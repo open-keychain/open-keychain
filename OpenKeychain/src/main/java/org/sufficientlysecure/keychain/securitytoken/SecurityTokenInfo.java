@@ -1,6 +1,8 @@
 package org.sufficientlysecure.keychain.securitytoken;
 
 
+import java.util.Arrays;
+
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
@@ -12,6 +14,8 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 @AutoValue
 public abstract class SecurityTokenInfo implements Parcelable {
+    private static final byte[] EMPTY_ARRAY = new byte[20];
+
     @Nullable
     public abstract byte[] getFingerprintSign();
     @Nullable
@@ -36,17 +40,14 @@ public abstract class SecurityTokenInfo implements Parcelable {
     }
 
     public boolean isEmpty() {
-        return getFingerprintSign() == null && getFingerprintDecrypt() == null && getFingerprintAuth() == null;
+        return Arrays.equals(EMPTY_ARRAY, getFingerprintSign()) && Arrays.equals(EMPTY_ARRAY, getFingerprintDecrypt()) &&
+                Arrays.equals(EMPTY_ARRAY, getFingerprintAuth());
     }
 
     public static SecurityTokenInfo create(byte[] fpSign, byte[] fpDecrypt, byte[] fpAuth,
             byte[] aid, String userId, String url, int verifyRetries, int verifyAdminRetries) {
         return new AutoValue_SecurityTokenInfo(fpSign, fpDecrypt, fpAuth, aid,
                 userId, url, verifyRetries, verifyAdminRetries);
-    }
-
-    public static SecurityTokenInfo createBlank(byte[] aid) {
-        return new AutoValue_SecurityTokenInfo(null, null, null, aid, null, null, 0, 0);
     }
 
     public static SecurityTokenInfo newInstanceDebugKeyserver() {

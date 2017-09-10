@@ -130,6 +130,7 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
         view.findViewById(R.id.button_unlock).setOnClickListener(this);
         view.findViewById(R.id.button_unlock_impossible).setOnClickListener(this);
         view.findViewById(R.id.button_load_file).setOnClickListener(this);
+        view.findViewById(R.id.button_setup).setOnClickListener(this);
 
         setHasOptionsMenu(true);
 
@@ -254,6 +255,11 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
     }
 
     @Override
+    public void showActionEmptyToken() {
+        actionAnimator.setDisplayedChildId(R.id.token_layout_empty);
+    }
+
+    @Override
     public void hideAction() {
         actionAnimator.setDisplayedChild(0);
     }
@@ -323,6 +329,12 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
         AlertDialog adminPinDialog = ChangePinDialogHelper.createAdminPinDialog(getContext(), presenter);
 
         adminPinDialog.show();
+    }
+
+    @Override
+    public void startCreateKeyForToken(SecurityTokenInfo tokenInfo) {
+        CreateKeyActivity activity = (CreateKeyActivity) getActivity();
+        activity.startCreateKeyForSecurityToken(tokenInfo);
     }
 
     @Override
@@ -428,6 +440,11 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
             }
             case R.id.button_unlock_impossible: {
                 presenter.onClickUnlockTokenImpossible();
+                break;
+            }
+
+            case R.id.button_setup: {
+                presenter.onClickSetupToken();
                 break;
             }
         }

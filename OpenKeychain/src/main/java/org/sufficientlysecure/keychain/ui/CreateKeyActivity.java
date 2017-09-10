@@ -110,16 +110,9 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
             if (intent.hasExtra(EXTRA_SECURITY_TOKEN_INFO)) {
                 SecurityTokenInfo tokenInfo = intent.getParcelableExtra(EXTRA_SECURITY_TOKEN_INFO);
 
-                if (!tokenInfo.isEmpty()) {
-                    Fragment frag = ManageSecurityTokenFragment.newInstance(tokenInfo);
-                    loadFragment(frag, FragAction.START);
-
-                    setTitle(R.string.title_import_keys);
-                } else {
-                    Fragment frag = CreateSecurityTokenBlankFragment.newInstance();
-                    loadFragment(frag, FragAction.START);
-                    setTitle(R.string.title_manage_my_keys);
-                }
+                Fragment frag = ManageSecurityTokenFragment.newInstance(tokenInfo);
+                loadFragment(frag, FragAction.START);
+                setTitle(R.string.title_manage_my_keys);
 
                 // done
                 return;
@@ -164,15 +157,10 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
             CreateSecurityTokenWaitFragment.sDisableFragmentAnimations = false;
         }
 
-        if (!tokenInfo.isEmpty()) {
-            Fragment frag = ManageSecurityTokenFragment.newInstance(tokenInfo);
-            if (mCurrentFragment instanceof ManageSecurityTokenFragment) {
-                loadFragment(frag, FragAction.REPLACE);
-            } else {
-                loadFragment(frag, FragAction.TO_RIGHT);
-            }
+        Fragment frag = ManageSecurityTokenFragment.newInstance(tokenInfo);
+        if (mCurrentFragment instanceof ManageSecurityTokenFragment) {
+            loadFragment(frag, FragAction.REPLACE);
         } else {
-            Fragment frag = CreateSecurityTokenBlankFragment.newInstance();
             loadFragment(frag, FragAction.TO_RIGHT);
         }
     }
@@ -194,6 +182,14 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
     @Override
     protected void initLayout() {
         setContentView(R.layout.create_key_activity);
+    }
+
+    public void startCreateKeyForSecurityToken(SecurityTokenInfo tokenInfo) {
+        mCreateSecurityToken = true;
+        this.tokenInfo = tokenInfo;
+
+        CreateKeyNameFragment frag = CreateKeyNameFragment.newInstance();
+        loadFragment(frag, FragAction.TO_RIGHT);
     }
 
     public enum FragAction {

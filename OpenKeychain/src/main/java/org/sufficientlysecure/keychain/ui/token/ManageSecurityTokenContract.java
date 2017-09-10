@@ -56,6 +56,8 @@ class ManageSecurityTokenContract {
         void onSecurityTokenResetSuccess(SecurityTokenInfo tokenInfo);
         void onSecurityTokenResetCanceled(SecurityTokenInfo tokenInfo);
 
+        void onClickSetupToken();
+
         void onClickUnlockToken();
         void onMenuClickChangePin();
         void onInputAdminPin(String adminPin, String newPin);
@@ -73,6 +75,7 @@ class ManageSecurityTokenContract {
         void showActionViewKey();
         void showActionRetryOrFromFile();
         void showActionLocked(int unlockAttempts);
+        void showActionEmptyToken();
         void hideAction();
 
         void operationImportKey(byte[] importKeyData);
@@ -85,6 +88,7 @@ class ManageSecurityTokenContract {
         void showFileSelectDialog();
         void showConfirmResetDialog();
         void showAdminPinDialog();
+        void startCreateKeyForToken(SecurityTokenInfo tokenInfo);
 
         void showDisplayLogActivity(OperationResult result);
 

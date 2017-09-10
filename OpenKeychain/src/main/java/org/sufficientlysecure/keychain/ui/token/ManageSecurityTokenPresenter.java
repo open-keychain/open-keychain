@@ -107,7 +107,8 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
     private void continueSearch() {
         if (!checkedKeyStatus) {
             boolean keyIsLocked = tokenInfo.getVerifyRetries() == 0;
-            if (keyIsLocked) {
+            boolean keyIsEmpty = tokenInfo.isEmpty();
+            if (keyIsLocked || keyIsEmpty) {
                 // the "checking key status" is fake: we only do it if we already know the key is locked
                 view.statusLineAdd(StatusLine.CHECK_KEY);
                 delayPerformKeyCheck();
@@ -148,19 +149,27 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
     }
 
     private void performKeyCheck() {
-        boolean isLocked = tokenInfo.getVerifyRetries() == 0;
-        if (!isLocked) {
+        boolean keyIsEmpty = tokenInfo.isEmpty();
+        if (keyIsEmpty) {
             view.statusLineOk();
 
-            checkedKeyStatus = true;
-            continueSearch();
+            view.showActionEmptyToken();
             return;
         }
 
-        view.statusLineError();
+        boolean keyIsLocked = tokenInfo.getVerifyRetries() == 0;
+        if (keyIsLocked) {
+            view.statusLineError();
 
-        int unlockAttemptsLeft = tokenInfo.getVerifyAdminRetries();
-        view.showActionLocked(unlockAttemptsLeft);
+            int unlockAttemptsLeft = tokenInfo.getVerifyAdminRetries();
+            view.showActionLocked(unlockAttemptsLeft);
+            return;
+        }
+
+        view.statusLineOk();
+
+        checkedKeyStatus = true;
+        continueSearch();
     }
 
     @Override
@@ -344,6 +353,11 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
             this.tokenInfo = tokenInfo;
             resetAndContinueSearch();
         }
+    }
+
+    @Override
+    public void onClickSetupToken() {
+        view.startCreateKeyForToken(tokenInfo);
     }
 
     @Override
