@@ -53,6 +53,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.KeyRetrievalResult;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
@@ -102,44 +103,55 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
         @Override
         public KeyRetrievalResult loadInBackground() {
             OperationLog log = new OperationLog();
-            try {
-                log.add(LogType.MSG_RET_LOCAL_START, 0);
+            log.add(LogType.MSG_RET_LOCAL_START, 0);
 
-                // TODO check other fingerprints
-                long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(fingerprints[0]);
-                log.add(LogType.MSG_RET_LOCAL_SEARCH, 1, KeyFormattingUtils.convertKeyIdToHex(masterKeyId));
-                CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(masterKeyId);
-
-                if (!Arrays.equals(fingerprints[0], cachedPublicKeyRing.getFingerprint())) {
-                    log.add(LogType.MSG_RET_LOCAL_FP_MISMATCH, 1);
-                    return KeyRetrievalResult.createWithError(log);
-                } else {
-                    log.add(LogType.MSG_RET_LOCAL_FP_MATCH, 1);
+            for (byte[] fingerprint : fingerprints) {
+                long keyId = KeyFormattingUtils.getKeyIdFromFingerprint(fingerprint);
+                if (keyId == 0L) {
+                    continue;
                 }
 
-                switch (cachedPublicKeyRing.getSecretKeyType(masterKeyId)) {
-                    case PASSPHRASE:
-                    case PASSPHRASE_EMPTY: {
-                        log.add(LogType.MSG_RET_LOCAL_SECRET, 1);
-                        log.add(LogType.MSG_RET_LOCAL_OK, 1);
-                        return KeyRetrievalResult.createWithMasterKeyIdAndSecretAvailable(log, masterKeyId);
-                    }
+                log.add(LogType.MSG_RET_LOCAL_SEARCH, 1, KeyFormattingUtils.convertKeyIdToHex(keyId));
+                try {
+                    CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(
+                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(keyId)
+                    );
 
-                    case GNU_DUMMY:
-                    case DIVERT_TO_CARD:
-                    case UNAVAILABLE: {
-                        log.add(LogType.MSG_RET_LOCAL_OK, 1);
-                        return KeyRetrievalResult.createWithMasterKeyId(log, masterKeyId);
-                    }
+                    long masterKeyId = cachedPublicKeyRing.getMasterKeyId();
+                    // TODO check fingerprint
+                    // if (!Arrays.equals(fingerprints, cachedPublicKeyRing.getFingerprint())) {
+                    //     log.add(LogType.MSG_RET_LOCAL_FP_MISMATCH, 1);
+                    //     return KeyRetrievalResult.createWithError(log);
+                    // } else {
+                    //     log.add(LogType.MSG_RET_LOCAL_FP_MATCH, 1);
+                    // }
 
-                    default: {
-                        throw new IllegalStateException("Unhandled SecretKeyType!");
+                    switch (cachedPublicKeyRing.getSecretKeyType(keyId)) {
+                        case PASSPHRASE:
+                        case PASSPHRASE_EMPTY: {
+                            log.add(LogType.MSG_RET_LOCAL_SECRET, 1);
+                            log.add(LogType.MSG_RET_LOCAL_OK, 1);
+                            return KeyRetrievalResult.createWithMasterKeyIdAndSecretAvailable(log, masterKeyId);
+                        }
+
+                        case GNU_DUMMY:
+                        case DIVERT_TO_CARD:
+                        case UNAVAILABLE: {
+                            log.add(LogType.MSG_RET_LOCAL_OK, 1);
+                            return KeyRetrievalResult.createWithMasterKeyId(log, masterKeyId);
+                        }
+
+                        default: {
+                            throw new IllegalStateException("Unhandled SecretKeyType!");
+                        }
                     }
+                } catch (PgpKeyNotFoundException | NotFoundException e) {
+                    log.add(LogType.MSG_RET_LOCAL_NOT_FOUND, 2);
                 }
-            } catch (PgpKeyNotFoundException | NotFoundException e) {
-                log.add(LogType.MSG_RET_LOCAL_NOT_FOUND, 1);
-                return KeyRetrievalResult.createWithError(log);
             }
+
+            log.add(LogType.MSG_RET_LOCAL_NONE_FOUND, 1);
+            return KeyRetrievalResult.createWithError(log);
         }
     }
 

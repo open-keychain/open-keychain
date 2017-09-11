@@ -1977,7 +1977,8 @@
     <string name="msg_ret_local_search">"Searching for key: %s"</string>
     <string name="msg_ret_local_fp_match">"Local key's fingerprint matches"</string>
     <string name="msg_ret_local_fp_mismatch">"Local key's fingerprint doesn't match!"</string>
-    <string name="msg_ret_local_not_found">"No key found"</string>
+    <string name="msg_ret_local_not_found">"Key not found"</string>
+    <string name="msg_ret_local_none_found">"No matching key found"</string>
     <string name="msg_ret_local_ok">"Key found"</string>
     <string name="msg_ret_local_secret">"Local key contains secret key material"</string>
     <string name="msg_ret_local_start">"Looking for key in local key list…"</string>
