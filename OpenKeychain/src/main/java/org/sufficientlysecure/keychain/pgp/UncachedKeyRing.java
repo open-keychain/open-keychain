@@ -171,6 +171,22 @@ public class UncachedKeyRing {
 
     }
 
+    public boolean containsKeyWithAnyFingerprint(byte[]... expectedFingerprints) {
+        Iterator<UncachedPublicKey> publicKeys = getPublicKeys();
+
+        while (publicKeys.hasNext()) {
+            UncachedPublicKey publicKey = publicKeys.next();
+
+            for (byte[] expectedFingerprint : expectedFingerprints) {
+                if (Arrays.equals(expectedFingerprint, publicKey.getFingerprint())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public static IteratorWithIOThrow<UncachedKeyRing> fromStream(InputStream rawStream) {
         final InputStream stream = rawStream.markSupported() ? rawStream: new BufferedInputStream(rawStream);
 

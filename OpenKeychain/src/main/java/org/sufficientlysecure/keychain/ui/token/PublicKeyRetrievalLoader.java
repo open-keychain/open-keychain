@@ -18,10 +18,8 @@
 package org.sufficientlysecure.keychain.ui.token;
 
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -66,9 +64,13 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
 
     private KeyRetrievalResult cachedResult;
 
+    protected final byte[][] fingerprints;
 
-    private PublicKeyRetrievalLoader(Context context) {
+
+    private PublicKeyRetrievalLoader(Context context, byte[][] fingerprints) {
         super(context);
+
+        this.fingerprints = fingerprints;
     }
 
     @Override
@@ -91,12 +93,10 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
 
     static class LocalKeyLookupLoader extends PublicKeyRetrievalLoader {
         private final KeyRepository keyRepository;
-        private final byte[][] fingerprints;
 
         LocalKeyLookupLoader(Context context, byte[][] fingerprints) {
-            super(context);
+            super(context, fingerprints);
 
-            this.fingerprints = fingerprints;
             this.keyRepository = KeyRepository.createDatabaseInteractor(context);
         }
 
@@ -156,14 +156,12 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
     }
 
     static class UriKeyRetrievalLoader extends PublicKeyRetrievalLoader {
-        private final byte[][] fingerprints;
         private final String tokenUri;
 
         UriKeyRetrievalLoader(Context context, String tokenUri, byte[][] fingerprints) {
-            super(context);
+            super(context, fingerprints);
 
             this.tokenUri = tokenUri;
-            this.fingerprints = fingerprints;
         }
 
         @Override
@@ -192,11 +190,11 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
                 }
 
                 IteratorWithIOThrow<UncachedKeyRing> uncachedKeyRingIterator = UncachedKeyRing.fromStream(
-                        new BufferedInputStream(execute.body().byteStream()));
+                        execute.body().byteStream());
                 while (uncachedKeyRingIterator.hasNext()) {
                     UncachedKeyRing keyRing = uncachedKeyRingIterator.next();
                     log.add(LogType.MSG_RET_URI_TEST, 1, KeyFormattingUtils.convertKeyIdToHex(keyRing.getMasterKeyId()));
-                    if (Arrays.equals(fingerprints[0], keyRing.getFingerprint())) {
+                    if (keyRing.containsKeyWithAnyFingerprint(fingerprints)) {
                         log.add(LogType.MSG_RET_URI_OK, 1);
                         return KeyRetrievalResult.createWithKeyringdata(log, keyRing.getMasterKeyId(), keyRing.getEncoded());
                     }
@@ -213,12 +211,8 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
     }
 
     static class KeyserverRetrievalLoader extends PublicKeyRetrievalLoader {
-        private final byte[] fingerprint;
-
-        KeyserverRetrievalLoader(Context context, byte[] fingerprint) {
-            super(context);
-
-            this.fingerprint = fingerprint;
+        KeyserverRetrievalLoader(Context context, byte[][] fingerprints) {
+            super(context, fingerprints);
         }
 
         @Override
@@ -234,10 +228,10 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
                 log.add(LogType.MSG_RET_KS_START, 0);
 
                 String keyString = keyserverClient.get(
-                        "0x" + KeyFormattingUtils.convertFingerprintToHex(fingerprint), parcelableProxy);
+                        "0x" + KeyFormattingUtils.convertFingerprintToHex(fingerprints[0]), parcelableProxy);
                 UncachedKeyRing keyRing = UncachedKeyRing.decodeFromData(keyString.getBytes());
 
-                if (!Arrays.equals(fingerprint, keyRing.getFingerprint())) {
+                if (!keyRing.containsKeyWithAnyFingerprint(fingerprints)) {
                     log.add(LogType.MSG_RET_KS_FP_MISMATCH, 1);
                     return KeyRetrievalResult.createWithError(log);
                 } else {
@@ -259,13 +253,11 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
 
     static class ContentUriRetrievalLoader extends PublicKeyRetrievalLoader {
         private final ContentResolver contentResolver;
-        private final byte[] fingerprint;
         private final Uri uri;
 
-        ContentUriRetrievalLoader(Context context, byte[] fingerprint, Uri uri) {
-            super(context);
+        ContentUriRetrievalLoader(Context context, byte[][] fingerprints, Uri uri) {
+            super(context, fingerprints);
 
-            this.fingerprint = fingerprint;
             this.uri = uri;
             this.contentResolver = context.getContentResolver();
         }
@@ -284,12 +276,11 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
                     return KeyRetrievalResult.createWithError(log);
                 }
 
-                IteratorWithIOThrow<UncachedKeyRing> uncachedKeyRingIterator = UncachedKeyRing.fromStream(
-                        new BufferedInputStream(is));
+                IteratorWithIOThrow<UncachedKeyRing> uncachedKeyRingIterator = UncachedKeyRing.fromStream(is);
                 while (uncachedKeyRingIterator.hasNext()) {
                     UncachedKeyRing keyRing = uncachedKeyRingIterator.next();
                     log.add(LogType.MSG_RET_CURI_FOUND, 1, KeyFormattingUtils.convertKeyIdToHex(keyRing.getMasterKeyId()));
-                    if (Arrays.equals(fingerprint, keyRing.getFingerprint())) {
+                    if (keyRing.containsKeyWithAnyFingerprint(fingerprints)) {
                         log.add(LogType.MSG_RET_CURI_OK, 1);
                         return KeyRetrievalResult.createWithKeyringdata(log, keyRing.getMasterKeyId(), keyRing.getEncoded());
                     } else {
