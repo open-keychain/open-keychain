@@ -19,6 +19,7 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,6 +32,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
@@ -170,7 +172,24 @@ public class UncachedKeyRing {
 
     }
 
-    public static IteratorWithIOThrow<UncachedKeyRing> fromStream(final InputStream stream) {
+    public boolean containsKeyWithAnyFingerprint(List<byte[]> expectedFingerprints) {
+        Iterator<UncachedPublicKey> publicKeys = getPublicKeys();
+
+        while (publicKeys.hasNext()) {
+            UncachedPublicKey publicKey = publicKeys.next();
+
+            for (byte[] expectedFingerprint : expectedFingerprints) {
+                if (Arrays.equals(expectedFingerprint, publicKey.getFingerprint())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public static IteratorWithIOThrow<UncachedKeyRing> fromStream(InputStream rawStream) {
+        final InputStream stream = rawStream.markSupported() ? rawStream: new BufferedInputStream(rawStream);
 
         return new IteratorWithIOThrow<UncachedKeyRing>() {
 
@@ -183,9 +202,15 @@ public class UncachedKeyRing {
                 }
 
                 try {
-                    while (stream.available() > 0) {
+                    while (true) {
                         // if there are no objects left from the last factory, create a new one
                         if (mObjectFactory == null) {
+                            stream.mark(1);
+                            if (stream.read() == -1) {
+                                break;
+                            }
+                            stream.reset();
+
                             InputStream in = PGPUtil.getDecoderStream(stream);
                             mObjectFactory = new PGPObjectFactory(in, new JcaKeyFingerprintCalculator());
                         }

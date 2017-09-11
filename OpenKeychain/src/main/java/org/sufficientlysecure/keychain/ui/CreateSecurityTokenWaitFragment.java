@@ -17,18 +17,26 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 
+import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
+import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenFragment;
+
 
 public class CreateSecurityTokenWaitFragment extends Fragment {
 
@@ -44,6 +52,36 @@ public class CreateSecurityTokenWaitFragment extends Fragment {
         if (this.getActivity() instanceof BaseSecurityTokenActivity) {
             ((BaseSecurityTokenActivity) this.getActivity()).checkDeviceConnection();
         }
+
+        setHasOptionsMenu(BuildConfig.DEBUG);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.token_debug, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_token_debug_uri:
+                mCreateKeyActivity.loadFragment(ManageSecurityTokenFragment.newInstance(
+                        SecurityTokenInfo.newInstanceDebugUri()), FragAction.TO_RIGHT);
+                break;
+            case R.id.menu_token_debug_keyserver:
+                mCreateKeyActivity.loadFragment(ManageSecurityTokenFragment.newInstance(
+                        SecurityTokenInfo.newInstanceDebugKeyserver()), FragAction.TO_RIGHT);
+                break;
+            case R.id.menu_token_debug_locked:
+                mCreateKeyActivity.loadFragment(ManageSecurityTokenFragment.newInstance(
+                        SecurityTokenInfo.newInstanceDebugLocked()), FragAction.TO_RIGHT);
+                break;
+            case R.id.menu_token_debug_locked_hard:
+                mCreateKeyActivity.loadFragment(ManageSecurityTokenFragment.newInstance(
+                        SecurityTokenInfo.newInstanceDebugLockedHard()), FragAction.TO_RIGHT);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

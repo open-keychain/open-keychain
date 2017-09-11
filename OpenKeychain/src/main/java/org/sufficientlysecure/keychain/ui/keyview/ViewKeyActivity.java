@@ -19,7 +19,6 @@
 package org.sufficientlysecure.keychain.ui.keyview;
 
 
-import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -76,7 +75,6 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -87,7 +85,6 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.BackupActivity;
 import org.sufficientlysecure.keychain.ui.CertifyFingerprintActivity;
 import org.sufficientlysecure.keychain.ui.CertifyKeyActivity;
-import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 import org.sufficientlysecure.keychain.ui.DeleteKeyDialogActivity;
 import org.sufficientlysecure.keychain.ui.EncryptFilesActivity;
 import org.sufficientlysecure.keychain.ui.EncryptTextActivity;
@@ -98,7 +95,6 @@ import org.sufficientlysecure.keychain.ui.QrCodeViewActivity;
 import org.sufficientlysecure.keychain.ui.SafeSlingerActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyAdvActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyKeybaseFragment;
-import org.sufficientlysecure.keychain.ui.ViewKeySecurityTokenFragment;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
@@ -107,7 +103,6 @@ import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
@@ -119,12 +114,6 @@ import org.sufficientlysecure.keychain.util.Preferences;
 public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
         CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
-
-    public static final String EXTRA_SECURITY_TOKEN_USER_ID = "security_token_user_id";
-    public static final String EXTRA_SECURITY_TOKEN_AID = "security_token_aid";
-    public static final String EXTRA_SECURITY_TOKEN_VERSION = "security_token_version";
-    public static final String EXTRA_SECURITY_TOKEN_FINGERPRINTS = "security_token_fingerprints";
-
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({REQUEST_QR_FINGERPRINT, REQUEST_BACKUP, REQUEST_CERTIFY, REQUEST_DELETE})
     private @interface RequestType {
@@ -173,8 +162,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     private boolean mIsSecure = true;
     private boolean mIsExpired = false;
 
-    private boolean mShowSecurityTokenAfterCreation = false;
-
     private MenuItem mRefreshItem;
     private boolean mIsRefreshing;
     private Animation mRotate, mRotateSpin;
@@ -182,11 +169,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     private long mMasterKeyId;
     private byte[] mFingerprint;
-
-    private byte[] mSecurityTokenFingerprints;
-    private String mSecurityTokenUserId;
-    private byte[] mSecurityTokenAid;
-    private double mSecurityTokenVersion;
 
     @SuppressLint("InflateParams")
     @Override
@@ -334,11 +316,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                     .replace(R.id.view_key_keybase_fragment, keybaseFrag)
                     .commit();
         }
-
-        // need to postpone loading of the security token fragment until after mMasterKeyId
-        // is available, but we mark here that this should be done
-        mShowSecurityTokenAfterCreation = true;
-
     }
 
     @Override
@@ -642,88 +619,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     }
 
     @Override
-    protected void doSecurityTokenInBackground() throws IOException {
-
-        mSecurityTokenFingerprints = mSecurityTokenHelper.getFingerprints();
-        mSecurityTokenUserId = mSecurityTokenHelper.getUserId();
-        mSecurityTokenAid = mSecurityTokenHelper.getAid();
-    }
-
-    @Override
     protected void onSecurityTokenPostExecute() {
-
-        long tokenId = KeyFormattingUtils.getKeyIdFromFingerprint(mSecurityTokenFingerprints);
-
-        try {
-
-            // if the security token matches a subkey in any key
-            CachedPublicKeyRing ring = mKeyRepository.getCachedPublicKeyRing(
-                    KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(tokenId));
-            byte[] candidateFp = ring.getFingerprint();
-
-            // if the master key of that key matches this one, just show the token dialog
-            if (Arrays.equals(candidateFp, mFingerprint)) {
-                showSecurityTokenFragment(
-                        mSecurityTokenFingerprints, mSecurityTokenUserId, mSecurityTokenAid, mSecurityTokenVersion);
-                return;
-            }
-
-            // otherwise, offer to go to that key
-            final long masterKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(candidateFp);
-            Notify.create(this, R.string.snack_security_token_other, Notify.LENGTH_LONG,
-                    Style.WARN, new ActionListener() {
-                        @Override
-                        public void onAction() {
-                            Intent intent = new Intent(
-                                    ViewKeyActivity.this, ViewKeyActivity.class);
-                            intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mSecurityTokenAid);
-                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_VERSION, mSecurityTokenVersion);
-                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mSecurityTokenUserId);
-                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mSecurityTokenFingerprints);
-                            startActivity(intent);
-                            finish();
-                        }
-                    }, R.string.snack_security_token_view).show();
-            // and if it's not found, offer import
-        } catch (PgpKeyNotFoundException e) {
-            Notify.create(this, R.string.snack_security_token_other, Notify.LENGTH_LONG,
-                    Style.WARN, new ActionListener() {
-                        @Override
-                        public void onAction() {
-                            Intent intent = new Intent(
-                                    ViewKeyActivity.this, CreateKeyActivity.class);
-                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mSecurityTokenAid);
-                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_VERSION, mSecurityTokenVersion);
-                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mSecurityTokenUserId);
-                            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mSecurityTokenFingerprints);
-                            startActivity(intent);
-                            finish();
-                        }
-                    }, R.string.snack_security_token_import).show();
-        }
-    }
-
-    public void showSecurityTokenFragment(
-            final byte[] tokenFingerprints, final String tokenUserId, final byte[] tokenAid, final double tokenVersion) {
-
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                ViewKeySecurityTokenFragment frag = ViewKeySecurityTokenFragment.newInstance(
-                        mMasterKeyId, tokenFingerprints, tokenUserId, tokenAid, tokenVersion);
-
-                FragmentManager manager = getSupportFragmentManager();
-
-                manager.popBackStack("security_token", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                manager.beginTransaction()
-                        .addToBackStack("security_token")
-                        .replace(R.id.view_key_fragment, frag)
-                        // if this is called while the activity wasn't resumed, just forget it happened
-                        .commitAllowingStateLoss();
-            }
-        });
-
+        super.onSecurityTokenPostExecute();
+        finish();
     }
 
     public void showMainFragment() {
@@ -926,17 +824,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
                     // queue showing of the main fragment
                     showMainFragment();
-
-                    // if it wasn't shown yet, display token fragment
-                    if (mShowSecurityTokenAfterCreation && getIntent().hasExtra(EXTRA_SECURITY_TOKEN_AID)) {
-                        mShowSecurityTokenAfterCreation = false;
-                        Intent intent = getIntent();
-                        byte[] tokenFingerprints = intent.getByteArrayExtra(EXTRA_SECURITY_TOKEN_FINGERPRINTS);
-                        String tokenUserId = intent.getStringExtra(EXTRA_SECURITY_TOKEN_USER_ID);
-                        byte[] tokenAid = intent.getByteArrayExtra(EXTRA_SECURITY_TOKEN_AID);
-                        double tokenVersion = intent.getDoubleExtra(EXTRA_SECURITY_TOKEN_VERSION, 2.0);
-                        showSecurityTokenFragment(tokenFingerprints, tokenUserId, tokenAid, tokenVersion);
-                    }
 
                     // if the refresh animation isn't playing
                     if (!mRotate.hasStarted() && !mRotateSpin.hasStarted()) {

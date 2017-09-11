@@ -18,6 +18,8 @@
 package org.sufficientlysecure.keychain.operations;
 
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
@@ -70,25 +72,24 @@ public class PromoteKeyOperation extends BaseReadWriteOperation<PromoteKeyringPa
                 CanonicalizedPublicKeyRing pubRing =
                         mKeyRepository.getCanonicalizedPublicKeyRing(promoteKeyringParcel.getMasterKeyId());
 
-                long[] subKeyIds = promoteKeyringParcel.getSubKeyIds();
-                if (subKeyIds == null) {
+                List<byte[]> fingerprints = promoteKeyringParcel.getFingerprints();
+                if (fingerprints == null) {
                     log.add(LogType.MSG_PR_ALL, 1);
                 } else {
                     // sort for binary search
                     for (CanonicalizedPublicKey key : pubRing.publicKeyIterator()) {
                         long subKeyId = key.getKeyId();
-                        if (naiveIndexOf(subKeyIds, subKeyId) != null) {
-                            log.add(LogType.MSG_PR_SUBKEY_MATCH, 1,
-                                    KeyFormattingUtils.convertKeyIdToHex(subKeyId));
+
+                        if (naiveArraySearch(fingerprints, key.getFingerprint())) {
+                            log.add(LogType.MSG_PR_SUBKEY_MATCH, 1, KeyFormattingUtils.convertKeyIdToHex(subKeyId));
                         } else {
-                            log.add(LogType.MSG_PR_SUBKEY_NOMATCH, 1,
-                                    KeyFormattingUtils.convertKeyIdToHex(subKeyId));
+                            log.add(LogType.MSG_PR_SUBKEY_NOMATCH, 1, KeyFormattingUtils.convertKeyIdToHex(subKeyId));
                         }
                     }
                 }
 
                 // create divert-to-card secret key from public key
-                promotedRing = pubRing.createDivertSecretRing(promoteKeyringParcel.getCardAid(), subKeyIds);
+                promotedRing = pubRing.createDivertSecretRing(promoteKeyringParcel.getCardAid(), fingerprints);
 
             } catch (NotFoundException e) {
                 log.add(LogType.MSG_PR_ERROR_KEY_NOT_FOUND, 2);
@@ -128,13 +129,13 @@ public class PromoteKeyOperation extends BaseReadWriteOperation<PromoteKeyringPa
 
     }
 
-    static private Integer naiveIndexOf(long[] haystack, long needle) {
-        for (int i = 0; i < haystack.length; i++) {
-            if (needle == haystack[i]) {
-                return i;
+    static private boolean naiveArraySearch(List<byte[]> searchElements, byte[] needle) {
+        for (byte[] searchElement : searchElements) {
+            if (Arrays.equals(needle, searchElement)) {
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
 }

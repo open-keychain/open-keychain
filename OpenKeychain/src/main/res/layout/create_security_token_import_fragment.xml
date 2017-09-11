@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/yubi_icon" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/token_status_title"
+            style="?android:textAppearanceMedium"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:animateLayoutChanges="true"
+            android:id="@+id/status_indicator_layout">
+
+            <!--
+            <include layout="@layout/status_indicator_line" />
+            -->
+
+        </LinearLayout>
+
+        <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/action_animator"
+            android:layout_marginRight="4dp"
+            android:layout_marginLeft="4dp"
+            android:inAnimation="@anim/fade_in_delayed"
+            android:outAnimation="@anim/fade_out"
+            android:clipChildren="false"
+            custom:initialView="06">
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/token_layout_not_found">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="?listPreferredItemHeight"
+                    android:gravity="center_vertical"
+                    android:text="@string/token_result_not_found"
+                    style="?android:textAppearanceLarge"
+                    />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_retry"
+                    android:drawableLeft="@drawable/ic_repeat_grey_24dp"
+                    android:drawableStart="@drawable/ic_repeat_grey_24dp"
+                    android:drawablePadding="12dp"
+                    android:textColor="@color/card_view_button"
+                    android:text="@string/token_action_retry"
+                    style="?borderlessButtonStyle"
+                    />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_load_file"
+                    android:drawableLeft="@drawable/ic_folder_grey_24dp"
+                    android:drawableStart="@drawable/ic_folder_grey_24dp"
+                    android:drawablePadding="12dp"
+                    android:textColor="@color/card_view_button"
+                    android:text="@string/token_action_load_from_file"
+                    style="?borderlessButtonStyle"
+                    />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_reset_token_1"
+                    android:drawableLeft="@drawable/ic_bomb_24dp"
+                    android:drawableStart="@drawable/ic_bomb_24dp"
+                    android:drawablePadding="12dp"
+                    android:textColor="@color/android_red_dark"
+                    android:text="@string/token_action_reset"
+                    style="?borderlessButtonStyle"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/token_layout_import">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="?listPreferredItemHeight"
+                    android:gravity="center_vertical"
+                    android:text="@string/token_result_key_found"
+                    style="?android:textAppearanceLarge"
+                    />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_import"
+                    android:drawableLeft="@drawable/ic_key_plus_grey600_24dp"
+                    android:drawableStart="@drawable/ic_key_plus_grey600_24dp"
+                    android:drawablePadding="12dp"
+                    android:textColor="@color/card_view_button"
+                    android:text="@string/token_action_import"
+                    style="?borderlessButtonStyle"
+                    />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_reset_token_2"
+                    android:drawableLeft="@drawable/ic_bomb_24dp"
+                    android:drawableStart="@drawable/ic_bomb_24dp"
+                    android:drawablePadding="12dp"
+                    android:textColor="@color/android_red_dark"
+                    android:text="@string/token_action_reset"
+                    style="?borderlessButtonStyle"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/token_layout_ok">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="?listPreferredItemHeight"
+                    android:gravity="center_vertical"
+                    android:text="@string/token_result_token_ok"
+                    style="?android:textAppearanceLarge"
+                    />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_view_key"
+                    android:drawableLeft="@drawable/ic_vpn_key_grey_24dp"
+                    android:drawableStart="@drawable/ic_vpn_key_grey_24dp"
+                    android:drawablePadding="12dp"
+                    android:textColor="@color/card_view_button"
+                    android:text="@string/token_action_view_key"
+                    style="?borderlessButtonStyle"
+                    />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_reset_token_3"
+                    android:drawableLeft="@drawable/ic_bomb_24dp"
+                    android:drawableStart="@drawable/ic_bomb_24dp"
+                    android:drawablePadding="12dp"
+                    android:textColor="@color/android_red_dark"
+                    android:text="@string/token_action_reset"
+                    style="?borderlessButtonStyle"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/token_layout_locked">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="?listPreferredItemHeight"
+                    android:gravity="center_vertical"
+                    android:text="Token is locked!"
+                    style="?android:textAppearanceLarge"
+                    />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp"
+                    android:id="@+id/button_unlock"
+                    android:background="?selectableItemBackground"
+                    >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:layout_centerVertical="true"
+                        android:id="@+id/button_unlock_drawable"
+                        android:src="@drawable/ic_vpn_key_grey_24dp"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/button_unlock_drawable"
+                        android:layout_toRightOf="@+id/button_unlock_drawable"
+                        android:id="@+id/button_unlock_title"
+                        android:textColor="@color/card_view_button"
+                        android:textAllCaps="true"
+                        android:textStyle="bold"
+                        android:text="@string/token_action_unlock"
+                        android:padding="0dp"
+                        android:minHeight="0dp"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/button_unlock_drawable"
+                        android:layout_toRightOf="@+id/button_unlock_drawable"
+                        android:layout_below="@+id/button_unlock_title"
+                        android:id="@+id/button_unlock_subtitle"
+                        tools:text="3 attempts left"
+                        style="?android:textAppearanceSmall"
+                        />
+
+                </RelativeLayout>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_reset_token_4"
+                    android:drawableLeft="@drawable/ic_bomb_24dp"
+                    android:drawableStart="@drawable/ic_bomb_24dp"
+                    android:drawablePadding="12dp"
+                    android:textColor="@color/android_red_dark"
+                    android:text="@string/token_action_reset"
+                    style="?borderlessButtonStyle"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/token_layout_locked_hard">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="?listPreferredItemHeight"
+                    android:gravity="center_vertical"
+                    android:text="Token is locked!"
+                    style="?android:textAppearanceLarge"
+                    />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp"
+                    android:id="@+id/button_unlock_impossible"
+                    android:background="?selectableItemBackground"
+                    >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="12dp"
+                        android:layout_marginEnd="12dp"
+                        android:layout_centerVertical="true"
+                        android:tint="@color/md_grey_400"
+                        android:id="@+id/button_unlock_drawable_2"
+                        android:src="@drawable/ic_vpn_key_grey_24dp"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/button_unlock_drawable_2"
+                        android:layout_toRightOf="@+id/button_unlock_drawable_2"
+                        android:id="@+id/button_unlock_title_2"
+                        android:textColor="@color/md_grey_400"
+                        android:textAllCaps="true"
+                        android:textStyle="bold"
+                        android:text="@string/token_action_unlock"
+                        android:padding="0dp"
+                        android:minHeight="0dp"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@+id/button_unlock_drawable_2"
+                        android:layout_toRightOf="@+id/button_unlock_drawable_2"
+                        android:layout_below="@+id/button_unlock_title_2"
+                        android:textColor="@color/md_grey_400"
+                        android:text="@string/token_unlock_attempts_none"
+                        style="?android:textAppearanceSmall"
+                        />
+
+                </RelativeLayout>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_reset_token_5"
+                    android:drawableLeft="@drawable/ic_bomb_24dp"
+                    android:drawableStart="@drawable/ic_bomb_24dp"
+                    android:drawablePadding="12dp"
+                    android:textColor="@color/android_red_dark"
+                    android:text="@string/token_action_reset"
+                    style="?borderlessButtonStyle"
+                    />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/token_layout_empty">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="?listPreferredItemHeight"
+                    android:gravity="center_vertical"
+                    android:text="@string/token_result_empty"
+                    style="?android:textAppearanceLarge"
+                    />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/button_setup"
+                    android:drawableLeft="@drawable/ic_person_add_grey_24dp"
+                    android:drawableStart="@drawable/ic_person_add_grey_24dp"
+                    android:drawableTint="@color/md_black_1000"
+                    android:drawablePadding="12dp"
+                    android:text="@string/token_action_setup"
+                    style="?borderlessButtonStyle"
+                    />
+
+            </LinearLayout>
+
+        </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
+
+    </LinearLayout>
+
+</ScrollView>

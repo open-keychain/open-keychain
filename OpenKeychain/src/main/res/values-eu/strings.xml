@@ -1291,7 +1291,7 @@
   <string name="security_token_serial_no">Serie Zbk: %s</string>
   <string name="security_token_key_holder_not_set"><![CDATA[Key holder: <not set>]]></string>
   <string name="btn_reset">Berrezarri</string>
-  <string name="security_token_reset_radio">Berrezarri Segurtasun Lekukoa</string>
+  <string name="security_token_radio_reset">Berrezarri Segurtasun Lekukoa</string>
   <string name="security_token_error">Akatsa: %s</string>
   <plurals name="security_token_error_pin">
     <item quantity="one">PIN okerra!\n%d saiakera gelditzen da.</item>

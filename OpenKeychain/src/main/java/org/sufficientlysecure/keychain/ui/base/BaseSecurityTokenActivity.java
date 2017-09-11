@@ -41,13 +41,10 @@ import nordpol.android.TagDispatcher;
 import nordpol.android.TagDispatcherBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.securitytoken.CardException;
 import org.sufficientlysecure.keychain.securitytoken.NfcTransport;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenHelper;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
 import org.sufficientlysecure.keychain.securitytoken.UsbConnectionDispatcher;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransport;
@@ -56,10 +53,8 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
-import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.dialog.FidesmoInstallDialog;
 import org.sufficientlysecure.keychain.ui.dialog.FidesmoPgpInstallDialog;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Log;
@@ -78,9 +73,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
     protected UsbConnectionDispatcher mUsbDispatcher;
     private boolean mTagHandlingEnabled;
 
-    private byte[] mSecurityTokenFingerprints;
-    private String mSecurityTokenUserId;
-    private byte[] mSecurityTokenAid;
+    private SecurityTokenInfo tokenInfo;
 
     /**
      * Override to change UI before SecurityToken handling (UI thread)
@@ -92,36 +85,17 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
      * Override to implement SecurityToken operations (background thread)
      */
     protected void doSecurityTokenInBackground() throws IOException {
-        mSecurityTokenAid = mSecurityTokenHelper.getAid();
-        mSecurityTokenFingerprints = mSecurityTokenHelper.getFingerprints();
-        mSecurityTokenUserId = mSecurityTokenHelper.getUserId();
+        tokenInfo = mSecurityTokenHelper.getTokenInfo();
+        Log.d(Constants.TAG, "Security Token: " + tokenInfo);
     }
 
     /**
      * Override to handle result of SecurityToken operations (UI thread)
      */
     protected void onSecurityTokenPostExecute() {
-
-        final long subKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(mSecurityTokenFingerprints);
-
-        try {
-            CachedPublicKeyRing ring = KeyRepository.createDatabaseInteractor(this).getCachedPublicKeyRing(
-                    KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
-            long masterKeyId = ring.getMasterKeyId();
-
-            Intent intent = new Intent(this, ViewKeyActivity.class);
-            intent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_AID, mSecurityTokenAid);
-            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mSecurityTokenUserId);
-            intent.putExtra(ViewKeyActivity.EXTRA_SECURITY_TOKEN_FINGERPRINTS, mSecurityTokenFingerprints);
-            startActivity(intent);
-        } catch (PgpKeyNotFoundException e) {
-            Intent intent = new Intent(this, CreateKeyActivity.class);
-            intent.putExtra(CreateKeyActivity.EXTRA_SECURITY_TOKEN_AID, mSecurityTokenAid);
-            intent.putExtra(CreateKeyActivity.EXTRA_SECURITY_TOKEN_USER_ID, mSecurityTokenUserId);
-            intent.putExtra(CreateKeyActivity.EXTRA_SECURITY_FINGERPRINTS, mSecurityTokenFingerprints);
-            startActivity(intent);
-        }
+        Intent intent = new Intent(this, CreateKeyActivity.class);
+        intent.putExtra(CreateKeyActivity.EXTRA_SECURITY_TOKEN_INFO, tokenInfo);
+        startActivity(intent);
     }
 
     /**
@@ -134,7 +108,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
     /**
      * Override to do something when PIN is wrong, e.g., clear passphrases (UI thread)
      */
-    protected void onSecurityTokenPinError(String error) {
+    protected void onSecurityTokenPinError(String error, SecurityTokenInfo tokeninfo) {
         onSecurityTokenError(error);
     }
 
@@ -268,8 +242,16 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         // https://github.com/Yubico/ykneo-openpgp/commit/90c2b91e86fb0e43ee234dd258834e75e3416410
         if ((status & (short) 0xFFF0) == 0x63C0) {
             int tries = status & 0x000F;
+
+            SecurityTokenInfo tokeninfo = null;
+            try {
+                tokeninfo = mSecurityTokenHelper.getTokenInfo();
+            } catch (IOException e2) {
+                // don't care
+            }
             // hook to do something different when PIN is wrong
-            onSecurityTokenPinError(getResources().getQuantityString(R.plurals.security_token_error_pin, tries, tries));
+            onSecurityTokenPinError(
+                    getResources().getQuantityString(R.plurals.security_token_error_pin, tries, tries), tokeninfo);
             return;
         }
 
@@ -282,8 +264,15 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
             PW not checked (command not allowed), Secure messaging incorrect (checksum and/or cryptogram) */
             // NOTE: Used in ykneo-openpgp >= 1.0.11 for wrong PIN
             case 0x6982: {
+                SecurityTokenInfo tokeninfo = null;
+                try {
+                    tokeninfo = mSecurityTokenHelper.getTokenInfo();
+                } catch (IOException e2) {
+                    // don't care
+                }
+
                 // hook to do something different when PIN is wrong
-                onSecurityTokenPinError(getString(R.string.security_token_error_security_not_satisfied));
+                onSecurityTokenPinError(getString(R.string.security_token_error_security_not_satisfied), tokeninfo);
                 break;
             }
             /* OpenPGP Card Spec: Selected file in termination state */
@@ -296,14 +285,14 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
             // https://github.com/Yubico/ykneo-openpgp/commit/b49ce8241917e7c087a4dab7b2c755420ff4500f
             case 0x6700: {
                 // hook to do something different when PIN is wrong
-                onSecurityTokenPinError(getString(R.string.security_token_error_wrong_length));
+                onSecurityTokenPinError(getString(R.string.security_token_error_wrong_length), null);
                 break;
             }
             /* OpenPGP Card Spec: Incorrect parameters in the data field */
             // NOTE: Used in ykneo-openpgp >= 1.0.11 for too short PIN
             case 0x6A80: {
                 // hook to do something different when PIN is wrong
-                onSecurityTokenPinError(getString(R.string.security_token_error_bad_data));
+                onSecurityTokenPinError(getString(R.string.security_token_error_bad_data), null);
                 break;
             }
             /* OpenPGP Card Spec: Authentication method blocked, PW blocked (error counter zero) */

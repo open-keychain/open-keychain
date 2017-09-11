@@ -20,7 +20,9 @@ package org.sufficientlysecure.keychain.pgp;
 
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import android.support.annotation.Nullable;
@@ -32,6 +34,7 @@ import org.bouncycastle.openpgp.PGPSecretKey;
 import org.bouncycastle.openpgp.PGPSecretKeyRing;
 import org.bouncycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 
 
@@ -153,19 +156,19 @@ public class CanonicalizedPublicKeyRing extends CanonicalizedKeyRing {
     }
 
     /** Create a dummy secret ring from this key */
-    public UncachedKeyRing createDivertSecretRing (byte[] cardAid, long[] subKeyIds) {
+    public UncachedKeyRing createDivertSecretRing(byte[] cardAid, List<byte[]> subKeyFingerprints) {
         PGPSecretKeyRing secRing = PGPSecretKeyRing.constructDummyFromPublic(getRing(), cardAid);
 
-        if (subKeyIds == null) {
+        if (subKeyFingerprints == null) {
             return new UncachedKeyRing(secRing);
         }
 
         // if only specific subkeys should be promoted, construct a
         // stripped dummy, then move divert-to-card keys over
         PGPSecretKeyRing newRing = PGPSecretKeyRing.constructDummyFromPublic(getRing());
-        for (long subKeyId : subKeyIds) {
-            PGPSecretKey key = secRing.getSecretKey(subKeyId);
-            if (key != null) {
+        for (byte[] subKeyFingerprint : subKeyFingerprints) {
+            PGPSecretKey key = secRing.getSecretKey(KeyFormattingUtils.convertFingerprintToKeyId(subKeyFingerprint));
+            if (key != null && Arrays.equals(subKeyFingerprint, key.getPublicKey().getFingerprint())) {
                 newRing = PGPSecretKeyRing.insertSecretKey(newRing, key);
             }
         }

@@ -1512,9 +1512,9 @@
   <string name="security_token_create">Тримайте маркер безпеки навпроти зворотнього боку Вашого пристрою.</string>
   <string name="security_token_reset_or_import">Маркер безпеки вже містить ключ. Щоб використовувати його, нам потрібна додаткова інформація. Ця інформація може бути знайдена на сервері ключів чи імпортована з файлу.</string>
   <string name="btn_reset">Скинути</string>
-  <string name="security_token_import_radio">Пошук інформації про ключ на сервері ключів</string>
+  <string name="security_token_radio_use_existing">Пошук інформації про ключ на сервері ключів</string>
   <string name="security_token_file_radio">Імпорт інформації про ключ з файлу</string>
-  <string name="security_token_reset_radio">Очистити маркер безпеки</string>
+  <string name="security_token_radio_reset">Очистити маркер безпеки</string>
   <string name="security_token_reset_warning">Скидання маркера безпеки повністю знищить всі ключі на ньому. Ви не зможете розшифрувати повідомлення/файли зашифровані цим ключем.</string>
   <string name="snack_security_token_other">Різні ключі збережено на маркері безпеки!</string>
   <string name="security_token_error">Помилка: %s</string>

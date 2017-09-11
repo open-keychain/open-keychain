@@ -1359,7 +1359,7 @@
   <string name="security_token_status_partly">安全信息匹配并且已部分绑定到密钥</string>
   <string name="security_token_create">保持安全令牌在您的手机背部</string>
   <string name="btn_reset">重置</string>
-  <string name="security_token_reset_radio">重置安全令牌</string>
+  <string name="security_token_radio_reset">重置安全令牌</string>
   <string name="security_token_reset_warning">重置安全令牌将完全摧毁其内部的密钥。之后您将无法使用该密钥加解密消息或文件！</string>
   <string name="snack_security_token_other">安全令牌中存有不同的密钥！</string>
   <string name="security_token_error">错误： %s</string>

@@ -1593,11 +1593,10 @@
     <string name="security_token_status_unbound">"Security Token matches, can be bound to key"</string>
     <string name="security_token_status_partly">"Security Token matches, partly bound to key"</string>
     <string name="security_token_create">"Hold Security Token against the back of your device."</string>
-    <string name="security_token_reset_or_import">"This Security Token already contains a key. To use it, we need additional key information. This information can be searched for on a keyserver or imported from a file."</string>
+    <string name="security_token_reset_or_import">"This Security Token already contains a key."</string>
     <string name="btn_reset">"Reset"</string>
-    <string name="security_token_import_radio">"Search key information on keyserver"</string>
-    <string name="security_token_file_radio">"Import key information from file"</string>
-    <string name="security_token_reset_radio">"Reset Security Token"</string>
+    <string name="security_token_radio_use_existing">"Use existing key"</string>
+    <string name="security_token_radio_reset">"Reset token"</string>
     <string name="security_token_reset_warning">"Resetting the Security Token completely destroys the keys on it. Afterwards, you will not be able to decrypt messages/files encrypted with this key!"</string>
     <string name="snack_security_token_other">Different key stored on Security Token!</string>
     <string name="security_token_error">"Error: %s"</string>
@@ -1918,5 +1917,78 @@
     <string name="transfer_error_wifi_text">"Connection failed!"</string>
     <string name="transfer_error_wifi_text_instructions">"Make sure you are on the same network, then scan again."</string>
     <string name="transfer_error_wifi_text_instructions_ssid">"Make sure you are on the &quot;%s&quot; network, then scan again."</string>
+
+    <string name="status_check_key">Checking key status…</string>
+    <string name="status_search_local">Searching in key list…</string>
+    <string name="status_search_uri">Searching at token Uri…</string>
+    <string name="status_search_keyserver">Searching on keyservers…</string>
+    <string name="status_import">Importing key…</string>
+    <string name="status_token_promote">Setting up key…</string>
+    <string name="status_token_check">Checking key setup…</string>
+    <string name="status_content_uri">Reading file…</string>
+
+    <string name="token_reset_confirm_title">Reset Security Token?</string>
+    <string name="token_reset_confirm_message">This will irrecoverably delete the key stored on this Security Token. You will no longer be able to use this key for decryption! Are you sure?</string>
+    <string name="token_reset_confirm_ok">Reset</string>
+    <string name="token_status_title">Gathering information for Security Token…</string>
+    <string name="token_result_not_found">Key not found!</string>
+    <string name="token_result_key_found">Key found!</string>
+    <string name="token_result_token_ok">Ready for use!</string>
+    <string name="token_result_empty">Token is empty</string>
+    <string name="token_action_retry">Retry Search</string>
+    <string name="token_action_load_from_file">Load from File</string>
+    <string name="token_action_reset">Reset Security Token</string>
+    <string name="token_action_import">Import</string>
+    <string name="token_action_view_key">View Key</string>
+    <string name="token_action_setup">"Set up with new key"</string>
+    <string name="token_action_unlock">Unlock using admin pin</string>
+    <string name="token_unlock_attempts_none">"No unlock attempts left"</string>
+    <plurals name="token_unlock_attempts">
+        <item quantity="one">"1 attempt left"</item>
+        <item quantity="other">"%d attempts left"</item>
+    </plurals>
+    <string name="token_error_locked_indefinitely">Too many reset attempts. Token is locked irrecoverably!</string>
+
+    <string name="token_menu_change_pin">Change Pin</string>
+    <string name="token_menu_view_log">View Log</string>
+
+    <string name="token_unlock_ok">Unlock</string>
+    <string name="token_hint_admin_pin">Admin Pin</string>
+    <string name="token_hint_new_pin">New Pin</string>
+    <string name="token_hint_new_pin_repeat">New Pin (repeat)</string>
+    <string name="token_error_admin_min8">Admin pin must be 8 characters or longer!</string>
+    <string name="token_error_pin_min6">New pin must be 6 characters or longer!</string>
+    <string name="token_error_pin_repeat">Doesn\'t match pin!</string>
+
+    <string name="msg_ret_curi_error_io">"Error reading data!"</string>
+    <string name="msg_ret_curi_error_no_match">"No matching key found"</string>
+    <string name="msg_ret_curi_error_not_found">"Couldn't open file!"</string>
+    <string name="msg_ret_curi_found">"Found key: %s"</string>
+    <string name="msg_ret_curi_mismatch">"Key doesn't match"</string>
+    <string name="msg_ret_curi_ok">"Key found"</string>
+    <string name="msg_ret_curi_open">"Opening Uri: %s"</string>
+    <string name="msg_ret_curi_start">"Loading key from file or document…"</string>
+    <string name="msg_ret_ks_error">"Unknown error searching for key!"</string>
+    <string name="msg_ret_ks_error_not_found">"Key not found"</string>
+    <string name="msg_ret_ks_fp_match">"Retrieved key's fingerprint matches"</string>
+    <string name="msg_ret_ks_fp_mismatch">"Retrieved key's fingerprint doesn't match!"</string>
+    <string name="msg_ret_ks_ok">"Key found"</string>
+    <string name="msg_ret_ks_start">"Looking for key on keyservers…"</string>
+    <string name="msg_ret_local_search">"Searching for key: %s"</string>
+    <string name="msg_ret_local_fp_match">"Local key's fingerprint matches"</string>
+    <string name="msg_ret_local_fp_mismatch">"Local key's fingerprint doesn't match!"</string>
+    <string name="msg_ret_local_not_found">"Key not found"</string>
+    <string name="msg_ret_local_none_found">"No matching key found"</string>
+    <string name="msg_ret_local_ok">"Key found"</string>
+    <string name="msg_ret_local_secret">"Local key contains secret key material"</string>
+    <string name="msg_ret_local_start">"Looking for key in local key list…"</string>
+    <string name="msg_ret_uri_error_fetch">"Unknown error fetching Uri!"</string>
+    <string name="msg_ret_uri_error_parse">"Token Uri is malformed!"</string>
+    <string name="msg_ret_uri_error_no_match">"No matching key found at Uri"</string>
+    <string name="msg_ret_uri_fetching">"Fetching Uri: %s"</string>
+    <string name="msg_ret_uri_ok">"Key found"</string>
+    <string name="msg_ret_uri_start">"Looking for key at token Uri…"</string>
+    <string name="msg_ret_uri_null">"No Uri saved on Security Token"</string>
+    <string name="msg_ret_uri_test">"Checking if found key matches: %s"</string>
 
 </resources>

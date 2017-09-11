@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    tools:showIn="@layout/fake_dialog">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/token_hint_admin_pin"
+        android:id="@+id/admin_pin_current"
+        android:inputType="numberPassword|textVisiblePassword" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/token_hint_new_pin"
+        android:id="@+id/pin_new"
+        android:inputType="numberPassword|textVisiblePassword" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/token_hint_new_pin_repeat"
+        android:id="@+id/pin_new_repeat"
+        android:inputType="numberPassword|textVisiblePassword" />
+
+</LinearLayout>

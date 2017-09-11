@@ -807,6 +807,13 @@
             android:theme="@style/Theme.Keychain.Light.Dialog" />
 
         <activity
+            android:name=".ui.SecurityTokenChangePinOperationActivity"
+            android:allowTaskReparenting="true"
+            android:launchMode="singleTop"
+            android:taskAffinity=":Nfc"
+            android:theme="@style/Theme.Keychain.Light.Dialog" />
+
+        <activity
             android:name=".ui.HelpActivity"
             android:label="@string/title_help" />
 

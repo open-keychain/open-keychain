@@ -217,6 +217,28 @@ public class SecurityTokenHelper {
 
     }
 
+    public void resetPin(String newPinStr) throws IOException {
+        if (!mPw3Validated) {
+            verifyPin(0x83); // (Verify PW1 with mode 82 for decryption)
+        }
+
+        byte[] newPin = newPinStr.getBytes();
+
+        final int MAX_PW1_LENGTH_INDEX = 1;
+        byte[] pwStatusBytes = getPwStatusBytes();
+        if (newPin.length < 6 || newPin.length > pwStatusBytes[MAX_PW1_LENGTH_INDEX]) {
+            throw new IOException("Invalid PIN length");
+        }
+
+        // Command APDU for RESET RETRY COUNTER command (page 33)
+        CommandAPDU changePin = new CommandAPDU(0x00, 0x2C, 0x02, 0x81, newPin);
+        ResponseAPDU response = communicate(changePin);
+
+        if (response.getSW() != APDU_SW_SUCCESS) {
+            throw new CardException("Failed to change PIN", response.getSW());
+        }
+    }
+
     /**
      * Modifies the user's PW1 or PW3. Before sending, the new PIN will be validated for
      * conformance to the token's requirements for key length.
@@ -587,6 +609,11 @@ public class SecurityTokenHelper {
         return getData(0x00, 0x4F);
     }
 
+    public String getUrl() throws IOException {
+        byte[] data = getData(0x5F, 0x50);
+        return new String(data).trim();
+    }
+
     public String getUserId() throws IOException {
         return getHolderName(getData(0x00, 0x65));
     }
@@ -949,6 +976,24 @@ public class SecurityTokenHelper {
 
     OpenPgpCapabilities getOpenPgpCapabilities() {
         return mOpenPgpCapabilities;
+    }
+
+    public SecurityTokenInfo getTokenInfo() throws IOException {
+        byte[] rawFingerprints = getFingerprints();
+
+        byte[][] fingerprints = new byte[rawFingerprints.length / 20][];
+        ByteBuffer buf = ByteBuffer.wrap(rawFingerprints);
+        for (int i = 0; i < rawFingerprints.length / 20; i++) {
+            fingerprints[i] = new byte[20];
+            buf.get(fingerprints[i]);
+        }
+
+        byte[] aid = getAid();
+        String userId = getUserId();
+        String url = getUrl();
+        byte[] pwInfo = getPwStatusBytes();
+
+        return SecurityTokenInfo.create(fingerprints, aid, userId, url, pwInfo[4], pwInfo[6]);
     }
 
     private static class LazyHolder {

@@ -1544,9 +1544,9 @@
   <string name="security_token_create">Держите токен безопасности возле задней части вашего устройства.</string>
   <string name="security_token_reset_or_import">Этот токен безопасности уже содержит ключ. Чтобы его использовать, нужна дополнительная информация о ключе. Её можно найти на сервере ключей или импортировать из файла.</string>
   <string name="btn_reset">Сброс</string>
-  <string name="security_token_import_radio">Найти информацию о ключе на сервере ключей</string>
+  <string name="security_token_radio_use_existing">Найти информацию о ключе на сервере ключей</string>
   <string name="security_token_file_radio">Импортировать информацию о ключе из файла</string>
-  <string name="security_token_reset_radio">Сбросить токен безопасности</string>
+  <string name="security_token_radio_reset">Сбросить токен безопасности</string>
   <string name="security_token_reset_warning">Сброс токена безопасности полностью уничтожает ключи на нём. После этого вы не сможете расшифровать сообщения или файлы, зашифрованные с помощью данных ключей!</string>
   <string name="snack_security_token_other">На токене безопасности хранится другой ключ!</string>
   <string name="security_token_error">Ошибка: %s</string>

@@ -1446,9 +1446,9 @@
   <string name="security_token_create">あなたのデバイスの背面にセキュリティトークンを保持してください。</string>
   <string name="security_token_reset_or_import">このセキュリティトークンにはすでに鍵が含まれています。 使用するには、追加の鍵の情報が必要です。 この情報は、鍵サーバ上で検索することや、ファイルからインポートすることができます。</string>
   <string name="btn_reset">リセット</string>
-  <string name="security_token_import_radio">鍵サーバ上で鍵情報を検索</string>
+  <string name="security_token_radio_use_existing">鍵サーバ上で鍵情報を検索</string>
   <string name="security_token_file_radio">ファイルから鍵情報をインポート</string>
-  <string name="security_token_reset_radio">セキュリティトークンのリセット</string>
+  <string name="security_token_radio_reset">セキュリティトークンのリセット</string>
   <string name="security_token_reset_warning">セキュリティトークンをリセットすると、その上の鍵を完全に破壊します。その後は、この鍵で暗号化されたメッセージ/ファイルを復号化することができなくなります!</string>
   <string name="snack_security_token_other">違う鍵がセキュリティトークンに格納されています!</string>
   <string name="security_token_error">エラー: %s</string>

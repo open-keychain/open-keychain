@@ -201,7 +201,7 @@ public class CreateSecurityTokenPinFragment extends Fragment {
 
             mCreateKeyActivity.mSecurityTokenPin = new Passphrase(mPin.getText().toString());
 
-            final double version = SecurityTokenHelper.parseOpenPgpVersion(mCreateKeyActivity.mSecurityTokenAid);
+            final double version = SecurityTokenHelper.parseOpenPgpVersion(mCreateKeyActivity.tokenInfo.getAid());
 
             Fragment frag;
             if (version >= 3.0) {
