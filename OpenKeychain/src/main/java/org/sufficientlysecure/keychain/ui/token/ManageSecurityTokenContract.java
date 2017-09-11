@@ -18,6 +18,8 @@
 package org.sufficientlysecure.keychain.ui.token;
 
 
+import java.util.List;
+
 import android.net.Uri;
 
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -79,7 +81,7 @@ class ManageSecurityTokenContract {
         void hideAction();
 
         void operationImportKey(byte[] importKeyData);
-        void operationPromote(long masterKeyId, byte[] cardAid, long[] subKeyIds);
+        void operationPromote(long masterKeyId, byte[] cardAid, List<byte[]> fingerprints);
         void operationResetSecurityToken();
         void operationChangePinSecurityToken(String adminPin, String newPin);
 

@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.operations;
 
 import java.io.PrintStream;
 import java.security.Security;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import org.bouncycastle.bcpg.sig.KeyFlags;
@@ -164,9 +165,8 @@ public class PromoteKeyOperationTest {
         long keyId = KeyringTestingHelper.getSubkeyId(mStaticRing, 1);
 
         PromoteKeyResult result = op.execute(
-                PromoteKeyringParcel.createPromoteKeyringParcel(mStaticRing.getMasterKeyId(), aid, new long[] {
-                    keyId
-                }), null);
+                PromoteKeyringParcel.createPromoteKeyringParcel(mStaticRing.getMasterKeyId(), aid,
+                        Arrays.asList(mStaticRing.getPublicKey(keyId).getFingerprint())), null);
 
         Assert.assertTrue("promotion must succeed", result.success());
 

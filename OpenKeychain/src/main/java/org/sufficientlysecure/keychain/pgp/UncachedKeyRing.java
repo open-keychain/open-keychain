@@ -32,6 +32,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
@@ -171,7 +172,7 @@ public class UncachedKeyRing {
 
     }
 
-    public boolean containsKeyWithAnyFingerprint(byte[]... expectedFingerprints) {
+    public boolean containsKeyWithAnyFingerprint(List<byte[]> expectedFingerprints) {
         Iterator<UncachedPublicKey> publicKeys = getPublicKeys();
 
         while (publicKeys.hasNext()) {

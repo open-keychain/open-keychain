@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui.token;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -64,10 +65,10 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
 
     private KeyRetrievalResult cachedResult;
 
-    protected final byte[][] fingerprints;
+    protected final List<byte[]> fingerprints;
 
 
-    private PublicKeyRetrievalLoader(Context context, byte[][] fingerprints) {
+    private PublicKeyRetrievalLoader(Context context, List<byte[]> fingerprints) {
         super(context);
 
         this.fingerprints = fingerprints;
@@ -94,7 +95,7 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
     static class LocalKeyLookupLoader extends PublicKeyRetrievalLoader {
         private final KeyRepository keyRepository;
 
-        LocalKeyLookupLoader(Context context, byte[][] fingerprints) {
+        LocalKeyLookupLoader(Context context, List<byte[]> fingerprints) {
             super(context, fingerprints);
 
             this.keyRepository = KeyRepository.createDatabaseInteractor(context);
@@ -158,7 +159,7 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
     static class UriKeyRetrievalLoader extends PublicKeyRetrievalLoader {
         private final String tokenUri;
 
-        UriKeyRetrievalLoader(Context context, String tokenUri, byte[][] fingerprints) {
+        UriKeyRetrievalLoader(Context context, String tokenUri, List<byte[]> fingerprints) {
             super(context, fingerprints);
 
             this.tokenUri = tokenUri;
@@ -211,7 +212,7 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
     }
 
     static class KeyserverRetrievalLoader extends PublicKeyRetrievalLoader {
-        KeyserverRetrievalLoader(Context context, byte[][] fingerprints) {
+        KeyserverRetrievalLoader(Context context, List<byte[]> fingerprints) {
             super(context, fingerprints);
         }
 
@@ -228,7 +229,7 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
                 log.add(LogType.MSG_RET_KS_START, 0);
 
                 String keyString = keyserverClient.get(
-                        "0x" + KeyFormattingUtils.convertFingerprintToHex(fingerprints[0]), parcelableProxy);
+                        "0x" + KeyFormattingUtils.convertFingerprintToHex(fingerprints.get(0)), parcelableProxy);
                 UncachedKeyRing keyRing = UncachedKeyRing.decodeFromData(keyString.getBytes());
 
                 if (!keyRing.containsKeyWithAnyFingerprint(fingerprints)) {
@@ -255,7 +256,7 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
         private final ContentResolver contentResolver;
         private final Uri uri;
 
-        ContentUriRetrievalLoader(Context context, byte[][] fingerprints, Uri uri) {
+        ContentUriRetrievalLoader(Context context, List<byte[]> fingerprints, Uri uri) {
             super(context, fingerprints);
 
             this.uri = uri;

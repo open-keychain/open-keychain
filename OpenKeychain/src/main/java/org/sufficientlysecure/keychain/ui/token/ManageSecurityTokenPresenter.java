@@ -38,7 +38,6 @@ import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.KeyRetr
 import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.KeyserverRetrievalLoader;
 import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.LocalKeyLookupLoader;
 import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.UriKeyRetrievalLoader;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.PermissionsUtil;
 
 
@@ -207,13 +206,13 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
         public Loader<KeyRetrievalResult> onCreateLoader(int id, Bundle args) {
             switch (id) {
                 case LOADER_LOCAL:
-                    return new LocalKeyLookupLoader(context, tokenInfo.getAllFingerprints());
+                    return new LocalKeyLookupLoader(context, tokenInfo.getFingerprints());
                 case LOADER_URI:
-                    return new UriKeyRetrievalLoader(context, tokenInfo.getUrl(), tokenInfo.getAllFingerprints());
+                    return new UriKeyRetrievalLoader(context, tokenInfo.getUrl(), tokenInfo.getFingerprints());
                 case LOADER_KEYSERVER:
-                    return new KeyserverRetrievalLoader(context, tokenInfo.getAllFingerprints());
+                    return new KeyserverRetrievalLoader(context, tokenInfo.getFingerprints());
                 case LOADER_CONTENT_URI:
-                    return new ContentUriRetrievalLoader(context, tokenInfo.getAllFingerprints(),
+                    return new ContentUriRetrievalLoader(context, tokenInfo.getFingerprints(),
                             args.<Uri>getParcelable(ARG_CONTENT_URI));
             }
             throw new IllegalArgumentException("called with unknown loader id!");
@@ -286,10 +285,7 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
     }
 
     private void promoteKeyWithTokenInfo(Long masterKeyId) {
-        long signKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(tokenInfo.getFingerprintSign());
-        long decryptKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(tokenInfo.getFingerprintDecrypt());
-        long authKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(tokenInfo.getFingerprintAuth());
-        view.operationPromote(masterKeyId, tokenInfo.getAid(), new long[] { signKeyId, decryptKeyId, authKeyId });
+        view.operationPromote(masterKeyId, tokenInfo.getAid(), tokenInfo.getFingerprints());
     }
 
     @Override

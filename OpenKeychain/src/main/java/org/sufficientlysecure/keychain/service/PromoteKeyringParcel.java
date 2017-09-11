@@ -20,11 +20,12 @@
 package org.sufficientlysecure.keychain.service;
 
 
+import java.util.List;
+
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
-import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 
 
 @AutoValue
@@ -35,10 +36,10 @@ public abstract class PromoteKeyringParcel implements Parcelable {
     public abstract byte[] getCardAid();
     @Nullable
     @SuppressWarnings("mutable")
-    public abstract long[] getSubKeyIds();
+    public abstract List<byte[]> getFingerprints();
 
     public static PromoteKeyringParcel createPromoteKeyringParcel(long keyRingId, byte[] cardAid,
-            @Nullable long[] subKeyIds) {
-        return new AutoValue_PromoteKeyringParcel(keyRingId, cardAid, subKeyIds);
+            @Nullable List<byte[]> fingerprints) {
+        return new AutoValue_PromoteKeyringParcel(keyRingId, cardAid, fingerprints);
     }
 }

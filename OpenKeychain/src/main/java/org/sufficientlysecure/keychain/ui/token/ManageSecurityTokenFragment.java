@@ -18,6 +18,8 @@
 package org.sufficientlysecure.keychain.ui.token;
 
 
+import java.util.List;
+
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -277,12 +279,13 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
     }
 
     @Override
-    public void operationPromote(long masterKeyId, byte[] cardAid, long[] subkeys) {
+    public void operationPromote(long masterKeyId, byte[] cardAid, List<byte[]> fingerprints) {
         if (currentImportKeyringParcel != null) {
             throw new IllegalStateException("Cannot trigger import operation twice!");
         }
 
-        currentPromoteKeyringParcel = PromoteKeyringParcel.createPromoteKeyringParcel(masterKeyId, cardAid, subkeys);
+        currentPromoteKeyringParcel = PromoteKeyringParcel.createPromoteKeyringParcel(
+                masterKeyId, cardAid, fingerprints);
         cryptoPromoteOperationHelper.setOperationMinimumDelay(1000L);
         cryptoPromoteOperationHelper.cryptoOperation();
     }

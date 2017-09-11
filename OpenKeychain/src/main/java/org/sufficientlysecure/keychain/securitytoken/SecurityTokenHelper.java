@@ -979,22 +979,21 @@ public class SecurityTokenHelper {
     }
 
     public SecurityTokenInfo getTokenInfo() throws IOException {
-        byte[] fingerprints = getFingerprints();
+        byte[] rawFingerprints = getFingerprints();
 
-        byte[] fpSign = new byte[20];
-        byte[] fpDecrypt = new byte[20];
-        byte[] fpAuth = new byte[20];
-        ByteBuffer buf = ByteBuffer.wrap(fingerprints);
-        buf.get(fpSign);
-        buf.get(fpDecrypt);
-        buf.get(fpAuth);
+        byte[][] fingerprints = new byte[rawFingerprints.length / 20][];
+        ByteBuffer buf = ByteBuffer.wrap(rawFingerprints);
+        for (int i = 0; i < rawFingerprints.length / 20; i++) {
+            fingerprints[i] = new byte[20];
+            buf.get(fingerprints[i]);
+        }
 
         byte[] aid = getAid();
         String userId = getUserId();
         String url = getUrl();
         byte[] pwInfo = getPwStatusBytes();
 
-        return SecurityTokenInfo.create(fpSign, fpDecrypt, fpAuth, aid, userId, url, pwInfo[4], pwInfo[6]);
+        return SecurityTokenInfo.create(fingerprints, aid, userId, url, pwInfo[4], pwInfo[6]);
     }
 
     private static class LazyHolder {
