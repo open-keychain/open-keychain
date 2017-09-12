@@ -25,14 +25,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:text="You don't have any keys yet!"
+                android:text="@string/key_list_dummy_title"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:text="Click here to create or import one."
+                android:text="@string/key_list_dummy_subtitle"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
         </LinearLayout>

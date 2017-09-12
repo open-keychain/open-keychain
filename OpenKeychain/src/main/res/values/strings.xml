@@ -699,6 +699,9 @@
     <string name="key_list_fab_search">"Key Search"</string>
     <string name="key_list_fab_import">"Import from File"</string>
 
+    <string name="key_list_dummy_title">"You don't have any keys yet!"</string>
+    <string name="key_list_dummy_subtitle">"Click here to create or import one."</string>
+
     <!-- Key view -->
     <string name="key_view_action_edit">"Edit"</string>
     <string name="key_view_action_encrypt">"Encrypt text"</string>
