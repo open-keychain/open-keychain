@@ -776,7 +776,6 @@
         <item>"Change Expiry"</item>
         <item>"Revoke Subkey"</item>
         <item>"Strip Subkey"</item>
-        <item>"Move Subkey to Security Token"</item>
     </string-array>
     <string name="edit_key_new_subkey">"new subkey"</string>
     <string name="edit_key_select_usage">"Please select key usage!"</string>

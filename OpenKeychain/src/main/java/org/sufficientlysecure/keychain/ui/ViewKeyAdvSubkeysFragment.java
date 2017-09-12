@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -38,9 +39,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ViewAnimator;
 
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.asn1.nist.NISTNamedCurves;
-import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
@@ -56,7 +54,6 @@ import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.dialog.AddSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyExpiryDialogFragment;
-import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
@@ -339,51 +336,6 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
                         SubkeyChange change = mEditModeSkpBuilder.getSubkeyChange(keyId);
                         if (change == null || !change.getDummyStrip()) {
                             mEditModeSkpBuilder.addOrReplaceSubkeyChange(SubkeyChange.createStripChange(keyId));
-                        } else {
-                            mEditModeSkpBuilder.removeSubkeyChange(change);
-                        }
-                        break;
-                    }
-                    case EditSubkeyDialogFragment.MESSAGE_MOVE_KEY_TO_SECURITY_TOKEN: {
-                        SecretKeyType secretKeyType = mSubkeysAdapter.getSecretKeyType(position);
-                        if (secretKeyType == SecretKeyType.DIVERT_TO_CARD ||
-                                secretKeyType == SecretKeyType.GNU_DUMMY) {
-                            Notify.create(getActivity(), R.string.edit_key_error_bad_security_token_stripped, Notify.Style.ERROR)
-                                    .show();
-                            break;
-                        }
-
-                        switch (mSubkeysAdapter.getAlgorithm(position)) {
-                            case PublicKeyAlgorithmTags.RSA_GENERAL:
-                            case PublicKeyAlgorithmTags.RSA_ENCRYPT:
-                            case PublicKeyAlgorithmTags.RSA_SIGN:
-                                if (mSubkeysAdapter.getKeySize(position) < 2048) {
-                                    Notify.create(getActivity(), R.string.edit_key_error_bad_security_token_size, Notify.Style.ERROR)
-                                            .show();
-                                }
-                                break;
-
-                            case PublicKeyAlgorithmTags.ECDH:
-                            case PublicKeyAlgorithmTags.ECDSA:
-                                final ASN1ObjectIdentifier curve = NISTNamedCurves.getOID(mSubkeysAdapter.getCurveOid(position));
-                                if (!curve.equals(NISTNamedCurves.getOID("P-256")) &&
-                                        !curve.equals(NISTNamedCurves.getOID("P-384")) &&
-                                        !curve.equals(NISTNamedCurves.getOID("P-521"))) {
-                                    Notify.create(getActivity(), R.string.edit_key_error_bad_security_token_curve, Notify.Style.ERROR)
-                                            .show();
-                                }
-                                break;
-
-                            default:
-                                Notify.create(getActivity(), R.string.edit_key_error_bad_security_token_algo, Notify.Style.ERROR)
-                                        .show();
-                                break;
-                        }
-
-                        SubkeyChange change = mEditModeSkpBuilder.getSubkeyChange(keyId);
-                        if (change == null || !change.getMoveKeyToSecurityToken()) {
-                            mEditModeSkpBuilder.addOrReplaceSubkeyChange(
-                                    SubkeyChange.createMoveToSecurityTokenChange(keyId));
                         } else {
                             mEditModeSkpBuilder.removeSubkeyChange(change);
                         }
