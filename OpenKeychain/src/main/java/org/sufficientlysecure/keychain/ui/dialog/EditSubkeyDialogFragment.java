@@ -35,11 +35,9 @@ public class EditSubkeyDialogFragment extends DialogFragment {
     public static final int MESSAGE_CHANGE_EXPIRY = 1;
     public static final int MESSAGE_REVOKE = 2;
     public static final int MESSAGE_STRIP = 3;
-    public static final int MESSAGE_MOVE_KEY_TO_SECURITY_TOKEN = 4;
     public static final int SUBKEY_MENU_CHANGE_EXPIRY = 0;
     public static final int SUBKEY_MENU_REVOKE_SUBKEY = 1;
     public static final int SUBKEY_MENU_STRIP_SUBKEY = 2;
-    public static final int SUBKEY_MENU_MOVE_TO_SECURITY_TOKEN = 3;
 
     private Messenger mMessenger;
 
@@ -80,9 +78,6 @@ public class EditSubkeyDialogFragment extends DialogFragment {
                         break;
                     case SUBKEY_MENU_STRIP_SUBKEY:
                         showAlertDialog();
-                        break;
-                    case SUBKEY_MENU_MOVE_TO_SECURITY_TOKEN:
-                        sendMessageToHandler(MESSAGE_MOVE_KEY_TO_SECURITY_TOKEN, null);
                         break;
                     default:
                         break;

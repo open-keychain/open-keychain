@@ -17,6 +17,9 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.Date;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -35,9 +38,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.asn1.nist.NISTNamedCurves;
-import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
@@ -49,9 +49,9 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
-import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
@@ -70,8 +70,6 @@ import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
-
-import java.util.Date;
 
 public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyringParcel, OperationResult>
         implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -433,52 +431,6 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                         SubkeyChange change = mSkpBuilder.getSubkeyChange(keyId);
                         if (change == null || !change.getDummyStrip()) {
                             mSkpBuilder.addOrReplaceSubkeyChange(SubkeyChange.createStripChange(keyId));
-                        } else {
-                            mSkpBuilder.removeSubkeyChange(change);
-                        }
-                        break;
-                    }
-                    case EditSubkeyDialogFragment.MESSAGE_MOVE_KEY_TO_SECURITY_TOKEN: {
-                        SecretKeyType secretKeyType = mSubkeysAdapter.getSecretKeyType(position);
-                        if (secretKeyType == SecretKeyType.DIVERT_TO_CARD ||
-                            secretKeyType == SecretKeyType.GNU_DUMMY) {
-                            Notify.create(getActivity(), R.string.edit_key_error_bad_security_token_stripped, Notify.Style.ERROR)
-                                    .show();
-                            break;
-                        }
-
-                        switch (mSubkeysAdapter.getAlgorithm(position)) {
-                            case PublicKeyAlgorithmTags.RSA_GENERAL:
-                            case PublicKeyAlgorithmTags.RSA_ENCRYPT:
-                            case PublicKeyAlgorithmTags.RSA_SIGN:
-                                if (mSubkeysAdapter.getKeySize(position) < 2048) {
-                                    Notify.create(getActivity(), R.string.edit_key_error_bad_security_token_size, Notify.Style.ERROR)
-                                            .show();
-                                }
-                                break;
-
-                            case PublicKeyAlgorithmTags.ECDH:
-                            case PublicKeyAlgorithmTags.ECDSA:
-                                final ASN1ObjectIdentifier curve = NISTNamedCurves.getOID(mSubkeysAdapter.getCurveOid(position));
-                                if (!curve.equals(NISTNamedCurves.getByName("P-256")) &&
-                                        !curve.equals(NISTNamedCurves.getByName("P-384")) &&
-                                        !curve.equals(NISTNamedCurves.getByName("P-521"))) {
-                                    Notify.create(getActivity(), R.string.edit_key_error_bad_security_token_curve, Notify.Style.ERROR)
-                                            .show();
-                                }
-                                break;
-
-                            default:
-                                Notify.create(getActivity(), R.string.edit_key_error_bad_security_token_algo, Notify.Style.ERROR)
-                                        .show();
-                                break;
-                        }
-
-                        SubkeyChange change = mSkpBuilder.getSubkeyChange(keyId);
-                        if (change == null || !change.getMoveKeyToSecurityToken()) {
-                            mSkpBuilder.addOrReplaceSubkeyChange(
-                                    SubkeyChange.createMoveToSecurityTokenChange(keyId));
-                            break;
                         } else {
                             mSkpBuilder.removeSubkeyChange(change);
                         }
