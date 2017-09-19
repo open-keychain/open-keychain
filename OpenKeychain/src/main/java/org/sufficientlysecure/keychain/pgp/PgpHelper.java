@@ -22,7 +22,10 @@ package org.sufficientlysecure.keychain.pgp;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -104,18 +107,52 @@ public class PgpHelper {
         }
     }
 
-    public static String getPgpKeyContent(@NonNull CharSequence input) {
+    public static String getPgpPublicKeyContent(@NonNull CharSequence input) {
         Log.dEscaped(Constants.TAG, "input: " + input);
 
         Matcher matcher = PgpHelper.PGP_PUBLIC_KEY.matcher(input);
-        if (matcher.matches()) {
-            String text = matcher.group(1);
-            text = fixPgpMessage(text);
-
-            Log.dEscaped(Constants.TAG, "input fixed: " + text);
-            return text;
+        if (!matcher.matches()) {
+            return null;
         }
-        return null;
+
+        String text = matcher.group(1);
+        text = fixPgpMessage(text);
+        text = reformatPgpPublicKeyBlock(text);
+
+        // Log.dEscaped(Constants.TAG, "input fixed: " + text);
+        return text;
+    }
+
+    @Nullable
+    @CheckResult
+    @VisibleForTesting
+    static String reformatPgpPublicKeyBlock(@NonNull String text) {
+        StringBuilder reformattedKeyBlocks = new StringBuilder();
+
+        while (!text.isEmpty()) {
+            int indexOfBlock = text.indexOf("-----BEGIN PGP PUBLIC KEY BLOCK-----");
+            int indexOfPubkeyMaterial = text.indexOf("mQ", indexOfBlock);
+            int indexOfBlockEnd = text.indexOf("-----END PGP PUBLIC KEY BLOCK-----");
+            if (indexOfBlock < 0 || indexOfPubkeyMaterial < 0 || indexOfBlockEnd < 0) {
+                break;
+            }
+
+            String keyMaterial = text.substring(indexOfPubkeyMaterial, indexOfBlockEnd);
+            keyMaterial = keyMaterial.replaceAll("\\s+", "\n");
+
+            reformattedKeyBlocks.append("-----BEGIN PGP PUBLIC KEY BLOCK-----\n");
+            reformattedKeyBlocks.append('\n');
+            reformattedKeyBlocks.append(keyMaterial);
+            reformattedKeyBlocks.append("-----END PGP PUBLIC KEY BLOCK-----\n");
+
+            text = text.substring(indexOfBlockEnd +34).trim();
+        }
+
+        if (reformattedKeyBlocks.length() == 0) {
+            return null;
+        }
+
+        return reformattedKeyBlocks.toString();
     }
 
 }
