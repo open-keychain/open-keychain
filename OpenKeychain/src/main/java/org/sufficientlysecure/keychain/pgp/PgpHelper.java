@@ -44,6 +44,7 @@ public class PgpHelper {
     public static final Pattern PGP_PUBLIC_KEY = Pattern.compile(
             ".*?(-----BEGIN PGP PUBLIC KEY BLOCK-----.*?-----END PGP PUBLIC KEY BLOCK-----).*",
             Pattern.DOTALL);
+    private static final Pattern KEYDATA_START_PATTERN = Pattern.compile("\\s(m[A-Q])");
 
     /**
      * Fixing broken PGP MESSAGE Strings coming from GMail/AOSP Mail
@@ -126,16 +127,49 @@ public class PgpHelper {
     @Nullable
     @CheckResult
     @VisibleForTesting
+    /* Reformats a public key block with messed up whitespace. This will strip headers in the process. */
     static String reformatPgpPublicKeyBlock(@NonNull String text) {
         StringBuilder reformattedKeyBlocks = new StringBuilder();
 
+        /*
+            This method assumes that the base64 encoded public key data always starts with "m[A-Q]".
+            This holds based on a few assumptions based on the following observations:
+
+            mA encodes 12 bits: 1001 1000 0000
+            ...
+            mP encodes 12 bits: 1001 1000 1111
+            mQ encodes 12 bits: 1001 1001 0000
+                                1234 5678
+
+            The first bit is a constant 1, the second is 0 for old packet format. Bits 3
+            through 6 encode the packet tag (constant 6 = b0110). Bits 7 and 8 encode the
+            length type of the packet, with a value of b00 or b01 referring to a 2- or
+            3-octet header, respectively. The following four bits are part of the length
+            header.
+
+            Thus we make the following assumptions:
+            - The packet uses the old packet format. Since the public key packet tag is available in the old format,
+              there is no reason to use the new one - implementations *could* do that, however.
+            - The first packet is a public key.
+            - The length is encoded as one or two bytes.
+            - If the length is encoded as one byte, the second character may be A through P (four length bits).
+            - If the length is encoded as two bytes, the second character is Q. This fixes the first four bits of
+              the length field to zero, limiting the length to 4096.
+         */
+
         while (!text.isEmpty()) {
             int indexOfBlock = text.indexOf("-----BEGIN PGP PUBLIC KEY BLOCK-----");
-            int indexOfPubkeyMaterial = text.indexOf("mQ", indexOfBlock);
             int indexOfBlockEnd = text.indexOf("-----END PGP PUBLIC KEY BLOCK-----");
-            if (indexOfBlock < 0 || indexOfPubkeyMaterial < 0 || indexOfBlockEnd < 0) {
+            if (indexOfBlock < 0 || indexOfBlockEnd < 0) {
                 break;
             }
+
+            Matcher matcher = KEYDATA_START_PATTERN.matcher(text);
+            if (!matcher.find()) {
+                Log.e(Constants.TAG, "Could not find start of key data!");
+                break;
+            }
+            int indexOfPubkeyMaterial = matcher.start(1);
 
             String keyMaterial = text.substring(indexOfPubkeyMaterial, indexOfBlockEnd);
             keyMaterial = keyMaterial.replaceAll("\\s+", "\n");
