@@ -1,0 +1,7 @@
+#!/bin/bash -x
+
+# Fix TypographyEllipsis programmatically
+
+projectdir=$(dirname $0)/../..
+
+sed -i 's/\.\.\./…/g' $projectdir/OpenKeychain/src/main/res/values*/strings.xml
