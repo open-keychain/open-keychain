@@ -204,17 +204,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
             // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.passphrase_preferences);
-
-            findPreference(Constants.Pref.PASSPHRASE_CACHE_TTLS)
-                    .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                        public boolean onPreferenceClick(Preference preference) {
-                            Intent intent = new Intent(getActivity(), SettingsCacheTTLActivity.class);
-                            intent.putExtra(SettingsCacheTTLActivity.EXTRA_TTL_PREF,
-                                    sPreferences.getPassphraseCacheTtl());
-                            startActivity(intent);
-                            return false;
-                        }
-                    });
         }
     }
 
