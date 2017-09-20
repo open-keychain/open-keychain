@@ -210,6 +210,8 @@ public class PassphraseDialogActivity extends FragmentActivity {
             vTimeToLiveLayout.setVisibility(mRequiredInput.mSkipCaching ? View.GONE : View.VISIBLE);
 
             mTimeToLiveSpinner = (CacheTTLSpinner) mLayout.findViewById(R.id.ttl_spinner);
+            int ttlSeconds = Preferences.getPreferences(getContext()).getCacheTtlSeconds();
+            mTimeToLiveSpinner.setSelectedTimeToLive(ttlSeconds);
 
             alert.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 
@@ -425,6 +427,8 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
                     final Passphrase passphrase = new Passphrase(mPassphraseEditText);
                     final int timeToLiveSeconds = mTimeToLiveSpinner.getSelectedTimeToLive();
+
+                    Preferences.getPreferences(getContext()).setCacheTtlSeconds(timeToLiveSeconds);
 
                     // Early breakout if we are dealing with a symmetric key
                     if (mRequiredInput.mType == RequiredInputType.PASSPHRASE_SYMMETRIC) {

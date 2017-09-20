@@ -96,6 +96,16 @@ public class Preferences {
         return mSharedPreferences.getBoolean(Pref.PASSPHRASE_CACHE_SUBS, false);
     }
 
+    public int getCacheTtlSeconds() {
+        return mSharedPreferences.getInt(Pref.PASSPHRASE_CACHE_LAST_TTL, 0);
+    }
+
+    public void setCacheTtlSeconds(int ttlSeconds) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putInt(Pref.PASSPHRASE_CACHE_LAST_TTL, ttlSeconds);
+        editor.commit();
+    }
+
     public boolean getCachedConsolidate() {
         return mSharedPreferences.getBoolean(Pref.CACHED_CONSOLIDATE, false);
     }

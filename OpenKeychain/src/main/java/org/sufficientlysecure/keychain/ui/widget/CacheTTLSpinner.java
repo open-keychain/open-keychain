@@ -67,4 +67,14 @@ public class CacheTTLSpinner extends AppCompatSpinner {
         Object item = getAdapter().getItem(selectedItemPosition);
         return ((Cursor) item).getInt(1);
     }
+
+    public void setSelectedTimeToLive(int ttlSeconds) {
+        for (int i = 0; i < TTL_TIMES.length; i++) {
+            boolean isSelectedOrLast = ttlSeconds <= TTL_TIMES[i] || (i == TTL_TIMES.length - 1);
+            if (isSelectedOrLast) {
+                setSelection(i);
+                break;
+            }
+        }
+    }
 }
