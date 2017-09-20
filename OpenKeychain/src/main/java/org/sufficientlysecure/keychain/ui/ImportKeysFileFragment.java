@@ -24,6 +24,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -105,21 +106,27 @@ public class ImportKeysFileFragment extends Fragment {
                         Uri.fromFile(Constants.Path.APP_DIR), "*/*", false, REQUEST_CODE_FILE);
                 return true;
             case R.id.menu_import_keys_file_paste:
-                CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
-                String sendText = "";
-                if (clipboardText != null) {
-                    sendText = clipboardText.toString();
-                    sendText = PgpHelper.getPgpKeyContent(sendText);
-                    if (sendText == null) {
-                        Notify.create(mActivity, R.string.error_bad_data, Style.ERROR).show();
-                    } else {
-                        mCallback.loadKeys(new BytesLoaderState(sendText.getBytes(), null));
-                    }
-                }
+                importFromClipboard();
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void importFromClipboard() {
+        CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
+        if (TextUtils.isEmpty(clipboardText)) {
+            Notify.create(mActivity, R.string.error_clipboard_empty, Style.ERROR).show();
+            return;
+        }
+
+        String keyText = PgpHelper.getPgpPublicKeyContent(clipboardText);
+        if (keyText == null) {
+            Notify.create(mActivity, R.string.error_clipboard_bad, Style.ERROR).show();
+            return;
+        }
+
+        mCallback.loadKeys(new BytesLoaderState(keyText.getBytes(), null));
     }
 
     @Override
