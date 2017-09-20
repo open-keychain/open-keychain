@@ -97,7 +97,7 @@ public class Preferences {
     }
 
     public int getCacheTtlSeconds() {
-        return mSharedPreferences.getInt(Pref.PASSPHRASE_CACHE_LAST_TTL, 0);
+        return mSharedPreferences.getInt(Pref.PASSPHRASE_CACHE_LAST_TTL, Integer.MAX_VALUE);
     }
 
     public void setCacheTtlSeconds(int ttlSeconds) {
