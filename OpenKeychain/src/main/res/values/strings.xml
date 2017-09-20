@@ -1986,4 +1986,24 @@
     <string name="label_usb_untested_summary">If enabled, USB Smartcard readers can be used that have not been properly tested.</string>
     <string name="label_usb_untested">Allow untested USB Devices</string>
 
+    <string name="title_edit_key_lock">Edit Key Lock</string>
+    <string name="lock_status_none">"None"</string>
+    <string name="lock_status_password">"Password"</string>
+    <string name="lock_status_security_token">"Security Token"</string>
+    <string name="lock_status_mixed">"Mixed"</string>
+    <string name="lock_status_unavailable">"Key not available"</string>
+    <string name="lock_explanation">Your key is stored in OpenKeychain\'s private storage, and other Apps can\'t access it. For extra protection, you can additionally lock your key using a password.</string>
+    <string name="lock_current">Current lock method:</string>
+    <string name="lock_choose">Choose a lock method:</string>
+    <string name="lock_method_none">None</string>
+    <string name="lock_currently_selected">Currently selected</string>
+    <string name="lock_method_password">Password</string>
+    <string name="lock_password_choose">Choose a password:</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_repeat_password">Repeat Password</string>
+    <string name="button_back">Back</string>
+    <string name="button_save">Save</string>
+    <string name="error_key_is_on_token">"Key is on Security Token!"</string>
+    <string name="error_key_not_available">"This key is stripped, it can\'t be locked!"</string>
+
 </resources>

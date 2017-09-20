@@ -198,21 +198,21 @@ public class ViewKeyAdvLockFragment extends LoaderFragment implements OnClickLis
 
         switch (currentLockType) {
             case NONE:
-                lockStatusText.setText("None");
+                lockStatusText.setText(R.string.lock_status_none);
                 lockCurrentNone.setVisibility(View.VISIBLE);
                 break;
             case PASSWORD:
-                lockStatusText.setText("Password");
+                lockStatusText.setText(R.string.lock_status_password);
                 lockCurrentPassword.setVisibility(View.VISIBLE);
                 break;
             case SECURITY_TOKEN:
-                lockStatusText.setText("Security Token");
+                lockStatusText.setText(R.string.lock_status_security_token);
                 break;
             case MIXED:
-                lockStatusText.setText("Mixed");
+                lockStatusText.setText(R.string.lock_status_mixed);
                 break;
             case UNAVAILABLE:
-                lockStatusText.setText("Unavailable");
+                lockStatusText.setText(R.string.lock_status_unavailable);
                 break;
         }
     }
@@ -241,8 +241,7 @@ public class ViewKeyAdvLockFragment extends LoaderFragment implements OnClickLis
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 actionMode = mode;
 
-                mode.setTitle("Edit Key Lock");
-//                mode.getMenuInflater().inflate(R.menu.action_edit_lock, menu);
+                mode.setTitle(R.string.title_edit_key_lock);
 
                 viewAnimator.setDisplayedChildId(R.id.lock_layout_select);
                 return true;
@@ -284,12 +283,12 @@ public class ViewKeyAdvLockFragment extends LoaderFragment implements OnClickLis
             }
 
             case SECURITY_TOKEN: {
-                Notify.create(getActivity(), "Key is on Security Token!", Style.ERROR).show();
+                Notify.create(getActivity(), R.string.error_key_is_on_token, Style.ERROR).show();
                 break;
             }
 
             case UNAVAILABLE: {
-                Notify.create(getActivity(), "Stripped keys can't be locked!", Style.ERROR).show();
+                Notify.create(getActivity(), R.string.error_key_not_available, Style.ERROR).show();
                 break;
             }
         }
