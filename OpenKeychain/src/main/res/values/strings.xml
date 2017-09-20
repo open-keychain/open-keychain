@@ -20,7 +20,6 @@
     <string name="title_api_registered_apps">"Apps"</string>
     <string name="title_key_server_preference">"OpenPGP keyservers"</string>
     <string name="title_smartpgp_authorities_preference">"SmartPGP: Trusted authorities"</string>
-    <string name="title_cache_ttl_preference">"Customize 'Remember' choices"</string>
     <string name="title_change_passphrase">"Change Password"</string>
     <string name="title_share_fingerprint_with">"Share fingerprint with…"</string>
     <string name="title_share_key">"Share key with…"</string>
@@ -164,7 +163,6 @@
     <string name="label_encryption_algorithm">"Encryption algorithm"</string>
     <string name="label_hash_algorithm">"Hash algorithm"</string>
     <string name="label_symmetric">"Encrypt with password"</string>
-    <string name="label_passphrase_cache_ttl">"Customize 'Remember' choices"</string>
     <string name="label_passphrase_cache_subs">"Remember passwords by subkey"</string>
     <string name="label_message_compression">"Text compression"</string>
     <string name="label_file_compression">"File compression"</string>
@@ -1755,16 +1753,9 @@
     <string name="title_edit_subkeys">"Edit Subkeys"</string>
     <string name="btn_search_for_query">"Search for\n'%s'"</string>
     <string name="cache_ttl_lock_screen">"until screen off"</string>
-    <string name="cache_ttl_ten_minutes">"for ten minutes"</string>
-    <string name="cache_ttl_thirty_minutes">"for thirty minutes"</string>
     <string name="cache_ttl_one_hour">"for one hour"</string>
-    <string name="cache_ttl_three_hours">"for three hours"</string>
     <string name="cache_ttl_one_day">"for one day"</string>
-    <string name="cache_ttl_three_days">"for three days"</string>
-    <string name="cache_ttl_forever">"forever"</string>
-    <string name="settings_cache_select_three">"Pick up to three."</string>
-    <string name="settings_cache_ttl_at_least_one">"At least one item must be selected!"</string>
-    <string name="settings_cache_ttl_max_three">"Can\'t select more than three items!"</string>
+    <string name="cache_ttl_forever">"until cleared"</string>
     <string name="remember">"Remember"</string>
     <string name="security_token_error_pgp_app_not_installed">"No PGP app was found on the security token"</string>
     <string name="prompt_fidesmo_pgp_install_title">"Install PGP?"</string>

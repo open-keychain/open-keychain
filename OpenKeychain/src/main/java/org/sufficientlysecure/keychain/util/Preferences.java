@@ -19,6 +19,10 @@
 package org.sufficientlysecure.keychain.util;
 
 
+import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.ListIterator;
+
 import android.accounts.Account;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
@@ -31,20 +35,8 @@ import android.preference.PreferenceManager;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
 import org.sufficientlysecure.keychain.KeychainApplication;
-import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
-
-import java.io.Serializable;
-import java.net.Proxy;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Singleton Implementation of a Preference Helper
@@ -102,6 +94,16 @@ public class Preferences {
 
     public boolean getPassphraseCacheSubs() {
         return mSharedPreferences.getBoolean(Pref.PASSPHRASE_CACHE_SUBS, false);
+    }
+
+    public int getCacheTtlSeconds() {
+        return mSharedPreferences.getInt(Pref.PASSPHRASE_CACHE_LAST_TTL, Integer.MAX_VALUE);
+    }
+
+    public void setCacheTtlSeconds(int ttlSeconds) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putInt(Pref.PASSPHRASE_CACHE_LAST_TTL, ttlSeconds);
+        editor.commit();
     }
 
     public boolean getCachedConsolidate() {
@@ -305,67 +307,6 @@ public class Preferences {
 
         return ContentResolver.getSyncAutomatically(account, authority) &&
                 !ContentResolver.getPeriodicSyncs(account, authority).isEmpty();
-    }
-
-    public CacheTTLPrefs getPassphraseCacheTtl() {
-        Set<String> pref = mSharedPreferences.getStringSet(Constants.Pref.PASSPHRASE_CACHE_TTLS, null);
-        if (pref == null) {
-            return CacheTTLPrefs.getDefault();
-        }
-        return new CacheTTLPrefs(pref);
-    }
-
-    public void setPassphraseCacheTtl(CacheTTLPrefs prefs) {
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putStringSet(Constants.Pref.PASSPHRASE_CACHE_TTLS, prefs.getStringSet());
-        editor.commit();
-    }
-
-    public static class CacheTTLPrefs implements Serializable {
-        public static final Map<Integer, Integer> CACHE_TTL_NAMES;
-        public static final ArrayList<Integer> CACHE_TTLS;
-
-        static {
-            HashMap<Integer, Integer> cacheTtlNames = new HashMap<>();
-            cacheTtlNames.put(0, R.string.cache_ttl_lock_screen);
-            cacheTtlNames.put(60 * 10, R.string.cache_ttl_ten_minutes);
-            cacheTtlNames.put(60 * 30, R.string.cache_ttl_thirty_minutes);
-            cacheTtlNames.put(60 * 60, R.string.cache_ttl_one_hour);
-            cacheTtlNames.put(60 * 60 * 3, R.string.cache_ttl_three_hours);
-            cacheTtlNames.put(60 * 60 * 24, R.string.cache_ttl_one_day);
-            cacheTtlNames.put(60 * 60 * 24 * 3, R.string.cache_ttl_three_days);
-            cacheTtlNames.put(Integer.MAX_VALUE, R.string.cache_ttl_forever);
-            CACHE_TTL_NAMES = Collections.unmodifiableMap(cacheTtlNames);
-
-            CACHE_TTLS = new ArrayList<>(CacheTTLPrefs.CACHE_TTL_NAMES.keySet());
-            Collections.sort(CACHE_TTLS);
-        }
-
-        public HashSet<Integer> ttlTimes;
-
-        public CacheTTLPrefs(Collection<String> ttlStrings) {
-            ttlTimes = new HashSet<>();
-            for (String ttlString : ttlStrings) {
-                ttlTimes.add(Integer.parseInt(ttlString));
-            }
-        }
-
-        public HashSet<String> getStringSet() {
-            HashSet<String> ttlTimeStrings = new HashSet<>();
-            for (Integer ttlTime : ttlTimes) {
-                ttlTimeStrings.add(Integer.toString(ttlTime));
-            }
-            return ttlTimeStrings;
-        }
-
-        public static CacheTTLPrefs getDefault() {
-            ArrayList<String> ttlStrings = new ArrayList<>();
-            ttlStrings.add(Integer.toString(0));
-            ttlStrings.add(Integer.toString(60 * 60));
-            ttlStrings.add(Integer.toString(60 * 60 * 24));
-            return new CacheTTLPrefs(ttlStrings);
-        }
-
     }
 
     // cloud prefs

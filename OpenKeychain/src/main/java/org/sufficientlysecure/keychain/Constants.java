@@ -114,9 +114,8 @@ public final class Constants {
     }
 
     public static final class Pref {
-        public static final String PASSPHRASE_CACHE_TTLS = "passphraseCacheTtls";
-        public static final String PASSPHRASE_CACHE_DEFAULT = "passphraseCacheDefault";
         public static final String PASSPHRASE_CACHE_SUBS = "passphraseCacheSubs";
+        public static final String PASSPHRASE_CACHE_LAST_TTL = "passphraseCacheLastTtl";
         public static final String LANGUAGE = "language";
         public static final String KEY_SERVERS = "keyServers";
         public static final String PREF_VERSION = "keyServersDefaultVersion";

@@ -26,32 +26,36 @@ import android.support.v7.widget.AppCompatSpinner;
 import android.util.AttributeSet;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.util.Preferences.CacheTTLPrefs;
 
 
 public class CacheTTLSpinner extends AppCompatSpinner {
+    public static final int[] TTL_TIMES = {
+            0,
+            60 * 60,
+            60 * 60 * 24,
+            Integer.MAX_VALUE
+    };
+    public static final int[] TTL_STRINGS = {
+            R.string.cache_ttl_lock_screen,
+            R.string.cache_ttl_one_hour,
+            R.string.cache_ttl_one_day,
+            R.string.cache_ttl_forever
+    };
 
     public CacheTTLSpinner(Context context, AttributeSet attrs) {
         super(context, attrs);
-        initView(context);
+        initView();
     }
 
     public CacheTTLSpinner(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        initView(context);
+        initView();
     }
 
-    private void initView(Context context) {
-
-        CacheTTLPrefs prefs = Preferences.getPreferences(context).getPassphraseCacheTtl();
-        MatrixCursor  cursor = new MatrixCursor(new String[] { "_id", "TTL", "description" }, 5);
-        int i = 0;
-        for (int ttl : CacheTTLPrefs.CACHE_TTLS) {
-            if ( ! prefs.ttlTimes.contains(ttl)) {
-                continue;
-            }
-            cursor.addRow(new Object[] { i++, ttl, getContext().getString(CacheTTLPrefs.CACHE_TTL_NAMES.get(ttl)) });
+    private void initView() {
+        MatrixCursor  cursor = new MatrixCursor(new String[] { "_id", "TTL", "description" }, TTL_TIMES.length);
+        for (int i = 0; i < TTL_TIMES.length; i++) {
+            cursor.addRow(new Object[] { i, TTL_TIMES[i], getContext().getString(TTL_STRINGS[i]) });
         }
 
         setAdapter(new SimpleCursorAdapter(getContext(), R.layout.simple_item, cursor,
@@ -64,4 +68,13 @@ public class CacheTTLSpinner extends AppCompatSpinner {
         return ((Cursor) item).getInt(1);
     }
 
+    public void setSelectedTimeToLive(int ttlSeconds) {
+        for (int i = 0; i < TTL_TIMES.length; i++) {
+            boolean isSelectedOrLast = ttlSeconds <= TTL_TIMES[i] || (i == TTL_TIMES.length - 1);
+            if (isSelectedOrLast) {
+                setSelection(i);
+                break;
+            }
+        }
+    }
 }
