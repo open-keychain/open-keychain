@@ -97,7 +97,8 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
             return new UserIdViewHolder(
                     layoutInflater.inflate(R.layout.view_key_identity_user_id, parent, false), identityClickListener);
         } else if (viewType == VIEW_TYPE_LINKED_ID) {
-            return new LinkedIdViewHolder(layoutInflater.inflate(R.layout.linked_id_item, parent, false));
+            return new LinkedIdViewHolder(layoutInflater.inflate(R.layout.linked_id_item, parent, false),
+                    identityClickListener);
         } else {
             throw new IllegalStateException("unhandled identitytype!");
         }
@@ -136,13 +137,22 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
         final private TextView vTitle;
         final private TextView vComment;
 
-        public LinkedIdViewHolder(View view) {
+        public LinkedIdViewHolder(View view, final IdentityClickListener identityClickListener) {
             super(view);
 
             vVerified = (ImageView) view.findViewById(R.id.linked_id_certified_icon);
             vIcon = (ImageView) view.findViewById(R.id.linked_id_type_icon);
             vTitle = (TextView) view.findViewById(R.id.linked_id_title);
             vComment = (TextView) view.findViewById(R.id.linked_id_comment);
+
+            view.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (identityClickListener != null) {
+                        identityClickListener.onClickIdentity(getAdapterPosition());
+                    }
+                }
+            });
         }
 
         public void bind(Context context, LinkedIdInfo info, boolean isSecret) {
