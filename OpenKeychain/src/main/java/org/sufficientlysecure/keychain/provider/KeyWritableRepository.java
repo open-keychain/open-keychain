@@ -1091,7 +1091,7 @@ public class KeyWritableRepository extends KeyRepository {
 
             final Cursor cursor = mContentResolver.query(
                     KeyRingData.buildPublicKeyRingUri(),
-                    new String[]{KeyRingData.KEY_RING_DATA}, null, null, null);
+                    new String[]{KeyRingData.MASTER_KEY_ID, KeyRingData.KEY_RING_DATA}, null, null, null);
 
             if (cursor == null) {
                 log.add(LogType.MSG_CON_ERROR_DB, indent);
@@ -1113,7 +1113,21 @@ public class KeyWritableRepository extends KeyRepository {
                     if (cursor.isAfterLast()) {
                         return false;
                     }
-                    ring = ParcelableKeyRing.createFromEncodedBytes(cursor.getBlob(0));
+
+                    long masterKeyId = cursor.getLong(0);
+                    byte[] keyBytes = cursor.getBlob(1);
+                    if (keyBytes == null) {
+                        try {
+                            keyBytes = mLocalPublicKeyStorage.readPublicKey(masterKeyId);
+                        } catch (IOException e) {
+                            Log.e(Constants.TAG, "Failed reading key data!", e);
+                        }
+                    }
+                    if (keyBytes == null) {
+                        throw new IllegalStateException("Lost a key! This should never happen!");
+                    }
+
+                    ring = ParcelableKeyRing.createFromEncodedBytes(keyBytes);
                     cursor.moveToNext();
                     return true;
                 }
