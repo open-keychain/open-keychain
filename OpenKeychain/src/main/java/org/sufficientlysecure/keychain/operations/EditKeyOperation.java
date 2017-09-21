@@ -82,13 +82,14 @@ public class EditKeyOperation extends BaseReadWriteOperation<SaveKeyringParcel> 
         }
 
         // Perform actual modification (or creation)
+        boolean isNewKey = saveParcel.getMasterKeyId() == null;
         PgpEditKeyResult modifyResult;
         {
             PgpKeyOperation keyOperations =
                     new PgpKeyOperation(new ProgressScaler(mProgressable, 10, 60, 100), mCancelled);
 
             // If a key id is specified, fetch and edit
-            if (saveParcel.getMasterKeyId() != null) {
+            if (!isNewKey) {
                 try {
 
                     log.add(LogType.MSG_ED_FETCHING, 1,
@@ -164,6 +165,10 @@ public class EditKeyOperation extends BaseReadWriteOperation<SaveKeyringParcel> 
         updateProgress(R.string.progress_saving, 90, 100);
         SaveKeyringResult saveResult = mKeyWritableRepository.saveSecretKeyRing(ring);
         log.add(saveResult, 1);
+
+        if (isNewKey) {
+            mKeyWritableRepository.renewKeyLastUpdatedTime(ring.getMasterKeyId(), saveParcel.isShouldUpload());
+        }
 
         // If the save operation didn't succeed, exit here
         if (!saveResult.success()) {
