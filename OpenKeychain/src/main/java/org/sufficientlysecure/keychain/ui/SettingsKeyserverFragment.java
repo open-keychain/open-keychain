@@ -79,7 +79,7 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
-        databaseReadWriteInteractor = KeyWritableRepository.createDatabaseReadWriteInteractor(getContext());
+        databaseReadWriteInteractor = KeyWritableRepository.create(getContext());
 
         return inflater.inflate(R.layout.settings_keyserver_fragment, null);
     }

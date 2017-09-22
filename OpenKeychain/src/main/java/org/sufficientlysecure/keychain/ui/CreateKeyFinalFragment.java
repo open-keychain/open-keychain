@@ -430,7 +430,7 @@ public class CreateKeyFinalFragment extends Fragment {
         CreateKeyActivity activity = (CreateKeyActivity) getActivity();
 
         SaveKeyringParcel.Builder builder;
-        CachedPublicKeyRing key = (KeyRepository.createDatabaseInteractor(getContext()))
+        CachedPublicKeyRing key = (KeyRepository.create(getContext()))
                 .getCachedPublicKeyRing(saveKeyResult.mMasterKeyId);
         try {
             builder = SaveKeyringParcel.buildChangeKeyringParcel(key.getMasterKeyId(), key.getFingerprint());

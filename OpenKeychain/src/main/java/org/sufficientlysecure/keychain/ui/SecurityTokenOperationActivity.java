@@ -197,7 +197,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                 }
 
                 KeyRepository keyRepository =
-                        KeyRepository.createDatabaseInteractor(this);
+                        KeyRepository.create(this);
                 CanonicalizedPublicKeyRing publicKeyRing;
                 try {
                     publicKeyRing = keyRepository.getCanonicalizedPublicKeyRing(
@@ -237,7 +237,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                 mSecurityTokenHelper.setAdminPin(new Passphrase("12345678"));
 
                 KeyRepository keyRepository =
-                        KeyRepository.createDatabaseInteractor(this);
+                        KeyRepository.create(this);
                 CanonicalizedSecretKeyRing secretKeyRing;
                 try {
                     secretKeyRing = keyRepository.getCanonicalizedSecretKeyRing(

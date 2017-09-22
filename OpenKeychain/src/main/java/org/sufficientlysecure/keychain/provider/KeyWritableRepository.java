@@ -83,9 +83,7 @@ import org.sufficientlysecure.keychain.util.Utf8Util;
 public class KeyWritableRepository extends KeyRepository {
     private static final int MAX_CACHED_KEY_SIZE = 1024 * 50;
 
-    private final Context mContext;
-
-    public static KeyWritableRepository createDatabaseReadWriteInteractor(Context context) {
+    public static KeyWritableRepository create(Context context) {
         LocalPublicKeyStorage localPublicKeyStorage = LocalPublicKeyStorage.getInstance(context);
 
         return new KeyWritableRepository(context, localPublicKeyStorage);
@@ -99,8 +97,6 @@ public class KeyWritableRepository extends KeyRepository {
     private KeyWritableRepository(
             Context context, LocalPublicKeyStorage localPublicKeyStorage, OperationLog log, int indent) {
         super(context.getContentResolver(), localPublicKeyStorage, log, indent);
-
-        mContext = context;
     }
 
     private LongSparseArray<CanonicalizedPublicKey> getTrustedMasterKeys() {

@@ -112,7 +112,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
         // handle empty passphrases by directly returning an empty crypto input parcel
         try {
             CachedPublicKeyRing pubRing =
-                    KeyRepository.createDatabaseInteractor(this).getCachedPublicKeyRing(requiredInput.getMasterKeyId());
+                    KeyRepository.create(this).getCachedPublicKeyRing(requiredInput.getMasterKeyId());
             // use empty passphrase for empty passphrase
             if (pubRing.getSecretKeyType(requiredInput.getSubKeyId()) == SecretKeyType.PASSPHRASE_EMPTY) {
                 // also return passphrase back to activity
@@ -234,7 +234,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     long subKeyId = mRequiredInput.getSubKeyId();
 
                     KeyRepository helper =
-                            KeyRepository.createDatabaseInteractor(getContext());
+                            KeyRepository.create(getContext());
                     CachedPublicKeyRing cachedPublicKeyRing = helper.getCachedPublicKeyRing(
                             KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
                     // yes the inner try/catch block is necessary, otherwise the final variable
@@ -454,7 +454,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
                                 Long subKeyId = mRequiredInput.getSubKeyId();
                                 CanonicalizedSecretKeyRing secretKeyRing =
-                                        KeyRepository.createDatabaseInteractor(getContext()).getCanonicalizedSecretKeyRing(
+                                        KeyRepository.create(getContext()).getCanonicalizedSecretKeyRing(
                                                 KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
                                 CanonicalizedSecretKey secretKeyToUnlock =
                                         secretKeyRing.getSecretKey(subKeyId);

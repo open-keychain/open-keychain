@@ -181,7 +181,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     private void startSafeSlinger(Uri dataUri) {
         long keyId = 0;
         try {
-            keyId = KeyRepository.createDatabaseInteractor(getContext())
+            keyId = KeyRepository.create(getContext())
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
@@ -198,7 +198,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
             return;
         }
         KeyRepository keyRepository =
-                KeyRepository.createDatabaseInteractor(getContext());
+                KeyRepository.create(getContext());
 
         try {
             long masterKeyId = keyRepository.getCachedPublicKeyRing(mDataUri).extractOrGetMasterKeyId();
@@ -436,7 +436,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     private void uploadToKeyserver() {
         long keyId;
         try {
-            keyId = KeyRepository.createDatabaseInteractor(getContext())
+            keyId = KeyRepository.create(getContext())
                     .getCachedPublicKeyRing(mDataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {

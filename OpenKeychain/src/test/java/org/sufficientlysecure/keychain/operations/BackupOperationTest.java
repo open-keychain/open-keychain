@@ -136,7 +136,7 @@ public class BackupOperationTest {
     @Before
     public void setUp() {
         KeyWritableRepository databaseInteractor =
-                KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application);
+                KeyWritableRepository.create(RuntimeEnvironment.application);
 
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
@@ -151,7 +151,7 @@ public class BackupOperationTest {
     @Test
     public void testExportAllLocalStripped() throws Exception {
         BackupOperation op = new BackupOperation(RuntimeEnvironment.application,
-                KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
+                KeyWritableRepository.create(RuntimeEnvironment.application), null);
 
         // make sure there is a local cert (so the later checks that there are none are meaningful)
         assertTrue("second keyring has local certification", checkForLocal(mStaticRing2));
@@ -250,7 +250,7 @@ public class BackupOperationTest {
         when(spyApplication.getContentResolver()).thenReturn(mockResolver);
 
         BackupOperation op = new BackupOperation(spyApplication,
-                KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
+                KeyWritableRepository.create(RuntimeEnvironment.application), null);
 
         BackupKeyringParcel parcel = BackupKeyringParcel.createBackupKeyringParcel(
                 new long[] { mStaticRing1.getMasterKeyId() }, false, false, true, fakeOutputUri);
@@ -307,7 +307,7 @@ public class BackupOperationTest {
 
         { // export encrypted
             BackupOperation op = new BackupOperation(spyApplication,
-                    KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
+                    KeyWritableRepository.create(RuntimeEnvironment.application), null);
 
             BackupKeyringParcel parcel = BackupKeyringParcel.createBackupKeyringParcel(
                     new long[] { mStaticRing1.getMasterKeyId() }, false, true, true, fakeOutputUri);
@@ -325,7 +325,7 @@ public class BackupOperationTest {
 
         {
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
-                    KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
+                    KeyWritableRepository.create(RuntimeEnvironment.application), null);
 
             PgpDecryptVerifyInputParcel input = PgpDecryptVerifyInputParcel.builder()
                     .setAllowSymmetricDecryption(true)

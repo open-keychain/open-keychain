@@ -96,7 +96,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         this.view = view;
         this.loaderManager = loaderManager;
         this.loaderId = loaderId;
-        this.databaseInteractor = KeyRepository.createDatabaseInteractor(context);
+        this.databaseInteractor = KeyRepository.create(context);
 
         secretKeyAdapter = new TransferKeyAdapter(context, LayoutInflater.from(context), this);
         view.setSecretKeyAdapter(secretKeyAdapter);

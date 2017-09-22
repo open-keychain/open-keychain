@@ -467,7 +467,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
 
                 byte[] fingerprint;
                 try {
-                    fingerprint = KeyRepository.createDatabaseInteractor(activity).getCachedPublicKeyRing(
+                    fingerprint = KeyRepository.create(activity).getCachedPublicKeyRing(
                             mMasterKeyId).getFingerprint();
                 } catch (PgpKeyNotFoundException e) {
                     throw new IllegalStateException("Key to verify linked id for must exist in db!");

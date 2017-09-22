@@ -41,7 +41,7 @@ class RequestKeyPermissionPresenter {
         ApiDataAccessObject apiDataAccessObject = new ApiDataAccessObject(context);
         ApiPermissionHelper apiPermissionHelper = new ApiPermissionHelper(context, apiDataAccessObject);
         KeyRepository keyRepository =
-                KeyRepository.createDatabaseInteractor(context);
+                KeyRepository.create(context);
 
         return new RequestKeyPermissionPresenter(context, apiDataAccessObject, apiPermissionHelper, packageManager,
                 keyRepository);

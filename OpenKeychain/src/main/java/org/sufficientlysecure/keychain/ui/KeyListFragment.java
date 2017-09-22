@@ -477,7 +477,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         }
 
         KeyRepository keyRepository =
-                KeyRepository.createDatabaseInteractor(getContext());
+                KeyRepository.create(getContext());
         Cursor cursor = keyRepository.getContentResolver().query(
                 KeyRings.buildUnifiedKeyRingsUri(), new String[]{
                         KeyRings.FINGERPRINT

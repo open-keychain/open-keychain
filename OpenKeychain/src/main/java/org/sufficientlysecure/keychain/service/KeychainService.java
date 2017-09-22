@@ -112,7 +112,7 @@ public class KeychainService extends Service implements Progressable {
                 // just for brevity
                 KeychainService outerThis = KeychainService.this;
                 KeyWritableRepository databaseInteractor =
-                        KeyWritableRepository.createDatabaseReadWriteInteractor(outerThis);
+                        KeyWritableRepository.create(outerThis);
                 if (inputParcel instanceof SignEncryptParcel) {
                     op = new SignEncryptOperation(outerThis, databaseInteractor, outerThis, mActionCanceled);
                 } else if (inputParcel instanceof PgpDecryptVerifyInputParcel) {

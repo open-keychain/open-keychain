@@ -52,7 +52,7 @@ public class KeyringTestingHelper {
     public boolean addKeyring(Collection<String> blobFiles) throws Exception {
 
         KeyWritableRepository databaseInteractor =
-                KeyWritableRepository.createDatabaseReadWriteInteractor(context);
+                KeyWritableRepository.create(context);
 
         byte[] data = TestDataUtil.readAllFully(blobFiles);
         UncachedKeyRing ring = UncachedKeyRing.decodeFromData(data);

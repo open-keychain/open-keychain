@@ -89,7 +89,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
         if (mMasterKeyIds.length == 1 && mHasSecret) {
             // if mMasterKeyIds.length == 0 we let the DeleteOperation respond
             try {
-                HashMap<String, Object> data = KeyRepository.createDatabaseInteractor(this).getUnifiedData(
+                HashMap<String, Object> data = KeyRepository.create(this).getUnifiedData(
                         mMasterKeyIds[0], new String[]{
                                 KeychainContract.KeyRings.NAME,
                                 KeychainContract.KeyRings.IS_REVOKED
@@ -272,7 +272,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                 long masterKeyId = masterKeyIds[0];
 
                 try {
-                    HashMap<String, Object> data = KeyRepository.createDatabaseInteractor(getContext())
+                    HashMap<String, Object> data = KeyRepository.create(getContext())
                             .getUnifiedData(
                             masterKeyId, new String[]{
                                     KeychainContract.KeyRings.NAME,

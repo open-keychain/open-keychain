@@ -189,7 +189,7 @@ public class ViewCertActivity extends BaseActivity
 
                 try {
                     KeyRepository keyRepository =
-                            KeyRepository.createDatabaseInteractor(ViewCertActivity.this);
+                            KeyRepository.create(ViewCertActivity.this);
                     long signerMasterKeyId = keyRepository.getCachedPublicKeyRing(
                             KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mCertifierKeyId)).getMasterKeyId();
                     viewIntent.setData(KeyRings.buildGenericKeyRingUri(signerMasterKeyId));

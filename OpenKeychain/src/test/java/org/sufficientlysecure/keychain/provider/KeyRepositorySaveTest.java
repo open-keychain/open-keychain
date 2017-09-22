@@ -35,7 +35,6 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.util.IterableIterator;
-import org.sufficientlysecure.keychain.util.ProgressScaler;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -44,7 +43,7 @@ import java.util.Iterator;
 public class KeyRepositorySaveTest {
 
     KeyWritableRepository mDatabaseInteractor =
-            KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application);
+            KeyWritableRepository.create(RuntimeEnvironment.application);
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
@@ -62,17 +61,17 @@ public class KeyRepositorySaveTest {
         SaveKeyringResult result;
 
         // insert both keys, second should fail
-        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(first);
+        result = KeyWritableRepository.create(RuntimeEnvironment.application).savePublicKeyRing(first);
         Assert.assertTrue("first keyring import should succeed", result.success());
-        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(second);
+        result = KeyWritableRepository.create(RuntimeEnvironment.application).savePublicKeyRing(second);
         Assert.assertFalse("second keyring import should fail", result.success());
 
         new KeychainDatabase(RuntimeEnvironment.application).clearDatabase();
 
         // and the other way around
-        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(second);
+        result = KeyWritableRepository.create(RuntimeEnvironment.application).savePublicKeyRing(second);
         Assert.assertTrue("first keyring import should succeed", result.success());
-        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(first);
+        result = KeyWritableRepository.create(RuntimeEnvironment.application).savePublicKeyRing(first);
         Assert.assertFalse("second keyring import should fail", result.success());
 
     }
@@ -91,14 +90,14 @@ public class KeyRepositorySaveTest {
         SaveKeyringResult result;
 
         // insert secret, this should fail because of missing self-cert
-        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application)
+        result = KeyWritableRepository.create(RuntimeEnvironment.application)
                 .saveSecretKeyRing(seckey);
         Assert.assertFalse("secret keyring import before pubring import should fail", result.success());
 
         // insert pubkey, then seckey - both should succeed
-        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application).savePublicKeyRing(pubkey);
+        result = KeyWritableRepository.create(RuntimeEnvironment.application).savePublicKeyRing(pubkey);
         Assert.assertTrue("public keyring import should succeed", result.success());
-        result = KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application)
+        result = KeyWritableRepository.create(RuntimeEnvironment.application)
                 .saveSecretKeyRing(seckey);
         Assert.assertTrue("secret keyring import after pubring import should succeed", result.success());
 

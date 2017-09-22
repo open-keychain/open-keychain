@@ -70,7 +70,7 @@ public class CertifyKeyFragment
             if (certifyKeyId != Constants.key.none) {
                 try {
                     CachedPublicKeyRing key = (KeyRepository
-                            .createDatabaseInteractor(getContext()))
+                            .create(getContext()))
                             .getCachedPublicKeyRing(certifyKeyId);
                     if (key.canCertify()) {
                         mCertifyKeySpinner.setPreSelectedKeyId(certifyKeyId);

@@ -104,7 +104,7 @@ public class OpenPgpService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mKeyRepository = KeyRepository.createDatabaseInteractor(this);
+        mKeyRepository = KeyRepository.create(this);
         mApiDao = new ApiDataAccessObject(this);
         mApiPermissionHelper = new ApiPermissionHelper(this, mApiDao);
         mApiPendingIntentFactory = new ApiPendingIntentFactory(getBaseContext());
@@ -491,7 +491,7 @@ public class OpenPgpService extends Service {
                 return null;
             }
             // this will merge if the key already exists - no worries!
-            KeyWritableRepository.createDatabaseReadWriteInteractor(this).savePublicKeyRing(uncachedKeyRing);
+            KeyWritableRepository.create(this).savePublicKeyRing(uncachedKeyRing);
             newMasterKeyId = uncachedKeyRing.getMasterKeyId();
         } else {
             newMasterKeyId = null;

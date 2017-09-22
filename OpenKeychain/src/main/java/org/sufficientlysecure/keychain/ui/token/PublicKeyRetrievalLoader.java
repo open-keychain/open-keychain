@@ -98,7 +98,7 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
         LocalKeyLookupLoader(Context context, List<byte[]> fingerprints) {
             super(context, fingerprints);
 
-            this.keyRepository = KeyRepository.createDatabaseInteractor(context);
+            this.keyRepository = KeyRepository.create(context);
         }
 
         @Override
