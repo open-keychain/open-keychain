@@ -18,15 +18,17 @@
 package org.sufficientlysecure.keychain.operations;
 
 
+import java.util.Collections;
+
 import android.content.Context;
 import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.BuildConfig;
-import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.operations.results.UpdateTrustResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
@@ -92,10 +94,11 @@ public class DeleteOperation extends BaseReadWriteOperation<DeleteKeyringParcel>
             }
         }
 
-        if (!BuildConfig.DEBUG && isSecret && success > 0) {
+        if (isSecret && success > 0) {
             log.add(LogType.MSG_DEL_CONSOLIDATE, 1);
-            ConsolidateResult sub = mKeyWritableRepository.consolidateDatabaseStep1(mProgressable);
-            log.add(sub, 2);
+            UpdateTrustResult sub = mKeyWritableRepository.updateTrustDb(
+                    Collections.singletonList(masterKeyIds[0]), mProgressable);
+//            log.add(sub, 2);
         }
 
         int result = DeleteResult.RESULT_OK;

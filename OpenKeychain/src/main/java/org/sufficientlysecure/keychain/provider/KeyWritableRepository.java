@@ -49,6 +49,7 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.operations.results.UpdateTrustResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
@@ -66,6 +67,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPee
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeySignatures;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
@@ -279,6 +281,8 @@ public class KeyWritableRepository extends KeyRepository {
             // otherwise the order in the keyfile is preserved.
             List<UserPacketItem> uids = new ArrayList<>();
 
+            List<Long> signerKeyIds = new ArrayList<>();
+
             if (trustedKeys.size() == 0) {
                 log(LogType.MSG_IP_UID_CLASSIFYING_ZERO);
             } else {
@@ -320,6 +324,13 @@ public class KeyWritableRepository extends KeyRepository {
 
                     // do we have a trusted key for this?
                     if (trustedKeys.indexOfKey(certId) < 0) {
+                        if (!signerKeyIds.contains(certId)) {
+                            operations.add(ContentProviderOperation.newInsert(KeySignatures.CONTENT_URI)
+                                    .withValue(KeySignatures.MASTER_KEY_ID, masterKeyId)
+                                    .withValue(KeySignatures.SIGNER_KEY_ID, certId)
+                                    .build());
+                            signerKeyIds.add(certId);
+                        }
                         unknownCerts += 1;
                         continue;
                     }
@@ -744,9 +755,10 @@ public class KeyWritableRepository extends KeyRepository {
      * If you want to merge keys in-memory only and not save in database set skipSave=true.
      */
     public SaveKeyringResult savePublicKeyRing(UncachedKeyRing publicRing,
-                                               byte[] expectedFingerprint,
-                                               ArrayList<CanonicalizedKeyRing> canKeyRings,
-                                               boolean skipSave) {
+            byte[] expectedFingerprint,
+            ArrayList<CanonicalizedKeyRing> canKeyRings,
+            boolean forceRefresh,
+            boolean skipSave) {
 
         try {
             long masterKeyId = publicRing.getMasterKeyId();
@@ -783,7 +795,7 @@ public class KeyWritableRepository extends KeyRepository {
                 if (canKeyRings != null) canKeyRings.add(canPublicRing);
 
                 // Early breakout if nothing changed
-                if (Arrays.hashCode(publicRing.getEncoded())
+                if (!forceRefresh && Arrays.hashCode(publicRing.getEncoded())
                         == Arrays.hashCode(oldPublicRing.getEncoded())) {
                     log(LogType.MSG_IP_SUCCESS_IDENTICAL);
                     return new SaveKeyringResult(SaveKeyringResult.UPDATED, mLog, null);
@@ -867,11 +879,20 @@ public class KeyWritableRepository extends KeyRepository {
     }
 
     public SaveKeyringResult savePublicKeyRing(UncachedKeyRing publicRing, byte[] expectedFingerprint) {
-        return savePublicKeyRing(publicRing, expectedFingerprint, null, false);
+        return savePublicKeyRing(publicRing, expectedFingerprint, null, false, false);
+    }
+
+    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing publicRing, byte[] expectedFingerprint,
+            boolean forceRefresh) {
+        return savePublicKeyRing(publicRing, expectedFingerprint, null, forceRefresh, false);
     }
 
     public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing) {
-        return savePublicKeyRing(keyRing, null);
+        return savePublicKeyRing(keyRing, null, false);
+    }
+
+    public SaveKeyringResult savePublicKeyRing(UncachedKeyRing keyRing, boolean forceRefresh) {
+        return savePublicKeyRing(keyRing, null, forceRefresh);
     }
 
     public SaveKeyringResult saveSecretKeyRing(UncachedKeyRing secretRing,
@@ -1001,6 +1022,52 @@ public class KeyWritableRepository extends KeyRepository {
 
     public SaveKeyringResult saveSecretKeyRing(UncachedKeyRing secretRing) {
         return saveSecretKeyRing(secretRing, null, false);
+    }
+
+    @NonNull
+    public UpdateTrustResult updateTrustDb(List<Long> signerMasterKeyIds, Progressable progress) {
+        OperationLog log = new OperationLog();
+
+        Cursor cursor;
+        boolean needsSigningDbUpdate = false; // TODO remember if we ever refreshed all keys everything
+        if (needsSigningDbUpdate) {
+            cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(),
+                    new String[] { KeyRings.MASTER_KEY_ID }, null, null, null);
+        } else {
+            String[] signerMasterKeyIdStrings = new String[signerMasterKeyIds.size()];
+            int i = 0;
+            for (Long masterKeyId : signerMasterKeyIds) {
+                signerMasterKeyIdStrings[i++] = Long.toString(masterKeyId);
+            }
+
+            cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsFilterBySigner(),
+                    new String[] { KeyRings.MASTER_KEY_ID }, null, signerMasterKeyIdStrings, null);
+        }
+
+        if (cursor == null) {
+            throw new IllegalStateException();
+        }
+
+        try {
+            while (cursor.moveToNext()) {
+                try {
+                    long masterKeyId = cursor.getLong(0);
+
+                    byte[] pubKeyData = loadPublicKeyRingData(masterKeyId);
+                    UncachedKeyRing uncachedKeyRing = UncachedKeyRing.decodeFromData(pubKeyData);
+                    SaveKeyringResult result = savePublicKeyRing(uncachedKeyRing, true);
+
+                    log.add(result, 1);
+                } catch (NotFoundException | PgpGeneralException | IOException e) {
+                    Log.e(Constants.TAG, "Error updating trust database", e);
+                    return new UpdateTrustResult(UpdateTrustResult.RESULT_ERROR, log);
+                }
+            }
+
+            return new UpdateTrustResult(UpdateTrustResult.RESULT_OK, log);
+        } finally {
+            cursor.close();
+        }
     }
 
     @NonNull
