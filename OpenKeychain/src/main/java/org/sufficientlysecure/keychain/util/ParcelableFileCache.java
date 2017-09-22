@@ -52,10 +52,6 @@ public class ParcelableFileCache<E extends Parcelable> {
         mFilename = filename;
     }
 
-    public static boolean cacheFileExists(Context context, String filename) {
-        return new File(context.getCacheDir(), filename).exists();
-    }
-
     public void writeCache(int numEntries, Iterator<E> it) throws IOException {
         DataOutputStream oos = getOutputStream();
 

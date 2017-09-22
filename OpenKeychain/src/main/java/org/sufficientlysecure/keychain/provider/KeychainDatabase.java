@@ -25,7 +25,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -42,7 +41,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.OverriddenWarnings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
-import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
 import org.sufficientlysecure.keychain.util.Log;
 
 /**
@@ -406,19 +404,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                         + "PRIMARY KEY(master_key_id, signer_key_id), "
                         + "FOREIGN KEY(master_key_id) REFERENCES keyrings_public(master_key_id) ON DELETE CASCADE"
                         + ")");
-
-                if (oldVersion == 18 || oldVersion == 19 || oldVersion == 20 || oldVersion == 21 || oldVersion == 22 ||
-                        oldVersion == 23) {
-                    return;
-                }
         }
-
-        // TODO: don't depend on consolidate! make migrations inline!
-        // consolidate after upgrade
-        Intent consolidateIntent = new Intent(mContext.getApplicationContext(), ConsolidateDialogActivity.class);
-        consolidateIntent.putExtra(ConsolidateDialogActivity.EXTRA_CONSOLIDATE_RECOVERY, false);
-        consolidateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.getApplicationContext().startActivity(consolidateIntent);
     }
 
     @Override
