@@ -68,6 +68,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.Utf8Util;
 
 /**
@@ -83,6 +84,8 @@ import org.sufficientlysecure.keychain.util.Utf8Util;
 public class KeyWritableRepository extends KeyRepository {
     private static final int MAX_CACHED_KEY_SIZE = 1024 * 50;
 
+    private final Context mContext;
+
     public static KeyWritableRepository create(Context context) {
         LocalPublicKeyStorage localPublicKeyStorage = LocalPublicKeyStorage.getInstance(context);
 
@@ -97,6 +100,8 @@ public class KeyWritableRepository extends KeyRepository {
     private KeyWritableRepository(
             Context context, LocalPublicKeyStorage localPublicKeyStorage, OperationLog log, int indent) {
         super(context.getContentResolver(), localPublicKeyStorage, log, indent);
+
+        mContext = context;
     }
 
     private LongSparseArray<CanonicalizedPublicKey> getTrustedMasterKeys() {
@@ -1015,8 +1020,9 @@ public class KeyWritableRepository extends KeyRepository {
         OperationLog log = new OperationLog();
 
         Cursor cursor;
-        boolean needsSigningDbUpdate = false; // TODO remember if we ever refreshed all keys everything
-        if (needsSigningDbUpdate) {
+        Preferences preferences = Preferences.getPreferences(mContext);
+        boolean isTrustDbInitialized = preferences.isKeySignaturesTableInitialized();
+        if (!isTrustDbInitialized) {
             cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(),
                     new String[] { KeyRings.MASTER_KEY_ID }, null, null, null);
         } else {
@@ -1048,6 +1054,10 @@ public class KeyWritableRepository extends KeyRepository {
                     Log.e(Constants.TAG, "Error updating trust database", e);
                     return new UpdateTrustResult(UpdateTrustResult.RESULT_ERROR, log);
                 }
+            }
+
+            if (!isTrustDbInitialized) {
+                preferences.setKeySignaturesTableInitialized();
             }
 
             return new UpdateTrustResult(UpdateTrustResult.RESULT_OK, log);

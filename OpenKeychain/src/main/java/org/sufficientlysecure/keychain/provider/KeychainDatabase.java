@@ -42,6 +42,8 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.OverriddenWarni
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
+
 
 /**
  * SQLite Datatypes (from http://www.sqlite.org/datatype3.html)
@@ -234,6 +236,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL("CREATE INDEX verified_certs ON certs ("
                 + CertsColumns.VERIFIED + ", " + CertsColumns.MASTER_KEY_ID + ");");
 
+        Preferences.getPreferences(mContext).setKeySignaturesTableInitialized();
     }
 
     @Override
