@@ -798,9 +798,8 @@ public abstract class OperationResult implements Parcelable {
         MSG_DEL_ERROR_EMPTY (LogLevel.ERROR, R.string.msg_del_error_empty),
         MSG_DEL_ERROR_MULTI_SECRET (LogLevel.ERROR, R.string.msg_del_error_multi_secret),
         MSG_DEL (LogLevel.START, R.plurals.msg_del),
-        MSG_DEL_KEY (LogLevel.DEBUG, R.string.msg_del_key),
+        MSG_DEL_KEY (LogLevel.INFO, R.string.msg_del_key),
         MSG_DEL_KEY_FAIL (LogLevel.WARN, R.string.msg_del_key_fail),
-        MSG_DEL_CONSOLIDATE (LogLevel.DEBUG, R.string.msg_del_consolidate),
         MSG_DEL_OK (LogLevel.OK, R.plurals.msg_del_ok),
         MSG_DEL_FAIL (LogLevel.WARN, R.plurals.msg_del_fail),
 
@@ -910,6 +909,12 @@ public abstract class OperationResult implements Parcelable {
         MSG_RET_URI_NULL (LogLevel.ERROR, R.string.msg_ret_uri_null),
         MSG_RET_URI_TEST (LogLevel.DEBUG, R.string.msg_ret_uri_test),
 
+        MSG_TRUST (LogLevel.START, R.string.msg_trust),
+        MSG_TRUST_OK (LogLevel.OK, R.string.msg_trust_ok),
+        MSG_TRUST_KEY (LogLevel.INFO, R.string.msg_trust_key),
+        MSG_TRUST_INITIALIZE (LogLevel.INFO, R.string.msg_trust_initialize),
+        MSG_TRUST_COUNT_NONE (LogLevel.DEBUG, R.string.msg_trust_count_none),
+        MSG_TRUST_COUNT (LogLevel.DEBUG, R.plurals.msg_trust_count);
         ;
 
         public final int mMsgId;

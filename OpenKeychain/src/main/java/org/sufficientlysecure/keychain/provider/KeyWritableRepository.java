@@ -40,6 +40,7 @@ import android.support.v4.util.LongSparseArray;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
@@ -1019,16 +1020,20 @@ public class KeyWritableRepository extends KeyRepository {
     public UpdateTrustResult updateTrustDb(List<Long> signerMasterKeyIds, Progressable progress) {
         OperationLog log = new OperationLog();
 
+        log.add(LogType.MSG_TRUST, 0);
+
         Cursor cursor;
         Preferences preferences = Preferences.getPreferences(mContext);
         boolean isTrustDbInitialized = preferences.isKeySignaturesTableInitialized();
         if (!isTrustDbInitialized) {
+            log.add(LogType.MSG_TRUST_INITIALIZE, 1);
             cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(),
                     new String[] { KeyRings.MASTER_KEY_ID }, null, null, null);
         } else {
             String[] signerMasterKeyIdStrings = new String[signerMasterKeyIds.size()];
             int i = 0;
             for (Long masterKeyId : signerMasterKeyIds) {
+                log.add(LogType.MSG_TRUST_KEY, 1, KeyFormattingUtils.beautifyKeyId(masterKeyId));
                 signerMasterKeyIdStrings[i++] = Long.toString(masterKeyId);
             }
 
@@ -1040,6 +1045,16 @@ public class KeyWritableRepository extends KeyRepository {
             throw new IllegalStateException();
         }
 
+        int totalKeys = cursor.getCount();
+        int processedKeys = 0;
+
+        if (totalKeys == 0) {
+            log.add(LogType.MSG_TRUST_COUNT_NONE, 1);
+        } else {
+            progress.setProgress(R.string.progress_update_trust, 0, totalKeys);
+            log.add(LogType.MSG_TRUST_COUNT, 1, totalKeys);
+        }
+
         try {
             while (cursor.moveToNext()) {
                 try {
@@ -1047,9 +1062,12 @@ public class KeyWritableRepository extends KeyRepository {
 
                     byte[] pubKeyData = loadPublicKeyRingData(masterKeyId);
                     UncachedKeyRing uncachedKeyRing = UncachedKeyRing.decodeFromData(pubKeyData);
+
+                    clearLog();
                     SaveKeyringResult result = savePublicKeyRing(uncachedKeyRing, true);
 
                     log.add(result, 1);
+                    progress.setProgress(processedKeys++, totalKeys);
                 } catch (NotFoundException | PgpGeneralException | IOException e) {
                     Log.e(Constants.TAG, "Error updating trust database", e);
                     return new UpdateTrustResult(UpdateTrustResult.RESULT_ERROR, log);
@@ -1060,6 +1078,7 @@ public class KeyWritableRepository extends KeyRepository {
                 preferences.setKeySignaturesTableInitialized();
             }
 
+            log.add(LogType.MSG_TRUST_OK, 1);
             return new UpdateTrustResult(UpdateTrustResult.RESULT_OK, log);
         } finally {
             cursor.close();

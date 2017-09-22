@@ -493,9 +493,7 @@
     <string name="progress_verifying_integrity">"verifying integrity…"</string>
     <string name="progress_deleting_securely">"deleting '%s' securely…"</string>
     <string name="progress_deleting">"deleting keys…"</string>
-
-    <string name="progress_con_saving">"consolidate: saving to cache…"</string>
-    <string name="progress_con_reimport">"consolidate: reimporting…"</string>
+    <string name="progress_update_trust">"updating trust info…"</string>
 
     <string name="progress_verifying_keyserver_connection">"verifying connection…"</string>
 
@@ -1351,7 +1349,6 @@
     </plurals>
     <string name="msg_del_key">"Deleting key %s"</string>
     <string name="msg_del_key_fail">"Failed deleting key %s"</string>
-    <string name="msg_del_consolidate">"Consolidating database after deletion of secret key"</string>
     <plurals name="msg_del_ok">
         <item quantity="one">"Successfully deleted key"</item>
         <item quantity="other">"Successfully deleted %d keys"</item>
@@ -1951,5 +1948,15 @@
     <string name="msg_ret_uri_start">"Looking for key at token Uri…"</string>
     <string name="msg_ret_uri_null">"No Uri saved on Security Token"</string>
     <string name="msg_ret_uri_test">"Checking if found key matches: %s"</string>
+
+    <string name="msg_trust">"Updating trust information…"</string>
+    <string name="msg_trust_ok">"Update operation successful!"</string>
+    <string name="msg_trust_initialize">"Initializing key signature cache"</string>
+    <string name="msg_trust_key">"Updating keys signed by %s"</string>
+    <string name="msg_trust_count_none">"No keys to update"</string>
+    <plurals name="msg_trust_count">
+        <item quantity="one">"Updating 1 key"</item>
+        <item quantity="other">"Updating %d keys"</item>
+    </plurals>
 
 </resources>

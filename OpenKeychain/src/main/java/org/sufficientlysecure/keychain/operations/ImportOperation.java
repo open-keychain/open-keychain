@@ -264,11 +264,10 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
         // and re-inserts keys, which could conflict with a parallel db key update
         if (!skipSave && !secretMasterKeyIds.isEmpty()) {
             setPreventCancel();
-            UpdateTrustResult result;
             synchronized (mKeyRepository) {
-                result = mKeyWritableRepository.updateTrustDb(secretMasterKeyIds, progressable);
+                UpdateTrustResult result = mKeyWritableRepository.updateTrustDb(secretMasterKeyIds, progressable);
+                log.add(result, 1);
             }
-            // log.add(result, 1);
         }
 
         // Special: make sure new data is synced into contacts

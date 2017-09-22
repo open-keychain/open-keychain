@@ -95,10 +95,9 @@ public class DeleteOperation extends BaseReadWriteOperation<DeleteKeyringParcel>
         }
 
         if (isSecret && success > 0) {
-            log.add(LogType.MSG_DEL_CONSOLIDATE, 1);
             UpdateTrustResult sub = mKeyWritableRepository.updateTrustDb(
                     Collections.singletonList(masterKeyIds[0]), mProgressable);
-//            log.add(sub, 2);
+            log.add(sub, 1);
         }
 
         int result = DeleteResult.RESULT_OK;
