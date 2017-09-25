@@ -275,7 +275,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
             vKeySpinnerContainer = root.findViewById(R.id.cert_key_spincontainer);
             vButtonSwitcher = (ViewAnimator) root.findViewById(R.id.button_animator);
 
-            mLinkedIdHolder = new IdentityAdapter.LinkedIdViewHolder(root);
+            mLinkedIdHolder = new IdentityAdapter.LinkedIdViewHolder(root, null);
 
             vButtonVerify = root.findViewById(R.id.button_verify);
             vButtonRetry = root.findViewById(R.id.button_retry);
