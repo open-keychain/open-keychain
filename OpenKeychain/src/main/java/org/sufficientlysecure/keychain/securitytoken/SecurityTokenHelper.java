@@ -329,22 +329,22 @@ public class SecurityTokenHelper {
                 if (data.length < 128) {
                     dataLen = new byte[]{(byte) data.length};
                 } else {
-                    dataLen = new byte[]{(byte)0x81, (byte) data.length};
-		}
+                    dataLen = new byte[]{(byte) 0x81, (byte) data.length};
+                }
                 data = Arrays.concatenate(Hex.decode("86"), dataLen, data);
 
                 if (data.length < 128) {
                     dataLen = new byte[]{(byte) data.length};
                 } else {
-                    dataLen = new byte[]{(byte)0x81, (byte) data.length};
-		}
+                    dataLen = new byte[]{(byte) 0x81, (byte) data.length};
+                }
                 data = Arrays.concatenate(Hex.decode("7F49"), dataLen, data);
 
                 if (data.length < 128) {
                     dataLen = new byte[]{(byte) data.length};
                 } else {
-                    dataLen = new byte[]{(byte)0x81, (byte) data.length};
-		}
+                    dataLen = new byte[]{(byte) 0x81, (byte) data.length};
+                }
                 data = Arrays.concatenate(Hex.decode("A6"), dataLen, data);
                 break;
 
