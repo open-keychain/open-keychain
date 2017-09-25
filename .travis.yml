@@ -2,7 +2,7 @@ language: android
 #jdk: oraclejdk8
 env:
   - TEST=unit
-  - TEST=android ANDROID_TARGET=android-21 ANDROID_ABI=armeabi-v7a ADB_INSTALL_TIMEOUT=10
+  - TEST=android ANDROID_TARGET=android-25 ANDROID_ABI=armeabi-v7a ADB_INSTALL_TIMEOUT=10
 
 # force non-container build
 sudo: required
