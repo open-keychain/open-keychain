@@ -14,7 +14,6 @@
   <string name="title_preferences">Inställningar</string>
   <string name="title_api_registered_apps">Appar</string>
   <string name="title_key_server_preference">OpenPGP-nyckelservrar</string>
-  <string name="title_cache_ttl_preference">Anpassa \"Kom ihåg\"-val</string>
   <string name="title_change_passphrase">Ändra lösenord</string>
   <string name="title_share_fingerprint_with">Dela fingeravtryck med…</string>
   <string name="title_share_key">Dela nyckel med…</string>
@@ -146,7 +145,6 @@
   <string name="label_encryption_algorithm">Krypteringsalgoritm</string>
   <string name="label_hash_algorithm">Hash-algoritm</string>
   <string name="label_symmetric">Kryptera med lösenord</string>
-  <string name="label_passphrase_cache_ttl">Anpassa \"Kom ihåg\"-val</string>
   <string name="label_passphrase_cache_subs">Kom ihåg lösenord genom undernyckel</string>
   <string name="label_message_compression">Textkompression</string>
   <string name="label_file_compression">Filkompression</string>
@@ -1089,13 +1087,8 @@
   <string name="title_edit_subkeys">Redigera undernycklar </string>
   <string name="btn_search_for_query">Sök efter\n\'%s\'</string>
   <string name="cache_ttl_lock_screen">till skärmen stängs</string>
-  <string name="cache_ttl_ten_minutes">för tio minuter</string>
-  <string name="cache_ttl_thirty_minutes">för trettio minuter</string>
   <string name="cache_ttl_one_hour">för en timme</string>
-  <string name="cache_ttl_three_hours">för tre veckor</string>
   <string name="cache_ttl_one_day">för en dag</string>
-  <string name="cache_ttl_three_days">för tre dagar</string>
-  <string name="cache_ttl_forever">för alltid</string>
   <string name="remember">Kom ihåg</string>
   <string name="security_token_error_pgp_app_not_installed">Ingen PGP-app hittades på säkerhetstoken</string>
   <string name="prompt_fidesmo_pgp_install_title">Installera PGP?</string>

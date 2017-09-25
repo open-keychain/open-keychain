@@ -593,12 +593,6 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">Tato identity byla zneplatněna. Toto není možné vzít zpět.</string>
   <string name="edit_key_edit_subkey_title">Vyberte akci!</string>
-  <string-array name="edit_key_edit_subkey">
-    <item>Změnit expiraci</item>
-    <item>Zneplatnit podklíč</item>
-    <item>Svléknout podklíč</item>
-    <item>Přesunout podklíč do bezpečnostního tokenu</item>
-  </string-array>
   <string name="edit_key_new_subkey">nový podklíč</string>
   <string name="edit_key_error_add_identity">Přidejte alespoň jednu identitu!</string>
   <string name="edit_key_error_add_subkey">Přidejte alespoň jeden podklíč!</string>

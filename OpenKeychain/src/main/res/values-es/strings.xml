@@ -15,7 +15,6 @@
   <string name="title_api_registered_apps">Aplicaciones</string>
   <string name="title_key_server_preference">Servidores de claves OpenPGP</string>
   <string name="title_smartpgp_authorities_preference">SmartPGP: Autoridades de confianza</string>
-  <string name="title_cache_ttl_preference">Personalizar opciones de \'Recordar\' </string>
   <string name="title_change_passphrase">Cambiar contraseña</string>
   <string name="title_share_fingerprint_with">Compartir huella digital con...</string>
   <string name="title_share_key">Compartir clave con...</string>
@@ -153,7 +152,6 @@
   <string name="label_encryption_algorithm">Algoritmo de cifrado</string>
   <string name="label_hash_algorithm">Algoritmo hash</string>
   <string name="label_symmetric">Cifrar con contraseña</string>
-  <string name="label_passphrase_cache_ttl">Personalizar opciones de \'Recordar\'</string>
   <string name="label_passphrase_cache_subs">Recordar contraseñas por subclave</string>
   <string name="label_message_compression">Compresión del texto</string>
   <string name="label_file_compression">Compresión del fichero</string>
@@ -595,6 +593,7 @@
   <string name="api_settings_allowed_keys">Claves permitidas</string>
   <string name="api_settings_settings">Configuración</string>
   <string name="api_register_title">¿Permitir el acceso a OpenKeychain?</string>
+  <string name="api_register_text">%s peticiones para usar OpenKeychain como un proveedor de criptografía. Aún se le pedirá permiso antes de que la aplicación pueda usar cualquiera de sus claves para descifrado.\n\nPuede revocar el acceso más tarde en la pantalla \'Aplicaciones\' en OpenKeychain.</string>
   <string name="api_register_allow">Permitir el acceso</string>
   <string name="api_register_disallow">Denegar el acceso</string>
   <string name="api_register_error_select_key">¡Por favor, selecciona una clave!</string>
@@ -632,6 +631,8 @@
   <string name="key_list_fab_qr_code">Escanear código QR</string>
   <string name="key_list_fab_search">Búsqueda de clave</string>
   <string name="key_list_fab_import">Importar desde fichero</string>
+  <string name="key_list_dummy_title">¡Aún no tiene ninguna clave!</string>
+  <string name="key_list_dummy_subtitle">Pulse aquí para crear o importar una.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Editar</string>
   <string name="key_view_action_encrypt">Cifrar texto</string>
@@ -706,7 +707,6 @@
     <item>Cambiar caducidad</item>
     <item>Revocar subclave</item>
     <item>Desnudar subclave</item>
-    <item>Mover subclave al token de seguridad</item>
   </string-array>
   <string name="edit_key_new_subkey">nueva subclave</string>
   <string name="edit_key_select_usage">¡Por favor, seleccione el uso de la clave!</string>
@@ -772,6 +772,7 @@
   <string name="drawer_close">Cerrar el Navigation Drawer</string>
   <string name="my_keys">Mis claves</string>
   <string name="nav_backup">Respaldar/restaurar</string>
+  <string name="nav_transfer">Transferencia wifi segura</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Escriba el texto</string>
   <!--certs-->
@@ -1473,11 +1474,10 @@
   <string name="security_token_status_unbound">El token de seguridad coincide, se puede ligar a la clave</string>
   <string name="security_token_status_partly">El token de seguridad coincide, está parcialmente ligado a la clave</string>
   <string name="security_token_create">Sostenga el token de seguridad contra la parte trasera de su dispositivo.</string>
-  <string name="security_token_reset_or_import">Este token de seguridad ya contiene una clave. Para usarla, necesitamos información adicional de la clave. Esta información se puede buscar en un servidor de claves o se puede importar de un fichero.</string>
+  <string name="security_token_reset_or_import">El token de seguridad ya contiene una clave.</string>
   <string name="btn_reset">Reiniciar</string>
-  <string name="security_token_radio_use_existing">Buscar información de la clave en el servidor de claves</string>
-  <string name="security_token_file_radio">Importar información de la clave desde un fichero</string>
-  <string name="security_token_radio_reset">Reinicializar token de seguridad</string>
+  <string name="security_token_radio_use_existing">Usar la clave existente</string>
+  <string name="security_token_radio_reset">Reinicializar token</string>
   <string name="security_token_reset_warning">Reinicializar el token de seguridad destruirá por completo las claves que almacene. ¡Acto seguido no podrá descifrar los mensajes/ficheros cifrados con esta clave!</string>
   <string name="snack_security_token_other">¡La clave almacenada en el token de seguridad es diferente!</string>
   <string name="security_token_error">Error: %s</string>
@@ -1526,6 +1526,7 @@
   <string name="file_delete_exception">¡No se pudo borrar el fichero original!</string>
   <string name="error_clipboard_empty">¡Portapapeles vacío!</string>
   <string name="error_clipboard_copy">¡Error al copiar datos al portapapeles!</string>
+  <string name="error_clipboard_bad">¡No se pudieron leer las claves en el portapapeles!</string>
   <string name="error_scan_fp">¡Error al escanear huella de validación de clave!</string>
   <string name="error_scan_match">¡Las huellas de validación de clave no coinciden!</string>
   <string name="error_expiry_past">¡La fecha de caducidad es del pasado!</string>
@@ -1625,16 +1626,9 @@
   <string name="title_edit_subkeys">Editar subclaves</string>
   <string name="btn_search_for_query">Buscando\n\'%s\'</string>
   <string name="cache_ttl_lock_screen">hasta que la pantalla se apague</string>
-  <string name="cache_ttl_ten_minutes">durante diez minutos</string>
-  <string name="cache_ttl_thirty_minutes">durante treinta minutos</string>
   <string name="cache_ttl_one_hour">durante una hora</string>
-  <string name="cache_ttl_three_hours">durante tres horas</string>
   <string name="cache_ttl_one_day">durante un día</string>
-  <string name="cache_ttl_three_days">durante tres días</string>
-  <string name="cache_ttl_forever">para siempre</string>
-  <string name="settings_cache_select_three">Seleccione hasta tres.</string>
-  <string name="settings_cache_ttl_at_least_one">¡Ha de seleccionar al menos un ítem!</string>
-  <string name="settings_cache_ttl_max_three">¡No es posible seleccionar más de tres ítems!</string>
+  <string name="cache_ttl_forever">hasta que se limpie</string>
   <string name="remember">Recordar</string>
   <string name="security_token_error_pgp_app_not_installed">No se encontró ninguna aplicación PGP en el token de seguridad</string>
   <string name="prompt_fidesmo_pgp_install_title">¿Instalar PGP?</string>
@@ -1708,6 +1702,11 @@
   <string name="key_health_stripped_subtitle">Pulse para ver detalles</string>
   <string name="key_health_partial_stripped_title">Saludable (parcialmente desnuda)</string>
   <string name="key_health_partial_stripped_subtitle">Pulse para ver detalles</string>
+  <string name="keyserver_title_published">Publicado</string>
+  <string name="keyserver_title_not_published">No publicado</string>
+  <string name="keyserver_title_unknown">Estado del servidor de claves: Desconocido</string>
+  <string name="keyserver_last_updated">Última comprobación: %s</string>
+  <string name="keyserver_last_updated_never">Última comprobación: Nunca</string>
   <string name="key_insecure_bitstrength_2048_problem">Esta clave usa el algoritmo <b>%1$s</b> con una fortaleza de <b>%2$s bits</b>. Una clave segura debe tener una fortaleza de 2048 bits.</string>
   <string name="key_insecure_bitstrength_2048_solution">Esta clave no se puede actualizar. Para una comunicación segura, el titular debe generar una nueva clave.</string>
   <string name="key_insecure_unknown_curve_problem">Esta clave usa el algoritmo <b>%1$s</b>, que no está en lista blanca.</string>
@@ -1739,4 +1738,102 @@
   <string name="dialog_insecure_button_undo">Des-suprimir</string>
   <string name="dialog_insecure_button_view_key">Ver clave</string>
   <string name="dialog_insecure_button_ok">Comprendido</string>
+  <string name="identity_context_forget">Olvidar</string>
+  <string name="button_scan">Escanear</string>
+  <string name="button_more_info">Más información</string>
+  <string name="transfer_scan_explanation">Para compartir o importar la configuración de su clave, establezca una conexión segura escaneando con cualquier dispositivo.</string>
+  <string name="transfer_scan_warning">¡Sólo usar con sus propias claves!</string>
+  <string name="connection_status">Estado de la conexión:</string>
+  <string name="section_transfer_keys">Claves disponibles para transferencia</string>
+  <string name="section_received_keys">Claves recibidas</string>
+  <string name="transfer_scan_only_wifi">Esta característica sólo se puede usar sobre Wifi.</string>
+  <string name="button_import">Importar</string>
+  <string name="transfer_status_connected">Conectado</string>
+  <string name="transfer_status_disconnected">¡Desconectado!</string>
+  <string name="transfer_error_read_incoming">¡No se pudo leer la clave entrante!</string>
+  <string name="transfer_error_connect">¡La conexión falló!</string>
+  <string name="transfer_error_listen">¡Error esperando la conexión!</string>
+  <string name="transfer_error_generic">¡Error de comunicación desconocido!</string>
+  <string name="transfer_error_generic_msg">Error de comunicación: %s</string>
+  <string name="transfer_not_available">Lo sentimos, esta característica sólo se puede usar en Android 5 o superior :(</string>
+  <string name="transfer_list_empty">No hay claves en este dispositivo que se puedan enviar. Esperando claves entrantes...</string>
+  <string name="transfer_connecting">Conectando...</string>
+  <string name="first_time_secure_wifi_transfer">Transferencia wifi segura</string>
+  <string name="menu_secure_wifi_transfer">Transferencia wifi segura</string>
+  <string name="transfer_confirm_cancel">Cancelar</string>
+  <string name="transfer_confirm_ok">Enviar</string>
+  <string name="transfer_confirm_title">¿Enviar su clave?</string>
+  <string name="transfer_confirm_text">Esto transmitirá a su dispositivo conectado el acceso completo a su clave. ¡Nunca debe enviar sus propias claves a dispositivos que no posea!</string>
+  <string name="button_scan_again">Escanear de nuevo</string>
+  <string name="transfer_error_wifi_text">¡La conexión falló!</string>
+  <string name="transfer_error_wifi_text_instructions">Asegúrese de que está en la misma red, y luego vuelva a escanear.</string>
+  <string name="transfer_error_wifi_text_instructions_ssid">Asegúrese de que está en la red \"%s\", y luego vuelva a escanear.</string>
+  <string name="status_check_key">Comprobando estado de la clave...</string>
+  <string name="status_search_local">Buscando en la lista de claves...</string>
+  <string name="status_search_uri">Buscando en el URI del token...</string>
+  <string name="status_search_keyserver">Buscando en los servidores de claves...</string>
+  <string name="status_import">Importando clave...</string>
+  <string name="status_token_promote">Estableciendo clave...</string>
+  <string name="status_token_check">Comprobando establecimiento de la clave...</string>
+  <string name="status_content_uri">Leyendo fichero...</string>
+  <string name="token_reset_confirm_title">¿Reinicializar token de seguridad?</string>
+  <string name="token_reset_confirm_message">Esto borrará de forma irrecuperable la clave almacenada en este token de seguridad. ¡Ya no podrá usar esta clave para descifrado! ¿Está seguro?</string>
+  <string name="token_reset_confirm_ok">Reinicializar</string>
+  <string name="token_status_title">Reuniendo información para el token de segurirdad...</string>
+  <string name="token_result_not_found">¡No se encontró la clave!</string>
+  <string name="token_result_key_found">¡Se encontró la clave!</string>
+  <string name="token_result_token_ok">¡Listo para usar!</string>
+  <string name="token_result_empty">El token está vacío</string>
+  <string name="token_action_retry">Reintentar búsqueda</string>
+  <string name="token_action_load_from_file">Cargar desde fichero</string>
+  <string name="token_action_reset">Reinicializar token de seguridad</string>
+  <string name="token_action_import">Importar</string>
+  <string name="token_action_view_key">Ver clave</string>
+  <string name="token_action_setup">Establecer una nueva clave</string>
+  <string name="token_action_unlock">Desbloquear usando el PIN del admin</string>
+  <string name="token_unlock_attempts_none">Ha agotado los intentos de desbloqueo</string>
+  <plurals name="token_unlock_attempts">
+    <item quantity="one">Le queda 1 intento</item>
+    <item quantity="other">Le quedan %d intentos</item>
+  </plurals>
+  <string name="token_error_locked_indefinitely">Demasiados intentos de reinicialización. ¡El token está bloqueado de forma irrevocable!</string>
+  <string name="token_menu_change_pin">Cambiar PIN</string>
+  <string name="token_menu_view_log">Ver registro</string>
+  <string name="token_unlock_ok">Desbloquear</string>
+  <string name="token_hint_admin_pin">PIN del admin</string>
+  <string name="token_hint_new_pin">PIN nuevo</string>
+  <string name="token_hint_new_pin_repeat">PIN nuevo (repetir)</string>
+  <string name="token_error_admin_min8">¡El PIN del admin debe tener al menos 8 caracteres!</string>
+  <string name="token_error_pin_min6">¡El PIN nuevo debe tener al menos 6 caracteres!</string>
+  <string name="token_error_pin_repeat">¡El PIN no coincide!</string>
+  <string name="msg_ret_curi_error_io">¡Error al leer datos!</string>
+  <string name="msg_ret_curi_error_no_match">No se encontró clave coincidente</string>
+  <string name="msg_ret_curi_error_not_found">¡No se pudo abrir el fichero!</string>
+  <string name="msg_ret_curi_found">Clave encontrada: %s</string>
+  <string name="msg_ret_curi_mismatch">La clave no coincide</string>
+  <string name="msg_ret_curi_ok">Se encontró la clave</string>
+  <string name="msg_ret_curi_open">Abriendo URI: %s</string>
+  <string name="msg_ret_curi_start">Cargando clave desde fichero o documento...</string>
+  <string name="msg_ret_ks_error">¡Error desconocido al buscar clave!</string>
+  <string name="msg_ret_ks_error_not_found">No se encontró clave</string>
+  <string name="msg_ret_ks_fp_match">La huella de validación de la clave descargada coincide</string>
+  <string name="msg_ret_ks_fp_mismatch">¡La huella de validación de la clave descargada no coincide!</string>
+  <string name="msg_ret_ks_ok">No se encontró la clave</string>
+  <string name="msg_ret_ks_start">Buscando clave en los servidores de claves...</string>
+  <string name="msg_ret_local_search">Buscando clave: %s</string>
+  <string name="msg_ret_local_fp_match">La huella de validación de la clave local coincide</string>
+  <string name="msg_ret_local_fp_mismatch">¡La huella de validación de la clave local no coincide!</string>
+  <string name="msg_ret_local_not_found">No se encontró la clave</string>
+  <string name="msg_ret_local_none_found">No se encontró clave coincidente</string>
+  <string name="msg_ret_local_ok">Se encontró la clave</string>
+  <string name="msg_ret_local_secret">La clave local contiene material de clave secreta/privada</string>
+  <string name="msg_ret_local_start">Buscando clave en la lista de claves locales...</string>
+  <string name="msg_ret_uri_error_fetch">¡Error desconocido al descargar URI!</string>
+  <string name="msg_ret_uri_error_parse">¡El URI del token está mal formado!</string>
+  <string name="msg_ret_uri_error_no_match">No se encontró clave coincidente en el URI</string>
+  <string name="msg_ret_uri_fetching">Descargando URI: %s</string>
+  <string name="msg_ret_uri_ok">Se encontró la clave</string>
+  <string name="msg_ret_uri_start">Buscando clave en el URI del token...</string>
+  <string name="msg_ret_uri_null">No hay URI guardado en el token de seguridad</string>
+  <string name="msg_ret_uri_test">Comprobando si la clave encontrada coincide: %s</string>
 </resources>

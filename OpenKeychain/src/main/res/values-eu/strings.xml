@@ -14,7 +14,6 @@
   <string name="title_preferences">Ezarpenak</string>
   <string name="title_api_registered_apps">Aplikazioak</string>
   <string name="title_key_server_preference">OpenPGP giltza-zerbitzariak</string>
-  <string name="title_cache_ttl_preference">Norbereratu \'Gogoratu\' hautapenak</string>
   <string name="title_change_passphrase">Aldatu Sarhitza</string>
   <string name="title_share_fingerprint_with">Elkarbanatu hatz-aztarna honekin...</string>
   <string name="title_share_key">Elkarbanatu giltza honekin...</string>
@@ -146,7 +145,6 @@
   <string name="label_encryption_algorithm">Enkriptaketa algoritmoa</string>
   <string name="label_hash_algorithm">Hash algoritmoa</string>
   <string name="label_symmetric">Enkriptatu sarhitzarekin</string>
-  <string name="label_passphrase_cache_ttl">Norbereratu \'Gogoratu\' hautapenak</string>
   <string name="label_passphrase_cache_subs">Gogoratu sarhitzak azpigiltzaz</string>
   <string name="label_message_compression">Idazki konpresioa</string>
   <string name="label_file_compression">Agiri konpresioa</string>
@@ -644,12 +642,6 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">Nortasun hau ukatua izan da. Hau ezin da desegin.</string>
   <string name="edit_key_edit_subkey_title">Hautatu ekintza bat!</string>
-  <string-array name="edit_key_edit_subkey">
-    <item>Aldatu Epemuga</item>
-    <item>Ukatu Azpigiltza</item>
-    <item>Strip Azpigiltza</item>
-    <item>Mugitu Azpigiltza Segurtasun Lekukora</item>
-  </string-array>
   <string name="edit_key_new_subkey">azpigiltza berria</string>
   <string name="edit_key_select_usage">Mesedez hautatu giltza erabilpena!</string>
   <string name="edit_key_error_add_identity">Gehitu nortasun bat gutxienez!</string>
@@ -1291,7 +1283,6 @@
   <string name="security_token_serial_no">Serie Zbk: %s</string>
   <string name="security_token_key_holder_not_set"><![CDATA[Key holder: <not set>]]></string>
   <string name="btn_reset">Berrezarri</string>
-  <string name="security_token_radio_reset">Berrezarri Segurtasun Lekukoa</string>
   <string name="security_token_error">Akatsa: %s</string>
   <plurals name="security_token_error_pin">
     <item quantity="one">PIN okerra!\n%d saiakera gelditzen da.</item>
@@ -1429,16 +1420,8 @@
   <string name="title_edit_subkeys">Editatu Azpigiltzak</string>
   <string name="btn_search_for_query">Bilatu\n\'%s\'</string>
   <string name="cache_ttl_lock_screen">ikusleihoa itzali arte</string>
-  <string name="cache_ttl_ten_minutes">hamar minutuz</string>
-  <string name="cache_ttl_thirty_minutes">hogeita-hamar minutuz</string>
   <string name="cache_ttl_one_hour">ordubetez</string>
-  <string name="cache_ttl_three_hours">hiru orduz</string>
   <string name="cache_ttl_one_day">egun batez</string>
-  <string name="cache_ttl_three_days">hiru egunez</string>
-  <string name="cache_ttl_forever">betirako</string>
-  <string name="settings_cache_select_three">Hautatu hiru.</string>
-  <string name="settings_cache_ttl_at_least_one">Gai bat hautatu behar da gutxienez!</string>
-  <string name="settings_cache_ttl_max_three">Ezin dira hiru gai baino gehiago hautatu!</string>
   <string name="remember">Gogoratu</string>
   <string name="security_token_error_pgp_app_not_installed">Ez da PGP aplikaziorik aurkitu segurtasun lekukoan</string>
   <string name="prompt_fidesmo_pgp_install_title">Ezarri PGP?</string>

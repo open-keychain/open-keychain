@@ -32,11 +32,18 @@
   <string name="title_help">Apua</string>
   <string name="title_log_display">Loki</string>
   <string name="title_exchange_keys">Vaihda avaimia</string>
+  <string name="title_advanced_key_info">Lisätietoja</string>
+  <string name="title_delete_secret_key">POISTA avaimesi \'1%s\'?</string>
   <string name="title_manage_my_keys">Hallitse avaimiani</string>
   <!--section-->
   <string name="section_user_ids">Identiteetit</string>
+  <string name="section_security_token">Turvallisuustunnus</string>
+  <string name="section_keybase_proofs">keybase.io todisteet</string>
+  <string name="section_should_you_trust">Pitäiskö sinun luottaa tähän avaimeen?</string>
   <string name="section_keys">Aliavaimet</string>
+  <string name="section_cloud_search">Avain haku</string>
   <string name="section_cloud_search_summary">Avainpalvelin, keybase.io</string>
+  <string name="section_passphrase_cache">Salasanat ja pin-koodit</string>
   <string name="section_gui">Käyttöliittymä</string>
   <string name="section_experimental_features">Kokeelliset ominaisuudet</string>
   <string name="section_certify">Vahvista</string>

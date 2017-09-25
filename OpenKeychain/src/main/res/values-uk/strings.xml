@@ -15,7 +15,6 @@
   <string name="title_api_registered_apps">Програми</string>
   <string name="title_key_server_preference">Сервери ключів OpenPGP</string>
   <string name="title_smartpgp_authorities_preference">SmartPGP: надійні повноваження</string>
-  <string name="title_cache_ttl_preference">Налаштувати вибрані \'Запам\'ятати\'</string>
   <string name="title_change_passphrase">Змінити пароль</string>
   <string name="title_share_fingerprint_with">Поділитися відбитком із…</string>
   <string name="title_share_key">Поділитися ключем з…</string>
@@ -153,7 +152,6 @@
   <string name="label_encryption_algorithm">Алгоритм шифрування</string>
   <string name="label_hash_algorithm">Хеш алгоритм</string>
   <string name="label_symmetric">Зашифрувати з паролем</string>
-  <string name="label_passphrase_cache_ttl">Налаштувати вибрані \'Запам\'ятати\'</string>
   <string name="label_passphrase_cache_subs">Пам\'ятати паролі залежних ключів</string>
   <string name="label_message_compression">Стиснення тексту</string>
   <string name="label_file_compression">Стиснення файлу</string>
@@ -616,6 +614,7 @@
   <string name="api_settings_allowed_keys">Дозволені ключі</string>
   <string name="api_settings_settings">Параметри</string>
   <string name="api_register_title">Дозволити доступ до OpenKeychain?</string>
+  <string name="api_register_text">%s запитів для використання OpenKeychain як криптопостачальника. У вас проситимуть дозвіл перед тим, як програма зможе використовувати будь-які ваші ключі для шифрування.\n\nВи можете відкликати дозвіл пізніше у вікні \'Програми\' OpenKeychain.</string>
   <string name="api_register_allow">Дозволити доступ</string>
   <string name="api_register_disallow">Не дозволити доступ</string>
   <string name="api_register_error_select_key">Будь ласка, виберіть ключ!</string>
@@ -654,6 +653,8 @@
   <string name="key_list_fab_qr_code">Сканувати QR код</string>
   <string name="key_list_fab_search">Шукати ключ</string>
   <string name="key_list_fab_import">Імпортувати з файлу</string>
+  <string name="key_list_dummy_title">У вас поки немає ключів!</string>
+  <string name="key_list_dummy_subtitle">Натисніть тут,  аби створити чи імпортувати їх.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Змінити</string>
   <string name="key_view_action_encrypt">Зашифрувати текст</string>
@@ -726,9 +727,8 @@
   <string name="edit_key_edit_subkey_title">Виберіть дію!</string>
   <string-array name="edit_key_edit_subkey">
     <item>Змінити термін дії</item>
-    <item>Відкликати ключ</item>
+    <item>Відкликати залежний ключ</item>
     <item>Відділити залежний ключ</item>
-    <item>Перемістити залежний ключ на маркер безпеки</item>
   </string-array>
   <string name="edit_key_new_subkey">новий підключ</string>
   <string name="edit_key_select_usage">Будь ласка, оберіть спосіб використання ключа!</string>
@@ -794,6 +794,7 @@
   <string name="drawer_close">Закрити панель навігації</string>
   <string name="my_keys">Мої ключі</string>
   <string name="nav_backup">Резервування/Відновлення</string>
+  <string name="nav_transfer">Безпечна передачі Wifi</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Набрати текст</string>
   <!--certs-->
@@ -1510,11 +1511,10 @@
   <string name="security_token_status_unbound">Маркер безпеки збігається та може бути прив\'язаний до ключа</string>
   <string name="security_token_status_partly">Маркер безпеки збігається та частково прив\'язаний до ключа</string>
   <string name="security_token_create">Тримайте маркер безпеки навпроти зворотнього боку Вашого пристрою.</string>
-  <string name="security_token_reset_or_import">Маркер безпеки вже містить ключ. Щоб використовувати його, нам потрібна додаткова інформація. Ця інформація може бути знайдена на сервері ключів чи імпортована з файлу.</string>
+  <string name="security_token_reset_or_import">Маркер безпеки вже містить ключ.</string>
   <string name="btn_reset">Скинути</string>
-  <string name="security_token_radio_use_existing">Пошук інформації про ключ на сервері ключів</string>
-  <string name="security_token_file_radio">Імпорт інформації про ключ з файлу</string>
-  <string name="security_token_radio_reset">Очистити маркер безпеки</string>
+  <string name="security_token_radio_use_existing">Використовувати наявний ключ</string>
+  <string name="security_token_radio_reset">Очистити маркер</string>
   <string name="security_token_reset_warning">Скидання маркера безпеки повністю знищить всі ключі на ньому. Ви не зможете розшифрувати повідомлення/файли зашифровані цим ключем.</string>
   <string name="snack_security_token_other">Різні ключі збережено на маркері безпеки!</string>
   <string name="security_token_error">Помилка: %s</string>
@@ -1664,16 +1664,8 @@
   <string name="title_edit_subkeys">Змінити залежні ключі</string>
   <string name="btn_search_for_query">Шукаю\n\'%s\'</string>
   <string name="cache_ttl_lock_screen">доки не згасне екран</string>
-  <string name="cache_ttl_ten_minutes">на десять хвилин</string>
-  <string name="cache_ttl_thirty_minutes">на тридцять хвилин</string>
   <string name="cache_ttl_one_hour">на одну годину</string>
-  <string name="cache_ttl_three_hours">на три години</string>
   <string name="cache_ttl_one_day">на один день</string>
-  <string name="cache_ttl_three_days">на три дні</string>
-  <string name="cache_ttl_forever">Завжди</string>
-  <string name="settings_cache_select_three">Оберіть не більше трьох.</string>
-  <string name="settings_cache_ttl_at_least_one">Бодай один пункт має бути обрано! </string>
-  <string name="settings_cache_ttl_max_three">Не можна обирати більше трьох пунктів!</string>
   <string name="remember">Нагадати</string>
   <string name="security_token_error_pgp_app_not_installed">Не знайдено програми PGP на маркері безпеки</string>
   <string name="prompt_fidesmo_pgp_install_title">Встановити PGP?</string>
@@ -1784,4 +1776,102 @@
   <string name="dialog_insecure_button_view_key">Дивитись ключ</string>
   <string name="dialog_insecure_button_ok">Отримано</string>
   <string name="identity_context_forget">Забути</string>
+  <string name="button_scan">Сканувати</string>
+  <string name="button_more_info">Докладніше</string>
+  <string name="transfer_scan_explanation">Щоб поділитися чи імпортувати налаштування вашого ключа, встановіть безпечне з\'єднання за допомогою сканування з будь-якого пристрою.</string>
+  <string name="transfer_scan_warning">Використовуйте лише з власними пристроями!</string>
+  <string name="connection_status">Стан з\'єднання:</string>
+  <string name="section_transfer_keys">Доступні ключі для передачі</string>
+  <string name="section_received_keys">Отримані ключі</string>
+  <string name="transfer_scan_only_wifi">Ця функція може використовуватися тільки на Wifi.</string>
+  <string name="button_import">Імпорт</string>
+  <string name="transfer_status_connected">З\'єднано</string>
+  <string name="transfer_status_disconnected">Від\'єднано!</string>
+  <string name="transfer_error_read_incoming">Невдале читання вхідного ключа!</string>
+  <string name="transfer_error_connect">Невдале зʼєднання!</string>
+  <string name="transfer_error_listen">Помилка очікування на з\'єднання!</string>
+  <string name="transfer_error_generic">Невідома комунікаційна помилка!</string>
+  <string name="transfer_error_generic_msg">Комунікаційна помилка: %s</string>
+  <string name="transfer_not_available">На жаль, ця функція може тільки використовуватися на Android 5 чи новішій :(</string>
+  <string name="transfer_list_empty">Немає ключів на цьому пристрої, які можна було б надіслати. Очікування вхідних ключів ...</string>
+  <string name="transfer_connecting">З\'єднуємося...</string>
+  <string name="first_time_secure_wifi_transfer">Безпечна передачі Wifi</string>
+  <string name="menu_secure_wifi_transfer">Безпечна передачі Wifi</string>
+  <string name="transfer_confirm_cancel">Скасувати</string>
+  <string name="transfer_confirm_ok">Надіслати</string>
+  <string name="transfer_confirm_title">Надіслати ваш ключ?</string>
+  <string name="transfer_confirm_text">Ця дія передасть повний доступ до вашого ключа на під\'єднаний пристрій. Ви ніколи не повинні надсилати свої ключі на пристрої, якими не володієте!</string>
+  <string name="button_scan_again">Сканувати знову</string>
+  <string name="transfer_error_wifi_text">Невдале зʼєднання!</string>
+  <string name="transfer_error_wifi_text_instructions">Переконайтеся, що ви перебуваєте в тій самій мережі. Тоді знову скануйте.</string>
+  <string name="transfer_error_wifi_text_instructions_ssid">Переконайтеся, що ви перебуваєте у мережі \'\'%s\". Тоді знову скануйте.</string>
+  <string name="status_check_key">Подивитись статус ключа...</string>
+  <string name="status_search_local">Пошук у списку ключів...</string>
+  <string name="status_search_uri">Пошук за Uri маркера...</string>
+  <string name="status_search_keyserver">Пошук на серверах ключів...</string>
+  <string name="status_import">Імпортується ключ…</string>
+  <string name="status_token_promote">Встановлення ключа...</string>
+  <string name="status_token_check">Перевірка встановлення ключа...</string>
+  <string name="status_content_uri">Читається файл...</string>
+  <string name="token_reset_confirm_title">Очистити маркер безпеки?</string>
+  <string name="token_reset_confirm_message">Це безповоротно видаляє ключ, що зберігається в цьому маркері безпеки. Через це більше не зможете використовувати цей ключ для розшифрування! Справді так вчинити?</string>
+  <string name="token_reset_confirm_ok">Скинути</string>
+  <string name="token_status_title">Збирання даних для маркера безпеки...</string>
+  <string name="token_result_not_found">Ключ не знайдено!</string>
+  <string name="token_result_key_found">Ключ знайдено!</string>
+  <string name="token_result_token_ok">Готове до використання!</string>
+  <string name="token_result_empty">Маркер - порожній</string>
+  <string name="token_action_retry">Повторити пошук</string>
+  <string name="token_action_load_from_file">Завантажити з файлу</string>
+  <string name="token_action_reset">Очистити маркер безпеки</string>
+  <string name="token_action_import">Імпортувати</string>
+  <string name="token_action_view_key">Переглянути ключ</string>
+  <string name="token_action_setup">Налаштувати з новим ключем</string>
+  <string name="token_action_unlock">Розблокувати за допомогою новою pin адміністратора</string>
+  <string name="token_unlock_attempts_none">Не залишилося спроб розблокування</string>
+  <plurals name="token_unlock_attempts">
+    <item quantity="one">залишилася 1 спроба</item>
+    <item quantity="few">залишилися %d спроби</item>
+    <item quantity="other">залишилося %d спроб</item>
+  </plurals>
+  <string name="token_error_locked_indefinitely">Надто багато спроб відновлення. Маркер заблокований безповоротно!</string>
+  <string name="token_menu_change_pin">Змінити Pin</string>
+  <string name="token_menu_view_log">Переглянути журнал</string>
+  <string name="token_unlock_ok">Розблокувати</string>
+  <string name="token_hint_admin_pin">PIN адміністратора</string>
+  <string name="token_hint_new_pin">Новий Pin</string>
+  <string name="token_hint_new_pin_repeat">Новий Pin (ще раз)</string>
+  <string name="token_error_admin_min8">Pin адміністратора повинен мати не менше 8 символів!</string>
+  <string name="token_error_pin_min6">Новий pin повинен мати не менше 6 символів!</string>
+  <string name="token_error_pin_repeat">Не збігається pin!</string>
+  <string name="msg_ret_curi_error_io">Помилка читання даних!</string>
+  <string name="msg_ret_curi_error_no_match">Не знайдено відповідний ключ</string>
+  <string name="msg_ret_curi_error_not_found">Не можливо відкрити файл!</string>
+  <string name="msg_ret_curi_found">Знайдений ключ: %s</string>
+  <string name="msg_ret_curi_mismatch">Ключ не збігається</string>
+  <string name="msg_ret_curi_ok">Ключ знайдено</string>
+  <string name="msg_ret_curi_open">Uri відкриття: %s</string>
+  <string name="msg_ret_curi_start">Завантаження ключа із файлу або документу...</string>
+  <string name="msg_ret_ks_error">Невідома помилка під час пошуку ключа!</string>
+  <string name="msg_ret_ks_error_not_found">Ключ не знайдено</string>
+  <string name="msg_ret_ks_fp_match">Відбиток отриманого ключа збігається</string>
+  <string name="msg_ret_ks_fp_mismatch">Відбиток отриманого ключа не збігається</string>
+  <string name="msg_ret_ks_ok">Ключ знайдено</string>
+  <string name="msg_ret_ks_start">Пошук ключа на серверах ключів...</string>
+  <string name="msg_ret_local_search">Пошук ключа: %s</string>
+  <string name="msg_ret_local_fp_match">Відбиток локального ключа збігається</string>
+  <string name="msg_ret_local_fp_mismatch">Відбиток локального ключа не збігається!</string>
+  <string name="msg_ret_local_not_found">Ключ не знайдено</string>
+  <string name="msg_ret_local_none_found">Не знайдено відповідний ключ</string>
+  <string name="msg_ret_local_ok">Ключ знайдено</string>
+  <string name="msg_ret_local_secret">Локальний ключ містить матеріал секретного ключа</string>
+  <string name="msg_ret_local_start">Пошук ключа у списку локальних ключів…</string>
+  <string name="msg_ret_uri_error_fetch">Невідома помилка отримання Uri!</string>
+  <string name="msg_ret_uri_error_parse">Uri маркера пошкоджено!</string>
+  <string name="msg_ret_uri_error_no_match">Не знайдено відповідний ключ на Uri</string>
+  <string name="msg_ret_uri_fetching">Отримання Uri: %s</string>
+  <string name="msg_ret_uri_ok">Ключ знайдено</string>
+  <string name="msg_ret_uri_start">Пошук ключа за маркером Uri…</string>
+  <string name="msg_ret_uri_null">Жодне Uri не збережено на маркері безпеки</string>
+  <string name="msg_ret_uri_test">Перевірка, чи знайдений ключ збігається: %s</string>
 </resources>

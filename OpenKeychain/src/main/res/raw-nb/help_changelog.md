@@ -1,19 +1,32 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 4.7
+
+  * Improved import from clipboard
+  * New key creation wizard for Security Tokens
+  * Removed password cache "time to live" setting
+
+
 ## 4.6
-  * Import your keys using our new Secure Wifi Transfer mechanism
+
+  * Import your keys using our new Secure Wi-Fi Transfer mechanism
+
 
 ## 4.5
-  * Detailed description for security problems
-  * Display keyserver status per key
-  * Support for EdDSA
-  * Fix pgp.mit.edu (new certificate)
+
+  * Detailed description of security problems
+  * Vis nøkkelstatus per nøkkel
+  * Støtte for EdDSA
+  * Fiks for pgp.mit.edu (nytt sertifikat)
+
 
 ## 4.4
+
   * New key status displays detailed information why a key is considered insecure or defective
 
 
 ## 4.3
+
   * Bedre støtte for store nøkler
   * Fix import of Gpg4win files with broken encodings
 
@@ -95,7 +108,7 @@
 ## 3.2
 
   * First version with full YubiKey support available from the user interface: Edit keys, bind YubiKey to keys,...
-  * Material design
+  * Materielt design
   * Integrasjon av QR-kodeskanning (Nye tilganger kreves)
   * Forbedret veiviser for nøkkelopprettelse
   * Fikser manglende kontakter etter synkronisering
@@ -123,11 +136,11 @@
 ## 3.1
 
   * Fikset kræsj på Android 5
-  * New certify screen
+  * Ny bekreftelsesskjerm
   * Secure Exchange directly from key list (SafeSlinger library)
   * New QR Code program flow
-  * Redesigned decrypt screen
-  * New icon usage and colors
+  * Nytt design for dekrypteringsoversikt
+  * Ny ikonbruk og farger
   * Fix import of secret keys from Symantec Encryption Desktop
   * Experimental YubiKey support: Subkey IDs are now checked correctly
 

@@ -14,7 +14,6 @@
   <string name="title_preferences">Configurações</string>
   <string name="title_api_registered_apps">Apps</string>
   <string name="title_key_server_preference">Servidores de chaves OpenPGP</string>
-  <string name="title_cache_ttl_preference">Personalize \'Lembretes\' de suas escolhas</string>
   <string name="title_change_passphrase">Alterar senha</string>
   <string name="title_share_fingerprint_with">Compartilhar impressão digital com...</string>
   <string name="title_share_key">Compartilhar minha chave com...</string>
@@ -147,7 +146,6 @@
   <string name="label_encryption_algorithm">Algoritmo de encriptação</string>
   <string name="label_hash_algorithm">Algoritmo de hash</string>
   <string name="label_symmetric">Encriptar com senha</string>
-  <string name="label_passphrase_cache_ttl">Personalize \'Lembrar\' escolhas</string>
   <string name="label_passphrase_cache_subs">Lembrar senhas por sub-chave</string>
   <string name="label_message_compression">Compressão de texto</string>
   <string name="label_file_compression">Compressão de arquivo</string>
@@ -656,12 +654,6 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">Esta identidade foi revogado. Está ação não pode ser desfeita.</string>
   <string name="edit_key_edit_subkey_title">Selecione uma ação!</string>
-  <string-array name="edit_key_edit_subkey">
-    <item>Modificar Expiração</item>
-    <item>Revogar Sub-chave</item>
-    <item>Extirpar Sub-chave</item>
-    <item>Mover Sub-chave para o Token de Segurança</item>
-  </string-array>
   <string name="edit_key_new_subkey">nova sub-chave</string>
   <string name="edit_key_select_usage">Por favor, selecione o uso da chave!</string>
   <string name="edit_key_error_add_identity">Adicione ao menos uma identidade!</string>
@@ -1390,7 +1382,6 @@
   <string name="security_token_status_partly">O Token de Segurança coincide, parcialmente associado à chave</string>
   <string name="security_token_create">Segure o Token de Segurança contra as costas do seu dispositivo.</string>
   <string name="btn_reset">Redefinir</string>
-  <string name="security_token_radio_reset">Redefinir Token de Segurança</string>
   <string name="security_token_reset_warning">Resetar o Token de Segurança destrói completamente as chaves nele. Após isto, você não será capaz de decriptar mensagens/arquivos encruiptados com estas chaves!</string>
   <string name="snack_security_token_other">Uma chave diferente está armazenada no Token de Segurança!</string>
   <string name="security_token_error">Erro: %s</string>
@@ -1533,16 +1524,8 @@
   <string name="title_edit_subkeys">Editar Sub-chaves</string>
   <string name="btn_search_for_query">Buscar por\n\'%s\'</string>
   <string name="cache_ttl_lock_screen">até desligar a tela</string>
-  <string name="cache_ttl_ten_minutes">por 10 minutos</string>
-  <string name="cache_ttl_thirty_minutes">por 30 minutos</string>
   <string name="cache_ttl_one_hour">por uma hora</string>
-  <string name="cache_ttl_three_hours">por 3 horas</string>
   <string name="cache_ttl_one_day">por um dia</string>
-  <string name="cache_ttl_three_days">por 3 dias</string>
-  <string name="cache_ttl_forever">Para sempre</string>
-  <string name="settings_cache_select_three">Selecione até 3.</string>
-  <string name="settings_cache_ttl_at_least_one">Ao menos um item deve ser selecionado!</string>
-  <string name="settings_cache_ttl_max_three">Não é possível selecionar mais de 3 itens!</string>
   <string name="remember">Lembrar</string>
   <string name="security_token_error_pgp_app_not_installed">Nenhum app PGP foi encontrado no token de segurança</string>
   <string name="prompt_fidesmo_pgp_install_title">Instalar o PGP?</string>

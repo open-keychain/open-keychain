@@ -12,7 +12,7 @@ Lisenssi: GPLv3+
   * Dominik Schürmann (Ylläpitäjä)
   * Vincent Breitmoser
 
-## Top Contributors
+## Suurimmat auttajat
   * Adithya Abraham Philip
   * Andrea Torlaschi
   * Arnaud Fontaine
@@ -61,7 +61,7 @@ Lisenssi: GPLv3+
 
 [//]: # (Huom.: Aakkosjärjestys)
 
-## Libraries
+## Kirjastot
   * [Android Support Libraries](http://developer.android.com/tools/support-library/index.html) (Apache License v2)
   * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Apache License v2)
   * [HtmlTextView](https://github.com/sufficientlysecure/html-textview) (Apache License v2)

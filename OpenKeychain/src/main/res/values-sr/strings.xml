@@ -14,7 +14,6 @@
   <string name="title_preferences">Поставке</string>
   <string name="title_api_registered_apps">Апликације</string>
   <string name="title_key_server_preference">ОпенПГП сервери кључева</string>
-  <string name="title_cache_ttl_preference">Прилагођавање избора „памћења“</string>
   <string name="title_change_passphrase">Измена лозинке</string>
   <string name="title_share_fingerprint_with">Подели отисак помоћу…</string>
   <string name="title_share_key">Подели кључ помоћу…</string>
@@ -146,7 +145,6 @@
   <string name="label_encryption_algorithm">Алгоритам шифровања</string>
   <string name="label_hash_algorithm">Алгоритам хеша</string>
   <string name="label_symmetric">Шифровање са лозинком</string>
-  <string name="label_passphrase_cache_ttl">Прилагодите изборе „памћења“</string>
   <string name="label_passphrase_cache_subs">Памти лозинке по поткључу</string>
   <string name="label_message_compression">Компресија текста</string>
   <string name="label_file_compression">Компресија фајла</string>
@@ -663,12 +661,6 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">Идентитет је опозван. Ово не може да се поништи.</string>
   <string name="edit_key_edit_subkey_title">Изаберите радњу!</string>
-  <string-array name="edit_key_edit_subkey">
-    <item>Измени истицање</item>
-    <item>Опозови поткључ</item>
-    <item>Оголи поткључ</item>
-    <item>Премести поткључ у безбедносни токен</item>
-  </string-array>
   <string name="edit_key_new_subkey">нови поткључ</string>
   <string name="edit_key_select_usage">Одредите коришћење кључа!</string>
   <string name="edit_key_error_add_identity">Додајте бар један идентитет!</string>
@@ -1520,16 +1512,8 @@
   <string name="title_edit_subkeys">Уређивање поткључева</string>
   <string name="btn_search_for_query">Тражи\n\'%s\'</string>
   <string name="cache_ttl_lock_screen">док се екран не искључи</string>
-  <string name="cache_ttl_ten_minutes">десет минута</string>
-  <string name="cache_ttl_thirty_minutes">тридесет минута</string>
   <string name="cache_ttl_one_hour">један сат</string>
-  <string name="cache_ttl_three_hours">три сата</string>
   <string name="cache_ttl_one_day">један дан</string>
-  <string name="cache_ttl_three_days">три дана</string>
-  <string name="cache_ttl_forever">заувек</string>
-  <string name="settings_cache_select_three">Изаберите највише три</string>
-  <string name="settings_cache_ttl_at_least_one">Бар једна ставка мора бити изабрана!</string>
-  <string name="settings_cache_ttl_max_three">Не можете изабрати више од три ставке!</string>
   <string name="remember">Запамти</string>
   <string name="prompt_fidesmo_pgp_install_title">Инсталирати ПГП?</string>
   <string name="prompt_fidesmo_pgp_install_message">Нема апликације за ПГП на вашем „Fidesmo“ уређају.</string>

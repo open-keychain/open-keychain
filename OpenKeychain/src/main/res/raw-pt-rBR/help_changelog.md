@@ -1,19 +1,32 @@
 [//]: # (NOTA: coloque cada frase em sua própria linha, o Transifex coloca cada linha em seu próprio campo de tradução!)
 
+## 4.7
+
+  * Improved import from clipboard
+  * New key creation wizard for Security Tokens
+  * Removed password cache "time to live" setting
+
+
 ## 4.6
-  * Import your keys using our new Secure Wifi Transfer mechanism
+
+  * Import your keys using our new Secure Wi-Fi Transfer mechanism
+
 
 ## 4.5
-  * Detailed description for security problems
+
+  * Detailed description of security problems
   * Display keyserver status per key
   * Support for EdDSA
   * Fix pgp.mit.edu (new certificate)
 
+
 ## 4.4
+
   * New key status displays detailed information why a key is considered insecure or defective
 
 
 ## 4.3
+
   *Melhor suporte para chaves grandes
   * Corrigido importação de arquivos Gpg4win com quebra de codificação
 

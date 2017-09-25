@@ -14,7 +14,6 @@
   <string name="title_preferences">Thiết lập</string>
   <string name="title_api_registered_apps">Ứng dụng đã cấp quyền</string>
   <string name="title_key_server_preference">Máy chủ lưu khóa</string>
-  <string name="title_cache_ttl_preference">Các lựa chọn \'Ghi nhớ\'</string>
   <string name="title_change_passphrase">Đổi mật khẩu</string>
   <string name="title_share_fingerprint_with">Chia sẻ mã nhận dạng với…</string>
   <string name="title_share_key">Chia sẻ khóa với…</string>
@@ -147,7 +146,6 @@
   <string name="label_encryption_algorithm">Thuật toán mã hóa</string>
   <string name="label_hash_algorithm">Thuật toán băm</string>
   <string name="label_symmetric">Mã hóa với mật khẩu</string>
-  <string name="label_passphrase_cache_ttl">Các tùy chọn \'Ghi nhớ\'</string>
   <string name="label_passphrase_cache_subs">Ghi nhớ mật khẩu bằng khóa con</string>
   <string name="label_message_compression">Nén văn bản</string>
   <string name="label_file_compression">Nén tệp tin</string>

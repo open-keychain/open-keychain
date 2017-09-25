@@ -14,7 +14,6 @@
   <string name="title_preferences">设置</string>
   <string name="title_api_registered_apps">已注册应用</string>
   <string name="title_key_server_preference">OpenPGP 密钥服务器</string>
-  <string name="title_cache_ttl_preference">自定义记忆时间选项</string>
   <string name="title_change_passphrase">变更密码</string>
   <string name="title_share_fingerprint_with">分享指纹</string>
   <string name="title_share_key">分享密钥</string>
@@ -147,7 +146,6 @@
   <string name="label_encryption_algorithm">加密算法</string>
   <string name="label_hash_algorithm">哈希算法</string>
   <string name="label_symmetric">用密码加密</string>
-  <string name="label_passphrase_cache_ttl">自定义 \'记忆时间\' 选项</string>
   <string name="label_passphrase_cache_subs">保存子密钥的密码</string>
   <string name="label_message_compression">文本压缩</string>
   <string name="label_file_compression">文件压缩</string>
@@ -639,12 +637,6 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">该用户标识已被吊销，该情况不能恢复</string>
   <string name="edit_key_edit_subkey_title">请选择一个操作！</string>
-  <string-array name="edit_key_edit_subkey">
-    <item>更改有效期</item>
-    <item>吊销子密钥</item>
-    <item>剥离子密钥</item>
-    <item>转移子密钥到安全令牌</item>
-  </string-array>
   <string name="edit_key_new_subkey">新建子密钥</string>
   <string name="edit_key_select_usage">请选择密钥的用途！</string>
   <string name="edit_key_error_add_identity">至少要有一个用户标识！</string>
@@ -1359,7 +1351,6 @@
   <string name="security_token_status_partly">安全信息匹配并且已部分绑定到密钥</string>
   <string name="security_token_create">保持安全令牌在您的手机背部</string>
   <string name="btn_reset">重置</string>
-  <string name="security_token_radio_reset">重置安全令牌</string>
   <string name="security_token_reset_warning">重置安全令牌将完全摧毁其内部的密钥。之后您将无法使用该密钥加解密消息或文件！</string>
   <string name="snack_security_token_other">安全令牌中存有不同的密钥！</string>
   <string name="security_token_error">错误： %s</string>
@@ -1500,16 +1491,8 @@
   <string name="title_edit_subkeys">编辑子密钥</string>
   <string name="btn_search_for_query">查找\n\'%s\'</string>
   <string name="cache_ttl_lock_screen">直到锁屏</string>
-  <string name="cache_ttl_ten_minutes">十分钟</string>
-  <string name="cache_ttl_thirty_minutes">三十分钟</string>
   <string name="cache_ttl_one_hour">一小时</string>
-  <string name="cache_ttl_three_hours">三小时</string>
   <string name="cache_ttl_one_day">一天</string>
-  <string name="cache_ttl_three_days">三天</string>
-  <string name="cache_ttl_forever">永久</string>
-  <string name="settings_cache_select_three">选取一到三个</string>
-  <string name="settings_cache_ttl_at_least_one">至少选择一个项目！</string>
-  <string name="settings_cache_ttl_max_three">不能选择多于三个项目！</string>
   <string name="remember">记住</string>
   <string name="security_token_error_pgp_app_not_installed">在安全令牌中没有找到 PGP 应用</string>
   <string name="prompt_fidesmo_pgp_install_title">安装 PGP？</string>

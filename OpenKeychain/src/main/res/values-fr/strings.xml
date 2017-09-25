@@ -15,7 +15,6 @@
   <string name="title_api_registered_apps">Applis</string>
   <string name="title_key_server_preference">Serveurs de clés OpenPGP</string>
   <string name="title_smartpgp_authorities_preference">SmartPGP : autorités de confiance</string>
-  <string name="title_cache_ttl_preference">Personnaliser les choix « Mémorisation »</string>
   <string name="title_change_passphrase">Changer le mot de passe</string>
   <string name="title_share_fingerprint_with">Partager l\'empreinte avec...</string>
   <string name="title_share_key">Partager la clé avec...</string>
@@ -153,7 +152,6 @@
   <string name="label_encryption_algorithm">Algorithme de chiffrement</string>
   <string name="label_hash_algorithm">Algorithme de hachage</string>
   <string name="label_symmetric">Chiffrer avec un mot de passe</string>
-  <string name="label_passphrase_cache_ttl">Personnaliser les choix « Mémorisation »</string>
   <string name="label_passphrase_cache_subs">Mémoriser les mots de passe par sous-clés</string>
   <string name="label_message_compression">Compression de texte</string>
   <string name="label_file_compression">Compression des fichiers</string>
@@ -175,7 +173,7 @@
   <string name="label_fingerprint">Empreinte</string>
   <string name="expiry_date_dialog_title">Définir une date d\'expiration</string>
   <string name="label_keyservers_title">Serveurs de clés </string>
-  <string name="label_keyserver_settings_hint">Glisser pour changer l\'ordre, toquer pour éditer/supprimer</string>
+  <string name="label_keyserver_settings_hint">Glisser pour changer l\'ordre, toquer pour modifier ou supprimer</string>
   <string name="label_selected_keyserver_title">Serveurs de clés sélectionnés</string>
   <string name="label_selected_smartpgp_authority_title">Autorité sélectionnée</string>
   <string name="label_preferred">préféré </string>
@@ -595,6 +593,7 @@
   <string name="api_settings_allowed_keys">clés autorisées</string>
   <string name="api_settings_settings">Paramètres</string>
   <string name="api_register_title">Autoriser l\'accès à OpenKeychain ?</string>
+  <string name="api_register_text">%s demandes d\'utiliser OpenKeychain comme fournisseur de cryptographie. Une autorisation vous sera encore demandée avant que l\'appli puisse utiliser l\'une de vos clés pour le déchiffrement.\n\nVous pourrez révoquer l\'accès ultérieurement dans l\'écran « Applis » d\'OpenKeychain.</string>
   <string name="api_register_allow">Autoriser l\'accès</string>
   <string name="api_register_disallow">Refuser l\'accès</string>
   <string name="api_register_error_select_key">Veuillez choisir une clé !</string>
@@ -702,12 +701,6 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">Cette identité a été révoquée ! Cela ne peut pas être annulé.</string>
   <string name="edit_key_edit_subkey_title">Choisissez une action !</string>
-  <string-array name="edit_key_edit_subkey">
-    <item>Changer l\'expiration</item>
-    <item>Révoquer la sous-clé</item>
-    <item>Dépouiller la sous-clé</item>
-    <item>Déplacer la sous-clé vers le jeton de sécurité</item>
-  </string-array>
   <string name="edit_key_new_subkey">nouvelle sous-clé</string>
   <string name="edit_key_select_usage">Veuillez choisir l\'utilisation de la clé !</string>
   <string name="edit_key_error_add_identity">Ajouter au moins une identité !</string>
@@ -772,6 +765,7 @@
   <string name="drawer_close">Fermer le tiroir de navigation</string>
   <string name="my_keys">Mes clés</string>
   <string name="nav_backup">Sauvegarder/Restaurer</string>
+  <string name="nav_transfer">Transfert Wi-Fi sécurisé</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Saisir le texte</string>
   <!--certs-->
@@ -1473,11 +1467,7 @@
   <string name="security_token_status_unbound">Le jeton de sécurité correspond et peut être relié à la clé</string>
   <string name="security_token_status_partly">Le jeton de sécurité correspond et est partiellement relié à la clé</string>
   <string name="security_token_create">Tenir le jeton de sécurité contre le dos de votre appareil.</string>
-  <string name="security_token_reset_or_import">Ce jeton de sécurité contient déjà une clé. Des informations supplémentaires sont requises pour l\'utiliser. Elles peuvent être recherchées sur un serveur de clés ou importer d\'un fichier.</string>
   <string name="btn_reset">Réinitialiser</string>
-  <string name="security_token_radio_use_existing">Rechercher les informations de la clé sur le serveur de clés</string>
-  <string name="security_token_file_radio">Importer les informations de la clé d\'un fichier</string>
-  <string name="security_token_radio_reset">Réinitialiser le jeton de sécurité</string>
   <string name="security_token_reset_warning">La réinitialisation du jeton de sécurité détruit complètement les clés qu\'il contient. Par la suite, vous ne pourrez plus déchiffrer les messages/les fichiers chiffrés avec cette clé !</string>
   <string name="snack_security_token_other">Une clé différente est stockée sur le jeton de sécurité !</string>
   <string name="security_token_error">Erreur : %s</string>
@@ -1544,7 +1534,7 @@
   <string name="linked_create_twitter_handle">Pseudo Twitter</string>
   <string name="linked_create_twitter_2_1">Toucher l\'un des boutons pour twitter le message !</string>
   <string name="linked_create_twitter_2_2">Vous pouvez modifier le gazouillis avant de le publier tant que le texte entre parenthèses reste inchangé.</string>
-  <string name="linked_create_twitter_2_3">Une fois que votre gazouillis est publié sur Tweeter en tant que <b>@%s</b>, toquez sur le bouton Vérifier pour le chercher dans votre fil d\'actualité. </string>
+  <string name="linked_create_twitter_2_3">Une fois que votre gazouillis est publié sur Tweeter en tant que <b>@%s</b>, touchez le bouton Vérifier pour le chercher dans votre fil d\'actualité. </string>
   <string name="linked_create_twitter_2_4">Suite à une vérification probante, touchez le bouton Terminer pour ajouter l\'identité reliée à votre trousseau et compléter le processus.</string>
   <string name="linked_create_verify">Vérifier</string>
   <string name="linked_text_clipboard">La texte a été copié dans le presse-papiers</string>
@@ -1625,16 +1615,8 @@
   <string name="title_edit_subkeys">Modifier les sous-clés</string>
   <string name="btn_search_for_query">Rechercher\n« %s »</string>
   <string name="cache_ttl_lock_screen">jusqu\'à l\'extinction de l\'écran</string>
-  <string name="cache_ttl_ten_minutes">pendant dix minutes</string>
-  <string name="cache_ttl_thirty_minutes">pendant trente minutes</string>
   <string name="cache_ttl_one_hour">pendant une heure</string>
-  <string name="cache_ttl_three_hours">pendant trois heures</string>
   <string name="cache_ttl_one_day">pendant un jour</string>
-  <string name="cache_ttl_three_days">pendant trois jours</string>
-  <string name="cache_ttl_forever">permanent</string>
-  <string name="settings_cache_select_three">En choisir jusqu\'à trois.</string>
-  <string name="settings_cache_ttl_at_least_one">Vous devez choisir au moins un élément !</string>
-  <string name="settings_cache_ttl_max_three">Vous ne pouvez pas choisir plus de trois éléments !</string>
   <string name="remember">Mémorisation</string>
   <string name="security_token_error_pgp_app_not_installed">Aucune appli PGP n\'a été trouvée sur le jeton de sécurité</string>
   <string name="prompt_fidesmo_pgp_install_title">Installer PGP ?</string>
@@ -1745,4 +1727,33 @@
   <string name="dialog_insecure_button_view_key">Visualiser la clé</string>
   <string name="dialog_insecure_button_ok">Compris</string>
   <string name="identity_context_forget">Oublier</string>
+  <string name="button_scan">Lire</string>
+  <string name="button_more_info">Plus d\'infos</string>
+  <string name="transfer_scan_explanation">Pour partager ou importer la configuration de votre clé, établissez une connexion sécurisée en lisant avec l\'un ou l\'autre des appareils.</string>
+  <string name="transfer_scan_warning">À utiliser avec vos propres aux appareils seulement !</string>
+  <string name="connection_status">État de connexion :</string>
+  <string name="section_transfer_keys">Clés disponibles pour le transfert</string>
+  <string name="section_received_keys">Clés reçues</string>
+  <string name="transfer_scan_only_wifi">Cette fonction ne peut être utilisée qu\'avec le Wi-Fi.</string>
+  <string name="button_import">Importer</string>
+  <string name="transfer_status_connected">Connecté</string>
+  <string name="transfer_status_disconnected">Déconnecté !</string>
+  <string name="transfer_error_read_incoming">Échec de lecture de la clé entrante !</string>
+  <string name="transfer_error_connect">Échec de connexion !</string>
+  <string name="transfer_error_listen">Erreur lors de l\'attente de connexion !</string>
+  <string name="transfer_error_generic">Erreur inconnue de communication !</string>
+  <string name="transfer_error_generic_msg">Erreur de communication : %s</string>
+  <string name="transfer_not_available">Désolé, cette fonction ne peut être utilisée qu\'avec Android 5 ou ultérieure :(</string>
+  <string name="transfer_list_empty">Il n\'existe aucune clé sur cet appareil qui puisse être envoyée. En attente de clés entrantes…</string>
+  <string name="transfer_connecting">Connexion…</string>
+  <string name="first_time_secure_wifi_transfer">Transfert Wi-Fi sécurisé</string>
+  <string name="menu_secure_wifi_transfer">Transfert Wi-Fi sécurisé</string>
+  <string name="transfer_confirm_cancel">Annuler</string>
+  <string name="transfer_confirm_ok">Envoyer</string>
+  <string name="transfer_confirm_title">Envoyer votre clé ?</string>
+  <string name="transfer_confirm_text">Cela transférera l\'accès complet à votre clé à l\'appareil connecté. Vous ne devriez jamais envoyer vos propres clés à des appareils dont vous n\'est pas propriétaire !</string>
+  <string name="button_scan_again">Réanalyser</string>
+  <string name="transfer_error_wifi_text">Échec de connexion !</string>
+  <string name="transfer_error_wifi_text_instructions">Assurez-vous d\'être sur le même réseau, puis réanalysez.</string>
+  <string name="transfer_error_wifi_text_instructions_ssid">Assurez-vous d\'être sur le réseau « %s », puis réanalysez.</string>
 </resources>

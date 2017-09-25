@@ -14,7 +14,6 @@
   <string name="title_preferences">Impostazioni</string>
   <string name="title_api_registered_apps">Apps</string>
   <string name="title_key_server_preference">Server chiavi OpenPGP</string>
-  <string name="title_cache_ttl_preference">Cambia le scelte da \'Ricordare\'</string>
   <string name="title_change_passphrase">Cambia la password</string>
   <string name="title_share_fingerprint_with">Condivi impronta con...</string>
   <string name="title_share_key">Condividi chiave con...</string>
@@ -146,7 +145,6 @@
   <string name="label_encryption_algorithm">Algoritmo di codifica</string>
   <string name="label_hash_algorithm">Algoritmo Hash</string>
   <string name="label_symmetric">Codifica con password</string>
-  <string name="label_passphrase_cache_ttl">Cambia le scelte da \'Ricordare\'</string>
   <string name="label_passphrase_cache_subs">Ricorda le password di sottochiave</string>
   <string name="label_message_compression">Compressione testo</string>
   <string name="label_file_compression">Compressione file</string>
@@ -1131,15 +1129,8 @@
   <string name="title_edit_identities">Modifica Identità</string>
   <string name="title_edit_subkeys">Modifica Sottochiavi</string>
   <string name="cache_ttl_lock_screen">fino allo spegnimento dello schermo</string>
-  <string name="cache_ttl_ten_minutes">per dieci minuti</string>
-  <string name="cache_ttl_thirty_minutes">per mezz\'ora</string>
   <string name="cache_ttl_one_hour">per un\'ora</string>
-  <string name="cache_ttl_three_hours">per tre ore</string>
   <string name="cache_ttl_one_day">per una giornata</string>
-  <string name="cache_ttl_three_days">per tre giorni</string>
-  <string name="cache_ttl_forever">per sempre</string>
-  <string name="settings_cache_ttl_at_least_one">Almeno un elemento deve essere selezionato!</string>
-  <string name="settings_cache_ttl_max_three">Non puoi selezionare più di tre elementi!</string>
   <string name="security_token_error_pgp_app_not_installed">Nessuna app PGP è stata trovata sul token di sicurezza</string>
   <string name="prompt_fidesmo_pgp_install_title">Installare PGP?</string>
   <string name="prompt_fidesmo_pgp_install_message">Non c\'era nessuna app PGP disponibile sul tuo dispositivo Fidesmo.</string>

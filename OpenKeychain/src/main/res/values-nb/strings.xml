@@ -14,7 +14,6 @@
   <string name="title_preferences">Innstillinger</string>
   <string name="title_api_registered_apps">Programmer</string>
   <string name="title_key_server_preference">OpenPGP-nøkkeltjenere</string>
-  <string name="title_cache_ttl_preference">Tilpass \"husk\"-valg</string>
   <string name="title_change_passphrase">Endre passord</string>
   <string name="title_share_fingerprint_with">Del fingeravtrykk med…</string>
   <string name="title_share_key">Del nøkkel med…</string>
@@ -139,7 +138,6 @@
   <string name="label_delete_after_decryption">Slett etter kryptering</string>
   <string name="label_encryption_algorithm">Krypteringsalgoritme</string>
   <string name="label_symmetric">Krypter med passord</string>
-  <string name="label_passphrase_cache_ttl">Tilpass \'husk\'-valg</string>
   <string name="label_message_compression">Tekstkomprimering</string>
   <string name="label_file_compression">Filkomprimering</string>
   <string name="label_key_id">Nøkkel-ID</string>
@@ -580,7 +578,6 @@
   <string name="nfc_settings">Innstillinger</string>
   <string name="snack_security_token_view">Vis</string>
   <string name="btn_reset">Tilbakestill</string>
-  <string name="security_token_radio_reset">Tilbakestill sikkerhetssymbol</string>
   <string name="security_token_error">Feil: %s</string>
   <string name="security_token_error_unknown">Ukjent feil</string>
   <string name="security_token_error_try_again">Prøv igjen</string>
@@ -615,12 +612,7 @@
   <string name="share_log_dialog_cancel_button">Avbryt</string>
   <string name="menu_uids_save">Lagre</string>
   <string name="cache_ttl_one_hour">i én time</string>
-  <string name="cache_ttl_three_hours">i tre timer</string>
   <string name="cache_ttl_one_day">i én dag</string>
-  <string name="cache_ttl_three_days">i tre dager</string>
-  <string name="cache_ttl_forever">for alltid</string>
-  <string name="settings_cache_select_three">Velg opptil tre.</string>
-  <string name="settings_cache_ttl_at_least_one">Ihvertfall ett element må velges!</string>
   <string name="remember">Husk</string>
   <string name="prompt_fidesmo_pgp_install_title">Installer PGP?</string>
   <string name="prompt_fidesmo_pgp_install_button_positive">Installer</string>
