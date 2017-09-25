@@ -1,0 +1,2 @@
+4.6
+  * Import your keys using our new Secure Wi-Fi Transfer mechanism
