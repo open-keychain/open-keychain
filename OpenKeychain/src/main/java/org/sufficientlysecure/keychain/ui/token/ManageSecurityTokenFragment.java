@@ -145,7 +145,7 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
     public void onDestroyView() {
         super.onDestroyView();
 
-        presenter.setView(null);
+        presenter.detach();
     }
 
     @Override

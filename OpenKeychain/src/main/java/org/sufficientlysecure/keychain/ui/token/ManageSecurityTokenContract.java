@@ -30,6 +30,7 @@ import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenFragment.Stat
 class ManageSecurityTokenContract {
     interface ManageSecurityTokenMvpPresenter {
         void setView(ManageSecurityTokenMvpView createSecurityTokenImportFragment);
+        void detach();
         void onActivityCreated();
 
         void onClickRetry();

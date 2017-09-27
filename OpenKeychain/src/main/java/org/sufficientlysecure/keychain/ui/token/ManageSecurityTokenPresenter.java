@@ -82,6 +82,16 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
     }
 
     @Override
+    public void detach() {
+        this.view = null;
+
+        loaderManager.destroyLoader(LOADER_LOCAL);
+        loaderManager.destroyLoader(LOADER_URI);
+        loaderManager.destroyLoader(LOADER_KEYSERVER);
+        loaderManager.destroyLoader(LOADER_CONTENT_URI);
+    }
+
+    @Override
     public void onActivityCreated() {
         if (!checkedKeyStatus || !searchedLocally || !searchedAtUri || !searchedKeyservers) {
             continueSearch();
@@ -143,6 +153,10 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                if (view == null) {
+                    return;
+                }
+
                 performKeyCheck();
             }
         }, 1000);
@@ -220,10 +234,6 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
 
         @Override
         public void onLoadFinished(Loader<KeyRetrievalResult> loader, KeyRetrievalResult data) {
-            if (view == null) {
-                return;
-            }
-
             switch (loader.getId()) {
                 case LOADER_LOCAL: {
                     searchedLocally = true;
