@@ -92,6 +92,8 @@ public class KeyHealthView extends LinearLayout implements KeyHealthMvpView, OnC
                 R.drawable.ic_check_black_24dp, R.color.android_green_light),
         DIVERT (R.string.key_health_divert_title, R.string.key_health_divert_subtitle,
                 R.drawable.yubi_icon_24dp, R.color.md_black_1000),
+        DIVERT_PARTIAL (R.string.key_health_divert_partial_title, R.string.key_health_divert_partial_subtitle,
+                R.drawable.yubi_icon_24dp, R.color.md_black_1000),
         REVOKED (R.string.key_health_revoked_title, R.string.key_health_revoked_subtitle,
                 R.drawable.ic_close_black_24dp, R.color.android_red_light),
         EXPIRED (R.string.key_health_expired_title, R.string.key_health_expired_subtitle,
@@ -131,6 +133,9 @@ public class KeyHealthView extends LinearLayout implements KeyHealthMvpView, OnC
                 break;
             case DIVERT:
                 setKeyStatus(KeyHealthDisplayStatus.DIVERT);
+                break;
+            case DIVERT_PARTIAL:
+                setKeyStatus(KeyHealthDisplayStatus.DIVERT_PARTIAL);
                 break;
             case REVOKED:
                 setKeyStatus(KeyHealthDisplayStatus.REVOKED);

@@ -1821,6 +1821,8 @@
     <string name="key_health_ok_subtitle">"No key issues found."</string>
     <string name="key_health_divert_title">"Healthy (Security Token)"</string>
     <string name="key_health_divert_subtitle">"No key issues found."</string>
+    <string name="key_health_divert_partial_title">"Healthy (Partial Token)"</string>
+    <string name="key_health_divert_partial_subtitle">"Click for details"</string>
     <string name="key_health_expired_title">"Expired"</string>
     <string name="key_health_expired_subtitle">"This key should not be used anymore."</string>
     <string name="key_health_revoked_title">"Revoked"</string>

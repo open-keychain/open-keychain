@@ -172,16 +172,24 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
             return KeyHealthStatus.STRIPPED;
         }
 
-        if (keyCertify.mSecretKeyType == SecretKeyType.GNU_DUMMY
-                || keySign.mSecretKeyType == SecretKeyType.GNU_DUMMY
-                || keyEncrypt.mSecretKeyType == SecretKeyType.GNU_DUMMY) {
-            return KeyHealthStatus.PARTIAL_STRIPPED;
-        }
-
         if (keyCertify.mSecretKeyType == SecretKeyType.DIVERT_TO_CARD
                 && keySign.mSecretKeyType == SecretKeyType.DIVERT_TO_CARD
                 && keyEncrypt.mSecretKeyType == SecretKeyType.DIVERT_TO_CARD) {
             return KeyHealthStatus.DIVERT;
+        }
+
+        boolean containsDivertKeys = keyCertify.mSecretKeyType == SecretKeyType.DIVERT_TO_CARD ||
+                keySign.mSecretKeyType == SecretKeyType.DIVERT_TO_CARD ||
+                keyEncrypt.mSecretKeyType == SecretKeyType.DIVERT_TO_CARD;
+        if (containsDivertKeys) {
+            return KeyHealthStatus.DIVERT_PARTIAL;
+        }
+
+        boolean containsStrippedKeys = keyCertify.mSecretKeyType == SecretKeyType.GNU_DUMMY
+                || keySign.mSecretKeyType == SecretKeyType.GNU_DUMMY
+                || keyEncrypt.mSecretKeyType == SecretKeyType.GNU_DUMMY;
+        if (containsStrippedKeys) {
+            return KeyHealthStatus.PARTIAL_STRIPPED;
         }
 
         return KeyHealthStatus.OK;
@@ -255,7 +263,7 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
     }
 
     public enum KeyHealthStatus {
-        OK, DIVERT, REVOKED, EXPIRED, INSECURE, SIGN_ONLY, STRIPPED, PARTIAL_STRIPPED, BROKEN
+        OK, DIVERT, DIVERT_PARTIAL, REVOKED, EXPIRED, INSECURE, SIGN_ONLY, STRIPPED, PARTIAL_STRIPPED, BROKEN
     }
 
     public interface KeyHealthMvpView {
