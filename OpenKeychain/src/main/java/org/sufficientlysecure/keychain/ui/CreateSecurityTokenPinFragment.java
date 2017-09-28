@@ -29,6 +29,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenHelper;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
@@ -125,6 +126,10 @@ public class CreateSecurityTokenPinFragment extends Fragment {
             new AsyncTask<Void, Void, Passphrase>() {
                 @Override
                 protected Passphrase doInBackground(Void... unused) {
+                    if (Constants.DEBUG) {
+                        return new Passphrase("12345678");
+                    }
+
                     SecureRandom secureRandom = new SecureRandom();
                     // min = 8, we choose 8
                     String adminPin = "" + secureRandom.nextInt(9)
