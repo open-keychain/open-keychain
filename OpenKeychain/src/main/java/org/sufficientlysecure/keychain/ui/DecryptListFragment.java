@@ -515,6 +515,25 @@ public class DecryptListFragment
 
     }
 
+    private Intent getDecryptedBinaryFileIntent(OpenPgpMetadata metadata, Uri outputUri,
+                                                boolean share, boolean forceChooser) {
+        Intent intent;
+        if (share) {
+            intent = new Intent(Intent.ACTION_SEND);
+            intent.setType(metadata.getMimeType());
+            intent.putExtra(Intent.EXTRA_STREAM, outputUri);
+        } else {
+            intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(outputUri, metadata.getMimeType());
+
+            if (!forceChooser && Constants.MIME_TYPE_KEYS.equals(metadata.getMimeType())) {
+                // bind Intent to this OpenKeychain, don't allow other apps to intercept here!
+                intent.setPackage(getActivity().getPackageName());
+            }
+        }
+        return intent;
+    }
+
     public void displayWithViewIntent(InputDataResult result, int index, boolean share, boolean forceChooser) {
         Activity activity = getActivity();
         if (activity == null) {
@@ -578,21 +597,7 @@ public class DecryptListFragment
 
         } else {
 
-            Intent intent;
-            if (share) {
-                intent = new Intent(Intent.ACTION_SEND);
-                intent.setType(metadata.getMimeType());
-                intent.putExtra(Intent.EXTRA_STREAM, outputUri);
-            } else {
-                intent = new Intent(Intent.ACTION_VIEW);
-                intent.setDataAndType(outputUri, metadata.getMimeType());
-
-                if (!forceChooser && Constants.MIME_TYPE_KEYS.equals(metadata.getMimeType())) {
-                    // bind Intent to this OpenKeychain, don't allow other apps to intercept here!
-                    intent.setPackage(getActivity().getPackageName());
-                }
-            }
-
+            Intent intent = getDecryptedBinaryFileIntent(metadata, outputUri, share, forceChooser);
             intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
             Intent chooserIntent;
@@ -1045,6 +1050,18 @@ public class DecryptListFragment
                             activity.startActivity(intent);
                         }
                     });
+                    if (sigResult.getResult() == OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED
+                            && model.mResult.getOutputUris().size() == 1) {
+                        PackageManager pm = getContext().getPackageManager();
+                        Uri outputUri = model.mResult.getOutputUris().get(0);
+                        OpenPgpMetadata metadata = model.mResult.mMetadata.get(0);
+                        Intent intent = getDecryptedBinaryFileIntent(metadata, outputUri, false, false);
+                        final ResolveInfo mInfo = pm.resolveActivity(intent, 0);
+                        if (!TextUtils.equals("android", mInfo.activityInfo.packageName)) {
+                            // the user set a default viewer app, automatically display using it
+                            startActivity(intent);
+                        }
+                    }
                 } else {
                     holder.vSignatureLayout.setOnClickListener(new OnClickListener() {
                         @Override
