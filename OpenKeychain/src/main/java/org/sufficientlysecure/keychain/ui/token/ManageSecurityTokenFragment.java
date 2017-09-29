@@ -146,6 +146,8 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
         super.onDestroyView();
 
         presenter.detach();
+        currentImportKeyringParcel = null;
+        currentPromoteKeyringParcel = null;
     }
 
     @Override
@@ -462,12 +464,20 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
 
                 @Override
                 public void onCryptoOperationSuccess(ImportKeyResult result) {
+                    if (currentImportKeyringParcel == null) {
+                        return;
+                    }
+
                     currentImportKeyringParcel = null;
                     presenter.onImportSuccess(result);
                 }
 
                 @Override
                 public void onCryptoOperationError(ImportKeyResult result) {
+                    if (currentImportKeyringParcel == null) {
+                        return;
+                    }
+
                     currentImportKeyringParcel = null;
                     presenter.onImportError(result);
                 }
@@ -482,12 +492,20 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
 
                 @Override
                 public void onCryptoOperationSuccess(PromoteKeyResult result) {
+                    if (currentPromoteKeyringParcel == null) {
+                        return;
+                    }
+
                     currentPromoteKeyringParcel = null;
                     presenter.onPromoteSuccess(result);
                 }
 
                 @Override
                 public void onCryptoOperationError(PromoteKeyResult result) {
+                    if (currentPromoteKeyringParcel == null) {
+                        return;
+                    }
+
                     currentPromoteKeyringParcel = null;
                     presenter.onPromoteError(result);
                 }
