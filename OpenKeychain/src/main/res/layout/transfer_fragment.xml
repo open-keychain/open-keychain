@@ -43,6 +43,7 @@
                 android:layout_weight="0.75"
                 custom:cardUseCompatPadding="true"
                 custom:cardCornerRadius="4dp"
+                custom:cardBackgroundColor="@android:color/white"
                 >
 
                 <ImageView
