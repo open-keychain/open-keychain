@@ -37,7 +37,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/menu_linked_add_identity"
-            android:textColor="@color/card_view_button" />
+            android:textColor="@color/card_view_button"
+            android:visibility="gone"
+            tools:visibility="visible"
+            />
 
         <Button
             android:id="@+id/view_key_card_user_ids_edit"

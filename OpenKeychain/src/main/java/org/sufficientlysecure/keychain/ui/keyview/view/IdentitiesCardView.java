@@ -38,6 +38,8 @@ public class IdentitiesCardView extends CardView implements IdentitiesMvpView {
     private final RecyclerView vIdentities;
 
     private IdentitiesCardListener identitiesCardListener;
+    private final Button linkedIdsAddButton;
+    private final Button userIdsEditButton;
 
     public IdentitiesCardView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -48,7 +50,7 @@ public class IdentitiesCardView extends CardView implements IdentitiesMvpView {
         vIdentities.setLayoutManager(new LinearLayoutManager(context));
         vIdentities.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL_LIST, false));
 
-        Button userIdsEditButton = (Button) view.findViewById(R.id.view_key_card_user_ids_edit);
+        userIdsEditButton = (Button) view.findViewById(R.id.view_key_card_user_ids_edit);
         userIdsEditButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,8 +60,7 @@ public class IdentitiesCardView extends CardView implements IdentitiesMvpView {
             }
         });
 
-        Button linkedIdsAddButton = (Button) view.findViewById(R.id.view_key_card_linked_ids_add);
-
+        linkedIdsAddButton = (Button) view.findViewById(R.id.view_key_card_linked_ids_add);
         linkedIdsAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,6 +83,11 @@ public class IdentitiesCardView extends CardView implements IdentitiesMvpView {
 
     @Override
     public void setEditIdentitiesButtonVisible(boolean show) {
-        findViewById(R.id.view_key_card_user_ids_buttons).setVisibility(show ? View.VISIBLE : View.GONE);
+        userIdsEditButton.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void setAddLinkedIdButtonVisible(boolean show) {
+        linkedIdsAddButton.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 }

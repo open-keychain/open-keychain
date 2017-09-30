@@ -60,6 +60,7 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
 
     private final long masterKeyId;
     private final boolean isSecret;
+    private final boolean showLinkedIds;
 
     public IdentitiesPresenter(Context context, IdentitiesMvpView view, ViewKeyMvpView viewKeyMvpView,
             int loaderId, long masterKeyId, boolean isSecret) {
@@ -70,6 +71,8 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
 
         this.masterKeyId = masterKeyId;
         this.isSecret = isSecret;
+
+        showLinkedIds = Preferences.getPreferences(context).getExperimentalEnableLinkedIdentities();
 
         identitiesAdapter = new IdentityAdapter(context, isSecret, new IdentityClickListener() {
             @Override
@@ -86,6 +89,7 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
         view.setIdentitiesAdapter(identitiesAdapter);
 
         view.setEditIdentitiesButtonVisible(isSecret);
+        view.setAddLinkedIdButtonVisible(showLinkedIds);
 
         view.setIdentitiesCardListener(new IdentitiesCardListener() {
             @Override
@@ -106,7 +110,6 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
 
     @Override
     public Loader<List<IdentityInfo>> onCreateLoader(int id, Bundle args) {
-        boolean showLinkedIds = Preferences.getPreferences(context).getExperimentalEnableLinkedIdentities();
         return new IdentityLoader(context, context.getContentResolver(), masterKeyId, showLinkedIds);
     }
 
@@ -189,6 +192,7 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
         void setIdentitiesAdapter(IdentityAdapter userIdsAdapter);
         void setIdentitiesCardListener(IdentitiesCardListener identitiesCardListener);
         void setEditIdentitiesButtonVisible(boolean show);
+        void setAddLinkedIdButtonVisible(boolean showLinkedIds);
     }
 
     public interface IdentitiesCardListener {
