@@ -46,6 +46,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPee
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeySignatures;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
@@ -77,6 +78,7 @@ public class KeychainProvider extends ContentProvider {
     private static final int KEY_RINGS_FIND_BY_EMAIL = 400;
     private static final int KEY_RINGS_FIND_BY_SUBKEY = 401;
     private static final int KEY_RINGS_FIND_BY_USER_ID = 402;
+    private static final int KEY_RINGS_FILTER_BY_SIGNER = 403;
 
     private static final int UPDATED_KEYS = 500;
     private static final int UPDATED_KEYS_SPECIFIC = 501;
@@ -84,6 +86,8 @@ public class KeychainProvider extends ContentProvider {
     private static final int AUTOCRYPT_PEERS_BY_MASTER_KEY_ID = 601;
     private static final int AUTOCRYPT_PEERS_BY_PACKAGE_NAME = 602;
     private static final int AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID = 603;
+
+    private static final int KEY_SIGNATURES = 700;
 
     protected UriMatcher mUriMatcher;
 
@@ -135,6 +139,9 @@ public class KeychainProvider extends ContentProvider {
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
                         + KeychainContract.PATH_FIND + "/" + KeychainContract.PATH_BY_USER_ID + "/*",
                 KEY_RINGS_FIND_BY_USER_ID);
+        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
+                        + KeychainContract.PATH_FILTER + "/" + KeychainContract.PATH_BY_SIGNER,
+                KEY_RINGS_FILTER_BY_SIGNER);
 
         /**
          * list key_ring specifics
@@ -219,6 +226,10 @@ public class KeychainProvider extends ContentProvider {
         matcher.addURI(authority, KeychainContract.BASE_UPDATED_KEYS, UPDATED_KEYS);
         matcher.addURI(authority, KeychainContract.BASE_UPDATED_KEYS + "/*", UPDATED_KEYS_SPECIFIC);
 
+
+        matcher.addURI(authority, KeychainContract.BASE_KEY_SIGNATURES, KEY_SIGNATURES);
+
+
         return matcher;
     }
 
@@ -260,8 +271,12 @@ public class KeychainProvider extends ContentProvider {
 
             case UPDATED_KEYS:
                 return UpdatedKeys.CONTENT_TYPE;
+
             case UPDATED_KEYS_SPECIFIC:
                 return UpdatedKeys.CONTENT_ITEM_TYPE;
+
+            case KEY_SIGNATURES:
+                return KeySignatures.CONTENT_TYPE;
 
             case API_APPS:
                 return ApiApps.CONTENT_TYPE;
@@ -297,7 +312,8 @@ public class KeychainProvider extends ContentProvider {
             case KEY_RINGS_UNIFIED:
             case KEY_RINGS_FIND_BY_EMAIL:
             case KEY_RINGS_FIND_BY_SUBKEY:
-            case KEY_RINGS_FIND_BY_USER_ID: {
+            case KEY_RINGS_FIND_BY_USER_ID:
+            case KEY_RINGS_FILTER_BY_SIGNER: {
                 HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(KeyRings._ID, Tables.KEYS + ".oid AS _id");
                 projectionMap.put(KeyRings.MASTER_KEY_ID, Tables.KEYS + "." + Keys.MASTER_KEY_ID);
@@ -444,6 +460,23 @@ public class KeychainProvider extends ContentProvider {
                             Log.e(Constants.TAG, "Malformed find by subkey query!", e);
                             qb.appendWhere(" AND 0");
                         }
+                        break;
+                    }
+                    case KEY_RINGS_FILTER_BY_SIGNER: {
+                        StringBuilder signerKeyIds = new StringBuilder();
+                        signerKeyIds.append(selectionArgs[0]);
+                        for (int i = 1; i < selectionArgs.length; i++) {
+                            signerKeyIds.append(',').append(selectionArgs[i]);
+                        }
+
+                        qb.appendWhere(" AND EXISTS (SELECT 1 FROM " + Tables.KEY_SIGNATURES + " WHERE " +
+                                Tables.KEY_SIGNATURES + "." + KeySignatures.MASTER_KEY_ID + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID +
+                                " AND " +
+                                Tables.KEY_SIGNATURES + "." + KeySignatures.SIGNER_KEY_ID + " IN (" + signerKeyIds + ")" +
+                                ")");
+
+                        selection = null;
+                        selectionArgs = null;
                         break;
                     }
                     case KEY_RINGS_FIND_BY_EMAIL:
@@ -858,6 +891,11 @@ public class KeychainProvider extends ContentProvider {
                                 UpdatedKeys.MASTER_KEY_ID + " = ?", new String[] { Long.toString(keyId) });
                     }
                     rowUri = UpdatedKeys.CONTENT_URI;
+                    break;
+                }
+                case KEY_SIGNATURES: {
+                    db.insert(Tables.KEY_SIGNATURES, null, values);
+                    rowUri = KeySignatures.CONTENT_URI;
                     break;
                 }
                 case API_APPS: {

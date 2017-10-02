@@ -52,7 +52,7 @@ public class KeychainExternalProviderTest {
 
 
     KeyWritableRepository databaseInteractor =
-            KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application);
+            KeyWritableRepository.create(RuntimeEnvironment.application);
     ContentResolver contentResolver = RuntimeEnvironment.application.getContentResolver();
     ApiPermissionHelper apiPermissionHelper;
     ApiDataAccessObject apiDao;

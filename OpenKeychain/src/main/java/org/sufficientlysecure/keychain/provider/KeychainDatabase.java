@@ -25,7 +25,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -37,12 +36,14 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeerColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeySignaturesColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.OverriddenWarnings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
-import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
+
 
 /**
  * SQLite Datatypes (from http://www.sqlite.org/datatype3.html)
@@ -54,7 +55,7 @@ import org.sufficientlysecure.keychain.util.Log;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 23;
+    private static final int DATABASE_VERSION = 24;
     private Context mContext;
 
     public interface Tables {
@@ -62,6 +63,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         String KEY_RINGS_SECRET = "keyrings_secret";
         String KEYS = "keys";
         String UPDATED_KEYS = "updated_keys";
+        String KEY_SIGNATURES = "key_signatures";
         String USER_PACKETS = "user_packets";
         String CERTS = "certs";
         String API_APPS = "api_apps";
@@ -159,6 +161,15 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
                     + ")";
 
+    private static final String CREATE_KEY_SIGNATURES =
+            "CREATE TABLE IF NOT EXISTS " + Tables.KEY_SIGNATURES + " ("
+                    + KeySignaturesColumns.MASTER_KEY_ID + " INTEGER NOT NULL, "
+                    + KeySignaturesColumns.SIGNER_KEY_ID + " INTEGER NOT NULL, "
+                    + "PRIMARY KEY(" + KeySignaturesColumns.MASTER_KEY_ID + ", " + KeySignaturesColumns.SIGNER_KEY_ID + "), "
+                    + "FOREIGN KEY(" + KeySignaturesColumns.MASTER_KEY_ID + ") REFERENCES "
+                    + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
+                    + ")";
+
     private static final String CREATE_API_AUTOCRYPT_PEERS =
             "CREATE TABLE IF NOT EXISTS " + Tables.API_AUTOCRYPT_PEERS + " ("
                     + ApiAutocryptPeerColumns.PACKAGE_NAME + " TEXT NOT NULL, "
@@ -213,6 +224,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_USER_PACKETS);
         db.execSQL(CREATE_CERTS);
         db.execSQL(CREATE_UPDATE_KEYS);
+        db.execSQL(CREATE_KEY_SIGNATURES);
         db.execSQL(CREATE_API_APPS);
         db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
         db.execSQL(CREATE_OVERRIDDEN_WARNINGS);
@@ -224,6 +236,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL("CREATE INDEX verified_certs ON certs ("
                 + CertsColumns.VERIFIED + ", " + CertsColumns.MASTER_KEY_ID + ");");
 
+        Preferences.getPreferences(mContext).setKeySignaturesTableInitialized();
     }
 
     @Override
@@ -387,17 +400,14 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                         + "FOREIGN KEY(package_name) REFERENCES api_apps(package_name) ON DELETE CASCADE"
                     + ")");
 
-                if (oldVersion == 18 || oldVersion == 19 || oldVersion == 20 || oldVersion == 21 || oldVersion == 22) {
-                    return;
-                }
+            case 23:
+                db.execSQL("CREATE TABLE IF NOT EXISTS key_signatures ("
+                        + "master_key_id INTEGER NOT NULL, "
+                        + "signer_key_id INTEGER NOT NULL, "
+                        + "PRIMARY KEY(master_key_id, signer_key_id), "
+                        + "FOREIGN KEY(master_key_id) REFERENCES keyrings_public(master_key_id) ON DELETE CASCADE"
+                        + ")");
         }
-
-        // TODO: don't depend on consolidate! make migrations inline!
-        // consolidate after upgrade
-        Intent consolidateIntent = new Intent(mContext.getApplicationContext(), ConsolidateDialogActivity.class);
-        consolidateIntent.putExtra(ConsolidateDialogActivity.EXTRA_CONSOLIDATE_RECOVERY, false);
-        consolidateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.getApplicationContext().startActivity(consolidateIntent);
     }
 
     @Override

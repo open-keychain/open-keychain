@@ -773,9 +773,6 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_log_display" />
         <activity
-            android:name=".ui.ConsolidateDialogActivity"
-            android:theme="@style/Theme.Keychain.Transparent" />
-        <activity
             android:name=".ui.PassphraseDialogActivity"
             android:theme="@style/Theme.Keychain.Transparent" />
         <activity

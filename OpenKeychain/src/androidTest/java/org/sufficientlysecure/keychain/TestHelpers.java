@@ -96,7 +96,7 @@ public class TestHelpers {
         IteratorWithIOThrow<UncachedKeyRing> stream = UncachedKeyRing.fromStream(
                 getInstrumentation().getContext().getAssets().open(name));
 
-        KeyWritableRepository helper = KeyWritableRepository.createDatabaseReadWriteInteractor(context);
+        KeyWritableRepository helper = KeyWritableRepository.create(context);
         while(stream.hasNext()) {
             UncachedKeyRing ring = stream.next();
             if (ring.isSecret()) {

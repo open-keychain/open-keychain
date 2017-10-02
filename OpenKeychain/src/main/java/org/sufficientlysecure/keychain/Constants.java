@@ -146,6 +146,8 @@ public final class Constants {
         public static final String EXPERIMENTAL_SMARTPGP_VERIFY_AUTHORITY = "smartpgp_authorities_pref";
         public static final String EXPERIMENTAL_SMARTPGP_AUTHORITIES = "smartpgp_authorities";
 
+        public static final String KEY_SIGNATURES_TABLE_INITIALIZED = "key_signatures_table_initialized";
+
         public static final class Theme {
             public static final String LIGHT = "light";
             public static final String DARK = "dark";

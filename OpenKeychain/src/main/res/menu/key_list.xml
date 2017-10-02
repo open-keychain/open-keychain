@@ -20,12 +20,6 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/menu_key_list_debug_cons"
-        android:title="Debug / Consolidate"
-        android:visible="false"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/menu_key_list_debug_bench"
         android:title="Debug / Benchmark"
         android:visible="false"

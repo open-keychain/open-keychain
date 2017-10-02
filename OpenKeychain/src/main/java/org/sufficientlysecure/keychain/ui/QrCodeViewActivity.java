@@ -74,7 +74,7 @@ public class QrCodeViewActivity extends BaseActivity {
             }
         });
 
-        KeyRepository keyRepository = KeyRepository.createDatabaseInteractor(this);
+        KeyRepository keyRepository = KeyRepository.create(this);
         try {
             byte[] blob = keyRepository.getCachedPublicKeyRing(dataUri).getFingerprint();
             if (blob == null) {

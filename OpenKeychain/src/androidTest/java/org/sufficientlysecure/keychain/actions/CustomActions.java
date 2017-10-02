@@ -37,7 +37,7 @@ public abstract class CustomActions {
 
     public static ViewAction tokenEncryptViewAddToken(long keyId) throws Exception {
         CanonicalizedPublicKeyRing ring =
-                KeyWritableRepository.createDatabaseReadWriteInteractor(getTargetContext()).getCanonicalizedPublicKeyRing(keyId);
+                KeyWritableRepository.create(getTargetContext()).getCanonicalizedPublicKeyRing(keyId);
         final Object item = new KeyAdapter.KeyItem(ring);
 
         return new ViewAction() {

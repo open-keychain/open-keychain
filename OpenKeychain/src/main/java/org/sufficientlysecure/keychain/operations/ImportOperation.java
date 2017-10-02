@@ -39,19 +39,19 @@ import android.support.annotation.Nullable;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.FacebookKeyserverClient;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverClient;
 import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserverClient;
 import org.sufficientlysecure.keychain.keyimport.KeyserverClient;
 import org.sufficientlysecure.keychain.keyimport.KeyserverClient.QueryNotFoundException;
-import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
-import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
+import org.sufficientlysecure.keychain.operations.results.UpdateTrustResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
@@ -155,7 +155,8 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
             return new ImportKeyResult(ImportKeyResult.RESULT_FAIL_NOTHING, log);
         }
 
-        int newKeys = 0, updatedKeys = 0, missingKeys = 0, badKeys = 0, secret = 0;
+        int newKeys = 0, updatedKeys = 0, missingKeys = 0, badKeys = 0;
+        ArrayList<Long> secretMasterKeyIds = new ArrayList<>();
         ArrayList<Long> importedMasterKeyIds = new ArrayList<>();
 
         ArrayList<CanonicalizedKeyRing> canKeyRings = new ArrayList<>();
@@ -223,7 +224,8 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
                     if (key.isSecret()) {
                         result = mKeyWritableRepository.saveSecretKeyRing(key, canKeyRings, skipSave);
                     } else {
-                        result = mKeyWritableRepository.savePublicKeyRing(key, entry.getExpectedFingerprint(), canKeyRings, skipSave);
+                        result = mKeyWritableRepository.savePublicKeyRing(key, entry.getExpectedFingerprint(), canKeyRings,
+                                false, skipSave);
                     }
                 }
                 if (!result.success()) {
@@ -235,7 +237,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
                     } else {
                         newKeys += 1;
                         if (key.isSecret()) {
-                            secret += 1;
+                            secretMasterKeyIds.add(key.getMasterKeyId());
                         }
                         importedMasterKeyIds.add(key.getMasterKeyId());
                     }
@@ -260,13 +262,12 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
         // synchronized on mProviderHelper to prevent
         // https://github.com/open-keychain/open-keychain/issues/1221 since a consolidate deletes
         // and re-inserts keys, which could conflict with a parallel db key update
-        if (!skipSave && (secret > 0)) {
+        if (!skipSave && !secretMasterKeyIds.isEmpty()) {
             setPreventCancel();
-            ConsolidateResult result;
             synchronized (mKeyRepository) {
-                result = mKeyWritableRepository.consolidateDatabaseStep1(progressable);
+                UpdateTrustResult result = mKeyWritableRepository.updateTrustDb(secretMasterKeyIds, progressable);
+                log.add(result, 1);
             }
-            log.add(result, 1);
         }
 
         // Special: make sure new data is synced into contacts
@@ -320,7 +321,8 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
         }
 
         ImportKeyResult result = new ImportKeyResult(
-                resultType, log, newKeys, updatedKeys, missingKeys, badKeys, secret, importedMasterKeyIdsArray);
+                resultType, log, newKeys, updatedKeys, missingKeys, badKeys, secretMasterKeyIds.size(),
+                importedMasterKeyIdsArray);
 
         result.setCanonicalizedKeyRings(canKeyRings);
         return result;

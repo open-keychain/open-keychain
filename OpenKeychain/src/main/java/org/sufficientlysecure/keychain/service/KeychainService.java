@@ -18,6 +18,9 @@
 
 package org.sufficientlysecure.keychain.service;
 
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,32 +31,29 @@ import android.os.Parcelable;
 import android.os.RemoteException;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.operations.BackupOperation;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
 import org.sufficientlysecure.keychain.operations.BenchmarkOperation;
 import org.sufficientlysecure.keychain.operations.CertifyOperation;
-import org.sufficientlysecure.keychain.operations.ConsolidateOperation;
+import org.sufficientlysecure.keychain.operations.ChangeUnlockOperation;
 import org.sufficientlysecure.keychain.operations.DeleteOperation;
 import org.sufficientlysecure.keychain.operations.EditKeyOperation;
-import org.sufficientlysecure.keychain.operations.BackupOperation;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
-import org.sufficientlysecure.keychain.operations.KeybaseVerificationOperation;
 import org.sufficientlysecure.keychain.operations.InputDataOperation;
-import org.sufficientlysecure.keychain.operations.ChangeUnlockOperation;
+import org.sufficientlysecure.keychain.operations.KeybaseVerificationOperation;
 import org.sufficientlysecure.keychain.operations.PromoteKeyOperation;
 import org.sufficientlysecure.keychain.operations.RevokeOperation;
 import org.sufficientlysecure.keychain.operations.SignEncryptOperation;
 import org.sufficientlysecure.keychain.operations.UploadOperation;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
+import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This Service contains all important long lasting operations for OpenKeychain. It receives Intents with
@@ -112,7 +112,7 @@ public class KeychainService extends Service implements Progressable {
                 // just for brevity
                 KeychainService outerThis = KeychainService.this;
                 KeyWritableRepository databaseInteractor =
-                        KeyWritableRepository.createDatabaseReadWriteInteractor(outerThis);
+                        KeyWritableRepository.create(outerThis);
                 if (inputParcel instanceof SignEncryptParcel) {
                     op = new SignEncryptOperation(outerThis, databaseInteractor, outerThis, mActionCanceled);
                 } else if (inputParcel instanceof PgpDecryptVerifyInputParcel) {
@@ -135,8 +135,6 @@ public class KeychainService extends Service implements Progressable {
                     op = new BackupOperation(outerThis, databaseInteractor, outerThis, mActionCanceled);
                 } else if (inputParcel instanceof UploadKeyringParcel) {
                     op = new UploadOperation(outerThis, databaseInteractor, outerThis, mActionCanceled);
-                } else if (inputParcel instanceof ConsolidateInputParcel) {
-                    op = new ConsolidateOperation(outerThis, databaseInteractor, outerThis);
                 } else if (inputParcel instanceof KeybaseVerificationParcel) {
                     op = new KeybaseVerificationOperation(outerThis, databaseInteractor, outerThis);
                 } else if (inputParcel instanceof InputDataParcel) {

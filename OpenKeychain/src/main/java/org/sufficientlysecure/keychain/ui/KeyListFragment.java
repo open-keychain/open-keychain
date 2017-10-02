@@ -19,6 +19,10 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.io.IOException;
+import java.util.ArrayList;
+
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
@@ -47,33 +51,27 @@ import com.futuremind.recyclerviewfastscroll.FastScroller;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.tonicartos.superslim.LayoutManager;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.BenchmarkResult;
-import org.sufficientlysecure.keychain.operations.results.ConsolidateResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.service.BenchmarkInputParcel;
-import org.sufficientlysecure.keychain.service.ConsolidateInputParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.KeySectionedListAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
+import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         implements SearchView.OnQueryTextListener,
@@ -96,9 +94,6 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
     private ArrayList<ParcelableKeyRing> mKeyList;
     private HkpKeyserverAddress mKeyserver;
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mImportOpHelper;
-
-    // for ConsolidateOperation
-    private CryptoOperationHelper<ConsolidateInputParcel, ConsolidateResult> mConsolidateOpHelper;
 
     // Callbacks related to listview and menu events
     private final ActionMode.Callback mActionCallback
@@ -334,7 +329,6 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         inflater.inflate(R.menu.key_list, menu);
 
         if (Constants.DEBUG) {
-            menu.findItem(R.id.menu_key_list_debug_cons).setVisible(true);
             menu.findItem(R.id.menu_key_list_debug_bench).setVisible(true);
             menu.findItem(R.id.menu_key_list_debug_read).setVisible(true);
             menu.findItem(R.id.menu_key_list_debug_write).setVisible(true);
@@ -413,10 +407,6 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
                 getActivity().finish();
                 return true;
             }
-            case R.id.menu_key_list_debug_cons: {
-                consolidate();
-                return true;
-            }
             case R.id.menu_key_list_debug_bench: {
                 benchmark();
                 return true;
@@ -487,7 +477,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         }
 
         KeyRepository keyRepository =
-                KeyRepository.createDatabaseInteractor(getContext());
+                KeyRepository.create(getContext());
         Cursor cursor = keyRepository.getContentResolver().query(
                 KeyRings.buildUnifiedKeyRingsUri(), new String[]{
                         KeyRings.FINGERPRINT
@@ -547,39 +537,6 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         mImportOpHelper.cryptoOperation();
     }
 
-    private void consolidate() {
-        CryptoOperationHelper.Callback<ConsolidateInputParcel, ConsolidateResult> callback
-                = new CryptoOperationHelper.Callback<ConsolidateInputParcel, ConsolidateResult>() {
-
-            @Override
-            public ConsolidateInputParcel createOperationInput() {
-                return ConsolidateInputParcel.createConsolidateInputParcel(false); // we want to perform a full consolidate
-            }
-
-            @Override
-            public void onCryptoOperationSuccess(ConsolidateResult result) {
-                result.createNotify(getActivity()).show();
-            }
-
-            @Override
-            public void onCryptoOperationCancelled() {
-            }
-
-            @Override
-            public void onCryptoOperationError(ConsolidateResult result) {
-                result.createNotify(getActivity()).show();
-            }
-
-            @Override
-            public boolean onCryptoSetProgress(String msg, int progress, int max) {
-                return false;
-            }
-        };
-
-        mConsolidateOpHelper = new CryptoOperationHelper<>(2, this, callback, R.string.progress_importing);
-        mConsolidateOpHelper.cryptoOperation();
-    }
-
     private void benchmark() {
         CryptoOperationHelper.Callback<BenchmarkInputParcel, BenchmarkResult> callback
                 = new CryptoOperationHelper.Callback<BenchmarkInputParcel, BenchmarkResult>() {
@@ -617,10 +574,6 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (mImportOpHelper != null) {
             mImportOpHelper.handleActivityResult(requestCode, resultCode, data);
-        }
-
-        if (mConsolidateOpHelper != null) {
-            mConsolidateOpHelper.handleActivityResult(requestCode, resultCode, data);
         }
 
         switch (requestCode) {

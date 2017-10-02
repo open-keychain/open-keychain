@@ -68,7 +68,7 @@ public class EddsaTest {
     @Before
     public void setUp() throws Exception {
         context = RuntimeEnvironment.application;
-        keyRepository = KeyWritableRepository.createDatabaseReadWriteInteractor(context);
+        keyRepository = KeyWritableRepository.create(context);
 
     }
 

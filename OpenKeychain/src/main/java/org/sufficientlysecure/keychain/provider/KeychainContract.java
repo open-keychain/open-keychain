@@ -58,6 +58,11 @@ public class KeychainContract {
         String SEEN_ON_KEYSERVERS = "seen_on_keyservers";
     }
 
+    interface KeySignaturesColumns {
+        String MASTER_KEY_ID = "master_key_id"; // not a database id
+        String SIGNER_KEY_ID = "signer_key_id";
+    }
+
     interface UserPacketsColumns {
         String MASTER_KEY_ID = "master_key_id"; // foreign key to key_rings._ID
         String TYPE = "type"; // not a database id
@@ -113,12 +118,17 @@ public class KeychainContract {
 
     public static final String BASE_UPDATED_KEYS = "updated_keys";
 
+    public static final String BASE_KEY_SIGNATURES = "key_signatures";
+
     public static final String PATH_UNIFIED = "unified";
 
     public static final String PATH_FIND = "find";
     public static final String PATH_BY_EMAIL = "email";
     public static final String PATH_BY_SUBKEY = "subkey";
     public static final String PATH_BY_USER_ID = "user_id";
+
+    public static final String PATH_FILTER = "filter";
+    public static final String PATH_BY_SIGNER = "signer";
 
     public static final String PATH_PUBLIC = "public";
     public static final String PATH_SECRET = "secret";
@@ -198,6 +208,9 @@ public class KeychainContract {
                     .appendPath(PATH_BY_SUBKEY).appendPath(Long.toString(subkey)).build();
         }
 
+        public static Uri buildUnifiedKeyRingsFilterBySigner() {
+            return CONTENT_URI.buildUpon().appendPath(PATH_FILTER).appendPath(PATH_BY_SIGNER).build();
+        }
     }
 
     public static class KeyRingData implements KeyRingsColumns, BaseColumns {
@@ -269,6 +282,14 @@ public class KeychainContract {
                 = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.updated_keys";
         public static final String CONTENT_ITEM_TYPE
                 = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.updated_keys";
+    }
+
+    public static class KeySignatures implements KeySignaturesColumns, BaseColumns {
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
+                .appendPath(BASE_KEY_SIGNATURES).build();
+
+        public static final String CONTENT_TYPE
+                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.key_signatures";
     }
 
     public static class UserPackets implements UserPacketsColumns, BaseColumns {

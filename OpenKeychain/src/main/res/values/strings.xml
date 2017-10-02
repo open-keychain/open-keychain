@@ -493,9 +493,7 @@
     <string name="progress_verifying_integrity">"verifying integrity…"</string>
     <string name="progress_deleting_securely">"deleting '%s' securely…"</string>
     <string name="progress_deleting">"deleting keys…"</string>
-
-    <string name="progress_con_saving">"consolidate: saving to cache…"</string>
-    <string name="progress_con_reimport">"consolidate: reimporting…"</string>
+    <string name="progress_update_trust">"updating trust info…"</string>
 
     <string name="progress_verifying_keyserver_connection">"verifying connection…"</string>
 
@@ -1146,39 +1144,6 @@
     <string name="msg_mf_unlock_error">"Error unlocking keyring!"</string>
     <string name="msg_mf_unlock">"Unlocking keyring"</string>
 
-    <!-- Consolidate -->
-    <string name="msg_con">"Consolidating database"</string>
-    <string name="msg_con_error_bad_state">"Consolidation was started while no database was cached! This is probably a programming error, please file a bug report."</string>
-    <string name="msg_con_error_concurrent">"Consolidation aborted, already running on other thread!"</string>
-    <string name="msg_con_save_secret">"Saving secret keyrings"</string>
-    <string name="msg_con_save_public">"Saving public keyrings"</string>
-    <string name="msg_con_db_clear">"Clearing database"</string>
-    <string name="msg_con_success">"Successfully consolidated database"</string>
-    <string name="msg_con_critical_in">"Entering critical phase"</string>
-    <string name="msg_con_critical_out">"Leaving critical phase"</string>
-    <string name="msg_con_delete_public">"Deleting public keyring cache file"</string>
-    <string name="msg_con_delete_secret">"Deleting secret keyring cache file"</string>
-    <string name="msg_con_error_db">"Error opening database!"</string>
-    <string name="msg_con_error_io_public">"IO error writing public keys to cache!"</string>
-    <string name="msg_con_error_io_secret">"IO error writing secret keys to cache!"</string>
-    <string name="msg_con_error_public">"Error reimporting public keys!"</string>
-    <string name="msg_con_error_secret">"Error reimporting secret keys!"</string>
-    <string name="msg_con_recover">"Resuming consolidation process"</string>
-    <string name="msg_con_recursive">"Skipping recursive consolidation"</string>
-    <string name="msg_con_recover_unknown">"Resuming consolidation process from unknown state"</string>
-    <plurals name="msg_con_reimport_public">
-        <item quantity="one">"Reimporting one public key"</item>
-        <item quantity="other">"Reimporting %d public keys"</item>
-    </plurals>
-    <string name="msg_con_reimport_public_skip">"No public keys to reimport, skipping…"</string>
-    <plurals name="msg_con_reimport_secret">
-        <item quantity="one">"Reimporting one secret key"</item>
-        <item quantity="other">"Reimporting %d secret keys"</item>
-    </plurals>
-    <string name="msg_con_reimport_secret_skip">"No secret keys to reimport, skipping…"</string>
-    <string name="msg_con_warn_delete_public">"Exception deleting public cache file"</string>
-    <string name="msg_con_warn_delete_secret">"Exception deleting secret cache file"</string>
-
     <!-- Edit Key (higher level than modify) -->
     <string name="msg_ed">"Performing key operation"</string>
     <string name="msg_ed_caching_new">"Caching new password"</string>
@@ -1384,7 +1349,6 @@
     </plurals>
     <string name="msg_del_key">"Deleting key %s"</string>
     <string name="msg_del_key_fail">"Failed deleting key %s"</string>
-    <string name="msg_del_consolidate">"Consolidating database after deletion of secret key"</string>
     <plurals name="msg_del_ok">
         <item quantity="one">"Successfully deleted key"</item>
         <item quantity="other">"Successfully deleted %d keys"</item>
@@ -1986,5 +1950,15 @@
     <string name="msg_ret_uri_start">"Looking for key at token Uri…"</string>
     <string name="msg_ret_uri_null">"No Uri saved on Security Token"</string>
     <string name="msg_ret_uri_test">"Checking if found key matches: %s"</string>
+
+    <string name="msg_trust">"Updating trust information…"</string>
+    <string name="msg_trust_ok">"Update operation successful!"</string>
+    <string name="msg_trust_initialize">"Initializing key signature cache"</string>
+    <string name="msg_trust_key">"Updating keys signed by %s"</string>
+    <string name="msg_trust_count_none">"No keys to update"</string>
+    <plurals name="msg_trust_count">
+        <item quantity="one">"Updating 1 key"</item>
+        <item quantity="other">"Updating %d keys"</item>
+    </plurals>
 
 </resources>

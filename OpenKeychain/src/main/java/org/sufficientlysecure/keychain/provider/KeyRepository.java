@@ -42,7 +42,7 @@ public class KeyRepository {
     OperationLog mLog;
     int mIndent;
 
-    public static KeyRepository createDatabaseInteractor(Context context) {
+    public static KeyRepository create(Context context) {
         ContentResolver contentResolver = context.getContentResolver();
         LocalPublicKeyStorage localPublicKeyStorage = LocalPublicKeyStorage.getInstance(context);
 

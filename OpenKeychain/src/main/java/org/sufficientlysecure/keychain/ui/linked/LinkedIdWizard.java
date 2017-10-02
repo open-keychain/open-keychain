@@ -58,7 +58,7 @@ public class LinkedIdWizard extends BaseActivity {
         try {
             Uri uri = getIntent().getData();
             uri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(uri);
-            CachedPublicKeyRing ring = KeyRepository.createDatabaseInteractor(this).getCachedPublicKeyRing(uri);
+            CachedPublicKeyRing ring = KeyRepository.create(this).getCachedPublicKeyRing(uri);
             if (!ring.hasAnySecret()) {
                 Log.e(Constants.TAG, "Linked Identities can only be added to secret keys!");
                 finish();

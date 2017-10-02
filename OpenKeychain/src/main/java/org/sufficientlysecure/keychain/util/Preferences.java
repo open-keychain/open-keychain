@@ -28,6 +28,7 @@ import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
@@ -316,6 +317,16 @@ public class Preferences {
                 mSharedPreferences.getBoolean(Pref.SEARCH_KEYBASE, true),
                 false,
                 getPreferredKeyserver());
+    }
+
+    public boolean isKeySignaturesTableInitialized() {
+        return mSharedPreferences.getBoolean(Pref.KEY_SIGNATURES_TABLE_INITIALIZED, false);
+    }
+
+    public void setKeySignaturesTableInitialized() {
+        Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.KEY_SIGNATURES_TABLE_INITIALIZED, true);
+        editor.commit();
     }
 
     public static class CloudSearchPrefs implements Parcelable {

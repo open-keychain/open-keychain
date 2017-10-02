@@ -17,11 +17,14 @@
 
 package org.sufficientlysecure.keychain;
 
+
+import java.security.Security;
+import java.util.HashMap;
+
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -31,19 +34,15 @@ import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.sufficientlysecure.keychain.network.TlsCertificatePinning;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
-import org.sufficientlysecure.keychain.ui.ConsolidateDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.network.TlsCertificatePinning;
-
-import java.security.Security;
-import java.util.HashMap;
 
 
 public class KeychainApplication extends Application {
@@ -119,11 +118,6 @@ public class KeychainApplication extends Application {
         TlsCertificatePinning.addPinnedCertificate("api.keybase.io", getAssets(), "api.keybase.io.CA.cer");
 
         TemporaryFileProvider.cleanUp(this);
-
-        if (!checkConsolidateRecovery()) {
-            // force DB upgrade, https://github.com/open-keychain/open-keychain/issues/1334
-            new KeychainDatabase(this).getReadableDatabase().close();
-        }
     }
 
     /**
@@ -161,21 +155,6 @@ public class KeychainApplication extends Application {
 
         if (level >= TRIM_MEMORY_UI_HIDDEN) {
             qrCodeCache.clear();
-        }
-    }
-
-    /**
-     * Restart consolidate process if it has been interrupted before
-     */
-    public boolean checkConsolidateRecovery() {
-        if (Preferences.getPreferences(this).getCachedConsolidate()) {
-            Intent consolidateIntent = new Intent(this, ConsolidateDialogActivity.class);
-            consolidateIntent.putExtra(ConsolidateDialogActivity.EXTRA_CONSOLIDATE_RECOVERY, true);
-            consolidateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(consolidateIntent);
-            return true;
-        } else {
-            return false;
         }
     }
 
