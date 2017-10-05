@@ -366,6 +366,7 @@
     <string name="no_keys_exported">"No keys exported."</string>
     <string name="key_creation_el_gamal_info">"Note: only subkeys support ElGamal."</string>
     <string name="key_not_found">"Couldn't find key %08X."</string>
+    <string name="authentication_subkey_not_found">"This key does not have an authentication subkey."</string>
 
     <plurals name="bad_keys_encountered">"
         <item quantity="one">"%d bad secret key ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.""</item>
@@ -705,6 +706,7 @@
     <string name="key_view_action_certify">"Confirm key"</string>
     <string name="key_view_action_update">"Update from keyserver"</string>
     <string name="key_view_action_share_with">"Share with…"</string>
+    <string name="key_view_action_share_ssh_with">"Share as SSH public key with…"</string>
     <string name="key_view_action_share_nfc">"Share over NFC"</string>
     <string name="key_view_action_upload">"Upload to keyserver"</string>
     <string name="key_view_tab_main">"Main Info"</string>
@@ -1269,6 +1271,19 @@
     <string name="msg_pse_sigcrypting">"Encrypting data with signature"</string>
     <string name="msg_pse">"Starting sign and/or encrypt operation"</string>
     <string name="msg_pse_symmetric">"Preparing symmetric encryption"</string>
+
+    <!-- Messages for Authentication operation -->
+    <string name="msg_auth">"Starting authentication operation"</string>
+    <string name="msg_auth_error_key_auth">"Selected authentication key cannot be found"</string>
+    <string name="msg_auth_error_key_not_allowed">"Key selected for authentication is not allowed"</string>
+    <string name="msg_auth_error_revoked_or_expired">"Revoked/Expired key cannot be used for authentication"</string>
+    <string name="msg_auth_error_unlock">"Unknown error unlocking key!"</string>
+    <string name="msg_auth_pending_nfc">"NFC token required, requesting user input…"</string>
+    <string name="msg_auth_pending_passphrase">"Password required, requesting user input…"</string>
+    <string name="msg_auth_error_bad_passphrase">"Bad password!"</string>
+    <string name="msg_auth_error_nfc">"NFC data error!"</string>
+    <string name="msg_auth_error_sig">"Encountered OpenPGP signature exception!"</string>
+    <string name="msg_auth_ok">"Authentication operation successful!"</string>
 
     <string name="msg_crt_certifying">"Generating certifications"</string>
     <plurals name="msg_crt_certify_uids">
@@ -1847,6 +1862,7 @@
     <string name="dialog_insecure_button_undo">Un-Suppress</string>
     <string name="dialog_insecure_button_view_key">View Key</string>
     <string name="dialog_insecure_button_ok">Got it</string>
+    <string name="usage_authentication">Authentication</string>
 
     <string name="identity_context_forget">Forget</string>
 

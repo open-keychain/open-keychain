@@ -720,6 +720,19 @@ public abstract class OperationResult implements Parcelable {
         MSG_PSE_SIGCRYPTING (LogLevel.DEBUG, R.string.msg_pse_sigcrypting),
         MSG_PSE_SYMMETRIC (LogLevel.INFO, R.string.msg_pse_symmetric),
 
+        MSG_AUTH (LogLevel.DEBUG, R.string.msg_auth),
+        MSG_AUTH_ERROR_KEY_AUTH (LogLevel.ERROR, R.string.msg_auth_error_key_auth),
+        MSG_AUTH_ERROR_KEY_NOT_ALLOWED(LogLevel.ERROR, R.string.msg_auth_error_key_not_allowed),
+        MSG_AUTH_ERROR_REVOKED_OR_EXPIRED (LogLevel.ERROR, R.string.msg_auth_error_revoked_or_expired),
+        MSG_AUTH_ERROR_UNLOCK (LogLevel.ERROR, R.string.msg_auth_error_unlock),
+        MSG_AUTH_PENDING_NFC (LogLevel.INFO, R.string.msg_auth_pending_nfc),
+        MSG_AUTH_PENDING_PASSPHRASE (LogLevel.INFO, R.string.msg_auth_pending_passphrase),
+        MSG_AUTH_ERROR_BAD_PASSPHRASE (LogLevel.ERROR, R.string.msg_auth_error_bad_passphrase),
+        MSG_AUTH_ERROR_NFC (LogLevel.ERROR, R.string.msg_auth_error_nfc),
+        MSG_AUTH_ERROR_SIG (LogLevel.ERROR, R.string.msg_auth_error_sig),
+        MSG_AUTH_OK (LogLevel.OK, R.string.msg_auth_ok),
+
+
         MSG_CRT_CERTIFYING (LogLevel.DEBUG, R.string.msg_crt_certifying),
         MSG_CRT_CERTIFY_UIDS (LogLevel.DEBUG, R.plurals.msg_crt_certify_uids),
         MSG_CRT_CERTIFY_UATS (LogLevel.DEBUG, R.plurals.msg_crt_certify_uats),

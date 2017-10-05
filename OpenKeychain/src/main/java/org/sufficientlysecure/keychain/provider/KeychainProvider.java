@@ -355,6 +355,8 @@ public class KeychainProvider extends ContentProvider {
                         "kE." + Keys.KEY_ID + " AS " + KeyRings.HAS_ENCRYPT);
                 projectionMap.put(KeyRings.HAS_SIGN,
                         "kS." + Keys.KEY_ID + " AS " + KeyRings.HAS_SIGN);
+                projectionMap.put(KeyRings.HAS_AUTHENTICATE,
+                        "kA." + Keys.KEY_ID + " AS " + KeyRings.HAS_AUTHENTICATE);
                 projectionMap.put(KeyRings.HAS_CERTIFY,
                         "kC." + Keys.KEY_ID + " AS " + KeyRings.HAS_CERTIFY);
                 projectionMap.put(KeyRings.IS_EXPIRED,

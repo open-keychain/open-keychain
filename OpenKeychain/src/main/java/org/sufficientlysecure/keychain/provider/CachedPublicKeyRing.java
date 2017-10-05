@@ -201,6 +201,27 @@ public class CachedPublicKeyRing extends KeyRing {
         }
     }
 
+    /** Returns the key id which should be used for authentication.
+     *
+     * This method returns keys which are actually available (ie. secret available, and not stripped,
+     * revoked, or expired), hence only works on keyrings where a secret key is available!
+     *
+     */
+    public long getSecretAuthenticationId() throws PgpKeyNotFoundException {
+        try {
+            Object data = mKeyRepository.getGenericData(mUri,
+                    KeyRings.HAS_AUTHENTICATE,
+                    KeyRepository.FIELD_TYPE_INTEGER);
+            return (Long) data;
+        } catch(KeyWritableRepository.NotFoundException e) {
+            throw new PgpKeyNotFoundException(e);
+        }
+    }
+
+    public boolean hasAuthentication() throws PgpKeyNotFoundException {
+        return getSecretAuthenticationId() != 0;
+    }
+
     @Override
     public int getVerified() throws PgpKeyNotFoundException {
         try {

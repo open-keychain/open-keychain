@@ -19,14 +19,6 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
-import java.io.IOException;
-import java.security.PublicKey;
-import java.security.interfaces.ECPublicKey;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.bcpg.ECDHPublicBCPGKey;
@@ -44,6 +36,14 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.io.IOException;
+import java.security.PublicKey;
+import java.security.interfaces.ECPublicKey;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
 
 /** Wrapper for a PGPPublicKey.
  *
@@ -211,18 +211,22 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
         return !isRevoked() && !isExpired();
     }
 
-    // For use only in card export; returns the public key.
+    // For use in key export only; returns the public key in a JCA compatible format.
+    public PublicKey getJcaPublicKey() throws PgpGeneralException {
+        JcaPGPKeyConverter keyConverter = new JcaPGPKeyConverter();
+        PublicKey publicKey;
+        try {
+            publicKey = keyConverter.getPublicKey(mPublicKey);
+        } catch (PGPException e) {
+            throw new PgpGeneralException("Error converting public key: "+ e.getMessage(), e);
+        }
+        return publicKey;
+    }
+
+    // For use in card export only; returns the public key in a JCA compatible format.
     public ECPublicKey getSecurityTokenECPublicKey()
             throws PgpGeneralException {
-        JcaPGPKeyConverter keyConverter = new JcaPGPKeyConverter();
-        PublicKey retVal;
-        try {
-            retVal = keyConverter.getPublicKey(mPublicKey);
-        } catch (PGPException e) {
-            throw new PgpGeneralException("Error converting public key!", e);
-        }
-
-        return (ECPublicKey) retVal;
+        return (ECPublicKey) getJcaPublicKey();
     }
 
     public ASN1ObjectIdentifier getSecurityTokenHashAlgorithm()

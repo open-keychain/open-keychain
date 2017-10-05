@@ -18,11 +18,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.ClipData;
@@ -50,13 +45,15 @@ import android.view.animation.AlphaAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.pgp.SshPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
@@ -67,6 +64,11 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.Log;
+
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 public class ViewKeyAdvShareFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -133,6 +135,8 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         View vKeyShareButton = view.findViewById(R.id.view_key_action_key_share);
         View vKeyClipboardButton = view.findViewById(R.id.view_key_action_key_clipboard);
         ImageButton vKeySafeSlingerButton = (ImageButton) view.findViewById(R.id.view_key_action_key_safeslinger);
+        View vKeySshShareButton = view.findViewById(R.id.view_key_action_key_ssh_share);
+        View vKeySshClipboardButton = view.findViewById(R.id.view_key_action_key_ssh_clipboard);
         View vKeyUploadButton = view.findViewById(R.id.view_key_action_upload);
         vKeySafeSlingerButton.setColorFilter(FormattingUtils.getColorFromAttr(getActivity(), R.attr.colorTertiaryText),
                 PorterDuff.Mode.SRC_IN);
@@ -152,13 +156,13 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         vKeyShareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                shareKey(false);
+                shareKey(false, false);
             }
         });
         vKeyClipboardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                shareKey(true);
+                shareKey(true, false);
             }
         });
 
@@ -166,6 +170,18 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
             @Override
             public void onClick(View v) {
                 startSafeSlinger(mDataUri);
+            }
+        });
+        vKeySshShareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shareKey(false, true);
+            }
+        });
+        vKeySshClipboardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shareKey(true, true);
             }
         });
         vKeyUploadButton.setOnClickListener(new View.OnClickListener() {
@@ -192,17 +208,52 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         startActivityForResult(safeSlingerIntent, 0);
     }
 
-    private void shareKey(boolean toClipboard) {
+    private boolean hasAuthenticationKey() {
+        KeyRepository keyRepository = KeyRepository.create(getContext());
+        long masterKeyId = Constants.key.none;
+        long authSubKeyId = Constants.key.none;
+        try {
+            masterKeyId = keyRepository.getCachedPublicKeyRing(mDataUri).extractOrGetMasterKeyId();
+            CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(masterKeyId);
+            authSubKeyId = cachedPublicKeyRing.getSecretAuthenticationId();
+        } catch (PgpKeyNotFoundException e) {
+            Log.e(Constants.TAG, "key not found!", e);
+        }
+        return authSubKeyId != Constants.key.none;
+    }
+
+    private String getShareKeyContent(boolean asSshKey)
+            throws PgpKeyNotFoundException, KeyRepository.NotFoundException, IOException, PgpGeneralException {
+
+        KeyRepository keyRepository = KeyRepository.create(getContext());
+
+        String content;
+        long masterKeyId = keyRepository.getCachedPublicKeyRing(mDataUri).extractOrGetMasterKeyId();
+        if (asSshKey) {
+            long authSubKeyId = keyRepository.getCachedPublicKeyRing(masterKeyId).getSecretAuthenticationId();
+            CanonicalizedPublicKey publicKey = keyRepository.getCanonicalizedPublicKeyRing(masterKeyId)
+                                                            .getPublicKey(authSubKeyId);
+            SshPublicKey sshPublicKey = new SshPublicKey(publicKey);
+            content = sshPublicKey.getEncodedKey();
+        } else {
+            content = keyRepository.getPublicKeyRingAsArmoredString(masterKeyId);
+        }
+
+        return content;
+    }
+
+    private void shareKey(boolean toClipboard, boolean asSshKey) {
         Activity activity = getActivity();
         if (activity == null || mFingerprint == null) {
             return;
         }
-        KeyRepository keyRepository =
-                KeyRepository.create(getContext());
+        if (asSshKey && !hasAuthenticationKey()) {
+            Notify.create(activity, R.string.authentication_subkey_not_found, Style.ERROR).show();
+            return;
+        }
 
         try {
-            long masterKeyId = keyRepository.getCachedPublicKeyRing(mDataUri).extractOrGetMasterKeyId();
-            String content = keyRepository.getPublicKeyRingAsArmoredString(masterKeyId);
+            String content = getShareKeyContent(asSshKey);
 
             if (toClipboard) {
                 ClipboardManager clipMan = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
