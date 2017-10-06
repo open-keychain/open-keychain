@@ -796,10 +796,10 @@ public class SecurityTokenHelper {
                 int cla = apdu.getCLA() + (last ? 0 : MASK_CLA_CHAINING);
 
                 lastResponse = mTransport.transceive(new CommandAPDU(cla, apdu.getINS(), apdu.getP1(),
-                        apdu.getP2(), Arrays.copyOfRange(data, offset, offset + curLen), ne));
+                        apdu.getP2(), data, offset, curLen, ne));
 
                 if (!last && lastResponse.getSW() != APDU_SW_SUCCESS) {
-                    throw new UsbTransportException("Failed to chain apdu");
+                    throw new UsbTransportException("Failed to chain apdu (last SW: " + lastResponse.getSW() + ")");
                 }
 
                 offset += curLen;
