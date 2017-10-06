@@ -211,6 +211,8 @@ android {
             // disable ProGuard for faster compile times for debug builds
             minifyEnabled false
 
+            multiDexEnabled true
+
             applicationIdSuffix ".debug"
 
             // Reference them in the java files with e.g. BuildConfig.ACCOUNT_TYPE.
