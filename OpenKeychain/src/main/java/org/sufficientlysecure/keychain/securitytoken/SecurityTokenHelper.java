@@ -814,7 +814,8 @@ public class SecurityTokenHelper {
         // Receive
         while (lastResponse.getSW1() == APDU_SW1_RESPONSE_AVAILABLE) {
             // GET RESPONSE ISO/IEC 7816-4 par.7.6.1
-            CommandAPDU getResponse = new CommandAPDU(0x00, 0xC0, 0x00, 0x00, lastResponse.getSW2());
+            CommandAPDU getResponse = new CommandAPDU(0x00, 0xC0, 0x00, 0x00,
+                    lastResponse.getSW2() == 0 ? MAX_APDU_NE : lastResponse.getSW2());
             lastResponse = mTransport.transceive(getResponse);
             result.write(lastResponse.getData());
         }
