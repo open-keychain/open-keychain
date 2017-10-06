@@ -649,16 +649,16 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
             nection.setRequestProperty("Authorization", "token " + accessToken);
         }
 
-        OutputStream os = nection.getOutputStream();
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-        writer.write(params.toString());
-        writer.flush();
-        writer.close();
-        os.close();
-
         try {
 
             nection.connect();
+
+            OutputStream os = nection.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+            writer.write(params.toString());
+            writer.flush();
+            writer.close();
+            os.close();
 
             int code = nection.getResponseCode();
             if (code != HttpsURLConnection.HTTP_CREATED && code != HttpsURLConnection.HTTP_OK) {
