@@ -379,7 +379,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                             .openConnection();
                     nection.setRequestMethod("DELETE");
                     String encoded = Base64.encodeToString(
-                            (BuildConfig.GITHUB_CLIENT_ID + ":" + BuildConfig.GITHUB_CLIENT_SECRET).getBytes(), Base64.DEFAULT);
+                            (BuildConfig.GITHUB_CLIENT_ID + ":" + BuildConfig.GITHUB_CLIENT_SECRET).getBytes(), Base64.NO_WRAP);
                     nection.setRequestProperty("Authorization", "Basic " + encoded);
                     nection.connect();
                 } catch (IOException e) {
