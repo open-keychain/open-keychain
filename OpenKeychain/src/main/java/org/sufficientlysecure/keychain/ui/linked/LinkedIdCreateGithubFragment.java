@@ -640,8 +640,8 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
         HttpsURLConnection nection = (HttpsURLConnection) new URL(url).openConnection();
         nection.setDoInput(true);
         nection.setDoOutput(true);
-        nection.setConnectTimeout(2000);
-        nection.setReadTimeout(1000);
+        nection.setConnectTimeout(3000);
+        nection.setReadTimeout(5000);
         nection.setRequestProperty("Content-Type", "application/json");
         nection.setRequestProperty("Accept", "application/json");
         nection.setRequestProperty("User-Agent", "OpenKeychain " + BuildConfig.VERSION_NAME);
