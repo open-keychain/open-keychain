@@ -4,6 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ca.hss.heatmaplib.HeatMap
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/heatmap"
+        custom:minOpacity="0"
+        custom:maxOpacity="255"
+        custom:radius="30dp"
+        custom:blur="0.01"
+        />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

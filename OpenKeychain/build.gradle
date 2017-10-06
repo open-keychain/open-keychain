@@ -27,6 +27,7 @@ dependencies {
     compile 'org.apache.james:apache-mime4j-core:0.8.0'
     compile 'org.apache.james:apache-mime4j-dom:0.8.0'
     compile 'org.thoughtcrime.ssl.pinning:AndroidPinning:1.0.0'
+    compile 'ca.heartlandsoftware:androidheatmap:1.0'
 
     // UI
     compile 'org.sufficientlysecure:html-textview:3.1'

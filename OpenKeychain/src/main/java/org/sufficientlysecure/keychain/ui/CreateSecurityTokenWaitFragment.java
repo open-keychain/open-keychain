@@ -18,10 +18,20 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import android.content.Context;
+import android.graphics.Color;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.ArrayMap;
+import android.util.JsonReader;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,8 +40,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 
+import ca.hss.heatmaplib.HeatMap;
+import ca.hss.heatmaplib.HeatMap.DataPoint;
+import okhttp3.Request;
+import okhttp3.Request.Builder;
+import okhttp3.Response;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONStringer;
+import org.json.JSONTokener;
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
@@ -44,6 +65,7 @@ public class CreateSecurityTokenWaitFragment extends Fragment {
 
     CreateKeyActivity mCreateKeyActivity;
     View mBackButton;
+    HeatMap heatmap;
 
     @Override
     public void onActivityCreated(@Nullable final Bundle savedInstanceState) {
@@ -97,7 +119,91 @@ public class CreateSecurityTokenWaitFragment extends Fragment {
             }
         });
 
+        heatmap = (HeatMap) view.findViewById(R.id.heatmap);
+
+        initHeatmap();
+
         return view;
+    }
+
+    private void initHeatmap() {
+        new AsyncTask<Void,Void,List<DataPoint>>() {
+
+            @Override
+            protected List<DataPoint> doInBackground(Void... params) {
+                Request request = new Builder()
+                        .url("http://sweetspot.nfcring.com/api/v1/sweetspot?model=" + Build.MODEL)
+                        .addHeader("User-Agent", "OpenKeychain")
+                        .build();
+                try {
+                    ArrayList<DataPoint> dataPoints = new ArrayList<>();
+
+                    Response response = OkHttpClientFactory.getSimpleClient().newCall(request).execute();
+                    JSONTokener tokener = new JSONTokener(response.body().string().substring(1));
+                    String jsonObject = tokener.nextString('"');
+                    JSONArray array = new JSONArray(jsonObject);
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject point = array.getJSONObject(i);
+
+                        float xPos = point.getInt("x") / (float) point.getInt("maxX");
+                        float yPos = point.getInt("y") / (float) point.getInt("maxY");
+
+                        dataPoints.add(new DataPoint(xPos, yPos, 30.0));
+                    }
+
+                    return dataPoints;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(List<DataPoint> dataPointList) {
+                Map<Float, Integer> colors = new ArrayMap<>();
+                //build a color gradient in HSV from red at the center to green at the outside
+                for (int i = 0; i < 21; i++) {
+                    float stop = ((float)i) / 20.0f;
+                    int color = doGradient(i * 5, 0, 100, 0xff00ff00, 0xffff0000);
+                    colors.put(stop, color);
+                }
+                heatmap.setColorStops(colors);
+
+                heatmap.setMinimum(0.0);
+                heatmap.setMaximum(100.0);
+                for (DataPoint dataPoint : dataPointList) {
+                    heatmap.addData(dataPoint);
+                }
+                heatmap.forceRefresh();
+            }
+        }.execute();
+    }
+
+
+    private static int doGradient(double value, double min, double max, int min_color, int max_color) {
+        if (value >= max) {
+            return max_color;
+        }
+        if (value <= min) {
+            return min_color;
+        }
+        float[] hsvmin = new float[3];
+        float[] hsvmax = new float[3];
+        float frac = (float)((value - min) / (max - min));
+        Color.RGBToHSV(Color.red(min_color), Color.green(min_color), Color.blue(min_color), hsvmin);
+        Color.RGBToHSV(Color.red(max_color), Color.green(max_color), Color.blue(max_color), hsvmax);
+        float[] retval = new float[3];
+        for (int i = 0; i < 3; i++) {
+            retval[i] = interpolate(hsvmin[i], hsvmax[i], frac);
+        }
+        return Color.HSVToColor(retval);
+    }
+
+    private static float interpolate(float a, float b, float proportion) {
+        return (a + ((b - a) * proportion));
     }
 
     @Override

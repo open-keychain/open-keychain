@@ -95,7 +95,9 @@
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Keychain.Light">
+        android:theme="@style/Theme.Keychain.Light"
+        tools:replace="android:allowBackup"
+        >
         <!-- broadcast receiver for Wi-Fi Connection -->
         <receiver
             android:name=".network.NetworkReceiver"
