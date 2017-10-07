@@ -20,9 +20,9 @@ package org.sufficientlysecure.keychain.securitytoken.usb.tpdu;
 import android.support.annotation.NonNull;
 
 import org.bouncycastle.util.Arrays;
-import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransceiver;
+import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransceiver.CcidDataBlock;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransportProtocol;
 import org.sufficientlysecure.keychain.util.Log;
@@ -31,30 +31,28 @@ public class T1TpduProtocol implements CcidTransportProtocol {
     private final static int MAX_FRAME_LEN = 254;
 
     private byte mCounter = 0;
-    private CcidTransceiver mTransceiver;
-    private BlockChecksumType mChecksumType;
+    private final CcidTransceiver ccidTransceiver;
+    private final BlockChecksumType checksumType;
 
-    public T1TpduProtocol(final CcidTransceiver transceiver) throws UsbTransportException {
-        mTransceiver = transceiver;
+    public T1TpduProtocol(CcidTransceiver transceiver) throws UsbTransportException {
+        ccidTransceiver = transceiver;
 
         // Connect
-        byte[] atr = mTransceiver.iccPowerOn();
-        Log.d(Constants.TAG, "Usb transport connected  T1/TPDU, ATR=" + Hex.toHexString(atr));
+        CcidDataBlock response = ccidTransceiver.iccPowerOn();
+        Log.d(Constants.TAG, "Usb transport connected  T1/TPDU, ATR=" + response);
+
         // TODO: set checksum from atr
-        mChecksumType = BlockChecksumType.LRC;
+        checksumType = BlockChecksumType.LRC;
 
         // PPS all auto
         pps();
     }
 
-    protected void pps() throws UsbTransportException {
+    private void pps() throws UsbTransportException {
         byte[] pps = new byte[]{(byte) 0xFF, 1, (byte) (0xFF ^ 1)};
 
-        mTransceiver.sendXfrBlock(pps);
-
-        byte[] ppsResponse = mTransceiver.receiveRaw();
-
-        Log.d(Constants.TAG, "PPS response " + Hex.toHexString(ppsResponse));
+        CcidDataBlock response = ccidTransceiver.sendXfrBlock(pps);
+        Log.d(Constants.TAG, "PPS response " + response);
     }
 
     public byte[] transceive(@NonNull byte[] apdu) throws UsbTransportException {
@@ -72,10 +70,10 @@ public class T1TpduProtocol implements CcidTransportProtocol {
             // Send next frame
             Block block = newIBlock(mCounter++, hasMore, Arrays.copyOfRange(apdu, start, start + len));
 
-            mTransceiver.sendXfrBlock(block.getRawData());
+            CcidDataBlock response = ccidTransceiver.sendXfrBlock(block.getRawData());
 
             // Receive I or R block
-            responseBlock = getBlockFromResponse(mTransceiver.receiveRaw());
+            responseBlock = getBlockFromResponse(response);
 
             start += len;
 
@@ -104,9 +102,9 @@ public class T1TpduProtocol implements CcidTransportProtocol {
 
         while (((IBlock) responseBlock).getChaining()) {
             Block ackBlock = newRBlock((byte) (((IBlock) responseBlock).getSequence() + 1));
-            mTransceiver.sendXfrBlock(ackBlock.getRawData());
+            CcidDataBlock response = ccidTransceiver.sendXfrBlock(ackBlock.getRawData());
 
-            responseBlock = getBlockFromResponse(mTransceiver.receiveRaw());
+            responseBlock = getBlockFromResponse(response);
 
             if (responseBlock instanceof IBlock) {
                 responseApdu = Arrays.concatenate(responseApdu, responseBlock.getApdu());
@@ -120,8 +118,8 @@ public class T1TpduProtocol implements CcidTransportProtocol {
     }
 
     // Factory methods
-    public Block getBlockFromResponse(byte[] data) throws UsbTransportException {
-        final Block baseBlock = new Block(mChecksumType, data);
+    public Block getBlockFromResponse(CcidDataBlock dataBlock) throws UsbTransportException {
+        final Block baseBlock = new Block(checksumType, dataBlock.getData());
 
         if ((baseBlock.getPcb() & IBlock.MASK_RBLOCK) == IBlock.MASK_VALUE_RBLOCK) {
             return new IBlock(baseBlock);
@@ -135,10 +133,10 @@ public class T1TpduProtocol implements CcidTransportProtocol {
     }
 
     public IBlock newIBlock(byte sequence, boolean chaining, byte[] apdu) throws UsbTransportException {
-        return new IBlock(mChecksumType, (byte) 0, sequence, chaining, apdu);
+        return new IBlock(checksumType, (byte) 0, sequence, chaining, apdu);
     }
 
     public RBlock newRBlock(byte sequence) throws UsbTransportException {
-        return new RBlock(mChecksumType, (byte) 0, sequence);
+        return new RBlock(checksumType, (byte) 0, sequence);
     }
 }

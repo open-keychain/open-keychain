@@ -21,66 +21,68 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.util.Log;
 
+import com.google.auto.value.AutoValue;
 import org.bouncycastle.util.Arrays;
-import org.bouncycastle.util.encoders.Hex;
+import org.sufficientlysecure.keychain.Constants;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class CcidTransceiver {
+    private static final int CCID_HEADER_LENGTH = 10;
+
+    private static final int MESSAGE_TYPE_RDR_TO_PC_DATA_BLOCK = 0x80;
+    private static final int MESSAGE_TYPE_PC_TO_RDR_ICC_POWER_ON = 0x62;
+    private static final int MESSAGE_TYPE_PC_TO_RDR_XFR_BLOCK = 0x6f;
+
+    private static final int COMMAND_STATUS_SUCCESS = 0;
+    private static final int COMMAND_STATUS_TIME_EXTENSION_RQUESTED = 2;
+
+    private static final int SLOT_NUMBER = 0x00;
+
+    private static final int ICC_STATUS_SUCCESS = 0;
+
     private static final int TIMEOUT = 20 * 1000; // 20s
 
-    private byte mCounter;
-    private UsbDeviceConnection mConnection;
-    private UsbEndpoint mBulkIn;
-    private UsbEndpoint mBulkOut;
+    private final UsbDeviceConnection usbConnection;
+    private final UsbEndpoint usbBulkIn;
+    private final UsbEndpoint usbBulkOut;
 
-    public CcidTransceiver(final UsbDeviceConnection connection, final UsbEndpoint bulkIn,
-                           final UsbEndpoint bulkOut) {
+    private byte currentSequenceNumber;
 
-        mConnection = connection;
-        mBulkIn = bulkIn;
-        mBulkOut = bulkOut;
-    }
-
-    public byte[] receiveRaw() throws UsbTransportException {
-        byte[] bytes;
-        do {
-            bytes = receive();
-        } while (isDataBlockNotReady(bytes));
-
-        checkDataBlockResponse(bytes);
-
-        return Arrays.copyOfRange(bytes, 10, bytes.length);
+    CcidTransceiver(UsbDeviceConnection connection, UsbEndpoint bulkIn, UsbEndpoint bulkOut) {
+        usbConnection = connection;
+        usbBulkIn = bulkIn;
+        usbBulkOut = bulkOut;
     }
 
     /**
      * Power of ICC
      * Spec: 6.1.1 PC_to_RDR_IccPowerOn
-     *
-     * @throws UsbTransportException
      */
     @NonNull
-    public byte[] iccPowerOn() throws UsbTransportException {
+    public CcidDataBlock iccPowerOn() throws UsbTransportException {
+        byte sequenceNumber = currentSequenceNumber++;
         final byte[] iccPowerCommand = {
-                0x62,
+                MESSAGE_TYPE_PC_TO_RDR_ICC_POWER_ON,
                 0x00, 0x00, 0x00, 0x00,
-                0x00,
-                mCounter++,
-                0x00,
-                0x00, 0x00
+                SLOT_NUMBER,
+                sequenceNumber,
+                0x00, // voltage select = auto
+                0x00, 0x00 // reserved for future use
         };
 
-        sendRaw(iccPowerCommand);
+        sendRaw(iccPowerCommand, 0, iccPowerCommand.length);
 
         long startTime = System.currentTimeMillis();
-        byte[] atr = null;
         while (true) {
             try {
-                atr = receiveRaw();
-                break;
+                return receiveDataBlock(sequenceNumber);
             } catch (Exception e) {
+                Log.e(Constants.TAG, "Error waiting for device power on", e);
                 // Try more startTime
                 if (System.currentTimeMillis() - startTime > TIMEOUT) {
                     break;
@@ -89,81 +91,155 @@ public class CcidTransceiver {
             SystemClock.sleep(100);
         }
 
-        if (atr == null) {
-            throw new UsbTransportException("Couldn't power up Security Token");
-        }
-
-        return atr;
+        throw new UsbTransportException("Couldn't power up Security Token");
     }
 
     /**
      * Transmits XfrBlock
      * 6.1.4 PC_to_RDR_XfrBlock
+     *
      * @param payload payload to transmit
-     * @throws UsbTransportException
      */
-    public void sendXfrBlock(byte[] payload) throws UsbTransportException {
+    public CcidDataBlock sendXfrBlock(byte[] payload) throws UsbTransportException {
         int l = payload.length;
-        byte[] data = Arrays.concatenate(new byte[]{
-                        0x6f,
-                        (byte) l, (byte) (l >> 8), (byte) (l >> 16), (byte) (l >> 24),
-                        0x00,
-                        mCounter++,
-                        0x00,
-                        0x00, 0x00},
-                payload);
+        byte sequenceNumber = currentSequenceNumber++;
+        byte[] headerData = {
+                MESSAGE_TYPE_PC_TO_RDR_XFR_BLOCK,
+                (byte) l, (byte) (l >> 8), (byte) (l >> 16), (byte) (l >> 24),
+                SLOT_NUMBER,
+                sequenceNumber,
+                0x00, // block waiting time
+                0x00, 0x00 // level parameters
+        };
+        byte[] data = Arrays.concatenate(headerData, payload);
 
-        int send = 0;
-        while (send < data.length) {
-            final int len = Math.min(mBulkIn.getMaxPacketSize(), data.length - send);
-            sendRaw(Arrays.copyOfRange(data, send, send + len));
-            send += len;
+        int sentBytes = 0;
+        while (sentBytes < data.length) {
+            int bytesToSend = Math.min(usbBulkIn.getMaxPacketSize(), data.length - sentBytes);
+            sendRaw(data, sentBytes, bytesToSend);
+            sentBytes += bytesToSend;
         }
+
+        return receiveDataBlock(sequenceNumber);
     }
 
-    public byte[] receive() throws UsbTransportException {
-        byte[] buffer = new byte[mBulkIn.getMaxPacketSize()];
-        byte[] result = null;
-        int readBytes = 0, totalBytes = 0;
-
+    private CcidDataBlock receiveDataBlock(byte expectedSequenceNumber) throws UsbTransportException {
+        CcidDataBlock response;
         do {
-            int res = mConnection.bulkTransfer(mBulkIn, buffer, buffer.length, TIMEOUT);
-            if (res < 0) {
-                throw new UsbTransportException("USB error - failed to receive response " + res);
-            }
-            if (result == null) {
-                if (res < 10) {
-                    throw new UsbTransportException("USB-CCID error - failed to receive CCID header");
-                }
-                totalBytes = ByteBuffer.wrap(buffer, 1, 4).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer().get() + 10;
-                result = new byte[totalBytes];
-            }
-            System.arraycopy(buffer, 0, result, readBytes, res);
-            readBytes += res;
-        } while (readBytes < totalBytes);
+            response = receiveDataBlockImmediate(expectedSequenceNumber);
+        } while (response.isStatusTimeoutExtensionRequest());
 
+        if (!response.isStatusSuccess()) {
+            throw new UsbTransportException("USB-CCID error: " + response);
+        }
+
+        return response;
+    }
+
+    private CcidDataBlock receiveDataBlockImmediate(byte expectedSequenceNumber) throws UsbTransportException {
+        byte[] buffer = new byte[usbBulkIn.getMaxPacketSize()];
+
+        int readBytes = usbConnection.bulkTransfer(usbBulkIn, buffer, buffer.length, TIMEOUT);
+        if (readBytes < CCID_HEADER_LENGTH) {
+            throw new UsbTransportException("USB-CCID error - failed to receive CCID header");
+        }
+        if (buffer[0] != (byte) MESSAGE_TYPE_RDR_TO_PC_DATA_BLOCK) {
+            throw new UsbTransportException("USB-CCID error - bad CCID header type " + buffer[0]);
+        }
+
+        CcidDataBlock result = CcidDataBlock.parseHeaderFromBytes(buffer);
+
+        if (expectedSequenceNumber != result.getSeq()) {
+            throw new UsbTransportException("USB-CCID error - expected sequence number " +
+                    expectedSequenceNumber + ", got " + result);
+        }
+
+        byte[] dataBuffer = new byte[result.getDataLength()];
+        int bufferedBytes = readBytes - CCID_HEADER_LENGTH;
+        System.arraycopy(buffer, CCID_HEADER_LENGTH, dataBuffer, 0, bufferedBytes);
+
+        while (bufferedBytes < dataBuffer.length) {
+            readBytes = usbConnection.bulkTransfer(usbBulkIn, buffer, buffer.length, TIMEOUT);
+            if (readBytes < 0) {
+                throw new UsbTransportException("USB error - failed reading response data! Header: " + result);
+            }
+            System.arraycopy(buffer, 0, dataBuffer, bufferedBytes, readBytes);
+            bufferedBytes += readBytes;
+        }
+
+        result = result.withData(dataBuffer);
         return result;
     }
 
-    private void sendRaw(final byte[] data) throws UsbTransportException {
-        final int tr1 = mConnection.bulkTransfer(mBulkOut, data, data.length, TIMEOUT);
-        if (tr1 != data.length) {
-            throw new UsbTransportException("USB error - failed to transmit data " + tr1);
+    private void sendRaw(byte[] data, int offset, int length) throws UsbTransportException {
+        int tr1;
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            tr1 = usbConnection.bulkTransfer(usbBulkOut, data, offset, length, TIMEOUT);
+        } else {
+            byte[] dataToSend = Arrays.copyOfRange(data, offset, offset+length);
+            tr1 = usbConnection.bulkTransfer(usbBulkOut, dataToSend, dataToSend.length, TIMEOUT);
+        }
+
+        if (tr1 != length) {
+            throw new UsbTransportException("USB error - failed to transmit data (" + tr1 + "/" + length + ")");
         }
     }
 
-    private static byte getStatus(byte[] bytes) {
-        return (byte) ((bytes[7] >> 6) & 0x03);
-    }
+    /** Corresponds to 6.2.1 RDR_to_PC_DataBlock. */
+    @AutoValue
+    public abstract static class CcidDataBlock {
+        public abstract int getDataLength();
+        public abstract byte getSlot();
+        public abstract byte getSeq();
+        public abstract byte getStatus();
+        public abstract byte getError();
+        public abstract byte getChainParameter();
+        @Nullable
+        public abstract byte[] getData();
 
-    private void checkDataBlockResponse(byte[] bytes) throws UsbTransportException {
-        final byte status = getStatus(bytes);
-        if (status != 0) {
-            throw new UsbTransportException("USB-CCID error - status " + status + " error code: " + Hex.toHexString(bytes, 8, 1));
+        static CcidDataBlock parseHeaderFromBytes(byte[] headerBytes) {
+            ByteBuffer buf = ByteBuffer.wrap(headerBytes);
+            buf.order(ByteOrder.LITTLE_ENDIAN);
+
+            byte type = buf.get();
+            if (type != (byte) MESSAGE_TYPE_RDR_TO_PC_DATA_BLOCK) {
+                throw new IllegalArgumentException("Header has incorrect type value!");
+            }
+            int dwLength = buf.getInt();
+            byte bSlot = buf.get();
+            byte bSeq = buf.get();
+            byte bStatus = buf.get();
+            byte bError = buf.get();
+            byte bChainParameter = buf.get();
+
+            return new AutoValue_CcidTransceiver_CcidDataBlock(
+                    dwLength, bSlot, bSeq, bStatus, bError, bChainParameter, null);
         }
-    }
 
-    private static boolean isDataBlockNotReady(byte[] bytes) {
-        return getStatus(bytes) == 2;
+        CcidDataBlock withData(byte[] data) {
+            if (getData() != null) {
+                throw new IllegalStateException("Cannot add data to this class twice!");
+            }
+
+            return new AutoValue_CcidTransceiver_CcidDataBlock(
+                    getDataLength(), getSlot(), getSeq(), getStatus(), getError(), getChainParameter(), data);
+        }
+
+        byte getIccStatus() {
+            return (byte) (getStatus() & 0x03);
+        }
+
+        byte getCommandStatus() {
+            return (byte) ((getStatus() >> 6) & 0x03);
+        }
+
+        boolean isStatusTimeoutExtensionRequest() {
+            return getCommandStatus() == COMMAND_STATUS_TIME_EXTENSION_RQUESTED;
+        }
+
+        boolean isStatusSuccess() {
+            return getIccStatus() == ICC_STATUS_SUCCESS && getCommandStatus() == COMMAND_STATUS_SUCCESS;
+        }
     }
 }

@@ -19,23 +19,23 @@ package org.sufficientlysecure.keychain.securitytoken.usb;
 
 import android.support.annotation.NonNull;
 
-import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransceiver.CcidDataBlock;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class T1ShortApduProtocol implements CcidTransportProtocol {
+class T1ShortApduProtocol implements CcidTransportProtocol {
     private CcidTransceiver mTransceiver;
 
-    public T1ShortApduProtocol(CcidTransceiver transceiver) throws UsbTransportException {
+    T1ShortApduProtocol(CcidTransceiver transceiver) throws UsbTransportException {
         mTransceiver = transceiver;
 
-        byte[] atr = mTransceiver.iccPowerOn();
-        Log.d(Constants.TAG, "Usb transport connected T1/Short APDU, ATR=" + Hex.toHexString(atr));
+        CcidDataBlock atr = mTransceiver.iccPowerOn();
+        Log.d(Constants.TAG, "Usb transport connected T1/Short APDU, ATR=" + atr);
     }
 
     @Override
     public byte[] transceive(@NonNull final byte[] apdu) throws UsbTransportException {
-        mTransceiver.sendXfrBlock(apdu);
-        return mTransceiver.receiveRaw();
+        CcidDataBlock response = mTransceiver.sendXfrBlock(apdu);
+        return response.getData();
     }
 }
