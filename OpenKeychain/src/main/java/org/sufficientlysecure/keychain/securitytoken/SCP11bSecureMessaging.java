@@ -275,7 +275,7 @@ class SCP11bSecureMessaging implements SecureMessaging {
     }
 
 
-    public static void establish(final SecurityTokenHelper t, final Context ctx)
+    public static void establish(final SecurityTokenConnection t, final Context ctx)
             throws SecureMessagingException, IOException {
 
         CommandAPDU cmd;
@@ -286,9 +286,9 @@ class SCP11bSecureMessaging implements SecureMessaging {
 
         // retrieving key algorithm
         cmd = new CommandAPDU(0, (byte)0xCA, (byte)0x00,
-                OPENPGP_SECURE_MESSAGING_KEY_ATTRIBUTES_TAG, SecurityTokenHelper.MAX_APDU_NE_EXT);
+                OPENPGP_SECURE_MESSAGING_KEY_ATTRIBUTES_TAG, SecurityTokenConnection.MAX_APDU_NE_EXT);
         resp = t.communicate(cmd);
-        if (resp.getSW() != SecurityTokenHelper.APDU_SW_SUCCESS) {
+        if (resp.getSW() != SecurityTokenConnection.APDU_SW_SUCCESS) {
             throw new SecureMessagingException("failed to retrieve secure messaging key attributes");
         }
         tlvs = Iso7816TLV.readList(resp.getData(), true);
@@ -320,12 +320,12 @@ class SCP11bSecureMessaging implements SecureMessaging {
                 cmd = new CommandAPDU(0, (byte) 0xA5, (byte) 0x03, (byte) 0x04,
                         new byte[]{(byte) 0x60, (byte) 0x04, (byte) 0x5C, (byte) 0x02, (byte) 0x7F, (byte) 0x21});
                 resp = t.communicate(cmd);
-                if (resp.getSW() != SecurityTokenHelper.APDU_SW_SUCCESS) {
+                if (resp.getSW() != SecurityTokenConnection.APDU_SW_SUCCESS) {
                     throw new SecureMessagingException("failed to select secure messaging certificate");
                 }
-                cmd = new CommandAPDU(0, (byte) 0xCA, (byte) 0x7F, (byte) 0x21, SecurityTokenHelper.MAX_APDU_NE_EXT);
+                cmd = new CommandAPDU(0, (byte) 0xCA, (byte) 0x7F, (byte) 0x21, SecurityTokenConnection.MAX_APDU_NE_EXT);
                 resp = t.communicate(cmd);
-                if (resp.getSW() != SecurityTokenHelper.APDU_SW_SUCCESS) {
+                if (resp.getSW() != SecurityTokenConnection.APDU_SW_SUCCESS) {
                     throw new SecureMessagingException("failed to retrieve secure messaging certificate");
                 }
 
@@ -334,9 +334,9 @@ class SCP11bSecureMessaging implements SecureMessaging {
             } else {
                 // retrieving public key
                 cmd = new CommandAPDU(0, (byte) 0x47, (byte) 0x81, (byte) 0x00,
-                        OPENPGP_SECURE_MESSAGING_KEY_CRT, SecurityTokenHelper.MAX_APDU_NE_EXT);
+                        OPENPGP_SECURE_MESSAGING_KEY_CRT, SecurityTokenConnection.MAX_APDU_NE_EXT);
                 resp = t.communicate(cmd);
-                if (resp.getSW() != SecurityTokenHelper.APDU_SW_SUCCESS) {
+                if (resp.getSW() != SecurityTokenConnection.APDU_SW_SUCCESS) {
                     throw new SecureMessagingException("failed to retrieve secure messaging public key");
                 }
                 tlvs = Iso7816TLV.readList(resp.getData(), true);
@@ -396,9 +396,9 @@ class SCP11bSecureMessaging implements SecureMessaging {
 
             // internal authenticate
             cmd = new CommandAPDU(0, (byte)0x88, (byte)0x01, (byte)0x0, pkout.toByteArray(),
-                    SecurityTokenHelper.MAX_APDU_NE_EXT);
+                    SecurityTokenConnection.MAX_APDU_NE_EXT);
             resp = t.communicate(cmd);
-            if (resp.getSW() != SecurityTokenHelper.APDU_SW_SUCCESS) {
+            if (resp.getSW() != SecurityTokenConnection.APDU_SW_SUCCESS) {
                 throw new SecureMessagingException("failed to initiate internal authenticate");
             }
 

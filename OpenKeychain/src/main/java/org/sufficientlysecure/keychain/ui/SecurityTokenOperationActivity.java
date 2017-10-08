@@ -190,7 +190,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
         switch (mRequiredInput.mType) {
             case SECURITY_TOKEN_DECRYPT: {
                 long tokenKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(
-                        mSecurityTokenHelper.getKeyFingerprint(KeyType.ENCRYPT));
+                        mSecurityTokenConnection.getKeyFingerprint(KeyType.ENCRYPT));
 
                 if (tokenKeyId != mRequiredInput.getSubKeyId()) {
                     throw new IOException(getString(R.string.error_wrong_security_token));
@@ -208,14 +208,15 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
 
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] encryptedSessionKey = mRequiredInput.mInputData[i];
-                    byte[] decryptedSessionKey = mSecurityTokenHelper.decryptSessionKey(encryptedSessionKey, publicKeyRing.getPublicKey(tokenKeyId));
+                    byte[] decryptedSessionKey = mSecurityTokenConnection
+                            .decryptSessionKey(encryptedSessionKey, publicKeyRing.getPublicKey(tokenKeyId));
                     mInputParcel = mInputParcel.withCryptoData(encryptedSessionKey, decryptedSessionKey);
                 }
                 break;
             }
             case SECURITY_TOKEN_SIGN: {
                 long tokenKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(
-                        mSecurityTokenHelper.getKeyFingerprint(KeyType.SIGN));
+                        mSecurityTokenConnection.getKeyFingerprint(KeyType.SIGN));
 
                 if (tokenKeyId != mRequiredInput.getSubKeyId()) {
                     throw new IOException(getString(R.string.error_wrong_security_token));
@@ -226,15 +227,15 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] hash = mRequiredInput.mInputData[i];
                     int algo = mRequiredInput.mSignAlgos[i];
-                    byte[] signedHash = mSecurityTokenHelper.calculateSignature(hash, algo);
+                    byte[] signedHash = mSecurityTokenConnection.calculateSignature(hash, algo);
                     mInputParcel = mInputParcel.withCryptoData(hash, signedHash);
                 }
                 break;
             }
             case SECURITY_TOKEN_MOVE_KEY_TO_CARD: {
                 // TODO: assume PIN and Admin PIN to be default for this operation
-                mSecurityTokenHelper.setPin(new Passphrase("123456"));
-                mSecurityTokenHelper.setAdminPin(new Passphrase("12345678"));
+                mSecurityTokenConnection.setPin(new Passphrase("123456"));
+                mSecurityTokenConnection.setAdminPin(new Passphrase("12345678"));
 
                 KeyRepository keyRepository =
                         KeyRepository.create(this);
@@ -256,7 +257,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     long subkeyId = buf.getLong();
 
                     CanonicalizedSecretKey key = secretKeyRing.getSecretKey(subkeyId);
-                    byte[] tokenSerialNumber = Arrays.copyOf(mSecurityTokenHelper.getAid(), 16);
+                    byte[] tokenSerialNumber = Arrays.copyOf(mSecurityTokenConnection.getAid(), 16);
 
                     Passphrase passphrase;
                     try {
@@ -266,21 +267,21 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                         throw new IOException("Unable to get cached passphrase!");
                     }
 
-                    mSecurityTokenHelper.changeKey(key, passphrase);
+                    mSecurityTokenConnection.changeKey(key, passphrase);
 
                     // TODO: Is this really used anywhere?
                     mInputParcel = mInputParcel.withCryptoData(subkeyBytes, tokenSerialNumber);
                 }
 
                 // change PINs afterwards
-                mSecurityTokenHelper.modifyPin(0x81, newPin);
-                mSecurityTokenHelper.modifyPin(0x83, newAdminPin);
+                mSecurityTokenConnection.modifyPin(0x81, newPin);
+                mSecurityTokenConnection.modifyPin(0x83, newAdminPin);
 
                 break;
             }
             case SECURITY_TOKEN_RESET_CARD: {
-                mSecurityTokenHelper.resetAndWipeToken();
-                mResultTokenInfo = mSecurityTokenHelper.getTokenInfo();
+                mSecurityTokenConnection.resetAndWipeToken();
+                mResultTokenInfo = mSecurityTokenConnection.getTokenInfo();
 
                 break;
             }
@@ -300,11 +301,11 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
 
         nfcGuideView.setCurrentStatus(NfcGuideView.NfcGuideViewStatus.DONE);
 
-        if (mSecurityTokenHelper.isPersistentConnectionAllowed()) {
+        if (mSecurityTokenConnection.isPersistentConnectionAllowed()) {
             // Just close
             finish();
         } else {
-            mSecurityTokenHelper.clearSecureMessaging();
+            mSecurityTokenConnection.clearSecureMessaging();
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... params) {

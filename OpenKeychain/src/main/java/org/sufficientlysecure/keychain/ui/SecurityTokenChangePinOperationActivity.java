@@ -139,10 +139,10 @@ public class SecurityTokenChangePinOperationActivity extends BaseSecurityTokenAc
 
     @Override
     protected void doSecurityTokenInBackground() throws IOException {
-        mSecurityTokenHelper.setAdminPin(new Passphrase(changePinInput.getAdminPin()));
-        mSecurityTokenHelper.resetPin(changePinInput.getNewPin());
+        mSecurityTokenConnection.setAdminPin(new Passphrase(changePinInput.getAdminPin()));
+        mSecurityTokenConnection.resetPin(changePinInput.getNewPin());
 
-        resultTokenInfo = mSecurityTokenHelper.getTokenInfo();
+        resultTokenInfo = mSecurityTokenConnection.getTokenInfo();
     }
 
     @Override
@@ -156,11 +156,11 @@ public class SecurityTokenChangePinOperationActivity extends BaseSecurityTokenAc
 
         nfcGuideView.setCurrentStatus(NfcGuideView.NfcGuideViewStatus.DONE);
 
-        if (mSecurityTokenHelper.isPersistentConnectionAllowed()) {
+        if (mSecurityTokenConnection.isPersistentConnectionAllowed()) {
             // Just close
             finish();
         } else {
-            mSecurityTokenHelper.clearSecureMessaging();
+            mSecurityTokenConnection.clearSecureMessaging();
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... params) {

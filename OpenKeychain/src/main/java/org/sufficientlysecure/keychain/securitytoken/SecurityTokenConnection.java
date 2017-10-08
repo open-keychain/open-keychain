@@ -70,7 +70,7 @@ import java.security.interfaces.RSAPrivateCrtKey;
  * devices.
  * For the full specs, see http://g10code.com/docs/openpgp-card-2.0.pdf
  */
-public class SecurityTokenHelper {
+public class SecurityTokenConnection {
     private static final int MAX_APDU_NC = 255;
     private static final int MAX_APDU_NC_EXT = 65535;
 
@@ -100,7 +100,7 @@ public class SecurityTokenHelper {
     private boolean mPw1ValidatedForDecrypt; // Mode 82 does other things; consider renaming?
     private boolean mPw3Validated;
 
-    private SecurityTokenHelper() {
+    private SecurityTokenConnection() {
     }
 
     public static double parseOpenPgpVersion(final byte[] aid) {
@@ -109,7 +109,7 @@ public class SecurityTokenHelper {
         return aid[6] + minv;
     }
 
-    public static SecurityTokenHelper getInstance() {
+    public static SecurityTokenConnection getInstance() {
         return LazyHolder.SECURITY_TOKEN_HELPER;
     }
 
@@ -1007,6 +1007,6 @@ public class SecurityTokenHelper {
     }
 
     private static class LazyHolder {
-        private static final SecurityTokenHelper SECURITY_TOKEN_HELPER = new SecurityTokenHelper();
+        private static final SecurityTokenConnection SECURITY_TOKEN_HELPER = new SecurityTokenConnection();
     }
 }

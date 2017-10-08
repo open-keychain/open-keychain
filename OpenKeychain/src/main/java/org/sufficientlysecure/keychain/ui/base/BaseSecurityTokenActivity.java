@@ -43,7 +43,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.securitytoken.CardException;
 import org.sufficientlysecure.keychain.securitytoken.NfcTransport;
-import org.sufficientlysecure.keychain.securitytoken.SecurityTokenHelper;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
 import org.sufficientlysecure.keychain.securitytoken.UsbConnectionDispatcher;
@@ -68,7 +68,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
 
     private static final String FIDESMO_APP_PACKAGE = "com.fidesmo.sec.android";
 
-    protected SecurityTokenHelper mSecurityTokenHelper = SecurityTokenHelper.getInstance();
+    protected SecurityTokenConnection mSecurityTokenConnection = SecurityTokenConnection.getInstance();
     protected TagDispatcher mNfcTagDispatcher;
     protected UsbConnectionDispatcher mUsbDispatcher;
     private boolean mTagHandlingEnabled;
@@ -85,7 +85,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
      * Override to implement SecurityToken operations (background thread)
      */
     protected void doSecurityTokenInBackground() throws IOException {
-        tokenInfo = mSecurityTokenHelper.getTokenInfo();
+        tokenInfo = mSecurityTokenConnection.getTokenInfo();
         Log.d(Constants.TAG, "Security Token: " + tokenInfo);
     }
 
@@ -250,7 +250,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
 
             SecurityTokenInfo tokeninfo = null;
             try {
-                tokeninfo = mSecurityTokenHelper.getTokenInfo();
+                tokeninfo = mSecurityTokenConnection.getTokenInfo();
             } catch (IOException e2) {
                 // don't care
             }
@@ -271,7 +271,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
             case 0x6982: {
                 SecurityTokenInfo tokeninfo = null;
                 try {
-                    tokeninfo = mSecurityTokenHelper.getTokenInfo();
+                    tokeninfo = mSecurityTokenConnection.getTokenInfo();
                 } catch (IOException e2) {
                     // don't care
                 }
@@ -325,7 +325,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
             }
             // 6A82 app not installed on security token!
             case 0x6A82: {
-                if (mSecurityTokenHelper.isFidesmoToken()) {
+                if (mSecurityTokenConnection.isFidesmoToken()) {
                     // Check if the Fidesmo app is installed
                     if (isAndroidAppInstalled(FIDESMO_APP_PACKAGE)) {
                         promptFidesmoPgpInstall();
@@ -396,7 +396,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
             Passphrase passphrase = PassphraseCacheService.getCachedPassphrase(this,
                     requiredInput.getMasterKeyId(), requiredInput.getSubKeyId());
             if (passphrase != null) {
-                mSecurityTokenHelper.setPin(passphrase);
+                mSecurityTokenConnection.setPin(passphrase);
                 return;
             }
 
@@ -421,7 +421,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
                     return;
                 }
                 CryptoInputParcel input = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
-                mSecurityTokenHelper.setPin(input.getPassphrase());
+                mSecurityTokenConnection.setPin(input.getPassphrase());
                 break;
             }
             default:
@@ -431,17 +431,17 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
 
     protected void handleSecurityToken(Transport transport, Context ctx) throws IOException {
         // Don't reconnect if device was already connected
-        if (!(mSecurityTokenHelper.isPersistentConnectionAllowed()
-                && mSecurityTokenHelper.isConnected()
-                && mSecurityTokenHelper.getTransport().equals(transport))) {
-            mSecurityTokenHelper.setTransport(transport);
-            mSecurityTokenHelper.connectToDevice(ctx);
+        if (!(mSecurityTokenConnection.isPersistentConnectionAllowed()
+                && mSecurityTokenConnection.isConnected()
+                && mSecurityTokenConnection.getTransport().equals(transport))) {
+            mSecurityTokenConnection.setTransport(transport);
+            mSecurityTokenConnection.connectToDevice(ctx);
         }
         doSecurityTokenInBackground();
     }
 
     public boolean isSecurityTokenConnected() {
-        return mSecurityTokenHelper.isConnected();
+        return mSecurityTokenConnection.isConnected();
     }
 
     public static class IsoDepNotSupportedException extends IOException {
@@ -500,8 +500,8 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         mUsbDispatcher.onStart();
     }
 
-    public SecurityTokenHelper getSecurityTokenHelper() {
-        return mSecurityTokenHelper;
+    public SecurityTokenConnection getSecurityTokenHelper() {
+        return mSecurityTokenConnection;
     }
 
     /**

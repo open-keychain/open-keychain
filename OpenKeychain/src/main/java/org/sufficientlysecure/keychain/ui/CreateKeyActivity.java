@@ -139,7 +139,7 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
             return;
         }
 
-        tokenInfo = mSecurityTokenHelper.getTokenInfo();
+        tokenInfo = mSecurityTokenConnection.getTokenInfo();
     }
 
     @Override

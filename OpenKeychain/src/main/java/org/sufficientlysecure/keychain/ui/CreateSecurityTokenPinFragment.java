@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -31,7 +30,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.securitytoken.SecurityTokenHelper;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
@@ -206,7 +205,7 @@ public class CreateSecurityTokenPinFragment extends Fragment {
 
             mCreateKeyActivity.mSecurityTokenPin = new Passphrase(mPin.getText().toString());
 
-            final double version = SecurityTokenHelper.parseOpenPgpVersion(mCreateKeyActivity.tokenInfo.getAid());
+            final double version = SecurityTokenConnection.parseOpenPgpVersion(mCreateKeyActivity.tokenInfo.getAid());
 
             Fragment frag;
             if (version >= 3.0) {
