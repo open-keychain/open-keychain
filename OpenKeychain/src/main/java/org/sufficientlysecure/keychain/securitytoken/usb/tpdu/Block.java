@@ -22,78 +22,99 @@ import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 
 public class Block {
-    protected static final int MAX_PAYLOAD_LEN = 254;
-    protected static final int OFFSET_NAD = 0;
-    protected static final int OFFSET_PCB = 1;
-    protected static final int OFFSET_LEN = 2;
-    protected static final int OFFSET_DATA = 3;
+    private static final int MAX_PAYLOAD_LEN = 254;
+    private static final int OFFSET_NAD = 0;
+    static final int OFFSET_PCB = 1;
+    private static final int OFFSET_LEN = 2;
+    private static final int OFFSET_DATA = 3;
 
-    protected byte[] mData;
-    protected BlockChecksumType mChecksumType;
+    private final byte[] blockData;
+    private final BlockChecksumType checksumType;
 
-    public Block(BlockChecksumType checksumType, byte[] data) throws UsbTransportException {
-        this.mChecksumType = checksumType;
-        this.mData = data;
+    Block(BlockChecksumType checksumType, byte[] data) throws UsbTransportException {
+        this.checksumType = checksumType;
+        this.blockData = data;
 
-        int checksumOffset = this.mData.length - mChecksumType.getLength();
-        byte[] checksum = mChecksumType.computeChecksum(data, 0, checksumOffset);
+        int checksumOffset = blockData.length - checksumType.getLength();
+        byte[] checksum = checksumType.computeChecksum(data, 0, checksumOffset);
         if (!Arrays.areEqual(checksum, getEdc())) {
             throw new UsbTransportException("TPDU CRC doesn't match");
         }
     }
 
-    protected Block(BlockChecksumType checksumType, byte nad, byte pcb, byte[] apdu)
+    /*
+    protected Block(BlockChecksumType checksumType, byte nad, byte pcb, byte[] apdu, int offset, int length)
             throws UsbTransportException {
-        this.mChecksumType = checksumType;
+        apdu = Arrays.copyOfRange(apdu, offset, offset + length);
+
+        this.checksumType = checksumType;
         if (apdu.length > MAX_PAYLOAD_LEN) {
             throw new UsbTransportException("APDU is too long; should be split");
         }
-        this.mData = Arrays.concatenate(
+        blockData = Arrays.concatenate(
                 new byte[]{nad, pcb, (byte) apdu.length},
                 apdu,
-                new byte[mChecksumType.getLength()]);
+                new byte[checksumType.getLength()]);
 
-        int checksumOffset = this.mData.length - mChecksumType.getLength();
-        byte[] checksum = mChecksumType.computeChecksum(this.mData, 0, checksumOffset);
+        int checksumOffset = blockData.length - checksumType.getLength();
+        byte[] checksum = checksumType.computeChecksum(blockData, 0, checksumOffset);
 
-        System.arraycopy(checksum, 0, this.mData, checksumOffset, mChecksumType.getLength());
+        System.arraycopy(checksum, 0, blockData, checksumOffset, checksumType.getLength());
     }
+    */
 
-    protected Block(Block baseBlock) {
-        this.mChecksumType = baseBlock.getChecksumType();
-        this.mData = baseBlock.getRawData();
+//    /*
+    Block(BlockChecksumType checksumType, byte nad, byte pcb, byte[] apdu, int offset, int length)
+            throws UsbTransportException {
+        this.checksumType = checksumType;
+        if (length > MAX_PAYLOAD_LEN) {
+            throw new IllegalArgumentException("Payload too long! " + length + " > " + MAX_PAYLOAD_LEN);
+        }
+
+        int lengthWithoutChecksum = length + 3;
+        int checksumLength = this.checksumType.getLength();
+
+        blockData = new byte[lengthWithoutChecksum + checksumLength];
+        blockData[0] = nad;
+        blockData[1] = pcb;
+        blockData[2] = (byte) length;
+        System.arraycopy(apdu, offset, blockData, 3, length);
+
+        byte[] checksum = this.checksumType.computeChecksum(blockData, 0, lengthWithoutChecksum);
+        System.arraycopy(checksum, 0, blockData, lengthWithoutChecksum, checksumLength);
     }
 
     public byte getNad() {
-        return mData[OFFSET_NAD];
+        return blockData[OFFSET_NAD];
     }
 
     public byte getPcb() {
-        return mData[OFFSET_PCB];
+        return blockData[OFFSET_PCB];
     }
 
     public byte getLen() {
-        return mData[OFFSET_LEN];
+        return blockData[OFFSET_LEN];
     }
 
     public byte[] getEdc() {
-        return Arrays.copyOfRange(mData, mData.length - mChecksumType.getLength(), mData.length);
+        return Arrays.copyOfRange(blockData, blockData.length - checksumType.getLength(), blockData.length);
     }
 
     public BlockChecksumType getChecksumType() {
-        return mChecksumType;
+        return checksumType;
     }
 
     public byte[] getApdu() {
-        return Arrays.copyOfRange(mData, OFFSET_DATA, mData.length - mChecksumType.getLength());
+        return Arrays.copyOfRange(blockData, OFFSET_DATA, blockData.length - checksumType.getLength());
     }
 
     public byte[] getRawData() {
-        return mData;
+        return blockData;
     }
 
     @Override
     public String toString() {
-        return Hex.toHexString(mData);
+        return Hex.toHexString(blockData);
     }
+
 }
