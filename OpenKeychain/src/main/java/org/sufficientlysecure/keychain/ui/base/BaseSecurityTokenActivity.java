@@ -112,21 +112,26 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         onSecurityTokenError(error);
     }
 
-    public void tagDiscovered(final Tag tag) {
+    public void tagDiscovered(Tag tag) {
         // Actual NFC operations are executed in doInBackground to not block the UI thread
-        if (!mTagHandlingEnabled)
+        if (!mTagHandlingEnabled) {
             return;
+        }
 
-        securityTokenDiscovered(new NfcTransport(tag));
+        NfcTransport nfcTransport = new NfcTransport(tag);
+        securityTokenDiscovered(nfcTransport);
     }
 
-    public void usbDeviceDiscovered(final UsbDevice usbDevice) {
+    public void usbDeviceDiscovered(UsbDevice usbDevice) {
         // Actual USB operations are executed in doInBackground to not block the UI thread
-        if (!mTagHandlingEnabled)
+        if (!mTagHandlingEnabled) {
             return;
+        }
 
         UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
-        securityTokenDiscovered(new UsbTransport(usbDevice, usbManager));
+
+        UsbTransport usbTransport = new UsbTransport(usbDevice, usbManager);
+        securityTokenDiscovered(usbTransport);
     }
 
     public void securityTokenDiscovered(final Transport transport) {

@@ -93,7 +93,9 @@ public class CcidTransceiver {
         CcidDataBlock response = receiveDataBlock(sequenceNumber);
 
         long elapsedTime = SystemClock.elapsedRealtime() - startTime;
-        Log.d(Constants.TAG, "USB IccPowerOn call took " + elapsedTime + "ms");
+
+        Log.d(Constants.TAG, "Usb transport connected  T1/TPDU, took " + elapsedTime + "ms, ATR=" +
+                Hex.toHexString(response.getData()));
 
         return response;
     }

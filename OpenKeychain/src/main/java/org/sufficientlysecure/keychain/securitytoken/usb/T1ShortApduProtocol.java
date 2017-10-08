@@ -24,18 +24,16 @@ import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransceiver.CcidDat
 import org.sufficientlysecure.keychain.util.Log;
 
 class T1ShortApduProtocol implements CcidTransportProtocol {
-    private CcidTransceiver mTransceiver;
+    private CcidTransceiver ccidTransceiver;
 
-    T1ShortApduProtocol(CcidTransceiver transceiver) throws UsbTransportException {
-        mTransceiver = transceiver;
-
-        CcidDataBlock atr = mTransceiver.iccPowerOn();
-        Log.d(Constants.TAG, "Usb transport connected T1/Short APDU, ATR=" + atr);
+    public void connect(@NonNull CcidTransceiver transceiver) throws UsbTransportException {
+        ccidTransceiver = transceiver;
+        ccidTransceiver.iccPowerOn();
     }
 
     @Override
     public byte[] transceive(@NonNull final byte[] apdu) throws UsbTransportException {
-        CcidDataBlock response = mTransceiver.sendXfrBlock(apdu);
+        CcidDataBlock response = ccidTransceiver.sendXfrBlock(apdu);
         return response.getData();
     }
 }
