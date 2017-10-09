@@ -27,7 +27,7 @@ class RBlock extends Block {
 
     private static final byte BIT_SEQUENCE = 4;
 
-    RBlock(BlockChecksumType checksumType, byte[] data) throws UsbTransportException {
+    RBlock(BlockChecksumAlgorithm checksumType, byte[] data) throws UsbTransportException {
         super(checksumType, data);
 
         if ((getPcb() & MASK_RBLOCK) != MASK_VALUE_RBLOCK) {
@@ -39,7 +39,7 @@ class RBlock extends Block {
         }
     }
 
-    RBlock(BlockChecksumType checksumType, byte nad, byte sequence)
+    RBlock(BlockChecksumAlgorithm checksumType, byte nad, byte sequence)
             throws UsbTransportException {
         super(checksumType, nad, (byte) (MASK_VALUE_RBLOCK | ((sequence & 1) << BIT_SEQUENCE)), new byte[0], 0, 0);
     }

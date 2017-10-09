@@ -15,15 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.securitytoken.usb;
+package org.sufficientlysecure.keychain.securitytoken.usb.tpdu;
+
 
 import android.support.annotation.NonNull;
 
-import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransceiver;
 import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransceiver.CcidDataBlock;
-import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransportProtocol;
+import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 
-class T1ShortApduProtocol implements CcidTransportProtocol {
+public class T1ShortApduProtocol implements CcidTransportProtocol {
     private CcidTransceiver ccidTransceiver;
 
     public void connect(@NonNull CcidTransceiver transceiver) throws UsbTransportException {

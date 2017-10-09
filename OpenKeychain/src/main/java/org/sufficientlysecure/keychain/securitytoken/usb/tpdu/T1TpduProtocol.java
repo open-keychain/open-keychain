@@ -47,7 +47,7 @@ public class T1TpduProtocol implements CcidTransportProtocol {
         this.ccidTransceiver.iccPowerOn();
 
         // TODO: set checksum from atr
-        blockFactory = new T1TpduBlockFactory(BlockChecksumType.LRC);
+        blockFactory = new T1TpduBlockFactory(BlockChecksumAlgorithm.LRC);
 
         performPpsExchange();
     }

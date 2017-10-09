@@ -5,9 +5,9 @@ import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 
 
 class T1TpduBlockFactory {
-    private BlockChecksumType checksumType;
+    private BlockChecksumAlgorithm checksumType;
 
-    T1TpduBlockFactory(BlockChecksumType checksumType) {
+    T1TpduBlockFactory(BlockChecksumAlgorithm checksumType) {
         this.checksumType = checksumType;
     }
 

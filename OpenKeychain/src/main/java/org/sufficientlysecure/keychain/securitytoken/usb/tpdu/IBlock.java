@@ -28,7 +28,7 @@ class IBlock extends Block {
     private static final byte BIT_SEQUENCE = 6;
     private static final byte BIT_CHAINING = 5;
 
-    IBlock(BlockChecksumType checksumType, byte[] data) throws UsbTransportException {
+    IBlock(BlockChecksumAlgorithm checksumType, byte[] data) throws UsbTransportException {
         super(checksumType, data);
 
         if ((getPcb() & MASK_IBLOCK) != MASK_VALUE_IBLOCK) {
@@ -36,7 +36,7 @@ class IBlock extends Block {
         }
     }
 
-    IBlock(BlockChecksumType checksumType, byte nad, byte sequence, boolean chaining, byte[] apdu, int offset,
+    IBlock(BlockChecksumAlgorithm checksumType, byte nad, byte sequence, boolean chaining, byte[] apdu, int offset,
             int length)
             throws UsbTransportException {
         super(checksumType, nad,

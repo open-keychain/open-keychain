@@ -25,7 +25,7 @@ class SBlock extends Block {
     static final byte MASK_SBLOCK = (byte) 0b11000000;
     static final byte MASK_VALUE_SBLOCK = (byte) 0b11000000;
 
-    SBlock(BlockChecksumType checksumType, byte[] data) throws UsbTransportException {
+    SBlock(BlockChecksumAlgorithm checksumType, byte[] data) throws UsbTransportException {
         super(checksumType, data);
 
         if ((getPcb() & MASK_SBLOCK) != MASK_VALUE_SBLOCK) {

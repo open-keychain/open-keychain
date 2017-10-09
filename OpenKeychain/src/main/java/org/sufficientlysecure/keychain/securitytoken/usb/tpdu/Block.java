@@ -21,7 +21,7 @@ import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 
-public class Block {
+class Block {
     private static final int MAX_PAYLOAD_LEN = 254;
     private static final int OFFSET_NAD = 0;
     static final int OFFSET_PCB = 1;
@@ -29,9 +29,9 @@ public class Block {
     private static final int OFFSET_DATA = 3;
 
     private final byte[] blockData;
-    private final BlockChecksumType checksumType;
+    private final BlockChecksumAlgorithm checksumType;
 
-    Block(BlockChecksumType checksumType, byte[] data) throws UsbTransportException {
+    Block(BlockChecksumAlgorithm checksumType, byte[] data) throws UsbTransportException {
         this.checksumType = checksumType;
         this.blockData = data;
 
@@ -64,7 +64,7 @@ public class Block {
     */
 
 //    /*
-    Block(BlockChecksumType checksumType, byte nad, byte pcb, byte[] apdu, int offset, int length)
+    Block(BlockChecksumAlgorithm checksumType, byte nad, byte pcb, byte[] apdu, int offset, int length)
             throws UsbTransportException {
         this.checksumType = checksumType;
         if (length > MAX_PAYLOAD_LEN) {
@@ -100,7 +100,7 @@ public class Block {
         return Arrays.copyOfRange(blockData, blockData.length - checksumType.getLength(), blockData.length);
     }
 
-    public BlockChecksumType getChecksumType() {
+    public BlockChecksumAlgorithm getChecksumType() {
         return checksumType;
     }
 

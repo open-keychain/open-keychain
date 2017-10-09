@@ -31,6 +31,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
+import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.T1ShortApduProtocol;
 import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.T1TpduProtocol;
 import org.sufficientlysecure.keychain.util.Log;
 
