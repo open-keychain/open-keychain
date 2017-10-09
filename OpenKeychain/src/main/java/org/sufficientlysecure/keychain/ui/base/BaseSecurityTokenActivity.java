@@ -68,12 +68,12 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
 
     private static final String FIDESMO_APP_PACKAGE = "com.fidesmo.sec.android";
 
-    protected SecurityTokenConnection mSecurityTokenConnection = SecurityTokenConnection.getInstance();
     protected TagDispatcher mNfcTagDispatcher;
     protected UsbConnectionDispatcher mUsbDispatcher;
     private boolean mTagHandlingEnabled;
 
     protected SecurityTokenInfo tokenInfo;
+    private Passphrase mCachedPin;
 
     /**
      * Override to change UI before SecurityToken handling (UI thread)
@@ -84,15 +84,15 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
     /**
      * Override to implement SecurityToken operations (background thread)
      */
-    protected void doSecurityTokenInBackground() throws IOException {
-        tokenInfo = mSecurityTokenConnection.getTokenInfo();
+    protected void doSecurityTokenInBackground(SecurityTokenConnection stConnection) throws IOException {
+        tokenInfo = stConnection.getTokenInfo();
         Log.d(Constants.TAG, "Security Token: " + tokenInfo);
     }
 
     /**
      * Override to handle result of SecurityToken operations (UI thread)
      */
-    protected void onSecurityTokenPostExecute() {
+    protected void onSecurityTokenPostExecute(SecurityTokenConnection stConnection) {
         Intent intent = new Intent(this, CreateKeyActivity.class);
         intent.putExtra(CreateKeyActivity.EXTRA_SECURITY_TOKEN_INFO, tokenInfo);
         startActivity(intent);
@@ -138,6 +138,10 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         // Actual Security Token operations are executed in doInBackground to not block the UI thread
         if (!mTagHandlingEnabled)
             return;
+
+        final SecurityTokenConnection stConnection =
+                SecurityTokenConnection.getInstanceForTransport(transport, mCachedPin);
+
         new AsyncTask<Void, Void, IOException>() {
             @Override
             protected void onPreExecute() {
@@ -148,7 +152,9 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
             @Override
             protected IOException doInBackground(Void... params) {
                 try {
-                    handleSecurityToken(transport, BaseSecurityTokenActivity.this);
+                    stConnection.connectIfNecessary(getBaseContext());
+
+                    handleSecurityToken(stConnection);
                 } catch (IOException e) {
                     return e;
                 }
@@ -161,11 +167,11 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
                 super.onPostExecute(exception);
 
                 if (exception != null) {
-                    handleSecurityTokenError(exception);
+                    handleSecurityTokenError(stConnection, exception);
                     return;
                 }
 
-                onSecurityTokenPostExecute();
+                onSecurityTokenPostExecute(stConnection);
             }
         }.execute();
     }
@@ -223,7 +229,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         mNfcTagDispatcher.interceptIntent(intent);
     }
 
-    private void handleSecurityTokenError(IOException e) {
+    private void handleSecurityTokenError(SecurityTokenConnection stConnection, IOException e) {
 
         if (e instanceof TagLostException) {
             onSecurityTokenError(getString(R.string.security_token_error_tag_lost));
@@ -250,7 +256,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
 
             SecurityTokenInfo tokeninfo = null;
             try {
-                tokeninfo = mSecurityTokenConnection.getTokenInfo();
+                tokeninfo = stConnection.getTokenInfo();
             } catch (IOException e2) {
                 // don't care
             }
@@ -271,7 +277,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
             case 0x6982: {
                 SecurityTokenInfo tokeninfo = null;
                 try {
-                    tokeninfo = mSecurityTokenConnection.getTokenInfo();
+                    tokeninfo = stConnection.getTokenInfo();
                 } catch (IOException e2) {
                     // don't care
                 }
@@ -325,7 +331,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
             }
             // 6A82 app not installed on security token!
             case 0x6A82: {
-                if (mSecurityTokenConnection.isFidesmoToken()) {
+                if (stConnection.isFidesmoToken()) {
                     // Check if the Fidesmo app is installed
                     if (isAndroidAppInstalled(FIDESMO_APP_PACKAGE)) {
                         promptFidesmoPgpInstall();
@@ -391,12 +397,11 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
     }
 
     protected void obtainSecurityTokenPin(RequiredInputParcel requiredInput) {
-
         try {
             Passphrase passphrase = PassphraseCacheService.getCachedPassphrase(this,
                     requiredInput.getMasterKeyId(), requiredInput.getSubKeyId());
             if (passphrase != null) {
-                mSecurityTokenConnection.setPin(passphrase);
+                mCachedPin = passphrase;
                 return;
             }
 
@@ -421,7 +426,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
                     return;
                 }
                 CryptoInputParcel input = data.getParcelableExtra(PassphraseDialogActivity.RESULT_CRYPTO_INPUT);
-                mSecurityTokenConnection.setPin(input.getPassphrase());
+                mCachedPin = input.getPassphrase();
                 break;
             }
             default:
@@ -429,19 +434,8 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         }
     }
 
-    protected void handleSecurityToken(Transport transport, Context ctx) throws IOException {
-        // Don't reconnect if device was already connected
-        if (!(mSecurityTokenConnection.isPersistentConnectionAllowed()
-                && mSecurityTokenConnection.isConnected()
-                && mSecurityTokenConnection.getTransport().equals(transport))) {
-            mSecurityTokenConnection.setTransport(transport);
-            mSecurityTokenConnection.connectToDevice(ctx);
-        }
-        doSecurityTokenInBackground();
-    }
-
-    public boolean isSecurityTokenConnected() {
-        return mSecurityTokenConnection.isConnected();
+    protected void handleSecurityToken(SecurityTokenConnection stConnection) throws IOException {
+        doSecurityTokenInBackground(stConnection);
     }
 
     public static class IsoDepNotSupportedException extends IOException {
@@ -498,10 +492,6 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
     protected void onStart() {
         super.onStart();
         mUsbDispatcher.onStart();
-    }
-
-    public SecurityTokenConnection getSecurityTokenHelper() {
-        return mSecurityTokenConnection;
     }
 
     /**

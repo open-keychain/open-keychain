@@ -44,6 +44,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.securitytoken.KeyType;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -185,12 +186,12 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
     }
 
     @Override
-    protected void doSecurityTokenInBackground() throws IOException {
+    protected void doSecurityTokenInBackground(SecurityTokenConnection stConnection) throws IOException {
 
         switch (mRequiredInput.mType) {
             case SECURITY_TOKEN_DECRYPT: {
                 long tokenKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(
-                        mSecurityTokenConnection.getKeyFingerprint(KeyType.ENCRYPT));
+                        stConnection.getKeyFingerprint(KeyType.ENCRYPT));
 
                 if (tokenKeyId != mRequiredInput.getSubKeyId()) {
                     throw new IOException(getString(R.string.error_wrong_security_token));
@@ -208,7 +209,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
 
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] encryptedSessionKey = mRequiredInput.mInputData[i];
-                    byte[] decryptedSessionKey = mSecurityTokenConnection
+                    byte[] decryptedSessionKey = stConnection
                             .decryptSessionKey(encryptedSessionKey, publicKeyRing.getPublicKey(tokenKeyId));
                     mInputParcel = mInputParcel.withCryptoData(encryptedSessionKey, decryptedSessionKey);
                 }
@@ -216,7 +217,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
             }
             case SECURITY_TOKEN_SIGN: {
                 long tokenKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(
-                        mSecurityTokenConnection.getKeyFingerprint(KeyType.SIGN));
+                        stConnection.getKeyFingerprint(KeyType.SIGN));
 
                 if (tokenKeyId != mRequiredInput.getSubKeyId()) {
                     throw new IOException(getString(R.string.error_wrong_security_token));
@@ -227,15 +228,13 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] hash = mRequiredInput.mInputData[i];
                     int algo = mRequiredInput.mSignAlgos[i];
-                    byte[] signedHash = mSecurityTokenConnection.calculateSignature(hash, algo);
+                    byte[] signedHash = stConnection.calculateSignature(hash, algo);
                     mInputParcel = mInputParcel.withCryptoData(hash, signedHash);
                 }
                 break;
             }
             case SECURITY_TOKEN_MOVE_KEY_TO_CARD: {
-                // TODO: assume PIN and Admin PIN to be default for this operation
-                mSecurityTokenConnection.setPin(new Passphrase("123456"));
-                mSecurityTokenConnection.setAdminPin(new Passphrase("12345678"));
+                Passphrase adminPin = new Passphrase("12345678");
 
                 KeyRepository keyRepository =
                         KeyRepository.create(this);
@@ -257,7 +256,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     long subkeyId = buf.getLong();
 
                     CanonicalizedSecretKey key = secretKeyRing.getSecretKey(subkeyId);
-                    byte[] tokenSerialNumber = Arrays.copyOf(mSecurityTokenConnection.getAid(), 16);
+                    byte[] tokenSerialNumber = Arrays.copyOf(stConnection.getAid(), 16);
 
                     Passphrase passphrase;
                     try {
@@ -267,21 +266,21 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                         throw new IOException("Unable to get cached passphrase!");
                     }
 
-                    mSecurityTokenConnection.changeKey(key, passphrase);
+                    stConnection.changeKey(key, passphrase, adminPin);
 
                     // TODO: Is this really used anywhere?
                     mInputParcel = mInputParcel.withCryptoData(subkeyBytes, tokenSerialNumber);
                 }
 
                 // change PINs afterwards
-                mSecurityTokenConnection.modifyPin(0x81, newPin);
-                mSecurityTokenConnection.modifyPin(0x83, newAdminPin);
+                stConnection.modifyPin(0x81, newPin, null);
+                stConnection.modifyPin(0x83, newAdminPin, adminPin);
 
                 break;
             }
             case SECURITY_TOKEN_RESET_CARD: {
-                mSecurityTokenConnection.resetAndWipeToken();
-                mResultTokenInfo = mSecurityTokenConnection.getTokenInfo();
+                stConnection.resetAndWipeToken();
+                mResultTokenInfo = stConnection.getTokenInfo();
 
                 break;
             }
@@ -293,7 +292,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
     }
 
     @Override
-    protected final void onSecurityTokenPostExecute() {
+    protected final void onSecurityTokenPostExecute(final SecurityTokenConnection stConnection) {
         handleResult(mInputParcel);
 
         // show finish
@@ -301,17 +300,17 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
 
         nfcGuideView.setCurrentStatus(NfcGuideView.NfcGuideViewStatus.DONE);
 
-        if (mSecurityTokenConnection.isPersistentConnectionAllowed()) {
+        if (stConnection.isPersistentConnectionAllowed()) {
             // Just close
             finish();
         } else {
-            mSecurityTokenConnection.clearSecureMessaging();
+            stConnection.clearSecureMessaging();
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... params) {
                     // check all 200ms if Security Token has been taken away
                     while (true) {
-                        if (isSecurityTokenConnected()) {
+                        if (stConnection.isConnected()) {
                             try {
                                 Thread.sleep(200);
                             } catch (InterruptedException ignored) {

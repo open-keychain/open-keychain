@@ -15,6 +15,7 @@ import android.view.animation.DecelerateInterpolator;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.securitytoken.NfcSweetspotData;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 
 
@@ -88,7 +89,7 @@ public class ShowNfcSweetspotActivity extends BaseSecurityTokenActivity {
     }
 
     @Override
-    protected void onSecurityTokenPostExecute() {
+    protected void onSecurityTokenPostExecute(SecurityTokenConnection stConnection) {
         Intent result = new Intent();
         result.putExtra(EXTRA_TOKEN_INFO, tokenInfo);
         setResult(Activity.RESULT_OK, result);

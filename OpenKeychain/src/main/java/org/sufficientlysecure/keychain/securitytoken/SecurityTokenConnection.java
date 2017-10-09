@@ -87,30 +87,34 @@ public class SecurityTokenConnection {
 
     private static final byte[] BLANK_FINGERPRINT = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
+    private static SecurityTokenConnection sCachedInstance;
+
     private final JcaKeyFingerprintCalculator fingerprintCalculator = new JcaKeyFingerprintCalculator();
 
-    private Transport mTransport;
+    @NonNull
+    private final Transport mTransport;
+    @NonNull
+    private final Passphrase mPin;
+
     private CardCapabilities mCardCapabilities;
     private OpenPgpCapabilities mOpenPgpCapabilities;
     private SecureMessaging mSecureMessaging;
 
-    private Passphrase mPin;
-    private Passphrase mAdminPin;
     private boolean mPw1ValidatedForSignature;
     private boolean mPw1ValidatedForDecrypt; // Mode 82 does other things; consider renaming?
     private boolean mPw3Validated;
 
-    private SecurityTokenConnection() {
+    public static SecurityTokenConnection getInstanceForTransport(Transport transport, Passphrase pin) {
+        if (sCachedInstance == null || !sCachedInstance.isPersistentConnectionAllowed() ||
+                !sCachedInstance.isConnected() || !sCachedInstance.mTransport.equals(transport)) {
+            sCachedInstance = new SecurityTokenConnection(transport, pin);
+        }
+        return sCachedInstance;
     }
 
-    public static double parseOpenPgpVersion(final byte[] aid) {
-        float minv = aid[7];
-        while (minv > 0) minv /= 10.0;
-        return aid[6] + minv;
-    }
-
-    public static SecurityTokenConnection getInstance() {
-        return LazyHolder.SECURITY_TOKEN_HELPER;
+    private SecurityTokenConnection(@NonNull Transport transport, @NonNull Passphrase pin) {
+        this.mTransport = transport;
+        this.mPin = pin;
     }
 
     private String getHolderName(byte[] name) {
@@ -126,23 +130,7 @@ public class SecurityTokenConnection {
         }
     }
 
-    public Passphrase getPin() {
-        return mPin;
-    }
-
-    public void setPin(final Passphrase pin) {
-        this.mPin = pin;
-    }
-
-    public Passphrase getAdminPin() {
-        return mAdminPin;
-    }
-
-    public void setAdminPin(final Passphrase adminPin) {
-        this.mAdminPin = adminPin;
-    }
-
-    public void changeKey(CanonicalizedSecretKey secretKey, Passphrase passphrase) throws IOException {
+    public void changeKey(CanonicalizedSecretKey secretKey, Passphrase passphrase, Passphrase adminPin) throws IOException {
         long keyGenerationTimestamp = secretKey.getCreationTime().getTime() / 1000;
         byte[] timestampBytes = ByteBuffer.allocate(4).putInt((int) keyGenerationTimestamp).array();
         KeyType keyType = KeyType.from(secretKey);
@@ -160,9 +148,9 @@ public class SecurityTokenConnection {
                     keyType.toString()));
         }
 
-        putKey(keyType, secretKey, passphrase);
-        putData(keyType.getFingerprintObjectId(), secretKey.getFingerprint());
-        putData(keyType.getTimestampObjectId(), timestampBytes);
+        putKey(keyType, secretKey, passphrase, adminPin);
+        putData(adminPin, keyType.getFingerprintObjectId(), secretKey.getFingerprint());
+        putData(adminPin, keyType.getTimestampObjectId(), timestampBytes);
     }
 
     private boolean isSlotEmpty(KeyType keyType) throws IOException {
@@ -179,12 +167,18 @@ public class SecurityTokenConnection {
         return java.util.Arrays.equals(getKeyFingerprint(keyType), fingerprint);
     }
 
+    public void connectIfNecessary(Context context) throws IOException {
+        if (isConnected()) {
+            return;
+        }
+
+        connectToDevice(context);
+    }
+
     /**
      * Connect to device and select pgp applet
-     *
-     * @throws IOException
      */
-    public void connectToDevice(final Context ctx) throws IOException {
+    private void connectToDevice(Context context) throws IOException {
         // Connect on transport layer
         mCardCapabilities = new CardCapabilities();
 
@@ -208,7 +202,7 @@ public class SecurityTokenConnection {
 
         if (mOpenPgpCapabilities.isHasSCP11bSM()) {
             try {
-                SCP11bSecureMessaging.establish(this, ctx);
+                SCP11bSecureMessaging.establish(this, context);
             } catch (SecureMessagingException e) {
                 mSecureMessaging = null;
                 Log.e(Constants.TAG, "failed to establish secure messaging", e);
@@ -217,9 +211,9 @@ public class SecurityTokenConnection {
 
     }
 
-    public void resetPin(String newPinStr) throws IOException {
+    public void resetPin(Passphrase adminPin, String newPinStr) throws IOException {
         if (!mPw3Validated) {
-            verifyPin(0x83); // (Verify PW1 with mode 82 for decryption)
+            verifyAdminPin(adminPin);
         }
 
         byte[] newPin = newPinStr.getBytes();
@@ -246,7 +240,7 @@ public class SecurityTokenConnection {
      * @param pw     For PW1, this is 0x81. For PW3 (Admin PIN), mode is 0x83.
      * @param newPin The new PW1 or PW3.
      */
-    public void modifyPin(int pw, byte[] newPin) throws IOException {
+    public void modifyPin(int pw, byte[] newPin, Passphrase adminPin) throws IOException {
         final int MAX_PW1_LENGTH_INDEX = 1;
         final int MAX_PW3_LENGTH_INDEX = 3;
 
@@ -266,7 +260,10 @@ public class SecurityTokenConnection {
 
         byte[] pin;
         if (pw == 0x83) {
-            pin = mAdminPin.toStringUnsafe().getBytes();
+            if (adminPin == null) {
+                throw new IllegalArgumentException("Changing the admin pin requires admin pin argument!");
+            }
+            pin = adminPin.toStringUnsafe().getBytes();
         } else {
             pin = mPin.toStringUnsafe().getBytes();
         }
@@ -422,28 +419,30 @@ public class SecurityTokenConnection {
      *             For PW3 (Admin PIN), mode is 0x83.
      */
     private void verifyPin(int mode) throws IOException {
-        if (mPin != null || mode == 0x83) {
+        byte[] pin = mPin.toStringUnsafe().getBytes();
 
-            byte[] pin;
-            if (mode == 0x83) {
-                pin = mAdminPin.toStringUnsafe().getBytes();
-            } else {
-                pin = mPin.toStringUnsafe().getBytes();
-            }
-
-            ResponseAPDU response = tryPin(mode, pin);// login
-            if (response.getSW() != APDU_SW_SUCCESS) {
-                throw new CardException("Bad PIN!", response.getSW());
-            }
-
-            if (mode == 0x81) {
-                mPw1ValidatedForSignature = true;
-            } else if (mode == 0x82) {
-                mPw1ValidatedForDecrypt = true;
-            } else if (mode == 0x83) {
-                mPw3Validated = true;
-            }
+        ResponseAPDU response = tryPin(mode, pin);// login
+        if (response.getSW() != APDU_SW_SUCCESS) {
+            throw new CardException("Bad PIN!", response.getSW());
         }
+
+        if (mode == 0x81) {
+            mPw1ValidatedForSignature = true;
+        } else if (mode == 0x82) {
+            mPw1ValidatedForDecrypt = true;
+        }
+    }
+
+    /**
+     * Verifies the user's PW1 or PW3 with the appropriate mode.
+     */
+    private void verifyAdminPin(Passphrase adminPin) throws IOException {
+        ResponseAPDU response = tryPin(0x83, adminPin.toStringUnsafe().getBytes());
+        if (response.getSW() != APDU_SW_SUCCESS) {
+            throw new CardException("Bad PIN!", response.getSW());
+        }
+
+        mPw3Validated = true;
     }
 
     /**
@@ -454,16 +453,17 @@ public class SecurityTokenConnection {
      * @param dataObject The data object to be stored.
      * @param data       The data to store in the object
      */
-    private void putData(int dataObject, byte[] data) throws IOException {
+    private void putData(Passphrase adminPin, int dataObject, byte[] data) throws IOException {
         if (data.length > 254) {
             throw new IOException("Cannot PUT DATA with length > 254");
         }
+        // TODO use admin pin regardless, if we have it?
         if (dataObject == 0x0101 || dataObject == 0x0103) {
             if (!mPw1ValidatedForDecrypt) {
                 verifyPin(0x82); // (Verify PW1 for non-signing operations)
             }
         } else if (!mPw3Validated) {
-            verifyPin(0x83); // (Verify PW3)
+            verifyAdminPin(adminPin);
         }
 
         CommandAPDU command = new CommandAPDU(0x00, 0xDA, (dataObject & 0xFF00) >> 8, dataObject & 0xFF, data);
@@ -475,7 +475,7 @@ public class SecurityTokenConnection {
     }
 
 
-    private void setKeyAttributes(final KeyType slot, final CanonicalizedSecretKey secretKey)
+    private void setKeyAttributes(Passphrase adminPin, final KeyType slot, final CanonicalizedSecretKey secretKey)
             throws IOException {
 
         if (mOpenPgpCapabilities.isAttributesChangable()) {
@@ -493,7 +493,7 @@ public class SecurityTokenConnection {
 
             try {
 
-                putData(tag, SecurityTokenUtils.attributesFromSecretKey(slot, secretKey));
+                putData(adminPin, tag, SecurityTokenUtils.attributesFromSecretKey(slot, secretKey));
 
                 mOpenPgpCapabilities.updateWithData(getData(0x00, tag));
 
@@ -512,14 +512,14 @@ public class SecurityTokenConnection {
      *             0xB8: Decipherment Key
      *             0xA4: Authentication Key
      */
-    private void putKey(KeyType slot, CanonicalizedSecretKey secretKey, Passphrase passphrase)
+    private void putKey(KeyType slot, CanonicalizedSecretKey secretKey, Passphrase passphrase, Passphrase adminPin)
             throws IOException {
         RSAPrivateCrtKey crtSecretKey;
         ECPrivateKey ecSecretKey;
         ECPublicKey ecPublicKey;
 
         if (!mPw3Validated) {
-            verifyPin(0x83); // (Verify PW3 with mode 83)
+            verifyAdminPin(adminPin);
         }
 
         // Now we're ready to communicate with the token.
@@ -528,7 +528,7 @@ public class SecurityTokenConnection {
         try {
             secretKey.unlock(passphrase);
 
-            setKeyAttributes(slot, secretKey);
+            setKeyAttributes(adminPin, slot, secretKey);
 
             switch (mOpenPgpCapabilities.getFormatForKeyType(slot).keyFormatType()) {
                 case RSAKeyFormatType:
@@ -836,15 +836,6 @@ public class SecurityTokenConnection {
         return lastResponse;
     }
 
-    public Transport getTransport() {
-        return mTransport;
-    }
-
-    public void setTransport(Transport mTransport) {
-        clearSecureMessaging();
-        this.mTransport = mTransport;
-    }
-
     public boolean isFidesmoToken() {
         if (isConnected()) { // Check if we can still talk to the card
             try {
@@ -873,13 +864,13 @@ public class SecurityTokenConnection {
      * @return the public key data objects, in TLV format. For RSA this will be the public modulus
      * (0x81) and exponent (0x82). These may come out of order; proper TLV parsing is required.
      */
-    public byte[] generateKey(int slot) throws IOException {
+    public byte[] generateKey(Passphrase adminPin, int slot) throws IOException {
         if (slot != 0xB6 && slot != 0xB8 && slot != 0xA4) {
             throw new IOException("Invalid key slot");
         }
 
         if (!mPw3Validated) {
-            verifyPin(0x83); // (Verify PW3 with mode 83)
+            verifyAdminPin(adminPin);
         }
 
         CommandAPDU apdu = new CommandAPDU(0x00, 0x47, 0x80, 0x00, new byte[]{(byte) slot, 0x00}, MAX_APDU_NE_EXT);
@@ -962,14 +953,12 @@ public class SecurityTokenConnection {
     }
 
     public boolean isPersistentConnectionAllowed() {
-        return mTransport != null &&
-                mTransport.isPersistentConnectionAllowed() &&
-                (mSecureMessaging == null ||
-                        !mSecureMessaging.isEstablished());
+        return mTransport.isPersistentConnectionAllowed() &&
+                (mSecureMessaging == null || !mSecureMessaging.isEstablished());
     }
 
     public boolean isConnected() {
-        return mTransport != null && mTransport.isConnected();
+        return mTransport.isConnected();
     }
 
     public void clearSecureMessaging() {
@@ -1006,7 +995,9 @@ public class SecurityTokenConnection {
         return SecurityTokenInfo.create(fingerprints, aid, userId, url, pwInfo[4], pwInfo[6]);
     }
 
-    private static class LazyHolder {
-        private static final SecurityTokenConnection SECURITY_TOKEN_HELPER = new SecurityTokenConnection();
+    public static double parseOpenPgpVersion(final byte[] aid) {
+        float minv = aid[7];
+        while (minv > 0) minv /= 10.0;
+        return aid[6] + minv;
     }
 }

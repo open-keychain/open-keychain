@@ -32,6 +32,7 @@ import android.widget.ViewAnimator;
 import nordpol.android.NfcGuideView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.service.input.SecurityTokenChangePinParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
@@ -138,15 +139,15 @@ public class SecurityTokenChangePinOperationActivity extends BaseSecurityTokenAc
     }
 
     @Override
-    protected void doSecurityTokenInBackground() throws IOException {
-        mSecurityTokenConnection.setAdminPin(new Passphrase(changePinInput.getAdminPin()));
-        mSecurityTokenConnection.resetPin(changePinInput.getNewPin());
+    protected void doSecurityTokenInBackground(SecurityTokenConnection stConnection) throws IOException {
+        Passphrase adminPin = new Passphrase(changePinInput.getAdminPin());
+        stConnection.resetPin(adminPin, changePinInput.getNewPin());
 
-        resultTokenInfo = mSecurityTokenConnection.getTokenInfo();
+        resultTokenInfo = stConnection.getTokenInfo();
     }
 
     @Override
-    protected final void onSecurityTokenPostExecute() {
+    protected final void onSecurityTokenPostExecute(final SecurityTokenConnection stConnection) {
         Intent result = new Intent();
         result.putExtra(RESULT_TOKEN_INFO, resultTokenInfo);
         setResult(RESULT_OK, result);
@@ -156,17 +157,17 @@ public class SecurityTokenChangePinOperationActivity extends BaseSecurityTokenAc
 
         nfcGuideView.setCurrentStatus(NfcGuideView.NfcGuideViewStatus.DONE);
 
-        if (mSecurityTokenConnection.isPersistentConnectionAllowed()) {
+        if (stConnection.isPersistentConnectionAllowed()) {
             // Just close
             finish();
         } else {
-            mSecurityTokenConnection.clearSecureMessaging();
+            stConnection.clearSecureMessaging();
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... params) {
                     // check all 200ms if Security Token has been taken away
                     while (true) {
-                        if (isSecurityTokenConnected()) {
+                        if (stConnection.isConnected()) {
                             try {
                                 Thread.sleep(200);
                             } catch (InterruptedException ignored) {
