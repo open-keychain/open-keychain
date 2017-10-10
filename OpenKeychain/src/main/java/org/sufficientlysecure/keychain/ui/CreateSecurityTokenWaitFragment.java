@@ -19,19 +19,24 @@ package org.sufficientlysecure.keychain.ui;
 
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.securitytoken.NfcSweetspotData;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
@@ -39,6 +44,7 @@ import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenFragment;
 
 
 public class CreateSecurityTokenWaitFragment extends Fragment {
+    public static final int REQUEST_CODE_SWEETSPOT = 0;
 
     public static boolean sDisableFragmentAnimations = false;
 
@@ -88,6 +94,17 @@ public class CreateSecurityTokenWaitFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_security_token_wait_fragment, container, false);
 
+        boolean showLocateHotspot = NfcSweetspotData.SWEETSPOT_DATA.containsKey(Build.MODEL);
+        View locateHotspotView = view.findViewById(R.id.button_locate_nfc);
+        locateHotspotView.setVisibility(showLocateHotspot ? View.VISIBLE : View.GONE);
+        locateHotspotView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), ShowNfcSweetspotActivity.class);
+                startActivityForResult(intent, REQUEST_CODE_SWEETSPOT);
+            }
+        });
+
         mBackButton = view.findViewById(R.id.create_key_back_button);
 
         mBackButton.setOnClickListener(new View.OnClickListener() {
@@ -98,6 +115,22 @@ public class CreateSecurityTokenWaitFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_SWEETSPOT) {
+            FragmentActivity activity = getActivity();
+            if (activity instanceof BaseSecurityTokenActivity && data != null &&
+                    data.hasExtra(ShowNfcSweetspotActivity.EXTRA_TOKEN_INFO)) {
+                SecurityTokenInfo tokenInfo = data.getParcelableExtra(ShowNfcSweetspotActivity.EXTRA_TOKEN_INFO);
+                ((CreateKeyActivity) activity).handleTokenInfo(tokenInfo);
+            }
+
+            return;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

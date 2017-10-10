@@ -144,6 +144,10 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
 
     @Override
     protected void onSecurityTokenPostExecute() {
+        handleTokenInfo(tokenInfo);
+    }
+
+    public void handleTokenInfo(SecurityTokenInfo tokenInfo) {
         if (mCurrentFragment instanceof SecurityTokenListenerFragment) {
             ((SecurityTokenListenerFragment) mCurrentFragment).onSecurityTokenPostExecute();
             return;
