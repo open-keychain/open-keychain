@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -36,7 +35,6 @@ import android.view.animation.Animation;
 
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.securitytoken.NfcSweetspotData;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
@@ -94,10 +92,10 @@ public class CreateSecurityTokenWaitFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_security_token_wait_fragment, container, false);
 
-        boolean showLocateHotspot = NfcSweetspotData.SWEETSPOT_DATA.containsKey(Build.MODEL);
-        View locateHotspotView = view.findViewById(R.id.button_locate_nfc);
-        locateHotspotView.setVisibility(showLocateHotspot ? View.VISIBLE : View.GONE);
-        locateHotspotView.setOnClickListener(new OnClickListener() {
+        boolean showLocateSweetspot = ShowNfcSweetspotActivity.hasSweetspotData();
+        View buttonLocateSweetspot = view.findViewById(R.id.button_locate_nfc);
+        buttonLocateSweetspot.setVisibility(showLocateSweetspot ? View.VISIBLE : View.GONE);
+        buttonLocateSweetspot.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), ShowNfcSweetspotActivity.class);

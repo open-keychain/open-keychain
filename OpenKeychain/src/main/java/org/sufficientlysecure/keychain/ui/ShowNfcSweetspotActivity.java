@@ -113,4 +113,8 @@ public class ShowNfcSweetspotActivity extends BaseSecurityTokenActivity {
 
         return metrics;
     }
+
+    public static boolean hasSweetspotData() {
+        return NfcSweetspotData.SWEETSPOT_DATA.containsKey(Build.MODEL);
+    }
 }
