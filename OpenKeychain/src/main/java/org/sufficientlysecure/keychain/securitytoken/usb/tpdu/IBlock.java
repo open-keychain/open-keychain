@@ -17,31 +17,38 @@
 
 package org.sufficientlysecure.keychain.securitytoken.usb.tpdu;
 
+
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 
-public class IBlock extends Block {
-    public static final byte MASK_RBLOCK = (byte) 0b10000000;
-    public static final byte MASK_VALUE_RBLOCK = (byte) 0b00000000;
+
+class IBlock extends Block {
+    static final byte MASK_IBLOCK = (byte) 0b10000000;
+    static final byte MASK_VALUE_IBLOCK = (byte) 0b00000000;
 
     private static final byte BIT_SEQUENCE = 6;
     private static final byte BIT_CHAINING = 5;
 
-    public IBlock(final Block baseBlock) {
-        super(baseBlock);
+    IBlock(BlockChecksumAlgorithm checksumType, byte[] data) throws UsbTransportException {
+        super(checksumType, data);
+
+        if ((getPcb() & MASK_IBLOCK) != MASK_VALUE_IBLOCK) {
+            throw new IllegalArgumentException("Data contained incorrect block type!");
+        }
     }
 
-    public IBlock(BlockChecksumType checksumType, byte nad, byte sequence, boolean chaining,
-                  byte[] apdu) throws UsbTransportException {
+    IBlock(BlockChecksumAlgorithm checksumType, byte nad, byte sequence, boolean chaining, byte[] apdu, int offset,
+            int length)
+            throws UsbTransportException {
         super(checksumType, nad,
                 (byte) (((sequence & 1) << BIT_SEQUENCE) | (chaining ? 1 << BIT_CHAINING : 0)),
-                apdu);
+                apdu, offset, length);
     }
 
-    public byte getSequence() {
+    byte getSequence() {
         return (byte) ((getPcb() >> BIT_SEQUENCE) & 1);
     }
 
-    public boolean getChaining() {
+    boolean getChaining() {
         return ((getPcb() >> BIT_CHAINING) & 1) != 0;
     }
 }

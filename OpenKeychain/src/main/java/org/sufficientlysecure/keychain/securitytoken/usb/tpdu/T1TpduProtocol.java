@@ -17,128 +17,114 @@
 
 package org.sufficientlysecure.keychain.securitytoken.usb.tpdu;
 
+
 import android.support.annotation.NonNull;
 
 import org.bouncycastle.util.Arrays;
-import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransceiver;
-import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
+import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransceiver.CcidDataBlock;
 import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransportProtocol;
+import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 import org.sufficientlysecure.keychain.util.Log;
 
 public class T1TpduProtocol implements CcidTransportProtocol {
     private final static int MAX_FRAME_LEN = 254;
 
-    private byte mCounter = 0;
-    private CcidTransceiver mTransceiver;
-    private BlockChecksumType mChecksumType;
 
-    public T1TpduProtocol(final CcidTransceiver transceiver) throws UsbTransportException {
-        mTransceiver = transceiver;
+    private CcidTransceiver ccidTransceiver;
+    private T1TpduBlockFactory blockFactory;
 
-        // Connect
-        byte[] atr = mTransceiver.iccPowerOn();
-        Log.d(Constants.TAG, "Usb transport connected  T1/TPDU, ATR=" + Hex.toHexString(atr));
+    private byte sequenceCounter = 0;
+
+
+    public void connect(@NonNull CcidTransceiver ccidTransceiver) throws UsbTransportException {
+        if (this.ccidTransceiver != null) {
+            throw new IllegalStateException("Protocol already connected!");
+        }
+        this.ccidTransceiver = ccidTransceiver;
+
+        this.ccidTransceiver.iccPowerOn();
+
         // TODO: set checksum from atr
-        mChecksumType = BlockChecksumType.LRC;
+        blockFactory = new T1TpduBlockFactory(BlockChecksumAlgorithm.LRC);
 
-        // PPS all auto
-        pps();
+        performPpsExchange();
     }
 
-    protected void pps() throws UsbTransportException {
-        byte[] pps = new byte[]{(byte) 0xFF, 1, (byte) (0xFF ^ 1)};
+    private void performPpsExchange() throws UsbTransportException {
+        byte[] pps = { (byte) 0xFF, 1, (byte) (0xFF ^ 1) };
 
-        mTransceiver.sendXfrBlock(pps);
+        CcidDataBlock response = ccidTransceiver.sendXfrBlock(pps);
 
-        byte[] ppsResponse = mTransceiver.receiveRaw();
-
-        Log.d(Constants.TAG, "PPS response " + Hex.toHexString(ppsResponse));
+        if (!Arrays.areEqual(pps, response.getData())) {
+            throw new UsbTransportException("Protocol and parameters (PPS) negotiation failed!");
+        }
     }
 
     public byte[] transceive(@NonNull byte[] apdu) throws UsbTransportException {
-        int start = 0;
+        if (this.ccidTransceiver == null) {
+            throw new IllegalStateException("Protocol not connected!");
+        }
 
         if (apdu.length == 0) {
             throw new UsbTransportException("Cant transcive zero-length apdu(tpdu)");
         }
 
-        Block responseBlock = null;
-        while (apdu.length - start > 0) {
-            boolean hasMore = start + MAX_FRAME_LEN < apdu.length;
-            int len = Math.min(MAX_FRAME_LEN, apdu.length - start);
+        IBlock responseBlock = sendChainedData(apdu);
+        return receiveChainedResponse(responseBlock);
+    }
 
-            // Send next frame
-            Block block = newIBlock(mCounter++, hasMore, Arrays.copyOfRange(apdu, start, start + len));
+    private IBlock sendChainedData(@NonNull byte[] apdu) throws UsbTransportException {
+        int sentLength = 0;
+        while (sentLength < apdu.length) {
+            boolean hasMore = sentLength + MAX_FRAME_LEN < apdu.length;
+            int len = Math.min(MAX_FRAME_LEN, apdu.length - sentLength);
 
-            mTransceiver.sendXfrBlock(block.getRawData());
+            Block sendBlock = blockFactory.newIBlock(sequenceCounter++, hasMore, apdu, sentLength, len);
+            CcidDataBlock response = ccidTransceiver.sendXfrBlock(sendBlock.getRawData());
+            Block responseBlock = blockFactory.fromBytes(response.getData());
 
-            // Receive I or R block
-            responseBlock = getBlockFromResponse(mTransceiver.receiveRaw());
-
-            start += len;
+            sentLength += len;
 
             if (responseBlock instanceof SBlock) {
-                Log.d(Constants.TAG, "S-Block received " + responseBlock.toString());
+                Log.d(Constants.TAG, "S-Block received " + responseBlock);
                 // just ignore
             } else if (responseBlock instanceof RBlock) {
-                Log.d(Constants.TAG, "R-Block received " + responseBlock.toString());
+                Log.d(Constants.TAG, "R-Block received " + responseBlock);
                 if (((RBlock) responseBlock).getError() != RBlock.RError.NO_ERROR) {
-                    throw new UsbTransportException("R-Block reports error "
-                            + ((RBlock) responseBlock).getError());
+                    throw new UsbTransportException("R-Block reports error " + ((RBlock) responseBlock).getError());
                 }
             } else {  // I block
-                if (start != apdu.length) {
+                if (sentLength != apdu.length) {
                     throw new UsbTransportException("T1 frame response underflow");
                 }
-                break;
+                return (IBlock) responseBlock;
             }
         }
 
-        // Receive
-        if (responseBlock == null || !(responseBlock instanceof IBlock))
-            throw new UsbTransportException("Invalid tpdu sequence state");
+        throw new UsbTransportException("Invalid tpdu sequence state");
+    }
 
-        byte[] responseApdu = responseBlock.getApdu();
+    private byte[] receiveChainedResponse(IBlock responseIBlock) throws UsbTransportException {
+        byte[] responseApdu = responseIBlock.getApdu();
 
-        while (((IBlock) responseBlock).getChaining()) {
-            Block ackBlock = newRBlock((byte) (((IBlock) responseBlock).getSequence() + 1));
-            mTransceiver.sendXfrBlock(ackBlock.getRawData());
+        while (responseIBlock.getChaining()) {
+            byte receivedSeqNum = responseIBlock.getSequence();
 
-            responseBlock = getBlockFromResponse(mTransceiver.receiveRaw());
+            Block ackBlock = blockFactory.createAckRBlock(receivedSeqNum);
+            CcidDataBlock response = ccidTransceiver.sendXfrBlock(ackBlock.getRawData());
+            Block responseBlock = blockFactory.fromBytes(response.getData());
 
-            if (responseBlock instanceof IBlock) {
-                responseApdu = Arrays.concatenate(responseApdu, responseBlock.getApdu());
-            } else {
-                Log.d(Constants.TAG, "Response block received " + responseBlock.toString());
+            if (!(responseBlock instanceof IBlock)) {
+                Log.e(Constants.TAG, "Invalid response block received " + responseBlock);
                 throw new UsbTransportException("Response: invalid state - invalid block received");
             }
+
+            responseIBlock = (IBlock) responseBlock;
+            responseApdu = Arrays.concatenate(responseApdu, responseBlock.getApdu());
         }
 
         return responseApdu;
-    }
-
-    // Factory methods
-    public Block getBlockFromResponse(byte[] data) throws UsbTransportException {
-        final Block baseBlock = new Block(mChecksumType, data);
-
-        if ((baseBlock.getPcb() & IBlock.MASK_RBLOCK) == IBlock.MASK_VALUE_RBLOCK) {
-            return new IBlock(baseBlock);
-        } else if ((baseBlock.getPcb() & SBlock.MASK_SBLOCK) == SBlock.MASK_VALUE_SBLOCK) {
-            return new SBlock(baseBlock);
-        } else if ((baseBlock.getPcb() & RBlock.MASK_RBLOCK) == RBlock.MASK_VALUE_RBLOCK) {
-            return new RBlock(baseBlock);
-        }
-
-        throw new UsbTransportException("TPDU Unknown block type");
-    }
-
-    public IBlock newIBlock(byte sequence, boolean chaining, byte[] apdu) throws UsbTransportException {
-        return new IBlock(mChecksumType, (byte) 0, sequence, chaining, apdu);
-    }
-
-    public RBlock newRBlock(byte sequence) throws UsbTransportException {
-        return new RBlock(mChecksumType, (byte) 0, sequence);
     }
 }

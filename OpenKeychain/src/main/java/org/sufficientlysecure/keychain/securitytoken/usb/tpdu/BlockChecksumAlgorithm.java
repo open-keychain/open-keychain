@@ -19,12 +19,12 @@ package org.sufficientlysecure.keychain.securitytoken.usb.tpdu;
 
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 
-public enum BlockChecksumType {
+enum BlockChecksumAlgorithm {
     LRC(1), CRC(2);
 
     private int mLength;
 
-    BlockChecksumType(int length) {
+    BlockChecksumAlgorithm(int length) {
         mLength = length;
     }
 

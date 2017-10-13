@@ -17,11 +17,19 @@
 
 package org.sufficientlysecure.keychain.securitytoken.usb.tpdu;
 
-public class SBlock extends Block {
-    public static final byte MASK_SBLOCK = (byte) 0b11000000;
-    public static final byte MASK_VALUE_SBLOCK = (byte) 0b11000000;
 
-    public SBlock(Block baseBlock) {
-        super(baseBlock);
+import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
+
+
+class SBlock extends Block {
+    static final byte MASK_SBLOCK = (byte) 0b11000000;
+    static final byte MASK_VALUE_SBLOCK = (byte) 0b11000000;
+
+    SBlock(BlockChecksumAlgorithm checksumType, byte[] data) throws UsbTransportException {
+        super(checksumType, data);
+
+        if ((getPcb() & MASK_SBLOCK) != MASK_VALUE_SBLOCK) {
+            throw new IllegalArgumentException("Data contained incorrect block type!");
+        }
     }
 }

@@ -20,5 +20,6 @@ package org.sufficientlysecure.keychain.securitytoken.usb;
 import android.support.annotation.NonNull;
 
 public interface CcidTransportProtocol {
+    void connect(@NonNull CcidTransceiver transceiver) throws UsbTransportException;
     byte[] transceive(@NonNull byte[] apdu) throws UsbTransportException;
 }

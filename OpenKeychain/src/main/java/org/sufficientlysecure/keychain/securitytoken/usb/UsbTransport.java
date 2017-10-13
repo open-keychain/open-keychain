@@ -31,6 +31,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
+import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.T1ShortApduProtocol;
 import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.T1TpduProtocol;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -54,19 +55,153 @@ public class UsbTransport implements Transport {
     private static final int MASK_EXTENDED_APDU = 0x40000;
 
 
-    private final UsbManager mUsbManager;
-    private final UsbDevice mUsbDevice;
-    private UsbInterface mUsbInterface;
-    private UsbEndpoint mBulkIn;
-    private UsbEndpoint mBulkOut;
-    private UsbDeviceConnection mConnection;
-    private CcidTransceiver mTransceiver;
-    private CcidTransportProtocol mProtocol;
+    private final UsbDevice usbDevice;
+    private final UsbManager usbManager;
+
+    private UsbDeviceConnection usbConnection;
+    private UsbInterface usbInterface;
+    private CcidTransportProtocol ccidTransportProtocol;
 
     public UsbTransport(UsbDevice usbDevice, UsbManager usbManager) {
-        mUsbDevice = usbDevice;
-        mUsbManager = usbManager;
+        this.usbDevice = usbDevice;
+        this.usbManager = usbManager;
     }
+
+    @Override
+    public void release() {
+        if (usbConnection != null) {
+            usbConnection.releaseInterface(usbInterface);
+            usbConnection.close();
+            usbConnection = null;
+        }
+
+        Log.d(Constants.TAG, "Usb transport disconnected");
+    }
+
+    /**
+     * Check if device is was connected to and still is connected
+     * @return true if device is connected
+     */
+    @Override
+    public boolean isConnected() {
+        return usbConnection != null && usbManager.getDeviceList().containsValue(usbDevice) &&
+                usbConnection.getSerial() != null;
+    }
+
+    /**
+     * Check if Transport supports persistent connections e.g connections which can
+     * handle multiple operations in one session
+     * @return true if transport supports persistent connections
+     */
+    @Override
+    public boolean isPersistentConnectionAllowed() {
+        return true;
+    }
+
+    /**
+     * Connect to OTG device
+     */
+    @Override
+    public void connect() throws IOException {
+        usbInterface = getSmartCardInterface(usbDevice);
+        if (usbInterface == null) {
+            // Shouldn't happen as we whitelist only class 11 devices
+            throw new UsbTransportException("USB error - device doesn't have class 11 interface");
+        }
+
+        final Pair<UsbEndpoint, UsbEndpoint> ioEndpoints = getIoEndpoints(usbInterface);
+        UsbEndpoint usbBulkIn = ioEndpoints.first;
+        UsbEndpoint usbBulkOut = ioEndpoints.second;
+
+        if (usbBulkIn == null || usbBulkOut == null) {
+            throw new UsbTransportException("USB error - invalid class 11 interface");
+        }
+
+        usbConnection = usbManager.openDevice(usbDevice);
+        if (usbConnection == null) {
+            throw new UsbTransportException("USB error - failed to connect to device");
+        }
+
+        if (!usbConnection.claimInterface(usbInterface, true)) {
+            throw new UsbTransportException("USB error - failed to claim interface");
+        }
+
+        byte[] rawDescriptors = usbConnection.getRawDescriptors();
+        ccidTransportProtocol = getCcidTransportProtocolForRawDescriptors(rawDescriptors);
+
+        CcidTransceiver transceiver = new CcidTransceiver(usbConnection, usbBulkIn, usbBulkOut);
+        ccidTransportProtocol.connect(transceiver);
+    }
+
+    private CcidTransportProtocol getCcidTransportProtocolForRawDescriptors(byte[] desc) throws UsbTransportException {
+        int dwProtocols = 0, dwFeatures = 0;
+        boolean hasCcidDescriptor = false;
+
+        ByteBuffer byteBuffer = ByteBuffer.wrap(desc).order(ByteOrder.LITTLE_ENDIAN);
+
+        while (byteBuffer.hasRemaining()) {
+            byteBuffer.mark();
+            byte len = byteBuffer.get(), type = byteBuffer.get();
+
+            if (type == 0x21 && len == 0x36) {
+                byteBuffer.reset();
+
+                byteBuffer.position(byteBuffer.position() + PROTOCOLS_OFFSET);
+                dwProtocols = byteBuffer.getInt();
+
+                byteBuffer.reset();
+
+                byteBuffer.position(byteBuffer.position() + FEATURES_OFFSET);
+                dwFeatures = byteBuffer.getInt();
+                hasCcidDescriptor = true;
+                break;
+            } else {
+                byteBuffer.position(byteBuffer.position() + len - 2);
+            }
+        }
+
+        if (!hasCcidDescriptor) {
+            throw new UsbTransportException("CCID descriptor not found");
+        }
+
+        if ((dwProtocols & MASK_T1_PROTO) == 0) {
+            throw new UsbTransportException("T=0 protocol is not supported");
+        }
+
+        if ((dwFeatures & MASK_TPDU) != 0) {
+            return new T1TpduProtocol();
+        } else if (((dwFeatures & MASK_SHORT_APDU) != 0) || ((dwFeatures & MASK_EXTENDED_APDU) != 0)) {
+            return new T1ShortApduProtocol();
+        } else {
+            throw new UsbTransportException("Character level exchange is not supported");
+        }
+    }
+
+    /**
+     * Transmit and receive data
+     * @param data data to transmit
+     * @return received data
+     */
+    @Override
+    public ResponseAPDU transceive(CommandAPDU data) throws UsbTransportException {
+        return new ResponseAPDU(ccidTransportProtocol.transceive(data.getBytes()));
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final UsbTransport that = (UsbTransport) o;
+
+        return usbDevice != null ? usbDevice.equals(that.usbDevice) : that.usbDevice == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return usbDevice != null ? usbDevice.hashCode() : 0;
+    }
+
 
     /**
      * Get first class 11 (Chip/Smartcard) interface of the device
@@ -107,150 +242,5 @@ public class UsbTransport implements Transport {
             }
         }
         return new Pair<>(bulkIn, bulkOut);
-    }
-
-    /**
-     * Release interface and disconnect
-     */
-    @Override
-    public void release() {
-        if (mConnection != null) {
-            mConnection.releaseInterface(mUsbInterface);
-            mConnection.close();
-            mConnection = null;
-        }
-
-        Log.d(Constants.TAG, "Usb transport disconnected");
-    }
-
-    /**
-     * Check if device is was connected to and still is connected
-     * @return true if device is connected
-     */
-    @Override
-    public boolean isConnected() {
-        return mConnection != null && mUsbManager.getDeviceList().containsValue(mUsbDevice) &&
-                mConnection.getSerial() != null;
-    }
-
-    /**
-     * Check if Transport supports persistent connections e.g connections which can
-     * handle multiple operations in one session
-     * @return true if transport supports persistent connections
-     */
-    @Override
-    public boolean isPersistentConnectionAllowed() {
-        return true;
-    }
-
-    /**
-     * Connect to OTG device
-     * @throws IOException
-     */
-    @Override
-    public void connect() throws IOException {
-        mUsbInterface = getSmartCardInterface(mUsbDevice);
-        if (mUsbInterface == null) {
-            // Shouldn't happen as we whitelist only class 11 devices
-            throw new UsbTransportException("USB error - device doesn't have class 11 interface");
-        }
-
-        final Pair<UsbEndpoint, UsbEndpoint> ioEndpoints = getIoEndpoints(mUsbInterface);
-        mBulkIn = ioEndpoints.first;
-        mBulkOut = ioEndpoints.second;
-
-        if (mBulkIn == null || mBulkOut == null) {
-            throw new UsbTransportException("USB error - invalid class 11 interface");
-        }
-
-        mConnection = mUsbManager.openDevice(mUsbDevice);
-        if (mConnection == null) {
-            throw new UsbTransportException("USB error - failed to connect to device");
-        }
-
-        if (!mConnection.claimInterface(mUsbInterface, true)) {
-            throw new UsbTransportException("USB error - failed to claim interface");
-        }
-
-        mTransceiver = new CcidTransceiver(mConnection, mBulkIn, mBulkOut);
-
-
-
-        configureProtocol();
-    }
-
-    private void configureProtocol() throws UsbTransportException {
-        byte[] desc = mConnection.getRawDescriptors();
-        int dwProtocols = 0, dwFeatures = 0;
-        boolean hasCcidDescriptor = false;
-
-        ByteBuffer byteBuffer = ByteBuffer.wrap(desc).order(ByteOrder.LITTLE_ENDIAN);
-
-        while (byteBuffer.hasRemaining()) {
-            byteBuffer.mark();
-            byte len = byteBuffer.get(), type = byteBuffer.get();
-
-            if (type == 0x21 && len == 0x36) {
-                byteBuffer.reset();
-
-                byteBuffer.position(byteBuffer.position() + PROTOCOLS_OFFSET);
-                dwProtocols = byteBuffer.getInt();
-
-                byteBuffer.reset();
-
-                byteBuffer.position(byteBuffer.position() + FEATURES_OFFSET);
-                dwFeatures = byteBuffer.getInt();
-                hasCcidDescriptor = true;
-                break;
-            } else {
-                byteBuffer.position(byteBuffer.position() + len - 2);
-            }
-        }
-
-        if (!hasCcidDescriptor) {
-            throw new UsbTransportException("CCID descriptor not found");
-        }
-
-        if ((dwProtocols & MASK_T1_PROTO) == 0) {
-            throw new UsbTransportException("T=0 protocol is not supported");
-        }
-
-        if ((dwFeatures & MASK_TPDU) != 0) {
-            mProtocol = new T1TpduProtocol(mTransceiver);
-        } else if (((dwFeatures & MASK_SHORT_APDU) != 0) || ((dwFeatures & MASK_EXTENDED_APDU) != 0)) {
-            mProtocol = new T1ShortApduProtocol(mTransceiver);
-        } else {
-            throw new UsbTransportException("Character level exchange is not supported");
-        }
-    }
-
-    /**
-     * Transmit and receive data
-     * @param data data to transmit
-     * @return received data
-     * @throws UsbTransportException
-     */
-    @Override
-    public ResponseAPDU transceive(CommandAPDU data) throws UsbTransportException {
-        return new ResponseAPDU(mProtocol.transceive(data.getBytes()));
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        final UsbTransport that = (UsbTransport) o;
-
-        return mUsbDevice != null ? mUsbDevice.equals(that.mUsbDevice) : that.mUsbDevice == null;
-    }
-
-    @Override
-    public int hashCode() {
-        return mUsbDevice != null ? mUsbDevice.hashCode() : 0;
-    }
-
-    public UsbDevice getUsbDevice() {
-        return mUsbDevice;
     }
 }
