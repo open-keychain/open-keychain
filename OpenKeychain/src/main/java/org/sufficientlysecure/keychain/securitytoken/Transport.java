@@ -17,8 +17,6 @@
 
 package org.sufficientlysecure.keychain.securitytoken;
 
-import javax.smartcardio.CommandAPDU;
-
 import java.io.IOException;
 
 /**
@@ -31,7 +29,7 @@ public interface Transport {
      * @return received data
      * @throws IOException
      */
-    ResponseApdu transceive(CommandAPDU data) throws IOException;
+    ResponseApdu transceive(CommandApdu data) throws IOException;
 
     /**
      * Disconnect and release connection

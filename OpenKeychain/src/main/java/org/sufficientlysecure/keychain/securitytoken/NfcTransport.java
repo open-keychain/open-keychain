@@ -19,7 +19,6 @@ package org.sufficientlysecure.keychain.securitytoken;
 
 import android.nfc.Tag;
 
-import javax.smartcardio.CommandAPDU;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 
 import java.io.IOException;
@@ -44,8 +43,8 @@ public class NfcTransport implements Transport {
      * @throws IOException
      */
     @Override
-    public ResponseApdu transceive(final CommandAPDU data) throws IOException {
-        return ResponseApdu.fromBytes(mIsoCard.transceive(data.getBytes()));
+    public ResponseApdu transceive(final CommandApdu data) throws IOException {
+        return ResponseApdu.fromBytes(mIsoCard.transceive(data.toBytes()));
     }
 
     /**

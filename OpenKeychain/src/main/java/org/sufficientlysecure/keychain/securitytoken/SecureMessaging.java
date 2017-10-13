@@ -17,8 +17,6 @@
 
 package org.sufficientlysecure.keychain.securitytoken;
 
-import javax.smartcardio.CommandAPDU;
-
 
 public interface SecureMessaging {
 
@@ -26,7 +24,7 @@ public interface SecureMessaging {
 
     boolean isEstablished();
 
-    CommandAPDU encryptAndSign(CommandAPDU apdu) throws SecureMessagingException;
+    CommandApdu encryptAndSign(CommandApdu apdu) throws SecureMessagingException;
 
     ResponseApdu verifyAndDecrypt(ResponseApdu apdu) throws SecureMessagingException;
 }

@@ -46,7 +46,6 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-import javax.smartcardio.CommandAPDU;
 
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 import org.sufficientlysecure.keychain.util.Log;
@@ -181,7 +180,7 @@ public class SecurityTokenConnection {
 
         // Connect on smartcard layer
         // Command APDU (page 51) for SELECT FILE command (page 29)
-        CommandAPDU select = commandFactory.createSelectFileOpenPgpCommand();
+        CommandApdu select = commandFactory.createSelectFileOpenPgpCommand();
         ResponseApdu response = communicate(select);  // activate connection
 
         if (!response.isSuccess()) {
@@ -218,7 +217,7 @@ public class SecurityTokenConnection {
         }
 
         // Command APDU for RESET RETRY COUNTER command (page 33)
-        CommandAPDU changePin = commandFactory.createResetPw1Command(newPin);
+        CommandApdu changePin = commandFactory.createResetPw1Command(newPin);
         ResponseApdu response = communicate(changePin);
 
         if (!response.isSuccess()) {
@@ -243,7 +242,7 @@ public class SecurityTokenConnection {
 
         byte[] pin = adminPin.toStringUnsafe().getBytes();
 
-        CommandAPDU changePin = commandFactory.createChangePw3Command(pin, newAdminPin);
+        CommandApdu changePin = commandFactory.createChangePw3Command(pin, newAdminPin);
         ResponseApdu response = communicate(changePin);
 
         if (!response.isSuccess()) {
@@ -323,7 +322,7 @@ public class SecurityTokenConnection {
                 throw new CardException("Unknown encryption key type!");
         }
 
-        CommandAPDU command = commandFactory.createDecipherCommand(data);
+        CommandApdu command = commandFactory.createDecipherCommand(data);
         ResponseApdu response = communicate(command);
 
         if (!response.isSuccess()) {
@@ -450,7 +449,7 @@ public class SecurityTokenConnection {
             verifyAdminPin(adminPin);
         }
 
-        CommandAPDU command = commandFactory.createPutDataCommand(dataObject, data);
+        CommandApdu command = commandFactory.createPutDataCommand(dataObject, data);
         ResponseApdu response = communicate(command); // put data
 
         if (!response.isSuccess()) {
@@ -549,7 +548,7 @@ public class SecurityTokenConnection {
             throw new IOException(e.getMessage());
         }
 
-        CommandAPDU apdu = commandFactory.createPutKeyCommand(keyBytes);
+        CommandApdu apdu = commandFactory.createPutKeyCommand(keyBytes);
         ResponseApdu response = communicate(apdu);
 
         if (!response.isSuccess()) {
@@ -564,7 +563,7 @@ public class SecurityTokenConnection {
      * @return The fingerprints of all subkeys in a contiguous byte array.
      */
     public byte[] getFingerprints() throws IOException {
-        CommandAPDU apdu = commandFactory.createGetDataCommand(0x00, 0x6E);
+        CommandApdu apdu = commandFactory.createGetDataCommand(0x00, 0x6E);
         ResponseApdu response = communicate(apdu);
 
         if (!response.isSuccess()) {
@@ -694,7 +693,7 @@ public class SecurityTokenConnection {
         }
 
         // Command APDU for PERFORM SECURITY OPERATION: COMPUTE DIGITAL SIGNATURE (page 37)
-        CommandAPDU command = commandFactory.createComputeDigitalSignatureCommand(data);
+        CommandApdu command = commandFactory.createComputeDigitalSignatureCommand(data);
         ResponseApdu response = communicate(command);
 
         if (!response.isSuccess()) {
@@ -748,7 +747,7 @@ public class SecurityTokenConnection {
      * @return response from the card
      * @throws IOException
      */
-    ResponseApdu communicate(CommandAPDU apdu) throws IOException {
+    ResponseApdu communicate(CommandApdu apdu) throws IOException {
         if ((mSecureMessaging != null) && mSecureMessaging.isEstablished()) {
             try {
                 apdu = mSecureMessaging.encryptAndSign(apdu);
@@ -763,12 +762,12 @@ public class SecurityTokenConnection {
         if (mCardCapabilities.hasExtended()) {
             lastResponse = mTransport.transceive(apdu);
         } else if (commandFactory.isSuitableForShortApdu(apdu)) {
-            CommandAPDU shortApdu = commandFactory.createShortApdu(apdu);
+            CommandApdu shortApdu = commandFactory.createShortApdu(apdu);
             lastResponse = mTransport.transceive(shortApdu);
         } else if (mCardCapabilities.hasChaining()) {
-            List<CommandAPDU> chainedApdus = commandFactory.createChainedApdus(apdu);
+            List<CommandApdu> chainedApdus = commandFactory.createChainedApdus(apdu);
             for (int i = 0, totalCommands = chainedApdus.size(); i < totalCommands; i++) {
-                CommandAPDU chainedApdu = chainedApdus.get(i);
+                CommandApdu chainedApdu = chainedApdus.get(i);
                 lastResponse = mTransport.transceive(chainedApdu);
 
                 boolean isLastCommand = i < totalCommands - 1;
@@ -787,7 +786,7 @@ public class SecurityTokenConnection {
         // Receive
         while (lastResponse.getSw1() == APDU_SW1_RESPONSE_AVAILABLE) {
             // GET RESPONSE ISO/IEC 7816-4 par.7.6.1
-            CommandAPDU getResponse = commandFactory.createGetResponseCommand(lastResponse.getSw2());
+            CommandApdu getResponse = commandFactory.createGetResponseCommand(lastResponse.getSw2());
             lastResponse = mTransport.transceive(getResponse);
             result.write(lastResponse.getData());
         }
@@ -814,7 +813,7 @@ public class SecurityTokenConnection {
             try {
                 // By trying to select any apps that have the Fidesmo AID prefix we can
                 // see if it is a Fidesmo device or not
-                CommandAPDU apdu = commandFactory.createSelectFileCommand(FIDESMO_APPS_AID_PREFIX);
+                CommandApdu apdu = commandFactory.createSelectFileCommand(FIDESMO_APPS_AID_PREFIX);
                 return communicate(apdu).isSuccess();
             } catch (IOException e) {
                 Log.e(Constants.TAG, "Card communication failed!", e);
@@ -846,7 +845,7 @@ public class SecurityTokenConnection {
             verifyAdminPin(adminPin);
         }
 
-        CommandAPDU apdu = commandFactory.createGenerateKeyCommand(slot);
+        CommandApdu apdu = commandFactory.createGenerateKeyCommand(slot);
         ResponseApdu response = communicate(apdu);
 
         if (!response.isSuccess()) {
@@ -888,8 +887,8 @@ public class SecurityTokenConnection {
         // reactivate token!
         // NOTE: keep the order here! First execute _both_ reactivate commands. Before checking _both_ responses
         // If a token is in a bad state and reactivate1 fails, it could still be reactivated with reactivate2
-        CommandAPDU reactivate1 = commandFactory.createReactivate1Command();
-        CommandAPDU reactivate2 = commandFactory.createReactivate2Command();
+        CommandApdu reactivate1 = commandFactory.createReactivate1Command();
+        CommandApdu reactivate2 = commandFactory.createReactivate2Command();
         ResponseApdu response1 = communicate(reactivate1);
         ResponseApdu response2 = communicate(reactivate2);
         if (!response1.isSuccess()) {

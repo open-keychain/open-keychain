@@ -29,7 +29,7 @@ import android.util.Pair;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
-import javax.smartcardio.CommandAPDU;
+import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
 import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
 import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.T1ShortApduProtocol;
 import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.T1TpduProtocol;
@@ -183,8 +183,8 @@ public class UsbTransport implements Transport {
      * @return received data
      */
     @Override
-    public ResponseApdu transceive(CommandAPDU data) throws UsbTransportException {
-        return ResponseApdu.fromBytes(ccidTransportProtocol.transceive(data.getBytes()));
+    public ResponseApdu transceive(CommandApdu data) throws UsbTransportException {
+        return ResponseApdu.fromBytes(ccidTransportProtocol.transceive(data.toBytes()));
     }
 
     @Override

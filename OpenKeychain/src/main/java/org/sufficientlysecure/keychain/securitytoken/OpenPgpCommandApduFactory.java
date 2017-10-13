@@ -6,7 +6,6 @@ import java.util.List;
 
 import android.support.annotation.NonNull;
 
-import javax.smartcardio.CommandAPDU;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
 
@@ -75,126 +74,126 @@ class OpenPgpCommandApduFactory {
     private static final int P2_EMPTY = 0x00;
 
     @NonNull
-    CommandAPDU createPutDataCommand(int dataObject, byte[] data) {
-        return new CommandAPDU(CLA, INS_PUT_DATA, (dataObject & 0xFF00) >> 8, dataObject & 0xFF, data);
+    CommandApdu createPutDataCommand(int dataObject, byte[] data) {
+        return CommandApdu.create(CLA, INS_PUT_DATA, (dataObject & 0xFF00) >> 8, dataObject & 0xFF, data);
     }
 
     @NonNull
-    CommandAPDU createPutKeyCommand(byte[] keyBytes) {
+    CommandApdu createPutKeyCommand(byte[] keyBytes) {
         // the odd PUT DATA INS is for compliance with ISO 7816-8. This is used only to put key data on the card
-        return new CommandAPDU(CLA, INS_PUT_DATA_ODD, P1_PUT_DATA_ODD_KEY, P2_PUT_DATA_ODD_KEY, keyBytes);
+        return CommandApdu.create(CLA, INS_PUT_DATA_ODD, P1_PUT_DATA_ODD_KEY, P2_PUT_DATA_ODD_KEY, keyBytes);
     }
 
     @NonNull
-    CommandAPDU createComputeDigitalSignatureCommand(byte[] data) {
-        return new CommandAPDU(CLA, INS_PERFORM_SECURITY_OPERATION, P1_PSO_COMPUTE_DIGITAL_SIGNATURE,
+    CommandApdu createComputeDigitalSignatureCommand(byte[] data) {
+        return CommandApdu.create(CLA, INS_PERFORM_SECURITY_OPERATION, P1_PSO_COMPUTE_DIGITAL_SIGNATURE,
                 P2_PSO_COMPUTE_DIGITAL_SIGNATURE, data, MAX_APDU_NE_EXT);
     }
 
     @NonNull
-    CommandAPDU createDecipherCommand(byte[] data) {
-        return new CommandAPDU(CLA, INS_PERFORM_SECURITY_OPERATION, P1_PSO_DECIPHER, P2_PSO_DECIPHER, data,
+    CommandApdu createDecipherCommand(byte[] data) {
+        return CommandApdu.create(CLA, INS_PERFORM_SECURITY_OPERATION, P1_PSO_DECIPHER, P2_PSO_DECIPHER, data,
                 MAX_APDU_NE_EXT);
     }
 
     @NonNull
-    CommandAPDU createChangePw3Command(byte[] adminPin, byte[] newAdminPin) {
-        return new CommandAPDU(CLA, INS_CHANGE_REFERENCE_DATA, P1_EMPTY,
+    CommandApdu createChangePw3Command(byte[] adminPin, byte[] newAdminPin) {
+        return CommandApdu.create(CLA, INS_CHANGE_REFERENCE_DATA, P1_EMPTY,
                 P2_CHANGE_REFERENCE_DATA_PW3, Arrays.concatenate(adminPin, newAdminPin));
     }
 
     @NonNull
-    CommandAPDU createResetPw1Command(byte[] newPin) {
-        return new CommandAPDU(CLA, INS_RESET_RETRY_COUNTER, P1_RESET_RETRY_COUNTER_NEW_PW,
+    CommandApdu createResetPw1Command(byte[] newPin) {
+        return CommandApdu.create(CLA, INS_RESET_RETRY_COUNTER, P1_RESET_RETRY_COUNTER_NEW_PW,
                 P2_RESET_RETRY_COUNTER, newPin);
     }
 
     @NonNull
-    CommandAPDU createGetDataCommand(int p1, int p2) {
-        return new CommandAPDU(CLA, INS_GET_DATA, p1, p2, MAX_APDU_NE_EXT);
+    CommandApdu createGetDataCommand(int p1, int p2) {
+        return CommandApdu.create(CLA, INS_GET_DATA, p1, p2, MAX_APDU_NE_EXT);
     }
 
     @NonNull
-    CommandAPDU createGetResponseCommand(int lastResponseSw2) {
-        return new CommandAPDU(CLA, INS_GET_RESPONSE, P1_EMPTY, P2_EMPTY, lastResponseSw2);
+    CommandApdu createGetResponseCommand(int lastResponseSw2) {
+        return CommandApdu.create(CLA, INS_GET_RESPONSE, P1_EMPTY, P2_EMPTY, lastResponseSw2);
     }
 
     @NonNull
-    CommandAPDU createVerifyPw1ForSignatureCommand(byte[] pin) {
-        return new CommandAPDU(CLA, INS_VERIFY, P1_EMPTY, P2_VERIFY_PW1_SIGN, pin);
+    CommandApdu createVerifyPw1ForSignatureCommand(byte[] pin) {
+        return CommandApdu.create(CLA, INS_VERIFY, P1_EMPTY, P2_VERIFY_PW1_SIGN, pin);
     }
 
     @NonNull
-    CommandAPDU createVerifyPw1ForOtherCommand(byte[] pin) {
-        return new CommandAPDU(CLA, INS_VERIFY, P1_EMPTY, P2_VERIFY_PW1_OTHER, pin);
+    CommandApdu createVerifyPw1ForOtherCommand(byte[] pin) {
+        return CommandApdu.create(CLA, INS_VERIFY, P1_EMPTY, P2_VERIFY_PW1_OTHER, pin);
     }
 
     @NonNull
-    CommandAPDU createVerifyPw3Command(byte[] pin) {
-        return new CommandAPDU(CLA, INS_VERIFY, P1_EMPTY, P2_VERIFY_PW3, pin);
+    CommandApdu createVerifyPw3Command(byte[] pin) {
+        return CommandApdu.create(CLA, INS_VERIFY, P1_EMPTY, P2_VERIFY_PW3, pin);
     }
 
     @NonNull
-    CommandAPDU createSelectFileOpenPgpCommand() {
-        return new CommandAPDU(CLA, INS_SELECT_FILE, P1_SELECT_FILE, P2_EMPTY, AID_SELECT_FILE_OPENPGP);
+    CommandApdu createSelectFileOpenPgpCommand() {
+        return CommandApdu.create(CLA, INS_SELECT_FILE, P1_SELECT_FILE, P2_EMPTY, AID_SELECT_FILE_OPENPGP);
     }
 
     @NonNull
-    CommandAPDU createSelectFileCommand(String fileAid) {
-        return new CommandAPDU(CLA, INS_SELECT_FILE, P1_SELECT_FILE, P2_EMPTY, Hex.decode(fileAid));
+    CommandApdu createSelectFileCommand(String fileAid) {
+        return CommandApdu.create(CLA, INS_SELECT_FILE, P1_SELECT_FILE, P2_EMPTY, Hex.decode(fileAid));
     }
 
     @NonNull
-    CommandAPDU createReactivate2Command() {
-        return new CommandAPDU(CLA, INS_ACTIVATE_FILE, P1_EMPTY, P2_EMPTY);
+    CommandApdu createReactivate2Command() {
+        return CommandApdu.create(CLA, INS_ACTIVATE_FILE, P1_EMPTY, P2_EMPTY);
     }
 
     @NonNull
-    CommandAPDU createReactivate1Command() {
-        return new CommandAPDU(CLA, INS_TERMINATE_DF, P1_EMPTY, P2_EMPTY);
+    CommandApdu createReactivate1Command() {
+        return CommandApdu.create(CLA, INS_TERMINATE_DF, P1_EMPTY, P2_EMPTY);
     }
 
     @NonNull
-    CommandAPDU createInternalAuthForSecureMessagingCommand(byte[] authData) {
-        return new CommandAPDU(CLA, INS_INTERNAL_AUTHENTICATE, P1_INTERNAL_AUTH_SECURE_MESSAGING, P2_EMPTY, authData,
+    CommandApdu createInternalAuthForSecureMessagingCommand(byte[] authData) {
+        return CommandApdu.create(CLA, INS_INTERNAL_AUTHENTICATE, P1_INTERNAL_AUTH_SECURE_MESSAGING, P2_EMPTY, authData,
                 MAX_APDU_NE_EXT);
     }
 
     @NonNull
-    CommandAPDU createGenerateKeyCommand(int slot) {
-        return new CommandAPDU(CLA, INS_GENERATE_ASYMMETRIC_KEY_PAIR,
+    CommandApdu createGenerateKeyCommand(int slot) {
+        return CommandApdu.create(CLA, INS_GENERATE_ASYMMETRIC_KEY_PAIR,
                 P1_GAKP_GENERATE, P2_EMPTY, new byte[] { (byte) slot, 0x00 }, MAX_APDU_NE_EXT);
     }
 
     @NonNull
-    CommandAPDU createRetrieveSecureMessagingPublicKeyCommand() {
+    CommandApdu createRetrieveSecureMessagingPublicKeyCommand() {
         // see https://github.com/ANSSI-FR/SmartPGP/blob/master/secure_messaging/smartpgp_sm.pdf
-        return new CommandAPDU(CLA, INS_GENERATE_ASYMMETRIC_KEY_PAIR, P1_GAKP_READ_PUBKEY_TEMPLATE, P2_EMPTY,
+        return CommandApdu.create(CLA, INS_GENERATE_ASYMMETRIC_KEY_PAIR, P1_GAKP_READ_PUBKEY_TEMPLATE, P2_EMPTY,
                 CRT_GAKP_SECURE_MESSAGING, MAX_APDU_NE_EXT);
     }
 
     @NonNull
-    CommandAPDU createSelectSecureMessagingCertificateCommand() {
+    CommandApdu createSelectSecureMessagingCertificateCommand() {
         // see https://github.com/ANSSI-FR/SmartPGP/blob/master/secure_messaging/smartpgp_sm.pdf
         // this command selects the fourth occurence of data tag 7F21
-        return new CommandAPDU(CLA, INS_SELECT_DATA, P1_SELECT_DATA_FOURTH, P2_SELECT_DATA,
+        return CommandApdu.create(CLA, INS_SELECT_DATA, P1_SELECT_DATA_FOURTH, P2_SELECT_DATA,
                 CP_SELECT_DATA_CARD_HOLDER_CERT);
     }
 
     @NonNull
-    CommandAPDU createGetDataCardHolderCertCommand() {
+    CommandApdu createGetDataCardHolderCertCommand() {
         return createGetDataCommand(P1_GET_DATA_CARD_HOLDER_CERT, P2_GET_DATA_CARD_HOLDER_CERT);
     }
 
     @NonNull
-    CommandAPDU createShortApdu(CommandAPDU apdu) {
+    CommandApdu createShortApdu(CommandApdu apdu) {
         int ne = Math.min(apdu.getNe(), MAX_APDU_NE);
-        return new CommandAPDU(apdu.getCLA(), apdu.getINS(), apdu.getP1(), apdu.getP2(), apdu.getData(), ne);
+        return CommandApdu.create(apdu.getCLA(), apdu.getINS(), apdu.getP1(), apdu.getP2(), apdu.getData(), ne);
     }
 
     @NonNull
-    List<CommandAPDU> createChainedApdus(CommandAPDU apdu) {
-        ArrayList<CommandAPDU> result = new ArrayList<>();
+    List<CommandApdu> createChainedApdus(CommandApdu apdu) {
+        ArrayList<CommandApdu> result = new ArrayList<>();
 
         int offset = 0;
         byte[] data = apdu.getData();
@@ -204,8 +203,8 @@ class OpenPgpCommandApduFactory {
             boolean last = offset + curLen >= data.length;
             int cla = apdu.getCLA() + (last ? 0 : MASK_CLA_CHAINING);
 
-            CommandAPDU cmd =
-                    new CommandAPDU(cla, apdu.getINS(), apdu.getP1(), apdu.getP2(), data, offset, curLen, ne);
+            CommandApdu cmd =
+                    CommandApdu.create(cla, apdu.getINS(), apdu.getP1(), apdu.getP2(), data, offset, curLen, ne);
             result.add(cmd);
 
             offset += curLen;
@@ -214,7 +213,7 @@ class OpenPgpCommandApduFactory {
         return result;
     }
 
-    boolean isSuitableForShortApdu(CommandAPDU apdu) {
+    boolean isSuitableForShortApdu(CommandApdu apdu) {
         return apdu.getData().length <= MAX_APDU_NC;
     }
 }

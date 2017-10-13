@@ -66,7 +66,6 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.smartcardio.CommandAPDU;
 import org.bouncycastle.asn1.nist.NISTNamedCurves;
 import org.bouncycastle.asn1.x9.ECNamedCurveTable;
 import org.bouncycastle.asn1.x9.X9ECParameters;
@@ -276,7 +275,7 @@ class SCP11bSecureMessaging implements SecureMessaging {
     static void establish(final SecurityTokenConnection t, final Context ctx, OpenPgpCommandApduFactory commandFactory)
             throws SecureMessagingException, IOException {
 
-        CommandAPDU cmd;
+        CommandApdu cmd;
         ResponseApdu resp;
         Iso7816TLV[] tlvs;
 
@@ -501,7 +500,7 @@ class SCP11bSecureMessaging implements SecureMessaging {
 
 
     @Override
-    public CommandAPDU encryptAndSign(CommandAPDU apdu)
+    public CommandApdu encryptAndSign(CommandApdu apdu)
             throws SecureMessagingException {
 
         if (!isEstablished()) {
@@ -579,7 +578,7 @@ class SCP11bSecureMessaging implements SecureMessaging {
             }
             odata[ooff++] = (byte) 0;
 
-            apdu = new CommandAPDU(odata, 0, ooff);
+            apdu = CommandApdu.fromBytes(odata, 0, ooff);
 
             Arrays.fill(odata, (byte)0);
 
