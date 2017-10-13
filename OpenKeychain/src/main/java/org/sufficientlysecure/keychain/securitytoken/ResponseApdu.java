@@ -24,6 +24,7 @@ import com.google.auto.value.AutoValue;
 
 /** A response APDU as defined in ISO/IEC 7816-4. */
 @AutoValue
+@SuppressWarnings("WeakerAccess")
 public abstract class ResponseApdu {
     private static final int APDU_SW_SUCCESS = 0x9000;
 

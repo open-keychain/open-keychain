@@ -150,7 +150,7 @@ class SCP11bSecureMessaging implements SecureMessaging {
                 && (mMacChaining != null);
     }
 
-    private static final ECParameterSpec getAlgorithmParameterSpec(final ECKeyFormat kf)
+    private static ECParameterSpec getAlgorithmParameterSpec(final ECKeyFormat kf)
             throws NoSuchProviderException, NoSuchAlgorithmException, InvalidParameterSpecException {
         final AlgorithmParameters algoParams = AlgorithmParameters.getInstance(SCP11B_KEY_AGREEMENT_KEY_ALGO, PROVIDER);
 
@@ -273,7 +273,7 @@ class SCP11bSecureMessaging implements SecureMessaging {
     }
 
 
-    public static void establish(final SecurityTokenConnection t, final Context ctx, OpenPgpCommandApduFactory commandFactory)
+    static void establish(final SecurityTokenConnection t, final Context ctx, OpenPgpCommandApduFactory commandFactory)
             throws SecureMessagingException, IOException {
 
         CommandAPDU cmd;

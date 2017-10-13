@@ -25,18 +25,18 @@ import org.sufficientlysecure.keychain.ui.CreateSecurityTokenAlgorithmFragment;
 
 public abstract class KeyFormat {
 
-    public enum KeyFormatType {
+    enum KeyFormatType {
         RSAKeyFormatType,
         ECKeyFormatType
-    };
+    }
 
     private final KeyFormatType mKeyFormatType;
 
-    public KeyFormat(final KeyFormatType keyFormatType) {
+    KeyFormat(final KeyFormatType keyFormatType) {
         mKeyFormatType = keyFormatType;
     }
 
-    public final KeyFormatType keyFormatType() {
+    final KeyFormatType keyFormatType() {
         return mKeyFormatType;
     }
 
