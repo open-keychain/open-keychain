@@ -17,17 +17,6 @@
 
 package org.sufficientlysecure.keychain.securitytoken;
 
-import android.content.Context;
-import android.support.annotation.NonNull;
-
-import org.bouncycastle.asn1.nist.NISTNamedCurves;
-import org.bouncycastle.asn1.x9.ECNamedCurveTable;
-import org.bouncycastle.asn1.x9.X9ECParameters;
-import org.bouncycastle.math.ec.ECCurve;
-import org.bouncycastle.math.ec.ECPoint;
-import org.bouncycastle.util.Arrays;
-import org.sufficientlysecure.keychain.ui.SettingsSmartPGPAuthoritiesActivity;
-import org.sufficientlysecure.keychain.util.Preferences;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -65,6 +54,9 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.InvalidParameterSpecException;
 import java.util.ArrayList;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -76,12 +68,19 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
+import org.bouncycastle.asn1.nist.NISTNamedCurves;
+import org.bouncycastle.asn1.x9.ECNamedCurveTable;
+import org.bouncycastle.asn1.x9.X9ECParameters;
+import org.bouncycastle.math.ec.ECCurve;
+import org.bouncycastle.math.ec.ECPoint;
+import org.bouncycastle.util.Arrays;
+import org.sufficientlysecure.keychain.ui.SettingsSmartPGPAuthoritiesActivity;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 
 class SCP11bSecureMessaging implements SecureMessaging {
 
     private static final byte OPENPGP_SECURE_MESSAGING_CLA_MASK = (byte)0x04;
-    private static final byte[] OPENPGP_SECURE_MESSAGING_KEY_CRT = new byte[] { (byte)0xA6, (byte)0 };
     private static final byte OPENPGP_SECURE_MESSAGING_KEY_ATTRIBUTES_TAG = (byte)0xD4;
 
     private static final int AES_BLOCK_SIZE = 128 / 8;
@@ -316,12 +315,12 @@ class SCP11bSecureMessaging implements SecureMessaging {
 
             if (prefs != null && prefs.getExperimentalSmartPGPAuthoritiesEnable()) {
                 // retrieving certificate
-                cmd = commandFactory.createRetrieveCertificateCommand();
+                cmd = commandFactory.createSelectSecureMessagingCertificateCommand();
                 resp = t.communicate(cmd);
                 if (resp.getSW() != SecurityTokenConnection.APDU_SW_SUCCESS) {
                     throw new SecureMessagingException("failed to select secure messaging certificate");
                 }
-                cmd = commandFactory.createGetDataCommand(0x7F, 0x21);
+                cmd = commandFactory.createGetDataCardHolderCertCommand();
                 resp = t.communicate(cmd);
                 if (resp.getSW() != SecurityTokenConnection.APDU_SW_SUCCESS) {
                     throw new SecureMessagingException("failed to retrieve secure messaging certificate");
@@ -330,8 +329,7 @@ class SCP11bSecureMessaging implements SecureMessaging {
                 pkcard = verifyCertificate(ctx, eckf, resp.getData());
 
             } else {
-                // retrieving public key
-                cmd = commandFactory.createRetrievePublicKeyCommand(OPENPGP_SECURE_MESSAGING_KEY_CRT);
+                cmd = commandFactory.createRetrieveSecureMessagingPublicKeyCommand();
                 resp = t.communicate(cmd);
                 if (resp.getSW() != SecurityTokenConnection.APDU_SW_SUCCESS) {
                     throw new SecureMessagingException("failed to retrieve secure messaging public key");
@@ -391,8 +389,7 @@ class SCP11bSecureMessaging implements SecureMessaging {
             pkout.writeTo(bout);
             pkout = bout;
 
-            // internal authenticate
-            cmd = commandFactory.createInternalAuthenticateCommand(pkout);
+            cmd = commandFactory.createInternalAuthForSecureMessagingCommand(pkout.toByteArray());
             resp = t.communicate(cmd);
             if (resp.getSW() != SecurityTokenConnection.APDU_SW_SUCCESS) {
                 throw new SecureMessagingException("failed to initiate internal authenticate");

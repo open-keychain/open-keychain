@@ -183,7 +183,7 @@ public class SecurityTokenConnection {
 
         // Connect on smartcard layer
         // Command APDU (page 51) for SELECT FILE command (page 29)
-        CommandAPDU select = commandFactory.createSelectFileCommand("D27600012401");
+        CommandAPDU select = commandFactory.createSelectFileOpenPgpCommand();
         ResponseAPDU response = communicate(select);  // activate connection
 
         if (response.getSW() != APDU_SW_SUCCESS) {
@@ -222,7 +222,7 @@ public class SecurityTokenConnection {
         }
 
         // Command APDU for RESET RETRY COUNTER command (page 33)
-        CommandAPDU changePin = commandFactory.createResetRetryCounter(newPin);
+        CommandAPDU changePin = commandFactory.createResetPw1Command(newPin);
         ResponseAPDU response = communicate(changePin);
 
         if (response.getSW() != APDU_SW_SUCCESS) {
@@ -231,42 +231,48 @@ public class SecurityTokenConnection {
     }
 
     /**
-     * Modifies the user's PW1 or PW3. Before sending, the new PIN will be validated for
+     * Modifies the user's PW3. Before sending, the new PIN will be validated for
      * conformance to the token's requirements for key length.
      *
-     * @param pw     For PW1, this is 0x81. For PW3 (Admin PIN), mode is 0x83.
-     * @param newPin The new PW1 or PW3.
+     * @param newAdminPin The new PW3.
      */
-    public void modifyPin(int pw, byte[] newPin, Passphrase adminPin) throws IOException {
-        final int MAX_PW1_LENGTH_INDEX = 1;
+    public void modifyPw3Pin(byte[] newAdminPin, Passphrase adminPin) throws IOException {
         final int MAX_PW3_LENGTH_INDEX = 3;
 
         byte[] pwStatusBytes = getPwStatusBytes();
 
-        if (pw == 0x81) {
-            if (newPin.length < 6 || newPin.length > pwStatusBytes[MAX_PW1_LENGTH_INDEX]) {
-                throw new IOException("Invalid PIN length");
-            }
-        } else if (pw == 0x83) {
-            if (newPin.length < 8 || newPin.length > pwStatusBytes[MAX_PW3_LENGTH_INDEX]) {
-                throw new IOException("Invalid PIN length");
-            }
-        } else {
-            throw new IOException("Invalid PW index for modify PIN operation");
+        if (newAdminPin.length < 8 || newAdminPin.length > pwStatusBytes[MAX_PW3_LENGTH_INDEX]) {
+            throw new IOException("Invalid PIN length");
         }
 
-        byte[] pin;
-        if (pw == 0x83) {
-            if (adminPin == null) {
-                throw new IllegalArgumentException("Changing the admin pin requires admin pin argument!");
-            }
-            pin = adminPin.toStringUnsafe().getBytes();
-        } else {
-            pin = mPin.toStringUnsafe().getBytes();
+        byte[] pin = adminPin.toStringUnsafe().getBytes();
+
+        CommandAPDU changePin = commandFactory.createChangePw3Command(pin, newAdminPin);
+        ResponseAPDU response = communicate(changePin);
+
+        if (response.getSW() != APDU_SW_SUCCESS) {
+            throw new CardException("Failed to change PIN", response.getSW());
+        }
+    }
+
+    /**
+     * Modifies the user's PW1. Before sending, the new PIN will be validated for
+     * conformance to the token's requirements for key length.
+     *
+     * @param newPin The new PW1.
+     */
+    public void modifyPw1Pin(byte[] newPin) throws IOException {
+        final int MAX_PW1_LENGTH_INDEX = 1;
+
+        byte[] pwStatusBytes = getPwStatusBytes();
+
+        if (newPin.length < 6 || newPin.length > pwStatusBytes[MAX_PW1_LENGTH_INDEX]) {
+            throw new IOException("Invalid PIN length");
         }
 
-        // Command APDU for CHANGE REFERENCE DATA command (page 32)
-        CommandAPDU changePin = commandFactory.createChangeReferenceDataCommand(pw, newPin, pin);
+        byte[] pin = mPin.toStringUnsafe().getBytes();
+
+        CommandAPDU changePin = commandFactory.createChangePw1Command(pin, newPin);
         ResponseAPDU response = communicate(changePin);
 
         if (response.getSW() != APDU_SW_SUCCESS) {
@@ -287,7 +293,7 @@ public class SecurityTokenConnection {
         final KeyFormat kf = mOpenPgpCapabilities.getFormatForKeyType(KeyType.ENCRYPT);
 
         if (!mPw1ValidatedForDecrypt) {
-            verifyPin(0x82); // (Verify PW1 with mode 82 for decryption)
+            verifyPinForOther();
         }
 
         byte[] data;
@@ -410,31 +416,41 @@ public class SecurityTokenConnection {
     }
 
     /**
-     * Verifies the user's PW1 or PW3 with the appropriate mode.
-     *
-     * @param mode For PW1, this is 0x81 for signing, 0x82 for everything else.
-     *             For PW3 (Admin PIN), mode is 0x83.
+     * Verifies the user's PW1 with the appropriate mode.
      */
-    private void verifyPin(int mode) throws IOException {
+    private void verifyPinForSignature() throws IOException {
         byte[] pin = mPin.toStringUnsafe().getBytes();
 
-        ResponseAPDU response = tryPin(mode, pin);// login
+        ResponseAPDU response = communicate(commandFactory.createVerifyPw1ForSignatureCommand(pin));
         if (response.getSW() != APDU_SW_SUCCESS) {
             throw new CardException("Bad PIN!", response.getSW());
         }
 
-        if (mode == 0x81) {
-            mPw1ValidatedForSignature = true;
-        } else if (mode == 0x82) {
-            mPw1ValidatedForDecrypt = true;
+        mPw1ValidatedForSignature = true;
+    }
+
+    /**
+     * Verifies the user's PW1 with the appropriate mode.
+     */
+    private void verifyPinForOther() throws IOException {
+        byte[] pin = mPin.toStringUnsafe().getBytes();
+
+        // Command APDU for VERIFY command (page 32)
+        ResponseAPDU response = communicate(commandFactory.createVerifyPw1ForOtherCommand(pin));
+        if (response.getSW() != APDU_SW_SUCCESS) {
+            throw new CardException("Bad PIN!", response.getSW());
         }
+
+        mPw1ValidatedForDecrypt = true;
     }
 
     /**
      * Verifies the user's PW1 or PW3 with the appropriate mode.
      */
     private void verifyAdminPin(Passphrase adminPin) throws IOException {
-        ResponseAPDU response = tryPin(0x83, adminPin.toStringUnsafe().getBytes());
+        // Command APDU for VERIFY command (page 32)
+        ResponseAPDU response =
+                communicate(commandFactory.createVerifyPw3Command(adminPin.toStringUnsafe().getBytes()));
         if (response.getSW() != APDU_SW_SUCCESS) {
             throw new CardException("Bad PIN!", response.getSW());
         }
@@ -457,7 +473,7 @@ public class SecurityTokenConnection {
         // TODO use admin pin regardless, if we have it?
         if (dataObject == 0x0101 || dataObject == 0x0103) {
             if (!mPw1ValidatedForDecrypt) {
-                verifyPin(0x82); // (Verify PW1 for non-signing operations)
+                verifyPinForOther();
             }
         } else if (!mPw3Validated) {
             verifyAdminPin(adminPin);
@@ -640,7 +656,7 @@ public class SecurityTokenConnection {
      */
     public byte[] calculateSignature(byte[] hash, int hashAlgo) throws IOException {
         if (!mPw1ValidatedForSignature) {
-            verifyPin(0x81); // (Verify PW1 with mode 81 for signing)
+            verifyPinForSignature();
         }
 
         byte[] dsi;
@@ -869,11 +885,6 @@ public class SecurityTokenConnection {
         return response.getData();
     }
 
-    private ResponseAPDU tryPin(int mode, byte[] pin) throws IOException {
-        // Command APDU for VERIFY command (page 32)
-        return communicate(commandFactory.createVerifyCommand(mode, pin));
-    }
-
     /**
      * Resets security token, which deletes all keys and data objects.
      * This works by entering a wrong PIN and then Admin PIN 4 times respectively.
@@ -883,8 +894,9 @@ public class SecurityTokenConnection {
         // try wrong PIN 4 times until counter goes to C0
         byte[] pin = "XXXXXX".getBytes();
         for (int i = 0; i <= 4; i++) {
-            ResponseAPDU response = tryPin(0x81, pin);
-            if (response.getSW() == APDU_SW_SUCCESS) { // Should NOT accept!
+            // Command APDU for VERIFY command (page 32)
+            ResponseAPDU response = communicate(commandFactory.createVerifyPw1ForSignatureCommand(pin));
+            if (response.getSW() == APDU_SW_SUCCESS) {
                 throw new CardException("Should never happen, XXXXXX has been accepted!", response.getSW());
             }
         }
@@ -892,7 +904,8 @@ public class SecurityTokenConnection {
         // try wrong Admin PIN 4 times until counter goes to C0
         byte[] adminPin = "XXXXXXXX".getBytes();
         for (int i = 0; i <= 4; i++) {
-            ResponseAPDU response = tryPin(0x83, adminPin);
+            // Command APDU for VERIFY command (page 32)
+            ResponseAPDU response = communicate(commandFactory.createVerifyPw3Command(adminPin));
             if (response.getSW() == APDU_SW_SUCCESS) { // Should NOT accept!
                 throw new CardException("Should never happen, XXXXXXXX has been accepted", response.getSW());
             }
