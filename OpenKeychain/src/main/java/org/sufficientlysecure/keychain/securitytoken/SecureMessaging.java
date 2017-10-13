@@ -17,10 +17,8 @@
 
 package org.sufficientlysecure.keychain.securitytoken;
 
-import java.io.IOException;
-
 import javax.smartcardio.CommandAPDU;
-import javax.smartcardio.ResponseAPDU;
+
 
 public interface SecureMessaging {
 
@@ -30,5 +28,5 @@ public interface SecureMessaging {
 
     CommandAPDU encryptAndSign(CommandAPDU apdu) throws SecureMessagingException;
 
-    ResponseAPDU verifyAndDecrypt(ResponseAPDU apdu) throws SecureMessagingException;
+    ResponseApdu verifyAndDecrypt(ResponseApdu apdu) throws SecureMessagingException;
 }

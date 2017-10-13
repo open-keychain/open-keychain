@@ -47,7 +47,6 @@ import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import javax.smartcardio.CommandAPDU;
-import javax.smartcardio.ResponseAPDU;
 
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 import org.sufficientlysecure.keychain.util.Log;
@@ -73,7 +72,6 @@ import java.util.List;
  * For the full specs, see http://g10code.com/docs/openpgp-card-2.0.pdf
  */
 public class SecurityTokenConnection {
-    static final int APDU_SW_SUCCESS = 0x9000;
     private static final int APDU_SW1_RESPONSE_AVAILABLE = 0x61;
 
     // Fidesmo constants
@@ -184,10 +182,10 @@ public class SecurityTokenConnection {
         // Connect on smartcard layer
         // Command APDU (page 51) for SELECT FILE command (page 29)
         CommandAPDU select = commandFactory.createSelectFileOpenPgpCommand();
-        ResponseAPDU response = communicate(select);  // activate connection
+        ResponseApdu response = communicate(select);  // activate connection
 
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Initialization failed!", response.getSW());
+        if (!response.isSuccess()) {
+            throw new CardException("Initialization failed!", response.getSw());
         }
 
         mOpenPgpCapabilities = new OpenPgpCapabilities(getData(0x00, 0x6E));
@@ -221,10 +219,10 @@ public class SecurityTokenConnection {
 
         // Command APDU for RESET RETRY COUNTER command (page 33)
         CommandAPDU changePin = commandFactory.createResetPw1Command(newPin);
-        ResponseAPDU response = communicate(changePin);
+        ResponseApdu response = communicate(changePin);
 
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Failed to change PIN", response.getSW());
+        if (!response.isSuccess()) {
+            throw new CardException("Failed to change PIN", response.getSw());
         }
     }
 
@@ -246,10 +244,10 @@ public class SecurityTokenConnection {
         byte[] pin = adminPin.toStringUnsafe().getBytes();
 
         CommandAPDU changePin = commandFactory.createChangePw3Command(pin, newAdminPin);
-        ResponseAPDU response = communicate(changePin);
+        ResponseApdu response = communicate(changePin);
 
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Failed to change PIN", response.getSW());
+        if (!response.isSuccess()) {
+            throw new CardException("Failed to change PIN", response.getSw());
         }
     }
 
@@ -326,10 +324,10 @@ public class SecurityTokenConnection {
         }
 
         CommandAPDU command = commandFactory.createDecipherCommand(data);
-        ResponseAPDU response = communicate(command);
+        ResponseApdu response = communicate(command);
 
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Deciphering with Security token failed on receive", response.getSW());
+        if (!response.isSuccess()) {
+            throw new CardException("Deciphering with Security token failed on receive", response.getSw());
         }
 
         switch (mOpenPgpCapabilities.getFormatForKeyType(KeyType.ENCRYPT).keyFormatType()) {
@@ -394,9 +392,9 @@ public class SecurityTokenConnection {
     private void verifyPinForSignature() throws IOException {
         byte[] pin = mPin.toStringUnsafe().getBytes();
 
-        ResponseAPDU response = communicate(commandFactory.createVerifyPw1ForSignatureCommand(pin));
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Bad PIN!", response.getSW());
+        ResponseApdu response = communicate(commandFactory.createVerifyPw1ForSignatureCommand(pin));
+        if (!response.isSuccess()) {
+            throw new CardException("Bad PIN!", response.getSw());
         }
 
         mPw1ValidatedForSignature = true;
@@ -409,9 +407,9 @@ public class SecurityTokenConnection {
         byte[] pin = mPin.toStringUnsafe().getBytes();
 
         // Command APDU for VERIFY command (page 32)
-        ResponseAPDU response = communicate(commandFactory.createVerifyPw1ForOtherCommand(pin));
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Bad PIN!", response.getSW());
+        ResponseApdu response = communicate(commandFactory.createVerifyPw1ForOtherCommand(pin));
+        if (!response.isSuccess()) {
+            throw new CardException("Bad PIN!", response.getSw());
         }
 
         mPw1ValidatedForDecrypt = true;
@@ -422,10 +420,10 @@ public class SecurityTokenConnection {
      */
     private void verifyAdminPin(Passphrase adminPin) throws IOException {
         // Command APDU for VERIFY command (page 32)
-        ResponseAPDU response =
+        ResponseApdu response =
                 communicate(commandFactory.createVerifyPw3Command(adminPin.toStringUnsafe().getBytes()));
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Bad PIN!", response.getSW());
+        if (!response.isSuccess()) {
+            throw new CardException("Bad PIN!", response.getSw());
         }
 
         mPw3Validated = true;
@@ -453,10 +451,10 @@ public class SecurityTokenConnection {
         }
 
         CommandAPDU command = commandFactory.createPutDataCommand(dataObject, data);
-        ResponseAPDU response = communicate(command); // put data
+        ResponseApdu response = communicate(command); // put data
 
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Failed to put data.", response.getSW());
+        if (!response.isSuccess()) {
+            throw new CardException("Failed to put data.", response.getSw());
         }
     }
 
@@ -552,10 +550,10 @@ public class SecurityTokenConnection {
         }
 
         CommandAPDU apdu = commandFactory.createPutKeyCommand(keyBytes);
-        ResponseAPDU response = communicate(apdu);
+        ResponseApdu response = communicate(apdu);
 
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Key export to Security Token failed", response.getSW());
+        if (!response.isSuccess()) {
+            throw new CardException("Key export to Security Token failed", response.getSw());
         }
     }
 
@@ -567,10 +565,10 @@ public class SecurityTokenConnection {
      */
     public byte[] getFingerprints() throws IOException {
         CommandAPDU apdu = commandFactory.createGetDataCommand(0x00, 0x6E);
-        ResponseAPDU response = communicate(apdu);
+        ResponseApdu response = communicate(apdu);
 
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Failed to get fingerprints", response.getSW());
+        if (!response.isSuccess()) {
+            throw new CardException("Failed to get fingerprints", response.getSw());
         }
 
         Iso7816TLV[] tlvList = Iso7816TLV.readList(response.getData(), true);
@@ -614,9 +612,9 @@ public class SecurityTokenConnection {
     }
 
     private byte[] getData(int p1, int p2) throws IOException {
-        ResponseAPDU response = communicate(commandFactory.createGetDataCommand(p1, p2));
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Failed to get pw status bytes", response.getSW());
+        ResponseApdu response = communicate(commandFactory.createGetDataCommand(p1, p2));
+        if (!response.isSuccess()) {
+            throw new CardException("Failed to get pw status bytes", response.getSw());
         }
         return response.getData();
     }
@@ -697,10 +695,10 @@ public class SecurityTokenConnection {
 
         // Command APDU for PERFORM SECURITY OPERATION: COMPUTE DIGITAL SIGNATURE (page 37)
         CommandAPDU command = commandFactory.createComputeDigitalSignatureCommand(data);
-        ResponseAPDU response = communicate(command);
+        ResponseApdu response = communicate(command);
 
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Failed to sign", response.getSW());
+        if (!response.isSuccess()) {
+            throw new CardException("Failed to sign", response.getSw());
         }
 
         if (!mOpenPgpCapabilities.isPw1ValidForMultipleSignatures()) {
@@ -750,7 +748,7 @@ public class SecurityTokenConnection {
      * @return response from the card
      * @throws IOException
      */
-    ResponseAPDU communicate(CommandAPDU apdu) throws IOException {
+    ResponseApdu communicate(CommandAPDU apdu) throws IOException {
         if ((mSecureMessaging != null) && mSecureMessaging.isEstablished()) {
             try {
                 apdu = mSecureMessaging.encryptAndSign(apdu);
@@ -760,7 +758,7 @@ public class SecurityTokenConnection {
             }
         }
 
-        ResponseAPDU lastResponse = null;
+        ResponseApdu lastResponse = null;
         // Transmit
         if (mCardCapabilities.hasExtended()) {
             lastResponse = mTransport.transceive(apdu);
@@ -774,8 +772,8 @@ public class SecurityTokenConnection {
                 lastResponse = mTransport.transceive(chainedApdu);
 
                 boolean isLastCommand = i < totalCommands - 1;
-                if (isLastCommand && lastResponse.getSW() != APDU_SW_SUCCESS) {
-                    throw new UsbTransportException("Failed to chain apdu (last SW: " + lastResponse.getSW() + ")");
+                if (isLastCommand && !lastResponse.isSuccess()) {
+                    throw new UsbTransportException("Failed to chain apdu (last SW: " + lastResponse.getSw() + ")");
                 }
             }
         }
@@ -787,17 +785,17 @@ public class SecurityTokenConnection {
         result.write(lastResponse.getData());
 
         // Receive
-        while (lastResponse.getSW1() == APDU_SW1_RESPONSE_AVAILABLE) {
+        while (lastResponse.getSw1() == APDU_SW1_RESPONSE_AVAILABLE) {
             // GET RESPONSE ISO/IEC 7816-4 par.7.6.1
-            CommandAPDU getResponse = commandFactory.createGetResponseCommand(lastResponse.getSW2());
+            CommandAPDU getResponse = commandFactory.createGetResponseCommand(lastResponse.getSw2());
             lastResponse = mTransport.transceive(getResponse);
             result.write(lastResponse.getData());
         }
 
-        result.write(lastResponse.getSW1());
-        result.write(lastResponse.getSW2());
+        result.write(lastResponse.getSw1());
+        result.write(lastResponse.getSw2());
 
-        lastResponse = new ResponseAPDU(result.toByteArray());
+        lastResponse = ResponseApdu.fromBytes(result.toByteArray());
 
         if ((mSecureMessaging != null) && mSecureMessaging.isEstablished()) {
             try {
@@ -817,7 +815,7 @@ public class SecurityTokenConnection {
                 // By trying to select any apps that have the Fidesmo AID prefix we can
                 // see if it is a Fidesmo device or not
                 CommandAPDU apdu = commandFactory.createSelectFileCommand(FIDESMO_APPS_AID_PREFIX);
-                return communicate(apdu).getSW() == APDU_SW_SUCCESS;
+                return communicate(apdu).isSuccess();
             } catch (IOException e) {
                 Log.e(Constants.TAG, "Card communication failed!", e);
             }
@@ -849,9 +847,9 @@ public class SecurityTokenConnection {
         }
 
         CommandAPDU apdu = commandFactory.createGenerateKeyCommand(slot);
-        ResponseAPDU response = communicate(apdu);
+        ResponseApdu response = communicate(apdu);
 
-        if (response.getSW() != APDU_SW_SUCCESS) {
+        if (!response.isSuccess()) {
             throw new IOException("On-card key generation failed");
         }
 
@@ -868,9 +866,9 @@ public class SecurityTokenConnection {
         byte[] pin = "XXXXXX".getBytes();
         for (int i = 0; i <= 4; i++) {
             // Command APDU for VERIFY command (page 32)
-            ResponseAPDU response = communicate(commandFactory.createVerifyPw1ForSignatureCommand(pin));
-            if (response.getSW() == APDU_SW_SUCCESS) {
-                throw new CardException("Should never happen, XXXXXX has been accepted!", response.getSW());
+            ResponseApdu response = communicate(commandFactory.createVerifyPw1ForSignatureCommand(pin));
+            if (response.isSuccess()) {
+                throw new CardException("Should never happen, XXXXXX has been accepted!", response.getSw());
             }
         }
 
@@ -878,9 +876,9 @@ public class SecurityTokenConnection {
         byte[] adminPin = "XXXXXXXX".getBytes();
         for (int i = 0; i <= 4; i++) {
             // Command APDU for VERIFY command (page 32)
-            ResponseAPDU response = communicate(commandFactory.createVerifyPw3Command(adminPin));
-            if (response.getSW() == APDU_SW_SUCCESS) { // Should NOT accept!
-                throw new CardException("Should never happen, XXXXXXXX has been accepted", response.getSW());
+            ResponseApdu response = communicate(commandFactory.createVerifyPw3Command(adminPin));
+            if (response.isSuccess()) { // Should NOT accept!
+                throw new CardException("Should never happen, XXXXXXXX has been accepted", response.getSw());
             }
         }
 
@@ -892,13 +890,13 @@ public class SecurityTokenConnection {
         // If a token is in a bad state and reactivate1 fails, it could still be reactivated with reactivate2
         CommandAPDU reactivate1 = commandFactory.createReactivate1Command();
         CommandAPDU reactivate2 = commandFactory.createReactivate2Command();
-        ResponseAPDU response1 = communicate(reactivate1);
-        ResponseAPDU response2 = communicate(reactivate2);
-        if (response1.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Reactivating failed!", response1.getSW());
+        ResponseApdu response1 = communicate(reactivate1);
+        ResponseApdu response2 = communicate(reactivate2);
+        if (!response1.isSuccess()) {
+            throw new CardException("Reactivating failed!", response1.getSw());
         }
-        if (response2.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Reactivating failed!", response2.getSW());
+        if (!response2.isSuccess()) {
+            throw new CardException("Reactivating failed!", response2.getSw());
         }
     }
 

@@ -29,6 +29,9 @@ import java.util.Arrays;
 
 import java.nio.ByteBuffer;
 
+import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
+
+
 /**
  * A command APDU following the structure defined in ISO/IEC 7816-4.
  * It consists of a four byte header and a conditional body of variable length.
@@ -55,7 +58,7 @@ import java.nio.ByteBuffer;
  * <p>Instances of this class are immutable. Where data is passed in or out
  * via byte arrays, defensive cloning is performed.
  *
- * @see ResponseAPDU
+ * @see ResponseApdu
  *
  * @since   1.6
  * @author  Andreas Sterbenz

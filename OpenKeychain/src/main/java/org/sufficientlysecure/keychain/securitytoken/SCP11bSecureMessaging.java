@@ -67,7 +67,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.smartcardio.CommandAPDU;
-import javax.smartcardio.ResponseAPDU;
 import org.bouncycastle.asn1.nist.NISTNamedCurves;
 import org.bouncycastle.asn1.x9.ECNamedCurveTable;
 import org.bouncycastle.asn1.x9.X9ECParameters;
@@ -278,7 +277,7 @@ class SCP11bSecureMessaging implements SecureMessaging {
             throws SecureMessagingException, IOException {
 
         CommandAPDU cmd;
-        ResponseAPDU resp;
+        ResponseApdu resp;
         Iso7816TLV[] tlvs;
 
         t.clearSecureMessaging();
@@ -286,7 +285,7 @@ class SCP11bSecureMessaging implements SecureMessaging {
         // retrieving key algorithm
         cmd = commandFactory.createGetDataCommand(0x00, OPENPGP_SECURE_MESSAGING_KEY_ATTRIBUTES_TAG);
         resp = t.communicate(cmd);
-        if (resp.getSW() != SecurityTokenConnection.APDU_SW_SUCCESS) {
+        if (!resp.isSuccess()) {
             throw new SecureMessagingException("failed to retrieve secure messaging key attributes");
         }
         tlvs = Iso7816TLV.readList(resp.getData(), true);
@@ -317,12 +316,12 @@ class SCP11bSecureMessaging implements SecureMessaging {
                 // retrieving certificate
                 cmd = commandFactory.createSelectSecureMessagingCertificateCommand();
                 resp = t.communicate(cmd);
-                if (resp.getSW() != SecurityTokenConnection.APDU_SW_SUCCESS) {
+                if (!resp.isSuccess()) {
                     throw new SecureMessagingException("failed to select secure messaging certificate");
                 }
                 cmd = commandFactory.createGetDataCardHolderCertCommand();
                 resp = t.communicate(cmd);
-                if (resp.getSW() != SecurityTokenConnection.APDU_SW_SUCCESS) {
+                if (!resp.isSuccess()) {
                     throw new SecureMessagingException("failed to retrieve secure messaging certificate");
                 }
 
@@ -331,7 +330,7 @@ class SCP11bSecureMessaging implements SecureMessaging {
             } else {
                 cmd = commandFactory.createRetrieveSecureMessagingPublicKeyCommand();
                 resp = t.communicate(cmd);
-                if (resp.getSW() != SecurityTokenConnection.APDU_SW_SUCCESS) {
+                if (!resp.isSuccess()) {
                     throw new SecureMessagingException("failed to retrieve secure messaging public key");
                 }
                 tlvs = Iso7816TLV.readList(resp.getData(), true);
@@ -391,7 +390,7 @@ class SCP11bSecureMessaging implements SecureMessaging {
 
             cmd = commandFactory.createInternalAuthForSecureMessagingCommand(pkout.toByteArray());
             resp = t.communicate(cmd);
-            if (resp.getSW() != SecurityTokenConnection.APDU_SW_SUCCESS) {
+            if (!resp.isSuccess()) {
                 throw new SecureMessagingException("failed to initiate internal authenticate");
             }
 
@@ -605,7 +604,7 @@ class SCP11bSecureMessaging implements SecureMessaging {
 
 
     @Override
-    public ResponseAPDU verifyAndDecrypt(ResponseAPDU apdu)
+    public ResponseApdu verifyAndDecrypt(ResponseApdu apdu)
             throws SecureMessagingException {
 
         if (!isEstablished()) {
@@ -614,10 +613,9 @@ class SCP11bSecureMessaging implements SecureMessaging {
 
         byte[] data = apdu.getData();
 
-        if ((data.length == 0) &&
-                (apdu.getSW() != 0x9000) &&
-                (apdu.getSW1() != 0x62) &&
-                (apdu.getSW1() != 0x63)) {
+        if ((data.length == 0) && !apdu.isSuccess() &&
+                (apdu.getSw1() != 0x62) &&
+                (apdu.getSw1() != 0x63)) {
             return apdu;
         }
 
@@ -634,8 +632,8 @@ class SCP11bSecureMessaging implements SecureMessaging {
             if ((data.length - SCP11_MAC_LENGTH) > 0) {
                 mac.update(data, 0, data.length - SCP11_MAC_LENGTH);
             }
-            mac.update((byte) apdu.getSW1());
-            mac.update((byte) apdu.getSW2());
+            mac.update((byte) apdu.getSw1());
+            mac.update((byte) apdu.getSw2());
 
             final byte[] sig = mac.doFinal();
 
@@ -675,19 +673,19 @@ class SCP11bSecureMessaging implements SecureMessaging {
 
                 final byte[] datasw = new byte[i + 2];
                 System.arraycopy(data, 0, datasw, 0, i);
-                datasw[datasw.length - 2] = (byte) apdu.getSW1();
-                datasw[datasw.length - 1] = (byte) apdu.getSW2();
+                datasw[datasw.length - 2] = (byte) apdu.getSw1();
+                datasw[datasw.length - 1] = (byte) apdu.getSw2();
 
                 Arrays.fill(data, (byte) 0);
 
                 data = datasw;
             } else {
                 data = new byte[2];
-                data[0] = (byte) apdu.getSW1();
-                data[1] = (byte) apdu.getSW2();
+                data[0] = (byte) apdu.getSw1();
+                data[1] = (byte) apdu.getSw2();
             }
 
-            apdu = new ResponseAPDU(data);
+            apdu = ResponseApdu.fromBytes(data);
 
             return apdu;
 
