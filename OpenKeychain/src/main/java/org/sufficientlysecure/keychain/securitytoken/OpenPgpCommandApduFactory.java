@@ -98,12 +98,6 @@ class OpenPgpCommandApduFactory {
     }
 
     @NonNull
-    CommandAPDU createChangePw1Command(byte[] pin, byte[] newPin) {
-        return new CommandAPDU(CLA, INS_CHANGE_REFERENCE_DATA, P1_EMPTY,
-                P2_CHANGE_REFERENCE_DATA_PW1, Arrays.concatenate(pin, newPin));
-    }
-
-    @NonNull
     CommandAPDU createChangePw3Command(byte[] adminPin, byte[] newAdminPin) {
         return new CommandAPDU(CLA, INS_CHANGE_REFERENCE_DATA, P1_EMPTY,
                 P2_CHANGE_REFERENCE_DATA_PW3, Arrays.concatenate(adminPin, newAdminPin));

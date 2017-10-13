@@ -208,12 +208,10 @@ public class SecurityTokenConnection {
 
     }
 
-    public void resetPin(Passphrase adminPin, String newPinStr) throws IOException {
+    public void resetPin(byte[] newPin, Passphrase adminPin) throws IOException {
         if (!mPw3Validated) {
             verifyAdminPin(adminPin);
         }
-
-        byte[] newPin = newPinStr.getBytes();
 
         final int MAX_PW1_LENGTH_INDEX = 1;
         byte[] pwStatusBytes = getPwStatusBytes();
@@ -248,31 +246,6 @@ public class SecurityTokenConnection {
         byte[] pin = adminPin.toStringUnsafe().getBytes();
 
         CommandAPDU changePin = commandFactory.createChangePw3Command(pin, newAdminPin);
-        ResponseAPDU response = communicate(changePin);
-
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Failed to change PIN", response.getSW());
-        }
-    }
-
-    /**
-     * Modifies the user's PW1. Before sending, the new PIN will be validated for
-     * conformance to the token's requirements for key length.
-     *
-     * @param newPin The new PW1.
-     */
-    public void modifyPw1Pin(byte[] newPin) throws IOException {
-        final int MAX_PW1_LENGTH_INDEX = 1;
-
-        byte[] pwStatusBytes = getPwStatusBytes();
-
-        if (newPin.length < 6 || newPin.length > pwStatusBytes[MAX_PW1_LENGTH_INDEX]) {
-            throw new IOException("Invalid PIN length");
-        }
-
-        byte[] pin = mPin.toStringUnsafe().getBytes();
-
-        CommandAPDU changePin = commandFactory.createChangePw1Command(pin, newPin);
         ResponseAPDU response = communicate(changePin);
 
         if (response.getSW() != APDU_SW_SUCCESS) {

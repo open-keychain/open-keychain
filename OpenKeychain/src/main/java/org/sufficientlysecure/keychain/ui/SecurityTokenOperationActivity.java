@@ -273,7 +273,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                 }
 
                 // change PINs afterwards
-                stConnection.modifyPw1Pin(newPin);
+                stConnection.resetPin(newPin, adminPin);
                 stConnection.modifyPw3Pin(newAdminPin, adminPin);
 
                 break;

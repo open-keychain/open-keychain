@@ -141,7 +141,7 @@ public class SecurityTokenChangePinOperationActivity extends BaseSecurityTokenAc
     @Override
     protected void doSecurityTokenInBackground(SecurityTokenConnection stConnection) throws IOException {
         Passphrase adminPin = new Passphrase(changePinInput.getAdminPin());
-        stConnection.resetPin(adminPin, changePinInput.getNewPin());
+        stConnection.resetPin(changePinInput.getNewPin().getBytes(), adminPin);
 
         resultTokenInfo = stConnection.getTokenInfo();
     }
