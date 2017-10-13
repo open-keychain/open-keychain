@@ -89,7 +89,7 @@ public class SecurityTokenConnection {
     private final Transport mTransport;
     @NonNull
     private final Passphrase mPin;
-    private final CommandAPDUFactory commandFactory;
+    private final OpenPgpCommandApduFactory commandFactory;
 
     private CardCapabilities mCardCapabilities;
     private OpenPgpCapabilities mOpenPgpCapabilities;
@@ -111,7 +111,7 @@ public class SecurityTokenConnection {
         this.mTransport = transport;
         this.mPin = pin;
 
-        commandFactory = new CommandAPDUFactory();
+        commandFactory = new OpenPgpCommandApduFactory();
     }
 
     private String getHolderName(byte[] name) {

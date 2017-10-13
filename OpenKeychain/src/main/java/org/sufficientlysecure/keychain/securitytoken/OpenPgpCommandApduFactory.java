@@ -11,7 +11,7 @@ import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
 
 
-class CommandAPDUFactory {
+class OpenPgpCommandApduFactory {
     private static final int MAX_APDU_NC = 255;
     private static final int MAX_APDU_NC_EXT = 65535;
 

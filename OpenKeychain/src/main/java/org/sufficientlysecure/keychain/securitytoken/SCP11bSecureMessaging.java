@@ -274,7 +274,7 @@ class SCP11bSecureMessaging implements SecureMessaging {
     }
 
 
-    public static void establish(final SecurityTokenConnection t, final Context ctx, CommandAPDUFactory commandFactory)
+    public static void establish(final SecurityTokenConnection t, final Context ctx, OpenPgpCommandApduFactory commandFactory)
             throws SecureMessagingException, IOException {
 
         CommandAPDU cmd;
