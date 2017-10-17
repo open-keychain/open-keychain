@@ -54,7 +54,7 @@
     <string name="section_cloud_search">"Key Search"</string>
     <string name="section_cloud_search_summary">"Keyserver, keybase.io"</string>
     <string name="section_passphrase_cache">"Passwords and PINs"</string>
-    <string name="section_passphrase_cache_summary">"Handling, user interface, remember time"</string>
+    <string name="section_passphrase_cache_summary">"Handling"</string>
     <string name="section_proxy_settings">"Network Anonymity"</string>
     <string name="section_proxy_settings_summary">"Tor, Proxy Settings"</string>
     <string name="section_gui">"Interface"</string>
