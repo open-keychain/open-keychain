@@ -192,7 +192,7 @@ public class GithubResource extends LinkedTokenResource {
             return null;
         }
 
-        Pattern p = Pattern.compile("https://gist\\.github\\.com/([a-zA-Z0-9_]+)/([0-9a-f]+)");
+        Pattern p = Pattern.compile("https://gist\\.github\\.com/([a-zA-Z0-9_-]+)/([0-9a-f]+)");
         Matcher match = p.matcher(uri.toString());
         if (!match.matches()) {
             return null;
