@@ -21,13 +21,13 @@
     <usb-device class="11" vendor-id="8352" product-id="16648"/>
 
     <!-- Yubikey 4 CCID -->
-    <!--<usb-device class="11" vendor-id="4176" product-id="1028"/>-->
+    <usb-device class="11" vendor-id="4176" product-id="1028"/>
     <!-- Yubikey 4 OTP + CCID -->
-    <!--<usb-device class="11" vendor-id="4176" product-id="1029"/>-->
+    <usb-device class="11" vendor-id="4176" product-id="1029"/>
     <!-- Yubikey 4 U2F + CCID -->
-    <!--<usb-device class="11" vendor-id="4176" product-id="1030"/>-->
+    <usb-device class="11" vendor-id="4176" product-id="1030"/>
     <!-- Yubikey 4 OTP + U2F + CCID -->
-    <!--<usb-device class="11" vendor-id="4176" product-id="1031"/>-->
+    <usb-device class="11" vendor-id="4176" product-id="1031"/>
 
     <!-- Nitrokey Storage -->
     <!--<usb-device class="11" vendor-id="8352" product-id="16649"/>-->
