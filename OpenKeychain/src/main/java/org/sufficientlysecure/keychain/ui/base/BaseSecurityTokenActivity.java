@@ -266,6 +266,8 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
             return;
         }
 
+        Log.d(Constants.TAG, "security token exception", e);
+
         // Otherwise, all status codes are fixed values.
         switch (status) {
 

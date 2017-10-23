@@ -23,6 +23,7 @@ package org.sufficientlysecure.keychain.securitytoken;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Integer;
@@ -99,16 +100,18 @@ public class SecurityTokenConnection {
     public static SecurityTokenConnection getInstanceForTransport(Transport transport, Passphrase pin) {
         if (sCachedInstance == null || !sCachedInstance.isPersistentConnectionAllowed() ||
                 !sCachedInstance.isConnected() || !sCachedInstance.mTransport.equals(transport)) {
-            sCachedInstance = new SecurityTokenConnection(transport, pin);
+            sCachedInstance = new SecurityTokenConnection(transport, pin, new OpenPgpCommandApduFactory());
         }
         return sCachedInstance;
     }
 
-    private SecurityTokenConnection(@NonNull Transport transport, @NonNull Passphrase pin) {
+    @VisibleForTesting
+    SecurityTokenConnection(@NonNull Transport transport, @NonNull Passphrase pin,
+            OpenPgpCommandApduFactory commandFactory) {
         this.mTransport = transport;
         this.mPin = pin;
 
-        commandFactory = new OpenPgpCommandApduFactory();
+        this.commandFactory = commandFactory;
     }
 
     private String getHolderName(byte[] name) {
@@ -172,7 +175,8 @@ public class SecurityTokenConnection {
     /**
      * Connect to device and select pgp applet
      */
-    private void connectToDevice(Context context) throws IOException {
+    @VisibleForTesting
+    void connectToDevice(Context context) throws IOException {
         // Connect on transport layer
         mCardCapabilities = new CardCapabilities();
 
@@ -187,8 +191,8 @@ public class SecurityTokenConnection {
             throw new CardException("Initialization failed!", response.getSw());
         }
 
-        mOpenPgpCapabilities = new OpenPgpCapabilities(getData(0x00, 0x6E));
-        mCardCapabilities = new CardCapabilities(mOpenPgpCapabilities.getHistoricalBytes());
+        OpenPgpCapabilities openPgpCapabilities = new OpenPgpCapabilities(getData(0x00, 0x6E));
+        setConnectionCapabilities(openPgpCapabilities);
 
         mPw1ValidatedForSignature = false;
         mPw1ValidatedForDecrypt = false;
@@ -202,7 +206,12 @@ public class SecurityTokenConnection {
                 Log.e(Constants.TAG, "failed to establish secure messaging", e);
             }
         }
+    }
 
+    @VisibleForTesting
+    void setConnectionCapabilities(OpenPgpCapabilities openPgpCapabilities) throws IOException {
+        this.mOpenPgpCapabilities = openPgpCapabilities;
+        this.mCardCapabilities = new CardCapabilities(openPgpCapabilities.getHistoricalBytes());
     }
 
     public void resetPin(byte[] newPin, Passphrase adminPin) throws IOException {
