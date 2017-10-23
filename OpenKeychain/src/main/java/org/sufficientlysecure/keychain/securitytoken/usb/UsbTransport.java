@@ -28,6 +28,8 @@ import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TransportType;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
 import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
 import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
@@ -201,6 +203,49 @@ public class UsbTransport implements Transport {
         return usbDevice != null ? usbDevice.hashCode() : 0;
     }
 
+    @Override
+    public TransportType getTransportType() {
+        return TransportType.USB;
+    }
+
+    @Override
+    public TokenType getTokenType() {
+        switch (usbDevice.getVendorId()) {
+            case 4176: {
+                switch (usbDevice.getProductId()) {
+                    case 273:
+                    case 274:
+                    case 277:
+                    case 278:
+                        return TokenType.YUBIKEY_NEO;
+                    case 1028:
+                    case 1029:
+                    case 1030:
+                    case 1031:
+                        return TokenType.YUBIKEY_4;
+                }
+                break;
+            }
+            case 8352: {
+                switch (usbDevice.getProductId()) {
+                    case 16648:
+                        return TokenType.NITROKEY_PRO;
+                    case 16913:
+                        return TokenType.NITROKEY_START;
+                    case 16649:
+                        return TokenType.NITROKEY_STORAGE;
+                }
+                break;
+            }
+            case 9035: {
+                return TokenType.GNUK;
+            }
+            case 11415: {
+                return TokenType.LEDGER_NANO_S;
+            }
+        }
+        throw new IllegalStateException("Unhandled usb token type!");
+    }
 
     /**
      * Get first class 11 (Chip/Smartcard) interface of the device

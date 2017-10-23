@@ -17,6 +17,9 @@
 
 package org.sufficientlysecure.keychain.securitytoken;
 
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TransportType;
+
 import java.io.IOException;
 
 /**
@@ -55,4 +58,8 @@ public interface Transport {
      * @throws IOException
      */
     void connect() throws IOException;
+
+    TransportType getTransportType();
+
+    TokenType getTokenType();
 }
