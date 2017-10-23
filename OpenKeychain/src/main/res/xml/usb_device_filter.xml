@@ -8,35 +8,35 @@
     Note that values are decimal.
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Yubikey NEO OTP + CCID-->
+    <!-- Yubikey NEO OTP + CCID -->
     <usb-device class="11" vendor-id="4176" product-id="273"/>
-    <!-- Yubikey NEO CCID-->
+    <!-- Yubikey NEO CCID -->
     <usb-device class="11" vendor-id="4176" product-id="274"/>
-    <!-- Yubikey NEO U2F + CCID-->
+    <!-- Yubikey NEO U2F + CCID -->
     <usb-device class="11" vendor-id="4176" product-id="277"/>
-    <!-- Yubikey NEO OTP + U2F + CCID-->
+    <!-- Yubikey NEO OTP + U2F + CCID -->
     <usb-device class="11" vendor-id="4176" product-id="278"/>
 
-
-    <!-- Yubikey 4 CCID-->
-    <usb-device class="11" vendor-id="4176" product-id="1028"/>
-    <!-- Yubikey 4 OTP + CCID-->
-    <usb-device class="11" vendor-id="4176" product-id="1029"/>
-    <!-- Yubikey 4 U2F + CCID-->
-    <usb-device class="11" vendor-id="4176" product-id="1030"/>
-    <!-- Yubikey 4 OTP + U2F + CCID-->
-    <usb-device class="11" vendor-id="4176" product-id="1031"/>
-
-
-    <!-- Nitrokey Pro-->
+    <!-- Nitrokey Pro -->
     <usb-device class="11" vendor-id="8352" product-id="16648"/>
-    <!-- Nitrokey Storage-->
-    <usb-device class="11" vendor-id="8352" product-id="16649"/>
 
-    <!--GNUK based device are not supported right now-->
-    
-    <!-- Nitrokey Start-->
+    <!-- Yubikey 4 CCID -->
+    <!--<usb-device class="11" vendor-id="4176" product-id="1028"/>-->
+    <!-- Yubikey 4 OTP + CCID -->
+    <!--<usb-device class="11" vendor-id="4176" product-id="1029"/>-->
+    <!-- Yubikey 4 U2F + CCID -->
+    <!--<usb-device class="11" vendor-id="4176" product-id="1030"/>-->
+    <!-- Yubikey 4 OTP + U2F + CCID -->
+    <!--<usb-device class="11" vendor-id="4176" product-id="1031"/>-->
+
+    <!-- Nitrokey Storage -->
+    <!--<usb-device class="11" vendor-id="8352" product-id="16649"/>-->
+
+    <!-- Nitrokey Start -->
     <!--<usb-device class="11" vendor-id="8352" product-id="16913"/>-->
-    <!-- Default GNUK vid/pid-->
+    <!-- Default GNUK vid/pid -->
     <!--<usb-device class="11" vendor-id="9035" product-id="0"/>-->
+
+    <!-- Ledger Nano S -->
+    <!--<usb-device class="11" vendor-id="11415" product-id="1"/>-->
 </resources>
