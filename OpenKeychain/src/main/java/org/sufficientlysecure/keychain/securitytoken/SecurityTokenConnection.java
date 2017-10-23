@@ -572,29 +572,7 @@ public class SecurityTokenConnection {
      * @return The fingerprints of all subkeys in a contiguous byte array.
      */
     public byte[] getFingerprints() throws IOException {
-        CommandApdu apdu = commandFactory.createGetDataCommand(0x00, 0x6E);
-        ResponseApdu response = communicate(apdu);
-
-        if (!response.isSuccess()) {
-            throw new CardException("Failed to get fingerprints", response.getSw());
-        }
-
-        Iso7816TLV[] tlvList = Iso7816TLV.readList(response.getData(), true);
-        Iso7816TLV fingerPrintTlv = null;
-
-        for (Iso7816TLV tlv : tlvList) {
-            Log.d(Constants.TAG, "nfcGetFingerprints() Iso7816TLV tlv data:\n" + tlv.prettyPrint());
-
-            Iso7816TLV matchingTlv = Iso7816TLV.findRecursive(tlv, 0xc5);
-            if (matchingTlv != null) {
-                fingerPrintTlv = matchingTlv;
-            }
-        }
-
-        if (fingerPrintTlv == null) {
-            return null;
-        }
-        return fingerPrintTlv.mV;
+        return mOpenPgpCapabilities.getFingerprints();
     }
 
     /**
@@ -603,11 +581,11 @@ public class SecurityTokenConnection {
      * @return Seven bytes in fixed format, plus 0x9000 status word at the end.
      */
     private byte[] getPwStatusBytes() throws IOException {
-        return getData(0x00, 0xC4);
+        return mOpenPgpCapabilities.getPwStatusBytes();
     }
 
     public byte[] getAid() throws IOException {
-        return getData(0x00, 0x4F);
+        return mOpenPgpCapabilities.getAid();
     }
 
     public String getUrl() throws IOException {

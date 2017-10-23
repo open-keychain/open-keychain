@@ -27,7 +27,6 @@ class OpenPgpCapabilities {
     private final static int MASK_KEY_IMPORT = 1 << 5;
     private final static int MASK_ATTRIBUTES_CHANGABLE = 1 << 2;
 
-    private boolean mPw1ValidForMultipleSignatures;
     private byte[] mAid;
     private byte[] mHistoricalBytes;
 
@@ -40,6 +39,8 @@ class OpenPgpCapabilities {
     private int mMaxRspLen;
 
     private Map<KeyType, KeyFormat> mKeyFormats;
+    private byte[] mFingerprints;
+    private byte[] mPwStatusBytes;
 
     OpenPgpCapabilities(byte[] data) throws IOException {
         mKeyFormats = new HashMap<>();
@@ -76,7 +77,10 @@ class OpenPgpCapabilities {
                     mKeyFormats.put(KeyType.AUTH, KeyFormat.fromBytes(tlv.mV));
                     break;
                 case 0xC4:
-                    mPw1ValidForMultipleSignatures = tlv.mV[0] == 1;
+                    mPwStatusBytes = tlv.mV;
+                    break;
+                case 0xC5:
+                    mFingerprints = tlv.mV;
                     break;
             }
         }
@@ -98,7 +102,10 @@ class OpenPgpCapabilities {
                     mKeyFormats.put(KeyType.AUTH, KeyFormat.fromBytes(tlv.mV));
                     break;
                 case 0xC4:
-                    mPw1ValidForMultipleSignatures = tlv.mV[0] == 1;
+                    mPwStatusBytes = tlv.mV;
+                    break;
+                case 0xC5:
+                    mFingerprints = tlv.mV;
                     break;
             }
         }
@@ -115,12 +122,16 @@ class OpenPgpCapabilities {
         mMaxRspLen = (v[8] << 8) + v[9];
     }
 
-    boolean isPw1ValidForMultipleSignatures() {
-        return mPw1ValidForMultipleSignatures;
-    }
-
     byte[] getAid() {
         return mAid;
+    }
+
+    byte[] getPwStatusBytes() {
+        return mPwStatusBytes;
+    }
+
+    boolean isPw1ValidForMultipleSignatures() {
+        return mPwStatusBytes[0] == 1;
     }
 
     byte[] getHistoricalBytes() {
@@ -157,5 +168,9 @@ class OpenPgpCapabilities {
 
     KeyFormat getFormatForKeyType(KeyType keyType) {
         return mKeyFormats.get(keyType);
+    }
+
+    public byte[] getFingerprints() {
+        return mFingerprints;
     }
 }
