@@ -57,7 +57,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onResume();
         onResumeChecks(this);
 
-        if (mThemeChanger.changeTheme()) {
+        if (mThemeChanger != null && mThemeChanger.changeTheme()) {
             Intent intent = getIntent();
             finish();
             overridePendingTransition(0, 0);

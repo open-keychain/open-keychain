@@ -1961,4 +1961,6 @@
         <item quantity="other">"Updating %d keys"</item>
     </plurals>
 
+    <string name="button_locate_nfc">"Where is my NFC reader?"</string>
+
 </resources>

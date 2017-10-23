@@ -73,7 +73,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
     protected UsbConnectionDispatcher mUsbDispatcher;
     private boolean mTagHandlingEnabled;
 
-    private SecurityTokenInfo tokenInfo;
+    protected SecurityTokenInfo tokenInfo;
 
     /**
      * Override to change UI before SecurityToken handling (UI thread)
