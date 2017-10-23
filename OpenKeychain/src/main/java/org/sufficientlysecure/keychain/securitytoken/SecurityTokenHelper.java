@@ -49,6 +49,8 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
 
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TransportType;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -1003,7 +1005,15 @@ public class SecurityTokenHelper {
         String url = getUrl();
         byte[] pwInfo = getPwStatusBytes();
 
-        return SecurityTokenInfo.create(fingerprints, aid, userId, url, pwInfo[4], pwInfo[6]);
+        TransportType transportType = mTransport.getTransportType();
+        TokenType tokenType;
+        if (transportType == TransportType.USB) {
+            tokenType = mTransport.getTokenType();
+        } else {
+            tokenType = isFidesmoToken() ? TokenType.FIDESMO : TokenType.UNKNOWN;
+        }
+
+        return SecurityTokenInfo.create(transportType, tokenType, fingerprints, aid, userId, url, pwInfo[4], pwInfo[6]);
     }
 
     private static class LazyHolder {

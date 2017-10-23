@@ -21,6 +21,8 @@ import android.nfc.Tag;
 
 import javax.smartcardio.CommandAPDU;
 import javax.smartcardio.ResponseAPDU;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TransportType;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 
 import java.io.IOException;
@@ -90,6 +92,16 @@ public class NfcTransport implements Transport {
 
         mIsoCard.setTimeout(TIMEOUT);
         mIsoCard.connect();
+    }
+
+    @Override
+    public TransportType getTransportType() {
+        return TransportType.NFC;
+    }
+
+    @Override
+    public TokenType getTokenType() {
+        return null;
     }
 
     @Override

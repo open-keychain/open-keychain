@@ -45,6 +45,7 @@ import org.sufficientlysecure.keychain.securitytoken.CardException;
 import org.sufficientlysecure.keychain.securitytoken.NfcTransport;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenHelper;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
 import org.sufficientlysecure.keychain.securitytoken.UsbConnectionDispatcher;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransport;
