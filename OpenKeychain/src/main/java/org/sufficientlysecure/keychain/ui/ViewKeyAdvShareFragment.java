@@ -398,7 +398,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         mFingerprint = fingerprintBlob;
 
         final String fingerprint = KeyFormattingUtils.convertFingerprintToHex(fingerprintBlob);
-        mFingerprintView.setText(KeyFormattingUtils.colorizeFingerprint(fingerprint));
+        mFingerprintView.setText(KeyFormattingUtils.formatFingerprint(fingerprint));
 
         if (mQrCodeBitmapCache != null) {
             return;

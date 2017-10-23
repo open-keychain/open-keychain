@@ -185,12 +185,10 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
 
     private void displayHexConfirm(byte[] fingerprintBlob) {
         String fingerprint = KeyFormattingUtils.convertFingerprintToHex(fingerprintBlob);
-        mFingerprint.setText(KeyFormattingUtils.colorizeFingerprint(fingerprint));
+        mFingerprint.setText(KeyFormattingUtils.formatFingerprint(fingerprint));
     }
 
     private void displayWordConfirm(byte[] fingerprintBlob) {
-//        String fingerprint = ExperimentalWordConfirm.getWords(getActivity(), fingerprintBlob);
-
         String fingerprint;
         try {
             fingerprint = new SentenceConfirm(getActivity()).fromBytes(fingerprintBlob, 20);
