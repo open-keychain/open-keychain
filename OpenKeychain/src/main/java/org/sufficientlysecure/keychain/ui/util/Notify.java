@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui.util;
 
 import android.app.Activity;
+import android.support.annotation.CheckResult;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,6 +56,7 @@ public class Notify {
     public static final int LENGTH_LONG = 3500;
     public static final int LENGTH_SHORT = 1500;
 
+    @CheckResult
     public static Showable create(final Activity activity, String text, int duration, Style style,
                                   final ActionListener actionListener, Integer actionResId) {
         final Snackbar snackbar = Snackbar.with(activity)
@@ -134,28 +136,34 @@ public class Notify {
         };
     }
 
+    @CheckResult
     public static Showable create(Activity activity, String text, int duration, Style style) {
         return create(activity, text, duration, style, null, null);
     }
 
+    @CheckResult
     public static Showable create(Activity activity, String text, Style style) {
         return create(activity, text, LENGTH_LONG, style);
     }
 
+    @CheckResult
     public static Showable create(Activity activity, int textResId, Style style,
             ActionListener actionListener, int actionResId) {
         return create(activity, textResId, LENGTH_LONG, style, actionListener, actionResId);
     }
 
+    @CheckResult
     public static Showable create(Activity activity, int textResId, int duration, Style style,
                                   ActionListener actionListener, int actionResId) {
         return create(activity, activity.getString(textResId), duration, style, actionListener, actionResId);
     }
 
+    @CheckResult
     public static Showable create(Activity activity, int textResId, int duration, Style style) {
         return create(activity, activity.getString(textResId), duration, style);
     }
 
+    @CheckResult
     public static Showable create(Activity activity, int textResId, Style style) {
         return create(activity, activity.getString(textResId), style);
     }
