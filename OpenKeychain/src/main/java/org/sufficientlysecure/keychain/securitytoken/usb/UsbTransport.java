@@ -105,8 +105,7 @@ public class UsbTransport implements Transport {
     public void connect() throws IOException {
         usbInterface = getSmartCardInterface(usbDevice);
         if (usbInterface == null) {
-            // Shouldn't happen as we whitelist only class 11 devices
-            throw new UsbTransportException("USB error - device doesn't have class 11 interface");
+            throw new UsbTransportException("USB error: CCID mode must be enabled (no class 11 interface)");
         }
 
         final Pair<UsbEndpoint, UsbEndpoint> ioEndpoints = getIoEndpoints(usbInterface);
@@ -114,16 +113,16 @@ public class UsbTransport implements Transport {
         UsbEndpoint usbBulkOut = ioEndpoints.second;
 
         if (usbBulkIn == null || usbBulkOut == null) {
-            throw new UsbTransportException("USB error - invalid class 11 interface");
+            throw new UsbTransportException("USB error: invalid class 11 interface");
         }
 
         usbConnection = usbManager.openDevice(usbDevice);
         if (usbConnection == null) {
-            throw new UsbTransportException("USB error - failed to connect to device");
+            throw new UsbTransportException("USB error: failed to connect to device");
         }
 
         if (!usbConnection.claimInterface(usbInterface, true)) {
-            throw new UsbTransportException("USB error - failed to claim interface");
+            throw new UsbTransportException("USB error: failed to claim interface");
         }
 
         byte[] rawDescriptors = usbConnection.getRawDescriptors();

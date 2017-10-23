@@ -7,36 +7,31 @@
 
     Note that values are decimal.
 -->
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Yubikey NEO OTP + CCID -->
-    <usb-device class="11" vendor-id="4176" product-id="273"/>
-    <!-- Yubikey NEO CCID -->
-    <usb-device class="11" vendor-id="4176" product-id="274"/>
-    <!-- Yubikey NEO U2F + CCID -->
-    <usb-device class="11" vendor-id="4176" product-id="277"/>
-    <!-- Yubikey NEO OTP + U2F + CCID -->
-    <usb-device class="11" vendor-id="4176" product-id="278"/>
+<resources>
 
-    <!-- Nitrokey Pro -->
-    <usb-device class="11" vendor-id="8352" product-id="16648"/>
+    <!--
+        Route all smart card devices (class 11) to OpenKeychain.
+        Internally, we check against a whitelist of working devices.
+    -->
+    <usb-device class="11" />
 
-    <!-- Yubikey 4 CCID -->
-    <usb-device class="11" vendor-id="4176" product-id="1028"/>
-    <!-- Yubikey 4 OTP + CCID -->
-    <usb-device class="11" vendor-id="4176" product-id="1029"/>
-    <!-- Yubikey 4 U2F + CCID -->
-    <usb-device class="11" vendor-id="4176" product-id="1030"/>
-    <!-- Yubikey 4 OTP + U2F + CCID -->
-    <usb-device class="11" vendor-id="4176" product-id="1031"/>
+    <!--
+        Route some HID devices (class 3) to OpenKeychain.
+        These tokens are generally supported but need to have CCID enabled.
+        Thus, we show a notification inside OpenKeychain to inform the user.
+    -->
+    <!-- Yubikey NEO - OTP only -->
+    <usb-device class="3" vendor-id="4176" product-id="272"/>
+    <!-- Yubikey NEO - U2F only -->
+    <usb-device class="3" vendor-id="4176" product-id="275"/>
+    <!-- Yubikey NEO - OTP and U2F -->
+    <usb-device class="3" vendor-id="4176" product-id="276"/>
 
-    <!-- Nitrokey Storage -->
-    <!--<usb-device class="11" vendor-id="8352" product-id="16649"/>-->
+    <!-- Yubikey 4 - OTP only -->
+    <usb-device class="3" vendor-id="4176" product-id="1025"/>
+    <!-- Yubikey 4 - U2F only -->
+    <usb-device class="3" vendor-id="4176" product-id="1026"/>
+    <!-- Yubikey 4 - OTP and U2F -->
+    <usb-device class="3" vendor-id="4176" product-id="1027"/>
 
-    <!-- Nitrokey Start -->
-    <!--<usb-device class="11" vendor-id="8352" product-id="16913"/>-->
-    <!-- Default GNUK vid/pid -->
-    <!--<usb-device class="11" vendor-id="9035" product-id="0"/>-->
-
-    <!-- Ledger Nano S -->
-    <!--<usb-device class="11" vendor-id="11415" product-id="1"/>-->
 </resources>

@@ -136,8 +136,9 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
 
     public void securityTokenDiscovered(final Transport transport) {
         // Actual Security Token operations are executed in doInBackground to not block the UI thread
-        if (!mTagHandlingEnabled)
+        if (!mTagHandlingEnabled) {
             return;
+        }
 
         final SecurityTokenConnection stConnection =
                 SecurityTokenConnection.getInstanceForTransport(transport, mCachedPin);
