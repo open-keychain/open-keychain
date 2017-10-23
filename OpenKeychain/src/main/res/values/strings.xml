@@ -1880,7 +1880,7 @@
 
     <string name="status_check_key">Checking key status…</string>
     <string name="status_search_local">Searching in key list…</string>
-    <string name="status_search_uri">Searching at token Uri…</string>
+    <string name="status_search_uri">Searching at token URL…</string>
     <string name="status_search_keyserver">Searching on keyservers…</string>
     <string name="status_import">Importing key…</string>
     <string name="status_token_promote">Setting up key…</string>
@@ -1901,7 +1901,7 @@
     <string name="token_action_import">Import</string>
     <string name="token_action_view_key">View Key</string>
     <string name="token_action_setup">"Set up with new key"</string>
-    <string name="token_action_unlock">Unlock using admin pin</string>
+    <string name="token_action_unlock">Unlock using admin PIN</string>
     <string name="token_unlock_attempts_none">"No unlock attempts left"</string>
     <plurals name="token_unlock_attempts">
         <item quantity="one">"1 attempt left"</item>
@@ -1909,16 +1909,16 @@
     </plurals>
     <string name="token_error_locked_indefinitely">Too many reset attempts. Token is locked irrecoverably!</string>
 
-    <string name="token_menu_change_pin">Change Pin</string>
+    <string name="token_menu_change_pin">Change PIN</string>
     <string name="token_menu_view_log">View Log</string>
 
     <string name="token_unlock_ok">Unlock</string>
-    <string name="token_hint_admin_pin">Admin Pin</string>
-    <string name="token_hint_new_pin">New Pin</string>
-    <string name="token_hint_new_pin_repeat">New Pin (repeat)</string>
-    <string name="token_error_admin_min8">Admin pin must be 8 characters or longer!</string>
-    <string name="token_error_pin_min6">New pin must be 6 characters or longer!</string>
-    <string name="token_error_pin_repeat">Doesn\'t match pin!</string>
+    <string name="token_hint_admin_pin">Admin PIN</string>
+    <string name="token_hint_new_pin">New PIN</string>
+    <string name="token_hint_new_pin_repeat">New PIN (repeat)</string>
+    <string name="token_error_admin_min8">Admin PIN must be 8 characters or longer!</string>
+    <string name="token_error_pin_min6">New PIN must be 6 characters or longer!</string>
+    <string name="token_error_pin_repeat">PINs do not match!</string>
 
     <string name="msg_ret_curi_error_io">"Error reading data!"</string>
     <string name="msg_ret_curi_error_no_match">"No matching key found"</string>
@@ -1926,7 +1926,7 @@
     <string name="msg_ret_curi_found">"Found key: %s"</string>
     <string name="msg_ret_curi_mismatch">"Key doesn't match"</string>
     <string name="msg_ret_curi_ok">"Key found"</string>
-    <string name="msg_ret_curi_open">"Opening Uri: %s"</string>
+    <string name="msg_ret_curi_open">"Opening URL: %s"</string>
     <string name="msg_ret_curi_start">"Loading key from file or document…"</string>
     <string name="msg_ret_ks_error">"Unknown error searching for key!"</string>
     <string name="msg_ret_ks_error_not_found">"Key not found"</string>
@@ -1942,13 +1942,13 @@
     <string name="msg_ret_local_ok">"Key found"</string>
     <string name="msg_ret_local_secret">"Local key contains secret key material"</string>
     <string name="msg_ret_local_start">"Looking for key in local key list…"</string>
-    <string name="msg_ret_uri_error_fetch">"Unknown error fetching Uri!"</string>
+    <string name="msg_ret_uri_error_fetch">"Unknown error fetching URL!"</string>
     <string name="msg_ret_uri_error_parse">"Token Uri is malformed!"</string>
-    <string name="msg_ret_uri_error_no_match">"No matching key found at Uri"</string>
-    <string name="msg_ret_uri_fetching">"Fetching Uri: %s"</string>
+    <string name="msg_ret_uri_error_no_match">"No matching key found at URL"</string>
+    <string name="msg_ret_uri_fetching">"Fetching URL: %s"</string>
     <string name="msg_ret_uri_ok">"Key found"</string>
-    <string name="msg_ret_uri_start">"Looking for key at token Uri…"</string>
-    <string name="msg_ret_uri_null">"No Uri saved on Security Token"</string>
+    <string name="msg_ret_uri_start">"Looking for key at token URL…"</string>
+    <string name="msg_ret_uri_null">"No URL saved on Security Token"</string>
     <string name="msg_ret_uri_test">"Checking if found key matches: %s"</string>
 
     <string name="msg_trust">"Updating trust information…"</string>
