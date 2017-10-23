@@ -18,7 +18,10 @@
 package org.sufficientlysecure.keychain.securitytoken;
 
 import android.nfc.Tag;
+import android.util.Log;
 
+import org.bouncycastle.util.encoders.Hex;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 
 import java.io.IOException;
@@ -44,7 +47,17 @@ public class NfcTransport implements Transport {
      */
     @Override
     public ResponseApdu transceive(final CommandApdu data) throws IOException {
-        return ResponseApdu.fromBytes(mIsoCard.transceive(data.toBytes()));
+        byte[] rawCommand = data.toBytes();
+        if (Constants.DEBUG) {
+            Log.d(Constants.TAG, "nfc out: " + Hex.toHexString(rawCommand));
+        }
+
+        byte[] rawResponse = mIsoCard.transceive(rawCommand);
+        if (Constants.DEBUG) {
+            Log.d(Constants.TAG, "nfc  in: " + Hex.toHexString(rawResponse));
+        }
+
+        return ResponseApdu.fromBytes(rawResponse);
     }
 
     /**
