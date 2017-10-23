@@ -56,6 +56,25 @@ public class UsbTransport implements Transport {
     private static final int MASK_SHORT_APDU = 0x20000;
     private static final int MASK_EXTENDED_APDU = 0x40000;
 
+    // https://github.com/Yubico/yubikey-personalization/blob/master/ykcore/ykdef.h
+    private static final int VENDOR_YUBICO = 4176;
+    private static final int PRODUCT_YUBIKEY_NEO_OTP_CCID = 273;
+    private static final int PRODUCT_YUBIKEY_NEO_CCID = 274;
+    private static final int PRODUCT_YUBIKEY_NEO_U2F_CCID = 277;
+    private static final int PRODUCT_YUBIKEY_NEO_OTP_U2F_CCID = 278;
+    private static final int PRODUCT_YUBIKEY_4_CCID = 1028;
+    private static final int PRODUCT_YUBIKEY_4_OTP_CCID = 1029;
+    private static final int PRODUCT_YUBIKEY_4_U2F_CCID = 1030;
+    private static final int PRODUCT_YUBIKEY_4_OTP_U2F_CCID = 1031;
+
+    // https://www.nitrokey.com/de/documentation/installation#p:nitrokey-pro&os:linux
+    private static final int VENDOR_NITROKEY = 8352;
+    private static final int PRODUCT_NITROKEY_PRO = 16648;
+    private static final int PRODUCT_NITROKEY_START = 16913;
+    private static final int PRODUCT_NITROKEY_STORAGE = 16649;
+
+    private static final int VENDOR_FSIJ = 9035;
+    private static final int VENDOR_LEDGER = 11415;
 
     private final UsbDevice usbDevice;
     private final UsbManager usbManager;
@@ -211,36 +230,36 @@ public class UsbTransport implements Transport {
     @Override
     public TokenType getTokenType() {
         switch (usbDevice.getVendorId()) {
-            case 4176: {
+            case VENDOR_YUBICO: {
                 switch (usbDevice.getProductId()) {
-                    case 273:
-                    case 274:
-                    case 277:
-                    case 278:
+                    case PRODUCT_YUBIKEY_NEO_OTP_CCID:
+                    case PRODUCT_YUBIKEY_NEO_CCID:
+                    case PRODUCT_YUBIKEY_NEO_U2F_CCID:
+                    case PRODUCT_YUBIKEY_NEO_OTP_U2F_CCID:
                         return TokenType.YUBIKEY_NEO;
-                    case 1028:
-                    case 1029:
-                    case 1030:
-                    case 1031:
+                    case PRODUCT_YUBIKEY_4_CCID:
+                    case PRODUCT_YUBIKEY_4_OTP_CCID:
+                    case PRODUCT_YUBIKEY_4_U2F_CCID:
+                    case PRODUCT_YUBIKEY_4_OTP_U2F_CCID:
                         return TokenType.YUBIKEY_4;
                 }
                 break;
             }
-            case 8352: {
+            case VENDOR_NITROKEY: {
                 switch (usbDevice.getProductId()) {
-                    case 16648:
+                    case PRODUCT_NITROKEY_PRO:
                         return TokenType.NITROKEY_PRO;
-                    case 16913:
+                    case PRODUCT_NITROKEY_START:
                         return TokenType.NITROKEY_START;
-                    case 16649:
+                    case PRODUCT_NITROKEY_STORAGE:
                         return TokenType.NITROKEY_STORAGE;
                 }
                 break;
             }
-            case 9035: {
+            case VENDOR_FSIJ: {
                 return TokenType.GNUK;
             }
-            case 11415: {
+            case VENDOR_LEDGER: {
                 return TokenType.LEDGER_NANO_S;
             }
         }

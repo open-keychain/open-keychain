@@ -1,12 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<!--
-    Based on
-    https://github.com/Yubico/yubikey-personalization/blob/master/ykcore/ykdef.h
-    https://www.nitrokey.com/de/documentation/installation#p:nitrokey-pro&os:linux
-
-    Note that values are decimal.
--->
 <resources>
 
     <!--
@@ -19,6 +11,10 @@
         Route some HID devices (class 3) to OpenKeychain.
         These tokens are generally supported but need to have CCID enabled.
         Thus, we show a notification inside OpenKeychain to inform the user.
+
+        Based on
+        https://github.com/Yubico/yubikey-personalization/blob/master/ykcore/ykdef.h
+        Note that values are decimal.
     -->
     <!-- Yubikey NEO - OTP only -->
     <usb-device class="3" vendor-id="4176" product-id="272"/>
