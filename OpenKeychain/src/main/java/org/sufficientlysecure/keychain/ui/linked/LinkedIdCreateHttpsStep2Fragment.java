@@ -126,7 +126,7 @@ public class LinkedIdCreateHttpsStep2Fragment extends LinkedIdCreateFinalFragmen
     private void proofSave () {
         String state = Environment.getExternalStorageState();
         if (!Environment.MEDIA_MOUNTED.equals(state)) {
-            Notify.create(getActivity(), "External storage not available!", Style.ERROR);
+            Notify.create(getActivity(), "External storage not available!", Style.ERROR).show();
             return;
         }
 

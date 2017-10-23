@@ -201,7 +201,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
             startActivity(viewKeyIntent);
 
         } catch (PgpKeyNotFoundException e) {
-            Notify.create(getActivity(), R.string.error_key_not_found, Style.ERROR);
+            Notify.create(getActivity(), R.string.error_key_not_found, Style.ERROR).show();
         }
     }
 
