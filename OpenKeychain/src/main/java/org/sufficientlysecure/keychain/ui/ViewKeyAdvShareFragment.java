@@ -207,7 +207,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
             if (toClipboard) {
                 ClipboardManager clipMan = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
                 if (clipMan == null) {
-                    Notify.create(activity, R.string.error_clipboard_copy, Style.ERROR);
+                    Notify.create(activity, R.string.error_clipboard_copy, Style.ERROR).show();
                     return;
                 }
 
@@ -278,7 +278,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         if (toClipboard) {
             ClipboardManager clipMan = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
             if (clipMan == null) {
-                Notify.create(activity, R.string.error_clipboard_copy, Style.ERROR);
+                Notify.create(activity, R.string.error_clipboard_copy, Style.ERROR).show();
                 return;
             }
 
