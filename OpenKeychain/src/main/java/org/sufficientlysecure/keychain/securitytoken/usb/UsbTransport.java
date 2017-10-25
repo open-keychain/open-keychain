@@ -101,6 +101,7 @@ public class UsbTransport implements Transport {
 
     /**
      * Check if device is was connected to and still is connected
+     *
      * @return true if device is connected
      */
     @Override
@@ -112,6 +113,7 @@ public class UsbTransport implements Transport {
     /**
      * Check if Transport supports persistent connections e.g connections which can
      * handle multiple operations in one session
+     *
      * @return true if transport supports persistent connections
      */
     @Override
@@ -199,6 +201,7 @@ public class UsbTransport implements Transport {
 
     /**
      * Transmit and receive data
+     *
      * @param data data to transmit
      * @return received data
      */
@@ -263,7 +266,10 @@ public class UsbTransport implements Transport {
                 return TokenType.LEDGER_NANO_S;
             }
         }
-        throw new IllegalStateException("Unhandled usb token type!");
+
+        Log.d(Constants.TAG, "Unknown USB token. Vendor ID: " + usbDevice.getVendorId()
+                + ", Product ID: " + usbDevice.getProductId());
+        return TokenType.UNKNOWN_USB;
     }
 
     /**

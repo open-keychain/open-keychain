@@ -370,6 +370,31 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/token_layout_unsupported">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="?listPreferredItemHeight"
+                    android:gravity="center_vertical"
+                    android:text="@string/token_result_empty"
+                    style="?android:textAppearanceLarge"
+                    />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:text="@string/token_put_key_unsupported"
+                    style="?android:textAppearanceMedium"/>
+
+            </LinearLayout>
+
         </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
 
     </LinearLayout>

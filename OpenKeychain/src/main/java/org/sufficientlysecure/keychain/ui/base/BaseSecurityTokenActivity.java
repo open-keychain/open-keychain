@@ -45,10 +45,11 @@ import org.sufficientlysecure.keychain.securitytoken.CardException;
 import org.sufficientlysecure.keychain.securitytoken.NfcTransport;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
-import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
+import org.sufficientlysecure.keychain.securitytoken.UnsupportedSecurityTokenException;
 import org.sufficientlysecure.keychain.securitytoken.UsbConnectionDispatcher;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransport;
+import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -238,8 +239,18 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
             return;
         }
 
-        if (e instanceof IsoDepNotSupportedException) {
+        if (e instanceof NfcTransport.IsoDepNotSupportedException) {
             onSecurityTokenError(getString(R.string.security_token_error_iso_dep_not_supported));
+            return;
+        }
+
+        if (e instanceof UsbTransportException) {
+            onSecurityTokenError(getString(R.string.security_token_error, e.getMessage()));
+            return;
+        }
+
+        if (e instanceof UnsupportedSecurityTokenException) {
+            onSecurityTokenError(getString(R.string.security_token_not_supported));
             return;
         }
 
@@ -440,14 +451,6 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
 
     protected void handleSecurityToken(SecurityTokenConnection stConnection) throws IOException {
         doSecurityTokenInBackground(stConnection);
-    }
-
-    public static class IsoDepNotSupportedException extends IOException {
-
-        public IsoDepNotSupportedException(String detailMessage) {
-            super(detailMessage);
-        }
-
     }
 
     /**

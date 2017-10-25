@@ -3,6 +3,7 @@ package org.sufficientlysecure.keychain.securitytoken;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import android.os.Parcelable;
@@ -52,7 +53,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
         if (!BuildConfig.DEBUG) {
             throw new UnsupportedOperationException("This operation is only available in debug builds!");
         }
-        return SecurityTokenInfo.create(TransportType.NFC, TokenType.UNKNOWN,
+        return SecurityTokenInfo.create(TransportType.NFC, TokenType.UNKNOWN_NFC,
                 new byte[][] { KeyFormattingUtils.convertFingerprintHexFingerprint("1efdb4845ca242ca6977fddb1f788094fd3b430a") },
                 Hex.decode("010203040506"), "yubinu2@mugenguild.com", null, 3, 3);
     }
@@ -61,7 +62,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
         if (!BuildConfig.DEBUG) {
             throw new UnsupportedOperationException("This operation is only available in debug builds!");
         }
-        return SecurityTokenInfo.create(TransportType.NFC, TokenType.UNKNOWN,
+        return SecurityTokenInfo.create(TransportType.NFC, TokenType.UNKNOWN_NFC,
                 new byte[][] { KeyFormattingUtils.convertFingerprintHexFingerprint("4700BA1AC417ABEF3CC7765AD686905837779C3E") },
                 Hex.decode("010203040506"), "yubinu2@mugenguild.com", "http://valodim.stratum0.net/mryubinu2.asc", 3, 3);
     }
@@ -70,7 +71,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
         if (!BuildConfig.DEBUG) {
             throw new UnsupportedOperationException("This operation is only available in debug builds!");
         }
-        return SecurityTokenInfo.create(TransportType.NFC, TokenType.UNKNOWN,
+        return SecurityTokenInfo.create(TransportType.NFC, TokenType.UNKNOWN_NFC,
                 new byte[][] { KeyFormattingUtils.convertFingerprintHexFingerprint("4700BA1AC417ABEF3CC7765AD686905837779C3E") },
                 Hex.decode("010203040506"), "yubinu2@mugenguild.com", "http://valodim.stratum0.net/mryubinu2.asc", 0, 3);
     }
@@ -79,7 +80,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
         if (!BuildConfig.DEBUG) {
             throw new UnsupportedOperationException("This operation is only available in debug builds!");
         }
-        return SecurityTokenInfo.create(TransportType.NFC, TokenType.UNKNOWN,
+        return SecurityTokenInfo.create(TransportType.NFC, TokenType.UNKNOWN_NFC,
                 new byte[][] { KeyFormattingUtils.convertFingerprintHexFingerprint("4700BA1AC417ABEF3CC7765AD686905837779C3E") },
                 Hex.decode("010203040506"), "yubinu2@mugenguild.com", "http://valodim.stratum0.net/mryubinu2.asc", 0, 0);
     }
@@ -89,7 +90,31 @@ public abstract class SecurityTokenInfo implements Parcelable {
     }
 
     public enum TokenType {
-        YUBIKEY_NEO, YUBIKEY_4, FIDESMO, NITROKEY_PRO, NITROKEY_STORAGE, NITROKEY_START, GNUK, LEDGER_NANO_S, UNKNOWN
+        YUBIKEY_NEO, YUBIKEY_4, FIDESMO, NITROKEY_PRO, NITROKEY_STORAGE, NITROKEY_START, GNUK, LEDGER_NANO_S, UNKNOWN_NFC, UNKNOWN_USB
+    }
+
+    private static final HashSet<TokenType> SUPPORTED_SECURITY_TOKENS = new HashSet<>(Arrays.asList(
+            TokenType.UNKNOWN_NFC,
+            TokenType.FIDESMO,
+            TokenType.YUBIKEY_NEO,
+            TokenType.YUBIKEY_4,
+            TokenType.NITROKEY_PRO,
+            TokenType.NITROKEY_STORAGE
+    ));
+
+    private static final HashSet<TokenType> SUPPORTED_PUT_KEY = new HashSet<>(Arrays.asList(
+            TokenType.UNKNOWN_NFC,
+            TokenType.FIDESMO,
+            TokenType.YUBIKEY_NEO,
+            TokenType.YUBIKEY_4 // Not clear, will be tested: https://github.com/open-keychain/open-keychain/issues/2069
+    ));
+
+    public boolean isSecurityTokenSupported() {
+        return SUPPORTED_SECURITY_TOKENS.contains(getTokenType());
+    }
+
+    public boolean isPutKeySupported() {
+        return SUPPORTED_PUT_KEY.contains(getTokenType());
     }
 
 }

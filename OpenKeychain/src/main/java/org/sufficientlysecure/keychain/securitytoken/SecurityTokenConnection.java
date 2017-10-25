@@ -955,10 +955,18 @@ public class SecurityTokenConnection {
         if (transportType == TransportType.USB) {
             tokenType = mTransport.getTokenType();
         } else {
-            tokenType = isFidesmoToken() ? TokenType.FIDESMO : TokenType.UNKNOWN;
+            tokenType = isFidesmoToken() ? TokenType.FIDESMO : TokenType.UNKNOWN_NFC;
         }
 
-        return SecurityTokenInfo.create(transportType, tokenType, fingerprints, aid, userId, url, pwInfo[4], pwInfo[6]);
+        // TODO: bail out earlier on unsupported tokens to not execute other commands
+
+        SecurityTokenInfo info = SecurityTokenInfo.create(transportType, tokenType, fingerprints, aid, userId, url, pwInfo[4], pwInfo[6]);
+
+        if (! info.isSecurityTokenSupported()) {
+            throw new UnsupportedSecurityTokenException();
+        }
+
+        return info;
     }
 
     public static double parseOpenPgpVersion(final byte[] aid) {
@@ -966,4 +974,5 @@ public class SecurityTokenConnection {
         while (minv > 0) minv /= 10.0;
         return aid[6] + minv;
     }
+
 }

@@ -37,6 +37,14 @@ public class NfcTransport implements Transport {
     private final Tag mTag;
     private IsoCard mIsoCard;
 
+    public static class IsoDepNotSupportedException extends IOException {
+
+        IsoDepNotSupportedException(String detailMessage) {
+            super(detailMessage);
+        }
+
+    }
+
     public NfcTransport(Tag tag) {
         this.mTag = tag;
     }
@@ -98,7 +106,7 @@ public class NfcTransport implements Transport {
     public void connect() throws IOException {
         mIsoCard = AndroidCard.get(mTag);
         if (mIsoCard == null) {
-            throw new BaseSecurityTokenActivity.IsoDepNotSupportedException("Tag does not support ISO-DEP (ISO 14443-4)");
+            throw new IsoDepNotSupportedException("Tag does not support ISO-DEP (ISO 14443-4)");
         }
 
         mIsoCard.setTimeout(TIMEOUT);
