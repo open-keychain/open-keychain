@@ -210,7 +210,8 @@ public class SecurityTokenConnection {
         }
     }
 
-    private void determineTokenType() throws IOException {
+    @VisibleForTesting
+    void determineTokenType() throws IOException {
         tokenType = mTransport.getTokenTypeIfAvailable();
         if (tokenType != null) {
             return;
