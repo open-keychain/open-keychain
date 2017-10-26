@@ -21,12 +21,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class OpenPgpCapabilities {
+@SuppressWarnings("unused") // just expose all included data
+class OpenPgpCapabilities {
     private final static int MASK_SM = 1 << 7;
     private final static int MASK_KEY_IMPORT = 1 << 5;
     private final static int MASK_ATTRIBUTES_CHANGABLE = 1 << 2;
 
-    private boolean mPw1ValidForMultipleSignatures;
     private byte[] mAid;
     private byte[] mHistoricalBytes;
 
@@ -39,13 +39,15 @@ public class OpenPgpCapabilities {
     private int mMaxRspLen;
 
     private Map<KeyType, KeyFormat> mKeyFormats;
+    private byte[] mFingerprints;
+    private byte[] mPwStatusBytes;
 
-    public OpenPgpCapabilities(byte[] data) throws IOException {
+    OpenPgpCapabilities(byte[] data) throws IOException {
         mKeyFormats = new HashMap<>();
         updateWithData(data);
     }
 
-    public void updateWithData(byte[] data) throws IOException {
+    void updateWithData(byte[] data) throws IOException {
         Iso7816TLV[] tlvs = Iso7816TLV.readList(data, true);
         if (tlvs.length == 1 && tlvs[0].mT == 0x6E) {
             tlvs = ((Iso7816TLV.Iso7816CompositeTLV) tlvs[0]).mSubs;
@@ -75,7 +77,10 @@ public class OpenPgpCapabilities {
                     mKeyFormats.put(KeyType.AUTH, KeyFormat.fromBytes(tlv.mV));
                     break;
                 case 0xC4:
-                    mPw1ValidForMultipleSignatures = tlv.mV[0] == 1;
+                    mPwStatusBytes = tlv.mV;
+                    break;
+                case 0xC5:
+                    mFingerprints = tlv.mV;
                     break;
             }
         }
@@ -97,7 +102,10 @@ public class OpenPgpCapabilities {
                     mKeyFormats.put(KeyType.AUTH, KeyFormat.fromBytes(tlv.mV));
                     break;
                 case 0xC4:
-                    mPw1ValidForMultipleSignatures = tlv.mV[0] == 1;
+                    mPwStatusBytes = tlv.mV;
+                    break;
+                case 0xC5:
+                    mFingerprints = tlv.mV;
                     break;
             }
         }
@@ -114,47 +122,55 @@ public class OpenPgpCapabilities {
         mMaxRspLen = (v[8] << 8) + v[9];
     }
 
-    public boolean isPw1ValidForMultipleSignatures() {
-        return mPw1ValidForMultipleSignatures;
-    }
-
-    public byte[] getAid() {
+    byte[] getAid() {
         return mAid;
     }
 
-    public byte[] getHistoricalBytes() {
+    byte[] getPwStatusBytes() {
+        return mPwStatusBytes;
+    }
+
+    boolean isPw1ValidForMultipleSignatures() {
+        return mPwStatusBytes[0] == 1;
+    }
+
+    byte[] getHistoricalBytes() {
         return mHistoricalBytes;
     }
 
-    public boolean isHasSM() {
+    boolean isHasSM() {
         return mHasSM;
     }
 
-    public boolean isAttributesChangable() {
+    boolean isAttributesChangable() {
         return mAttriburesChangable;
     }
 
-    public boolean isHasKeyImport() {
+    boolean isHasKeyImport() {
         return mHasKeyImport;
     }
 
-    public boolean isHasAESSM() {
+    boolean isHasAESSM() {
         return isHasSM() && ((mSMType == 1) || (mSMType == 2));
     }
 
-    public boolean isHasSCP11bSM() {
+    boolean isHasSCP11bSM() {
         return isHasSM() && (mSMType == 3);
     }
 
-    public int getMaxCmdLen() {
+    int getMaxCmdLen() {
         return mMaxCmdLen;
     }
 
-    public int getMaxRspLen() {
+    int getMaxRspLen() {
         return mMaxRspLen;
     }
 
-    public KeyFormat getFormatForKeyType(KeyType keyType) {
+    KeyFormat getFormatForKeyType(KeyType keyType) {
         return mKeyFormats.get(keyType);
+    }
+
+    public byte[] getFingerprints() {
+        return mFingerprints;
     }
 }

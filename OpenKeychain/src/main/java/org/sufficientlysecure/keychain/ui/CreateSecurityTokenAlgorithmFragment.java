@@ -32,7 +32,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
-import org.sufficientlysecure.keychain.securitytoken.SecurityTokenHelper;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.util.Choice;
 
@@ -100,7 +100,7 @@ public class CreateSecurityTokenAlgorithmFragment extends Fragment {
         choices.add(new Choice<>(SupportedKeyType.RSA_4096, getResources().getString(
                 R.string.rsa_4096), getResources().getString(R.string.rsa_4096_description_html)));
 
-        final double version = SecurityTokenHelper.parseOpenPgpVersion(mCreateKeyActivity.tokenInfo.getAid());
+        final double version = SecurityTokenConnection.parseOpenPgpVersion(mCreateKeyActivity.tokenInfo.getAid());
 
         if (version >= 3.0) {
             choices.add(new Choice<>(SupportedKeyType.ECC_P256, getResources().getString(

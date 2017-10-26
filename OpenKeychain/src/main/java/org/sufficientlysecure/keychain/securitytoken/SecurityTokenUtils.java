@@ -33,8 +33,8 @@ import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPrivateCrtKey;
 
-public class SecurityTokenUtils {
-    public static byte[] attributesFromSecretKey(final KeyType slot, final CanonicalizedSecretKey secretKey) throws IOException, PgpGeneralException {
+class SecurityTokenUtils {
+    static byte[] attributesFromSecretKey(final KeyType slot, final CanonicalizedSecretKey secretKey) throws IOException, PgpGeneralException {
         if (secretKey.isRSA()) {
             final int mModulusLength = secretKey.getBitStrength();
             final int mExponentLength = secretKey.getSecurityTokenRSASecretKey().getPublicExponent().bitLength();
@@ -46,7 +46,7 @@ public class SecurityTokenUtils {
             attrs[i++] = (byte) (mModulusLength & 0xff);
             attrs[i++] = (byte) ((mExponentLength >> 8) & 0xff);
             attrs[i++] = (byte) (mExponentLength & 0xff);
-            attrs[i++] = RSAKeyFormat.RSAAlgorithmFormat.CRT_WITH_MODULUS.getValue();
+            attrs[i] = RSAKeyFormat.RSAAlgorithmFormat.CRT_WITH_MODULUS.getValue();
 
             return attrs;
         } else if (secretKey.isEC()) {
@@ -70,8 +70,8 @@ public class SecurityTokenUtils {
     }
 
 
-    public static byte[] createRSAPrivKeyTemplate(RSAPrivateCrtKey secretKey, KeyType slot,
-                                                  RSAKeyFormat format) throws IOException {
+    static byte[] createRSAPrivKeyTemplate(RSAPrivateCrtKey secretKey, KeyType slot,
+            RSAKeyFormat format) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream(),
                 template = new ByteArrayOutputStream(),
                 data = new ByteArrayOutputStream(),
@@ -138,8 +138,8 @@ public class SecurityTokenUtils {
         return res.toByteArray();
     }
 
-    public static byte[] createECPrivKeyTemplate(ECPrivateKey secretKey, ECPublicKey publicKey, KeyType slot,
-                                                 ECKeyFormat format) throws IOException {
+    static byte[] createECPrivKeyTemplate(ECPrivateKey secretKey, ECPublicKey publicKey, KeyType slot,
+            ECKeyFormat format) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream(),
                 template = new ByteArrayOutputStream(),
                 data = new ByteArrayOutputStream(),
@@ -184,7 +184,7 @@ public class SecurityTokenUtils {
         return res.toByteArray();
     }
 
-    public static byte[] encodeLength(int len) {
+    static byte[] encodeLength(int len) {
         if (len < 0) {
             throw new IllegalArgumentException("length is negative");
         } else if (len >= 16777216) {
@@ -214,7 +214,7 @@ public class SecurityTokenUtils {
         return res;
     }
 
-    public static void writeBits(ByteArrayOutputStream stream, BigInteger value, int width) {
+    static void writeBits(ByteArrayOutputStream stream, BigInteger value, int width) {
         if (value.signum() == -1) {
             throw new IllegalArgumentException("value is negative");
         } else if (width <= 0) {

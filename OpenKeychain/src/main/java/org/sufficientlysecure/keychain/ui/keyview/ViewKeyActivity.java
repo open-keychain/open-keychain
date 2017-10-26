@@ -79,6 +79,7 @@ import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -619,8 +620,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     }
 
     @Override
-    protected void onSecurityTokenPostExecute() {
-        super.onSecurityTokenPostExecute();
+    protected void onSecurityTokenPostExecute(SecurityTokenConnection stConnection) {
+        super.onSecurityTokenPostExecute(stConnection);
         finish();
     }
 

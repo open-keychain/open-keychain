@@ -21,7 +21,8 @@ import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 
 import java.nio.ByteBuffer;
 
-public class CardCapabilities {
+@SuppressWarnings("WeakerAccess")
+class CardCapabilities {
     private static final int MASK_CHAINING = 1 << 7;
     private static final int MASK_EXTENDED = 1 << 6;
 

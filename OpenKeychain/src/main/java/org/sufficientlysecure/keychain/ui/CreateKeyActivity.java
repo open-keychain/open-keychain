@@ -32,6 +32,7 @@ import android.support.v4.app.TaskStackBuilder;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenFragment;
@@ -133,17 +134,17 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
     }
 
     @Override
-    protected void doSecurityTokenInBackground() throws IOException {
+    protected void doSecurityTokenInBackground(SecurityTokenConnection stConnection) throws IOException {
         if (mCurrentFragment instanceof SecurityTokenListenerFragment) {
             ((SecurityTokenListenerFragment) mCurrentFragment).doSecurityTokenInBackground();
             return;
         }
 
-        tokenInfo = mSecurityTokenHelper.getTokenInfo();
+        tokenInfo = stConnection.getTokenInfo();
     }
 
     @Override
-    protected void onSecurityTokenPostExecute() {
+    protected void onSecurityTokenPostExecute(SecurityTokenConnection stConnection) {
         handleTokenInfo(tokenInfo);
     }
 

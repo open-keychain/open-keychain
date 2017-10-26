@@ -23,6 +23,7 @@ package org.sufficientlysecure.keychain.securitytoken;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.ASN1Integer;
@@ -46,8 +47,6 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-import javax.smartcardio.CommandAPDU;
-import javax.smartcardio.ResponseAPDU;
 
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 import org.sufficientlysecure.keychain.util.Log;
@@ -64,53 +63,55 @@ import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPrivateCrtKey;
+import java.util.List;
+
 
 /**
  * This class provides a communication interface to OpenPGP applications on ISO SmartCard compliant
  * devices.
  * For the full specs, see http://g10code.com/docs/openpgp-card-2.0.pdf
  */
-public class SecurityTokenHelper {
-    private static final int MAX_APDU_NC = 255;
-    private static final int MAX_APDU_NC_EXT = 65535;
-
-    private static final int MAX_APDU_NE = 256;
-    static final int MAX_APDU_NE_EXT = 65536;
-
-    static final int APDU_SW_SUCCESS = 0x9000;
+public class SecurityTokenConnection {
     private static final int APDU_SW1_RESPONSE_AVAILABLE = 0x61;
-
-    private static final int MASK_CLA_CHAINING = 1 << 4;
 
     // Fidesmo constants
     private static final String FIDESMO_APPS_AID_PREFIX = "A000000617";
 
     private static final byte[] BLANK_FINGERPRINT = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
+    private static SecurityTokenConnection sCachedInstance;
+
     private final JcaKeyFingerprintCalculator fingerprintCalculator = new JcaKeyFingerprintCalculator();
 
-    private Transport mTransport;
+    @NonNull
+    private final Transport mTransport;
+    @NonNull
+    private final Passphrase mPin;
+    private final OpenPgpCommandApduFactory commandFactory;
+
     private CardCapabilities mCardCapabilities;
     private OpenPgpCapabilities mOpenPgpCapabilities;
     private SecureMessaging mSecureMessaging;
 
-    private Passphrase mPin;
-    private Passphrase mAdminPin;
     private boolean mPw1ValidatedForSignature;
     private boolean mPw1ValidatedForDecrypt; // Mode 82 does other things; consider renaming?
     private boolean mPw3Validated;
 
-    private SecurityTokenHelper() {
+    public static SecurityTokenConnection getInstanceForTransport(Transport transport, Passphrase pin) {
+        if (sCachedInstance == null || !sCachedInstance.isPersistentConnectionAllowed() ||
+                !sCachedInstance.isConnected() || !sCachedInstance.mTransport.equals(transport)) {
+            sCachedInstance = new SecurityTokenConnection(transport, pin, new OpenPgpCommandApduFactory());
+        }
+        return sCachedInstance;
     }
 
-    public static double parseOpenPgpVersion(final byte[] aid) {
-        float minv = aid[7];
-        while (minv > 0) minv /= 10.0;
-        return aid[6] + minv;
-    }
+    @VisibleForTesting
+    SecurityTokenConnection(@NonNull Transport transport, @NonNull Passphrase pin,
+            OpenPgpCommandApduFactory commandFactory) {
+        this.mTransport = transport;
+        this.mPin = pin;
 
-    public static SecurityTokenHelper getInstance() {
-        return LazyHolder.SECURITY_TOKEN_HELPER;
+        this.commandFactory = commandFactory;
     }
 
     private String getHolderName(byte[] name) {
@@ -126,23 +127,7 @@ public class SecurityTokenHelper {
         }
     }
 
-    public Passphrase getPin() {
-        return mPin;
-    }
-
-    public void setPin(final Passphrase pin) {
-        this.mPin = pin;
-    }
-
-    public Passphrase getAdminPin() {
-        return mAdminPin;
-    }
-
-    public void setAdminPin(final Passphrase adminPin) {
-        this.mAdminPin = adminPin;
-    }
-
-    public void changeKey(CanonicalizedSecretKey secretKey, Passphrase passphrase) throws IOException {
+    public void changeKey(CanonicalizedSecretKey secretKey, Passphrase passphrase, Passphrase adminPin) throws IOException {
         long keyGenerationTimestamp = secretKey.getCreationTime().getTime() / 1000;
         byte[] timestampBytes = ByteBuffer.allocate(4).putInt((int) keyGenerationTimestamp).array();
         KeyType keyType = KeyType.from(secretKey);
@@ -160,9 +145,9 @@ public class SecurityTokenHelper {
                     keyType.toString()));
         }
 
-        putKey(keyType, secretKey, passphrase);
-        putData(keyType.getFingerprintObjectId(), secretKey.getFingerprint());
-        putData(keyType.getTimestampObjectId(), timestampBytes);
+        putKey(keyType, secretKey, passphrase, adminPin);
+        putData(adminPin, keyType.getFingerprintObjectId(), secretKey.getFingerprint());
+        putData(adminPin, keyType.getTimestampObjectId(), timestampBytes);
     }
 
     private boolean isSlotEmpty(KeyType keyType) throws IOException {
@@ -179,12 +164,19 @@ public class SecurityTokenHelper {
         return java.util.Arrays.equals(getKeyFingerprint(keyType), fingerprint);
     }
 
+    public void connectIfNecessary(Context context) throws IOException {
+        if (isConnected()) {
+            return;
+        }
+
+        connectToDevice(context);
+    }
+
     /**
      * Connect to device and select pgp applet
-     *
-     * @throws IOException
      */
-    public void connectToDevice(final Context ctx) throws IOException {
+    @VisibleForTesting
+    void connectToDevice(Context context) throws IOException {
         // Connect on transport layer
         mCardCapabilities = new CardCapabilities();
 
@@ -192,15 +184,15 @@ public class SecurityTokenHelper {
 
         // Connect on smartcard layer
         // Command APDU (page 51) for SELECT FILE command (page 29)
-        CommandAPDU select = new CommandAPDU(0x00, 0xA4, 0x04, 0x00, Hex.decode("D27600012401"));
-        ResponseAPDU response = communicate(select);  // activate connection
+        CommandApdu select = commandFactory.createSelectFileOpenPgpCommand();
+        ResponseApdu response = communicate(select);  // activate connection
 
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Initialization failed!", response.getSW());
+        if (!response.isSuccess()) {
+            throw new CardException("Initialization failed!", response.getSw());
         }
 
-        mOpenPgpCapabilities = new OpenPgpCapabilities(getData(0x00, 0x6E));
-        mCardCapabilities = new CardCapabilities(mOpenPgpCapabilities.getHistoricalBytes());
+        OpenPgpCapabilities openPgpCapabilities = new OpenPgpCapabilities(getData(0x00, 0x6E));
+        setConnectionCapabilities(openPgpCapabilities);
 
         mPw1ValidatedForSignature = false;
         mPw1ValidatedForDecrypt = false;
@@ -208,21 +200,24 @@ public class SecurityTokenHelper {
 
         if (mOpenPgpCapabilities.isHasSCP11bSM()) {
             try {
-                SCP11bSecureMessaging.establish(this, ctx);
+                SCP11bSecureMessaging.establish(this, context, commandFactory);
             } catch (SecureMessagingException e) {
                 mSecureMessaging = null;
                 Log.e(Constants.TAG, "failed to establish secure messaging", e);
             }
         }
-
     }
 
-    public void resetPin(String newPinStr) throws IOException {
-        if (!mPw3Validated) {
-            verifyPin(0x83); // (Verify PW1 with mode 82 for decryption)
-        }
+    @VisibleForTesting
+    void setConnectionCapabilities(OpenPgpCapabilities openPgpCapabilities) throws IOException {
+        this.mOpenPgpCapabilities = openPgpCapabilities;
+        this.mCardCapabilities = new CardCapabilities(openPgpCapabilities.getHistoricalBytes());
+    }
 
-        byte[] newPin = newPinStr.getBytes();
+    public void resetPin(byte[] newPin, Passphrase adminPin) throws IOException {
+        if (!mPw3Validated) {
+            verifyAdminPin(adminPin);
+        }
 
         final int MAX_PW1_LENGTH_INDEX = 1;
         byte[] pwStatusBytes = getPwStatusBytes();
@@ -231,52 +226,36 @@ public class SecurityTokenHelper {
         }
 
         // Command APDU for RESET RETRY COUNTER command (page 33)
-        CommandAPDU changePin = new CommandAPDU(0x00, 0x2C, 0x02, 0x81, newPin);
-        ResponseAPDU response = communicate(changePin);
+        CommandApdu changePin = commandFactory.createResetPw1Command(newPin);
+        ResponseApdu response = communicate(changePin);
 
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Failed to change PIN", response.getSW());
+        if (!response.isSuccess()) {
+            throw new CardException("Failed to change PIN", response.getSw());
         }
     }
 
     /**
-     * Modifies the user's PW1 or PW3. Before sending, the new PIN will be validated for
+     * Modifies the user's PW3. Before sending, the new PIN will be validated for
      * conformance to the token's requirements for key length.
      *
-     * @param pw     For PW1, this is 0x81. For PW3 (Admin PIN), mode is 0x83.
-     * @param newPin The new PW1 or PW3.
+     * @param newAdminPin The new PW3.
      */
-    public void modifyPin(int pw, byte[] newPin) throws IOException {
-        final int MAX_PW1_LENGTH_INDEX = 1;
+    public void modifyPw3Pin(byte[] newAdminPin, Passphrase adminPin) throws IOException {
         final int MAX_PW3_LENGTH_INDEX = 3;
 
         byte[] pwStatusBytes = getPwStatusBytes();
 
-        if (pw == 0x81) {
-            if (newPin.length < 6 || newPin.length > pwStatusBytes[MAX_PW1_LENGTH_INDEX]) {
-                throw new IOException("Invalid PIN length");
-            }
-        } else if (pw == 0x83) {
-            if (newPin.length < 8 || newPin.length > pwStatusBytes[MAX_PW3_LENGTH_INDEX]) {
-                throw new IOException("Invalid PIN length");
-            }
-        } else {
-            throw new IOException("Invalid PW index for modify PIN operation");
+        if (newAdminPin.length < 8 || newAdminPin.length > pwStatusBytes[MAX_PW3_LENGTH_INDEX]) {
+            throw new IOException("Invalid PIN length");
         }
 
-        byte[] pin;
-        if (pw == 0x83) {
-            pin = mAdminPin.toStringUnsafe().getBytes();
-        } else {
-            pin = mPin.toStringUnsafe().getBytes();
-        }
+        byte[] pin = adminPin.toStringUnsafe().getBytes();
 
-        // Command APDU for CHANGE REFERENCE DATA command (page 32)
-        CommandAPDU changePin = new CommandAPDU(0x00, 0x24, 0x00, pw, Arrays.concatenate(pin, newPin));
-        ResponseAPDU response = communicate(changePin);
+        CommandApdu changePin = commandFactory.createChangePw3Command(pin, newAdminPin);
+        ResponseApdu response = communicate(changePin);
 
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Failed to change PIN", response.getSW());
+        if (!response.isSuccess()) {
+            throw new CardException("Failed to change PIN", response.getSw());
         }
     }
 
@@ -293,7 +272,7 @@ public class SecurityTokenHelper {
         final KeyFormat kf = mOpenPgpCapabilities.getFormatForKeyType(KeyType.ENCRYPT);
 
         if (!mPw1ValidatedForDecrypt) {
-            verifyPin(0x82); // (Verify PW1 with mode 82 for decryption)
+            verifyPinForOther();
         }
 
         byte[] data;
@@ -352,11 +331,11 @@ public class SecurityTokenHelper {
                 throw new CardException("Unknown encryption key type!");
         }
 
-        CommandAPDU command = new CommandAPDU(0x00, 0x2A, 0x80, 0x86, data, MAX_APDU_NE_EXT);
-        ResponseAPDU response = communicate(command);
+        CommandApdu command = commandFactory.createDecipherCommand(data);
+        ResponseApdu response = communicate(command);
 
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Deciphering with Security token failed on receive", response.getSW());
+        if (!response.isSuccess()) {
+            throw new CardException("Deciphering with Security token failed on receive", response.getSw());
         }
 
         switch (mOpenPgpCapabilities.getFormatForKeyType(KeyType.ENCRYPT).keyFormatType()) {
@@ -416,34 +395,46 @@ public class SecurityTokenHelper {
     }
 
     /**
-     * Verifies the user's PW1 or PW3 with the appropriate mode.
-     *
-     * @param mode For PW1, this is 0x81 for signing, 0x82 for everything else.
-     *             For PW3 (Admin PIN), mode is 0x83.
+     * Verifies the user's PW1 with the appropriate mode.
      */
-    private void verifyPin(int mode) throws IOException {
-        if (mPin != null || mode == 0x83) {
+    private void verifyPinForSignature() throws IOException {
+        byte[] pin = mPin.toStringUnsafe().getBytes();
 
-            byte[] pin;
-            if (mode == 0x83) {
-                pin = mAdminPin.toStringUnsafe().getBytes();
-            } else {
-                pin = mPin.toStringUnsafe().getBytes();
-            }
-
-            ResponseAPDU response = tryPin(mode, pin);// login
-            if (response.getSW() != APDU_SW_SUCCESS) {
-                throw new CardException("Bad PIN!", response.getSW());
-            }
-
-            if (mode == 0x81) {
-                mPw1ValidatedForSignature = true;
-            } else if (mode == 0x82) {
-                mPw1ValidatedForDecrypt = true;
-            } else if (mode == 0x83) {
-                mPw3Validated = true;
-            }
+        ResponseApdu response = communicate(commandFactory.createVerifyPw1ForSignatureCommand(pin));
+        if (!response.isSuccess()) {
+            throw new CardException("Bad PIN!", response.getSw());
         }
+
+        mPw1ValidatedForSignature = true;
+    }
+
+    /**
+     * Verifies the user's PW1 with the appropriate mode.
+     */
+    private void verifyPinForOther() throws IOException {
+        byte[] pin = mPin.toStringUnsafe().getBytes();
+
+        // Command APDU for VERIFY command (page 32)
+        ResponseApdu response = communicate(commandFactory.createVerifyPw1ForOtherCommand(pin));
+        if (!response.isSuccess()) {
+            throw new CardException("Bad PIN!", response.getSw());
+        }
+
+        mPw1ValidatedForDecrypt = true;
+    }
+
+    /**
+     * Verifies the user's PW1 or PW3 with the appropriate mode.
+     */
+    private void verifyAdminPin(Passphrase adminPin) throws IOException {
+        // Command APDU for VERIFY command (page 32)
+        ResponseApdu response =
+                communicate(commandFactory.createVerifyPw3Command(adminPin.toStringUnsafe().getBytes()));
+        if (!response.isSuccess()) {
+            throw new CardException("Bad PIN!", response.getSw());
+        }
+
+        mPw3Validated = true;
     }
 
     /**
@@ -454,28 +445,28 @@ public class SecurityTokenHelper {
      * @param dataObject The data object to be stored.
      * @param data       The data to store in the object
      */
-    private void putData(int dataObject, byte[] data) throws IOException {
+    private void putData(Passphrase adminPin, int dataObject, byte[] data) throws IOException {
         if (data.length > 254) {
             throw new IOException("Cannot PUT DATA with length > 254");
         }
+        // TODO use admin pin regardless, if we have it?
         if (dataObject == 0x0101 || dataObject == 0x0103) {
             if (!mPw1ValidatedForDecrypt) {
-                verifyPin(0x82); // (Verify PW1 for non-signing operations)
+                verifyPinForOther();
             }
         } else if (!mPw3Validated) {
-            verifyPin(0x83); // (Verify PW3)
+            verifyAdminPin(adminPin);
         }
 
-        CommandAPDU command = new CommandAPDU(0x00, 0xDA, (dataObject & 0xFF00) >> 8, dataObject & 0xFF, data);
-        ResponseAPDU response = communicate(command); // put data
+        CommandApdu command = commandFactory.createPutDataCommand(dataObject, data);
+        ResponseApdu response = communicate(command); // put data
 
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Failed to put data.", response.getSW());
+        if (!response.isSuccess()) {
+            throw new CardException("Failed to put data.", response.getSw());
         }
     }
 
-
-    private void setKeyAttributes(final KeyType slot, final CanonicalizedSecretKey secretKey)
+    private void setKeyAttributes(Passphrase adminPin, final KeyType slot, final CanonicalizedSecretKey secretKey)
             throws IOException {
 
         if (mOpenPgpCapabilities.isAttributesChangable()) {
@@ -493,7 +484,7 @@ public class SecurityTokenHelper {
 
             try {
 
-                putData(tag, SecurityTokenUtils.attributesFromSecretKey(slot, secretKey));
+                putData(adminPin, tag, SecurityTokenUtils.attributesFromSecretKey(slot, secretKey));
 
                 mOpenPgpCapabilities.updateWithData(getData(0x00, tag));
 
@@ -512,14 +503,14 @@ public class SecurityTokenHelper {
      *             0xB8: Decipherment Key
      *             0xA4: Authentication Key
      */
-    private void putKey(KeyType slot, CanonicalizedSecretKey secretKey, Passphrase passphrase)
+    private void putKey(KeyType slot, CanonicalizedSecretKey secretKey, Passphrase passphrase, Passphrase adminPin)
             throws IOException {
         RSAPrivateCrtKey crtSecretKey;
         ECPrivateKey ecSecretKey;
         ECPublicKey ecPublicKey;
 
         if (!mPw3Validated) {
-            verifyPin(0x83); // (Verify PW3 with mode 83)
+            verifyAdminPin(adminPin);
         }
 
         // Now we're ready to communicate with the token.
@@ -528,7 +519,7 @@ public class SecurityTokenHelper {
         try {
             secretKey.unlock(passphrase);
 
-            setKeyAttributes(slot, secretKey);
+            setKeyAttributes(adminPin, slot, secretKey);
 
             switch (mOpenPgpCapabilities.getFormatForKeyType(slot).keyFormatType()) {
                 case RSAKeyFormatType:
@@ -566,11 +557,11 @@ public class SecurityTokenHelper {
             throw new IOException(e.getMessage());
         }
 
-        CommandAPDU apdu = new CommandAPDU(0x00, 0xDB, 0x3F, 0xFF, keyBytes);
-        ResponseAPDU response = communicate(apdu);
+        CommandApdu apdu = commandFactory.createPutKeyCommand(keyBytes);
+        ResponseApdu response = communicate(apdu);
 
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Key export to Security Token failed", response.getSW());
+        if (!response.isSuccess()) {
+            throw new CardException("Key export to Security Token failed", response.getSw());
         }
     }
 
@@ -581,29 +572,7 @@ public class SecurityTokenHelper {
      * @return The fingerprints of all subkeys in a contiguous byte array.
      */
     public byte[] getFingerprints() throws IOException {
-        CommandAPDU apdu = new CommandAPDU(0x00, 0xCA, 0x00, 0x6E, MAX_APDU_NE_EXT);
-        ResponseAPDU response = communicate(apdu);
-
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Failed to get fingerprints", response.getSW());
-        }
-
-        Iso7816TLV[] tlvList = Iso7816TLV.readList(response.getData(), true);
-        Iso7816TLV fingerPrintTlv = null;
-
-        for (Iso7816TLV tlv : tlvList) {
-            Log.d(Constants.TAG, "nfcGetFingerprints() Iso7816TLV tlv data:\n" + tlv.prettyPrint());
-
-            Iso7816TLV matchingTlv = Iso7816TLV.findRecursive(tlv, 0xc5);
-            if (matchingTlv != null) {
-                fingerPrintTlv = matchingTlv;
-            }
-        }
-
-        if (fingerPrintTlv == null) {
-            return null;
-        }
-        return fingerPrintTlv.mV;
+        return mOpenPgpCapabilities.getFingerprints();
     }
 
     /**
@@ -612,11 +581,11 @@ public class SecurityTokenHelper {
      * @return Seven bytes in fixed format, plus 0x9000 status word at the end.
      */
     private byte[] getPwStatusBytes() throws IOException {
-        return getData(0x00, 0xC4);
+        return mOpenPgpCapabilities.getPwStatusBytes();
     }
 
     public byte[] getAid() throws IOException {
-        return getData(0x00, 0x4F);
+        return mOpenPgpCapabilities.getAid();
     }
 
     public String getUrl() throws IOException {
@@ -629,9 +598,9 @@ public class SecurityTokenHelper {
     }
 
     private byte[] getData(int p1, int p2) throws IOException {
-        ResponseAPDU response = communicate(new CommandAPDU(0x00, 0xCA, p1, p2, MAX_APDU_NE_EXT));
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Failed to get pw status bytes", response.getSW());
+        ResponseApdu response = communicate(commandFactory.createGetDataCommand(p1, p2));
+        if (!response.isSuccess()) {
+            throw new CardException("Failed to get pw status bytes", response.getSw());
         }
         return response.getData();
     }
@@ -644,7 +613,7 @@ public class SecurityTokenHelper {
      */
     public byte[] calculateSignature(byte[] hash, int hashAlgo) throws IOException {
         if (!mPw1ValidatedForSignature) {
-            verifyPin(0x81); // (Verify PW1 with mode 81 for signing)
+            verifyPinForSignature();
         }
 
         byte[] dsi;
@@ -711,11 +680,11 @@ public class SecurityTokenHelper {
         }
 
         // Command APDU for PERFORM SECURITY OPERATION: COMPUTE DIGITAL SIGNATURE (page 37)
-        CommandAPDU command = new CommandAPDU(0x00, 0x2A, 0x9E, 0x9A, data, MAX_APDU_NE_EXT);
-        ResponseAPDU response = communicate(command);
+        CommandApdu command = commandFactory.createComputeDigitalSignatureCommand(data);
+        ResponseApdu response = communicate(command);
 
-        if (response.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Failed to sign", response.getSW());
+        if (!response.isSuccess()) {
+            throw new CardException("Failed to sign", response.getSw());
         }
 
         if (!mOpenPgpCapabilities.isPw1ValidForMultipleSignatures()) {
@@ -756,7 +725,6 @@ public class SecurityTokenHelper {
         return signature;
     }
 
-
     /**
      * Transceives APDU
      * Splits extended APDU into short APDUs and chains them if necessary
@@ -766,7 +734,7 @@ public class SecurityTokenHelper {
      * @return response from the card
      * @throws IOException
      */
-    ResponseAPDU communicate(CommandAPDU apdu) throws IOException {
+    ResponseApdu communicate(CommandApdu apdu) throws IOException {
         if ((mSecureMessaging != null) && mSecureMessaging.isEstablished()) {
             try {
                 apdu = mSecureMessaging.encryptAndSign(apdu);
@@ -776,53 +744,44 @@ public class SecurityTokenHelper {
             }
         }
 
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
-
-        ResponseAPDU lastResponse = null;
+        ResponseApdu lastResponse = null;
         // Transmit
         if (mCardCapabilities.hasExtended()) {
             lastResponse = mTransport.transceive(apdu);
-        } else if (apdu.getData().length <= MAX_APDU_NC) {
-            int ne = Math.min(apdu.getNe(), MAX_APDU_NE);
-            lastResponse = mTransport.transceive(new CommandAPDU(apdu.getCLA(), apdu.getINS(),
-                    apdu.getP1(), apdu.getP2(), apdu.getData(), ne));
-        } else if (apdu.getData().length > MAX_APDU_NC && mCardCapabilities.hasChaining()) {
-            int offset = 0;
-            byte[] data = apdu.getData();
-            int ne = Math.min(apdu.getNe(), MAX_APDU_NE);
-            while (offset < data.length) {
-                int curLen = Math.min(MAX_APDU_NC, data.length - offset);
-                boolean last = offset + curLen >= data.length;
-                int cla = apdu.getCLA() + (last ? 0 : MASK_CLA_CHAINING);
+        } else if (commandFactory.isSuitableForShortApdu(apdu)) {
+            CommandApdu shortApdu = commandFactory.createShortApdu(apdu);
+            lastResponse = mTransport.transceive(shortApdu);
+        } else if (mCardCapabilities.hasChaining()) {
+            List<CommandApdu> chainedApdus = commandFactory.createChainedApdus(apdu);
+            for (int i = 0, totalCommands = chainedApdus.size(); i < totalCommands; i++) {
+                CommandApdu chainedApdu = chainedApdus.get(i);
+                lastResponse = mTransport.transceive(chainedApdu);
 
-                lastResponse = mTransport.transceive(new CommandAPDU(cla, apdu.getINS(), apdu.getP1(),
-                        apdu.getP2(), data, offset, curLen, ne));
-
-                if (!last && lastResponse.getSW() != APDU_SW_SUCCESS) {
-                    throw new UsbTransportException("Failed to chain apdu (last SW: " + lastResponse.getSW() + ")");
+                boolean isLastCommand = i < totalCommands - 1;
+                if (isLastCommand && !lastResponse.isSuccess()) {
+                    throw new UsbTransportException("Failed to chain apdu (last SW: " + lastResponse.getSw() + ")");
                 }
-
-                offset += curLen;
             }
         }
         if (lastResponse == null) {
             throw new UsbTransportException("Can't transmit command");
         }
 
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
         result.write(lastResponse.getData());
 
         // Receive
-        while (lastResponse.getSW1() == APDU_SW1_RESPONSE_AVAILABLE) {
+        while (lastResponse.getSw1() == APDU_SW1_RESPONSE_AVAILABLE) {
             // GET RESPONSE ISO/IEC 7816-4 par.7.6.1
-            CommandAPDU getResponse = new CommandAPDU(0x00, 0xC0, 0x00, 0x00, lastResponse.getSW2());
+            CommandApdu getResponse = commandFactory.createGetResponseCommand(lastResponse.getSw2());
             lastResponse = mTransport.transceive(getResponse);
             result.write(lastResponse.getData());
         }
 
-        result.write(lastResponse.getSW1());
-        result.write(lastResponse.getSW2());
+        result.write(lastResponse.getSw1());
+        result.write(lastResponse.getSw2());
 
-        lastResponse = new ResponseAPDU(result.toByteArray());
+        lastResponse = ResponseApdu.fromBytes(result.toByteArray());
 
         if ((mSecureMessaging != null) && mSecureMessaging.isEstablished()) {
             try {
@@ -836,22 +795,13 @@ public class SecurityTokenHelper {
         return lastResponse;
     }
 
-    public Transport getTransport() {
-        return mTransport;
-    }
-
-    public void setTransport(Transport mTransport) {
-        clearSecureMessaging();
-        this.mTransport = mTransport;
-    }
-
     public boolean isFidesmoToken() {
         if (isConnected()) { // Check if we can still talk to the card
             try {
                 // By trying to select any apps that have the Fidesmo AID prefix we can
                 // see if it is a Fidesmo device or not
-                CommandAPDU apdu = new CommandAPDU(0x00, 0xA4, 0x04, 0x00, Hex.decode(FIDESMO_APPS_AID_PREFIX));
-                return communicate(apdu).getSW() == APDU_SW_SUCCESS;
+                CommandApdu apdu = commandFactory.createSelectFileCommand(FIDESMO_APPS_AID_PREFIX);
+                return communicate(apdu).isSuccess();
             } catch (IOException e) {
                 Log.e(Constants.TAG, "Card communication failed!", e);
             }
@@ -873,28 +823,23 @@ public class SecurityTokenHelper {
      * @return the public key data objects, in TLV format. For RSA this will be the public modulus
      * (0x81) and exponent (0x82). These may come out of order; proper TLV parsing is required.
      */
-    public byte[] generateKey(int slot) throws IOException {
+    public byte[] generateKey(Passphrase adminPin, int slot) throws IOException {
         if (slot != 0xB6 && slot != 0xB8 && slot != 0xA4) {
             throw new IOException("Invalid key slot");
         }
 
         if (!mPw3Validated) {
-            verifyPin(0x83); // (Verify PW3 with mode 83)
+            verifyAdminPin(adminPin);
         }
 
-        CommandAPDU apdu = new CommandAPDU(0x00, 0x47, 0x80, 0x00, new byte[]{(byte) slot, 0x00}, MAX_APDU_NE_EXT);
-        ResponseAPDU response = communicate(apdu);
+        CommandApdu apdu = commandFactory.createGenerateKeyCommand(slot);
+        ResponseApdu response = communicate(apdu);
 
-        if (response.getSW() != APDU_SW_SUCCESS) {
+        if (!response.isSuccess()) {
             throw new IOException("On-card key generation failed");
         }
 
         return response.getData();
-    }
-
-    private ResponseAPDU tryPin(int mode, byte[] pin) throws IOException {
-        // Command APDU for VERIFY command (page 32)
-        return communicate(new CommandAPDU(0x00, 0x20, 0x00, mode, pin));
     }
 
     /**
@@ -906,18 +851,20 @@ public class SecurityTokenHelper {
         // try wrong PIN 4 times until counter goes to C0
         byte[] pin = "XXXXXX".getBytes();
         for (int i = 0; i <= 4; i++) {
-            ResponseAPDU response = tryPin(0x81, pin);
-            if (response.getSW() == APDU_SW_SUCCESS) { // Should NOT accept!
-                throw new CardException("Should never happen, XXXXXX has been accepted!", response.getSW());
+            // Command APDU for VERIFY command (page 32)
+            ResponseApdu response = communicate(commandFactory.createVerifyPw1ForSignatureCommand(pin));
+            if (response.isSuccess()) {
+                throw new CardException("Should never happen, XXXXXX has been accepted!", response.getSw());
             }
         }
 
         // try wrong Admin PIN 4 times until counter goes to C0
         byte[] adminPin = "XXXXXXXX".getBytes();
         for (int i = 0; i <= 4; i++) {
-            ResponseAPDU response = tryPin(0x83, adminPin);
-            if (response.getSW() == APDU_SW_SUCCESS) { // Should NOT accept!
-                throw new CardException("Should never happen, XXXXXXXX has been accepted", response.getSW());
+            // Command APDU for VERIFY command (page 32)
+            ResponseApdu response = communicate(commandFactory.createVerifyPw3Command(adminPin));
+            if (response.isSuccess()) { // Should NOT accept!
+                throw new CardException("Should never happen, XXXXXXXX has been accepted", response.getSw());
             }
         }
 
@@ -927,15 +874,15 @@ public class SecurityTokenHelper {
         // reactivate token!
         // NOTE: keep the order here! First execute _both_ reactivate commands. Before checking _both_ responses
         // If a token is in a bad state and reactivate1 fails, it could still be reactivated with reactivate2
-        CommandAPDU reactivate1 = new CommandAPDU(0x00, 0xE6, 0x00, 0x00);
-        CommandAPDU reactivate2 = new CommandAPDU(0x00, 0x44, 0x00, 0x00);
-        ResponseAPDU response1 = communicate(reactivate1);
-        ResponseAPDU response2 = communicate(reactivate2);
-        if (response1.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Reactivating failed!", response1.getSW());
+        CommandApdu reactivate1 = commandFactory.createReactivate1Command();
+        CommandApdu reactivate2 = commandFactory.createReactivate2Command();
+        ResponseApdu response1 = communicate(reactivate1);
+        ResponseApdu response2 = communicate(reactivate2);
+        if (!response1.isSuccess()) {
+            throw new CardException("Reactivating failed!", response1.getSw());
         }
-        if (response2.getSW() != APDU_SW_SUCCESS) {
-            throw new CardException("Reactivating failed!", response2.getSW());
+        if (!response2.isSuccess()) {
+            throw new CardException("Reactivating failed!", response2.getSw());
         }
     }
 
@@ -962,14 +909,12 @@ public class SecurityTokenHelper {
     }
 
     public boolean isPersistentConnectionAllowed() {
-        return mTransport != null &&
-                mTransport.isPersistentConnectionAllowed() &&
-                (mSecureMessaging == null ||
-                        !mSecureMessaging.isEstablished());
+        return mTransport.isPersistentConnectionAllowed() &&
+                (mSecureMessaging == null || !mSecureMessaging.isEstablished());
     }
 
     public boolean isConnected() {
-        return mTransport != null && mTransport.isConnected();
+        return mTransport.isConnected();
     }
 
     public void clearSecureMessaging() {
@@ -1006,7 +951,9 @@ public class SecurityTokenHelper {
         return SecurityTokenInfo.create(fingerprints, aid, userId, url, pwInfo[4], pwInfo[6]);
     }
 
-    private static class LazyHolder {
-        private static final SecurityTokenHelper SECURITY_TOKEN_HELPER = new SecurityTokenHelper();
+    public static double parseOpenPgpVersion(final byte[] aid) {
+        float minv = aid[7];
+        while (minv > 0) minv /= 10.0;
+        return aid[6] + minv;
     }
 }
