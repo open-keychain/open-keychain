@@ -101,7 +101,9 @@ class RemoteDeduplicatePresenter implements LoaderCallbacks<List<KeyInfo>> {
 
     @Override
     public void onLoaderReset(Loader loader) {
-        view.setKeyListData(null);
+        if (view != null) {
+            view.setKeyListData(null);
+        }
     }
 
     void onClickSelect() {
