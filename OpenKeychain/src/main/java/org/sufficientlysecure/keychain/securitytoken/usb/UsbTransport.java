@@ -269,7 +269,7 @@ public class UsbTransport implements Transport {
 
         Log.d(Constants.TAG, "Unknown USB token. Vendor ID: " + usbDevice.getVendorId()
                 + ", Product ID: " + usbDevice.getProductId());
-        return TokenType.UNKNOWN_USB;
+        return TokenType.UNKNOWN;
     }
 
     /**

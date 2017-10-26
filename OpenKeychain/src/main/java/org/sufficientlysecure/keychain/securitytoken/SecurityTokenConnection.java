@@ -955,7 +955,7 @@ public class SecurityTokenConnection {
         if (transportType == TransportType.USB) {
             tokenType = mTransport.getTokenType();
         } else {
-            tokenType = isFidesmoToken() ? TokenType.FIDESMO : TokenType.UNKNOWN_NFC;
+            tokenType = isFidesmoToken() ? TokenType.FIDESMO : TokenType.UNKNOWN;
         }
 
         // TODO: bail out earlier on unsupported tokens to not execute other commands
