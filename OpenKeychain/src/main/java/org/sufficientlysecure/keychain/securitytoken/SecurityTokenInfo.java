@@ -93,29 +93,27 @@ public abstract class SecurityTokenInfo implements Parcelable {
         YUBIKEY_NEO, YUBIKEY_4, FIDESMO, NITROKEY_PRO, NITROKEY_STORAGE, NITROKEY_START, GNUK, LEDGER_NANO_S, UNKNOWN
     }
 
-    private static final HashSet<TokenType> SUPPORTED_SECURITY_TOKENS = new HashSet<>(Arrays.asList(
-            TokenType.FIDESMO,
+    private static final HashSet<TokenType> SUPPORTED_USB_TOKENS = new HashSet<>(Arrays.asList(
             TokenType.YUBIKEY_NEO,
             TokenType.YUBIKEY_4,
             TokenType.NITROKEY_PRO,
             TokenType.NITROKEY_STORAGE
     ));
 
-    private static final HashSet<TokenType> SUPPORTED_PUT_KEY = new HashSet<>(Arrays.asList(
-            TokenType.FIDESMO,
+    private static final HashSet<TokenType> SUPPORTED_USB_PUT_KEY = new HashSet<>(Arrays.asList(
             TokenType.YUBIKEY_NEO,
             TokenType.YUBIKEY_4 // Not clear, will be tested: https://github.com/open-keychain/open-keychain/issues/2069
     ));
 
     public boolean isSecurityTokenSupported() {
-        boolean isKnownSupported = SUPPORTED_SECURITY_TOKENS.contains(getTokenType());
+        boolean isKnownSupported = SUPPORTED_USB_TOKENS.contains(getTokenType());
         boolean isNfcTransport = getTransportType() == TransportType.NFC;
 
         return isKnownSupported || isNfcTransport;
     }
 
     public boolean isPutKeySupported() {
-        boolean isKnownSupported = SUPPORTED_PUT_KEY.contains(getTokenType());
+        boolean isKnownSupported = SUPPORTED_USB_PUT_KEY.contains(getTokenType());
         boolean isNfcTransport = getTransportType() == TransportType.NFC;
 
         return isKnownSupported || isNfcTransport;

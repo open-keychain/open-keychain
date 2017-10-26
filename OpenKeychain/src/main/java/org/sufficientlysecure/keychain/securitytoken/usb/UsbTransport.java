@@ -230,8 +230,9 @@ public class UsbTransport implements Transport {
         return TransportType.USB;
     }
 
+    @Nullable
     @Override
-    public TokenType getTokenType() {
+    public TokenType getTokenTypeIfAvailable() {
         switch (usbDevice.getVendorId()) {
             case VENDOR_YUBICO: {
                 switch (usbDevice.getProductId()) {
@@ -267,9 +268,9 @@ public class UsbTransport implements Transport {
             }
         }
 
-        Log.d(Constants.TAG, "Unknown USB token. Vendor ID: " + usbDevice.getVendorId()
-                + ", Product ID: " + usbDevice.getProductId());
-        return TokenType.UNKNOWN;
+        Log.d(Constants.TAG, "Unknown USB token. Vendor ID: " + usbDevice.getVendorId() + ", Product ID: " +
+                usbDevice.getProductId());
+        return null;
     }
 
     /**

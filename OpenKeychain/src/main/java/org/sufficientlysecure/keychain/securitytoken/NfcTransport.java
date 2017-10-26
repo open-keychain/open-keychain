@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.securitytoken;
 
 import android.nfc.Tag;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.bouncycastle.util.encoders.Hex;
@@ -118,8 +119,10 @@ public class NfcTransport implements Transport {
         return TransportType.NFC;
     }
 
+    @Nullable
     @Override
-    public TokenType getTokenType() {
+    public TokenType getTokenTypeIfAvailable() {
+        // Sadly, the NFC transport has no direct information about the token type.
         return null;
     }
 

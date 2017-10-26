@@ -45,6 +45,7 @@ import org.sufficientlysecure.keychain.securitytoken.CardException;
 import org.sufficientlysecure.keychain.securitytoken.NfcTransport;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
 import org.sufficientlysecure.keychain.securitytoken.UnsupportedSecurityTokenException;
 import org.sufficientlysecure.keychain.securitytoken.UsbConnectionDispatcher;
@@ -338,7 +339,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
                 }
                 // 6A82 app not installed on security token!
                 case 0x6A82: {
-                    if (stConnection.isFidesmoToken()) {
+                    if (stConnection.getTokenType() == TokenType.FIDESMO) {
                         // Check if the Fidesmo app is installed
                         if (isAndroidAppInstalled(FIDESMO_APP_PACKAGE)) {
                             promptFidesmoPgpInstall();

@@ -76,8 +76,7 @@ import java.util.List;
 public class SecurityTokenConnection {
     private static final int APDU_SW1_RESPONSE_AVAILABLE = 0x61;
 
-    // Fidesmo constants
-    private static final String FIDESMO_APPS_AID_PREFIX = "A000000617";
+    private static final String AID_PREFIX_FIDESMO = "A000000617";
 
     private static final byte[] BLANK_FINGERPRINT = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -91,6 +90,7 @@ public class SecurityTokenConnection {
     private final Passphrase mPin;
     private final OpenPgpCommandApduFactory commandFactory;
 
+    private TokenType tokenType;
     private CardCapabilities mCardCapabilities;
     private OpenPgpCapabilities mOpenPgpCapabilities;
     private SecureMessaging mSecureMessaging;
@@ -184,8 +184,8 @@ public class SecurityTokenConnection {
 
         mTransport.connect();
 
-        // Connect on smartcard layer
-        // Command APDU (page 51) for SELECT FILE command (page 29)
+        determineTokenType();
+
         CommandApdu select = commandFactory.createSelectFileOpenPgpCommand();
         ResponseApdu response = communicate(select);  // activate connection
 
@@ -208,6 +208,30 @@ public class SecurityTokenConnection {
                 Log.e(Constants.TAG, "failed to establish secure messaging", e);
             }
         }
+    }
+
+    private void determineTokenType() throws IOException {
+        tokenType = mTransport.getTokenTypeIfAvailable();
+        if (tokenType != null) {
+            return;
+        }
+
+        CommandApdu selectFidesmoApdu = commandFactory.createSelectFileCommand(AID_PREFIX_FIDESMO);
+        if (communicate(selectFidesmoApdu).isSuccess()) {
+            tokenType = TokenType.FIDESMO;
+            return;
+        }
+
+        /* We could determine if this is a yubikey here. The info isn't used at the moment, so we save the roundtrip
+        // AID from https://github.com/Yubico/ykneo-oath/blob/master/build.xml#L16
+        CommandApdu selectYubicoApdu = commandFactory.createSelectFileCommand("A000000527200101");
+        if (communicate(selectYubicoApdu).isSuccess()) {
+            tokenType = TokenType.YUBIKEY_UNKNOWN;
+            return;
+        }
+        */
+
+        tokenType = TokenType.UNKNOWN;
     }
 
     @VisibleForTesting
@@ -797,20 +821,6 @@ public class SecurityTokenConnection {
         return lastResponse;
     }
 
-    public boolean isFidesmoToken() {
-        if (isConnected()) { // Check if we can still talk to the card
-            try {
-                // By trying to select any apps that have the Fidesmo AID prefix we can
-                // see if it is a Fidesmo device or not
-                CommandApdu apdu = commandFactory.createSelectFileCommand(FIDESMO_APPS_AID_PREFIX);
-                return communicate(apdu).isSuccess();
-            } catch (IOException e) {
-                Log.e(Constants.TAG, "Card communication failed!", e);
-            }
-        }
-        return false;
-    }
-
     /**
      * Generates a key on the card in the given slot. If the slot is 0xB6 (the signature key),
      * this command also has the effect of resetting the digital signature counter.
@@ -919,6 +929,10 @@ public class SecurityTokenConnection {
         return mTransport.isConnected();
     }
 
+    public TokenType getTokenType() {
+        return tokenType;
+    }
+
     public void clearSecureMessaging() {
         if (mSecureMessaging != null) {
             mSecureMessaging.clearSession();
@@ -929,10 +943,6 @@ public class SecurityTokenConnection {
     void setSecureMessaging(final SecureMessaging sm) {
         clearSecureMessaging();
         mSecureMessaging = sm;
-    }
-
-    OpenPgpCapabilities getOpenPgpCapabilities() {
-        return mOpenPgpCapabilities;
     }
 
     public SecurityTokenInfo getTokenInfo() throws IOException {
@@ -951,16 +961,9 @@ public class SecurityTokenConnection {
         byte[] pwInfo = getPwStatusBytes();
 
         TransportType transportType = mTransport.getTransportType();
-        TokenType tokenType;
-        if (transportType == TransportType.USB) {
-            tokenType = mTransport.getTokenType();
-        } else {
-            tokenType = isFidesmoToken() ? TokenType.FIDESMO : TokenType.UNKNOWN;
-        }
 
-        // TODO: bail out earlier on unsupported tokens to not execute other commands
-
-        SecurityTokenInfo info = SecurityTokenInfo.create(transportType, tokenType, fingerprints, aid, userId, url, pwInfo[4], pwInfo[6]);
+        SecurityTokenInfo info = SecurityTokenInfo
+                .create(transportType, tokenType, fingerprints, aid, userId, url, pwInfo[4], pwInfo[6]);
 
         if (! info.isSecurityTokenSupported()) {
             throw new UnsupportedSecurityTokenException();
@@ -974,5 +977,4 @@ public class SecurityTokenConnection {
         while (minv > 0) minv /= 10.0;
         return aid[6] + minv;
     }
-
 }
