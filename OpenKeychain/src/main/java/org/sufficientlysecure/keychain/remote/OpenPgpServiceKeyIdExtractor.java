@@ -102,7 +102,7 @@ class OpenPgpServiceKeyIdExtractor {
         return result;
     }
 
-    private KeyIdResult returnKeyIdsFromEmails(Intent data, String[] encryptionAddresses, String callingPackageName) {
+    KeyIdResult returnKeyIdsFromEmails(Intent data, String[] encryptionAddresses, String callingPackageName) {
         boolean hasAddresses = (encryptionAddresses != null && encryptionAddresses.length > 0);
 
         boolean allKeysConfirmed = false;

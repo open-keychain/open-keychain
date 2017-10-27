@@ -31,6 +31,7 @@ import java.util.List;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
@@ -388,7 +389,7 @@ public class OpenPgpService extends Service {
 
             AutocryptPeerDataAccessObject autocryptPeerentityDao = new AutocryptPeerDataAccessObject(
                     getBaseContext(), mApiPermissionHelper.getCurrentCallingPackage());
-            updateAutocryptPeerStateFromIntent(data, autocryptPeerentityDao);
+            updateAutocryptPeerStateFromIntent(data, autocryptPeerentityDao, false);
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(this, mKeyRepository, progressable);
 
@@ -475,10 +476,18 @@ public class OpenPgpService extends Service {
                 mApiPendingIntentFactory.createSecurityProblemIntent(packageName, securityProblem, supportOverride));
     }
 
-    private String updateAutocryptPeerStateFromIntent(Intent data, AutocryptPeerDataAccessObject autocryptPeerDao)
+    private String updateAutocryptPeerStateFromIntent(Intent data, AutocryptPeerDataAccessObject autocryptPeerDao,
+            boolean isGossip)
             throws PgpGeneralException, IOException {
         String autocryptPeerId = data.getStringExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_ID);
         AutocryptPeerUpdate autocryptPeerUpdate = data.getParcelableExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_UPDATE);
+
+        return updateAutocryptPeerState(autocryptPeerId, autocryptPeerUpdate, autocryptPeerDao, isGossip);
+    }
+
+    private String updateAutocryptPeerState(String autocryptPeerId, AutocryptPeerUpdate autocryptPeerUpdate,
+            AutocryptPeerDataAccessObject autocryptPeerDao, boolean isGossip)
+            throws PgpGeneralException, IOException {
         if (autocryptPeerUpdate == null) {
             return null;
         }
@@ -500,7 +509,7 @@ public class OpenPgpService extends Service {
         Date lastSeen = autocryptPeerDao.getLastSeen(autocryptPeerId);
         Date effectiveDate = autocryptPeerUpdate.getEffectiveDate();
         if (newMasterKeyId == null) {
-            if (effectiveDate.after(lastSeen)) {
+            if (!isGossip && effectiveDate.after(lastSeen)) {
                 autocryptPeerDao.updateToResetState(autocryptPeerId, effectiveDate);
             }
             return autocryptPeerId;
@@ -512,7 +521,9 @@ public class OpenPgpService extends Service {
         }
 
         if (lastSeen == null || effectiveDate.after(lastSeen)) {
-            if (autocryptPeerUpdate.getPreferEncrypt() == PreferEncrypt.MUTUAL) {
+            if (isGossip) {
+                autocryptPeerDao.updateToGossipState(autocryptPeerId, effectiveDate, newMasterKeyId);
+            } else if (autocryptPeerUpdate.getPreferEncrypt() == PreferEncrypt.MUTUAL) {
                 autocryptPeerDao.updateToMutualState(autocryptPeerId, effectiveDate, newMasterKeyId);
             } else {
                 autocryptPeerDao.updateToAvailableState(autocryptPeerId, effectiveDate, newMasterKeyId);
@@ -641,7 +652,23 @@ public class OpenPgpService extends Service {
 
     private Intent getKeyImpl(Intent data, OutputStream outputStream) {
         try {
-            long masterKeyId = data.getLongExtra(OpenPgpApi.EXTRA_KEY_ID, 0);
+            long masterKeyId;
+            if (data.hasExtra(OpenPgpApi.EXTRA_KEY_ID)) {
+                masterKeyId = data.getLongExtra(OpenPgpApi.EXTRA_KEY_ID, 0);
+            } else if (data.hasExtra(OpenPgpApi.EXTRA_USER_ID)) {
+                KeyIdResult keyIdResult = mKeyIdExtractor.returnKeyIdsFromEmails(
+                        null, new String[] { data.getStringExtra(OpenPgpApi.EXTRA_USER_ID) },
+                        mApiPermissionHelper.getCurrentCallingPackage());
+                if (keyIdResult.getStatus() != KeyIdResultStatus.OK) {
+                    Intent result = getAutocryptStatusResult(keyIdResult);
+                    result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
+                    return result;
+                }
+
+                masterKeyId = keyIdResult.getKeyIds()[0];
+            } else {
+                throw new IllegalArgumentException("Missing argument key_id or user_id!");
+            }
 
             try {
                 // try to find key, throws NotFoundException if not in db!
@@ -784,15 +811,23 @@ public class OpenPgpService extends Service {
 
     private Intent updateAutocryptPeerImpl(Intent data) {
         try {
-            if (!data.hasExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_ID) ||
-                    !data.hasExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_UPDATE)) {
-                throw new IllegalArgumentException("need to specify both autocrypt_peer_id and autocrypt_peer_update!");
-            }
-
             AutocryptPeerDataAccessObject autocryptPeerentityDao = new AutocryptPeerDataAccessObject(getBaseContext(),
                     mApiPermissionHelper.getCurrentCallingPackage());
 
-            updateAutocryptPeerStateFromIntent(data, autocryptPeerentityDao);
+            if (data.hasExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_ID) &&
+                    data.hasExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_UPDATE)) {
+                updateAutocryptPeerStateFromIntent(data, autocryptPeerentityDao, false);
+            } else if (data.hasExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_GOSSIP_UPDATES)) {
+                Bundle updates = data.getBundleExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_GOSSIP_UPDATES);
+                for (String address : updates.keySet()) {
+                    Log.d(Constants.TAG, "Updating gossip state: " + address);
+                    AutocryptPeerUpdate update = updates.getParcelable(address);
+                    updateAutocryptPeerState(address, update, autocryptPeerentityDao, true);
+                }
+            } else {
+                throw new IllegalArgumentException("need to specify both autocrypt_peer_id and" +
+                        "autocrypt_peer_update, or autocrypt_peer_gossip_updates!");
+            }
 
             Intent result = new Intent();
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
