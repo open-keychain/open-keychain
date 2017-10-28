@@ -115,7 +115,8 @@ class OpenPgpCommandApduFactory {
 
     @NonNull
     CommandApdu createGetResponseCommand(int lastResponseSw2) {
-        return CommandApdu.create(CLA, INS_GET_RESPONSE, P1_EMPTY, P2_EMPTY, lastResponseSw2);
+        return CommandApdu.create(CLA, INS_GET_RESPONSE, P1_EMPTY, P2_EMPTY,
+                lastResponseSw2 == 0 ? MAX_APDU_NE : lastResponseSw2);
     }
 
     @NonNull
