@@ -15,6 +15,8 @@ dependencies {
     compile "com.android.support:cardview-v7:$supportVersion"
     compile "com.android.support:support-annotations:$supportVersion"
 
+    compile 'org.conscrypt:conscrypt-android:1.0.0.RC11' //include PskKeyManager
+
     // JCenter etc.
     compile 'com.journeyapps:zxing-android-embedded:3.4.0'
     compile 'com.google.zxing:core:3.3.0'
