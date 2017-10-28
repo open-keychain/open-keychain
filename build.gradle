@@ -1,29 +1,29 @@
-apply plugin: 'com.github.ben-manes.versions'
-
 buildscript {
     repositories {
         jcenter()
+        google()
     }
 
     dependencies {
         // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
-        classpath 'com.android.tools.build:gradle:2.2.3'
+        classpath 'com.android.tools.build:gradle:3.0.0'
         classpath files('gradle-witness.jar')
         // bintray dependency to satisfy dependency of openpgp-api lib
-        classpath 'com.novoda:bintray-release:0.2.7'
+        classpath 'com.novoda:bintray-release:0.5.0'
 
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3'
-
-        // allows to check for lib updates with "./gradlew dependencyUpdates -Drevision=release"
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0'
-
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
     }
+}
+
+plugins {
+    // ./gradlew dependencyUpdates -Drevision=release"
+    id 'com.github.ben-manes.versions' version '0.17.0'
 }
 
 allprojects {
     repositories {
         jcenter()
+        google()
     }
 }
 
@@ -49,6 +49,7 @@ project(':extern:bouncycastle') {
 // SDK Version and Build Tools used by all subprojects
 // See http://tools.android.com/tech-docs/new-build-system/tips#TOC-Controlling-Android-properties-of-all-your-modules-from-the-main-project.
 ext {
-    compileSdkVersion = 25
-    buildToolsVersion = '25.0.2'
+    compileSdkVersion = 26
+    buildToolsVersion = '26.0.2'
+    supportVersion = "26.1.0"
 }

@@ -2,19 +2,18 @@ apply plugin: 'com.android.application'
 apply plugin: 'witness'
 apply plugin: 'jacoco'
 apply plugin: 'com.github.kt3k.coveralls'
-apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
     // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
     // NOTE: libraries are pinned to a specific build, see below
 
     // from local Android SDK
-    compile 'com.android.support:support-v4:25.3.1'
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:design:25.3.1'
-    compile 'com.android.support:recyclerview-v7:25.3.1'
-    compile 'com.android.support:cardview-v7:25.3.1'
-    compile 'com.android.support:support-annotations:25.3.1'
+    compile "com.android.support:support-v4:$supportVersion"
+    compile "com.android.support:appcompat-v7:$supportVersion"
+    compile "com.android.support:design:$supportVersion"
+    compile "com.android.support:recyclerview-v7:$supportVersion"
+    compile "com.android.support:cardview-v7:$supportVersion"
+    compile "com.android.support:support-annotations:$supportVersion"
 
     // JCenter etc.
     compile 'com.journeyapps:zxing-android-embedded:3.4.0'
@@ -22,7 +21,7 @@ dependencies {
     compile 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.1'
     compile 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
     compile 'org.sufficientlysecure:donations:2.5'
-    compile 'com.squareup.okhttp3:okhttp:3.5.0'
+    compile 'com.squareup.okhttp3:okhttp:3.9.0'
     compile 'com.squareup.okhttp3:okhttp-urlconnection:3.5.0'
     compile 'org.apache.james:apache-mime4j-core:0.8.0'
     compile 'org.apache.james:apache-mime4j-dom:0.8.0'
@@ -53,14 +52,14 @@ dependencies {
     compile 'com.fidesmo:nordpol-android:0.1.22'
 
     // libs as submodules
-    compile project(':libkeychain')
-    compile project(':openpgp-api-lib')
-    compile project(':extern:bouncycastle:core')
-    compile project(':extern:bouncycastle:pg')
-    compile project(':extern:bouncycastle:prov')
-    compile project(':extern:minidns')
-    compile project(':KeybaseLib')
-    compile project(':safeslinger-exchange')
+    compile project(path: ':libkeychain', configuration: 'default')
+    compile project(path: ':openpgp-api-lib', configuration: 'default')
+    compile project(path: ':extern:bouncycastle:core', configuration: 'default')
+    compile project(path: ':extern:bouncycastle:pg', configuration: 'default')
+    compile project(path: ':extern:bouncycastle:prov', configuration: 'default')
+    compile project(path: ':extern:minidns', configuration: 'default')
+    compile project(path: ':KeybaseLib', configuration: 'default')
+    compile project(path: ':safeslinger-exchange', configuration: 'default')
 
     // Unit tests in the local JVM with Robolectric
     // https://developer.android.com/training/testing/unit-testing/local-unit-tests.html
@@ -75,14 +74,14 @@ dependencies {
     // UI testing with Espresso
     // Force usage of support libs in the test app, since they are internally used by the runner module.
     // https://github.com/googlesamples/android-testing/blob/master/ui/espresso/BasicSample/app/build.gradle#L28
-    androidTestCompile 'com.android.support:support-annotations:25.3.1'
-    androidTestCompile 'com.android.support:appcompat-v7:25.3.1'
-    androidTestCompile 'com.android.support:design:25.3.1'
-    androidTestCompile 'com.android.support.test:runner:0.5'
-    androidTestCompile 'com.android.support.test:rules:0.5'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
-    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
-    androidTestCompile ('com.android.support.test.espresso:espresso-contrib:2.2.2') {
+    androidTestCompile "com.android.support:support-annotations:$supportVersion"
+    androidTestCompile "com.android.support:appcompat-v7:$supportVersion"
+    androidTestCompile "com.android.support:design:$supportVersion"
+    androidTestCompile 'com.android.support.test:runner:1.0.1'
+    androidTestCompile 'com.android.support.test:rules:1.0.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:3.0.1'
+    androidTestCompile ('com.android.support.test.espresso:espresso-contrib:3.0.1') {
         exclude group: 'com.android.support', module: 'appcompat'
         exclude group: 'com.android.support', module: 'support-v4'
         exclude module: 'recyclerview-v7'
@@ -90,8 +89,8 @@ dependencies {
 
     compile 'org.glassfish:javax.annotation:10.0-b28'
     provided    "com.google.auto.value:auto-value:1.4.1"
-    apt         "com.google.auto.value:auto-value:1.4.1"
-    apt         "com.ryanharter.auto.value:auto-value-parcel:0.2.5"
+    annotationProcessor         "com.google.auto.value:auto-value:1.4.1"
+    annotationProcessor         "com.ryanharter.auto.value:auto-value-parcel:0.2.5"
     compile 'com.ryanharter.auto.value:auto-value-parcel-adapter:0.2.5'
 }
 
@@ -178,8 +177,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
     testOptions.unitTests.all {
@@ -236,8 +235,12 @@ android {
         }
     }
 
+
+    flavorDimensions "target"
     productFlavors {
         google {
+            dimension "target"
+
             buildConfigField "boolean", "DONATIONS_GOOGLE", "true"
             buildConfigField "String", "GOOGLE_PLAY_PUBKEY", "\"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwX9SOQ/EL4u5pvbYmYMagN5DDenuSaMaVs2cVPzqxMaIHp6/9/nGuzj2/CpcB4ASd2vvfLlE9tZRkPmFTULWc4Sp4OR+JenQufZZr7Y8WGPkFyqd+dOxhIqKKLtH1QuqSyhby3gEMlWzydJY3rHXlH2Bpu65Uroawq76nynnELXNlzsCM231XWgj4HA87qxv9hSWLCpu16wKxZIX3d6mwZLZmGF+xYJAzVr291oDYYl+h6BDoIcAfmQFsv5MexNwBFO+TLVrvL0e5qdGHZxwwD1/68VSY8FxAEfM+yq7jovdVSdcXlJQjZrV5TRDdFWrtEB6njGA3YZWXP6B6MMMoQIDAQAB\""
             buildConfigField "String", "PAYPAL_USER", "null"
@@ -247,6 +250,8 @@ android {
             buildConfigField "String", "FLATTR_URL", "null"
         }
         fdroid {
+            dimension "target"
+
             buildConfigField "boolean", "DONATIONS_GOOGLE", "false"
             buildConfigField "String", "GOOGLE_PLAY_PUBKEY", "null"
             buildConfigField "String", "PAYPAL_USER", "\"android@schuermann.eu\""

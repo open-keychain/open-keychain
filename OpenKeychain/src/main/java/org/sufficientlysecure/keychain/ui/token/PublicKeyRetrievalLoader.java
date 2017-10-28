@@ -324,6 +324,7 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
 
         @Nullable
         abstract Long getMasterKeyId();
+        @SuppressWarnings("mutable")
         @Nullable
         abstract byte[] getKeyData();
         abstract boolean isSecretKeyAvailable();
