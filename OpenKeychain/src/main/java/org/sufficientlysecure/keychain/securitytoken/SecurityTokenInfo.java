@@ -97,7 +97,8 @@ public abstract class SecurityTokenInfo implements Parcelable {
             TokenType.YUBIKEY_NEO,
             TokenType.YUBIKEY_4,
             TokenType.NITROKEY_PRO,
-            TokenType.NITROKEY_STORAGE
+            TokenType.NITROKEY_STORAGE,
+            TokenType.GNUK
     ));
 
     private static final HashSet<TokenType> SUPPORTED_USB_PUT_KEY = new HashSet<>(Arrays.asList(
