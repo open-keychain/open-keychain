@@ -264,6 +264,11 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
     }
 
     @Override
+    public void showActionUnsupportedToken() {
+        actionAnimator.setDisplayedChildId(R.id.token_layout_unsupported);
+    }
+
+    @Override
     public void hideAction() {
         actionAnimator.setDisplayedChild(0);
     }

@@ -164,6 +164,14 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
 
     private void performKeyCheck() {
         boolean keyIsEmpty = tokenInfo.isEmpty();
+        boolean putKeyIsSupported = tokenInfo.isPutKeySupported();
+
+        if (keyIsEmpty && !putKeyIsSupported) {
+            view.statusLineOk();
+            view.showActionUnsupportedToken();
+            return;
+        }
+
         if (keyIsEmpty) {
             boolean tokenIsAdminLocked = tokenInfo.getVerifyAdminRetries() == 0;
             if (tokenIsAdminLocked) {

@@ -18,10 +18,13 @@
 package org.sufficientlysecure.keychain.securitytoken;
 
 import android.nfc.Tag;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TransportType;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 
 import java.io.IOException;
@@ -34,6 +37,14 @@ public class NfcTransport implements Transport {
     private static final int TIMEOUT = 100 * 1000;
     private final Tag mTag;
     private IsoCard mIsoCard;
+
+    public static class IsoDepNotSupportedException extends IOException {
+
+        IsoDepNotSupportedException(String detailMessage) {
+            super(detailMessage);
+        }
+
+    }
 
     public NfcTransport(Tag tag) {
         this.mTag = tag;
@@ -96,11 +107,23 @@ public class NfcTransport implements Transport {
     public void connect() throws IOException {
         mIsoCard = AndroidCard.get(mTag);
         if (mIsoCard == null) {
-            throw new BaseSecurityTokenActivity.IsoDepNotSupportedException("Tag does not support ISO-DEP (ISO 14443-4)");
+            throw new IsoDepNotSupportedException("Tag does not support ISO-DEP (ISO 14443-4)");
         }
 
         mIsoCard.setTimeout(TIMEOUT);
         mIsoCard.connect();
+    }
+
+    @Override
+    public TransportType getTransportType() {
+        return TransportType.NFC;
+    }
+
+    @Nullable
+    @Override
+    public TokenType getTokenTypeIfAvailable() {
+        // Sadly, the NFC transport has no direct information about the token type.
+        return null;
     }
 
     @Override

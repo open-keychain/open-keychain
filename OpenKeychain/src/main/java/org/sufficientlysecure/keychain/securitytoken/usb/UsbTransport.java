@@ -28,6 +28,8 @@ import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TransportType;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
 import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
 import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
@@ -54,6 +56,25 @@ public class UsbTransport implements Transport {
     private static final int MASK_SHORT_APDU = 0x20000;
     private static final int MASK_EXTENDED_APDU = 0x40000;
 
+    // https://github.com/Yubico/yubikey-personalization/blob/master/ykcore/ykdef.h
+    private static final int VENDOR_YUBICO = 4176;
+    private static final int PRODUCT_YUBIKEY_NEO_OTP_CCID = 273;
+    private static final int PRODUCT_YUBIKEY_NEO_CCID = 274;
+    private static final int PRODUCT_YUBIKEY_NEO_U2F_CCID = 277;
+    private static final int PRODUCT_YUBIKEY_NEO_OTP_U2F_CCID = 278;
+    private static final int PRODUCT_YUBIKEY_4_CCID = 1028;
+    private static final int PRODUCT_YUBIKEY_4_OTP_CCID = 1029;
+    private static final int PRODUCT_YUBIKEY_4_U2F_CCID = 1030;
+    private static final int PRODUCT_YUBIKEY_4_OTP_U2F_CCID = 1031;
+
+    // https://www.nitrokey.com/de/documentation/installation#p:nitrokey-pro&os:linux
+    private static final int VENDOR_NITROKEY = 8352;
+    private static final int PRODUCT_NITROKEY_PRO = 16648;
+    private static final int PRODUCT_NITROKEY_START = 16913;
+    private static final int PRODUCT_NITROKEY_STORAGE = 16649;
+
+    private static final int VENDOR_FSIJ = 9035;
+    private static final int VENDOR_LEDGER = 11415;
 
     private final UsbDevice usbDevice;
     private final UsbManager usbManager;
@@ -80,6 +101,7 @@ public class UsbTransport implements Transport {
 
     /**
      * Check if device is was connected to and still is connected
+     *
      * @return true if device is connected
      */
     @Override
@@ -91,6 +113,7 @@ public class UsbTransport implements Transport {
     /**
      * Check if Transport supports persistent connections e.g connections which can
      * handle multiple operations in one session
+     *
      * @return true if transport supports persistent connections
      */
     @Override
@@ -105,8 +128,7 @@ public class UsbTransport implements Transport {
     public void connect() throws IOException {
         usbInterface = getSmartCardInterface(usbDevice);
         if (usbInterface == null) {
-            // Shouldn't happen as we whitelist only class 11 devices
-            throw new UsbTransportException("USB error - device doesn't have class 11 interface");
+            throw new UsbTransportException("USB error: CCID mode must be enabled (no class 11 interface)");
         }
 
         final Pair<UsbEndpoint, UsbEndpoint> ioEndpoints = getIoEndpoints(usbInterface);
@@ -114,16 +136,16 @@ public class UsbTransport implements Transport {
         UsbEndpoint usbBulkOut = ioEndpoints.second;
 
         if (usbBulkIn == null || usbBulkOut == null) {
-            throw new UsbTransportException("USB error - invalid class 11 interface");
+            throw new UsbTransportException("USB error: invalid class 11 interface");
         }
 
         usbConnection = usbManager.openDevice(usbDevice);
         if (usbConnection == null) {
-            throw new UsbTransportException("USB error - failed to connect to device");
+            throw new UsbTransportException("USB error: failed to connect to device");
         }
 
         if (!usbConnection.claimInterface(usbInterface, true)) {
-            throw new UsbTransportException("USB error - failed to claim interface");
+            throw new UsbTransportException("USB error: failed to claim interface");
         }
 
         byte[] rawDescriptors = usbConnection.getRawDescriptors();
@@ -179,6 +201,7 @@ public class UsbTransport implements Transport {
 
     /**
      * Transmit and receive data
+     *
      * @param data data to transmit
      * @return received data
      */
@@ -202,6 +225,53 @@ public class UsbTransport implements Transport {
         return usbDevice != null ? usbDevice.hashCode() : 0;
     }
 
+    @Override
+    public TransportType getTransportType() {
+        return TransportType.USB;
+    }
+
+    @Nullable
+    @Override
+    public TokenType getTokenTypeIfAvailable() {
+        switch (usbDevice.getVendorId()) {
+            case VENDOR_YUBICO: {
+                switch (usbDevice.getProductId()) {
+                    case PRODUCT_YUBIKEY_NEO_OTP_CCID:
+                    case PRODUCT_YUBIKEY_NEO_CCID:
+                    case PRODUCT_YUBIKEY_NEO_U2F_CCID:
+                    case PRODUCT_YUBIKEY_NEO_OTP_U2F_CCID:
+                        return TokenType.YUBIKEY_NEO;
+                    case PRODUCT_YUBIKEY_4_CCID:
+                    case PRODUCT_YUBIKEY_4_OTP_CCID:
+                    case PRODUCT_YUBIKEY_4_U2F_CCID:
+                    case PRODUCT_YUBIKEY_4_OTP_U2F_CCID:
+                        return TokenType.YUBIKEY_4;
+                }
+                break;
+            }
+            case VENDOR_NITROKEY: {
+                switch (usbDevice.getProductId()) {
+                    case PRODUCT_NITROKEY_PRO:
+                        return TokenType.NITROKEY_PRO;
+                    case PRODUCT_NITROKEY_START:
+                        return TokenType.NITROKEY_START;
+                    case PRODUCT_NITROKEY_STORAGE:
+                        return TokenType.NITROKEY_STORAGE;
+                }
+                break;
+            }
+            case VENDOR_FSIJ: {
+                return TokenType.GNUK;
+            }
+            case VENDOR_LEDGER: {
+                return TokenType.LEDGER_NANO_S;
+            }
+        }
+
+        Log.d(Constants.TAG, "Unknown USB token. Vendor ID: " + usbDevice.getVendorId() + ", Product ID: " +
+                usbDevice.getProductId());
+        return null;
+    }
 
     /**
      * Get first class 11 (Chip/Smartcard) interface of the device

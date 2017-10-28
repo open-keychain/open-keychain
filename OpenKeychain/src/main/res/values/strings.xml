@@ -1580,6 +1580,8 @@
     <string name="security_token_error_header">"Security Token reported invalid %s byte."</string>
     <string name="security_token_error_tag_lost">"Security Token has been taken off too early. Keep the Security Token at the back until the operation finishes."</string>
     <string name="security_token_error_iso_dep_not_supported">"Security Token does not support the required communication standard (ISO-DEP, ISO 14443-4)"</string>
+    <string name="security_token_error_generic">"Generic Error: Most probably, the Security Token has been taken off too early."</string>
+    <string name="security_token_not_supported">"This Security Token is not supported by OpenKeychain."</string>
     <string name="security_token_error_try_again">"Try again"</string>
     <string name="btn_delete_original">Delete original file</string>
 
@@ -1895,6 +1897,7 @@
     <string name="token_result_key_found">Key found!</string>
     <string name="token_result_token_ok">Ready for use!</string>
     <string name="token_result_empty">Token is empty</string>
+    <string name="token_put_key_unsupported">"Please set up this Security Token using GnuPG. OpenKeychain currently only supports singing/decrypting with this Security Token."</string>
     <string name="token_action_retry">Retry Search</string>
     <string name="token_action_load_from_file">Load from File</string>
     <string name="token_action_reset">Reset Security Token</string>

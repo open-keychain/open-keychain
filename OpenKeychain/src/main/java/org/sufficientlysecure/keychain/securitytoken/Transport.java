@@ -17,7 +17,13 @@
 
 package org.sufficientlysecure.keychain.securitytoken;
 
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TransportType;
+
 import java.io.IOException;
+
+import android.support.annotation.Nullable;
+
 
 /**
  * Abstraction for transmitting APDU commands
@@ -55,4 +61,8 @@ public interface Transport {
      * @throws IOException
      */
     void connect() throws IOException;
+
+    TransportType getTransportType();
+    @Nullable
+    TokenType getTokenTypeIfAvailable();
 }

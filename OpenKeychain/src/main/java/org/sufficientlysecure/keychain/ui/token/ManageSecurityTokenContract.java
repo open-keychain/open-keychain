@@ -79,6 +79,7 @@ class ManageSecurityTokenContract {
         void showActionRetryOrFromFile();
         void showActionLocked(int unlockAttempts);
         void showActionEmptyToken();
+        void showActionUnsupportedToken();
         void hideAction();
 
         void operationImportKey(byte[] importKeyData);
