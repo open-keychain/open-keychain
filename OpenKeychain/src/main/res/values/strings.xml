@@ -1580,7 +1580,7 @@
     <string name="security_token_error_header">"Security Token reported invalid %s byte."</string>
     <string name="security_token_error_tag_lost">"Security Token has been taken off too early. Keep the Security Token at the back until the operation finishes."</string>
     <string name="security_token_error_iso_dep_not_supported">"Security Token does not support the required communication standard (ISO-DEP, ISO 14443-4)"</string>
-    <string name="security_token_error_generic">"Generic Error: Most probably, the Security Token has been taken off too early."</string>
+    <string name="security_token_error_generic">"Unknown Error: Most probably, the Security Token has been taken off too early."</string>
     <string name="security_token_not_supported">"This Security Token is not supported by OpenKeychain."</string>
     <string name="security_token_error_try_again">"Try again"</string>
     <string name="btn_delete_original">Delete original file</string>
