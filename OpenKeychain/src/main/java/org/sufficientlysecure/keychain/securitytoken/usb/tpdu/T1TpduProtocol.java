@@ -28,9 +28,14 @@ import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransportProtocol;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 import org.sufficientlysecure.keychain.util.Log;
 
+/* T=1 Protocol, see http://www.icedev.se/proxmark3/docs/ISO-7816.pdf, Part 11 */
 public class T1TpduProtocol implements CcidTransportProtocol {
     private final static int MAX_FRAME_LEN = 254;
 
+    private static final byte PPS_PPPSS = (byte) 0xFF;
+    private static final byte PPS_PPS0_T1 = 1;
+    @SuppressWarnings("PointlessBitwiseExpression") // constructed per spec
+    private static final byte PPS_PCK = (byte) (PPS_PPPSS ^ PPS_PPS0_T1);
 
     private CcidTransceiver ccidTransceiver;
     private T1TpduBlockFactory blockFactory;
@@ -53,7 +58,8 @@ public class T1TpduProtocol implements CcidTransportProtocol {
     }
 
     private void performPpsExchange() throws UsbTransportException {
-        byte[] pps = { (byte) 0xFF, 1, (byte) (0xFF ^ 1) };
+        // Perform PPS, see ISO-7816, Part 9
+        byte[] pps = { PPS_PPPSS, PPS_PPS0_T1, PPS_PCK };
 
         CcidDataBlock response = ccidTransceiver.sendXfrBlock(pps);
 
