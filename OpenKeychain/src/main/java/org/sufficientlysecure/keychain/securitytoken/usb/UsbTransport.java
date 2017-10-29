@@ -17,6 +17,9 @@
 
 package org.sufficientlysecure.keychain.securitytoken.usb;
 
+
+import java.io.IOException;
+
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
@@ -28,14 +31,12 @@ import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
+import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TransportType;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
-import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
-import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.io.IOException;
 
 /**
  * Based on USB CCID Specification rev. 1.1
@@ -136,6 +137,7 @@ public class UsbTransport implements Transport {
         }
 
         CcidDescription ccidDescription = CcidDescription.fromRawDescriptors(usbConnection.getRawDescriptors());
+        Log.d(Constants.TAG, "CCID Description: " + ccidDescription);
         CcidTransceiver transceiver = new CcidTransceiver(usbConnection, usbBulkIn, usbBulkOut, ccidDescription);
 
         ccidTransportProtocol = ccidDescription.getSuitableTransportProtocol();

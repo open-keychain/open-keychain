@@ -19,6 +19,9 @@ package org.sufficientlysecure.keychain.securitytoken.usb;
 
 import java.io.IOException;
 
+import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransceiver.CcidDataBlock;
+
+
 public class UsbTransportException extends IOException {
     public UsbTransportException(String detailMessage) {
         super(detailMessage);
@@ -30,5 +33,18 @@ public class UsbTransportException extends IOException {
 
     public UsbTransportException(Throwable cause) {
         super(cause);
+    }
+
+    static class UsbCcidErrorException extends UsbTransportException {
+        private CcidDataBlock errorResponse;
+
+        UsbCcidErrorException(String detailMessage, CcidDataBlock errorResponse) {
+            super(detailMessage + " " + errorResponse);
+            this.errorResponse = errorResponse;
+        }
+
+        CcidDataBlock getErrorResponse() {
+            return errorResponse;
+        }
     }
 }

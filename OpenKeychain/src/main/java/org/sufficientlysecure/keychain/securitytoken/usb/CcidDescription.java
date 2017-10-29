@@ -23,6 +23,7 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 
 import com.google.auto.value.AutoValue;
 import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.T1ShortApduProtocol;
@@ -53,6 +54,11 @@ abstract class CcidDescription {
     public abstract byte getVoltageSupport();
     public abstract int getProtocols();
     public abstract int getFeatures();
+
+    @VisibleForTesting
+    static CcidDescription fromValues(byte maxSlotIndex, byte voltageSupport, int protocols, int features) {
+        return new AutoValue_CcidDescription(maxSlotIndex, voltageSupport, protocols, features);
+    }
 
     @NonNull
     static CcidDescription fromRawDescriptors(byte[] desc) throws UsbTransportException {
