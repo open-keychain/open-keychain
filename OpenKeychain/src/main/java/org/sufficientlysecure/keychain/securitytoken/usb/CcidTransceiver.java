@@ -168,7 +168,7 @@ public class CcidTransceiver {
 
         int sentBytes = 0;
         while (sentBytes < data.length) {
-            int bytesToSend = Math.min(usbBulkIn.getMaxPacketSize(), data.length - sentBytes);
+            int bytesToSend = Math.min(usbBulkOut.getMaxPacketSize(), data.length - sentBytes);
             sendRaw(data, sentBytes, bytesToSend);
             sentBytes += bytesToSend;
         }
