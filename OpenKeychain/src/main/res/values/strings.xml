@@ -1897,7 +1897,7 @@
     <string name="token_result_key_found">Key found!</string>
     <string name="token_result_token_ok">Ready for use!</string>
     <string name="token_result_empty">Token is empty</string>
-    <string name="token_put_key_unsupported">"Please set up this Security Token using GnuPG. OpenKeychain currently only supports singing/decrypting with this Security Token."</string>
+    <string name="token_put_key_unsupported">"Please set up this Security Token using GnuPG. OpenKeychain currently only supports signing/decrypting with this Security Token."</string>
     <string name="token_action_retry">Retry Search</string>
     <string name="token_action_load_from_file">Load from File</string>
     <string name="token_action_reset">Reset Security Token</string>
