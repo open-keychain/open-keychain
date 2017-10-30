@@ -22,9 +22,6 @@ import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.securitytoken.ECKeyFormat;
-import org.sufficientlysecure.keychain.securitytoken.RSAKeyFormat;
-import org.sufficientlysecure.keychain.securitytoken.KeyType;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -33,8 +30,10 @@ import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPrivateCrtKey;
 
+
 class SecurityTokenUtils {
-    static byte[] attributesFromSecretKey(final KeyType slot, final CanonicalizedSecretKey secretKey) throws IOException, PgpGeneralException {
+    static byte[] attributesFromSecretKey(KeyType slot, CanonicalizedSecretKey secretKey, KeyFormat formatForKeyType)
+            throws IOException, PgpGeneralException {
         if (secretKey.isRSA()) {
             final int mModulusLength = secretKey.getBitStrength();
             final int mExponentLength = secretKey.getSecurityTokenRSASecretKey().getPublicExponent().bitLength();
@@ -46,7 +45,7 @@ class SecurityTokenUtils {
             attrs[i++] = (byte) (mModulusLength & 0xff);
             attrs[i++] = (byte) ((mExponentLength >> 8) & 0xff);
             attrs[i++] = (byte) (mExponentLength & 0xff);
-            attrs[i] = RSAKeyFormat.RSAAlgorithmFormat.CRT_WITH_MODULUS.getValue();
+            attrs[i] = ((RSAKeyFormat) formatForKeyType).getAlgorithmFormat().getValue();
 
             return attrs;
         } else if (secretKey.isEC()) {

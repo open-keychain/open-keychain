@@ -20,20 +20,22 @@ package org.sufficientlysecure.keychain.securitytoken;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 
 public enum KeyType {
-    SIGN(0, 0xB6, 0xCE, 0xC7),
-    ENCRYPT(1, 0xB8, 0xCF, 0xC8),
-    AUTH(2, 0xA4, 0xD0, 0xC9),;
+    SIGN(0, 0xB6, 0xCE, 0xC7, 0xC1),
+    ENCRYPT(1, 0xB8, 0xCF, 0xC8, 0xC2),
+    AUTH(2, 0xA4, 0xD0, 0xC9, 0xC3);
 
     private final int mIdx;
     private final int mSlot;
     private final int mTimestampObjectId;
     private final int mFingerprintObjectId;
+    private final int mAlgoAttributeSlot;
 
-    KeyType(final int idx, final int slot, final int timestampObjectId, final int fingerprintObjectId) {
+    KeyType(int idx, int slot, int timestampObjectId, int fingerprintObjectId, int algoAttributeSlot) {
         this.mIdx = idx;
         this.mSlot = slot;
         this.mTimestampObjectId = timestampObjectId;
         this.mFingerprintObjectId = fingerprintObjectId;
+        this.mAlgoAttributeSlot = algoAttributeSlot;
     }
 
     public static KeyType from(final CanonicalizedSecretKey key) {
@@ -61,5 +63,9 @@ public enum KeyType {
 
     public int getFingerprintObjectId() {
         return mFingerprintObjectId;
+    }
+
+    public int getAlgoAttributeSlot() {
+        return mAlgoAttributeSlot;
     }
 }
