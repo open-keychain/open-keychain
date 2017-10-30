@@ -22,6 +22,7 @@ import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.securitytoken.RSAKeyFormat.RSAAlgorithmFormat;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -33,24 +34,12 @@ import java.security.interfaces.RSAPrivateCrtKey;
 
 class SecurityTokenUtils {
     static byte[] attributesFromSecretKey(KeyType slot, CanonicalizedSecretKey secretKey, KeyFormat formatForKeyType)
-            throws IOException, PgpGeneralException {
+            throws IOException {
         if (secretKey.isRSA()) {
-            final int mModulusLength = secretKey.getBitStrength();
-            final int mExponentLength = secretKey.getSecurityTokenRSASecretKey().getPublicExponent().bitLength();
-            final byte[] attrs = new byte[6];
-            int i = 0;
-
-            attrs[i++] = (byte) 0x01;
-            attrs[i++] = (byte) ((mModulusLength >> 8) & 0xff);
-            attrs[i++] = (byte) (mModulusLength & 0xff);
-            attrs[i++] = (byte) ((mExponentLength >> 8) & 0xff);
-            attrs[i++] = (byte) (mExponentLength & 0xff);
-            attrs[i] = ((RSAKeyFormat) formatForKeyType).getAlgorithmFormat().getValue();
-
-            return attrs;
+            return attributesForRsaKey(secretKey.getBitStrength(), (RSAKeyFormat) formatForKeyType);
         } else if (secretKey.isEC()) {
-            final byte[] oid = new ASN1ObjectIdentifier(secretKey.getCurveOid()).getEncoded();
-            final byte[] attrs = new byte[1 + (oid.length - 2) + 1];
+            byte[] oid = new ASN1ObjectIdentifier(secretKey.getCurveOid()).getEncoded();
+            byte[] attrs = new byte[1 + (oid.length - 2) + 1];
 
             if (slot.equals(KeyType.SIGN))
                 attrs[0] = ECKeyFormat.ECAlgorithmFormat.ECDSA_WITH_PUBKEY.getValue();
@@ -68,6 +57,21 @@ class SecurityTokenUtils {
         }
     }
 
+    private static byte[] attributesForRsaKey(int modulusLength, RSAKeyFormat formatForKeyType) {
+        RSAAlgorithmFormat algorithmFormat = formatForKeyType.getAlgorithmFormat();
+        int exponentLength = formatForKeyType.getExponentLength();
+
+        int i = 0;
+        byte[] attrs = new byte[6];
+        attrs[i++] = (byte) 0x01;
+        attrs[i++] = (byte) ((modulusLength >> 8) & 0xff);
+        attrs[i++] = (byte) (modulusLength & 0xff);
+        attrs[i++] = (byte) ((exponentLength >> 8) & 0xff);
+        attrs[i++] = (byte) (exponentLength & 0xff);
+        attrs[i] = algorithmFormat.getValue();
+
+        return attrs;
+    }
 
     static byte[] createRSAPrivKeyTemplate(RSAPrivateCrtKey secretKey, KeyType slot,
             RSAKeyFormat format) throws IOException {
