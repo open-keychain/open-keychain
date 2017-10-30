@@ -30,6 +30,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Pair;
 
+import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
 import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
@@ -152,7 +153,17 @@ public class UsbTransport implements Transport {
      */
     @Override
     public ResponseApdu transceive(CommandApdu data) throws UsbTransportException {
-        return ResponseApdu.fromBytes(ccidTransportProtocol.transceive(data.toBytes()));
+        byte[] rawCommand = data.toBytes();
+        if (Constants.DEBUG) {
+            Log.d(Constants.TAG, "USB >> " + Hex.toHexString(rawCommand));
+        }
+
+        byte[] rawResponse = ccidTransportProtocol.transceive(rawCommand);
+        if (Constants.DEBUG) {
+            Log.d(Constants.TAG, "USB << " + Hex.toHexString(rawResponse));
+        }
+
+        return ResponseApdu.fromBytes(rawResponse);
     }
 
     @Override
