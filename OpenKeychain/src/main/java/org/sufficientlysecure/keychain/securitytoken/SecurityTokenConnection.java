@@ -516,7 +516,8 @@ public class SecurityTokenConnection {
      *             0xB8: Decipherment Key
      *             0xA4: Authentication Key
      */
-    private void putKey(KeyType slot, CanonicalizedSecretKey secretKey, Passphrase passphrase, Passphrase adminPin)
+    @VisibleForTesting
+    void putKey(KeyType slot, CanonicalizedSecretKey secretKey, Passphrase passphrase, Passphrase adminPin)
             throws IOException {
         RSAPrivateCrtKey crtSecretKey;
         ECPrivateKey ecSecretKey;
