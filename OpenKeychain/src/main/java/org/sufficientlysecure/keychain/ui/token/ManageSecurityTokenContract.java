@@ -98,6 +98,7 @@ class ManageSecurityTokenContract {
 
         void requestStoragePermission();
 
+        void showErrorCannotReset(boolean isGnuk);
         void showErrorCannotUnlock();
     }
 }

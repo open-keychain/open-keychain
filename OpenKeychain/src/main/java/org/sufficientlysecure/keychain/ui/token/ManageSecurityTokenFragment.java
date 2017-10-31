@@ -353,6 +353,15 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
     }
 
     @Override
+    public void showErrorCannotReset(boolean isGnuk) {
+        if (isGnuk) {
+            Notify.create(getActivity(), R.string.token_error_cannot_reset_gnuk_old, Style.ERROR).show();
+        } else {
+            Notify.create(getActivity(), R.string.token_error_cannot_reset, Style.ERROR).show();
+        }
+    }
+
+    @Override
     public void showDisplayLogActivity(OperationResult result) {
         Intent intent = new Intent(getActivity(), LogDisplayActivity.class);
         intent.putExtra(LogDisplayFragment.EXTRA_RESULT, result);

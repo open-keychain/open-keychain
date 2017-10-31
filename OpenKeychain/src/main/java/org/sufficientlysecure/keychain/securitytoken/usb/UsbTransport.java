@@ -34,6 +34,7 @@ import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
 import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TransportType;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
@@ -217,7 +218,10 @@ public class UsbTransport implements Transport {
                 break;
             }
             case VENDOR_FSIJ: {
-                return TokenType.GNUK;
+                String serialNo = usbConnection.getSerial();
+                String gnukVersion = SecurityTokenInfo.parseGnukVersionString(serialNo);
+                boolean versionBigger125 = gnukVersion != null && "1.2.5".compareTo(gnukVersion) < 0;
+                return versionBigger125 ? TokenType.GNUK_NEWER_1_25 : TokenType.GNUK_OLD;
             }
             case VENDOR_LEDGER: {
                 return TokenType.LEDGER_NANO_S;

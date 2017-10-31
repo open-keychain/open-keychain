@@ -30,6 +30,7 @@ import org.sufficientlysecure.keychain.operations.results.GenericOperationResult
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
 import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenContract.ManageSecurityTokenMvpPresenter;
 import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenContract.ManageSecurityTokenMvpView;
 import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenFragment.StatusLine;
@@ -362,6 +363,14 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
 
     @Override
     public void onClickResetToken() {
+        if (!tokenInfo.isResetSupported()) {
+            TokenType tokenType = tokenInfo.getTokenType();
+            boolean isGnuk = tokenType == TokenType.GNUK_OLD || tokenType == TokenType.GNUK_UNKNOWN;
+
+            view.showErrorCannotReset(isGnuk);
+            return;
+        }
+
         view.showConfirmResetDialog();
     }
 
