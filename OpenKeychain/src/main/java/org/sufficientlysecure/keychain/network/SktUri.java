@@ -23,6 +23,7 @@ abstract class SktUri {
 
     public abstract String getHost();
     public abstract int getPort();
+    @SuppressWarnings("mutable")
     public abstract byte[] getPresharedKey();
 
     @Nullable

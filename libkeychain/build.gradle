@@ -5,7 +5,7 @@ dependencies {
     // NOTE: libraries are pinned to a specific build, see below
 
     // from local Android SDK
-    compile 'com.android.support:support-v4:25.0.1'
+    compile "com.android.support:support-v4:$supportVersion"
 
     // libs as submodules
     compile project(':openpgp-api-lib') // TODO: get rid of this dependency
