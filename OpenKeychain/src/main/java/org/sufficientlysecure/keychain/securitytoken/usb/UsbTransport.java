@@ -17,6 +17,9 @@
 
 package org.sufficientlysecure.keychain.securitytoken.usb;
 
+
+import java.io.IOException;
+
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
@@ -27,19 +30,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Pair;
 
+import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
+import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TransportType;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
-import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
-import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
-import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.T1ShortApduProtocol;
-import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.T1TpduProtocol;
 import org.sufficientlysecure.keychain.util.Log;
-
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 /**
  * Based on USB CCID Specification rev. 1.1
@@ -47,15 +46,6 @@ import java.nio.ByteOrder;
  * Implements small subset of these features
  */
 public class UsbTransport implements Transport {
-    private static final int PROTOCOLS_OFFSET = 6;
-    private static final int FEATURES_OFFSET = 40;
-    private static final short MASK_T1_PROTO = 2;
-
-    // dwFeatures Masks
-    private static final int MASK_TPDU = 0x10000;
-    private static final int MASK_SHORT_APDU = 0x20000;
-    private static final int MASK_EXTENDED_APDU = 0x40000;
-
     // https://github.com/Yubico/yubikey-personalization/blob/master/ykcore/ykdef.h
     private static final int VENDOR_YUBICO = 4176;
     private static final int PRODUCT_YUBIKEY_NEO_OTP_CCID = 273;
@@ -148,55 +138,12 @@ public class UsbTransport implements Transport {
             throw new UsbTransportException("USB error: failed to claim interface");
         }
 
-        byte[] rawDescriptors = usbConnection.getRawDescriptors();
-        ccidTransportProtocol = getCcidTransportProtocolForRawDescriptors(rawDescriptors);
+        CcidDescription ccidDescription = CcidDescription.fromRawDescriptors(usbConnection.getRawDescriptors());
+        Log.d(Constants.TAG, "CCID Description: " + ccidDescription);
+        CcidTransceiver transceiver = new CcidTransceiver(usbConnection, usbBulkIn, usbBulkOut, ccidDescription);
 
-        CcidTransceiver transceiver = new CcidTransceiver(usbConnection, usbBulkIn, usbBulkOut);
+        ccidTransportProtocol = ccidDescription.getSuitableTransportProtocol();
         ccidTransportProtocol.connect(transceiver);
-    }
-
-    private CcidTransportProtocol getCcidTransportProtocolForRawDescriptors(byte[] desc) throws UsbTransportException {
-        int dwProtocols = 0, dwFeatures = 0;
-        boolean hasCcidDescriptor = false;
-
-        ByteBuffer byteBuffer = ByteBuffer.wrap(desc).order(ByteOrder.LITTLE_ENDIAN);
-
-        while (byteBuffer.hasRemaining()) {
-            byteBuffer.mark();
-            byte len = byteBuffer.get(), type = byteBuffer.get();
-
-            if (type == 0x21 && len == 0x36) {
-                byteBuffer.reset();
-
-                byteBuffer.position(byteBuffer.position() + PROTOCOLS_OFFSET);
-                dwProtocols = byteBuffer.getInt();
-
-                byteBuffer.reset();
-
-                byteBuffer.position(byteBuffer.position() + FEATURES_OFFSET);
-                dwFeatures = byteBuffer.getInt();
-                hasCcidDescriptor = true;
-                break;
-            } else {
-                byteBuffer.position(byteBuffer.position() + len - 2);
-            }
-        }
-
-        if (!hasCcidDescriptor) {
-            throw new UsbTransportException("CCID descriptor not found");
-        }
-
-        if ((dwProtocols & MASK_T1_PROTO) == 0) {
-            throw new UsbTransportException("T=0 protocol is not supported");
-        }
-
-        if ((dwFeatures & MASK_TPDU) != 0) {
-            return new T1TpduProtocol();
-        } else if (((dwFeatures & MASK_SHORT_APDU) != 0) || ((dwFeatures & MASK_EXTENDED_APDU) != 0)) {
-            return new T1ShortApduProtocol();
-        } else {
-            throw new UsbTransportException("Character level exchange is not supported");
-        }
     }
 
     /**
@@ -207,7 +154,17 @@ public class UsbTransport implements Transport {
      */
     @Override
     public ResponseApdu transceive(CommandApdu data) throws UsbTransportException {
-        return ResponseApdu.fromBytes(ccidTransportProtocol.transceive(data.toBytes()));
+        byte[] rawCommand = data.toBytes();
+        if (Constants.DEBUG) {
+            Log.d(Constants.TAG, "USB >> " + Hex.toHexString(rawCommand));
+        }
+
+        byte[] rawResponse = ccidTransportProtocol.transceive(rawCommand);
+        if (Constants.DEBUG) {
+            Log.d(Constants.TAG, "USB << " + Hex.toHexString(rawResponse));
+        }
+
+        return ResponseApdu.fromBytes(rawResponse);
     }
 
     @Override
@@ -261,7 +218,10 @@ public class UsbTransport implements Transport {
                 break;
             }
             case VENDOR_FSIJ: {
-                return TokenType.GNUK;
+                String serialNo = usbConnection.getSerial();
+                String gnukVersion = SecurityTokenInfo.parseGnukVersionString(serialNo);
+                boolean versionBigger125 = gnukVersion != null && "1.2.5".compareTo(gnukVersion) < 0;
+                return versionBigger125 ? TokenType.GNUK_NEWER_1_25 : TokenType.GNUK_OLD;
             }
             case VENDOR_LEDGER: {
                 return TokenType.LEDGER_NANO_S;

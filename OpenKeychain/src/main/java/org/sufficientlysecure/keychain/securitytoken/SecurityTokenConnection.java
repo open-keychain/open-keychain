@@ -193,8 +193,7 @@ public class SecurityTokenConnection {
             throw new CardException("Initialization failed!", response.getSw());
         }
 
-        OpenPgpCapabilities openPgpCapabilities = new OpenPgpCapabilities(getData(0x00, 0x6E));
-        setConnectionCapabilities(openPgpCapabilities);
+        refreshConnectionCapabilities();
 
         mPw1ValidatedForSignature = false;
         mPw1ValidatedForDecrypt = false;
@@ -233,6 +232,13 @@ public class SecurityTokenConnection {
         */
 
         tokenType = TokenType.UNKNOWN;
+    }
+
+    private void refreshConnectionCapabilities() throws IOException {
+        byte[] rawOpenPgpCapabilities = getData(0x00, 0x6E);
+
+        OpenPgpCapabilities openPgpCapabilities = new OpenPgpCapabilities(rawOpenPgpCapabilities);
+        setConnectionCapabilities(openPgpCapabilities);
     }
 
     @VisibleForTesting
@@ -493,33 +499,13 @@ public class SecurityTokenConnection {
         }
     }
 
-    private void setKeyAttributes(Passphrase adminPin, final KeyType slot, final CanonicalizedSecretKey secretKey)
-            throws IOException {
-
-        if (mOpenPgpCapabilities.isAttributesChangable()) {
-            int tag;
-
-            if (slot == KeyType.SIGN) {
-                tag = 0xC1;
-            } else if (slot == KeyType.ENCRYPT) {
-                tag = 0xC2;
-            } else if (slot == KeyType.AUTH) {
-                tag = 0xC3;
-            } else {
-                throw new IOException("Unknown key for card.");
-            }
-
-            try {
-
-                putData(adminPin, tag, SecurityTokenUtils.attributesFromSecretKey(slot, secretKey));
-
-                mOpenPgpCapabilities.updateWithData(getData(0x00, tag));
-
-            } catch (PgpGeneralException e) {
-                throw new IOException("Key algorithm not supported by the security token.");
-            }
-
+    private void setKeyAttributes(Passphrase adminPin, KeyType keyType, byte[] data) throws IOException {
+        if (!mOpenPgpCapabilities.isAttributesChangable()) {
+            return;
         }
+
+        putData(adminPin, keyType.getAlgoAttributeSlot(), data);
+        refreshConnectionCapabilities();
     }
 
     /**
@@ -546,9 +532,11 @@ public class SecurityTokenConnection {
         try {
             secretKey.unlock(passphrase);
 
-            setKeyAttributes(adminPin, slot, secretKey);
+            setKeyAttributes(adminPin, slot, SecurityTokenUtils.attributesFromSecretKey(slot, secretKey,
+                    mOpenPgpCapabilities.getFormatForKeyType(slot)));
 
-            switch (mOpenPgpCapabilities.getFormatForKeyType(slot).keyFormatType()) {
+            KeyFormat formatForKeyType = mOpenPgpCapabilities.getFormatForKeyType(slot);
+            switch (formatForKeyType.keyFormatType()) {
                 case RSAKeyFormatType:
                     if (!secretKey.isRSA()) {
                         throw new IOException("Security Token not configured for RSA key.");
@@ -561,7 +549,7 @@ public class SecurityTokenConnection {
                     }
 
                     keyBytes = SecurityTokenUtils.createRSAPrivKeyTemplate(crtSecretKey, slot,
-                            (RSAKeyFormat) (mOpenPgpCapabilities.getFormatForKeyType(slot)));
+                            (RSAKeyFormat) formatForKeyType);
                     break;
 
                 case ECKeyFormatType:
@@ -574,7 +562,7 @@ public class SecurityTokenConnection {
                     ecPublicKey = secretKey.getSecurityTokenECPublicKey();
 
                     keyBytes = SecurityTokenUtils.createECPrivKeyTemplate(ecSecretKey, ecPublicKey, slot,
-                            (ECKeyFormat) (mOpenPgpCapabilities.getFormatForKeyType(slot)));
+                            (ECKeyFormat) formatForKeyType);
                     break;
 
                 default:

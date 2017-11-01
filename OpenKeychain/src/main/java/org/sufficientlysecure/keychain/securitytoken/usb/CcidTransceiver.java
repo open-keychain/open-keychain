@@ -33,12 +33,15 @@ import com.google.auto.value.AutoValue;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException.UsbCcidErrorException;
+
 
 public class CcidTransceiver {
     private static final int CCID_HEADER_LENGTH = 10;
 
     private static final int MESSAGE_TYPE_RDR_TO_PC_DATA_BLOCK = 0x80;
     private static final int MESSAGE_TYPE_PC_TO_RDR_ICC_POWER_ON = 0x62;
+    private static final int MESSAGE_TYPE_PC_TO_RDR_ICC_POWER_OFF = 0x63;
     private static final int MESSAGE_TYPE_PC_TO_RDR_XFR_BLOCK = 0x6f;
 
     private static final int COMMAND_STATUS_SUCCESS = 0;
@@ -55,15 +58,18 @@ public class CcidTransceiver {
     private final UsbDeviceConnection usbConnection;
     private final UsbEndpoint usbBulkIn;
     private final UsbEndpoint usbBulkOut;
+    private final CcidDescription usbCcidDescription;
     private final byte[] inputBuffer;
 
     private byte currentSequenceNumber;
 
 
-    CcidTransceiver(UsbDeviceConnection connection, UsbEndpoint bulkIn, UsbEndpoint bulkOut) {
+    CcidTransceiver(UsbDeviceConnection connection, UsbEndpoint bulkIn, UsbEndpoint bulkOut,
+            CcidDescription ccidDescription) {
         usbConnection = connection;
         usbBulkIn = bulkIn;
         usbBulkOut = bulkOut;
+        usbCcidDescription = ccidDescription;
 
         inputBuffer = new byte[usbBulkIn.getMaxPacketSize()];
     }
@@ -79,25 +85,63 @@ public class CcidTransceiver {
 
         skipAvailableInput();
 
+        CcidDataBlock response = null;
+        for (CcidDescription.Voltage v : usbCcidDescription.getVoltages()) {
+            Log.v(Constants.TAG, "CCID: attempting to power on with voltage " + v.toString());
+            try {
+                response = iccPowerOnVoltage(v.powerOnValue);
+            } catch (UsbCcidErrorException e) {
+                if (e.getErrorResponse().getError() == 7) { // Power select error
+                    Log.v(Constants.TAG, "CCID: failed to power on with voltage " + v.toString());
+                    iccPowerOff();
+                    Log.v(Constants.TAG, "CCID: powered off");
+                    continue;
+                }
+
+                throw e;
+            }
+
+            break;
+        }
+        if (response == null) {
+            throw new UsbTransportException("Couldn't power up ICC2");
+        }
+
+        long elapsedTime = SystemClock.elapsedRealtime() - startTime;
+
+        Log.d(Constants.TAG, "Usb transport connected, took " + elapsedTime + "ms, ATR=" +
+                Hex.toHexString(response.getData()));
+
+        return response;
+    }
+
+    private CcidDataBlock iccPowerOnVoltage(byte voltage) throws UsbTransportException {
         byte sequenceNumber = currentSequenceNumber++;
         final byte[] iccPowerCommand = {
                 MESSAGE_TYPE_PC_TO_RDR_ICC_POWER_ON,
                 0x00, 0x00, 0x00, 0x00,
                 SLOT_NUMBER,
                 sequenceNumber,
-                0x00, // voltage select = auto
+                voltage,
                 0x00, 0x00 // reserved for future use
         };
 
         sendRaw(iccPowerCommand, 0, iccPowerCommand.length);
-        CcidDataBlock response = receiveDataBlock(sequenceNumber);
 
-        long elapsedTime = SystemClock.elapsedRealtime() - startTime;
+        return receiveDataBlock(sequenceNumber);
+    }
 
-        Log.d(Constants.TAG, "Usb transport connected  T1/TPDU, took " + elapsedTime + "ms, ATR=" +
-                Hex.toHexString(response.getData()));
+    private void iccPowerOff() throws UsbTransportException {
+        byte sequenceNumber = currentSequenceNumber++;
+        final byte[] iccPowerCommand = {
+                MESSAGE_TYPE_PC_TO_RDR_ICC_POWER_OFF,
+                0x00, 0x00, 0x00, 0x00,
+                0x00,
+                sequenceNumber,
+                0x00
+        };
 
-        return response;
+        sendRaw(iccPowerCommand, 0, iccPowerCommand.length);
     }
 
     /**
@@ -124,7 +168,7 @@ public class CcidTransceiver {
 
         int sentBytes = 0;
         while (sentBytes < data.length) {
-            int bytesToSend = Math.min(usbBulkIn.getMaxPacketSize(), data.length - sentBytes);
+            int bytesToSend = Math.min(usbBulkOut.getMaxPacketSize(), data.length - sentBytes);
             sendRaw(data, sentBytes, bytesToSend);
             sentBytes += bytesToSend;
         }
@@ -156,7 +200,7 @@ public class CcidTransceiver {
         } while (response.isStatusTimeoutExtensionRequest());
 
         if (!response.isStatusSuccess()) {
-            throw new UsbTransportException("USB-CCID error: " + response);
+            throw new UsbCcidErrorException("USB-CCID error!", response);
         }
 
         return response;
@@ -176,7 +220,6 @@ public class CcidTransceiver {
 
             throw new UsbTransportException("USB-CCID error - bad CCID header type " + inputBuffer[0]);
         }
-
         CcidDataBlock result = CcidDataBlock.parseHeaderFromBytes(inputBuffer);
 
         if (expectedSequenceNumber != result.getSeq()) {
@@ -198,6 +241,7 @@ public class CcidTransceiver {
         }
 
         result = result.withData(dataBuffer);
+
         return result;
     }
 

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
@@ -18,6 +20,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 @AutoValue
 public abstract class SecurityTokenInfo implements Parcelable {
     private static final byte[] EMPTY_ARRAY = new byte[20];
+    private static final Pattern GNUK_VERSION_PATTERN = Pattern.compile("FSIJ-(\\d\\.\\d\\.\\d)-.+");
 
     public abstract TransportType getTransportType();
     public abstract TokenType getTokenType();
@@ -90,19 +93,31 @@ public abstract class SecurityTokenInfo implements Parcelable {
     }
 
     public enum TokenType {
-        YUBIKEY_NEO, YUBIKEY_4, FIDESMO, NITROKEY_PRO, NITROKEY_STORAGE, NITROKEY_START, GNUK, LEDGER_NANO_S, UNKNOWN
+        YUBIKEY_NEO, YUBIKEY_4, FIDESMO, NITROKEY_PRO, NITROKEY_STORAGE, NITROKEY_START,
+        GNUK_OLD, GNUK_UNKNOWN, GNUK_NEWER_1_25, LEDGER_NANO_S, UNKNOWN
     }
 
     private static final HashSet<TokenType> SUPPORTED_USB_TOKENS = new HashSet<>(Arrays.asList(
             TokenType.YUBIKEY_NEO,
             TokenType.YUBIKEY_4,
             TokenType.NITROKEY_PRO,
-            TokenType.NITROKEY_STORAGE
+            TokenType.NITROKEY_STORAGE,
+            TokenType.GNUK_OLD,
+            TokenType.GNUK_UNKNOWN,
+            TokenType.GNUK_NEWER_1_25
+    ));
+
+    private static final HashSet<TokenType> SUPPORTED_USB_RESET = new HashSet<>(Arrays.asList(
+            TokenType.YUBIKEY_NEO,
+            TokenType.YUBIKEY_4,
+            TokenType.NITROKEY_PRO,
+            TokenType.GNUK_NEWER_1_25
     ));
 
     private static final HashSet<TokenType> SUPPORTED_USB_PUT_KEY = new HashSet<>(Arrays.asList(
             TokenType.YUBIKEY_NEO,
-            TokenType.YUBIKEY_4 // Not clear, will be tested: https://github.com/open-keychain/open-keychain/issues/2069
+            TokenType.YUBIKEY_4, // Not clear, will be tested: https://github.com/open-keychain/open-keychain/issues/2069
+            TokenType.NITROKEY_PRO
     ));
 
     public boolean isSecurityTokenSupported() {
@@ -119,4 +134,22 @@ public abstract class SecurityTokenInfo implements Parcelable {
         return isKnownSupported || isNfcTransport;
     }
 
+    public boolean isResetSupported() {
+        boolean isKnownSupported = SUPPORTED_USB_RESET.contains(getTokenType());
+        boolean isNfcTransport = getTransportType() == TransportType.NFC;
+
+        return isKnownSupported || isNfcTransport;
+    }
+
+    public static String parseGnukVersionString(String serialNo) {
+        if (serialNo == null) {
+            return null;
+        }
+
+        Matcher matcher = GNUK_VERSION_PATTERN.matcher(serialNo);
+        if (!matcher.matches()) {
+            return null;
+        }
+        return matcher.group(1);
+    }
 }
