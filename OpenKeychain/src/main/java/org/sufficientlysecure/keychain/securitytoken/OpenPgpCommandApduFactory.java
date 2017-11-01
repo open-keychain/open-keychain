@@ -160,6 +160,11 @@ class OpenPgpCommandApduFactory {
     }
 
     @NonNull
+    CommandApdu createInternalAuthCommand(byte[] authData) {
+        return CommandApdu.create(CLA, INS_INTERNAL_AUTHENTICATE, P1_EMPTY, P2_EMPTY, authData, MAX_APDU_NE_EXT);
+    }
+
+    @NonNull
     CommandApdu createGenerateKeyCommand(int slot) {
         return CommandApdu.create(CLA, INS_GENERATE_ASYMMETRIC_KEY_PAIR,
                 P1_GAKP_GENERATE, P2_EMPTY, new byte[] { (byte) slot, 0x00 }, MAX_APDU_NE_EXT);

@@ -78,6 +78,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
     private RadioButton mUsageSign;
     private RadioButton mUsageEncrypt;
     private RadioButton mUsageSignAndEncrypt;
+    private RadioButton mUsageAuthentication;
 
     private boolean mWillBeMasterKey;
 
@@ -121,6 +122,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
         mUsageSign = (RadioButton) view.findViewById(R.id.add_subkey_usage_sign);
         mUsageEncrypt = (RadioButton) view.findViewById(R.id.add_subkey_usage_encrypt);
         mUsageSignAndEncrypt = (RadioButton) view.findViewById(R.id.add_subkey_usage_sign_and_encrypt);
+        mUsageAuthentication = (RadioButton) view.findViewById(R.id.add_subkey_usage_authentication);
 
         if(mWillBeMasterKey) {
             dialog.setTitle(R.string.title_change_master_key);
@@ -296,6 +298,8 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                         flags |= KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE;
                     } else if (mUsageSignAndEncrypt.isChecked()) {
                         flags |= KeyFlags.SIGN_DATA | KeyFlags.ENCRYPT_COMMS | KeyFlags.ENCRYPT_STORAGE;
+                    } else if (mUsageAuthentication.isChecked()) {
+                        flags |= KeyFlags.AUTHENTICATION;
                     }
 
 

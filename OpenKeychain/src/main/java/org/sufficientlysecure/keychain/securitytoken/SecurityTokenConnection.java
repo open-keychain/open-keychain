@@ -620,17 +620,8 @@ public class SecurityTokenConnection {
         return response.getData();
     }
 
-    /**
-     * Call COMPUTE DIGITAL SIGNATURE command and returns the MPI value
-     *
-     * @param hash the hash for signing
-     * @return a big integer representing the MPI for the given hash
-     */
-    public byte[] calculateSignature(byte[] hash, int hashAlgo) throws IOException {
-        if (!mPw1ValidatedForSignature) {
-            verifyPinForSignature();
-        }
 
+    private byte[] prepareDsi(byte[] hash, int hashAlgo) throws IOException {
         byte[] dsi;
 
         Log.i(Constants.TAG, "Hash: " + hashAlgo);
@@ -679,13 +670,14 @@ public class SecurityTokenConnection {
             default:
                 throw new IOException("Not supported hash algo!");
         }
+        return dsi;
+    }
 
+    private byte[] prepareData(byte[] hash, int hashAlgo, KeyFormat keyFormat) throws IOException {
         byte[] data;
-
-        KeyFormat signKeyFormat = mOpenPgpCapabilities.getFormatForKeyType(KeyType.SIGN);
-        switch (signKeyFormat.keyFormatType()) {
+        switch (keyFormat.keyFormatType()) {
             case RSAKeyFormatType:
-                data = dsi;
+                data = prepareDsi(hash, hashAlgo);
                 break;
             case ECKeyFormatType:
                 data = hash;
@@ -693,25 +685,16 @@ public class SecurityTokenConnection {
             default:
                 throw new IOException("Not supported key type!");
         }
+        return data;
+    }
 
-        // Command APDU for PERFORM SECURITY OPERATION: COMPUTE DIGITAL SIGNATURE (page 37)
-        CommandApdu command = commandFactory.createComputeDigitalSignatureCommand(data);
-        ResponseApdu response = communicate(command);
 
-        if (!response.isSuccess()) {
-            throw new CardException("Failed to sign", response.getSw());
-        }
-
-        if (!mOpenPgpCapabilities.isPw1ValidForMultipleSignatures()) {
-            mPw1ValidatedForSignature = false;
-        }
-
-        byte[] signature = response.getData();
-
+    private byte[] encodeSignature(byte[] signature, KeyFormat keyFormat) throws IOException {
         // Make sure the signature we received is actually the expected number of bytes long!
-        switch (signKeyFormat.keyFormatType()) {
+        switch (keyFormat.keyFormatType()) {
             case RSAKeyFormatType:
-                int modulusLength = ((RSAKeyFormat) signKeyFormat).getModulusLength();
+                // no encoding necessary
+                int modulusLength = ((RSAKeyFormat) keyFormat).getModulusLength();
                 if (signature.length != (modulusLength / 8)) {
                     throw new IOException("Bad signature length! Expected " + (modulusLength / 8) +
                             " bytes, got " + signature.length);
@@ -736,8 +719,67 @@ public class SecurityTokenConnection {
                 signature = baos.toByteArray();
                 break;
         }
-
         return signature;
+    }
+
+    /**
+     * Call COMPUTE DIGITAL SIGNATURE command and returns the MPI value
+     *
+     * @param hash the hash for signing
+     * @return a big integer representing the MPI for the given hash
+     */
+    public byte[] calculateSignature(byte[] hash, int hashAlgo) throws IOException {
+        if (!mPw1ValidatedForSignature) {
+            verifyPinForSignature();
+        }
+
+        KeyFormat signKeyFormat = mOpenPgpCapabilities.getFormatForKeyType(KeyType.SIGN);
+
+        byte[] data = prepareData(hash, hashAlgo, signKeyFormat);
+
+        // Command APDU for PERFORM SECURITY OPERATION: COMPUTE DIGITAL SIGNATURE (page 37)
+        CommandApdu command = commandFactory.createComputeDigitalSignatureCommand(data);
+        ResponseApdu response = communicate(command);
+
+        if (!response.isSuccess()) {
+            throw new CardException("Failed to sign", response.getSw());
+        }
+
+        if (!mOpenPgpCapabilities.isPw1ValidForMultipleSignatures()) {
+            mPw1ValidatedForSignature = false;
+        }
+
+        return encodeSignature(response.getData(), signKeyFormat);
+    }
+
+    /**
+     * Call INTERNAL AUTHENTICATE command and returns the MPI value
+     *
+     * @param hash the hash for signing
+     * @return a big integer representing the MPI for the given hash
+     */
+    public byte[] calculateAuthenticationSignature(byte[] hash, int hashAlgo) throws IOException {
+        if (!mPw1ValidatedForDecrypt) {
+            verifyPinForOther();
+        }
+
+        KeyFormat authKeyFormat = mOpenPgpCapabilities.getFormatForKeyType(KeyType.AUTH);
+
+        byte[] data = prepareData(hash, hashAlgo, authKeyFormat);
+
+        // Command APDU for INTERNAL AUTHENTICATE (page 55)
+        CommandApdu command = commandFactory.createInternalAuthCommand(data);
+        ResponseApdu response = communicate(command);
+
+        if (!response.isSuccess()) {
+            throw new CardException("Failed to sign", response.getSw());
+        }
+
+        if (!mOpenPgpCapabilities.isPw1ValidForMultipleSignatures()) {
+            mPw1ValidatedForSignature = false;
+        }
+
+        return encodeSignature(response.getData(), authKeyFormat);
     }
 
     /**

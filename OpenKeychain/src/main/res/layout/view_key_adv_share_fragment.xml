@@ -153,6 +153,65 @@
 
         </LinearLayout>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:background="?android:attr/listDivider" />
+
+        <LinearLayout
+                android:id="@+id/share_ssh_layout"
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/listPreferredItemHeight"
+                android:orientation="horizontal">
+
+            <TextView
+                    android:id="@+id/view_key_action_key_ssh_share"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:layout_width="0dip"
+                    android:layout_height="match_parent"
+                    android:text="@string/key_view_action_share_ssh_with"
+                    android:layout_weight="1"
+                    android:drawableRight="@drawable/ic_share_grey_24dp"
+                    android:drawablePadding="8dp"
+                    android:gravity="center_vertical"
+                    android:background="?android:selectableItemBackground"/>
+
+            <View
+                    android:layout_width="1dip"
+                    android:layout_height="match_parent"
+                    android:gravity="right"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="?android:attr/listDivider"/>
+
+            <ImageButton
+                    android:id="@+id/view_key_action_key_ssh_clipboard"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_content_copy_grey_24dp"
+                    android:layout_gravity="center_vertical"
+                    android:background="?android:selectableItemBackground"/>
+
+            <View
+                    android:layout_width="1dip"
+                    android:layout_height="match_parent"
+                    android:gravity="right"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="?android:attr/listDivider"/>
+
+            <!-- spacer -->
+            <View
+                    android:layout_width="40dip"
+                    android:layout_height="match_parent"
+                    android:gravity="right"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="8dp"/>
+
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"

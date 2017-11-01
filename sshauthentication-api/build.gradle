@@ -1,0 +1,36 @@
+apply plugin: 'com.android.library'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.2'
+        // NOTE: Do not place application dependencies here
+    }
+}
+
+android {
+    if (project.hasProperty('rootProject.ext.compileSdkVersion')) {
+        compileSdkVersion rootProject.ext.compileSdkVersion
+    } else {
+        compileSdkVersion 25
+    }
+    if (project.hasProperty('rootProject.ext.buildToolsVersion')) {
+        buildToolsVersion rootProject.ext.buildToolsVersion
+    } else {
+        buildToolsVersion '25.0.2'
+    }
+
+    defaultConfig {
+        minSdkVersion 9
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+    }
+
+    // Do not abort build if lint finds errors
+    lintOptions {
+        abortOnError false
+    }
+}

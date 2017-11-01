@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain.remote;
 
-
 import java.util.ArrayList;
 
 import android.app.PendingIntent;
@@ -28,7 +27,6 @@ import android.os.Build;
 import org.sufficientlysecure.keychain.pgp.DecryptVerifySecurityProblem;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.remote.ui.RemoteBackupActivity;
-import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteDeduplicateActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteErrorActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteImportKeysActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemotePassphraseDialogActivity;
@@ -38,6 +36,8 @@ import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationAct
 import org.sufficientlysecure.keychain.remote.ui.RemoteSelectPubKeyActivity;
 import org.sufficientlysecure.keychain.remote.ui.RequestKeyPermissionActivity;
 import org.sufficientlysecure.keychain.remote.ui.SelectSignKeyIdActivity;
+import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteDeduplicateActivity;
+import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectAuthenticationKeyActivity;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
@@ -56,10 +56,12 @@ public class ApiPendingIntentFactory {
         switch (requiredInput.mType) {
             case SECURITY_TOKEN_MOVE_KEY_TO_CARD:
             case SECURITY_TOKEN_DECRYPT:
+            case SECURITY_TOKEN_AUTH:
             case SECURITY_TOKEN_SIGN: {
                 return createSecurityTokenOperationPendingIntent(data, requiredInput, cryptoInput);
             }
 
+            case PASSPHRASE_AUTH:
             case PASSPHRASE: {
                 return createPassphrasePendingIntent(data, requiredInput, cryptoInput);
             }
@@ -135,6 +137,14 @@ public class ApiPendingIntentFactory {
         Intent intent = new Intent(mContext, SelectSignKeyIdActivity.class);
         intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(packageName));
         intent.putExtra(SelectSignKeyIdActivity.EXTRA_USER_ID, preferredUserId);
+
+        return createInternal(data, intent);
+    }
+
+    PendingIntent createSelectAuthenticationKeyIdPendingIntent(Intent data, String packageName) {
+        Intent intent = new Intent(mContext, RemoteSelectAuthenticationKeyActivity.class);
+        intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(packageName));
+        intent.putExtra(RemoteSelectAuthenticationKeyActivity.EXTRA_PACKAGE_NAME, packageName);
 
         return createInternal(data, intent);
     }

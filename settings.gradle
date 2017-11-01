@@ -18,3 +18,5 @@ project(':openpgp-api-lib').projectDir = new File('extern/openpgp-api-lib/openpg
 //include ':extern:KeybaseLib:Lib'
 include ':KeybaseLib'
 project(':KeybaseLib').projectDir = new File('extern/KeybaseLib/Lib')
+include ':sshauthentication-api'
+project(':sshauthentication-api').projectDir = new File('sshauthentication-api')

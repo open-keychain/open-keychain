@@ -55,6 +55,7 @@ dependencies {
     // libs as submodules
     compile project(':libkeychain')
     compile project(':openpgp-api-lib')
+    compile project(':sshauthentication-api')
     compile project(':extern:bouncycastle:core')
     compile project(':extern:bouncycastle:pg')
     compile project(':extern:bouncycastle:prov')

@@ -25,6 +25,7 @@ package org.sufficientlysecure.keychain.ui;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Map;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -62,6 +63,8 @@ import org.sufficientlysecure.keychain.util.Passphrase;
  * For the full specs, see http://g10code.com/docs/openpgp-card-2.0.pdf
  */
 public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
+
+    public static final String TAG = "SecurityTokenOperationActivity";
 
     public static final String EXTRA_REQUIRED_INPUT = "required_input";
     public static final String EXTRA_CRYPTO_INPUT = "crypto_input";
@@ -231,6 +234,24 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     byte[] signedHash = stConnection.calculateSignature(hash, algo);
                     mInputParcel = mInputParcel.withCryptoData(hash, signedHash);
                 }
+                break;
+            }
+            case SECURITY_TOKEN_AUTH: {
+                long tokenKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(
+                        stConnection.getKeyFingerprint(KeyType.AUTH));
+
+                if (tokenKeyId != mRequiredInput.getSubKeyId()) {
+                    throw new IOException(getString(R.string.error_wrong_security_token));
+                }
+
+                for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
+                    byte[] hash = mRequiredInput.mInputData[i];
+                    int algo = mRequiredInput.mSignAlgos[i];
+                    byte[] signedHash = stConnection.calculateAuthenticationSignature(hash, algo);
+                    mInputParcel = mInputParcel.withCryptoData(hash, signedHash);
+
+                }
+
                 break;
             }
             case SECURITY_TOKEN_MOVE_KEY_TO_CARD: {

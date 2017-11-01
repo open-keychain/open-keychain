@@ -32,7 +32,9 @@ import android.support.v4.content.Loader;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.remote.ui.dialog.KeyLoader.KeyInfo;
+import org.sufficientlysecure.keychain.remote.ui.dialog.KeyLoader.KeySelector;
 import org.sufficientlysecure.keychain.util.Log;
 
 
@@ -90,7 +92,10 @@ class RemoteDeduplicatePresenter implements LoaderCallbacks<List<KeyInfo>> {
 
     @Override
     public Loader<List<KeyInfo>> onCreateLoader(int id, Bundle args) {
-        return new KeyLoader(context, context.getContentResolver(), duplicateAddress);
+        KeySelector keySelector = KeySelector.create(
+                KeyRings.buildUnifiedKeyRingsFindByEmailUri(duplicateAddress), null);
+
+        return new KeyLoader(context, context.getContentResolver(), keySelector);
     }
 
     @Override
