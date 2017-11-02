@@ -120,7 +120,8 @@ public abstract class SecurityTokenInfo implements Parcelable {
     private static final HashSet<TokenType> SUPPORTED_USB_PUT_KEY = new HashSet<>(Arrays.asList(
             TokenType.YUBIKEY_NEO,
             TokenType.YUBIKEY_4, // Not clear, will be tested: https://github.com/open-keychain/open-keychain/issues/2069
-            TokenType.NITROKEY_PRO
+            TokenType.NITROKEY_PRO,
+            TokenType.GNUK_1_25_AND_NEWER
     ));
 
     public boolean isSecurityTokenSupported() {
