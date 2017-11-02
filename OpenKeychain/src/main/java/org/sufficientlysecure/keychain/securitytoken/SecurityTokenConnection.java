@@ -990,11 +990,12 @@ public class SecurityTokenConnection {
         String userId = getUserId();
         String url = getUrl();
         byte[] pwInfo = getPwStatusBytes();
+        boolean hasLifeCycleManagement = mCardCapabilities.hasLifeCycleManagement();
 
         TransportType transportType = mTransport.getTransportType();
 
         SecurityTokenInfo info = SecurityTokenInfo
-                .create(transportType, tokenType, fingerprints, aid, userId, url, pwInfo[4], pwInfo[6]);
+                .create(transportType, tokenType, fingerprints, aid, userId, url, pwInfo[4], pwInfo[6], hasLifeCycleManagement);
 
         if (! info.isSecurityTokenSupported()) {
             throw new UnsupportedSecurityTokenException();

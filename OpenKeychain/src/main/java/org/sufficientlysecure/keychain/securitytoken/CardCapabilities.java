@@ -17,7 +17,10 @@
 
 package org.sufficientlysecure.keychain.securitytoken;
 
+import org.bouncycastle.util.encoders.Hex;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -72,7 +75,7 @@ class CardCapabilities {
         return capabilityBytes != null && (capabilityBytes[2] & MASK_EXTENDED) != 0;
     }
 
-    public boolean hasResetSupport() throws UsbTransportException {
+    public boolean hasLifeCycleManagement() throws UsbTransportException {
         byte[] lastBytes = Arrays.copyOfRange(historicalBytes, historicalBytes.length - 2, historicalBytes.length);
         boolean hasExpectedLastBytes = Arrays.equals(lastBytes, EXPECTED_PROCESSING_STATUS_BYTES);
 

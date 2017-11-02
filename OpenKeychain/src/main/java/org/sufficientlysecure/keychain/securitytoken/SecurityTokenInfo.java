@@ -35,6 +35,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
     public abstract String getUrl();
     public abstract int getVerifyRetries();
     public abstract int getVerifyAdminRetries();
+    public abstract boolean hasLifeCycleManagement();
 
     public boolean isEmpty() {
         return getFingerprints().isEmpty();
@@ -42,7 +43,8 @@ public abstract class SecurityTokenInfo implements Parcelable {
 
     public static SecurityTokenInfo create(TransportType transportType, TokenType tokenType, byte[][] fingerprints,
             byte[] aid, String userId, String url,
-            int verifyRetries, int verifyAdminRetries) {
+            int verifyRetries, int verifyAdminRetries,
+            boolean hasLifeCycleSupport) {
         ArrayList<byte[]> fingerprintList = new ArrayList<>(fingerprints.length);
         for (byte[] fingerprint : fingerprints) {
             if (!Arrays.equals(EMPTY_ARRAY, fingerprint)) {
@@ -50,7 +52,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
             }
         }
         return new AutoValue_SecurityTokenInfo(
-                transportType, tokenType, fingerprintList, aid, userId, url, verifyRetries, verifyAdminRetries);
+                transportType, tokenType, fingerprintList, aid, userId, url, verifyRetries, verifyAdminRetries, hasLifeCycleSupport);
     }
 
     public static SecurityTokenInfo newInstanceDebugKeyserver() {
@@ -59,7 +61,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
         }
         return SecurityTokenInfo.create(TransportType.NFC, TokenType.UNKNOWN,
                 new byte[][] { KeyFormattingUtils.convertFingerprintHexFingerprint("1efdb4845ca242ca6977fddb1f788094fd3b430a") },
-                Hex.decode("010203040506"), "yubinu2@mugenguild.com", null, 3, 3);
+                Hex.decode("010203040506"), "yubinu2@mugenguild.com", null, 3, 3, true);
     }
 
     public static SecurityTokenInfo newInstanceDebugUri() {
@@ -68,7 +70,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
         }
         return SecurityTokenInfo.create(TransportType.NFC, TokenType.UNKNOWN,
                 new byte[][] { KeyFormattingUtils.convertFingerprintHexFingerprint("4700BA1AC417ABEF3CC7765AD686905837779C3E") },
-                Hex.decode("010203040506"), "yubinu2@mugenguild.com", "http://valodim.stratum0.net/mryubinu2.asc", 3, 3);
+                Hex.decode("010203040506"), "yubinu2@mugenguild.com", "http://valodim.stratum0.net/mryubinu2.asc", 3, 3, true);
     }
 
     public static SecurityTokenInfo newInstanceDebugLocked() {
@@ -77,7 +79,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
         }
         return SecurityTokenInfo.create(TransportType.NFC, TokenType.UNKNOWN,
                 new byte[][] { KeyFormattingUtils.convertFingerprintHexFingerprint("4700BA1AC417ABEF3CC7765AD686905837779C3E") },
-                Hex.decode("010203040506"), "yubinu2@mugenguild.com", "http://valodim.stratum0.net/mryubinu2.asc", 0, 3);
+                Hex.decode("010203040506"), "yubinu2@mugenguild.com", "http://valodim.stratum0.net/mryubinu2.asc", 0, 3, true);
     }
 
     public static SecurityTokenInfo newInstanceDebugLockedHard() {
@@ -86,7 +88,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
         }
         return SecurityTokenInfo.create(TransportType.NFC, TokenType.UNKNOWN,
                 new byte[][] { KeyFormattingUtils.convertFingerprintHexFingerprint("4700BA1AC417ABEF3CC7765AD686905837779C3E") },
-                Hex.decode("010203040506"), "yubinu2@mugenguild.com", "http://valodim.stratum0.net/mryubinu2.asc", 0, 0);
+                Hex.decode("010203040506"), "yubinu2@mugenguild.com", "http://valodim.stratum0.net/mryubinu2.asc", 0, 0, true);
     }
 
     public enum TransportType {
@@ -138,8 +140,9 @@ public abstract class SecurityTokenInfo implements Parcelable {
     public boolean isResetSupported() {
         boolean isKnownSupported = SUPPORTED_USB_RESET.contains(getTokenType());
         boolean isNfcTransport = getTransportType() == TransportType.NFC;
+        boolean hasLifeCycleManagement = hasLifeCycleManagement();
 
-        return isKnownSupported || isNfcTransport;
+        return (isKnownSupported || isNfcTransport) && hasLifeCycleManagement;
     }
 
     public static Version parseGnukVersionString(String serialNo) {
