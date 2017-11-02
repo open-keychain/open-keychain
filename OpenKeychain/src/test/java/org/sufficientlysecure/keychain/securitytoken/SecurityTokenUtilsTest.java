@@ -167,16 +167,31 @@ public class SecurityTokenUtilsTest extends Mockito {
         capabilities = new CardCapabilities(Hex.decode("007300008000000000000000000000"));
         Assert.assertEquals(capabilities.hasChaining(), true);
         Assert.assertEquals(capabilities.hasExtended(), false);
+        Assert.assertEquals(capabilities.hasResetSupport(), true);
 
         // Yk 4
         capabilities = new CardCapabilities(Hex.decode("0073000080059000"));
         Assert.assertEquals(capabilities.hasChaining(), true);
         Assert.assertEquals(capabilities.hasExtended(), false);
+        Assert.assertEquals(capabilities.hasResetSupport(), true);
 
         // Nitrokey pro
         capabilities = new CardCapabilities(Hex.decode("0031c573c00140059000"));
         Assert.assertEquals(capabilities.hasChaining(), false);
         Assert.assertEquals(capabilities.hasExtended(), true);
+        Assert.assertEquals(capabilities.hasResetSupport(), true);
+
+        // GNUK without Life Cycle Management
+        capabilities = new CardCapabilities(Hex.decode("00318473800180009000"));
+        Assert.assertEquals(capabilities.hasChaining(), true);
+        Assert.assertEquals(capabilities.hasExtended(), false);
+        Assert.assertEquals(capabilities.hasResetSupport(), false);
+
+        // GNUK with Life Cycle Management: ./configure --enable-factory-reset
+        capabilities = new CardCapabilities(Hex.decode("00318473800180059000"));
+        Assert.assertEquals(capabilities.hasChaining(), true);
+        Assert.assertEquals(capabilities.hasExtended(), false);
+        Assert.assertEquals(capabilities.hasResetSupport(), true);
     }
 
     @Test
