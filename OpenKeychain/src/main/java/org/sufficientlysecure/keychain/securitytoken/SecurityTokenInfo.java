@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
@@ -94,7 +95,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
 
     public enum TokenType {
         YUBIKEY_NEO, YUBIKEY_4, FIDESMO, NITROKEY_PRO, NITROKEY_STORAGE, NITROKEY_START,
-        GNUK_OLD, GNUK_UNKNOWN, GNUK_NEWER_1_25, LEDGER_NANO_S, UNKNOWN
+        GNUK_OLD, GNUK_UNKNOWN, GNUK_1_25_AND_NEWER, LEDGER_NANO_S, UNKNOWN
     }
 
     private static final HashSet<TokenType> SUPPORTED_USB_TOKENS = new HashSet<>(Arrays.asList(
@@ -104,14 +105,14 @@ public abstract class SecurityTokenInfo implements Parcelable {
             TokenType.NITROKEY_STORAGE,
             TokenType.GNUK_OLD,
             TokenType.GNUK_UNKNOWN,
-            TokenType.GNUK_NEWER_1_25
+            TokenType.GNUK_1_25_AND_NEWER
     ));
 
     private static final HashSet<TokenType> SUPPORTED_USB_RESET = new HashSet<>(Arrays.asList(
             TokenType.YUBIKEY_NEO,
             TokenType.YUBIKEY_4,
             TokenType.NITROKEY_PRO,
-            TokenType.GNUK_NEWER_1_25
+            TokenType.GNUK_1_25_AND_NEWER
     ));
 
     private static final HashSet<TokenType> SUPPORTED_USB_PUT_KEY = new HashSet<>(Arrays.asList(
@@ -141,7 +142,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
         return isKnownSupported || isNfcTransport;
     }
 
-    public static String parseGnukVersionString(String serialNo) {
+    public static Version parseGnukVersionString(String serialNo) {
         if (serialNo == null) {
             return null;
         }
@@ -150,6 +151,60 @@ public abstract class SecurityTokenInfo implements Parcelable {
         if (!matcher.matches()) {
             return null;
         }
-        return matcher.group(1);
+        return new Version(matcher.group(1));
+    }
+
+    public static class Version implements Comparable<Version> {
+
+        private String version;
+
+        public final String get() {
+            return this.version;
+        }
+
+        public Version(String version) {
+            if (version == null) {
+                throw new IllegalArgumentException("Version can not be null");
+            }
+            if (!version.matches("[0-9]+(\\.[0-9]+)*")) {
+                throw new IllegalArgumentException("Invalid version format");
+            }
+            this.version = version;
+        }
+
+        @Override
+        public int compareTo(@NonNull Version that) {
+            String[] thisParts = this.get().split("\\.");
+            String[] thatParts = that.get().split("\\.");
+            int length = Math.max(thisParts.length, thatParts.length);
+            for (int i = 0; i < length; i++) {
+                int thisPart = i < thisParts.length ?
+                        Integer.parseInt(thisParts[i]) : 0;
+                int thatPart = i < thatParts.length ?
+                        Integer.parseInt(thatParts[i]) : 0;
+                if (thisPart < thatPart) {
+                    return -1;
+                }
+                if (thisPart > thatPart) {
+                    return 1;
+                }
+            }
+            return 0;
+        }
+
+        @Override
+        public boolean equals(Object that) {
+            if (this == that) {
+                return true;
+            }
+            if (that == null) {
+                return false;
+            }
+            if (this.getClass() != that.getClass()) {
+                return false;
+            }
+            return this.compareTo((Version) that) == 0;
+        }
+
     }
 }
