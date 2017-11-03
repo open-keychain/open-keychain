@@ -209,6 +209,10 @@ public class SecurityTokenConnection {
         }
     }
 
+    public void resetPw3Validation() {
+        mPw3Validated = false;
+    }
+
     @VisibleForTesting
     void determineTokenType() throws IOException {
         tokenType = mTransport.getTokenTypeIfAvailable();

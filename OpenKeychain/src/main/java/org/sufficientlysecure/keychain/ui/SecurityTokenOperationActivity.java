@@ -25,7 +25,6 @@ package org.sufficientlysecure.keychain.ui;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Map;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -293,9 +292,12 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     mInputParcel = mInputParcel.withCryptoData(subkeyBytes, tokenSerialNumber);
                 }
 
-                // change PINs afterwards
-                stConnection.resetPin(newPin, adminPin);
+                // First set Admin PIN, then PIN.
+                // Order is important for Gnuk, otherwise it will be set up in "admin less mode".
+                // http://www.fsij.org/doc-gnuk/gnuk-passphrase-setting.html#set-up-pw1-pw3-and-reset-code
                 stConnection.modifyPw3Pin(newAdminPin, adminPin);
+                stConnection.resetPw3Validation();
+                stConnection.resetPin(newPin, new Passphrase(new String(newAdminPin)));
 
                 break;
             }
