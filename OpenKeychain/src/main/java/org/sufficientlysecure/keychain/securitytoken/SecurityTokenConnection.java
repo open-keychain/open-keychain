@@ -209,10 +209,6 @@ public class SecurityTokenConnection {
         }
     }
 
-    public void resetPw3Validation() {
-        mPw3Validated = false;
-    }
-
     @VisibleForTesting
     void determineTokenType() throws IOException {
         tokenType = mTransport.getTokenTypeIfAvailable();
@@ -290,6 +286,8 @@ public class SecurityTokenConnection {
 
         CommandApdu changePin = commandFactory.createChangePw3Command(pin, newAdminPin);
         ResponseApdu response = communicate(changePin);
+
+        mPw3Validated = false;
 
         if (!response.isSuccess()) {
             throw new CardException("Failed to change PIN", response.getSw());
