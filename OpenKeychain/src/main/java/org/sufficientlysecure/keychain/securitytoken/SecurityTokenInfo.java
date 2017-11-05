@@ -110,14 +110,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
             TokenType.GNUK_1_25_AND_NEWER
     ));
 
-    private static final HashSet<TokenType> SUPPORTED_USB_RESET = new HashSet<>(Arrays.asList(
-            TokenType.YUBIKEY_NEO,
-            TokenType.YUBIKEY_4,
-            TokenType.NITROKEY_PRO,
-            TokenType.GNUK_1_25_AND_NEWER
-    ));
-
-    private static final HashSet<TokenType> SUPPORTED_USB_PUT_KEY = new HashSet<>(Arrays.asList(
+    private static final HashSet<TokenType> SUPPORTED_USB_SETUP = new HashSet<>(Arrays.asList(
             TokenType.YUBIKEY_NEO,
             TokenType.YUBIKEY_4, // Not clear, will be tested: https://github.com/open-keychain/open-keychain/issues/2069
             TokenType.NITROKEY_PRO,
@@ -132,14 +125,14 @@ public abstract class SecurityTokenInfo implements Parcelable {
     }
 
     public boolean isPutKeySupported() {
-        boolean isKnownSupported = SUPPORTED_USB_PUT_KEY.contains(getTokenType());
+        boolean isKnownSupported = SUPPORTED_USB_SETUP.contains(getTokenType());
         boolean isNfcTransport = getTransportType() == TransportType.NFC;
 
         return isKnownSupported || isNfcTransport;
     }
 
     public boolean isResetSupported() {
-        boolean isKnownSupported = SUPPORTED_USB_RESET.contains(getTokenType());
+        boolean isKnownSupported = SUPPORTED_USB_SETUP.contains(getTokenType());
         boolean isNfcTransport = getTransportType() == TransportType.NFC;
         boolean hasLifeCycleManagement = hasLifeCycleManagement();
 
