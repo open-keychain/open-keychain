@@ -221,7 +221,7 @@ public class UsbTransport implements Transport {
                 String serialNo = usbConnection.getSerial();
                 SecurityTokenInfo.Version gnukVersion = SecurityTokenInfo.parseGnukVersionString(serialNo);
                 boolean versionGreaterEquals125 = gnukVersion != null
-                        && new SecurityTokenInfo.Version("1.2.5").compareTo(gnukVersion) <= 0;
+                        && SecurityTokenInfo.Version.create("1.2.5").compareTo(gnukVersion) <= 0;
                 return versionGreaterEquals125 ? TokenType.GNUK_1_25_AND_NEWER : TokenType.GNUK_OLD;
             }
             case VENDOR_LEDGER: {

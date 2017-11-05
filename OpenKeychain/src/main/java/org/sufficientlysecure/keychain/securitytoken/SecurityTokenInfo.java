@@ -148,31 +148,25 @@ public abstract class SecurityTokenInfo implements Parcelable {
         if (!matcher.matches()) {
             return null;
         }
-        return new Version(matcher.group(1));
+        return Version.create(matcher.group(1));
     }
 
-    public static class Version implements Comparable<Version> {
+    @AutoValue
+    public static abstract class Version implements Comparable<Version> {
 
-        private String version;
+        abstract String getVersion();
 
-        public final String get() {
-            return this.version;
-        }
-
-        public Version(String version) {
-            if (version == null) {
-                throw new IllegalArgumentException("Version can not be null");
-            }
+        public static Version create(@NonNull String version) {
             if (!version.matches("[0-9]+(\\.[0-9]+)*")) {
                 throw new IllegalArgumentException("Invalid version format");
             }
-            this.version = version;
+            return new AutoValue_SecurityTokenInfo_Version(version);
         }
 
         @Override
         public int compareTo(@NonNull Version that) {
-            String[] thisParts = this.get().split("\\.");
-            String[] thatParts = that.get().split("\\.");
+            String[] thisParts = this.getVersion().split("\\.");
+            String[] thatParts = that.getVersion().split("\\.");
             int length = Math.max(thisParts.length, thatParts.length);
             for (int i = 0; i < length; i++) {
                 int thisPart = i < thisParts.length ?
@@ -187,20 +181,6 @@ public abstract class SecurityTokenInfo implements Parcelable {
                 }
             }
             return 0;
-        }
-
-        @Override
-        public boolean equals(Object that) {
-            if (this == that) {
-                return true;
-            }
-            if (that == null) {
-                return false;
-            }
-            if (this.getClass() != that.getClass()) {
-                return false;
-            }
-            return this.compareTo((Version) that) == 0;
         }
 
     }
