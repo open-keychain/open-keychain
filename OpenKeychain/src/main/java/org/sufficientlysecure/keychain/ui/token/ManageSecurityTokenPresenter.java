@@ -365,9 +365,9 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
     public void onClickResetToken() {
         if (!tokenInfo.isResetSupported()) {
             TokenType tokenType = tokenInfo.getTokenType();
-            boolean isGnuk = tokenType == TokenType.GNUK_OLD || tokenType == TokenType.GNUK_UNKNOWN;
+            boolean isGnukOrNitrokeyStart = tokenType == TokenType.GNUK_OLD || tokenType == TokenType.NITROKEY_START_OLD;
 
-            view.showErrorCannotReset(isGnuk);
+            view.showErrorCannotReset(isGnukOrNitrokeyStart);
             return;
         }
 

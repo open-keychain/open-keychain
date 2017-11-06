@@ -211,7 +211,11 @@ public class UsbTransport implements Transport {
                     case PRODUCT_NITROKEY_PRO:
                         return TokenType.NITROKEY_PRO;
                     case PRODUCT_NITROKEY_START:
-                        return TokenType.NITROKEY_START;
+                        String serialNo = usbConnection.getSerial();
+                        SecurityTokenInfo.Version gnukVersion = SecurityTokenInfo.parseGnukVersionString(serialNo);
+                        boolean versionGreaterEquals125 = gnukVersion != null
+                                && SecurityTokenInfo.Version.create("1.2.5").compareTo(gnukVersion) <= 0;
+                        return versionGreaterEquals125 ? TokenType.NITROKEY_START_1_25_AND_NEWER : TokenType.NITROKEY_START_OLD;
                     case PRODUCT_NITROKEY_STORAGE:
                         return TokenType.NITROKEY_STORAGE;
                 }
