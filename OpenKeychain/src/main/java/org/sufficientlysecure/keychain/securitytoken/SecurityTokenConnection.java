@@ -287,6 +287,8 @@ public class SecurityTokenConnection {
         CommandApdu changePin = commandFactory.createChangePw3Command(pin, newAdminPin);
         ResponseApdu response = communicate(changePin);
 
+        mPw3Validated = false;
+
         if (!response.isSuccess()) {
             throw new CardException("Failed to change PIN", response.getSw());
         }
@@ -516,7 +518,8 @@ public class SecurityTokenConnection {
      *             0xB8: Decipherment Key
      *             0xA4: Authentication Key
      */
-    private void putKey(KeyType slot, CanonicalizedSecretKey secretKey, Passphrase passphrase, Passphrase adminPin)
+    @VisibleForTesting
+    void putKey(KeyType slot, CanonicalizedSecretKey secretKey, Passphrase passphrase, Passphrase adminPin)
             throws IOException {
         RSAPrivateCrtKey crtSecretKey;
         ECPrivateKey ecSecretKey;
@@ -990,11 +993,12 @@ public class SecurityTokenConnection {
         String userId = getUserId();
         String url = getUrl();
         byte[] pwInfo = getPwStatusBytes();
+        boolean hasLifeCycleManagement = mCardCapabilities.hasLifeCycleManagement();
 
         TransportType transportType = mTransport.getTransportType();
 
         SecurityTokenInfo info = SecurityTokenInfo
-                .create(transportType, tokenType, fingerprints, aid, userId, url, pwInfo[4], pwInfo[6]);
+                .create(transportType, tokenType, fingerprints, aid, userId, url, pwInfo[4], pwInfo[6], hasLifeCycleManagement);
 
         if (! info.isSecurityTokenSupported()) {
             throw new UnsupportedSecurityTokenException();

@@ -144,13 +144,13 @@ class OpenPgpCommandApduFactory {
     }
 
     @NonNull
-    CommandApdu createReactivate2Command() {
-        return CommandApdu.create(CLA, INS_ACTIVATE_FILE, P1_EMPTY, P2_EMPTY);
+    CommandApdu createReactivate1Command() {
+        return CommandApdu.create(CLA, INS_TERMINATE_DF, P1_EMPTY, P2_EMPTY);
     }
 
     @NonNull
-    CommandApdu createReactivate1Command() {
-        return CommandApdu.create(CLA, INS_TERMINATE_DF, P1_EMPTY, P2_EMPTY);
+    CommandApdu createReactivate2Command() {
+        return CommandApdu.create(CLA, INS_ACTIVATE_FILE, P1_EMPTY, P2_EMPTY);
     }
 
     @NonNull

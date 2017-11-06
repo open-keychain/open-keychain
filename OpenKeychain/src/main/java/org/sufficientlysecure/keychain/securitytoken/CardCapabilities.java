@@ -17,27 +17,38 @@
 
 package org.sufficientlysecure.keychain.securitytoken;
 
+import org.bouncycastle.util.encoders.Hex;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
+import org.sufficientlysecure.keychain.util.Log;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 @SuppressWarnings("WeakerAccess")
 class CardCapabilities {
     private static final int MASK_CHAINING = 1 << 7;
     private static final int MASK_EXTENDED = 1 << 6;
 
-    private byte[] mCapabilityBytes;
+    private static final int STATUS_INDICATOR_NO_INFORMATION = 0x00;
+    private static final int STATUS_INDICATOR_INITIALISATION_STATE = 0x03;
+    private static final int STATUS_INDICATOR_OPERATIONAL_STATE = 0x05;
+
+    private static final byte[] EXPECTED_PROCESSING_STATUS_BYTES = {(byte) 0x90, (byte) 0x00};
+
+    private byte[] historicalBytes;
+    private byte[] capabilityBytes;
 
     public CardCapabilities(byte[] historicalBytes) throws UsbTransportException {
         if ((historicalBytes == null) || (historicalBytes[0] != 0x00)) {
             throw new UsbTransportException("Invalid historical bytes category indicator byte");
         }
-
-        mCapabilityBytes = getCapabilitiesBytes(historicalBytes);
+        this.historicalBytes = historicalBytes;
+        capabilityBytes = getCapabilitiesBytes(historicalBytes);
     }
 
     public CardCapabilities() {
-        mCapabilityBytes = null;
+        capabilityBytes = null;
     }
 
     private static byte[] getCapabilitiesBytes(byte[] historicalBytes) {
@@ -57,10 +68,34 @@ class CardCapabilities {
     }
 
     public boolean hasChaining() {
-        return mCapabilityBytes != null && (mCapabilityBytes[2] & MASK_CHAINING) != 0;
+        return capabilityBytes != null && (capabilityBytes[2] & MASK_CHAINING) != 0;
     }
 
     public boolean hasExtended() {
-        return mCapabilityBytes != null && (mCapabilityBytes[2] & MASK_EXTENDED) != 0;
+        return capabilityBytes != null && (capabilityBytes[2] & MASK_EXTENDED) != 0;
+    }
+
+    public boolean hasLifeCycleManagement() throws UsbTransportException {
+        byte[] lastBytes = Arrays.copyOfRange(historicalBytes, historicalBytes.length - 2, historicalBytes.length);
+        boolean hasExpectedLastBytes = Arrays.equals(lastBytes, EXPECTED_PROCESSING_STATUS_BYTES);
+
+        // Yk neo simply ends with 0x0000
+        if (!hasExpectedLastBytes) {
+            return true;
+        }
+
+        int statusIndicatorByte = historicalBytes[historicalBytes.length - 3];
+        switch (statusIndicatorByte) {
+            case STATUS_INDICATOR_NO_INFORMATION: {
+                return false;
+            }
+            case STATUS_INDICATOR_INITIALISATION_STATE:
+            case STATUS_INDICATOR_OPERATIONAL_STATE: {
+                return true;
+            }
+            default: {
+                throw new UsbTransportException("Status indicator byte not specified in OpenPGP specification");
+            }
+        }
     }
 }
