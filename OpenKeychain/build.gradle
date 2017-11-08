@@ -4,6 +4,16 @@ apply plugin: 'jacoco'
 apply plugin: 'com.github.kt3k.coveralls'
 apply plugin: 'com.neenbedankt.android-apt'
 
+/* gets the version name from the latest Git tag */
+def getVersionName = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--tags', '--always'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim().substring(1)
+}
+
 dependencies {
     // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
     // NOTE: libraries are pinned to a specific build, see below
@@ -167,7 +177,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 48000
-        versionName "4.8-beta1"
+        versionName getVersionName()
         applicationId "org.sufficientlysecure.keychain"
         // the androidjunitrunner is broken regarding coverage, see here:
         // https://code.google.com/p/android/issues/detail?id=170607
