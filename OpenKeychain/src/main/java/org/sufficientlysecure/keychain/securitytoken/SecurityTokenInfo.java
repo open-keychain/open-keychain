@@ -96,8 +96,8 @@ public abstract class SecurityTokenInfo implements Parcelable {
     }
 
     public enum TokenType {
-        YUBIKEY_NEO, YUBIKEY_4, FIDESMO, NITROKEY_PRO, NITROKEY_STORAGE, NITROKEY_START,
-        GNUK_OLD, GNUK_UNKNOWN, GNUK_1_25_AND_NEWER, LEDGER_NANO_S, UNKNOWN
+        YUBIKEY_NEO, YUBIKEY_4, FIDESMO, NITROKEY_PRO, NITROKEY_STORAGE, NITROKEY_START_OLD,
+        NITROKEY_START_1_25_AND_NEWER, GNUK_OLD, GNUK_1_25_AND_NEWER, LEDGER_NANO_S, UNKNOWN
     }
 
     private static final HashSet<TokenType> SUPPORTED_USB_TOKENS = new HashSet<>(Arrays.asList(
@@ -105,15 +105,18 @@ public abstract class SecurityTokenInfo implements Parcelable {
             TokenType.YUBIKEY_4,
             TokenType.NITROKEY_PRO,
             TokenType.NITROKEY_STORAGE,
+            TokenType.NITROKEY_START_OLD,
+            TokenType.NITROKEY_START_1_25_AND_NEWER,
             TokenType.GNUK_OLD,
-            TokenType.GNUK_UNKNOWN,
             TokenType.GNUK_1_25_AND_NEWER
     ));
 
     private static final HashSet<TokenType> SUPPORTED_USB_SETUP = new HashSet<>(Arrays.asList(
             TokenType.YUBIKEY_NEO,
-            TokenType.YUBIKEY_4, // Not clear, will be tested: https://github.com/open-keychain/open-keychain/issues/2069
+            TokenType.YUBIKEY_4,
             TokenType.NITROKEY_PRO,
+            TokenType.NITROKEY_STORAGE,
+            TokenType.NITROKEY_START_1_25_AND_NEWER,
             TokenType.GNUK_1_25_AND_NEWER
     ));
 

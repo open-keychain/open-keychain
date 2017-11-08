@@ -1927,7 +1927,7 @@
         <item quantity="other">"%d attempts left"</item>
     </plurals>
     <string name="token_error_locked_indefinitely">Too many reset attempts. Token cannot be unlocked!</string>
-    <string name="token_error_cannot_reset_gnuk_old">"The Gnuk Token does not support reset until version 1.2.5"</string>
+    <string name="token_error_cannot_reset_gnuk_old">"The Gnuk Token/Nitrokey Start does not support reset until version 1.2.5"</string>
     <string name="token_error_cannot_reset">"This Security Token does not support reset"</string>
 
     <string name="token_menu_change_pin">Change PIN</string>

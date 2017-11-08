@@ -353,8 +353,8 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
     }
 
     @Override
-    public void showErrorCannotReset(boolean isGnuk) {
-        if (isGnuk) {
+    public void showErrorCannotReset(boolean isGnukOrNitrokeyStart) {
+        if (isGnukOrNitrokeyStart) {
             Notify.create(getActivity(), R.string.token_error_cannot_reset_gnuk_old, Style.ERROR).show();
         } else {
             Notify.create(getActivity(), R.string.token_error_cannot_reset, Style.ERROR).show();
