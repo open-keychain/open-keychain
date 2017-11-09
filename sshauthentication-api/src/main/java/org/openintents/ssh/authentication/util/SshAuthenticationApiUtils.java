@@ -26,16 +26,31 @@ import java.util.List;
 
 
 public class SshAuthenticationApiUtils {
-    public static List<String> getAgentProviders(Context context) {
-        Intent intent = new Intent(SshAuthenticationApi.SERVICE_INTENT);
-        List<ResolveInfo> resolvedInfo = context.getPackageManager().queryIntentServices(intent, 0);
+    public static List<String> getAuthenticationProviderPackageNames(Context context) {
+        List<ResolveInfo> resolvedInfo = getAuthenticationProviderInfo(context);
+        return getAuthenticationProviderPackageNames(resolvedInfo);
+    }
+
+    public static List<String> getAuthenticationProviderPackageNames(List<ResolveInfo> resolvedInfo) {
         ArrayList<String> providers = new ArrayList<>();
-        if (resolvedInfo != null) {
-            for (ResolveInfo resolveInfoEntry : resolvedInfo) {
-                providers.add(resolveInfoEntry.serviceInfo.packageName);
-            }
+        for (ResolveInfo resolveInfoEntry : resolvedInfo) {
+            providers.add(resolveInfoEntry.serviceInfo.packageName);
         }
         return providers;
     }
 
+    public static List<String> getAuthenticationProviderLabel(Context context, List<ResolveInfo> resolvedInfo) {
+        ArrayList<String> providerLabel = new ArrayList<>();
+        for (ResolveInfo resolveInfoEntry : resolvedInfo) {
+            CharSequence label = context.getPackageManager()
+                    .getApplicationLabel(resolveInfoEntry.serviceInfo.applicationInfo);
+            providerLabel.add(label.toString());
+        }
+        return providerLabel;
+    }
+
+    public static List<ResolveInfo> getAuthenticationProviderInfo(Context context) {
+        Intent intent = new Intent(SshAuthenticationApi.SERVICE_INTENT);
+        return context.getPackageManager().queryIntentServices(intent, 0);
+    }
 }
