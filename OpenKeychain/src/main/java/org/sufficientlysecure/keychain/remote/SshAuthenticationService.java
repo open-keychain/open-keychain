@@ -273,8 +273,8 @@ public class SshAuthenticationService extends Service {
                 return createExceptionErrorResult(SshAuthenticationApiError.NO_AUTH_KEY,
                         "Authentication key for master key id not found in keychain", e);
             } catch (NoSuchAlgorithmException e) {
-                return createExceptionErrorResult(SshAuthenticationApi.RESULT_CODE_ERROR,
-                        "", e);
+                return createExceptionErrorResult(SshAuthenticationApiError.INVALID_ALGORITHM,
+                        "Algorithm not supported", e);
             }
         } else {
             return createErrorResult(SshAuthenticationApiError.NO_KEY_ID,
