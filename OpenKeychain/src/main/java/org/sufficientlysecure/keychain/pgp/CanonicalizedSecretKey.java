@@ -28,7 +28,7 @@ import java.util.Map;
 
 import org.bouncycastle.bcpg.S2K;
 import org.bouncycastle.bcpg.SymmetricKeyAlgorithmTags;
-import org.bouncycastle.openpgp.PGPAuthenticationSignatureGenerator;
+import org.bouncycastle.openpgp.AuthenticationSignatureGenerator;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPrivateKey;
 import org.bouncycastle.openpgp.PGPSecretKey;
@@ -253,8 +253,8 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         }
     }
 
-    public PGPAuthenticationSignatureGenerator getAuthenticationSignatureGenerator(int hashAlgorithm,
-                                                                                   Map<ByteBuffer, byte[]> signedHashes)
+    public AuthenticationSignatureGenerator getAuthenticationSignatureGenerator(int hashAlgorithm,
+                                                                                Map<ByteBuffer, byte[]> signedHashes)
             throws PgpGeneralException {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PrivateKeyNotUnlockedException();
@@ -263,7 +263,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         PGPContentSignerBuilder contentSignerBuilder = getContentSignerBuilder(hashAlgorithm, signedHashes);
 
         try {
-            PGPAuthenticationSignatureGenerator signatureGenerator = new PGPAuthenticationSignatureGenerator(contentSignerBuilder);
+            AuthenticationSignatureGenerator signatureGenerator = new AuthenticationSignatureGenerator(contentSignerBuilder);
             signatureGenerator.init(PGPSignature.BINARY_DOCUMENT, mPrivateKey);
 
             return signatureGenerator;
