@@ -21,6 +21,8 @@ package org.sufficientlysecure.keychain.operations;
 
 import org.bouncycastle.bcpg.HashAlgorithmTags;
 import org.bouncycastle.jcajce.provider.asymmetric.eddsa.EdDSAEngine;
+import org.bouncycastle.jcajce.provider.asymmetric.eddsa.spec.EdDSANamedCurveTable;
+import org.bouncycastle.jcajce.provider.asymmetric.eddsa.spec.EdDSAParameterSpec;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Assert;
 import org.junit.Before;
@@ -278,12 +280,12 @@ public class AuthenticationOperationTest {
                                                                          .getPublicKey(authSubKeyId);
             PublicKey publicKey = canonicalizedPublicKey.getJcaPublicKey();
 
-            EdDSAEngine engine = new EdDSAEngine(MessageDigest.getInstance("SHA-512"));
-			engine.initVerify(publicKey);
-			engine.setParameter(EdDSAEngine.ONE_SHOT_MODE);
-			engine.update(challenge);
-
-            boolean isSignatureValid = engine.verify(signature);
+            EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName("Ed25519");
+            Signature signatureVerifier = new EdDSAEngine(MessageDigest.getInstance(spec.getHashAlgorithm()));
+			signatureVerifier.setParameter(EdDSAEngine.ONE_SHOT_MODE);
+            signatureVerifier.initVerify(publicKey);
+            signatureVerifier.update(challenge);
+            boolean isSignatureValid = signatureVerifier.verify(signature);
 
             Assert.assertTrue("signature must be valid", isSignatureValid);
         }
