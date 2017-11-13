@@ -26,6 +26,7 @@ import java.security.interfaces.RSAPrivateCrtKey;
 import java.util.Date;
 import java.util.Map;
 
+import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.bouncycastle.bcpg.S2K;
 import org.bouncycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.bouncycastle.openpgp.AuthenticationSignatureGenerator;
@@ -37,13 +38,7 @@ import org.bouncycastle.openpgp.PGPSignatureGenerator;
 import org.bouncycastle.openpgp.PGPSignatureSubpacketGenerator;
 import org.bouncycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.bouncycastle.openpgp.operator.PGPContentSignerBuilder;
-import org.bouncycastle.openpgp.operator.jcajce.CachingDataDecryptorFactory;
-import org.bouncycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
-import org.bouncycastle.openpgp.operator.jcajce.JcaPGPKeyConverter;
-import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
-import org.bouncycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder;
-import org.bouncycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
-import org.bouncycastle.openpgp.operator.jcajce.SessionKeySecretKeyDecryptorBuilder;
+import org.bouncycastle.openpgp.operator.jcajce.*;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
@@ -219,8 +214,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         return true;
     }
 
-    private PGPContentSignerBuilder getContentSignerBuilder(int hashAlgo,
-            Map<ByteBuffer,byte[]> signedHashes) {
+    private PGPContentSignerBuilder getContentSignerBuilder(int hashAlgo, Map<ByteBuffer, byte[]> signedHashes) {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
             // use synchronous "NFC based" SignerBuilder
             return new NfcSyncPGPContentSignerBuilder(
@@ -253,6 +247,20 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         }
     }
 
+
+    private PGPContentSignerBuilder getAuthenticationContentSignerBuilder(int hashAlgorithm, Map<ByteBuffer,
+            byte[]> signedHashes) {
+        if (getAlgorithm() == PublicKeyAlgorithmTags.EDDSA) {
+            // content signer feeding the input directly into the signature engine,
+            // since EdDSA hashes the input anyway
+            return new EdDsaAuthenticationContentSignerBuilder(
+                    mSecretKey.getPublicKey().getAlgorithm(), hashAlgorithm)
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+        } else {
+            return getContentSignerBuilder(hashAlgorithm, signedHashes);
+        }
+    }
+
     public AuthenticationSignatureGenerator getAuthenticationSignatureGenerator(int hashAlgorithm,
                                                                                 Map<ByteBuffer, byte[]> signedHashes)
             throws PgpGeneralException {
@@ -260,10 +268,12 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             throw new PrivateKeyNotUnlockedException();
         }
 
-        PGPContentSignerBuilder contentSignerBuilder = getContentSignerBuilder(hashAlgorithm, signedHashes);
+        PGPContentSignerBuilder contentSignerBuilder =
+                getAuthenticationContentSignerBuilder(hashAlgorithm, signedHashes);
 
         try {
-            AuthenticationSignatureGenerator signatureGenerator = new AuthenticationSignatureGenerator(contentSignerBuilder);
+            AuthenticationSignatureGenerator signatureGenerator =
+                    new AuthenticationSignatureGenerator(contentSignerBuilder);
             signatureGenerator.init(PGPSignature.BINARY_DOCUMENT, mPrivateKey);
 
             return signatureGenerator;
