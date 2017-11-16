@@ -252,7 +252,7 @@ android {
             buildConfigField "String", "GOOGLE_PLAY_PUBKEY", "null"
             buildConfigField "String", "PAYPAL_USER", "\"android@schuermann.eu\""
             buildConfigField "String", "PAYPAL_CURRENCY_CODE", "\"EUR\""
-            buildConfigField "String", "BITCOIN_ADDRESS", "\"1JZfAKTbTU5LJTkDELhPUF4Xa6VstEZgz6\""
+            buildConfigField "String", "BITCOIN_ADDRESS", "\"1LY6Hs6SurATjfxnihzLMDUMUuMxvQ4aEi\""
             buildConfigField "String", "FLATTR_PROJECT_URL", "\"https://www.openkeychain.org\""
             buildConfigField "String", "FLATTR_URL", "\"flattr.com/submit/auto?fid=4vzg0p&url=https%3A%2F%2Fwww.openkeychain.org\""
         }
