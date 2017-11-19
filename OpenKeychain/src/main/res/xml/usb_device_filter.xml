@@ -4,6 +4,7 @@
     <!--
         Route all smart card devices (class 11) to OpenKeychain.
         Internally, we check against a whitelist of working devices.
+        See SecurityTokenInfo.
     -->
     <usb-device class="11" />
 
