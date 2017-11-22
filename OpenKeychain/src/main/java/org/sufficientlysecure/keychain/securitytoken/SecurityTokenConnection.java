@@ -946,6 +946,8 @@ public class SecurityTokenConnection {
         if (!response2.isSuccess()) {
             throw new CardException("Reactivating failed!", response2.getSw());
         }
+
+        refreshConnectionCapabilities();
     }
 
     /**
