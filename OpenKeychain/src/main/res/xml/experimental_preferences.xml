@@ -35,6 +35,14 @@
         android:persistent="true"
         android:title="@string/label_theme" />
 
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="experimentalUsbAllowUntested"
+        android:persistent="true"
+        android:summary="@string/label_usb_untested_summary"
+        android:title="@string/label_usb_untested" />
+
     <SwitchPreference
         android:defaultValue="false"
         android:key="smartpgp_authorities_pref"

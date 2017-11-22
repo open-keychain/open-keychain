@@ -1016,10 +1016,9 @@ public class SecurityTokenConnection {
 
         TransportType transportType = mTransport.getTransportType();
 
-        SecurityTokenInfo info = SecurityTokenInfo
-                .create(transportType, tokenType, fingerprints, aid, userId, url, pwInfo[4], pwInfo[6], hasLifeCycleManagement);
-
-        return info;
+        return SecurityTokenInfo
+                .create(transportType, tokenType, fingerprints, aid, userId, url, pwInfo[4], pwInfo[6],
+                        hasLifeCycleManagement);
     }
 
     public static double parseOpenPgpVersion(final byte[] aid) {

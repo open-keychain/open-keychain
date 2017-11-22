@@ -1982,5 +1982,7 @@
     </plurals>
 
     <string name="button_locate_nfc">"Where is my NFC reader?"</string>
+    <string name="label_usb_untested_summary">If enabled, USB Smartcard readers can be used that have not been properly tested.</string>
+    <string name="label_usb_untested">Allow untested USB Devices</string>
 
 </resources>
