@@ -47,7 +47,6 @@ import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
-import org.sufficientlysecure.keychain.securitytoken.UnsupportedSecurityTokenException;
 import org.sufficientlysecure.keychain.securitytoken.UsbConnectionDispatcher;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransport;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
@@ -248,11 +247,6 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
 
         if (e instanceof UsbTransportException) {
             onSecurityTokenError(getString(R.string.security_token_error, e.getMessage()));
-            return;
-        }
-
-        if (e instanceof UnsupportedSecurityTokenException) {
-            onSecurityTokenError(getString(R.string.security_token_not_supported));
             return;
         }
 

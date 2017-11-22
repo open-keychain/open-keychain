@@ -1018,10 +1018,6 @@ public class SecurityTokenConnection {
         SecurityTokenInfo info = SecurityTokenInfo
                 .create(transportType, tokenType, fingerprints, aid, userId, url, pwInfo[4], pwInfo[6], hasLifeCycleManagement);
 
-        if (! info.isSecurityTokenSupported()) {
-            throw new UnsupportedSecurityTokenException();
-        }
-
         return info;
     }
 
