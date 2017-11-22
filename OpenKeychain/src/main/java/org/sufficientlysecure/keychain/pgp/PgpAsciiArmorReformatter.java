@@ -19,6 +19,7 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,7 +32,7 @@ import android.text.TextUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.Log;
 
-public class PgpHelper {
+public class PgpAsciiArmorReformatter {
 
     public static final Pattern PGP_MESSAGE = Pattern.compile(
             ".*?(-----BEGIN PGP MESSAGE-----.*?-----END PGP MESSAGE-----).*", Pattern.DOTALL);
@@ -44,6 +45,8 @@ public class PgpHelper {
     public static final Pattern PGP_PUBLIC_KEY = Pattern.compile(
             ".*?(-----BEGIN PGP PUBLIC KEY BLOCK-----.*?-----END PGP PUBLIC KEY BLOCK-----).*",
             Pattern.DOTALL);
+    private static final Pattern ASCII_ARMOR_LINE = Pattern.compile("\\s[a-zA-Z0-9=/+]{30,}\\s");
+    private static final Pattern HEADER_VALUE = Pattern.compile("\\s[a-zA-Z0-9]+: ");
     private static final Pattern KEYDATA_START_PATTERN = Pattern.compile("\\s(m[A-Q])");
 
     /**
@@ -84,34 +87,31 @@ public class PgpHelper {
         }
     }
 
-    public static String getPgpMessageContent(@NonNull CharSequence input) {
+    public static String getPgpMessageContent(@NonNull String input) {
         Log.dEscaped(Constants.TAG, "input: " + input);
 
-        Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(input);
-        if (matcher.matches()) {
-            String text = matcher.group(1);
-            text = fixPgpMessage(text);
-
-            Log.dEscaped(Constants.TAG, "input fixed: " + text);
-            return text;
-        } else {
-            matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(input);
-            if (matcher.matches()) {
-                String text = matcher.group(1);
-                text = fixPgpCleartextSignature(text);
-
-                Log.dEscaped(Constants.TAG, "input fixed: " + text);
-                return text;
-            } else {
-                return null;
-            }
+        int indexOfMsg = input.indexOf("-----BEGIN PGP MESSAGE-----");
+        if (indexOfMsg < 0) {
+            return null;
         }
+        input = input.substring(indexOfMsg);
+
+        int indexOfEnd = input.indexOf("-----END PGP MESSAGE-----");
+        if (indexOfEnd < 0) {
+            return null;
+        }
+
+        // TODO deal with cleartext signatures
+        String text = fixPgpMessage(input);
+        text = reformatPgpEncryptedMessageBlock(text);
+
+        return text;
     }
 
     public static String getPgpPublicKeyContent(@NonNull CharSequence input) {
         Log.dEscaped(Constants.TAG, "input: " + input);
 
-        Matcher matcher = PgpHelper.PGP_PUBLIC_KEY.matcher(input);
+        Matcher matcher = PgpAsciiArmorReformatter.PGP_PUBLIC_KEY.matcher(input);
         if (!matcher.matches()) {
             return null;
         }
@@ -122,6 +122,58 @@ public class PgpHelper {
 
         // Log.dEscaped(Constants.TAG, "input fixed: " + text);
         return text;
+    }
+
+    @Nullable
+    @CheckResult
+    @VisibleForTesting
+    /* Reformats a public key block with messed up whitespace. This will strip headers in the process. */
+    static String reformatPgpEncryptedMessageBlock(@NonNull String text) {
+        text = text.substring("-----BEGIN PGP MESSAGE-----".length()).trim();
+        text = text.substring(0, text.indexOf("-----END PGP MESSAGE-----"));
+
+        // deal with headers
+        ArrayList<String> headerLines = new ArrayList<>();
+        int headerIndex;
+        while ((headerIndex = text.indexOf(": ")) >= 0) {
+            String headerName = text.substring(0, headerIndex).trim();
+            text = text.substring(headerIndex + 2);
+
+            int headerContentEnd;
+
+            Matcher matcher = HEADER_VALUE.matcher(text);
+            if (matcher.find()) {
+                headerContentEnd = matcher.start();
+            } else {
+                Matcher matcher2 = ASCII_ARMOR_LINE.matcher(text);
+                if (!matcher2.find()) {
+                    return null;
+                }
+                headerContentEnd = matcher2.start();
+            }
+
+            String headerContent = text.substring(0, headerContentEnd).trim();
+            text = text.substring(headerContentEnd);
+
+            headerLines.add(headerName + ": " + headerContent);
+        }
+
+        // change every consecutive amount of whitespace into newlines
+        String data = text.trim().replaceAll("\\s+", "\n");
+
+        StringBuilder reformattedKeyBlocks = new StringBuilder();
+
+        reformattedKeyBlocks.append("-----BEGIN PGP MESSAGE-----\n");
+        for (String headerLine : headerLines) {
+            reformattedKeyBlocks.append(headerLine);
+            reformattedKeyBlocks.append('\n');
+        }
+        reformattedKeyBlocks.append('\n');
+        reformattedKeyBlocks.append(data);
+        reformattedKeyBlocks.append('\n');
+        reformattedKeyBlocks.append("-----END PGP MESSAGE-----\n");
+
+        return reformattedKeyBlocks.toString();
     }
 
     @Nullable

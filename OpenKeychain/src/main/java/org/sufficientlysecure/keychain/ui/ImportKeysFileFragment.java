@@ -37,7 +37,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpAsciiArmorReformatter;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.PermissionsUtil;
@@ -120,7 +120,7 @@ public class ImportKeysFileFragment extends Fragment {
             return;
         }
 
-        String keyText = PgpHelper.getPgpPublicKeyContent(clipboardText);
+        String keyText = PgpAsciiArmorReformatter.getPgpPublicKeyContent(clipboardText);
         if (keyText == null) {
             Notify.create(mActivity, R.string.error_clipboard_bad, Style.ERROR).show();
             return;

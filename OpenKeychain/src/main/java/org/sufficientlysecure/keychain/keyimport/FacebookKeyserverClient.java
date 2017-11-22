@@ -36,7 +36,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpAsciiArmorReformatter;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -90,7 +90,7 @@ public class FacebookKeyserverClient implements KeyserverClient {
             throw new QueryFailedException("data is null");
         }
 
-        Matcher matcher = PgpHelper.PGP_PUBLIC_KEY.matcher(data);
+        Matcher matcher = PgpAsciiArmorReformatter.PGP_PUBLIC_KEY.matcher(data);
         if (matcher.find()) {
             return matcher.group(1);
         }

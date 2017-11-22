@@ -35,7 +35,7 @@ import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpAsciiArmorReformatter;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.SubtleAttentionSeeker;
@@ -131,12 +131,12 @@ public class EncryptDecryptFragment extends Fragment {
             protected Boolean doInBackground(String... clipboardText) {
 
                 // see if it looks like a pgp thing
-                Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(clipboardText[0]);
+                Matcher matcher = PgpAsciiArmorReformatter.PGP_MESSAGE.matcher(clipboardText[0]);
                 boolean animate = matcher.matches();
 
                 // see if it looks like another pgp thing
                 if (!animate) {
-                    matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(clipboardText[0]);
+                    matcher = PgpAsciiArmorReformatter.PGP_CLEARTEXT_SIGNATURE.matcher(clipboardText[0]);
                     animate = matcher.matches();
                 }
                 return animate;

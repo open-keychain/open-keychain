@@ -36,7 +36,7 @@ import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.pgp.PgpAsciiArmorReformatter;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 
@@ -200,7 +200,7 @@ public class DecryptActivity extends BaseActivity {
         }
 
         // clean up ascii armored message, fixing newlines and stuff
-        String cleanedText = PgpHelper.getPgpMessageContent(text);
+        String cleanedText = PgpAsciiArmorReformatter.getPgpMessageContent(text);
         if (cleanedText == null) {
             return null;
         }

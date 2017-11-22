@@ -1,8 +1,13 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
 
+import org.bouncycastle.bcpg.ArmoredInputStream;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
@@ -11,11 +16,12 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 
 @SuppressWarnings("WeakerAccess")
 @RunWith(KeychainTestRunner.class)
-public class PgpHelperTest {
+public class PgpAsciiArmorReformatterTest {
 
     static final String INPUT_KEY_BLOCK_TWO_OCTET_LENGTH = "-----BEGIN PGP PUBLIC KEY BLOCK----- Version: GnuPG v2 " +
             "mQENBFnA7Y0BCAC+pdQ1mV9QguWvAyMsKiKkzeP5VxbIDUyQ8OBDFKIrZKZGTzjZ " +
@@ -57,10 +63,14 @@ public class PgpHelperTest {
             "bcVr5AE/huKUnwKYa7SP7wzoZg==\n" +
             "=ou9N\n" +
             "-----END PGP PUBLIC KEY BLOCK-----\n";
+    static final String INPUT_MSG = "-----BEGIN PGP MESSAGE----- Version: GnuPG v2 Header: Value of header " +
+            "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdC4g " +
+            "SW50ZWdlciBwb3N1ZXJlIHB1cnVzIG5lYyBsaWJlcm8gaWFjdWxpcywgZWdldCByaG9uY3VzIGxh " +
+            "Y3VzIHVsbGFtY29ycGVyLgo= =2V66 -----END PGP MESSAGE-----";
 
     @Test
     public void reformatPgpPublicKeyBlock() throws Exception {
-        String reformattedKey = PgpHelper.reformatPgpPublicKeyBlock(INPUT_KEY_BLOCK_TWO_OCTET_LENGTH);
+        String reformattedKey = PgpAsciiArmorReformatter.reformatPgpPublicKeyBlock(INPUT_KEY_BLOCK_TWO_OCTET_LENGTH);
 
         assertNotNull(reformattedKey);
         UncachedKeyRing.decodeFromData(reformattedKey.getBytes());
@@ -68,7 +78,7 @@ public class PgpHelperTest {
 
     @Test
     public void reformatPgpPublicKeyBlock_consecutiveKeys() throws Exception {
-        String reformattedKey = PgpHelper.reformatPgpPublicKeyBlock(
+        String reformattedKey = PgpAsciiArmorReformatter.reformatPgpPublicKeyBlock(
                 INPUT_KEY_BLOCK_TWO_OCTET_LENGTH + INPUT_KEY_BLOCK_TWO_OCTET_LENGTH);
 
         assertNotNull(reformattedKey);
@@ -81,18 +91,43 @@ public class PgpHelperTest {
 
     @Test
     public void reformatPgpPublicKeyBlock_shouldBeIdempotent() throws Exception {
-        String reformattedKey1 = PgpHelper.reformatPgpPublicKeyBlock(INPUT_KEY_BLOCK_TWO_OCTET_LENGTH);
+        String reformattedKey1 = PgpAsciiArmorReformatter.reformatPgpPublicKeyBlock(INPUT_KEY_BLOCK_TWO_OCTET_LENGTH);
         assertNotNull(reformattedKey1);
 
-        String reformattedKey2 = PgpHelper.reformatPgpPublicKeyBlock(reformattedKey1);
+        String reformattedKey2 = PgpAsciiArmorReformatter.reformatPgpPublicKeyBlock(reformattedKey1);
         assertEquals(reformattedKey1, reformattedKey2);
     }
 
     @Test
     public void reformatPgpPublicKeyBlock_withOneOctetLengthHeader() throws Exception {
-        String reformattedKey = PgpHelper.reformatPgpPublicKeyBlock(INPUT_KEY_BLOCK_ONE_OCTET_LENGTH);
+        String reformattedKey = PgpAsciiArmorReformatter.reformatPgpPublicKeyBlock(INPUT_KEY_BLOCK_ONE_OCTET_LENGTH);
 
         assertNotNull(reformattedKey);
         UncachedKeyRing.decodeFromData(reformattedKey.getBytes());
+    }
+
+    @Test
+    public void reformatPgpEncryptedMessageBlock() throws Exception {
+        String reformattedMsg = PgpAsciiArmorReformatter.reformatPgpEncryptedMessageBlock(INPUT_MSG);
+
+        String expectedMsg = "-----BEGIN PGP MESSAGE-----\n" +
+                "Version: GnuPG v2\n" +
+                "Header: Value of header\n" +
+                "\n" +
+                "TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdC4g\n" +
+                "SW50ZWdlciBwb3N1ZXJlIHB1cnVzIG5lYyBsaWJlcm8gaWFjdWxpcywgZWdldCByaG9uY3VzIGxh\n" +
+                "Y3VzIHVsbGFtY29ycGVyLgo=\n" +
+                "=2V66\n" +
+                "-----END PGP MESSAGE-----\n";
+
+        assertEquals(expectedMsg, reformattedMsg);
+    }
+
+    @Test
+    public void reformatPgpEncryptedMessageBlockIdempotent() throws Exception {
+        String reformattedMsg = PgpAsciiArmorReformatter.reformatPgpEncryptedMessageBlock(INPUT_MSG);
+        String reformattedMsg2 = PgpAsciiArmorReformatter.reformatPgpEncryptedMessageBlock(reformattedMsg);
+
+        assertEquals(reformattedMsg, reformattedMsg2);
     }
 }
