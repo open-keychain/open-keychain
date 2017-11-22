@@ -42,7 +42,7 @@ import java.security.Security;
 @RunWith(KeychainTestRunner.class)
 public class SshPublicKeyTest {
 
-    private static UncachedKeyRing mStaticRing;
+    private static UncachedKeyRing mStaticRingEcDsa;
     private static Passphrase mKeyPhrase;
 
     private static PrintStream oldShadowStream;
@@ -53,23 +53,8 @@ public class SshPublicKeyTest {
         oldShadowStream = ShadowLog.stream;
         // ShadowLog.stream = System.out;
 
-        /* keyring generation:
-        PgpKeyOperation op = new PgpKeyOperation(null);
-        SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildNewKeyringParcel();
-
-        builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
-                Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
-        builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
-                Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.AUTHENTICATION, 0L));
-        builder.addUserId("blah");
-        builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase("x")));
-
-        PgpEditKeyResult result = op.createSecretKeyRing(builder.build());
-        new FileOutputStream("/tmp/authenticate.sec").write(result.getRing().getEncoded());
-        */
-
         mKeyPhrase = new Passphrase("x");
-        mStaticRing = KeyringTestingHelper.readRingFromResource("/test-keys/authenticate.sec");
+        mStaticRingEcDsa = KeyringTestingHelper.readRingFromResource("/test-keys/authenticate_ecdsa.sec");
     }
 
     @Before
@@ -80,7 +65,7 @@ public class SshPublicKeyTest {
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        databaseInteractor.saveSecretKeyRing(mStaticRing);
+        databaseInteractor.saveSecretKeyRing(mStaticRingEcDsa);
 
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;
@@ -90,7 +75,7 @@ public class SshPublicKeyTest {
     public void testECDSA() throws Exception {
         KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
 
-        long masterKeyId = mStaticRing.getMasterKeyId();
+        long masterKeyId = mStaticRingEcDsa.getMasterKeyId();
         long authSubKeyId = keyRepository.getCachedPublicKeyRing(masterKeyId).getSecretAuthenticationId();
         CanonicalizedPublicKey canonicalizedPublicKey = keyRepository.getCanonicalizedPublicKeyRing(masterKeyId)
                                                                      .getPublicKey(authSubKeyId);

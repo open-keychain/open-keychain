@@ -20,6 +20,9 @@ package org.sufficientlysecure.keychain.operations;
 
 
 import org.bouncycastle.bcpg.HashAlgorithmTags;
+import org.bouncycastle.jcajce.provider.asymmetric.eddsa.EdDSAEngine;
+import org.bouncycastle.jcajce.provider.asymmetric.eddsa.spec.EdDSANamedCurveTable;
+import org.bouncycastle.jcajce.provider.asymmetric.eddsa.spec.EdDSAParameterSpec;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,6 +45,7 @@ import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 import java.io.PrintStream;
+import java.security.MessageDigest;
 import java.security.PublicKey;
 import java.security.Security;
 import java.security.Signature;
@@ -50,10 +54,72 @@ import java.util.ArrayList;
 @RunWith(KeychainTestRunner.class)
 public class AuthenticationOperationTest {
 
-    private static UncachedKeyRing mStaticRing;
+    private static UncachedKeyRing mStaticRingRsa;
+    private static UncachedKeyRing mStaticRingEcDsa;
+    private static UncachedKeyRing mStaticRingEdDsa;
+    private static UncachedKeyRing mStaticRingDsa;
     private static Passphrase mKeyPhrase;
 
     private static PrintStream oldShadowStream;
+
+    /*
+    private static void generateKeys() throws IOException {
+        PgpKeyOperation op = new PgpKeyOperation(null);
+        SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildNewKeyringParcel();
+
+        builder.addSubkeyAdd(SaveKeyringParcel.SubkeyAdd.createSubkeyAdd(
+                SaveKeyringParcel.Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
+        builder.addSubkeyAdd(SaveKeyringParcel.SubkeyAdd.createSubkeyAdd(
+                SaveKeyringParcel.Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.AUTHENTICATION, 0L));
+        builder.addUserId("blah");
+        builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase("x")));
+
+        PgpEditKeyResult result = op.createSecretKeyRing(builder.build());
+        new FileOutputStream("/tmp/authenticate_ecdsa.sec").write(result.getRing().getEncoded());
+
+
+        op = new PgpKeyOperation(null);
+        builder = SaveKeyringParcel.buildNewKeyringParcel();
+
+        builder.addSubkeyAdd(SaveKeyringParcel.SubkeyAdd.createSubkeyAdd(
+                SaveKeyringParcel.Algorithm.EDDSA, 0, null, KeyFlags.CERTIFY_OTHER, 0L));
+        builder.addSubkeyAdd(SaveKeyringParcel.SubkeyAdd.createSubkeyAdd(
+                SaveKeyringParcel.Algorithm.EDDSA, 0, null, KeyFlags.AUTHENTICATION, 0L));
+        builder.addUserId("blah");
+        builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase("x")));
+
+        result = op.createSecretKeyRing(builder.build());
+        new FileOutputStream("/tmp/authenticate_eddsa.sec").write(result.getRing().getEncoded());
+
+
+        op = new PgpKeyOperation(null);
+        builder = SaveKeyringParcel.buildNewKeyringParcel();
+
+        builder.addSubkeyAdd(SaveKeyringParcel.SubkeyAdd.createSubkeyAdd(
+                SaveKeyringParcel.Algorithm.RSA, 2048, null, KeyFlags.CERTIFY_OTHER, 0L));
+        builder.addSubkeyAdd(SaveKeyringParcel.SubkeyAdd.createSubkeyAdd(
+                SaveKeyringParcel.Algorithm.RSA, 2048, null, KeyFlags.AUTHENTICATION, 0L));
+        builder.addUserId("blah");
+        builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase("x")));
+
+        result = op.createSecretKeyRing(builder.build());
+        new FileOutputStream("/tmp/authenticate_rsa.sec").write(result.getRing().getEncoded());
+
+
+        op = new PgpKeyOperation(null);
+        builder = SaveKeyringParcel.buildNewKeyringParcel();
+
+        builder.addSubkeyAdd(SaveKeyringParcel.SubkeyAdd.createSubkeyAdd(
+                SaveKeyringParcel.Algorithm.DSA, 2048, null, KeyFlags.CERTIFY_OTHER, 0L));
+        builder.addSubkeyAdd(SaveKeyringParcel.SubkeyAdd.createSubkeyAdd(
+                SaveKeyringParcel.Algorithm.DSA, 2048, null, KeyFlags.AUTHENTICATION, 0L));
+        builder.addUserId("blah");
+        builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase("x")));
+
+        result = op.createSecretKeyRing(builder.build());
+        new FileOutputStream("/tmp/authenticate_dsa.sec").write(result.getRing().getEncoded());
+    }
+    */
 
     @BeforeClass
     public static void setUpOnce() throws Exception {
@@ -61,24 +127,11 @@ public class AuthenticationOperationTest {
         oldShadowStream = ShadowLog.stream;
         // ShadowLog.stream = System.out;
 
-        /* keyring generation:
-        PgpKeyOperation op = new PgpKeyOperation(null);
-        SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildNewKeyringParcel();
-
-        builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
-                Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
-        builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
-                Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.AUTHENTICATION, 0L));
-        builder.addUserId("blah");
-        builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase("x")));
-
-        PgpEditKeyResult result = op.createSecretKeyRing(builder.build());
-        new FileOutputStream("/tmp/authenticate.sec").write(result.getRing().getEncoded());
-        */
-
         mKeyPhrase = new Passphrase("x");
-        mStaticRing = KeyringTestingHelper.readRingFromResource("/test-keys/authenticate.sec");
-
+        mStaticRingRsa = KeyringTestingHelper.readRingFromResource("/test-keys/authenticate_rsa.sec");
+        mStaticRingEcDsa = KeyringTestingHelper.readRingFromResource("/test-keys/authenticate_ecdsa.sec");
+        mStaticRingEdDsa = KeyringTestingHelper.readRingFromResource("/test-keys/authenticate_eddsa.sec");
+        mStaticRingDsa = KeyringTestingHelper.readRingFromResource("/test-keys/authenticate_dsa.sec");
     }
 
     @Before
@@ -89,21 +142,24 @@ public class AuthenticationOperationTest {
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
 
-        databaseInteractor.saveSecretKeyRing(mStaticRing);
+        databaseInteractor.saveSecretKeyRing(mStaticRingRsa);
+        databaseInteractor.saveSecretKeyRing(mStaticRingEcDsa);
+        databaseInteractor.saveSecretKeyRing(mStaticRingEdDsa);
+        databaseInteractor.saveSecretKeyRing(mStaticRingDsa);
 
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;
     }
 
     @Test
-    public void testAuthenticate() throws Exception {
+    public void testAuthenticateRsa() throws Exception {
 
         byte[] challenge = "dies ist ein challenge ☭".getBytes();
         byte[] signature;
 
         KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
 
-        long masterKeyId = mStaticRing.getMasterKeyId();
+        long masterKeyId = mStaticRingRsa.getMasterKeyId();
         Long authSubKeyId = keyRepository.getCachedPublicKeyRing(masterKeyId).getSecretAuthenticationId();
 
         { // sign challenge
@@ -115,9 +171,51 @@ public class AuthenticationOperationTest {
             authData.setAuthenticationSubKeyId(authSubKeyId);
             authData.setHashAlgorithm(HashAlgorithmTags.SHA512);
 
-//            ArrayList<Long> allowedKeyIds = new ArrayList<>(1);
-//            allowedKeyIds.add(mStaticRing.getMasterKeyId());
-//            authData.setAllowedAuthenticationKeyIds(allowedKeyIds);
+            AuthenticationParcel authenticationParcel = AuthenticationParcel
+                    .createAuthenticationParcel(authData.build(), challenge);
+
+            CryptoInputParcel inputParcel = CryptoInputParcel.createCryptoInputParcel();
+            inputParcel = inputParcel.withPassphrase(mKeyPhrase);
+
+            AuthenticationResult result = op.execute(authData.build(), inputParcel, authenticationParcel);
+
+            Assert.assertTrue("authentication must succeed", result.success());
+
+            signature = result.getSignature();
+        }
+        { // verify signature
+            CanonicalizedPublicKey canonicalizedPublicKey = keyRepository.getCanonicalizedPublicKeyRing(masterKeyId)
+                                                                         .getPublicKey(authSubKeyId);
+            PublicKey publicKey = canonicalizedPublicKey.getJcaPublicKey();
+
+            Signature signatureVerifier = Signature.getInstance("SHA512withRSA");
+            signatureVerifier.initVerify(publicKey);
+            signatureVerifier.update(challenge);
+            boolean isSignatureValid = signatureVerifier.verify(signature);
+
+            Assert.assertTrue("signature must be valid", isSignatureValid);
+        }
+    }
+
+    @Test
+    public void testAuthenticateEcDsa() throws Exception {
+
+        byte[] challenge = "dies ist ein challenge ☭".getBytes();
+        byte[] signature;
+
+        KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
+
+        long masterKeyId = mStaticRingEcDsa.getMasterKeyId();
+        Long authSubKeyId = keyRepository.getCachedPublicKeyRing(masterKeyId).getSecretAuthenticationId();
+
+        { // sign challenge
+            AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.application,
+                    keyRepository);
+
+            AuthenticationData.Builder authData = AuthenticationData.builder();
+            authData.setAuthenticationMasterKeyId(masterKeyId);
+            authData.setAuthenticationSubKeyId(authSubKeyId);
+            authData.setHashAlgorithm(HashAlgorithmTags.SHA512);
 
             AuthenticationParcel authenticationParcel = AuthenticationParcel
                     .createAuthenticationParcel(authData.build(), challenge);
@@ -146,13 +244,107 @@ public class AuthenticationOperationTest {
     }
 
     @Test
+    public void testAuthenticateEdDsa() throws Exception {
+
+        byte[] challenge = "dies ist ein challenge ☭".getBytes();
+        byte[] signature;
+
+        KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
+
+        long masterKeyId = mStaticRingEdDsa.getMasterKeyId();
+        Long authSubKeyId = keyRepository.getCachedPublicKeyRing(masterKeyId).getSecretAuthenticationId();
+
+        { // sign challenge
+            AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.application,
+                    keyRepository);
+
+            AuthenticationData.Builder authData = AuthenticationData.builder();
+            authData.setAuthenticationMasterKeyId(masterKeyId);
+            authData.setAuthenticationSubKeyId(authSubKeyId);
+            authData.setHashAlgorithm(HashAlgorithmTags.SHA512);
+
+            AuthenticationParcel authenticationParcel = AuthenticationParcel
+                    .createAuthenticationParcel(authData.build(), challenge);
+
+            CryptoInputParcel inputParcel = CryptoInputParcel.createCryptoInputParcel();
+            inputParcel = inputParcel.withPassphrase(mKeyPhrase);
+
+            AuthenticationResult result = op.execute(authData.build(), inputParcel, authenticationParcel);
+
+            Assert.assertTrue("authentication must succeed", result.success());
+
+            signature = result.getSignature();
+        }
+        { // verify signature
+            CanonicalizedPublicKey canonicalizedPublicKey = keyRepository.getCanonicalizedPublicKeyRing(masterKeyId)
+                                                                         .getPublicKey(authSubKeyId);
+            PublicKey publicKey = canonicalizedPublicKey.getJcaPublicKey();
+
+            EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName("Ed25519");
+            Signature signatureVerifier = new EdDSAEngine(MessageDigest.getInstance(spec.getHashAlgorithm()));
+			signatureVerifier.setParameter(EdDSAEngine.ONE_SHOT_MODE);
+            signatureVerifier.initVerify(publicKey);
+            signatureVerifier.update(challenge);
+            boolean isSignatureValid = signatureVerifier.verify(signature);
+
+            Assert.assertTrue("signature must be valid", isSignatureValid);
+        }
+    }
+
+    @Test
+    public void testAuthenticateDsa() throws Exception {
+
+        byte[] challenge = "dies ist ein challenge ☭".getBytes();
+        byte[] signature;
+
+        KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
+
+        long masterKeyId = mStaticRingDsa.getMasterKeyId();
+        Long authSubKeyId = keyRepository.getCachedPublicKeyRing(masterKeyId).getSecretAuthenticationId();
+
+        { // sign challenge
+            AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.application,
+                    keyRepository);
+
+            AuthenticationData.Builder authData = AuthenticationData.builder();
+            authData.setAuthenticationMasterKeyId(masterKeyId);
+            authData.setAuthenticationSubKeyId(authSubKeyId);
+            authData.setHashAlgorithm(HashAlgorithmTags.SHA256);
+
+            AuthenticationParcel authenticationParcel = AuthenticationParcel
+                    .createAuthenticationParcel(authData.build(), challenge);
+
+            CryptoInputParcel inputParcel = CryptoInputParcel.createCryptoInputParcel();
+            inputParcel = inputParcel.withPassphrase(mKeyPhrase);
+
+            AuthenticationResult result = op.execute(authData.build(), inputParcel, authenticationParcel);
+
+            Assert.assertTrue("authentication must succeed", result.success());
+
+            signature = result.getSignature();
+        }
+        { // verify signature
+            CanonicalizedPublicKey canonicalizedPublicKey = keyRepository.getCanonicalizedPublicKeyRing(masterKeyId)
+                                                                         .getPublicKey(authSubKeyId);
+            PublicKey publicKey = canonicalizedPublicKey.getJcaPublicKey();
+
+            Signature signatureVerifier = Signature.getInstance("SHA256withDSA");
+            signatureVerifier.initVerify(publicKey);
+            signatureVerifier.update(challenge);
+            boolean isSignatureValid = signatureVerifier.verify(signature);
+
+            Assert.assertTrue("signature must be valid", isSignatureValid);
+        }
+    }
+
+    @Test
     public void testAccessControl() throws Exception {
 
         byte[] challenge = "dies ist ein challenge ☭".getBytes();
 
         KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
 
-        long masterKeyId = mStaticRing.getMasterKeyId();
+        long masterKeyId = mStaticRingEcDsa.getMasterKeyId();
         Long authSubKeyId = keyRepository.getCachedPublicKeyRing(masterKeyId).getSecretAuthenticationId();
 
         { // sign challenge - should succeed with selected key allowed
@@ -165,7 +357,7 @@ public class AuthenticationOperationTest {
             authData.setHashAlgorithm(HashAlgorithmTags.SHA512);
 
             ArrayList<Long> allowedKeyIds = new ArrayList<>(1);
-            allowedKeyIds.add(mStaticRing.getMasterKeyId());
+            allowedKeyIds.add(mStaticRingEcDsa.getMasterKeyId());
             authData.setAllowedAuthenticationKeyIds(allowedKeyIds);
 
             AuthenticationParcel authenticationParcel = AuthenticationParcel
