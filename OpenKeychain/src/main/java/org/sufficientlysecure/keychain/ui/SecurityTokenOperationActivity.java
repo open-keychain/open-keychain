@@ -298,6 +298,8 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                 stConnection.modifyPw3Pin(newAdminPin, adminPin);
                 stConnection.resetPin(newPin, new Passphrase(new String(newAdminPin)));
 
+                SecurityTokenConnection.clearCachedConnections();
+
                 break;
             }
             case SECURITY_TOKEN_RESET_CARD: {

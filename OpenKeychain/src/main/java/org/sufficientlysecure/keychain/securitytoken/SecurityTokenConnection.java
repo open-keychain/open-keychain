@@ -23,6 +23,7 @@ package org.sufficientlysecure.keychain.securitytoken;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import org.bouncycastle.asn1.ASN1Encodable;
@@ -86,7 +87,7 @@ public class SecurityTokenConnection {
 
     @NonNull
     private final Transport mTransport;
-    @NonNull
+    @Nullable
     private final Passphrase mPin;
     private final OpenPgpCommandApduFactory commandFactory;
 
@@ -99,16 +100,24 @@ public class SecurityTokenConnection {
     private boolean mPw1ValidatedForDecrypt; // Mode 82 does other things; consider renaming?
     private boolean mPw3Validated;
 
-    public static SecurityTokenConnection getInstanceForTransport(Transport transport, Passphrase pin) {
+
+    public static SecurityTokenConnection getInstanceForTransport(
+            @NonNull Transport transport, @Nullable Passphrase pin) {
         if (sCachedInstance == null || !sCachedInstance.isPersistentConnectionAllowed() ||
-                !sCachedInstance.isConnected() || !sCachedInstance.mTransport.equals(transport)) {
+                !sCachedInstance.isConnected() || !sCachedInstance.mTransport.equals(transport) ||
+                (pin != null && !pin.equals(sCachedInstance.mPin))) {
             sCachedInstance = new SecurityTokenConnection(transport, pin, new OpenPgpCommandApduFactory());
         }
         return sCachedInstance;
     }
 
+    public static void clearCachedConnections() {
+        sCachedInstance = null;
+    }
+
+
     @VisibleForTesting
-    SecurityTokenConnection(@NonNull Transport transport, @NonNull Passphrase pin,
+    SecurityTokenConnection(@NonNull Transport transport, @Nullable Passphrase pin,
             OpenPgpCommandApduFactory commandFactory) {
         this.mTransport = transport;
         this.mPin = pin;
@@ -433,6 +442,9 @@ public class SecurityTokenConnection {
      * Verifies the user's PW1 with the appropriate mode.
      */
     private void verifyPinForSignature() throws IOException {
+        if (mPin == null) {
+            throw new IllegalStateException("Connection not initialized with Pin!");
+        }
         byte[] pin = mPin.toStringUnsafe().getBytes();
 
         ResponseApdu response = communicate(commandFactory.createVerifyPw1ForSignatureCommand(pin));
@@ -447,6 +459,10 @@ public class SecurityTokenConnection {
      * Verifies the user's PW1 with the appropriate mode.
      */
     private void verifyPinForOther() throws IOException {
+        if (mPin == null) {
+            throw new IllegalStateException("Connection not initialized with Pin!");
+        }
+
         byte[] pin = mPin.toStringUnsafe().getBytes();
 
         // Command APDU for VERIFY command (page 32)
