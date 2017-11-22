@@ -1,15 +1,11 @@
 package org.bouncycastle.openpgp;
 
-import org.bouncycastle.bcpg.MPInteger;
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
-import org.bouncycastle.bcpg.SignaturePacket;
 import org.bouncycastle.openpgp.operator.PGPContentSigner;
 import org.bouncycastle.openpgp.operator.PGPContentSignerBuilder;
-import org.bouncycastle.util.BigIntegers;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.math.BigInteger;
 
 /**
  * Generator for authentication signatures.
@@ -71,30 +67,20 @@ public class AuthenticationSignatureGenerator {
     }
 
     /**
-     * Return a signature object containing the current signature state.
+     * Return the signature.
      *
-     * @return PGPSignature
+     * @return byte[]
      * @throws PGPException
      */
-    public PGPSignature generate() throws PGPException {
-        MPInteger[] sigValues;
-
+    public byte[] getSignature() throws PGPException {
         if (contentSigner.getKeyAlgorithm() == PublicKeyAlgorithmTags.RSA_SIGN
-                || contentSigner.getKeyAlgorithm() == PublicKeyAlgorithmTags.RSA_GENERAL) {
-            sigValues = new MPInteger[1];
-            sigValues[0] = new MPInteger(new BigInteger(1, contentSigner.getSignature()));
-        } else if (contentSigner.getKeyAlgorithm() == PublicKeyAlgorithmTags.EDDSA) {
-            byte[] sig = contentSigner.getSignature();
-
-            sigValues = new MPInteger[2];
-
-            sigValues[0] = new MPInteger(BigIntegers.fromUnsignedByteArray(sig, 0, 32));
-            sigValues[1] = new MPInteger(BigIntegers.fromUnsignedByteArray(sig, 32, 32));
+                || contentSigner.getKeyAlgorithm() == PublicKeyAlgorithmTags.RSA_GENERAL
+                || contentSigner.getKeyAlgorithm() == PublicKeyAlgorithmTags.EDDSA
+                || contentSigner.getKeyAlgorithm() == PublicKeyAlgorithmTags.ECDSA
+                || contentSigner.getKeyAlgorithm() == PublicKeyAlgorithmTags.DSA) {
+            return contentSigner.getSignature();
         } else {
-            sigValues = PGPUtil.dsaSigToMpi(contentSigner.getSignature());
+           throw new UnsupportedOperationException("Unsupported algorithm");
         }
-
-        return new PGPSignature(new SignaturePacket(sigType, contentSigner.getKeyID(), contentSigner.getKeyAlgorithm(),
-                contentSigner.getHashAlgorithm(), null, null, null, sigValues));
     }
 }

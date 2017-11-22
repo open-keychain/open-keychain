@@ -218,7 +218,7 @@ public class AuthenticationOperation extends BaseOperation<AuthenticationParcel>
         signatureGenerator.update(challenge, 0, challenge.length);
 
         try {
-            signature = signatureGenerator.generate().getSignature();
+            signature = signatureGenerator.getSignature();
         } catch (NfcSyncPGPContentSignerBuilder.NfcInteractionNeeded e) {
             // this secret key diverts to a OpenPGP card, thus requires user interaction
             log.add(LogType.MSG_AUTH_PENDING_NFC, indent);
