@@ -149,22 +149,22 @@ public class SshAuthenticationApi {
         void onReturn(final Intent result);
     }
 
-    private class SshAgentAsyncTask extends AsyncTask<Void, Integer, Intent> {
-        Intent data;
-        ISshAgentCallback callback;
+    private class SshAgentAsyncTask extends AsyncTask<Void, Void, Intent> {
+        Intent mRequest;
+        ISshAgentCallback mCallback;
 
-        private SshAgentAsyncTask(Intent data, ISshAgentCallback callback) {
-            this.data = data;
-            this.callback = callback;
+        private SshAgentAsyncTask(Intent request, ISshAgentCallback callback) {
+            mRequest = request;
+            mCallback = callback;
         }
 
         @Override
         protected Intent doInBackground(Void... unused) {
-            return executeApi(data);
+            return executeApi(mRequest);
         }
 
         protected void onPostExecute(Intent result) {
-            callback.onReturn(result);
+            mCallback.onReturn(result);
         }
 
     }
@@ -176,9 +176,9 @@ public class SshAuthenticationApi {
         // don't serialize async tasks, always execute them in parallel
         // http://commonsware.com/blog/2012/04/20/asynctask-threading-regression-confirmed.html
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void[]) null);
+            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } else {
-            task.execute((Void[]) null);
+            task.execute();
         }
     }
 
