@@ -87,7 +87,7 @@ import static org.sufficientlysecure.keychain.service.SaveKeyringParcel.buildCha
 public class PgpKeyOperationTest {
 
     static UncachedKeyRing staticRing;
-    final static Passphrase passphrase = TestingUtils.genPassphrase();
+    final static Passphrase passphrase = new Passphrase("passphrase");
 
     UncachedKeyRing ring;
     PgpKeyOperation op;

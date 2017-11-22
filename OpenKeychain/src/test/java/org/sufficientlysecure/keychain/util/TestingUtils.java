@@ -23,10 +23,6 @@ import junit.framework.Assert;
 
 
 public class TestingUtils {
-    public static Passphrase genPassphrase() {
-        return genPassphrase(false);
-    }
-
     public static Passphrase genPassphrase(boolean noEmpty) {
         String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789!@#$%^&*()-_=";
         Random r = new Random();
