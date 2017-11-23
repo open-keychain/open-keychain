@@ -29,19 +29,25 @@ public class RequiredInputParcel implements Parcelable {
     public final byte[][] mInputData;
     public final int[] mSignAlgos;
 
-    private Long mMasterKeyId;
-    private Long mSubKeyId;
+    private long[] mMasterKeyIds;
+    private long[] mSubKeyIds;
 
     public boolean mSkipCaching = false;
 
     private RequiredInputParcel(RequiredInputType type, byte[][] inputData,
-            int[] signAlgos, Date signatureTime, Long masterKeyId, Long subKeyId) {
+            int[] signAlgos, Date signatureTime, long[] masterKeyIds, long[] subKeyIds) {
         mType = type;
         mInputData = inputData;
         mSignAlgos = signAlgos;
         mSignatureTime = signatureTime;
-        mMasterKeyId = masterKeyId;
-        mSubKeyId = subKeyId;
+        mMasterKeyIds = masterKeyIds;
+        mSubKeyIds = subKeyIds;
+    }
+
+    private RequiredInputParcel(RequiredInputType type, byte[][] inputData,
+            int[] signAlgos, Date signatureTime, Long masterKeyId, Long subKeyId) {
+        this(type, inputData, signAlgos, signatureTime, masterKeyId != null ? new long[] { masterKeyId } : null,
+                subKeyId != null ? new long[] { subKeyId } : null);
     }
 
     public RequiredInputParcel(Parcel source) {
@@ -70,18 +76,18 @@ public class RequiredInputParcel implements Parcelable {
         }
 
         mSignatureTime = source.readInt() != 0 ? new Date(source.readLong()) : null;
-        mMasterKeyId = source.readInt() != 0 ? source.readLong() : null;
-        mSubKeyId = source.readInt() != 0 ? source.readLong() : null;
+        mMasterKeyIds = source.readInt() != 0 ? source.createLongArray() : null;
+        mSubKeyIds = source.readInt() != 0 ? source.createLongArray() : null;
         mSkipCaching = source.readInt() != 0;
 
     }
 
     public Long getMasterKeyId() {
-        return mMasterKeyId;
+        return mMasterKeyIds == null ? null : mMasterKeyIds[0];
     }
 
     public Long getSubKeyId() {
-        return mSubKeyId;
+        return mSubKeyIds == null ? null : mSubKeyIds[0];
     }
 
     public static RequiredInputParcel createRetryUploadOperation() {
@@ -117,7 +123,7 @@ public class RequiredInputParcel implements Parcelable {
 
     public static RequiredInputParcel createSecurityTokenReset() {
         return new RequiredInputParcel(RequiredInputType.SECURITY_TOKEN_RESET_CARD,
-                null, null, null, null, null);
+                null, null, null, (long[]) null, null);
     }
 
     public static RequiredInputParcel createRequiredAuthenticationPassphrase(
@@ -140,18 +146,18 @@ public class RequiredInputParcel implements Parcelable {
 
     public static RequiredInputParcel createRequiredSymmetricPassphrase() {
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE_SYMMETRIC,
-                null, null, null, null, null);
+                null, null, null, (long[]) null, null);
     }
 
     public static RequiredInputParcel createRequiredBackupCode() {
         return new RequiredInputParcel(RequiredInputType.BACKUP_CODE,
-                null, null, null, null, null);
+                null, null, null, (long[]) null, null);
     }
 
     public static RequiredInputParcel createRequiredPassphrase(
             RequiredInputParcel req) {
         return new RequiredInputParcel(RequiredInputType.PASSPHRASE,
-                null, null, req.mSignatureTime, req.mMasterKeyId, req.mSubKeyId);
+                null, null, req.mSignatureTime, req.mMasterKeyIds, req.mSubKeyIds);
     }
 
     @Override
@@ -180,15 +186,15 @@ public class RequiredInputParcel implements Parcelable {
         } else {
             dest.writeInt(0);
         }
-        if (mMasterKeyId != null) {
+        if (mMasterKeyIds != null) {
             dest.writeInt(1);
-            dest.writeLong(mMasterKeyId);
+            dest.writeLongArray(mMasterKeyIds);
         } else {
             dest.writeInt(0);
         }
-        if (mSubKeyId != null) {
+        if (mSubKeyIds != null) {
             dest.writeInt(1);
-            dest.writeLong(mSubKeyId);
+            dest.writeLongArray(mSubKeyIds);
         } else {
             dest.writeInt(0);
         }
@@ -302,7 +308,7 @@ public class RequiredInputParcel implements Parcelable {
         }
 
         public void addAll(RequiredInputParcel input) {
-            if (!mMasterKeyId.equals(input.mMasterKeyId)) {
+            if (!mMasterKeyId.equals(input.mMasterKeyIds)) {
                 throw new AssertionError("Master keys must match, this is a programming error!");
             }
             if (input.mType != RequiredInputType.SECURITY_TOKEN_MOVE_KEY_TO_CARD) {
@@ -318,4 +324,30 @@ public class RequiredInputParcel implements Parcelable {
 
     }
 
+    public static class RequireAnyDecryptPassphraseBuilder {
+        private final ArrayList<Long> masterKeyIds = new ArrayList<>();
+        private final ArrayList<Long> subKeyIds = new ArrayList<>();
+
+        public RequiredInputParcel build() {
+            int numIds = masterKeyIds.size();
+            long[] masterKeyIdsArr = new long[numIds];
+            long[] subKeyIdsArr = new long[numIds];
+            for (int i = 0; i < numIds; i++) {
+                masterKeyIdsArr[i] = masterKeyIds.get(i);
+                subKeyIdsArr[i] = subKeyIds.get(i);
+            }
+
+            return new RequiredInputParcel(RequiredInputType.PASSPHRASE,
+                    null, null, null, masterKeyIdsArr, subKeyIdsArr);
+        }
+
+        public void add(long masterKeyId, long subKeyId) {
+            masterKeyIds.add(masterKeyId);
+            subKeyIds.add(subKeyId);
+        }
+
+        public boolean isEmpty() {
+            return masterKeyIds.isEmpty();
+        }
+    }
 }
