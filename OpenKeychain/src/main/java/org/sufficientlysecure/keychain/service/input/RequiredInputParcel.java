@@ -90,6 +90,14 @@ public class RequiredInputParcel implements Parcelable {
         return mSubKeyIds == null ? null : mSubKeyIds[0];
     }
 
+    public long[] getMasterKeyIds() {
+        return mMasterKeyIds;
+    }
+
+    public long[] getSubKeyIds() {
+        return mSubKeyIds;
+    }
+
     public static RequiredInputParcel createRetryUploadOperation() {
         return new RequiredInputParcel(RequiredInputType.UPLOAD_FAIL_RETRY,
                 null, null, null, 0L, 0L);

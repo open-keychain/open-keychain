@@ -58,6 +58,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequiredInputType;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
@@ -1062,6 +1063,25 @@ public class PgpEncryptDecryptTest {
         Assert.assertEquals(mStaticRingInsecure.getMasterKeyId(), encryptionKeySecurityProblem.masterKeyId);
         Assert.assertEquals(PublicKeyAlgorithmTags.RSA_ENCRYPT, encryptionKeySecurityProblem.algorithm);
         Assert.assertEquals(1024, encryptionKeySecurityProblem.bitStrength);
+    }
+
+    @Test
+    public void testDecryptForTwoKeys() throws Exception {
+        InputStream in = getResourceAsStream("/test-ciphertexts/two_keys.asc");
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        InputData data = new InputData(in, in.available());
+
+        PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null, null);
+        PgpDecryptVerifyInputParcel input = PgpDecryptVerifyInputParcel.builder().build();
+        DecryptVerifyResult result = op.execute(input, CryptoInputParcel.createCryptoInputParcel(), data, out);
+
+        RequiredInputParcel requiredInputParcel = result.getRequiredInputParcel();
+        Assert.assertNotNull(requiredInputParcel);
+        Assert.assertEquals(3, requiredInputParcel.getMasterKeyIds().length);
+        Assert.assertEquals(mStaticRing1.getMasterKeyId(), requiredInputParcel.getMasterKeyIds()[0]);
+        Assert.assertEquals(mStaticRing1.getMasterKeyId(), requiredInputParcel.getMasterKeyIds()[1]);
+        Assert.assertEquals(mStaticRing2.getMasterKeyId(), requiredInputParcel.getMasterKeyIds()[2]);
     }
 
     private PgpDecryptVerifyOperation operationWithFakePassphraseCache(
