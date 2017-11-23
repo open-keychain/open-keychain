@@ -232,40 +232,45 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 hint = getString(R.string.label_passphrase);
             } else {
                 try {
-                    long subKeyId = mRequiredInput.getSubKeyId();
-
-                    KeyRepository helper =
-                            KeyRepository.create(getContext());
-                    CachedPublicKeyRing cachedPublicKeyRing = helper.getCachedPublicKeyRing(
-                            KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
-                    // yes the inner try/catch block is necessary, otherwise the final variable
-                    // above can't be statically verified to have been set in all cases because
-                    // the catch clause doesn't return.
-                    String mainUserId = cachedPublicKeyRing.getPrimaryUserIdWithFallback();
-                    OpenPgpUtils.UserId mainUserIdSplit = KeyRing.splitUserId(mainUserId);
-                    if (mainUserIdSplit.name != null) {
-                        userId = mainUserIdSplit.name;
+                    long[] subKeyIds = mRequiredInput.getSubKeyIds();
+                    if (subKeyIds.length > 1) {
+                        message = getString(R.string.passphrase_for_any);
+                        hint = getString(R.string.label_passphrase);
                     } else {
-                        userId = getString(R.string.user_id_no_name);
-                    }
+                        long subKeyId = subKeyIds[0];
 
-                    keyType = cachedPublicKeyRing.getSecretKeyType(subKeyId);
-                    switch (keyType) {
-                        case PASSPHRASE:
-                            message = getString(R.string.passphrase_for, userId);
-                            hint = getString(R.string.label_passphrase);
-                            break;
-                        case DIVERT_TO_CARD:
-                            message = getString(R.string.security_token_pin_for, userId);
-                            hint = getString(R.string.label_pin);
-                            break;
-                        // special case: empty passphrase just returns the empty passphrase
-                        case PASSPHRASE_EMPTY:
-                            finishCaching(new Passphrase(""), subKeyId);
-                        default:
-                            throw new AssertionError("Unhandled SecretKeyType (should not happen)");
-                    }
+                        KeyRepository helper =
+                                KeyRepository.create(getContext());
+                        CachedPublicKeyRing cachedPublicKeyRing = helper.getCachedPublicKeyRing(
+                                KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
+                        // yes the inner try/catch block is necessary, otherwise the final variable
+                        // above can't be statically verified to have been set in all cases because
+                        // the catch clause doesn't return.
+                        String mainUserId = cachedPublicKeyRing.getPrimaryUserIdWithFallback();
+                        OpenPgpUtils.UserId mainUserIdSplit = KeyRing.splitUserId(mainUserId);
+                        if (mainUserIdSplit.name != null) {
+                            userId = mainUserIdSplit.name;
+                        } else {
+                            userId = getString(R.string.user_id_no_name);
+                        }
 
+                        keyType = cachedPublicKeyRing.getSecretKeyType(subKeyId);
+                        switch (keyType) {
+                            case PASSPHRASE:
+                                message = getString(R.string.passphrase_for, userId);
+                                hint = getString(R.string.label_passphrase);
+                                break;
+                            case DIVERT_TO_CARD:
+                                message = getString(R.string.security_token_pin_for, userId);
+                                hint = getString(R.string.label_pin);
+                                break;
+                            // special case: empty passphrase just returns the empty passphrase
+                            case PASSPHRASE_EMPTY:
+                                finishCaching(new Passphrase(""), subKeyId);
+                            default:
+                                throw new AssertionError("Unhandled SecretKeyType (should not happen)");
+                        }
+                    }
                 } catch (PgpKeyNotFoundException | KeyRepository.NotFoundException e) {
                     alert.setTitle(R.string.title_key_not_found);
                     alert.setMessage(getString(R.string.key_not_found, mRequiredInput.getSubKeyId()));

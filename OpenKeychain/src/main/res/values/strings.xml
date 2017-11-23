@@ -332,6 +332,7 @@
     <string name="passphrase_for_symmetric_encryption">"Enter password"</string>
     <string name="passphrase_for_backup">"Enter backup code"</string>
     <string name="passphrase_for">"Enter password for '%s'"</string>
+    <string name="passphrase_for_any">"Enter password"</string>
     <string name="passphrase_keyboard_hint_alpha">"Switch to alphabetic keyboard"</string>
     <string name="passphrase_keyboard_hint_numeric">"Switch to numeric keyboard"</string>
     <string name="pin_for">"Enter PIN for '%s'"</string>
