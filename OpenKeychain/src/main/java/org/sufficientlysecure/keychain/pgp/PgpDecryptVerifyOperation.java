@@ -649,7 +649,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                         passphrase = null;
                     } else if (secretKeyType == SecretKeyType.PASSPHRASE_EMPTY) {
                         passphrase = new Passphrase("");
-                    } else if (cryptoInput.hasPassphrase()) {
+                    } else if (cryptoInput.hasPassphraseForSubkey(subKeyId)) {
                         passphrase = cryptoInput.getPassphrase();
                     } else {
                         // if no passphrase was explicitly set try to get it from the cache service
@@ -712,7 +712,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
                 // if no passphrase is given, return here
                 // indicating that a passphrase is missing!
-                if (!cryptoInput.hasPassphrase()) {
+                if (!cryptoInput.hasPassphraseForSymmetric()) {
 
                     try {
                         passphrase = getCachedPassphrase(key.symmetric);

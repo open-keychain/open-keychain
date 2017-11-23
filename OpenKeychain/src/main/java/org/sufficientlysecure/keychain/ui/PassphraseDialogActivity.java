@@ -25,6 +25,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -117,7 +118,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
             if (pubRing.getSecretKeyType(requiredInput.getSubKeyId()) == SecretKeyType.PASSPHRASE_EMPTY) {
                 // also return passphrase back to activity
                 Intent returnIntent = new Intent();
-                cryptoInputParcel = cryptoInputParcel.withPassphrase(new Passphrase(""));
+                cryptoInputParcel = cryptoInputParcel.withPassphrase(new Passphrase(""), requiredInput.getSubKeyId());
                 returnIntent.putExtra(RESULT_CRYPTO_INPUT, cryptoInputParcel);
                 setResult(RESULT_OK, returnIntent);
                 finish();
@@ -260,7 +261,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                             break;
                         // special case: empty passphrase just returns the empty passphrase
                         case PASSPHRASE_EMPTY:
-                            finishCaching(new Passphrase(""));
+                            finishCaching(new Passphrase(""), subKeyId);
                         default:
                             throw new AssertionError("Unhandled SecretKeyType (should not happen)");
                     }
@@ -420,7 +421,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                         backupCodeInput.deleteCharAt(backupCodeInput.length() - 1);
 
                         Passphrase passphrase = new Passphrase(backupCodeInput.toString());
-                        finishCaching(passphrase);
+                        finishCaching(passphrase, null);
 
                         return;
                     }
@@ -438,96 +439,107 @@ public class PassphraseDialogActivity extends FragmentActivity {
                                     getString(R.string.passp_cache_notif_pwd), timeToLiveSeconds);
                         }
 
-                        finishCaching(passphrase);
+                        finishCaching(passphrase, null);
                         return;
                     }
 
-                    mLayout.setDisplayedChild(1);
-                    positive.setEnabled(false);
-
-                    new AsyncTask<Void, Void, CanonicalizedSecretKey>() {
-
-                        @Override
-                        protected CanonicalizedSecretKey doInBackground(Void... params) {
-                            try {
-                                long timeBeforeOperation = System.currentTimeMillis();
-
-                                Long subKeyId = mRequiredInput.getSubKeyId();
-                                CanonicalizedSecretKeyRing secretKeyRing =
-                                        KeyRepository.create(getContext()).getCanonicalizedSecretKeyRing(
-                                                KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
-                                CanonicalizedSecretKey secretKeyToUnlock =
-                                        secretKeyRing.getSecretKey(subKeyId);
-
-                                // this is the operation may take a very long time (100ms to several seconds!)
-                                boolean unlockSucceeded = secretKeyToUnlock.unlock(passphrase);
-
-                                // if it didn't take that long, give the user time to appreciate the progress bar
-                                long operationTime = System.currentTimeMillis() - timeBeforeOperation;
-                                if (operationTime < 100) {
-                                    try {
-                                        Thread.sleep(100 - operationTime);
-                                    } catch (InterruptedException e) {
-                                        // ignore
-                                    }
-                                }
-
-                                return unlockSucceeded ? secretKeyToUnlock : null;
-                            } catch (NotFoundException | PgpGeneralException e) {
-                                Toast.makeText(getActivity(), R.string.error_could_not_extract_private_key,
-                                        Toast.LENGTH_SHORT).show();
-
-                                getActivity().setResult(RESULT_CANCELED);
-                                dismiss();
-                                getActivity().finish();
-                                return null;
-                            }
-                        }
-
-                        /** Handle a good or bad passphrase. This happens in the UI thread!  */
-                        @Override
-                        protected void onPostExecute(CanonicalizedSecretKey result) {
-                            super.onPostExecute(result);
-
-                            // if we were cancelled in the meantime, the result isn't relevant anymore
-                            if (mIsCancelled) {
-                                return;
-                            }
-
-                            // if the passphrase was wrong, reset and re-enable the dialogue
-                            if (result == null) {
-                                mPassphraseEditText.setText("");
-                                mPassphraseEditText.setError(getString(R.string.wrong_passphrase));
-                                mLayout.setDisplayedChild(0);
-                                positive.setEnabled(true);
-                                return;
-                            }
-
-                            // cache the new passphrase as specified in CryptoInputParcel
-                            Log.d(Constants.TAG, "Everything okay!");
-
-                            if (mRequiredInput.mSkipCaching) {
-                                Log.d(Constants.TAG, "Not caching entered passphrase!");
-                            } else {
-                                Log.d(Constants.TAG, "Caching entered passphrase");
-
-                                try {
-                                    PassphraseCacheService.addCachedPassphrase(getActivity(),
-                                            mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId(), passphrase,
-                                            result.getRing().getPrimaryUserIdWithFallback(), timeToLiveSeconds);
-                                } catch (PgpKeyNotFoundException e) {
-                                    Log.e(Constants.TAG, "adding of a passphrase failed", e);
-                                }
-                            }
-
-                            finishCaching(passphrase);
-                        }
-                    }.execute();
+                    checkPassphraseAndFinishCaching(positive, passphrase, timeToLiveSeconds);
                 }
+
             });
         }
 
-        private void finishCaching(Passphrase passphrase) {
+        private void checkPassphraseAndFinishCaching(final Button positive, final Passphrase passphrase,
+                final int timeToLiveSeconds) {
+            mLayout.setDisplayedChild(1);
+            positive.setEnabled(false);
+
+            new AsyncTask<Void, Void, CanonicalizedSecretKey>() {
+
+                @Override
+                protected CanonicalizedSecretKey doInBackground(Void... params) {
+                    try {
+                        long timeBeforeOperation = SystemClock.elapsedRealtime();
+
+                        CanonicalizedSecretKey canonicalizedSecretKey = null;
+                        for (long subKeyId : mRequiredInput.getSubKeyIds()) {
+                            CanonicalizedSecretKeyRing secretKeyRing =
+                                    KeyRepository.create(getContext()).getCanonicalizedSecretKeyRing(
+                                            KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
+                            CanonicalizedSecretKey secretKeyToUnlock =
+                                    secretKeyRing.getSecretKey(subKeyId);
+
+                            // this is the operation may take a very long time (100ms to several seconds!)
+                            boolean unlockSucceeded = secretKeyToUnlock.unlock(passphrase);
+                            if (unlockSucceeded) {
+                                canonicalizedSecretKey = secretKeyToUnlock;
+                            }
+                        }
+
+                        // if it didn't take that long, give the user time to appreciate the progress bar
+                        long operationTime = SystemClock.elapsedRealtime() - timeBeforeOperation;
+                        if (operationTime < 100) {
+                            try {
+                                Thread.sleep(100 - operationTime);
+                            } catch (InterruptedException e) {
+                                // ignore
+                            }
+                        }
+
+                        return canonicalizedSecretKey;
+                    } catch (NotFoundException | PgpGeneralException e) {
+                        Toast.makeText(getActivity(), R.string.error_could_not_extract_private_key,
+                                Toast.LENGTH_SHORT).show();
+
+                        getActivity().setResult(RESULT_CANCELED);
+                        dismiss();
+                        getActivity().finish();
+                        return null;
+                    }
+                }
+
+                /** Handle a good or bad passphrase. This happens in the UI thread!  */
+                @Override
+                protected void onPostExecute(CanonicalizedSecretKey unlockedKey) {
+                    super.onPostExecute(unlockedKey);
+
+                    // if we were cancelled in the meantime, the result isn't relevant anymore
+                    if (mIsCancelled) {
+                        return;
+                    }
+
+                    // if the passphrase was wrong, reset and re-enable the dialogue
+                    if (unlockedKey == null) {
+                        mPassphraseEditText.setText("");
+                        mPassphraseEditText.setError(getString(R.string.wrong_passphrase));
+                        mLayout.setDisplayedChild(0);
+                        positive.setEnabled(true);
+                        return;
+                    }
+
+                    // cache the new passphrase as specified in CryptoInputParcel
+                    Log.d(Constants.TAG, "Everything okay!");
+
+                    if (mRequiredInput.mSkipCaching) {
+                        Log.d(Constants.TAG, "Not caching entered passphrase!");
+                    } else {
+                        Log.d(Constants.TAG, "Caching entered passphrase");
+
+                        try {
+                            PassphraseCacheService.addCachedPassphrase(getActivity(),
+                                    unlockedKey.getRing().getMasterKeyId(), unlockedKey.getKeyId(), passphrase,
+                                    unlockedKey.getRing().getPrimaryUserIdWithFallback(), timeToLiveSeconds);
+                        } catch (PgpKeyNotFoundException e) {
+                            Log.e(Constants.TAG, "adding of a passphrase failed", e);
+                        }
+                    }
+
+                    finishCaching(passphrase, unlockedKey.getKeyId());
+                }
+            }.execute();
+        }
+
+        private void finishCaching(Passphrase passphrase, Long subKeyId) {
             // any indication this isn't needed anymore, don't do it.
             if (mIsCancelled || getActivity() == null) {
                 return;
@@ -535,7 +547,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
             CryptoInputParcel inputParcel = getArguments().getParcelable(EXTRA_CRYPTO_INPUT);
             // noinspection ConstantConditions, we handle the non-null case in PassphraseDialogActivity.onCreate()
-            inputParcel = inputParcel.withPassphrase(passphrase);
+            inputParcel = inputParcel.withPassphrase(passphrase, subKeyId);
 
             ((PassphraseDialogActivity) getActivity()).handleResult(inputParcel);
 

@@ -40,10 +40,16 @@ public abstract class CryptoInputParcel implements Parcelable {
     public abstract Date getSignatureTime();
     @Nullable
     public abstract Passphrase getPassphrase();
+    @Nullable
+    public abstract Long getPassphraseSubkey();
     public abstract boolean isCachePassphrase();
 
-    public boolean hasPassphrase() {
-        return getPassphrase() != null;
+    public boolean hasPassphraseForSubkey(long subKeyId) {
+        return getPassphrase() != null && (getPassphraseSubkey() == null || getPassphraseSubkey() == subKeyId);
+    }
+
+    public boolean hasPassphraseForSymmetric() {
+        return getPassphrase() != null && getPassphraseSubkey() == null;
     }
 
     // used to supply an explicit proxy to operations that require it
@@ -59,43 +65,43 @@ public abstract class CryptoInputParcel implements Parcelable {
 
 
     public static CryptoInputParcel createCryptoInputParcel() {
-        return new AutoValue_CryptoInputParcel(null, null, true, null, Collections.<ByteBuffer,byte[]>emptyMap());
+        return new AutoValue_CryptoInputParcel(null, null, null, true, null, Collections.<ByteBuffer,byte[]>emptyMap());
     }
 
     public static CryptoInputParcel createCryptoInputParcel(Date signatureTime, Passphrase passphrase) {
         if (signatureTime == null) {
             signatureTime = new Date();
         }
-        return new AutoValue_CryptoInputParcel(signatureTime, passphrase, true, null,
+        return new AutoValue_CryptoInputParcel(signatureTime, passphrase, null, true, null,
                 Collections.<ByteBuffer,byte[]>emptyMap());
     }
 
     public static CryptoInputParcel createCryptoInputParcel(Passphrase passphrase) {
-        return new AutoValue_CryptoInputParcel(null, passphrase, true, null, Collections.<ByteBuffer,byte[]>emptyMap());
+        return new AutoValue_CryptoInputParcel(null, passphrase, null, true, null, Collections.<ByteBuffer,byte[]>emptyMap());
     }
 
     public static CryptoInputParcel createCryptoInputParcel(Date signatureTime) {
         if (signatureTime == null) {
             signatureTime = new Date();
         }
-        return new AutoValue_CryptoInputParcel(signatureTime, null, true, null,
+        return new AutoValue_CryptoInputParcel(signatureTime, null, null, true, null,
                 Collections.<ByteBuffer,byte[]>emptyMap());
     }
 
     public static CryptoInputParcel createCryptoInputParcel(ParcelableProxy parcelableProxy) {
-        return new AutoValue_CryptoInputParcel(null, null, true, parcelableProxy, new HashMap<ByteBuffer,byte[]>());
+        return new AutoValue_CryptoInputParcel(null, null, null, true, parcelableProxy, new HashMap<ByteBuffer,byte[]>());
     }
 
     public static CryptoInputParcel createCryptoInputParcel(Date signatureTime, boolean cachePassphrase) {
         if (signatureTime == null) {
             signatureTime = new Date();
         }
-        return new AutoValue_CryptoInputParcel(signatureTime, null, cachePassphrase, null,
+        return new AutoValue_CryptoInputParcel(signatureTime, null, null, cachePassphrase, null,
                 new HashMap<ByteBuffer,byte[]>());
     }
 
     public static CryptoInputParcel createCryptoInputParcel(boolean cachePassphrase) {
-        return new AutoValue_CryptoInputParcel(null, null, cachePassphrase, null, new HashMap<ByteBuffer,byte[]>());
+        return new AutoValue_CryptoInputParcel(null, null, null, cachePassphrase, null, new HashMap<ByteBuffer,byte[]>());
     }
 
     // TODO get rid of this!
@@ -105,8 +111,8 @@ public abstract class CryptoInputParcel implements Parcelable {
         newCryptoData.put(ByteBuffer.wrap(hash), signedHash);
         newCryptoData = Collections.unmodifiableMap(newCryptoData);
 
-        return new AutoValue_CryptoInputParcel(getSignatureTime(), getPassphrase(), isCachePassphrase(),
-                getParcelableProxy(), newCryptoData);
+        return new AutoValue_CryptoInputParcel(getSignatureTime(), getPassphrase(), getPassphraseSubkey(),
+                isCachePassphrase(), getParcelableProxy(), newCryptoData);
     }
 
     @CheckResult
@@ -115,32 +121,32 @@ public abstract class CryptoInputParcel implements Parcelable {
         newCryptoData.putAll(cachedSessionKeys);
         newCryptoData = Collections.unmodifiableMap(newCryptoData);
 
-        return new AutoValue_CryptoInputParcel(getSignatureTime(), getPassphrase(), isCachePassphrase(),
-                getParcelableProxy(), newCryptoData);
+        return new AutoValue_CryptoInputParcel(getSignatureTime(), getPassphrase(), getPassphraseSubkey(),
+                isCachePassphrase(), getParcelableProxy(), newCryptoData);
     }
 
 
     @CheckResult
-    public CryptoInputParcel withPassphrase(Passphrase passphrase) {
-        return new AutoValue_CryptoInputParcel(getSignatureTime(), passphrase, isCachePassphrase(),
+    public CryptoInputParcel withPassphrase(Passphrase passphrase, Long subKeyId) {
+        return new AutoValue_CryptoInputParcel(getSignatureTime(), passphrase, subKeyId, isCachePassphrase(),
                 getParcelableProxy(), getCryptoData());
     }
 
     @CheckResult
     public CryptoInputParcel withNoCachePassphrase() {
-        return new AutoValue_CryptoInputParcel(getSignatureTime(), getPassphrase(), false, getParcelableProxy(),
-                getCryptoData());
+        return new AutoValue_CryptoInputParcel(getSignatureTime(), getPassphrase(), getPassphraseSubkey(),
+                false, getParcelableProxy(), getCryptoData());
     }
 
     @CheckResult
     public CryptoInputParcel withSignatureTime(Date signatureTime) {
-        return new AutoValue_CryptoInputParcel(signatureTime, getPassphrase(), isCachePassphrase(),
-                getParcelableProxy(), getCryptoData());
+        return new AutoValue_CryptoInputParcel(signatureTime, getPassphrase(), getPassphraseSubkey(),
+                isCachePassphrase(), getParcelableProxy(), getCryptoData());
     }
 
     @CheckResult
     public CryptoInputParcel withParcelableProxy(ParcelableProxy parcelableProxy) {
-        return new AutoValue_CryptoInputParcel(getSignatureTime(), getPassphrase(), isCachePassphrase(),
-                parcelableProxy, getCryptoData());
+        return new AutoValue_CryptoInputParcel(getSignatureTime(), getPassphrase(), getPassphraseSubkey(),
+                isCachePassphrase(), parcelableProxy, getCryptoData());
     }
 }
