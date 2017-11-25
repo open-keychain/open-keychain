@@ -19,7 +19,7 @@ package org.sufficientlysecure.keychain.ssh;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import org.bouncycastle.openpgp.PGPAuthenticationSignatureGenerator;
+import org.bouncycastle.openpgp.AuthenticationSignatureGenerator;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
@@ -206,7 +206,7 @@ public class AuthenticationOperation extends BaseOperation<AuthenticationParcel>
 
         }
 
-        PGPAuthenticationSignatureGenerator signatureGenerator;
+        AuthenticationSignatureGenerator signatureGenerator;
         try {
             signatureGenerator = authKey.getAuthenticationSignatureGenerator(
                     hashAlgorithm, cryptoInput.getCryptoData());
@@ -218,7 +218,7 @@ public class AuthenticationOperation extends BaseOperation<AuthenticationParcel>
         signatureGenerator.update(challenge, 0, challenge.length);
 
         try {
-            signature = signatureGenerator.generate().getSignature();
+            signature = signatureGenerator.getSignature();
         } catch (NfcSyncPGPContentSignerBuilder.NfcInteractionNeeded e) {
             // this secret key diverts to a OpenPGP card, thus requires user interaction
             log.add(LogType.MSG_AUTH_PENDING_NFC, indent);
