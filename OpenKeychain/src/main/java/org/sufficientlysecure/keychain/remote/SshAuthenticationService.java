@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 import org.bouncycastle.bcpg.HashAlgorithmTags;
+import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.openintents.ssh.authentication.ISshAuthenticationService;
 import org.openintents.ssh.authentication.SshAuthenticationApi;
 import org.openintents.ssh.authentication.SshAuthenticationApiError;
@@ -46,10 +47,14 @@ import org.sufficientlysecure.keychain.ssh.AuthenticationData;
 import org.sufficientlysecure.keychain.ssh.AuthenticationOperation;
 import org.sufficientlysecure.keychain.ssh.AuthenticationParcel;
 import org.sufficientlysecure.keychain.ssh.AuthenticationResult;
+import org.sufficientlysecure.keychain.ssh.signature.SshSignatureConverter;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 
 
 public class SshAuthenticationService extends Service {
@@ -141,12 +146,22 @@ public class SshAuthenticationService extends Service {
         CachedPublicKeyRing cachedPublicKeyRing = mKeyRepository.getCachedPublicKeyRing(masterKeyId);
 
         long authSubKeyId;
+        int authSubKeyAlgorithm;
+        String authSubKeyCurveOid = null;
         try {
             // get first usable subkey capable of authentication
             authSubKeyId = cachedPublicKeyRing.getSecretAuthenticationId();
+            // needed for encoding the resulting signature
+            authSubKeyAlgorithm = getPublicKey(masterKeyId).getAlgorithm();
+            if (authSubKeyAlgorithm == PublicKeyAlgorithmTags.ECDSA) {
+                authSubKeyCurveOid = getPublicKey(masterKeyId).getCurveOid();
+            }
         } catch (PgpKeyNotFoundException e) {
             return createExceptionErrorResult(SshAuthenticationApiError.NO_AUTH_KEY,
                     "authentication key for master key id not found in keychain", e);
+        } catch (KeyRepository.NotFoundException e) {
+            return createExceptionErrorResult(SshAuthenticationApiError.NO_SUCH_KEY,
+                    "Key for master key id not found", e);
         }
 
         authData.setAuthenticationSubKeyId(authSubKeyId);
@@ -175,7 +190,19 @@ public class SshAuthenticationService extends Service {
             // return PendingIntent to be executed by client
             return packagePendingIntent(pi);
         } else if (authResult.success()) {
-            return new SigningResponse(authResult.getSignature()).toIntent();
+            byte[] rawSignature = authResult.getSignature();
+            byte[] sshSignature;
+            if (authSubKeyAlgorithm == PublicKeyAlgorithmTags.ECDSA) {
+                sshSignature = SshSignatureConverter.getSshSignatureEcDsa(rawSignature, authSubKeyCurveOid);
+            } else {
+                try {
+                    sshSignature = SshSignatureConverter.getSshSignature(rawSignature, authSubKeyAlgorithm);
+                } catch (NoSuchAlgorithmException e) {
+                    return createExceptionErrorResult(SshAuthenticationApiError.INTERNAL_ERROR,
+                            "Error converting signature", e);
+                }
+            }
+            return new SigningResponse(sshSignature).toIntent();
         } else {
             LogEntryParcel errorMsg = authResult.getLog().getLast();
             return createErrorResult(SshAuthenticationApiError.INTERNAL_ERROR, getString(errorMsg.mType.getMsgId()));
