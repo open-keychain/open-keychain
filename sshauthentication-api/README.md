@@ -3,7 +3,7 @@
 The SSH authentication API library provides an interface to using an external authentication provider, such as OpenKeychain, in the SSH authentication layer.
 
 ### License
-[Apache License v2](https://github.com/open-keychain/openpgp-api/blob/master/LICENSE)
+[Apache License v2](https://github.com/open-keychain/open-keychain/blob/master/sshauthentication-api/LICENSE)
 
 ### API
 For a basic rundown of the API design see the OpenPGP API library's [README.md](https://github.com/open-keychain/openpgp-api/blob/master/README.md).
