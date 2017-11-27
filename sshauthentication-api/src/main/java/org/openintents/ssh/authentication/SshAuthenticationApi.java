@@ -49,6 +49,8 @@ public class SshAuthenticationApi {
      *
      * returned extras:
      * byte[]        EXTRA_SIGNATURE
+     *
+     * Note: for EdDSA the hash algorithm is ignored, PureEdDSA has to be implemented
      */
     public static final String ACTION_SIGN = "org.openintents.ssh.action.SIGN";
     public static final String EXTRA_CHALLENGE = "challenge";
