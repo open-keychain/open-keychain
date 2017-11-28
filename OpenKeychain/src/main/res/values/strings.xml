@@ -1597,6 +1597,7 @@
     <string name="security_token_error_iso_dep_not_supported">"Security Token does not support the required communication standard (ISO-DEP, ISO 14443-4)"</string>
     <string name="security_token_error_generic">"Communication error. Most probably, the Security Token has been taken off too early."</string>
     <string name="security_token_error_try_again">"Try again"</string>
+    <string name="security_token_not_supported">"This Security Token is not yet supported by OpenKeychain"</string>
     <string name="btn_delete_original">Delete original file</string>
 
     <string name="snack_encrypt_filenames_on">"Filenames <b>are</b> encrypted."</string>

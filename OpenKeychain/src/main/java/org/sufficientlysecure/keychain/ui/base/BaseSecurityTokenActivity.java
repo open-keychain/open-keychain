@@ -45,6 +45,7 @@ import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
 import org.sufficientlysecure.keychain.securitytoken.UsbConnectionDispatcher;
+import org.sufficientlysecure.keychain.securitytoken.usb.UnsupportedUsbTokenException;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransport;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
@@ -231,6 +232,11 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
 
     private void handleSecurityTokenError(SecurityTokenConnection stConnection, IOException e) {
         Log.d(Constants.TAG, "Exception in handleSecurityTokenError", e);
+
+        if (e instanceof UnsupportedUsbTokenException) {
+            onSecurityTokenError(getString(R.string.security_token_not_supported));
+            return;
+        }
 
         if (e instanceof TagLostException) {
             onSecurityTokenError(getString(R.string.security_token_error_tag_lost));
