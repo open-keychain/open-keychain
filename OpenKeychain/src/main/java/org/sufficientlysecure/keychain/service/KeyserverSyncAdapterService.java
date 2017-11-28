@@ -528,10 +528,6 @@ public class KeyserverSyncAdapterService extends Service {
         return builder.build();
     }
 
-    /**
-     * creates a new sync if one does not exist, or updates an existing sync if the sync interval
-     * has changed.
-     */
     public static void enableKeyserverSync(Context context) {
         Account account = KeychainApplication.createAccountIfNecessary(context);
 
@@ -542,6 +538,21 @@ public class KeyserverSyncAdapterService extends Service {
 
         ContentResolver.setIsSyncable(account, Constants.PROVIDER_AUTHORITY, 1);
         ContentResolver.setSyncAutomatically(account, Constants.PROVIDER_AUTHORITY, true);
+
+        updateInterval(context);
+    }
+
+    /**
+     * creates a new sync if one does not exist, or updates an existing sync if the sync interval
+     * has changed.
+     */
+    public static void updateInterval(Context context) {
+        Account account = KeychainApplication.createAccountIfNecessary(context);
+
+        if (account == null) {
+            // account failed to be created for some reason, nothing we can do here
+            return;
+        }
 
         boolean intervalChanged = false;
         boolean syncExists = Preferences.getKeyserverSyncEnabled(context);

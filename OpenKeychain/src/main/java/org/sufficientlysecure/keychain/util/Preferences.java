@@ -118,16 +118,22 @@ public class Preferences {
     }
 
     public boolean isFirstTime() {
-        return mSharedPreferences.getBoolean(Constants.Pref.FIRST_TIME, true);
-    }
-
-    public boolean useNumKeypadForSecurityTokenPin() {
-        return mSharedPreferences.getBoolean(Pref.USE_NUMKEYPAD_FOR_SECURITY_TOKEN_PIN, true);
+        return mSharedPreferences.getBoolean(Constants.Pref.FIRST_TIME_WIZARD, true);
     }
 
     public void setFirstTime(boolean value) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putBoolean(Constants.Pref.FIRST_TIME, value);
+        editor.putBoolean(Constants.Pref.FIRST_TIME_WIZARD, value);
+        editor.commit();
+    }
+
+    public boolean isAppExecutedFirstTime() {
+        return mSharedPreferences.getBoolean(Pref.FIRST_TIME_APP, true);
+    }
+
+    public void setAppExecutedFirstTime(boolean value) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Constants.Pref.FIRST_TIME_APP, value);
         editor.commit();
     }
 
@@ -213,6 +219,10 @@ public class Preferences {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(Pref.USE_ARMOR, useArmor);
         editor.commit();
+    }
+
+    public boolean useNumKeypadForSecurityTokenPin() {
+        return mSharedPreferences.getBoolean(Pref.USE_NUMKEYPAD_FOR_SECURITY_TOKEN_PIN, true);
     }
 
     public void setUseNumKeypadForSecurityTokenPin(boolean useNumKeypad) {
@@ -404,6 +414,12 @@ public class Preferences {
 
     public boolean getExperimentalSmartPGPAuthoritiesEnable() {
         return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_SMARTPGP_VERIFY_AUTHORITY, false);
+    }
+
+    public void setPrefVersionToCurrentVersion() {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putInt(Pref.PREF_VERSION, Constants.Defaults.PREF_CURRENT_VERSION);
+        editor.commit();
     }
 
     public void upgradePreferences(Context context) {

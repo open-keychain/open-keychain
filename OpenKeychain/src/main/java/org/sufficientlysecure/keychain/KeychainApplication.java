@@ -35,7 +35,6 @@ import android.widget.Toast;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.network.TlsCertificatePinning;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
@@ -99,19 +98,23 @@ public class KeychainApplication extends Application {
         // Add OpenKeychain account to Android to link contacts with keys and keyserver sync
         createAccountIfNecessary(this);
 
-        if (Preferences.getKeyserverSyncEnabled(this)) {
-            // will update a keyserver sync if the interval has changed
-            KeyserverSyncAdapterService.enableKeyserverSync(this);
-        }
+        Preferences preferences = Preferences.getPreferences(this);
+        if (preferences.isAppExecutedFirstTime()) {
+            preferences.setAppExecutedFirstTime(false);
 
-        // if first time, enable keyserver and contact sync
-        if (Preferences.getPreferences(this).isFirstTime()) {
             KeyserverSyncAdapterService.enableKeyserverSync(this);
             ContactSyncAdapterService.enableContactsSync(this);
+
+            preferences.setPrefVersionToCurrentVersion();
         }
 
-        // Update keyserver list as needed
-        Preferences.getPreferences(this).upgradePreferences(this);
+        if (Preferences.getKeyserverSyncEnabled(this)) {
+            // will update a keyserver sync if the interval has changed
+            KeyserverSyncAdapterService.updateInterval(this);
+        }
+
+        // Upgrade preferences as needed
+        preferences.upgradePreferences(this);
 
         TlsCertificatePinning.addPinnedCertificate("hkps.pool.sks-keyservers.net", getAssets(), "hkps.pool.sks-keyservers.net.CA.cer");
         TlsCertificatePinning.addPinnedCertificate("pgp.mit.edu", getAssets(), "pgp.mit.edu.cer");
