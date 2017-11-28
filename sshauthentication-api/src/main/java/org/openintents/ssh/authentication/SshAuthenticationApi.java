@@ -42,6 +42,10 @@ public class SshAuthenticationApi {
      *
      * Sign a given challenge
      *
+     * returns the encoded signature as described in
+     * RFC4253, RFC5656 & draft-ietf-curdle-ssh-ed25519
+     * and their respective updates
+     *
      * required extras:
      * String        EXTRA_KEY_ID
      * byte[]        EXTRA_CHALLENGE

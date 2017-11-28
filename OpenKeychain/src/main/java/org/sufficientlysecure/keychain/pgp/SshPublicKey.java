@@ -27,6 +27,9 @@ import org.sufficientlysecure.keychain.ssh.key.SshDSAPublicKey;
 import org.sufficientlysecure.keychain.ssh.key.SshECDSAPublicKey;
 import org.sufficientlysecure.keychain.ssh.key.SshEd25519PublicKey;
 import org.sufficientlysecure.keychain.ssh.key.SshRSAPublicKey;
+import org.sufficientlysecure.keychain.ssh.utils.SshUtils;
+
+import java.security.NoSuchAlgorithmException;
 
 public class SshPublicKey {
     private final static String TAG = "SshPublicKey";
@@ -37,7 +40,7 @@ public class SshPublicKey {
         mPublicKey = publicKey;
     }
 
-    public String getEncodedKey() throws PgpGeneralException {
+    public String getEncodedKey() throws PgpGeneralException, NoSuchAlgorithmException {
         PGPPublicKey key = mPublicKey.getPublicKey();
 
         switch (key.getAlgorithm()) {
@@ -50,9 +53,8 @@ public class SshPublicKey {
             case PGPPublicKey.DSA:
                 return encodeDSAKey(key);
             default:
-                break;
+                throw new PgpGeneralException("Unknown key algorithm");
         }
-        throw new PgpGeneralException("Unknown algorithm");
     }
 
     private String encodeRSAKey(PGPPublicKey publicKey) {
@@ -63,51 +65,16 @@ public class SshPublicKey {
         return pubkey.getPublicKeyBlob();
     }
 
-    private String encodeECKey(PGPPublicKey publicKey) {
+    private String encodeECKey(PGPPublicKey publicKey) throws NoSuchAlgorithmException {
         ECPublicBCPGKey publicBCPGKey = (ECPublicBCPGKey) publicKey.getPublicKeyPacket().getKey();
 
-        String curveName = getCurveName(publicBCPGKey);
+        String curveName = SshUtils.getCurveName(mPublicKey.getCurveOid());
         SshECDSAPublicKey sshECDSAPublicKey = new SshECDSAPublicKey(curveName, publicBCPGKey.getEncodedPoint());
 
         return sshECDSAPublicKey.getPublicKeyBlob();
     }
 
-    private String getCurveName(ECPublicBCPGKey publicBCPGKey) {
-        String curveOid = publicBCPGKey.getCurveOID().getId();
-        // see RFC5656 section 10.{1,2}
-        switch (curveOid) {
-            // REQUIRED curves
-            case "1.2.840.10045.3.1.7":
-                return "nistp256";
-            case "1.3.132.0.34":
-                return "nistp384";
-            case "1.3.132.0.35":
-                return "nistp521";
 
-            // RECOMMENDED curves
-            case "1.3.132.0.1":
-                return     "1.3.132.0.1";
-            case "1.2.840.10045.3.1.1":
-                return  "1.2.840.10045.3.1.1";
-            case "1.3.132.0.33":
-                return     "1.3.132.0.33";
-            case "1.3.132.0.26":
-                return     "1.3.132.0.26";
-            case "1.3.132.0.27":
-                return     "1.3.132.0.27";
-            case "1.3.132.0.16":
-                return     "1.3.132.0.16";
-            case "1.3.132.0.36":
-                return     "1.3.132.0.36";
-            case "1.3.132.0.37":
-                return     "1.3.132.0.37";
-            case "1.3.132.0.38":
-                return     "1.3.132.0.38";
-
-            default:
-                return null;
-        }
-    }
 
     private String encodeEdDSAKey(PGPPublicKey publicKey) {
         EdDSAPublicBCPGKey publicBCPGKey = (EdDSAPublicBCPGKey) publicKey.getPublicKeyPacket().getKey();

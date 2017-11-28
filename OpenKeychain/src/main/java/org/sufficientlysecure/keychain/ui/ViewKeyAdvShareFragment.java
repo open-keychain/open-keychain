@@ -69,6 +69,7 @@ import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.security.NoSuchAlgorithmException;
 
 public class ViewKeyAdvShareFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -223,7 +224,8 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
     }
 
     private String getShareKeyContent(boolean asSshKey)
-            throws PgpKeyNotFoundException, KeyRepository.NotFoundException, IOException, PgpGeneralException {
+            throws PgpKeyNotFoundException, KeyRepository.NotFoundException, IOException, PgpGeneralException,
+            NoSuchAlgorithmException {
 
         KeyRepository keyRepository = KeyRepository.create(getContext());
 
@@ -303,7 +305,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
             Intent shareChooser = Intent.createChooser(sendIntent, title);
 
             startActivity(shareChooser);
-        } catch (PgpGeneralException | IOException e) {
+        } catch (PgpGeneralException | IOException | NoSuchAlgorithmException e) {
             Log.e(Constants.TAG, "error processing key!", e);
             Notify.create(activity, R.string.error_key_processing, Notify.Style.ERROR).show();
         } catch (PgpKeyNotFoundException | KeyRepository.NotFoundException e) {
