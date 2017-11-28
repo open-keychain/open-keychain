@@ -105,6 +105,8 @@
   <string name="menu_delete_key">刪除金鑰</string>
   <string name="menu_manage_keys">管理我的金鑰</string>
   <string name="menu_search">搜尋</string>
+  <string name="menu_open">開啟</string>
+  <string name="menu_read_clipboard">從剪貼簿中讀取</string>
   <string name="menu_nfc_preferences">NFC 設定</string>
   <string name="menu_beam_preferences">Beam 設定</string>
   <string name="menu_encrypt_to">加密到...</string>
@@ -166,6 +168,7 @@
   <string name="label_enter_keyserver_url">網址</string>
   <string name="label_keyserver_dialog_delete">刪除金鑰伺服器</string>
   <string name="label_theme">主題</string>
+  <string name="label_enter_smartpgp_authority_name">名稱</string>
   <string name="pref_keyserver">OpenPGP金鑰伺服器</string>
   <string name="pref_keyserver_summary">透過已選擇的金鑰伺服器搜尋金鑰(HKP 協定)</string>
   <string name="pref_keybase">keybase.io</string>
@@ -231,6 +234,7 @@
   <string name="rsa_2048">RSA 2048</string>
   <string name="rsa_3072">RSA 3072</string>
   <string name="rsa_4096">RSA 4096</string>
+  <string name="usage_sign">簽名</string>
   <string name="usage_encrypt">加密</string>
   <string name="error">錯誤</string>
   <string name="error_message">錯誤: %s</string>
@@ -403,12 +407,15 @@
   <string name="help_tab_donations">捐贈</string>
   <!--Import-->
   <string name="import_tab_keyserver">金鑰伺服器</string>
+  <string name="import_tab_cloud">金鑰搜尋</string>
   <string name="import_tab_direct">檔案/剪貼簿</string>
   <string name="import_tab_qr_code">二維條碼/NFC</string>
   <string name="import_qr_code_fp">指紋異常或長度不足!</string>
   <string name="import_qr_code_too_short_fingerprint">長度不足!</string>
   <string name="import_qr_code_button">掃描二維條碼</string>
   <string name="import_qr_code_text">將您的相機對準 QR Code !</string>
+  <string name="btn_import">匯入</string>
+  <string name="btn_refresh">重新整理</string>
   <!--Generic result toast-->
   <string name="snackbar_details">詳細資訊</string>
   <string name="with_warnings">，包含警告</string>
@@ -457,6 +464,8 @@
   <string name="intent_send_encrypt">使用OpenKeychain加密</string>
   <string name="intent_send_decrypt">使用OpenKeychain解密</string>
   <!--Remote API-->
+  <string name="api_settings_show_info">顯示進階資訊</string>
+  <string name="api_settings_hide_info">隱藏進階資訊</string>
   <string name="api_settings_no_key">沒有選擇金鑰</string>
   <string name="api_settings_select_key">選擇金鑰</string>
   <string name="api_settings_create_key">建立新金鑰</string>
@@ -466,6 +475,7 @@
   <string name="api_settings_start">開啟應用程式</string>
   <string name="api_settings_package_name">打包名稱</string>
   <string name="api_settings_package_certificate">封裝證書的SHA-256</string>
+  <string name="api_settings_advanced">進階</string>
   <string name="api_settings_allowed_keys">允許的金鑰</string>
   <string name="api_settings_settings">設定</string>
   <string name="api_register_allow">允許存取</string>
@@ -547,6 +557,11 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">這個身分識別已被撤銷。此動作無法還原。</string>
   <string name="edit_key_edit_subkey_title">選擇一個動作！</string>
+  <string-array name="edit_key_edit_subkey">
+    <item>變更到期日</item>
+    <item>撤銷子金鑰</item>
+    <item>Strip Subkey</item>
+  </string-array>
   <string name="edit_key_new_subkey">新增子金鑰</string>
   <string name="edit_key_error_add_identity">新增至少一組身分識別！</string>
   <string name="edit_key_error_add_subkey">新增至少一組子金鑰！</string>
@@ -663,60 +678,82 @@
   <string name="msg_is_success_identical">鑰匙圈沒有新資料，不必進行操作</string>
   <string name="msg_is_success">成功匯入密鑰鑰匙圈</string>
   <!--Keyring Canonicalization log entries-->
+  <string name="msg_kc_sub">正在處理子金鑰%s</string>
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
+  <string name="msg_mf_error_noop">無事可做</string>
   <string name="msg_mf_subkey_strip">正在卸除子金鑰%s</string>
-  <!--Consolidate-->
   <!--Edit Key (higher level than modify)-->
+  <string name="msg_ed_error_key_not_found">找不到金鑰！</string>
   <!--Promote key-->
+  <string name="msg_pr_error_key_not_found">找不到金鑰！</string>
   <!--Other messages used in OperationLogs-->
   <string name="msg_ek_error_not_found">找不到金鑰！</string>
   <!--Messages for DecryptVerify operation-->
   <string name="msg_dc_error_invalid_data">沒有找到有效的OpenPGP加密或簽署內容！</string>
   <string name="msg_dc">開始解密…</string>
   <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl_ok">OK</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <string name="msg_pse">開始簽名並/或加密…</string>
+  <!--Messages for Authentication operation-->
   <string name="msg_crt_warn_not_found">找不到金鑰！</string>
   <string name="msg_crt_warn_cert_failed">產生認證失敗！</string>
   <string name="msg_crt_warn_save_failed">儲存失敗！</string>
   <string name="msg_crt_upload_success">成功上傳金鑰到伺服器</string>
   <string name="msg_import_fetch_error">無法取得金鑰！(網路問題？)</string>
+  <string name="msg_import_fetch_error_not_found">找不到金鑰！</string>
   <string name="msg_import_fetch_keybase">從keybase.io取回：%s</string>
   <string name="msg_import_fetch_keyserver">從金鑰伺服器取回：%s</string>
   <string name="msg_import_fetch_keyserver_ok">成功取得金鑰</string>
   <string name="msg_import_keyserver">使用金鑰伺服器%s</string>
   <string name="msg_import_merge">正在合併取得的資料</string>
+  <string name="msg_backup_error_db">資料庫錯誤！</string>
+  <string name="msg_backup_error_io">輸入/輸出錯誤！</string>
   <string name="msg_backup_success">備份處理成功</string>
+  <string name="msg_upload_error_not_found">找不到金鑰！</string>
   <string name="msg_del_error_empty">沒有東西可以刪除！</string>
   <string name="msg_del_error_multi_secret">私鑰只能分別刪除！</string>
   <!--Linked Identity verification-->
+  <string name="msg_get_success">下載成功！</string>
+  <string name="msg_get_no_valid_keys">在檔案/剪貼簿中找不到有效的金鑰！</string>
   <string name="msg_download_query_failed">查詢金鑰的時候發生錯誤。</string>
   <!--Messages for Keybase Verification operation-->
+  <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_pwd">密碼</string>
   <!--Keyserver sync-->
+  <string name="keyserver_sync_orbot_notif_start">啟動Orbot</string>
   <!--First Time-->
   <string name="first_time_create_key">建立金鑰</string>
   <string name="first_time_import_key">從檔案匯入金鑰</string>
   <string name="first_time_skip">跳過設置</string>
   <string name="backup_section">備份</string>
   <!--unsorted-->
+  <string name="label_user_id">身分</string>
   <string name="empty_certs">這把金鑰未經過認證</string>
   <string name="certs_text">只有有效的自簽署認證以及經由你的金鑰簽署的有效認證會被顯示在這。</string>
   <string name="label_revocation">撤銷原因</string>
+  <string name="label_cert_type">類型</string>
   <string name="error_key_not_found">找不到金鑰！</string>
   <string name="key_unavailable">無法使用</string>
   <string name="secret_cannot_multiple">您的金鑰只能個別地刪除！</string>
   <string name="title_view_cert">查看認證內容</string>
+  <string name="unknown">未知</string>
   <string name="error_no_encrypt_subkey">沒有可供加密的子金鑰！</string>
+  <string name="key_colon">鍵值:</string>
   <string name="exchange_description">要發起金鑰交換，先在右邊選擇與會人數，然後點選〝開始交換〞。\n\n接下來會詢問你兩個問題，以確保會議成員與交換的指紋是正確的。</string>
   <string name="btn_start_exchange">開始交換</string>
   <!--Android Account-->
+  <string name="account_privacy_title">隱私</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <string name="enter_passphrase">輸入密碼</string>
+  <string name="passphrase">密碼</string>
   <string name="passphrase_again">再一次</string>
   <string name="unlock_method">解鎖方法</string>
   <string name="nfc_title">NFC</string>
@@ -724,9 +761,23 @@
   <string name="nfc_wrong_tag">錯誤的標籤。請再試一次。</string>
   <string name="enable_nfc">請在您的設定中啓用 NFC</string>
   <string name="no_nfc_support">該裝置不支援 NFC</string>
+  <string name="nfc_write_successful">成功寫入 NFC 標籤</string>
   <string name="unlocked">解鎖</string>
   <string name="nfc_settings">設定</string>
+  <string name="snack_security_token_view">檢視</string>
+  <string name="snack_security_token_import">匯入</string>
+  <string name="btn_reset">重置</string>
+  <string name="security_token_error">錯誤: %s</string>
+  <string name="security_token_error_unknown">不明的錯誤</string>
+  <string name="security_token_error_try_again">重試</string>
+  <string name="linked_create_verify">驗證　</string>
   <!--Other Linked Identity strings-->
+  <string name="linked_verifying">驗證中...</string>
+  <string name="section_linked_identities">連結身份</string>
+  <string name="btn_finish">結束</string>
+  <string name="linked_title_twitter">Twitter</string>
+  <string name="linked_button_verify">驗證　</string>
+  <string name="linked_button_retry">重試</string>
   <string name="linked_button_confirm">確認</string>
   <string name="linked_button_view">查看</string>
   <string name="linked_text_verifying">驗證中...</string>
@@ -743,5 +794,23 @@
   <string name="prompt_fidesmo_pgp_install_title">安裝 PGP？</string>
   <string name="prompt_fidesmo_pgp_install_button_positive">安裝</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">取消</string>
+  <string name="prompt_fidesmo_app_install_button_positive">安裝</string>
   <string name="prompt_fidesmo_app_install_button_negative">取消</string>
+  <string name="redirect_import_key_no">關閉</string>
+  <string name="button_allow">同意</string>
+  <string name="button_cancel">取消</string>
+  <string name="key_health_revoked_title">撒銷</string>
+  <string name="keyserver_title_published">釋出</string>
+  <string name="button_import">匯入</string>
+  <string name="transfer_status_connected">已連接</string>
+  <string name="transfer_status_disconnected">已斷線！</string>
+  <string name="transfer_connecting">連接中…</string>
+  <string name="transfer_confirm_cancel">取消</string>
+  <string name="transfer_confirm_ok">傳送</string>
+  <string name="token_reset_confirm_ok">重置</string>
+  <string name="token_result_not_found">找不到金鑰！</string>
+  <string name="token_action_import">匯入</string>
+  <string name="token_menu_view_log">查看紀錄</string>
+  <string name="token_unlock_ok">解鎖</string>
+  <string name="token_hint_admin_pin">管理者PIN碼</string>
 </resources>

@@ -1,8 +1,13 @@
 [//]: # (Beachte: Bitte schreibe jeden Satz in eine eigene Zeile, Transifex wird jede Zeile in ein eigenes Übesetzungsfeld setzen!)
 
+## 4.8
+
+  * Improved support for USB tokens: Gnuk, Nitrokey models, YubiKey 4 models
+  * Feature to find the position of the device's NFC reader
+
 ## 4.7
 
-  * Improved import from clipboard
+  * Die Möglichkeit, aus der Zwischenablage zu Importieren wurde verbessert
   * New key creation wizard for Security Tokens
   * Removed password cache "time to live" setting
 

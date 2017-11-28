@@ -24,11 +24,13 @@
   <string name="title_export_keys">پشتیبان‌گیری از کلیدها</string>
   <string name="title_key_not_found">کلید پیدا نشد</string>
   <string name="title_send_key">آپلود در سرور کلید</string>
+  <string name="title_backup">پشتیبان‌گیری از کلید</string>
   <string name="title_certify_key">تأیید کلید</string>
   <string name="title_key_details">جزئیات کلید</string>
   <string name="title_help">کمک</string>
   <string name="title_log_display">لاگ</string>
   <string name="title_exchange_keys">مبادلهٔ کلیدها</string>
+  <string name="title_advanced_key_info">پیشرفته </string>
   <string name="title_delete_secret_key">آیا کلید \'%s\' خود را پاک می‌کنید؟</string>
   <string name="title_manage_my_keys">مدیریت کلیدهام</string>
   <!--section-->
@@ -36,7 +38,9 @@
   <string name="section_should_you_trust">آیا به این کلید اعتماد دارید؟</string>
   <string name="section_keys">زیرکلیدها</string>
   <string name="section_gui">رابط</string>
+  <string name="section_sync_settings">انجام هماهنگ سازی</string>
   <string name="section_certify">تأیید</string>
+  <string name="section_actions">اعمال</string>
   <string name="section_share_key">کلید</string>
   <string name="section_key_server">سرور کلید</string>
   <string name="section_fingerprint">اثر انگشت</string>
@@ -61,6 +65,8 @@
   <string name="btn_match">اثر انگشت‌ها مطابقت دارد</string>
   <string name="btn_create_key">ساخت کلید</string>
   <string name="btn_add_files">اضافه کردن فایل(ها)</string>
+  <string name="btn_share_decrypted_text">به‌اشتراک گذاشتن</string>
+  <string name="btn_copy_decrypted_text">به کلیپ بورد کپی کن</string>
   <string name="btn_decrypt_clipboard">خواندن از متن کپی‌شده</string>
   <string name="btn_decrypt_files">انتخاب فایل ورودی</string>
   <string name="btn_encrypt_files">رمزگذاری فایلها</string>
@@ -71,18 +77,24 @@
   <string name="btn_save_default">ذخیره به عنوان پیش‌فرض</string>
   <string name="btn_saved">ذخیره شد!</string>
   <!--Content Description-->
+  <string name="cd_encrypt_files">رمزگذاری فایلها</string>
+  <string name="cd_encrypt_text">رمزگذاری فایل</string>
   <!--menu-->
   <string name="menu_preferences">تنظیمات</string>
   <string name="menu_help">کمک</string>
+  <string name="menu_export_key">پشتیبان گیری از کلید</string>
   <string name="menu_delete_key">حذف کلید</string>
   <string name="menu_manage_keys">مدیریت کلیدهای من</string>
   <string name="menu_search">جستجو</string>
+  <string name="menu_open">بازکردن</string>
+  <string name="menu_read_clipboard">خواندن از متن کپی‌شده</string>
   <string name="menu_nfc_preferences">تنظیمات NFC</string>
   <string name="menu_beam_preferences">تنظیمات Beam</string>
   <string name="menu_encrypt_to">رمزگذاری به...</string>
   <string name="menu_select_all">انتخاب همه</string>
   <string name="menu_export_all_keys">خروج همهٔ کلیدها</string>
   <string name="menu_update_all_keys">آپدیت همهٔ کلیدها</string>
+  <string name="menu_advanced">پیشرفته </string>
   <string name="menu_keyserver_add">اضافه‌کردن</string>
   <!--label-->
   <string name="label_message">متن</string>
@@ -109,7 +121,9 @@
   <string name="label_message_compression">فشرده‌کردن متن</string>
   <string name="label_file_compression">فشرده‌کردن فایل</string>
   <string name="label_key_id">هویت کلید</string>
+  <string name="label_key_id_colon">ID اصلی : </string>
   <string name="label_key_created">کلید ساخته شد %s</string>
+  <string name="label_key_type"> نوع</string>
   <string name="label_creation">ساخت</string>
   <string name="label_expiry">انقضأ</string>
   <string name="label_usage">مصرف</string>
@@ -126,24 +140,44 @@
   <string name="label_enable_compression">فشرده‌کردن</string>
   <string name="label_encrypt_filenames">رمزگذاری اسمِ فایل‌ها</string>
   <string name="label_hidden_recipients">مخفی‌کردن گیرنده‌ها</string>
+  <string name="label_enter_keyserver_url">URL</string>
   <string name="label_keyserver_dialog_delete">حذف سرورهای کلید</string>
   <string name="label_theme">قالب</string>
+  <string name="label_enter_smartpgp_authority_name">نام</string>
   <string name="pref_keyserver">سرورهای کلید OpenPGP</string>
+  <string name="pref_facebook">فیسبوک</string>
   <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="label_experimental_settings_desc_title">هشدار</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">فعال‌کردن Tor</string>
   <string name="pref_proxy_tor_summary">برنامهٔ Orbot باید نصب شده باشد</string>
   <string name="pref_proxy_normal_title">فعال کردن پراکسی دیگر</string>
+  <string name="pref_proxy_host_title">میزبان پروکسی</string>
+  <string name="pref_proxy_port_title">درگاه پروکسی</string>
+  <string name="pref_proxy_type_title">نوع پروکسی</string>
   <!--proxy type choices and values-->
+  <string name="pref_proxy_type_choice_http">HTTP</string>
+  <string name="pref_proxy_type_choice_socks">SOCKS</string>
   <!--OrbotHelper strings-->
   <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_install">نصب</string>
+  <string name="orbot_install_dialog_cancel">لغو</string>
   <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_btn">اجرای Orbot</string>
+  <string name="orbot_start_dialog_start">اجرای Orbot</string>
+  <string name="orbot_start_dialog_cancel">لغو</string>
   <!--choice-->
+  <string name="choice_none">هیـچ</string>
+  <string name="choice_1hour">1 ساعت</string>
+  <string name="usage_sign">امضاء کردن</string>
+  <string name="usage_encrypt">رمزگذاری</string>
+  <string name="error">خطا </string>
   <!--sentences-->
   <string name="wrong_passphrase">رمزعبور اشتباه است.</string>
   <string name="no_filemanager_installed">برنامهٔ مدیریتِ فایل سازگاری نصب نیست.</string>
   <string name="passphrases_do_not_match">رمز عبور‌ها مطابقت ندارند.</string>
   <string name="passphrase_must_not_be_empty">لطفاً یک رمزعبور وارد کنید.</string>
+  <string name="passphrase_for_symmetric_encryption">رمزعبور را وارد کنید</string>
   <string name="passphrase_for">وارد کردن رمز عبور برای \'%s\'</string>
   <string name="pin_for">وارد کردن رمزِ پین برای \'%s\'</string>
   <string name="keys_exported">%d کلید با موفقیت خارج شد.</string>
@@ -214,20 +248,42 @@
     <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
   <!--Help-->
+  <string name="help_tab_start">شروع</string>
+  <string name="help_tab_faq">سوال‌های متداول</string>
+  <string name="help_tab_changelog">لیست تغییرات</string>
+  <string name="help_tab_about">درباره‌ی سایفون</string>
+  <string name="help_about_version">نسخه:</string>
+  <string name="help_tab_donations">حمایت مالی</string>
   <!--Import-->
+  <string name="import_tab_keyserver">سرور کلید</string>
+  <string name="btn_import">وارد کردن</string>
+  <string name="btn_refresh">تازه کردن</string>
   <!--Generic result toast-->
+  <string name="snackbar_details">جزئیات</string>
   <!--Import result toast-->
   <!--Delete result toast-->
   <!--Revoke result toast (snackbar)-->
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
+  <string name="api_settings_no_key">کلیدی انتخاب نشده‌است</string>
+  <string name="api_settings_save">ذخيره</string>
+  <string name="api_settings_cancel">لغو</string>
+  <string name="api_settings_package_name">نام بسته</string>
+  <string name="api_settings_advanced">پیشرفته </string>
+  <string name="api_settings_settings">تنظیمات</string>
   <!--Share-->
   <!--retry upload dialog-->
   <!--Delete or revoke private key dialog-->
   <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <!--Key view-->
+  <string name="key_view_action_edit">ویرایش</string>
+  <string name="key_view_action_encrypt">رمزگذاری فایل</string>
+  <string name="key_view_tab_start">شروع</string>
+  <string name="key_view_tab_share">به‌اشتراک گذاشتن</string>
+  <string name="key_view_tab_keys">زیرکلیدها</string>
+  <string name="user_id_info_revoked_title">لغو</string>
   <string name="user_id_info_invalid_title">نامعتبر</string>
   <string name="user_id_info_invalid_text">هویت مشکل دارد!</string>
   <!--Key trust-->
@@ -236,6 +292,7 @@
   <string name="keybase_narrative_twitter">روی Twitter پست می‌کند به عنوان %s</string>
   <string name="keybase_narrative_github">بر روی GitHub شناخته شده است به عنوان %s</string>
   <string name="keybase_narrative_dns">کنترل می‌کند نام دامنه‌(های) %s</string>
+  <string name="keybase_verify">تایید</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">تغییر رمزعبور</string>
   <string name="edit_key_action_add_identity">اضافه‌کردن هویت</string>
@@ -256,8 +313,14 @@
   <!--Add/Edit keyserver-->
   <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
+  <string name="nav_apps">برنامه‌ها</string>
+  <string name="drawer_open">باز کردن منوی برنامه</string>
+  <string name="drawer_close">بستن منوی برنامه</string>
   <!--hints-->
   <!--certs-->
+  <string name="cert_none">هیچ</string>
+  <string name="cert_revoke">لغو</string>
+  <string name="cert_verify_ok">قبول</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
@@ -265,10 +328,6 @@
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
-  <!--Consolidate-->
-  <string name="msg_con_reimport_secret_skip">هیچ کلید خصوصی‌ای برای ورود یافت نشد، نادیده گرفته شد...</string>
-  <string name="msg_con_warn_delete_public">استثنا در حذف کردن فایل عمومیِ cache</string>
-  <string name="msg_con_warn_delete_secret">استثنا در حذف کردن فایل خصوصیِ cache</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">در حال انجام عملیات کلید</string>
   <string name="msg_ed_caching_new">در حال کَش کردنِ رمزعبور جدید</string>
@@ -278,22 +337,80 @@
   <string name="msg_ed_fetching">در حال واکشیِ کلید برای ویرایش (%s)</string>
   <string name="msg_ed_success">عملیات کلید با موفقیت انجام شد</string>
   <!--Promote key-->
+  <string name="msg_pr_error_key_not_found">کلید یافت نشد!</string>
+  <string name="msg_pr_fetching">در حال واکشیِ کلید برای ویرایش (%s)</string>
   <!--Other messages used in OperationLogs-->
+  <string name="msg_ek_error_not_found">کلید یافت نشد!</string>
   <!--Messages for DecryptVerify operation-->
   <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl_ok">قبول</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <!--Messages for Authentication operation-->
+  <string name="msg_crt_warn_not_found">کلید یافت نشد!</string>
+  <string name="msg_import_fetch_error_not_found">کلید یافت نشد!</string>
+  <string name="msg_upload_error_not_found">کلید یافت نشد!</string>
   <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
+  <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_pwd">رمز عبور</string>
   <!--Keyserver sync-->
+  <string name="keyserver_sync_orbot_notif_start">اجرای Orbot</string>
   <!--First Time-->
+  <string name="backup_section">پشتیبان گیری </string>
+  <string name="restore_section">بازگرداندن</string>
   <!--unsorted-->
+  <string name="label_user_id">هویت</string>
+  <string name="label_cert_type"> نوع</string>
+  <string name="error_key_not_found">کلید یافت نشد!</string>
+  <string name="key_unavailable">در دسترس نیست</string>
+  <string name="unknown">ناشناخته</string>
   <!--Android Account-->
+  <string name="account_privacy_title">حریم خصوصی</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <string name="enter_passphrase">رمزعبور را وارد کنید</string>
+  <string name="passphrase">رمز عبور</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="nfc_settings">تنظیمات</string>
+  <string name="snack_security_token_view">مشاهده</string>
+  <string name="snack_security_token_import">وارد کردن</string>
+  <string name="btn_reset">راه اندازی مجدد</string>
+  <string name="linked_create_verify">تایید</string>
   <!--Other Linked Identity strings-->
+  <string name="btn_finish">پایان</string>
+  <string name="linked_title_twitter">توییتر</string>
+  <string name="linked_button_verify">تایید</string>
+  <string name="linked_button_retry">تلاش دوباره</string>
+  <string name="linked_button_confirm">تایید </string>
+  <string name="linked_button_view">مشاهده</string>
+  <string name="linked_text_error">خطا </string>
+  <string name="share_log_dialog_share_button">به‌اشتراک گذاشتن</string>
+  <string name="share_log_dialog_cancel_button">لغو</string>
+  <string name="menu_uids_save">ذخيره</string>
+  <string name="prompt_fidesmo_pgp_install_button_positive">نصب</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">لغو</string>
+  <string name="prompt_fidesmo_app_install_button_positive">نصب</string>
+  <string name="prompt_fidesmo_app_install_button_negative">لغو</string>
+  <string name="redirect_import_key_no">بستن</string>
+  <string name="button_cancel">لغو</string>
+  <string name="key_health_revoked_title">لغو</string>
+  <string name="keyserver_title_published">منتشرشده</string>
+  <string name="keyserver_title_not_published">منتشر نشده</string>
+  <string name="dialog_insecure_title">هشدار امنیتی</string>
+  <string name="dialog_insecure_button_ok">فهمیدم.</string>
+  <string name="button_more_info">اطلاعات بیشتر</string>
+  <string name="button_import">وارد کردن</string>
+  <string name="transfer_status_connected">وصل شد</string>
+  <string name="transfer_status_disconnected">قطع شد!</string>
+  <string name="transfer_connecting">در حال اتصال…</string>
+  <string name="transfer_confirm_cancel">لغو</string>
+  <string name="transfer_confirm_ok">ارسال</string>
+  <string name="token_reset_confirm_ok">راه اندازی مجدد</string>
+  <string name="token_result_not_found">کلید یافت نشد!</string>
+  <string name="token_action_import">وارد کردن</string>
+  <string name="token_unlock_ok">باز کردن قفل</string>
 </resources>

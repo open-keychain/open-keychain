@@ -4,7 +4,7 @@
 
 [OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
 
-License: GPLv3+
+Lisans: GPLv3+
 
 [//]: # (NOTE: Alphabetic ordering)
 

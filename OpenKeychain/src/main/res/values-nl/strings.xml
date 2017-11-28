@@ -48,7 +48,7 @@
   <string name="section_cloud_search">Zoek naar sleutels</string>
   <string name="section_cloud_search_summary">Keyserver, keybase.io</string>
   <string name="section_passphrase_cache">Wachtwoorden en pincodes</string>
-  <string name="section_passphrase_cache_summary">Afhandeling, gebruikersinterface, herrineringstijd</string>
+  <string name="section_passphrase_cache_summary">Verwerking</string>
   <string name="section_proxy_settings">Netwerkanonimiteit</string>
   <string name="section_proxy_settings_summary">Tor, proxy-instellingen</string>
   <string name="section_gui">Interface</string>
@@ -337,6 +337,7 @@
   <string name="no_keys_exported">Geen sleutels geëxporteerd.</string>
   <string name="key_creation_el_gamal_info">Opmerking: alleen subsleutels ondersteunen ElGamal.</string>
   <string name="key_not_found">Kan de sleutel %08X niet vinden.</string>
+  <string name="authentication_subkey_not_found">Deze sleutel heeft geen authenticatiesubsleutel.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d slechte geheime sleutel genegeerd. Misschien heb je geëxporteerd met de optie\n--export-secret-subkeys\nZorg ervoor dat je in plaats daarvan met --export-secret-keys exporteert.</item>
     <item quantity="other">%d slechte geheime sleutels genegeerd. Misschien heb je geëxporteerd met de optie\n--export-secret-subkeys\nZorg ervoor dat je in plaats daarvan met --export-secret-keys exporteert.</item>
@@ -452,8 +453,7 @@
   <string name="progress_verifying_integrity">integriteit verifiëren…</string>
   <string name="progress_deleting_securely">\'%s\' veilig verwijderen…</string>
   <string name="progress_deleting">bezig met verwijderen van sleutels…</string>
-  <string name="progress_con_saving">consolidatie: bezig met opslaan naar cache…</string>
-  <string name="progress_con_reimport">consolidatie: bezig met opnieuw importeren…</string>
+  <string name="progress_update_trust">vertrouwensinfo bijwerken…</string>
   <string name="progress_verifying_keyserver_connection">verbinding wordt geverifieerd…</string>
   <string name="progress_starting_orbot">Orbot wordt gestart…</string>
   <!--action strings-->
@@ -640,6 +640,7 @@
   <string name="key_view_action_certify">Sleutel bevestigen</string>
   <string name="key_view_action_update">Update van sleutelserver</string>
   <string name="key_view_action_share_with">Delen met…</string>
+  <string name="key_view_action_share_ssh_with">Delen als SSH-publieke sleutel met…</string>
   <string name="key_view_action_share_nfc">Delen over NFC</string>
   <string name="key_view_action_upload">Uploaden naar sleutelserver</string>
   <string name="key_view_tab_main">Hoofdinfo</string>
@@ -1057,38 +1058,6 @@
   <string name="msg_mf_uat_add_unknown">Bezig met toevoegen van gebruikersattribuut van onbekend type</string>
   <string name="msg_mf_unlock_error">Fout bij ontgrendelen van sleutelbos!</string>
   <string name="msg_mf_unlock">Bezig met ontgrendelen van sleutelbos</string>
-  <!--Consolidate-->
-  <string name="msg_con">Bezig met consolideren van database</string>
-  <string name="msg_con_error_bad_state">Consolidatie gestart terwijl er geen database was gecached! Dit is waarschijnlijk een bug, gelieve een verslag in te dienen!</string>
-  <string name="msg_con_error_concurrent">Consolidatie afgebroken, loopt al op een andere draad!</string>
-  <string name="msg_con_save_secret">Bezig met opslaan van geheime sleutelbossen</string>
-  <string name="msg_con_save_public">Bezig met opslaan van publieke sleutelbossen</string>
-  <string name="msg_con_db_clear">Bezig met wissen van database</string>
-  <string name="msg_con_success">Database succesvol geconsolideerd</string>
-  <string name="msg_con_critical_in">Begin van kritieke fase</string>
-  <string name="msg_con_critical_out">Einde van kritieke fase</string>
-  <string name="msg_con_delete_public">Bezig met verwijderen van cachebestand van publieke sleutelbos</string>
-  <string name="msg_con_delete_secret">Bezig met verwijderen van cachebestand van geheime sleutelbos</string>
-  <string name="msg_con_error_db">Fout bij openen van database!</string>
-  <string name="msg_con_error_io_public">I/O-fout bij schrijven van publieke sleutels naar cache!</string>
-  <string name="msg_con_error_io_secret">I/O-fout bij schrijven van geheime sleutels naar cache!</string>
-  <string name="msg_con_error_public">Fout bij opnieuw importeren van publieke sleutels!</string>
-  <string name="msg_con_error_secret">Fout bij opnieuw importeren van geheime sleutels!</string>
-  <string name="msg_con_recover">Bezig met hervatten van consolidatieproces</string>
-  <string name="msg_con_recursive">Recursief samenvoegen wordt overgeslagen</string>
-  <string name="msg_con_recover_unknown">Bezig met hervatten van consolidatieproces uit onbekende staat</string>
-  <plurals name="msg_con_reimport_public">
-    <item quantity="one">Bezig met opnieuw importeren van een publieke sleutel</item>
-    <item quantity="other">Bezig met opnieuw importeren van %d publieke sleutels</item>
-  </plurals>
-  <string name="msg_con_reimport_public_skip">Geen publieke sleutels om opnieuw te importeren, bewerking wordt overgeslagen…</string>
-  <plurals name="msg_con_reimport_secret">
-    <item quantity="one">Bezig met opnieuw importeren van een geheime sleutel</item>
-    <item quantity="other">Bezig met opnieuw importeren van %d geheime sleutels</item>
-  </plurals>
-  <string name="msg_con_reimport_secret_skip">Geen geheime sleutel om opnieuw te importeren, bewerking wordt overgeslagen…</string>
-  <string name="msg_con_warn_delete_public">Uitzondering bij verwijderen van publiek cachebestand</string>
-  <string name="msg_con_warn_delete_secret">Uitzondering bij verwijderen van geheim cachebestand</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Bezig met uitvoeren van sleutelbewerking</string>
   <string name="msg_ed_caching_new">Bezig met cachen van nieuw wachtwoord</string>
@@ -1208,6 +1177,18 @@
   <string name="msg_pse_sigcrypting">Bezig met versleutelen van gegevens met ondertekening</string>
   <string name="msg_pse">Ondertekening en/of versleuteling wordt gestart</string>
   <string name="msg_pse_symmetric">Bezig met voorbereiden van symmetrische versleuteling</string>
+  <!--Messages for Authentication operation-->
+  <string name="msg_auth">Authenticatie wordt gestart</string>
+  <string name="msg_auth_error_key_auth">Geselecteerde authenticatiesleutel kan niet gevonden worden</string>
+  <string name="msg_auth_error_key_not_allowed">De sleutel geselecteerd voor authenticatie is niet toegestaan</string>
+  <string name="msg_auth_error_revoked_or_expired">Ingetrokken/verlopen sleutel kan niet gebruikt worden voor authenticatie</string>
+  <string name="msg_auth_error_unlock">Onbekende fout bij ontgrendelen van sleutel!</string>
+  <string name="msg_auth_pending_nfc">NFC-token vereist, gebruikersinvoer wordt gevraagd…</string>
+  <string name="msg_auth_pending_passphrase">Wachtwoord vereist, gebruikersinvoer wordt gevraagd…</string>
+  <string name="msg_auth_error_bad_passphrase">Wachtwoord verkeerd!</string>
+  <string name="msg_auth_error_nfc">NFC-gegevensfout!</string>
+  <string name="msg_auth_error_sig">OpenPGP-ondertekeningsuitzondering tegengekomen!</string>
+  <string name="msg_auth_ok">Authenticatie voltooid!</string>
   <string name="msg_crt_certifying">Bezig met aanmaken van certificaten</string>
   <plurals name="msg_crt_certify_uids">
     <item quantity="one">Bezig met certificeren van een gebruikers-ID voor sleutel %2$s</item>
@@ -1282,7 +1263,6 @@
   </plurals>
   <string name="msg_del_key">Bezig met verwijderen van sleutel %s</string>
   <string name="msg_del_key_fail">Verwijderen van sleutel %s mislukt</string>
-  <string name="msg_del_consolidate">Bezig met consolideren van database na verwijderen van geheime sleutel</string>
   <plurals name="msg_del_ok">
     <item quantity="one">Sleutel succesvol verwijderd</item>
     <item quantity="other">%d sleutels succesvol verwijderd</item>
@@ -1497,6 +1477,7 @@
   <string name="security_token_error_header">Security Token rapporteerde ongeldige %s byte</string>
   <string name="security_token_error_tag_lost">Security Token is te vroeg verwijderd. Houdt het Security Token aan de achterkant totdat de bewerking is beëindigd.</string>
   <string name="security_token_error_iso_dep_not_supported">Security Token biedt geen ondersteuning voor de vereiste communicatiestandaard (ISO-DEP, ISO 14443-4)</string>
+  <string name="security_token_error_generic">Communicatiefout. Het Security Token is waarschijnlijk te snel weggenomen.</string>
   <string name="security_token_error_try_again">Opnieuw proberen</string>
   <string name="btn_delete_original">Oorspronkelijk bestand verwijderen</string>
   <string name="snack_encrypt_filenames_on">Bestandsnamen <b>zijn</b> versleuteld.</string>
@@ -1688,6 +1669,8 @@
   <string name="key_health_ok_subtitle">Geen problemen met sleutel gevonden.</string>
   <string name="key_health_divert_title">Gezond (Security Token)</string>
   <string name="key_health_divert_subtitle">Geen problemen met sleutel gevonden.</string>
+  <string name="key_health_divert_partial_title">Gezond (gedeeltelijk token)</string>
+  <string name="key_health_divert_partial_subtitle">Tik voor meer info</string>
   <string name="key_health_expired_title">Verlopen</string>
   <string name="key_health_expired_subtitle">Deze sleutel mag niet meer gebruikt worden.</string>
   <string name="key_health_revoked_title">Ingetrokken</string>
@@ -1738,6 +1721,7 @@
   <string name="dialog_insecure_button_undo">Onderdrukking opheffen</string>
   <string name="dialog_insecure_button_view_key">Sleutel bekijken</string>
   <string name="dialog_insecure_button_ok">Begrepen</string>
+  <string name="usage_authentication">Authenticatie</string>
   <string name="identity_context_forget">Vergeten</string>
   <string name="button_scan">Scannen</string>
   <string name="button_more_info">Meer info</string>
@@ -1770,7 +1754,7 @@
   <string name="transfer_error_wifi_text_instructions_ssid">Zorg dat je je op het netwerk \"%s\" bevindt, en scan dan opnieuw.</string>
   <string name="status_check_key">Sleutelstatus controleren…</string>
   <string name="status_search_local">Zoeken in sleutellijst…</string>
-  <string name="status_search_uri">Zoeken op token-URI…</string>
+  <string name="status_search_uri">Zoeken op token-URL…</string>
   <string name="status_search_keyserver">Zoeken op sleutelservers…</string>
   <string name="status_import">Sleutel importeren…</string>
   <string name="status_token_promote">Sleutel instellen…</string>
@@ -1784,6 +1768,7 @@
   <string name="token_result_key_found">Sleutel gevonden!</string>
   <string name="token_result_token_ok">Klaar voor gebruik!</string>
   <string name="token_result_empty">Token is leeg</string>
+  <string name="token_put_key_unsupported">Stel dit Security Token in met GnuPG. OpenKeychain ondersteunt momenteel enkel ondertekenen/ontsleutelen met dit Security Token.</string>
   <string name="token_action_retry">Opnieuw zoeken</string>
   <string name="token_action_load_from_file">Laden uit bestand</string>
   <string name="token_action_reset">Security Token opnieuw instellen</string>
@@ -1796,7 +1781,9 @@
     <item quantity="one">1 poging resterend</item>
     <item quantity="other">%d pogingen resterend</item>
   </plurals>
-  <string name="token_error_locked_indefinitely">Te veel pogingen tot ontgrendelen. Token is voorgoed vergrendeld!</string>
+  <string name="token_error_locked_indefinitely">Te veel pogingen tot ontgrendelen. Token kan niet ontgrendeld worden!</string>
+  <string name="token_error_cannot_reset_gnuk_old">Het Gnuk-token/de Nitrokey Start biedt geen ondersteuning voor opnieuw instellen tot versie 1.2.5</string>
+  <string name="token_error_cannot_reset">Dit Security Token biedt geen ondersteuning voor opnieuw instellen</string>
   <string name="token_menu_change_pin">Pincode wijzigen</string>
   <string name="token_menu_view_log">Log bekijken</string>
   <string name="token_unlock_ok">Ontgrendelen</string>
@@ -1805,14 +1792,14 @@
   <string name="token_hint_new_pin_repeat">Nieuwe pincode (herhalen)</string>
   <string name="token_error_admin_min8">Beheerderspincode moet 8 of meer tekens bevatten!</string>
   <string name="token_error_pin_min6">Nieuwe pincode moet 6 of meer tekens bevatten!</string>
-  <string name="token_error_pin_repeat">Pincode komt niet overeen!</string>
+  <string name="token_error_pin_repeat">Pincodes komen niet overeen!</string>
   <string name="msg_ret_curi_error_io">Fout bij lezen van gegevens!</string>
   <string name="msg_ret_curi_error_no_match">Geen overeenkomstige sleutel gevonden</string>
   <string name="msg_ret_curi_error_not_found">Kon bestand niet openen!</string>
   <string name="msg_ret_curi_found">Sleutel gevonden: %s</string>
   <string name="msg_ret_curi_mismatch">Sleutel komt niet overeen</string>
   <string name="msg_ret_curi_ok">Sleutel gevonden</string>
-  <string name="msg_ret_curi_open">URI openen: %s</string>
+  <string name="msg_ret_curi_open">URL openen: %s</string>
   <string name="msg_ret_curi_start">Sleutel laden uit bestand of document…</string>
   <string name="msg_ret_ks_error">Onbekende fout bij zoeken naar sleutel!</string>
   <string name="msg_ret_ks_error_not_found">Sleutel niet gevonden</string>
@@ -1828,12 +1815,22 @@
   <string name="msg_ret_local_ok">Sleutel gevonden</string>
   <string name="msg_ret_local_secret">Lokale sleutel bevat geheime sleutelgegevens</string>
   <string name="msg_ret_local_start">Zoeken naar sleutel in lokale sleutellijst…</string>
-  <string name="msg_ret_uri_error_fetch">Onbekende fout bij ophalen van URI!</string>
+  <string name="msg_ret_uri_error_fetch">Onbekende fout bij ophalen van URL!</string>
   <string name="msg_ret_uri_error_parse">Token-URI is verkeerd opgemaakt!</string>
-  <string name="msg_ret_uri_error_no_match">Geen overeenkomstige sleutel gevonden op URI</string>
-  <string name="msg_ret_uri_fetching">URI ophalen: %s</string>
+  <string name="msg_ret_uri_error_no_match">Geen overeenkomstige sleutel gevonden op URL</string>
+  <string name="msg_ret_uri_fetching">URL ophalen: %s</string>
   <string name="msg_ret_uri_ok">Sleutel gevonden</string>
-  <string name="msg_ret_uri_start">Zoeken naar sleutel op token-URI…</string>
-  <string name="msg_ret_uri_null">Geen URI opgeslagen op Security Token</string>
+  <string name="msg_ret_uri_start">Zoeken naar sleutel op token-URL…</string>
+  <string name="msg_ret_uri_null">Geen URL opgeslagen op Security Token</string>
   <string name="msg_ret_uri_test">Controleren of gevonden sleutel overeenkomt: %s</string>
+  <string name="msg_trust">Vertrouwensinformatie bijwerken…</string>
+  <string name="msg_trust_ok">Bijwerken voltooid!</string>
+  <string name="msg_trust_initialize">Sleutelondertekeningscache initialiseren</string>
+  <string name="msg_trust_key">Sleutels ondertekend door %s bijwerken</string>
+  <string name="msg_trust_count_none">Geen sleutels om bij te werken</string>
+  <plurals name="msg_trust_count">
+    <item quantity="one">1 sleutel bijwerken</item>
+    <item quantity="other">%d sleutels bijwerken</item>
+  </plurals>
+  <string name="button_locate_nfc">Waar is mijn NFC-lezer?</string>
 </resources>

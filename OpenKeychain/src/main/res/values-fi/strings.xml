@@ -91,12 +91,16 @@
   <string name="menu_delete_key">Poista avain</string>
   <string name="menu_manage_keys">Hallitse avaimiani</string>
   <string name="menu_search">Etsi</string>
+  <string name="menu_open">Avaa</string>
+  <string name="menu_read_clipboard">Lue leikepöydältä</string>
   <string name="menu_nfc_preferences">NFC-asetukset</string>
   <string name="menu_beam_preferences">Beam-asetukset</string>
   <string name="menu_encrypt_to">Salaa...</string>
   <string name="menu_select_all">Valitse kaikki</string>
   <string name="menu_export_all_keys">Vie kaikki avaimet</string>
   <string name="menu_update_all_keys">Päivitä kaikki avaimet</string>
+  <string name="menu_change_password">Vaihda salasana</string>
+  <string name="menu_advanced">Lisätietoja</string>
   <string name="menu_keyserver_add">Lisää</string>
   <!--label-->
   <string name="label_message">Teksti</string>
@@ -119,6 +123,7 @@
   <string name="label_file_compression">Tiedoston pakkaus</string>
   <string name="label_key_id">Avaimen ID</string>
   <string name="label_key_created">Avain luotu %s</string>
+  <string name="label_key_type">Tyyppi</string>
   <string name="label_creation">Luontiaika</string>
   <string name="label_expiry">Umpeutumisaika</string>
   <string name="label_usage">Käyttö</string>
@@ -134,13 +139,18 @@
   <string name="label_preferred">ensisijainen</string>
   <string name="label_enable_compression">Ota pakkaus käyttöön</string>
   <string name="label_encrypt_filenames">Salaa tiedostojen nimet</string>
+  <string name="label_hidden_recipients">Piilota vastaanottajat</string>
+  <string name="label_enter_keyserver_url">Verkko-osoite</string>
   <string name="label_keyserver_dialog_delete">Poista avainpalvelin</string>
   <string name="label_theme">Teema</string>
+  <string name="label_enter_smartpgp_authority_name">Nimi</string>
   <string name="pref_keyserver">OpenPGP-avainpalvelimet</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">Etsi avaimia osoitteesta keybase.io</string>
+  <string name="pref_facebook">Facebook</string>
   <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">Varoitus</string>
+  <string name="label_experimental_settings_linked_identities_title">Linkitetyt identiteetit</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Ota Tor käyttöö</string>
   <string name="pref_proxy_tor_summary">Orbot tulee olla asennettu</string>
@@ -178,6 +188,8 @@
   <string name="choice_forever">ikuisesti</string>
   <string name="choice_select_cert">Valitse avain</string>
   <string name="filemanager_title_open">Avaa...</string>
+  <string name="usage_sign">Allekirjoita</string>
+  <string name="usage_encrypt">Salaa</string>
   <string name="error">Virhe</string>
   <string name="error_message">Virhe: %s</string>
   <string name="theme_dark">Tumma</string>
@@ -195,6 +207,7 @@
   <string name="error_wrong_passphrase">väärä salasana</string>
   <!--errors without preceding Error:-->
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_no_signature">Allekirjoittamaton</string>
   <string name="decrypt_result_encrypted">Salattu</string>
   <string name="decrypt_result_not_encrypted">Ei salattu</string>
   <string name="decrypt_result_insecure">Turvaton salaus</string>
@@ -221,30 +234,68 @@
     <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
   <!--Help-->
+  <string name="help_tab_start">Käynnistä</string>
+  <string name="help_tab_faq">UKK</string>
+  <string name="help_tab_changelog">Muutosloki</string>
+  <string name="help_tab_about">Ohjelmasta</string>
+  <string name="help_about_version">Versio:</string>
+  <string name="help_tab_donations">Lahjoita</string>
   <!--Import-->
+  <string name="import_tab_keyserver">Avainpalvelin</string>
+  <string name="import_tab_cloud">Avain haku</string>
+  <string name="btn_import">Tuo</string>
+  <string name="btn_refresh">Virkistä</string>
   <!--Generic result toast-->
+  <string name="snackbar_details">Lisätiedot</string>
   <!--Import result toast-->
   <!--Delete result toast-->
   <!--Revoke result toast (snackbar)-->
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
+  <string name="api_settings_no_key">Ei avainta valittu</string>
+  <string name="api_settings_save">Tallenna</string>
+  <string name="api_settings_cancel">Peruuta</string>
+  <string name="api_settings_package_name">Pakkausnimi</string>
+  <string name="api_settings_advanced">Lisätietoja</string>
+  <string name="api_settings_settings">Asetukset</string>
   <!--Share-->
   <!--retry upload dialog-->
   <!--Delete or revoke private key dialog-->
   <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
+  <string name="key_list_fab_search">Avain haku</string>
   <!--Key view-->
+  <string name="key_view_action_edit">Muokkaa</string>
+  <string name="key_view_action_encrypt">Salaa Tekstiä</string>
+  <string name="key_view_tab_start">Käynnistä</string>
+  <string name="key_view_tab_share">Jaa</string>
+  <string name="key_view_tab_keys">Aliavaimet</string>
+  <string name="key_view_tab_certs">Varmenteet</string>
+  <string name="user_id_info_revoked_title">Kumottu</string>
+  <string name="user_id_info_invalid_title">Virheellinen</string>
   <!--Key trust-->
   <!--keybase proof stuff-->
+  <string name="keybase_verify">Todenna</string>
   <!--Edit key-->
+  <string name="edit_key_action_change_passphrase">Vaihda salasana</string>
   <!--Create key-->
+  <string name="create_key_empty">Kenttä on vaadittu</string>
+  <string name="create_key_passphrases_not_equal">Salasanat eivät täsmää</string>
   <!--View key-->
+  <string name="view_key_fragment_no_system_contact">&lt;ei mitään&gt;</string>
   <!--Add/Edit keyserver-->
   <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
+  <string name="nav_keys">Avaimet</string>
+  <string name="nav_apps">Sovellukset</string>
+  <string name="drawer_open">Avaa navigointilaatikko</string>
+  <string name="drawer_close">Sulje navigointilaatikko</string>
   <!--hints-->
   <!--certs-->
+  <string name="cert_none">ei mitään</string>
+  <string name="cert_revoke">peruutettu</string>
+  <string name="cert_verify_ok">OK</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
@@ -252,7 +303,7 @@
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
-  <!--Consolidate-->
+  <string name="msg_mf_error_noop">Ei mitään tekemistä!</string>
   <!--Edit Key (higher level than modify)-->
   <!--Promote key-->
   <!--Other messages used in OperationLogs-->
@@ -261,23 +312,41 @@
   <string name="msg_vl_ok">OK</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <!--Messages for Authentication operation-->
   <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
+  <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_pwd">Salasana</string>
   <!--Keyserver sync-->
   <!--First Time-->
+  <string name="first_time_create_key">Luo minun avaimeni</string>
+  <string name="backup_section">Varmuuskopio</string>
+  <string name="restore_section">Palauta</string>
   <!--unsorted-->
+  <string name="label_user_id">Identiteetti</string>
   <string name="label_cert_type">Tyyppi</string>
   <string name="key_no_passphrase">ei salasanaa</string>
   <string name="key_unavailable">ei saatavilla</string>
+  <string name="unknown">tunnistamaton</string>
   <string name="contact_show_key">Näytä avain (%s)</string>
   <string name="key_colon">Avain:</string>
   <!--Android Account-->
+  <string name="account_privacy_title">Yksityisyys</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <string name="passphrase">Salasana</string>
+  <string name="set_passphrase">Aseta salasana</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="nfc_settings">Asetukset</string>
+  <string name="snack_security_token_view">Näkymä</string>
+  <string name="snack_security_token_import">Tuo</string>
+  <string name="btn_reset">Nollaa</string>
+  <string name="security_token_error">Virhe: %s</string>
+  <string name="security_token_error_unknown">Tuntematon virhe</string>
+  <string name="security_token_error_try_again">Yritä uudelleen</string>
   <string name="progress_processing">Käsitellään...</string>
   <string name="linked_create_twitter_1_3">Syötäthän Twitter-näyttönimesi jatkaaksesi.</string>
   <string name="linked_create_twitter_handle">Twitter-välikappale</string>
@@ -291,6 +360,7 @@
   <string name="linked_need_verify">Resurssi täytyy todentaa ennenkuin voit jatkaa!</string>
   <string name="menu_linked_add_identity">Linkitä tunnukseen</string>
   <string name="section_linked_identities">Linkitetyt identiteetit</string>
+  <string name="btn_finish">Loppu</string>
   <string name="linked_title_https">Verkkosivu (HTTPS)</string>
   <string name="linked_title_dns">Domain-nimi (DNS)</string>
   <string name="linked_title_github">GitHub</string>
@@ -305,4 +375,26 @@
   <string name="linked_text_confirming">Vahvistetaan...</string>
   <string name="linked_ids_more_unknown">Vielä %d tunnistamatonta identiteettityyppiä</string>
   <string name="title_linked_id_create">Luo linkitetty identiteetti</string>
+  <string name="share_log_dialog_share_button">Jaa</string>
+  <string name="share_log_dialog_cancel_button">Peruuta</string>
+  <string name="menu_uids_save">Tallenna</string>
+  <string name="prompt_fidesmo_pgp_install_button_positive">Asenna</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">Peruuta</string>
+  <string name="prompt_fidesmo_app_install_button_positive">Asenna</string>
+  <string name="prompt_fidesmo_app_install_button_negative">Peruuta</string>
+  <string name="redirect_import_key_no">Sulje</string>
+  <string name="button_allow">Salli</string>
+  <string name="button_cancel">Peruuta</string>
+  <string name="key_health_expired_title">Vanhentunut</string>
+  <string name="key_health_revoked_title">Kumottu</string>
+  <string name="keyserver_title_published">Julkaistu</string>
+  <string name="dialog_insecure_button_ok">Selvä</string>
+  <string name="button_import">Tuo</string>
+  <string name="transfer_status_connected">Yhdistetty</string>
+  <string name="transfer_connecting">Yhdistetään...</string>
+  <string name="transfer_confirm_cancel">Peruuta</string>
+  <string name="transfer_confirm_ok">Lähetä</string>
+  <string name="token_reset_confirm_ok">Nollaa</string>
+  <string name="token_action_import">Tuo</string>
+  <string name="token_unlock_ok">Poista lukitus</string>
 </resources>

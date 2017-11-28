@@ -48,7 +48,7 @@
   <string name="section_cloud_search">Пошук ключа</string>
   <string name="section_cloud_search_summary">Сервер ключів, keybase.io</string>
   <string name="section_passphrase_cache">Паролі та Піни</string>
-  <string name="section_passphrase_cache_summary">Опрацювання, інтерфейс, час запам\'ятовування</string>
+  <string name="section_passphrase_cache_summary">Обробка</string>
   <string name="section_proxy_settings">Мережева анонімність</string>
   <string name="section_proxy_settings_summary">Tor, налаштування проксі</string>
   <string name="section_gui">Інтерфейс</string>
@@ -340,6 +340,7 @@
   <string name="no_keys_exported">Жодного ключа не експортовано.</string>
   <string name="key_creation_el_gamal_info">Примітка: лише підключі підтримують ElGamal.</string>
   <string name="key_not_found">Не можливо знайти ключ %08X.</string>
+  <string name="authentication_subkey_not_found">Цей ключ не містить підключа автентифікації.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d поганий секретний ключ проігнорований. Можливо ви експортували з параметром\n
  --export-secret-subkeys\nЗробіть ваш експорт з   --export-secret-keys\n натомість.</item>
@@ -460,8 +461,6 @@
   <string name="progress_verifying_integrity">перевірка цілісності…</string>
   <string name="progress_deleting_securely">вилучення безпечно \'%s\'…</string>
   <string name="progress_deleting">вилучаються ключі…</string>
-  <string name="progress_con_saving">consolidate: зберігається у кеші…</string>
-  <string name="progress_con_reimport">consolidate: повторний імпорт…</string>
   <string name="progress_verifying_keyserver_connection">перевірка з\'єднання...</string>
   <string name="progress_starting_orbot">Стартує Orbot…</string>
   <!--action strings-->
@@ -662,6 +661,7 @@
   <string name="key_view_action_certify">Підтвердити ключ</string>
   <string name="key_view_action_update">Оновити із сервера ключів</string>
   <string name="key_view_action_share_with">Поділитися із…</string>
+  <string name="key_view_action_share_ssh_with">Поділитися відкритим ключем SSH із…</string>
   <string name="key_view_action_share_nfc">Поділитися через NFC</string>
   <string name="key_view_action_upload">Вивантажити на сервер ключів</string>
   <string name="key_view_tab_main">Основна інформація</string>
@@ -1084,40 +1084,6 @@
   <string name="msg_mf_uat_add_unknown">Додавання користувацького атрибута невідомого типу</string>
   <string name="msg_mf_unlock_error">Помилка розблокування в\'язки!</string>
   <string name="msg_mf_unlock">Розблоковується в\'язка</string>
-  <!--Consolidate-->
-  <string name="msg_con">Об\'єднання бази даних</string>
-  <string name="msg_con_error_bad_state">Об\'єднання було розпочато оскільки відсутня кешована база даних! Можливо це програмна помилка. Будь ласка, повідомте через звіт про помилки.</string>
-  <string name="msg_con_error_concurrent">Об\'єднання перервано, задача вже працює в іншому потоці</string>
-  <string name="msg_con_save_secret">Збереження секретних  в\'язок</string>
-  <string name="msg_con_save_public">Збереження публічних в\'язок</string>
-  <string name="msg_con_db_clear">Очищення бази даних</string>
-  <string name="msg_con_success">База даних об\'єднана успішно</string>
-  <string name="msg_con_critical_in">Входжу у критичну фазу</string>
-  <string name="msg_con_critical_out">Покидаю критичну фазу</string>
-  <string name="msg_con_delete_public">Видалення кешу публічної в\'язки ключів</string>
-  <string name="msg_con_delete_secret">Видалення секретного файлу кешу в\'язки ключів</string>
-  <string name="msg_con_error_db">Помилка відкриття бази даних!</string>
-  <string name="msg_con_error_io_public">Помилка вводу-виводу кешування публічних ключів!</string>
-  <string name="msg_con_error_io_secret">Помилка вводу-виводу кешування секретних ключів!</string>
-  <string name="msg_con_error_public">Помилка повторного імпорту публічних ключів!</string>
-  <string name="msg_con_error_secret">Помилка повторного імпорту секретних ключів!</string>
-  <string name="msg_con_recover">Поновлення процесу об\'єднання</string>
-  <string name="msg_con_recursive">Пропущення рекурсивного об\'єднання</string>
-  <string name="msg_con_recover_unknown">Поновлення процесу об\'єднання з невідомого стану</string>
-  <plurals name="msg_con_reimport_public">
-    <item quantity="one">Реімпорт публічного ключа</item>
-    <item quantity="few">Реімпорт %d публічних ключів</item>
-    <item quantity="other">Реімпорт %d публічних ключів</item>
-  </plurals>
-  <string name="msg_con_reimport_public_skip">Відсутні публічні ключі для реімпорту, пропускаю...</string>
-  <plurals name="msg_con_reimport_secret">
-    <item quantity="one">Реімпорт секретного ключа</item>
-    <item quantity="few">Реімпорт %d секретних ключів</item>
-    <item quantity="other">Реімпорт %d секретних ключів</item>
-  </plurals>
-  <string name="msg_con_reimport_secret_skip">Немає секретних ключів для імпортування, пропускаю...</string>
-  <string name="msg_con_warn_delete_public">Проблема з видаленням публічного файлу кешування</string>
-  <string name="msg_con_warn_delete_secret">Проблема з видаленням секретного файлу кешування</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Виконання операції з ключем</string>
   <string name="msg_ed_caching_new">Кешування нового паролю</string>
@@ -1237,6 +1203,18 @@
   <string name="msg_pse_sigcrypting">Шифрування даних з підписом</string>
   <string name="msg_pse">Старт операції підписування та/чи шифрування</string>
   <string name="msg_pse_symmetric">Підготовка симетричного шифрування</string>
+  <!--Messages for Authentication operation-->
+  <string name="msg_auth">Старт операції автентифікації...</string>
+  <string name="msg_auth_error_key_auth">Вибраний ключ не знайдений для автентифікації</string>
+  <string name="msg_auth_error_key_not_allowed">Вибраний ключ не допущений для автентифікації</string>
+  <string name="msg_auth_error_revoked_or_expired">Відкликаний/Застарілий ключ не може бути використаний для автентифікації</string>
+  <string name="msg_auth_error_unlock">Невідома помилка розблокування ключа!</string>
+  <string name="msg_auth_pending_nfc">Потрібен токен NFC, запит на дані користувача…</string>
+  <string name="msg_auth_pending_passphrase">Потрібен пароль, запит користувачу на дані...</string>
+  <string name="msg_auth_error_bad_passphrase">Поганий пароль!</string>
+  <string name="msg_auth_error_nfc">Помилка NFC даних!</string>
+  <string name="msg_auth_error_sig">Виявлено виняток підпису OpenPGP!</string>
+  <string name="msg_auth_ok">Операцію над ключем виконано успішно</string>
   <string name="msg_crt_certifying">Генерування сертифікатів</string>
   <plurals name="msg_crt_certify_uids">
     <item quantity="one">Сертифікування користувацького ідентифікатору для ключа %2$s</item>
@@ -1316,7 +1294,6 @@
   </plurals>
   <string name="msg_del_key">Видалення ключа %s</string>
   <string name="msg_del_key_fail">Помилка видалення ключа %s</string>
-  <string name="msg_del_consolidate">Об\'єднання бази даних після видалення секретного ключа</string>
   <plurals name="msg_del_ok">
     <item quantity="one">Успішно видалено ключ</item>
     <item quantity="few">Успішно видалено %d ключі</item>
@@ -1535,6 +1512,7 @@
   <string name="security_token_error_header">Маркер безпеки звітував про недопустимий %s байт.</string>
   <string name="security_token_error_tag_lost">Маркер безпеки було прибрано занадто рано. Тримайте маркер безпеки за пристроєм, поки виконується операція.</string>
   <string name="security_token_error_iso_dep_not_supported">Маркер безпеки не підтримує потрібний комунікаційний стандарт (ISO-DEP, ISO 14443-4)</string>
+  <string name="security_token_error_generic">Помилка зв\'язку. Вірогідно, маркер безпеки вимкнений надто рано.</string>
   <string name="security_token_error_try_again">Спробуйте знову</string>
   <string name="btn_delete_original">Видалити оригінальний файл</string>
   <string name="snack_encrypt_filenames_on">Назви файлів <b>є</b> зашифрованими.</string>
@@ -1564,6 +1542,7 @@
   <string name="file_delete_exception">Оригінальний файл не може бути видалений!</string>
   <string name="error_clipboard_empty">Буфер обміну - порожній</string>
   <string name="error_clipboard_copy">Помилка копіювання до буфера обміну!</string>
+  <string name="error_clipboard_bad">Не можливо прочитати ключів з буфера обміну!</string>
   <string name="error_scan_fp">Помилка сканування відбитку</string>
   <string name="error_scan_match">Відбитки не збігаються</string>
   <string name="error_expiry_past">Дата закінчення у минулому!</string>
@@ -1725,6 +1704,8 @@
   <string name="key_health_ok_subtitle">Проблем ключа не виявлено.</string>
   <string name="key_health_divert_title">Придатний (маркер безпеки)</string>
   <string name="key_health_divert_subtitle">Проблем ключа не виявлено.</string>
+  <string name="key_health_divert_partial_title">Придатний (частковий маркер)</string>
+  <string name="key_health_divert_partial_subtitle">Клацніть для подробиць</string>
   <string name="key_health_expired_title">Закінчився</string>
   <string name="key_health_expired_subtitle">Цей ключ не повинен більше використовуватись.</string>
   <string name="key_health_revoked_title">Відкликано</string>
@@ -1775,6 +1756,7 @@
   <string name="dialog_insecure_button_undo">Не забороняти</string>
   <string name="dialog_insecure_button_view_key">Дивитись ключ</string>
   <string name="dialog_insecure_button_ok">Отримано</string>
+  <string name="usage_authentication">Аутентифікація</string>
   <string name="identity_context_forget">Забути</string>
   <string name="button_scan">Сканувати</string>
   <string name="button_more_info">Докладніше</string>
@@ -1807,7 +1789,7 @@
   <string name="transfer_error_wifi_text_instructions_ssid">Переконайтеся, що ви перебуваєте у мережі \'\'%s\". Тоді знову скануйте.</string>
   <string name="status_check_key">Подивитись статус ключа...</string>
   <string name="status_search_local">Пошук у списку ключів...</string>
-  <string name="status_search_uri">Пошук за Uri маркера...</string>
+  <string name="status_search_uri">Пошук URL маркера...</string>
   <string name="status_search_keyserver">Пошук на серверах ключів...</string>
   <string name="status_import">Імпортується ключ…</string>
   <string name="status_token_promote">Встановлення ключа...</string>
@@ -1821,36 +1803,37 @@
   <string name="token_result_key_found">Ключ знайдено!</string>
   <string name="token_result_token_ok">Готове до використання!</string>
   <string name="token_result_empty">Маркер - порожній</string>
+  <string name="token_put_key_unsupported">Налаштуйте цей маркер безпеки за допомогою GnuPG. OpenKeychain наразі підтримує лише шифрування/розшифрування з цим маркером безпеки.</string>
   <string name="token_action_retry">Повторити пошук</string>
   <string name="token_action_load_from_file">Завантажити з файлу</string>
   <string name="token_action_reset">Очистити маркер безпеки</string>
   <string name="token_action_import">Імпортувати</string>
   <string name="token_action_view_key">Переглянути ключ</string>
   <string name="token_action_setup">Налаштувати з новим ключем</string>
-  <string name="token_action_unlock">Розблокувати за допомогою новою pin адміністратора</string>
+  <string name="token_action_unlock">Розблокувати через PIN адміністратора</string>
   <string name="token_unlock_attempts_none">Не залишилося спроб розблокування</string>
   <plurals name="token_unlock_attempts">
     <item quantity="one">залишилася 1 спроба</item>
     <item quantity="few">залишилися %d спроби</item>
     <item quantity="other">залишилося %d спроб</item>
   </plurals>
-  <string name="token_error_locked_indefinitely">Надто багато спроб відновлення. Маркер заблокований безповоротно!</string>
-  <string name="token_menu_change_pin">Змінити Pin</string>
+  <string name="token_error_locked_indefinitely">Забагато спроб очистити налаштування. Маркер неможливо розблокувати!</string>
+  <string name="token_menu_change_pin">Змінити PIN</string>
   <string name="token_menu_view_log">Переглянути журнал</string>
   <string name="token_unlock_ok">Розблокувати</string>
   <string name="token_hint_admin_pin">PIN адміністратора</string>
-  <string name="token_hint_new_pin">Новий Pin</string>
-  <string name="token_hint_new_pin_repeat">Новий Pin (ще раз)</string>
-  <string name="token_error_admin_min8">Pin адміністратора повинен мати не менше 8 символів!</string>
-  <string name="token_error_pin_min6">Новий pin повинен мати не менше 6 символів!</string>
-  <string name="token_error_pin_repeat">Не збігається pin!</string>
+  <string name="token_hint_new_pin">Новий PIN</string>
+  <string name="token_hint_new_pin_repeat">Новий PIN (ще раз)</string>
+  <string name="token_error_admin_min8">PIN адміністратора повинен бути не меншим за 8 символів.</string>
+  <string name="token_error_pin_min6">Новий PIN повинен бути не меншим за 6 символів.</string>
+  <string name="token_error_pin_repeat">Не збігаються PINи.</string>
   <string name="msg_ret_curi_error_io">Помилка читання даних!</string>
   <string name="msg_ret_curi_error_no_match">Не знайдено відповідний ключ</string>
   <string name="msg_ret_curi_error_not_found">Не можливо відкрити файл!</string>
   <string name="msg_ret_curi_found">Знайдений ключ: %s</string>
   <string name="msg_ret_curi_mismatch">Ключ не збігається</string>
   <string name="msg_ret_curi_ok">Ключ знайдено</string>
-  <string name="msg_ret_curi_open">Uri відкриття: %s</string>
+  <string name="msg_ret_curi_open">Відкриття URL: %s</string>
   <string name="msg_ret_curi_start">Завантаження ключа із файлу або документу...</string>
   <string name="msg_ret_ks_error">Невідома помилка під час пошуку ключа!</string>
   <string name="msg_ret_ks_error_not_found">Ключ не знайдено</string>
@@ -1866,12 +1849,16 @@
   <string name="msg_ret_local_ok">Ключ знайдено</string>
   <string name="msg_ret_local_secret">Локальний ключ містить матеріал секретного ключа</string>
   <string name="msg_ret_local_start">Пошук ключа у списку локальних ключів…</string>
-  <string name="msg_ret_uri_error_fetch">Невідома помилка отримання Uri!</string>
+  <string name="msg_ret_uri_error_fetch">Невідома помилка отримання URL!</string>
   <string name="msg_ret_uri_error_parse">Uri маркера пошкоджено!</string>
-  <string name="msg_ret_uri_error_no_match">Не знайдено відповідний ключ на Uri</string>
-  <string name="msg_ret_uri_fetching">Отримання Uri: %s</string>
+  <string name="msg_ret_uri_error_no_match">Не знайдено відповідний ключ на  URL</string>
+  <string name="msg_ret_uri_fetching">Отримання URL: %s</string>
   <string name="msg_ret_uri_ok">Ключ знайдено</string>
-  <string name="msg_ret_uri_start">Пошук ключа за маркером Uri…</string>
-  <string name="msg_ret_uri_null">Жодне Uri не збережено на маркері безпеки</string>
+  <string name="msg_ret_uri_start">Пошук ключа в URL маркера...</string>
+  <string name="msg_ret_uri_null">Жодне URL не збережене на маркері безпеки</string>
   <string name="msg_ret_uri_test">Перевірка, чи знайдений ключ збігається: %s</string>
+  <string name="msg_trust_ok">Операція оновлення вдала!</string>
+  <string name="msg_trust_key">Оновлення ключів підписаних %s</string>
+  <string name="msg_trust_count_none">Немає ключів для оновлення</string>
+  <string name="button_locate_nfc">Де мій зчитувач NFC?</string>
 </resources>

@@ -46,7 +46,6 @@
   <string name="section_cloud_search">Giltza Bilaketa</string>
   <string name="section_cloud_search_summary">Giltza-zerbitzaria, keybase.io</string>
   <string name="section_passphrase_cache">Sarhitzak eta PIN-ak</string>
-  <string name="section_passphrase_cache_summary">Kudeaketa, erabiltzaile interfazea, gogoratu ordua</string>
   <string name="section_proxy_settings">Sare Izengabetasuna</string>
   <string name="section_proxy_settings_summary">Tor, Proxy Ezarpenak</string>
   <string name="section_gui">Interfazea</string>
@@ -110,6 +109,8 @@
   <string name="menu_delete_key">Ezabatu giltza</string>
   <string name="menu_manage_keys">Kudeatu nire giltzak</string>
   <string name="menu_search">Bilatu</string>
+  <string name="menu_open">Ireki</string>
+  <string name="menu_read_clipboard">Irakurri gakotik</string>
   <string name="menu_nfc_preferences">NFC ezarpenak</string>
   <string name="menu_beam_preferences">Beam ezarpenak</string>
   <string name="menu_encrypt_to">Enkriptatu hona...</string>
@@ -174,6 +175,7 @@
   <string name="label_enter_keyserver_url">URL-a</string>
   <string name="label_keyserver_dialog_delete">Ezabatu giltza-zerbitzaria</string>
   <string name="label_theme">Azalgaia</string>
+  <string name="label_enter_smartpgp_authority_name">Izena</string>
   <string name="pref_keyserver">OpenPGP giltza-zerbitzariak</string>
   <string name="pref_keyserver_summary">Bilatu giltzak hautaturiko OpenPGP giltza-zerbitzarietan (HKP protokoloa)</string>
   <string name="pref_keybase">keybase.io</string>
@@ -409,8 +411,6 @@
   <string name="progress_verifying_integrity">osotasuna egiaztatzen...</string>
   <string name="progress_deleting_securely">\'%s\' segurtasunez ezabatzen...</string>
   <string name="progress_deleting">giltzak ezabatzen...</string>
-  <string name="progress_con_saving">sendotu: katxean gordetzen...</string>
-  <string name="progress_con_reimport">sendotu: berrinportatzen...</string>
   <string name="progress_verifying_keyserver_connection">elkarketa egiaztatzen...</string>
   <string name="progress_starting_orbot">Orbot Abiarazten...</string>
   <!--action strings-->
@@ -454,6 +454,7 @@
   <string name="import_qr_code_button">Eskaneatu QR Kodea</string>
   <string name="import_qr_code_text">Jarri zure kamera QR Kodearen gainean!</string>
   <string name="btn_import">Inportatu</string>
+  <string name="btn_refresh">Birkargatu</string>
   <!--Generic result toast-->
   <string name="snackbar_details">Xehetasunak</string>
   <string name="with_warnings">, kontuz oharrekin</string>
@@ -913,36 +914,6 @@
   <string name="msg_mf_uat_add_unknown">Mota ezezaguneko erabiltzaile ezaugarria gehitzen</string>
   <string name="msg_mf_unlock_error">Akatsa giltza-uztaia desblokeatzerakoan!</string>
   <string name="msg_mf_unlock">Giltza-uztaia desblokeatzerakoan</string>
-  <!--Consolidate-->
-  <string name="msg_con">Datubasea sendotzen</string>
-  <string name="msg_con_error_bad_state">Sendotzea abiatu da datubasea katxeatu gabe! Hau zihurrenik programazio akats bat  da, mesedez agiritu akats jakinarazpen bat.</string>
-  <string name="msg_con_error_concurrent">Sendotzea utzita, jadanik beste hari batean ekinean!</string>
-  <string name="msg_con_save_secret">Giltza-uztai sekretuak gordetzen</string>
-  <string name="msg_con_save_public">Giltza-uztai publikoak gordetzen</string>
-  <string name="msg_con_db_clear">Datubasea garbitzen</string>
-  <string name="msg_con_success">Datubasea ongi trinkotu da</string>
-  <string name="msg_con_critical_in">Fase kritikoan sartzen</string>
-  <string name="msg_con_critical_out">Fase kritikoa uzten</string>
-  <string name="msg_con_delete_public">Giltza-uztai publikoaren katxe agiria ezabatzen</string>
-  <string name="msg_con_delete_secret">Giltza-uztai sekretuaren katxe agiria ezabatzen</string>
-  <string name="msg_con_error_db">Akatsa datubasea irekitzerakoan!</string>
-  <string name="msg_con_error_io_public">S/I akatsa giltza publikoak katxera idazterakoan!</string>
-  <string name="msg_con_error_io_secret">S/I akatsa giltza sekretuak katxera idazterakoan!</string>
-  <string name="msg_con_error_public">Akatsa giltza publikoak ber-inportatzerakoan!</string>
-  <string name="msg_con_error_secret">Akatsa giltza sekretuak ber-inportatzerakoan!</string>
-  <string name="msg_con_recover">Trinkotze aurrerabidea berrekiten</string>
-  <plurals name="msg_con_reimport_public">
-    <item quantity="one">Giltza publiko bat berrinportatzen</item>
-    <item quantity="other">%d giltza publiko berrinportatzen</item>
-  </plurals>
-  <string name="msg_con_reimport_public_skip">Ez dago giltza publikorik berrinportatzeko, jauzi egiten...</string>
-  <plurals name="msg_con_reimport_secret">
-    <item quantity="one">Giltza sekretu bat berrinportatzen</item>
-    <item quantity="other">%d giltza sekretu berrinportatzen</item>
-  </plurals>
-  <string name="msg_con_reimport_secret_skip">Ez dago giltza sekreturik berrinportatzeko, jauzi egiten...</string>
-  <string name="msg_con_warn_delete_public">Salbuespena katxe publikoaren agiria ezabatzerakoan</string>
-  <string name="msg_con_warn_delete_secret">Salbuespena katxe agiri sekretua ezabatzerakoan</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Giltza eragiketa burutzen</string>
   <string name="msg_ed_caching_new">Sarhitz berria katxeatzen</string>
@@ -1049,6 +1020,7 @@
   <string name="msg_pse_sigcrypting">Datuak sinadurarekin enkriptatzen</string>
   <string name="msg_pse">Sinadura eta/edo enkriptaketa eragiketa abiatzen</string>
   <string name="msg_pse_symmetric">Enkriptaketa simetrikoa gertatzen</string>
+  <!--Messages for Authentication operation-->
   <string name="msg_crt_certifying">Egiaztagiriak sortzen</string>
   <string name="msg_crt_error_self">Ezin da hau bezalako berez-egiaztatua jaulki!</string>
   <string name="msg_crt_error_master_not_found">Maisu giltza ez da aurkitu!</string>
@@ -1072,6 +1044,7 @@
   </plurals>
   <string name="msg_import_fetch_error_decode">Akatsa berreskuratutako giltza-uztai dekodeatzerakoan!</string>
   <string name="msg_import_fetch_error">Giltza ezin da berreskuratu! (Sare arazoak?)</string>
+  <string name="msg_import_fetch_error_not_found">Giltza ez da aurkitu!</string>
   <string name="msg_import_fetch_error_keyserver">Ezin da giltza berreskuratu giltza-zerbitzarietatik: %s</string>
   <string name="msg_import_fetch_error_keyserver_secret">Ezin da giltza inportatu giltza-zerbitzaritik!</string>
   <string name="msg_import_fetch_keybase">keybase.io-tik berreskuratzen: %s</string>
@@ -1114,7 +1087,6 @@
   </plurals>
   <string name="msg_del_key">%s giltza ezabatzen</string>
   <string name="msg_del_key_fail">Hutsegitea %s giltza ezabatzerakoan</string>
-  <string name="msg_del_consolidate">Datubasea sendotzen giltza sekretua ezabatu ondoren</string>
   <plurals name="msg_del_ok">
     <item quantity="one">Ongi ezabatuta giltza</item>
     <item quantity="other">Ongi ezabatuta %d giltza</item>
@@ -1232,6 +1204,7 @@
   <string name="key_unavailable">eskuraezina</string>
   <string name="secret_cannot_multiple">Zure jabetzako giltzak banaka bakarrik ezabatu daitezke!</string>
   <string name="title_view_cert">Ikusi Egiaztagiriaren Xehetasunak</string>
+  <string name="unknown">ezezaguna</string>
   <string name="can_sign_not">ezin da sinatu</string>
   <string name="error_no_encrypt_subkey">Ez dago enkriptaketa azpigiltzarik eskuragarri!</string>
   <string name="contact_show_key">Erakutsi (%s) giltza</string>
@@ -1442,4 +1415,20 @@
     <item>50 EUR</item>
     <item>100 EUR</item>
   </string-array>
+  <string name="redirect_import_key_no">Itxi</string>
+  <string name="button_allow">Baimendu</string>
+  <string name="button_cancel">Utzi</string>
+  <string name="key_health_revoked_title">Ukatuta</string>
+  <string name="dialog_insecure_button_ok">Ulertu dut</string>
+  <string name="button_import">Inportatu</string>
+  <string name="transfer_status_connected">Konektatuta</string>
+  <string name="transfer_error_generic_msg">Komunikazio akatsa: %s</string>
+  <string name="transfer_confirm_cancel">Utzi</string>
+  <string name="transfer_confirm_ok">Bidali</string>
+  <string name="token_reset_confirm_ok">Berrezarri</string>
+  <string name="token_result_not_found">Giltza ez da aurkitu!</string>
+  <string name="token_action_reset">Berrezarri Segurtasun Lekukoa</string>
+  <string name="token_action_import">Inportatu</string>
+  <string name="token_unlock_ok">Desblokeatu</string>
+  <string name="token_hint_admin_pin">Administrari PIN-a</string>
 </resources>

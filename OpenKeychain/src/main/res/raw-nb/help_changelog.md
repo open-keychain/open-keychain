@@ -1,5 +1,10 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 4.8
+
+  * Improved support for USB tokens: Gnuk, Nitrokey models, YubiKey 4 models
+  * Feature to find the position of the device's NFC reader
+
 ## 4.7
 
   * Improved import from clipboard

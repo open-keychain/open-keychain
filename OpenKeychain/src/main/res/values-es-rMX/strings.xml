@@ -90,6 +90,8 @@
   <string name="btn_save_default">Guardar como predeterminado</string>
   <string name="btn_saved">¡Guardado!</string>
   <!--Content Description-->
+  <string name="cd_encrypt_files">Cifrar archivos</string>
+  <string name="cd_encrypt_text">Cifrar texto</string>
   <!--menu-->
   <string name="menu_preferences">Ajustes</string>
   <string name="menu_help">Ayuda</string>
@@ -97,6 +99,7 @@
   <string name="menu_delete_key">Eliminar clave</string>
   <string name="menu_manage_keys">Administrar mis claves</string>
   <string name="menu_search">Buscar</string>
+  <string name="menu_read_clipboard">Leer desde el portapapeles</string>
   <string name="menu_nfc_preferences">Ajustes NFC</string>
   <string name="menu_beam_preferences">Ajustes Beam</string>
   <string name="menu_encrypt_to">Cifrar a...</string>
@@ -150,8 +153,10 @@
   <string name="label_enter_keyserver_url">URL</string>
   <string name="label_keyserver_dialog_delete">Eliminar servidor de claves</string>
   <string name="label_theme">Tema</string>
+  <string name="label_enter_smartpgp_authority_name">Nombre</string>
   <string name="pref_keyserver">Servidores OpenPGP</string>
   <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="label_experimental_settings_desc_title">Advertencia</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Activar Tor</string>
   <string name="pref_proxy_tor_summary">Requiere Orbot instalado</string>
@@ -201,6 +206,8 @@
   <string name="choice_forever">para siempre</string>
   <string name="choice_select_cert">Elija una clave</string>
   <string name="filemanager_title_open">Abrir...</string>
+  <string name="usage_sign">Firmar</string>
+  <string name="usage_encrypt">Cifrar</string>
   <string name="error">Error</string>
   <string name="error_message">Error: %s</string>
   <string name="theme_dark">Oscuro</string>
@@ -219,6 +226,7 @@
          they will be put after "error_message", e.g. "Error: file not found"-->
   <!--errors without preceding Error:-->
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_action_show">Mostrar</string>
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_cancel">Cancelar</string>
@@ -231,6 +239,10 @@
     <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
   <!--Help-->
+  <string name="help_tab_changelog">Registro de cambios</string>
+  <string name="help_tab_about">Acerca de</string>
+  <string name="help_about_version">Versión:</string>
+  <string name="help_tab_donations">Donar</string>
   <!--Import-->
   <string name="import_tab_keyserver">Servidor de claves</string>
   <string name="import_tab_cloud">Búsqueda de clave</string>
@@ -257,6 +269,7 @@
   <string name="key_view_tab_keys">Subclave</string>
   <!--Key trust-->
   <!--keybase proof stuff-->
+  <string name="keybase_verify">Verificar</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Cambiar contraseña</string>
   <!--Create key-->
@@ -269,6 +282,8 @@
   <string name="nav_apps">Apps</string>
   <!--hints-->
   <!--certs-->
+  <string name="cert_none">Ninguno</string>
+  <string name="cert_verify_ok">OK</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
@@ -276,14 +291,15 @@
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
-  <!--Consolidate-->
   <!--Edit Key (higher level than modify)-->
   <!--Promote key-->
   <!--Other messages used in OperationLogs-->
   <!--Messages for DecryptVerify operation-->
   <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl_ok">OK</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <!--Messages for Authentication operation-->
   <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
@@ -294,6 +310,7 @@
   <!--First Time-->
   <!--unsorted-->
   <!--Android Account-->
+  <string name="account_privacy_title">Privacidad</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
@@ -301,9 +318,22 @@
   <string name="passphrase">Contraseña</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="nfc_settings">Ajustes</string>
+  <string name="snack_security_token_view">Ve</string>
+  <string name="security_token_error">Error: %s</string>
+  <string name="linked_create_verify">Verificar</string>
   <!--Other Linked Identity strings-->
+  <string name="linked_button_verify">Verificar</string>
   <string name="linked_button_confirm">Confirmar</string>
+  <string name="linked_button_view">Ve</string>
   <string name="linked_text_error">Error</string>
   <string name="share_log_dialog_share_button">Compartir</string>
   <string name="share_log_dialog_cancel_button">Cancelar</string>
+  <string name="menu_uids_save">Guardar</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">Cancelar</string>
+  <string name="prompt_fidesmo_app_install_button_negative">Cancelar</string>
+  <string name="redirect_import_key_no">Cerrar</string>
+  <string name="button_cancel">Cancelar</string>
+  <string name="transfer_confirm_cancel">Cancelar</string>
+  <string name="transfer_confirm_ok">Enviar</string>
+  <string name="token_unlock_ok">Abrir</string>
 </resources>

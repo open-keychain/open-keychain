@@ -48,7 +48,7 @@
   <string name="section_cloud_search">Поиск ключа</string>
   <string name="section_cloud_search_summary">Сервер ключей, keybase.io</string>
   <string name="section_passphrase_cache">Пароли и PIN-коды</string>
-  <string name="section_passphrase_cache_summary">Обработка, пользовательский интерфейс, время запоминания</string>
+  <string name="section_passphrase_cache_summary">Обработка</string>
   <string name="section_proxy_settings">Сетевая анонимность</string>
   <string name="section_proxy_settings_summary">Tor, настройки прокси</string>
   <string name="section_gui">Интерфейс</string>
@@ -344,6 +344,7 @@
   <string name="no_keys_exported">Ключи не были экспортированы.</string>
   <string name="key_creation_el_gamal_info">Прим.: только вторичные ключи поддерживают ElGamal.</string>
   <string name="key_not_found">Не удается найти ключ %08X.</string>
+  <string name="authentication_subkey_not_found">Данный ключ не содержит доп. ключ аутентификации.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d плохой секретный ключ проигнорирован. Возможно, вы экспортируете с параметром\n --export-secret-subkeys\nВместо этого используйте\n --export-secret-keys.\"</item>
     <item quantity="few">%d плохих секретных ключа проигнорировано. Возможно, вы экспортируете с параметром\n --export-secret-subkeys\nВместо этого используйте\n --export-secret-keys.\"</item>
@@ -463,8 +464,7 @@
   <string name="progress_verifying_integrity">проверка целостности...</string>
   <string name="progress_deleting_securely">безопасное удаление \'%s\'...</string>
   <string name="progress_deleting">удаление ключей...</string>
-  <string name="progress_con_saving">объединение: сохранение в кэш...</string>
-  <string name="progress_con_reimport">объединение: реимпорт...</string>
+  <string name="progress_update_trust">обновление информации о доверии...</string>
   <string name="progress_verifying_keyserver_connection">проверка соединения…</string>
   <string name="progress_starting_orbot">Запуск Orbot…</string>
   <!--action strings-->
@@ -679,6 +679,7 @@
   <string name="key_view_action_certify">Подтвердить ключ</string>
   <string name="key_view_action_update">Обновить с сервера ключей</string>
   <string name="key_view_action_share_with">Отправить...</string>
+  <string name="key_view_action_share_ssh_with">Отправить публичный ключ SSH в…</string>
   <string name="key_view_action_share_nfc">Отправить через NFC</string>
   <string name="key_view_action_upload">Загрузить на сервер ключей</string>
   <string name="key_view_tab_main">Основные данные</string>
@@ -811,7 +812,7 @@
   <string name="drawer_close">Закрыть панель навигации</string>
   <string name="my_keys">Мои ключи</string>
   <string name="nav_backup">Резервирование/Восстановление</string>
-  <string name="nav_transfer">Безопасная передача через Wi-Fi</string>
+  <string name="nav_transfer">Безопасная передача по Wi-Fi</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Напишите текст</string>
   <!--certs-->
@@ -1106,42 +1107,6 @@
   <string name="msg_mf_uat_add_unknown">Добавление атрибута пользователя неизвестного типа</string>
   <string name="msg_mf_unlock_error">Ошибка разблокирования связки!</string>
   <string name="msg_mf_unlock">Разблокирование связки</string>
-  <!--Consolidate-->
-  <string name="msg_con">Консолидация базы данных</string>
-  <string name="msg_con_error_bad_state">Консолидация началась но база не кэширована! Это программная ошибка, пожалуйста, сообщите об этом.</string>
-  <string name="msg_con_error_concurrent">Консолидация прервана, уже запущена на другом потоке!</string>
-  <string name="msg_con_save_secret">Сохранение секретной связки ключей</string>
-  <string name="msg_con_save_public">Сохранение публичной связки ключей</string>
-  <string name="msg_con_db_clear">Очистка базы данных</string>
-  <string name="msg_con_success">База данных успешно консолидирована</string>
-  <string name="msg_con_critical_in">Ввод в критическую фазу</string>
-  <string name="msg_con_critical_out">Выход из критической фазы</string>
-  <string name="msg_con_delete_public">Удаление кэша связки публичных ключей</string>
-  <string name="msg_con_delete_secret">Удаление кэша связки секретных ключей</string>
-  <string name="msg_con_error_db">Ошибка открытия базы данных!</string>
-  <string name="msg_con_error_io_public">Ошибка записи публичных ключей в кэш!</string>
-  <string name="msg_con_error_io_secret">Ошибка записи приватных ключей в кэш!</string>
-  <string name="msg_con_error_public">Ошибка переимпортирования публичных ключей!</string>
-  <string name="msg_con_error_secret">Ошибка переимпортирования приватных ключей!</string>
-  <string name="msg_con_recover">Возобновление процесса консолидации</string>
-  <string name="msg_con_recursive">Пропуск рекурсивной консолидации</string>
-  <string name="msg_con_recover_unknown">Возобновление процесса консолидации из неизвестного состояния</string>
-  <plurals name="msg_con_reimport_public">
-    <item quantity="one">Переимпортирование публичного ключа!</item>
-    <item quantity="few">Переимпортирование %d публичных ключей!</item>
-    <item quantity="many">Переимпортирование %d публичных ключей!</item>
-    <item quantity="other">Переимпортирование %d публичных ключей!</item>
-  </plurals>
-  <string name="msg_con_reimport_public_skip">Нет публичных ключей для повторного импорта, пропуск…</string>
-  <plurals name="msg_con_reimport_secret">
-    <item quantity="one">Переимпортирование секретного ключа!</item>
-    <item quantity="few">Переимпортирование %d секретных ключей!</item>
-    <item quantity="many">Переимпортирование %d секретных ключей!</item>
-    <item quantity="other">Переимпортирование %d секретных ключей!</item>
-  </plurals>
-  <string name="msg_con_reimport_secret_skip">Нет секретных ключей для повторного импорта, пропуск…</string>
-  <string name="msg_con_warn_delete_public">Исключение удаления публичного файла кэша</string>
-  <string name="msg_con_warn_delete_secret">Исключение удаления секретного файла кэша</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Выполнение операции ключа</string>
   <string name="msg_ed_caching_new">Кэширование нового пароля</string>
@@ -1261,6 +1226,18 @@
   <string name="msg_pse_sigcrypting">Шифрование данных с подписыванием</string>
   <string name="msg_pse">Подпись и/или шифрование начаты</string>
   <string name="msg_pse_symmetric">Подготовка симметричного шифрования</string>
+  <!--Messages for Authentication operation-->
+  <string name="msg_auth">Запущена аутентификация</string>
+  <string name="msg_auth_error_key_auth">Не удаётся найти выбранный ключ аутентификации</string>
+  <string name="msg_auth_error_key_not_allowed">Выбранный для аутентификации ключ не разрешён к использованию</string>
+  <string name="msg_auth_error_revoked_or_expired">Отозванный/истёкший ключ нельзя использовать для аутентификации</string>
+  <string name="msg_auth_error_unlock">Неизвестная ошибка разблокировки ключа!</string>
+  <string name="msg_auth_pending_nfc">Требуется токен NFC, запрашивается ввод пользователя…</string>
+  <string name="msg_auth_pending_passphrase">Требуется пароль, запрашивается ввод пользователя…</string>
+  <string name="msg_auth_error_bad_passphrase">Плохой пароль!</string>
+  <string name="msg_auth_error_nfc">Ошибка данных NFC!</string>
+  <string name="msg_auth_error_sig">Подпись OpenPGP неожиданно отклонена!</string>
+  <string name="msg_auth_ok">Аутентификация прошла успешно!</string>
   <string name="msg_crt_certifying">Генерация сертификатов</string>
   <plurals name="msg_crt_certify_uids">
     <item quantity="one">Сертификация ID пользователя ключа %2$s</item>
@@ -1345,7 +1322,6 @@
   </plurals>
   <string name="msg_del_key">Удаление ключа %s</string>
   <string name="msg_del_key_fail">Ошибка удаления ключа %s</string>
-  <string name="msg_del_consolidate">Консолидация базы данных после удаления секретного ключа</string>
   <plurals name="msg_del_ok">
     <item quantity="one">Успешно удалён ключ</item>
     <item quantity="few">Успешно удалено %d ключа</item>
@@ -1568,6 +1544,7 @@
   <string name="security_token_error_header">Токен безопасности сообщил о повреждённом %s байте.</string>
   <string name="security_token_error_tag_lost">Токен безопасности был убран слишком рано. Держите токен безопасности на задней панели до завершения операции.</string>
   <string name="security_token_error_iso_dep_not_supported">Токен безопасности не поддерживает требуемый стандарт связи (ISO-DEP, ISO 14443-4)</string>
+  <string name="security_token_error_generic">Ошибка передачи данных. Возможно, токен безопасности был извлечён слишком рано.</string>
   <string name="security_token_error_try_again">Попробовать ещё раз</string>
   <string name="btn_delete_original">Удалить оригинальный файл</string>
   <string name="snack_encrypt_filenames_on">Имена файлов  <b>шифруются</b>.</string>
@@ -1761,6 +1738,8 @@
   <string name="key_health_ok_subtitle">Проблем ключа не обнаружено.</string>
   <string name="key_health_divert_title">Безопасный (токен безопасности)</string>
   <string name="key_health_divert_subtitle">Проблем ключа не обнаружено.</string>
+  <string name="key_health_divert_partial_title">Годный (частичный токен)</string>
+  <string name="key_health_divert_partial_subtitle">Нажмите для доп. сведений</string>
   <string name="key_health_expired_title">Истёкший</string>
   <string name="key_health_expired_subtitle">Этот ключ больше не должен быть использован.</string>
   <string name="key_health_revoked_title">Аннулированный</string>
@@ -1811,6 +1790,7 @@
   <string name="dialog_insecure_button_undo">Раскрыть</string>
   <string name="dialog_insecure_button_view_key">Просмотреть ключ</string>
   <string name="dialog_insecure_button_ok">Понятно</string>
+  <string name="usage_authentication">Аутентификация</string>
   <string name="identity_context_forget">Забыть</string>
   <string name="button_scan">Сканировать</string>
   <string name="button_more_info">Дополнительная информация</string>
@@ -1831,8 +1811,8 @@
   <string name="transfer_not_available">К сожалению, эта функция доступна только на Android 5 или более новых версиях :(</string>
   <string name="transfer_list_empty">На устройстве не обнаружены ключи, доступные к отправке. Ждём входящие ключи...</string>
   <string name="transfer_connecting">Идёт подключение...</string>
-  <string name="first_time_secure_wifi_transfer">Безопасная передача через Wi-Fi</string>
-  <string name="menu_secure_wifi_transfer">Безопасная передача через Wi-Fi</string>
+  <string name="first_time_secure_wifi_transfer">Безопасная передача по Wi-Fi</string>
+  <string name="menu_secure_wifi_transfer">Безопасная передача по Wi-Fi</string>
   <string name="transfer_confirm_cancel">Отмена</string>
   <string name="transfer_confirm_ok">Отправить</string>
   <string name="transfer_confirm_title">Отправить ваш ключ?</string>
@@ -1843,7 +1823,7 @@
   <string name="transfer_error_wifi_text_instructions_ssid">Убедитесь, что вы в сети \"%s\", и просканируйте ещё раз.</string>
   <string name="status_check_key">Проверка статуса ключа...</string>
   <string name="status_search_local">Поиск в списке ключей...</string>
-  <string name="status_search_uri">Поиск в токене Uri…</string>
+  <string name="status_search_uri">Поиск по URL токена...</string>
   <string name="status_search_keyserver">Поиск на серверах ключей...</string>
   <string name="status_import">Импорт ключа...</string>
   <string name="status_token_promote">Настройка ключа...</string>
@@ -1857,37 +1837,40 @@
   <string name="token_result_key_found">Найден ключ!</string>
   <string name="token_result_token_ok">Готово к использованию!</string>
   <string name="token_result_empty">Токен пуст</string>
+  <string name="token_put_key_unsupported">Пожалуйста, настройте данный токен безопасности с помощью GnuPG. В данный момент OpenKeychain поддерживает только подпись/расшифровку с данным токеном безопасности.</string>
   <string name="token_action_retry">Найти заново</string>
   <string name="token_action_load_from_file">Загрузить из файла</string>
   <string name="token_action_reset">Сбросить токен безопасности</string>
   <string name="token_action_import">Импортировать</string>
   <string name="token_action_view_key">Просмотреть ключ</string>
   <string name="token_action_setup">Настроить с новым ключом</string>
-  <string name="token_action_unlock">Расблокировать с помощью пароля администратора</string>
-  <string name="token_unlock_attempts_none">Попытки разблокировки законсились</string>
+  <string name="token_action_unlock">Разблокировать с помощью PIN администратора</string>
+  <string name="token_unlock_attempts_none">Попытки разблокировки закончились</string>
   <plurals name="token_unlock_attempts">
     <item quantity="one">Осталось 1 попытка</item>
     <item quantity="few">Осталось %d попытки</item>
     <item quantity="many">Осталось %d попыток</item>
     <item quantity="other">Осталось %d попыток</item>
   </plurals>
-  <string name="token_error_locked_indefinitely">Слишком много попыток разблокировки. Токен заблокирован без возможности восстановления!</string>
-  <string name="token_menu_change_pin">Изменить пароль</string>
+  <string name="token_error_locked_indefinitely">Слишком много попыток сброса. Токен не может быть разблокирован!</string>
+  <string name="token_error_cannot_reset_gnuk_old">Токен Gnuk/Nitrokey Start не поддерживает сброс до версии 1.2.5</string>
+  <string name="token_error_cannot_reset">Данный токен безопасности не поддерживает сброс</string>
+  <string name="token_menu_change_pin">Изменить PIN</string>
   <string name="token_menu_view_log">Просмотреть журнал</string>
   <string name="token_unlock_ok">Разблокировать</string>
-  <string name="token_hint_admin_pin">Пароль администратора</string>
-  <string name="token_hint_new_pin">Новый пароль</string>
-  <string name="token_hint_new_pin_repeat">Новый пароль (повторить)</string>
-  <string name="token_error_admin_min8">Пароль администратора должен состоять из 8 символов или больше!</string>
-  <string name="token_error_pin_min6">Новый пароль должен состоять из 6 символов или больше!</string>
-  <string name="token_error_pin_repeat">Пароли не совпадают!</string>
+  <string name="token_hint_admin_pin">PIN-код администратора</string>
+  <string name="token_hint_new_pin">Новый PIN</string>
+  <string name="token_hint_new_pin_repeat">Новый PIN (повторить)</string>
+  <string name="token_error_admin_min8">PIN администратора должен быть 8 символов или больше!</string>
+  <string name="token_error_pin_min6">Новый PIN должен быть 6 символов или больше!</string>
+  <string name="token_error_pin_repeat">PIN\'ы не совпадают!</string>
   <string name="msg_ret_curi_error_io">Ошибка чтения данных!</string>
   <string name="msg_ret_curi_error_no_match">Не найдены совпадающие ключи</string>
   <string name="msg_ret_curi_error_not_found">Не удалось открыть файл!</string>
   <string name="msg_ret_curi_found">Найден ключ: %s</string>
   <string name="msg_ret_curi_mismatch">Ключ не совпадает</string>
   <string name="msg_ret_curi_ok">Найден ключ</string>
-  <string name="msg_ret_curi_open">Открыть Uri: %s</string>
+  <string name="msg_ret_curi_open">Открытие URL: %s</string>
   <string name="msg_ret_curi_start">Загрузить ключ из файла или документа...</string>
   <string name="msg_ret_ks_error">Неизвестная ошибка поиска ключа!</string>
   <string name="msg_ret_ks_error_not_found">Ключ не найден</string>
@@ -1903,12 +1886,24 @@
   <string name="msg_ret_local_ok">Найден ключ</string>
   <string name="msg_ret_local_secret">Локальный ключ содержит данные секретного ключа</string>
   <string name="msg_ret_local_start">Поиск ключа в списке локальных ключей...</string>
-  <string name="msg_ret_uri_error_fetch">Неизвестная ошибка получения Uri!</string>
-  <string name="msg_ret_uri_error_parse">Токен Uri поврежден!</string>
-  <string name="msg_ret_uri_error_no_match">Не найдены ключи, совпадающие по Uri</string>
-  <string name="msg_ret_uri_fetching">Получение Uri: %s</string>
+  <string name="msg_ret_uri_error_fetch">Неизвестная ошибка обработки URL!</string>
+  <string name="msg_ret_uri_error_parse">Uri токена повреждён!</string>
+  <string name="msg_ret_uri_error_no_match">По URL не найдено совпадающих ключей</string>
+  <string name="msg_ret_uri_fetching">Обработка URL: %s</string>
   <string name="msg_ret_uri_ok">Найден ключ</string>
-  <string name="msg_ret_uri_start">Поиск ключа в токене Uri…</string>
-  <string name="msg_ret_uri_null">В токене безопасности нет сохраненных Uri</string>
+  <string name="msg_ret_uri_start">Поиск ключа по URL токена...</string>
+  <string name="msg_ret_uri_null">В токене безопасности нет сохранённых URL</string>
   <string name="msg_ret_uri_test">Проверка и поиск совпадающих ключей: %s</string>
+  <string name="msg_trust">Обновление информации о доверии...</string>
+  <string name="msg_trust_ok">Обновление завершено успешно!</string>
+  <string name="msg_trust_initialize">Инициализация кэша подписи ключей</string>
+  <string name="msg_trust_key">Обновление ключей, подписанных %s</string>
+  <string name="msg_trust_count_none">Нет ключей для обновления</string>
+  <plurals name="msg_trust_count">
+    <item quantity="one">Обновление 1 ключа</item>
+    <item quantity="few">Обновление %d ключей</item>
+    <item quantity="many">Обновление %d ключей</item>
+    <item quantity="other">Обновление %d ключей</item>
+  </plurals>
+  <string name="button_locate_nfc">Где мой NFC-ридер?</string>
 </resources>

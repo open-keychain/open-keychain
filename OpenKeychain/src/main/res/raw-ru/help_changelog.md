@@ -1,20 +1,25 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 4.8
+
+  * Improved support for USB tokens: Gnuk, Nitrokey models, YubiKey 4 models
+  * Feature to find the position of the device's NFC reader
+
 ## 4.7
 
-  * Improved import from clipboard
-  * New key creation wizard for Security Tokens
-  * Removed password cache "time to live" setting
+  * Улучшен импорт из буфера обмена
+  * Новый мастер создания ключей для токенов безопасности
+  * Удалена настройка кэша пароля "время жизни"
 
 
 ## 4.6
 
-  * Import your keys using our new Secure Wi-Fi Transfer mechanism
+  * Импорт ключей с помощью безопасной передачи по Wi-Fi
 
 
 ## 4.5
 
-  * Detailed description of security problems
+  * Подробное описание проблем безопасности
   * Отображение статуса сервера для каждого ключа
   * Поддержка EdDSA
   * Исправлен pgp.mit.edu (новый сертификат)

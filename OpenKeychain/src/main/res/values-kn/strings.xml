@@ -3,18 +3,29 @@
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
+  <string name="title_help">Help</string>
   <!--section-->
+  <string name="section_share_key">ಕೀಲಿ</string>
   <!--button-->
+  <string name="btn_do_not_save">Cancel</string>
+  <string name="btn_no">ಇಲ್ಲ</string>
   <!--Content Description-->
   <!--menu-->
+  <string name="menu_help">Help</string>
   <!--label-->
+  <string name="label_name">Name</string>
+  <string name="label_enter_smartpgp_authority_name">Name</string>
   <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
+  <string name="pref_proxy_tor_title">ಟಾರ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</string>
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
   <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_cancel">Cancel</string>
   <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_cancel">Cancel</string>
   <!--choice-->
+  <string name="choice_none">ಎನೂ ಇಲ್ಲ</string>
   <!--sentences-->
   <!--errors
          no punctuation, all lowercase,
@@ -23,6 +34,7 @@
   <!--results shown after decryption/verification-->
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
+  <string name="progress_cancel">Cancel</string>
   <!--action strings-->
   <!--key bit length selections-->
   <!--elliptic curve names-->
@@ -32,6 +44,8 @@
     <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
   <!--Help-->
+  <string name="help_tab_about">ಬಗ್ಗೆ</string>
+  <string name="help_about_version">Version:</string>
   <!--Import-->
   <!--Generic result toast-->
   <!--Import result toast-->
@@ -40,6 +54,8 @@
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
+  <string name="api_settings_no_key">ಯಾವುದೆ ಕೀಯನ್ನು ಆಯ್ಕೆಮಾಡಿಲ್ಲ</string>
+  <string name="api_settings_cancel">Cancel</string>
   <!--Share-->
   <!--retry upload dialog-->
   <!--Delete or revoke private key dialog-->
@@ -63,7 +79,6 @@
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
-  <!--Consolidate-->
   <!--Edit Key (higher level than modify)-->
   <!--Promote key-->
   <!--Other messages used in OperationLogs-->
@@ -71,6 +86,7 @@
   <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <!--Messages for Authentication operation-->
   <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
@@ -84,4 +100,9 @@
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <!--Other Linked Identity strings-->
+  <string name="share_log_dialog_cancel_button">Cancel</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">Cancel</string>
+  <string name="prompt_fidesmo_app_install_button_negative">Cancel</string>
+  <string name="button_cancel">Cancel</string>
+  <string name="transfer_confirm_cancel">Cancel</string>
 </resources>

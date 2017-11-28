@@ -47,7 +47,7 @@
   <string name="section_cloud_search">搜索密钥</string>
   <string name="section_cloud_search_summary">密钥服务器， keybase.io</string>
   <string name="section_passphrase_cache">密码和 PIN 码</string>
-  <string name="section_passphrase_cache_summary">处理，用户界面，记忆时间</string>
+  <string name="section_passphrase_cache_summary">正在处理</string>
   <string name="section_proxy_settings">匿名网络</string>
   <string name="section_proxy_settings_summary">Tor，代理服务器设置</string>
   <string name="section_gui">界面</string>
@@ -61,6 +61,7 @@
   <string name="section_fingerprint">指纹</string>
   <string name="section_phrases">短语</string>
   <string name="section_encrypt">加密</string>
+  <string name="section_decrypt">解密/验证</string>
   <string name="section_current_expiry">当前有效期</string>
   <string name="section_new_expiry">新有效期</string>
   <!--button-->
@@ -109,8 +110,11 @@
   <string name="menu_help">帮助</string>
   <string name="menu_export_key">备份密钥</string>
   <string name="menu_delete_key">删除密钥</string>
+  <string name="menu_status">查看密钥状态</string>
   <string name="menu_manage_keys">管理我的密钥</string>
   <string name="menu_search">搜索</string>
+  <string name="menu_open">打开</string>
+  <string name="menu_read_clipboard">从剪贴板读取</string>
   <string name="menu_nfc_preferences">NFC 设置</string>
   <string name="menu_beam_preferences">参数</string>
   <string name="menu_encrypt_to">加密到…</string>
@@ -135,6 +139,7 @@
   <string name="label_passphrase_again">重复密码</string>
   <string name="label_show_passphrase">显示密码</string>
   <string name="label_algorithm">算法</string>
+  <string name="label_algorithm_colon">算法：</string>
   <string name="label_ascii_armor">文件 ASCII 封装</string>
   <string name="label_file_ascii_armor">启用 ASCII 封装</string>
   <string name="label_write_version_header">写入文件头信息</string>
@@ -149,10 +154,13 @@
   <string name="label_passphrase_cache_subs">保存子密钥的密码</string>
   <string name="label_message_compression">文本压缩</string>
   <string name="label_file_compression">文件压缩</string>
+  <string name="label_keyservers">管理 OpenPGP 密钥服务器</string>
   <string name="label_key_id">密钥 ID</string>
+  <string name="label_key_id_colon">密钥 ID：</string>
   <string name="label_key_created">已创建密钥 %s</string>
   <string name="label_key_type">类型</string>
   <string name="label_creation">创建时间</string>
+  <string name="label_creation_colon">创建时间：</string>
   <string name="label_expiry">过期时间</string>
   <string name="label_usage">用途</string>
   <string name="label_key_size">密钥大小</string>
@@ -175,6 +183,7 @@
   <string name="label_enter_keyserver_url">URL</string>
   <string name="label_keyserver_dialog_delete">删除密钥服务器</string>
   <string name="label_theme">主题</string>
+  <string name="label_enter_smartpgp_authority_name">名称</string>
   <string name="pref_keyserver">OpenPGP 密钥服务器</string>
   <string name="pref_keyserver_summary">在指定的 OpenPGP 密钥服务器上搜索（HKP协议）</string>
   <string name="pref_keybase">keybase.io</string>
@@ -258,8 +267,10 @@
   <string name="rsa_4096_description_html">较大的文件，在 2040 年之后若干年内也被认为是安全的</string>
   <string name="ecc_p256">ECC P-256</string>
   <string name="ecc_p256_description_html">非常小的文件尺寸，在 2040 年之前被认为是安全的 &lt;br/&gt; &lt;u&gt;试验性质且不被所有实现所支持&lt;/u&gt;</string>
+  <string name="ecc_p384_description_html">非常小的文件尺寸，在 2040 年之前被认为是安全的 &lt;br/&gt; &lt;u&gt;试验性质且不被所有实现所支持&lt;/u&gt;</string>
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">较小的文件尺寸，在 2040 之后若干年也被认为是安全的 &lt;br/&gt; &lt;u&gt;试验性质且不被所有实现所支持&lt;/u&gt;</string>
+  <string name="ecc_eddsa_description_html">较小的文件尺寸，在 2040 之后若干年也被认为是安全的 &lt;br/&gt; &lt;u&gt;试验性质且不被所有实现所支持&lt;/u&gt;</string>
   <string name="usage_none">无 (只绑定子密钥)</string>
   <string name="usage_sign">签名</string>
   <string name="usage_encrypt">加密</string>
@@ -415,8 +426,6 @@
   <string name="progress_verifying_integrity">完整性验证中…</string>
   <string name="progress_deleting_securely">安全删除 \'%s\' 中…</string>
   <string name="progress_deleting">在删除密钥中…</string>
-  <string name="progress_con_saving">合并：保存到缓存中…</string>
-  <string name="progress_con_reimport">合并：重新导入中…</string>
   <string name="progress_verifying_keyserver_connection">验证网络连接中…</string>
   <string name="progress_starting_orbot">启动 Orbot 中…</string>
   <!--action strings-->
@@ -455,6 +464,7 @@
   <string name="import_tab_cloud">搜索密钥</string>
   <string name="import_tab_direct">文件/剪切板</string>
   <string name="import_tab_qr_code">二维码/NFC</string>
+  <string name="import_qr_code_wrong">二维码格式不支持 (格式规范: https://github.com/open-keychain/open-keychain/wiki/QR-Codes)!</string>
   <string name="import_qr_code_fp">指纹异常或太短！</string>
   <string name="import_qr_code_too_short_fingerprint">指纹太短！</string>
   <string name="import_qr_code_button">扫描二维码</string>
@@ -637,6 +647,11 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">该用户标识已被吊销，该情况不能恢复</string>
   <string name="edit_key_edit_subkey_title">请选择一个操作！</string>
+  <string-array name="edit_key_edit_subkey">
+    <item>更改有效期</item>
+    <item>吊销子密钥</item>
+    <item>剥离子密钥</item>
+  </string-array>
   <string name="edit_key_new_subkey">新建子密钥</string>
   <string name="edit_key_select_usage">请选择密钥的用途！</string>
   <string name="edit_key_error_add_identity">至少要有一个用户标识！</string>
@@ -959,36 +974,6 @@
   <string name="msg_mf_uat_add_unknown">正在添加未知类型的用户属性</string>
   <string name="msg_mf_unlock_error">密钥环解锁时出错！</string>
   <string name="msg_mf_unlock">正在解锁密钥环</string>
-  <!--Consolidate-->
-  <string name="msg_con">正在合并数据库</string>
-  <string name="msg_con_error_bad_state">在没有数据库缓存的情况下，尝试合并数据库！这是一个编程错误，请发送错误报告！</string>
-  <string name="msg_con_error_concurrent">正在其他线程合并数据库，本次操作已取消。</string>
-  <string name="msg_con_save_secret">正在保存私钥密钥环</string>
-  <string name="msg_con_save_public">正在保存公钥密钥环</string>
-  <string name="msg_con_db_clear">正在清空数据库</string>
-  <string name="msg_con_success">成功整理数据库</string>
-  <string name="msg_con_critical_in">进入关键阶段</string>
-  <string name="msg_con_critical_out">离开关键阶段</string>
-  <string name="msg_con_delete_public">正在删除公钥密钥环缓存</string>
-  <string name="msg_con_delete_secret">正在删除私钥密钥环缓存</string>
-  <string name="msg_con_error_db">打开数据库时出错！</string>
-  <string name="msg_con_error_io_public">将公钥写入缓存时，发生 IO 错误！</string>
-  <string name="msg_con_error_io_secret">将私钥写入缓存时，发生 IO 错误！</string>
-  <string name="msg_con_error_public">重新导入公共密钥时出错</string>
-  <string name="msg_con_error_secret">重新导入私有密钥时出错</string>
-  <string name="msg_con_recover">正在恢复合并</string>
-  <string name="msg_con_recursive">跳过递归合并</string>
-  <string name="msg_con_recover_unknown">从未知状态恢复合并过程</string>
-  <plurals name="msg_con_reimport_public">
-    <item quantity="other">正在重新导入 %d 个公钥</item>
-  </plurals>
-  <string name="msg_con_reimport_public_skip">没有需要重新导入的公钥，忽略…</string>
-  <plurals name="msg_con_reimport_secret">
-    <item quantity="other">正在重新导入 %d 个私钥</item>
-  </plurals>
-  <string name="msg_con_reimport_secret_skip">没有需要重新导入的私钥，忽略…</string>
-  <string name="msg_con_warn_delete_public">删除公钥缓存时发生异常</string>
-  <string name="msg_con_warn_delete_secret">删除私钥缓存时发生异常</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">正在进行密钥操作</string>
   <string name="msg_ed_caching_new">正在缓存新密码</string>
@@ -1090,6 +1075,7 @@
   <string name="msg_pse_error_pgp">OpenPGP 内部错误！</string>
   <string name="msg_pse_error_sig">遇到 OpenPGP 签名异常！</string>
   <string name="msg_pse_error_unlock">未知的密钥解锁错误！</string>
+  <string name="msg_pse_error_revoked_or_expired">吊销/过期的密钥不能用于签名或加密</string>
   <string name="msg_pse_key_ok">正在加密到密钥：%s</string>
   <string name="msg_pse_key_unknown">没有找到加密的密钥：%s</string>
   <string name="msg_pse_key_warn">不可用于加密的密钥：%s</string>
@@ -1102,6 +1088,7 @@
   <string name="msg_pse_sigcrypting">加密并签名数据</string>
   <string name="msg_pse">开始签名/加密操作</string>
   <string name="msg_pse_symmetric">正在准备对称加密</string>
+  <!--Messages for Authentication operation-->
   <string name="msg_crt_certifying">正在生成证书</string>
   <plurals name="msg_crt_certify_uids">
     <item quantity="other">正在认证密钥 %2$s 的 %1$d 个用户标识。</item>
@@ -1130,6 +1117,7 @@
   </plurals>
   <string name="msg_import_fetch_error_decode">取回的密钥环解码错误！</string>
   <string name="msg_import_fetch_error">无法获取密钥！（网络问题？）</string>
+  <string name="msg_import_fetch_error_not_found">未找到密钥</string>
   <string name="msg_import_fetch_error_keyserver">无法从密钥服务器下载密钥：%s</string>
   <string name="msg_import_fetch_error_keyserver_secret">无法从密钥服务器导入私钥！</string>
   <string name="msg_import_fetch_keybase">正在从 keybase.io 获取密钥：%s</string>
@@ -1170,7 +1158,6 @@
   </plurals>
   <string name="msg_del_key">正在删除密钥 %s</string>
   <string name="msg_del_key_fail">不能成功删除密钥 %s</string>
-  <string name="msg_del_consolidate">删除私钥后合并数据库</string>
   <plurals name="msg_del_ok">
     <item quantity="other">成功删除 %d 个密钥</item>
   </plurals>
@@ -1295,6 +1282,7 @@
   <string name="key_unavailable">不可用</string>
   <string name="secret_cannot_multiple">只能逐个删除您的密钥！</string>
   <string name="title_view_cert">查看认证详情</string>
+  <string name="unknown">未知</string>
   <string name="can_sign_not">无法签署</string>
   <string name="error_no_encrypt_subkey">没有加密子密钥！</string>
   <string name="contact_show_key">显示密钥 (%s)</string>
@@ -1513,4 +1501,37 @@
     <item>50 欧元</item>
     <item>100 欧元</item>
   </string-array>
+  <string name="redirect_import_key_no">关闭</string>
+  <string name="button_cancel">取消</string>
+  <string name="cap_sign_ok">此密钥可用于签名/发送消息。</string>
+  <string name="cap_sign_divert">此密钥可用于签名/发送消息，使用安全令牌。</string>
+  <string name="cap_sign_expired">此密钥不能用于签名/发送消息，因为已过期。</string>
+  <string name="cap_sign_revoked">此密钥不能用于签名/发送消息，因为已吊销。</string>
+  <string name="cap_sign_stripped">此密钥不能在此设备上签名/发送消息！</string>
+  <string name="cap_sign_unavailable">此密钥未配置为签名/发送消息用途！</string>
+  <string name="cap_sign_insecure">此密钥可用于签名/发送消息，但不安全！</string>
+  <string name="cap_decrypt_ok">此密钥可用于解密/接收消息。</string>
+  <string name="cap_decrypt_divert">此密钥可用于解密/接收消息，使用安全令牌。</string>
+  <string name="cap_decrypt_expired">此密钥可用于解密/接收消息，但已过期。</string>
+  <string name="cap_decrypt_revoked">此密钥可用于解密/接收消息，但已吊销。</string>
+  <string name="cap_decrypt_stripped">此密钥不能在此设备上解密/接收消息。</string>
+  <string name="cap_decrypt_unavailable">此密钥未配置为解密/接收消息用途！</string>
+  <string name="cap_decrypt_insecure">此密钥可用于解密/接收消息，但不安全！</string>
+  <string name="key_health_revoked_title">已吊销</string>
+  <string name="keyserver_title_published">Published</string>
+  <string name="keyserver_title_not_published">不公开</string>
+  <string name="dialog_insecure_title">安全警告</string>
+  <string name="button_import">导入</string>
+  <string name="transfer_status_connected">已连接</string>
+  <string name="transfer_status_disconnected">已断开连接！</string>
+  <string name="transfer_error_generic_msg">通讯错误:%s</string>
+  <string name="transfer_connecting">连接中…</string>
+  <string name="transfer_confirm_cancel">取消</string>
+  <string name="transfer_confirm_ok">发送</string>
+  <string name="token_reset_confirm_ok">重置</string>
+  <string name="token_result_not_found">未找到密钥</string>
+  <string name="token_action_reset">重置安全令牌</string>
+  <string name="token_action_import">导入</string>
+  <string name="token_unlock_ok">解锁</string>
+  <string name="token_hint_admin_pin">Admin PIN</string>
 </resources>

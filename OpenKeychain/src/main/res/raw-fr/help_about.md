@@ -2,7 +2,7 @@
 
 [https://www.openkeychain.org](https://www.openkeychain.org)
 
-[OpenKeychain](https://www.openkeychain.org) est une implémentation d'OpenPGP pour Android.
+[OpenKeychain](https://www.openkeychain.org) est une implémentation d’OpenPGP pour Android.
 
 Licence : GPLv3+
 
@@ -71,7 +71,7 @@ Licence : GPLv3+
   * [MiniDNS](https://github.com/rtreffer/minidns) (Licence Apache v2)
   * [OkHttp](https://square.github.io/okhttp/) (Licence Apache v2)
   * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Conception matérielle)</a> (Licence Apache v2)
-  * [Bibliothèque d'échange SafeSlinger](https://github.com/SafeSlingerProject/exchange-android) (Licence MIT)
+  * [Bibliothèque d’échange SafeSlinger](https://github.com/SafeSlingerProject/exchange-android) (Licence MIT)
   * [Snackbar](https://github.com/nispok/snackbar) (Licence MIT)
   * [BouncyCastle](https://github.com/open-keychain/bouncycastle) (Licence MIT X11)
   * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Licence Apache v2)

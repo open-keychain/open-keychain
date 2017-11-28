@@ -14,6 +14,7 @@
   <string name="title_preferences">Einstellungen</string>
   <string name="title_api_registered_apps">Apps</string>
   <string name="title_key_server_preference">OpenPGP-Schlüsselserver</string>
+  <string name="title_smartpgp_authorities_preference">SmartPGP: Vertraute Zertifizierungsstellen</string>
   <string name="title_change_passphrase">Passwort ändern</string>
   <string name="title_share_fingerprint_with">Teile Fingerabdruck über…</string>
   <string name="title_share_key">Teile Schlüssel über...</string>
@@ -47,7 +48,6 @@
   <string name="section_cloud_search">Schlüsselsuche</string>
   <string name="section_cloud_search_summary">Schlüsselserver, Keybase.io</string>
   <string name="section_passphrase_cache">Passwörter und PINs</string>
-  <string name="section_passphrase_cache_summary">Bedienung, Benutzeroberfläche, Merkdauer</string>
   <string name="section_proxy_settings">Netzwerkanonymität</string>
   <string name="section_proxy_settings_summary">Tor, Proxyeinstellungen</string>
   <string name="section_gui">Oberfläche</string>
@@ -179,6 +179,7 @@
   <string name="label_enable_compression">Komprimierung aktivieren</string>
   <string name="label_encrypt_filenames">Dateinamen verschlüsseln</string>
   <string name="label_hidden_recipients">Empfänger verbergen</string>
+  <string name="label_smartpgp_roots">SmartPGP: Vertraute Zertifizierungsstellen</string>
   <string name="label_verify_keyserver_connection">Verbindung testen</string>
   <string name="label_only_trusted_keyserver">Erlaube nur vertrauenswürdige Schlüsselserver</string>
   <string name="label_enter_keyserver_url">URL</string>
@@ -280,6 +281,7 @@
   <string name="ecc_p384_description_html">sehr kleine Dateigröße, bis 2040 als sicher erachtet <br></br> <u>experimentell, nicht von allen Implementierungen unterstützt</u></string>
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">kleine Dateigröße, bis nach 2040 als sicher erachtet &lt;br/&gt; &lt;u&gt;experimentell, nicht von allen Implementierungen unterstützt&lt;/u&gt;</string>
+  <string name="ecc_eddsa_description_html">kleine Dateigröße, bis nach 2040 als sicher erachtet &lt;br/&gt; &lt;u&gt;experimentell, nicht von allen Implementierungen unterstützt&lt;/u&gt;</string>
   <string name="usage_none">Keine (nur Unterschlüssel-Bindung)</string>
   <string name="usage_sign">Signieren</string>
   <string name="usage_encrypt">Verschlüsseln</string>
@@ -442,8 +444,6 @@
   <string name="progress_verifying_integrity">Integrität wird verifiziert…</string>
   <string name="progress_deleting_securely">\'%s\' wird sicher gelöscht…</string>
   <string name="progress_deleting">Schlüssel werden gelöscht…</string>
-  <string name="progress_con_saving">Zusammenführung: Wird in den Zwischenspeicher gesichert...</string>
-  <string name="progress_con_reimport">Zusammenführung: Wird reimportiert...</string>
   <string name="progress_verifying_keyserver_connection">Verbindung wird verifiziert...</string>
   <string name="progress_starting_orbot">Orbot wird gestartet…</string>
   <!--action strings-->
@@ -543,6 +543,7 @@
     <item quantity="other">Fehler beim Löschen von %1$d Schlüsseln.</item>
   </plurals>
   <string name="delete_nothing">Nichts zu löschen.</string>
+  <string name="delete_cancelled">Löschvorgang abgebrochen.</string>
   <!--Revoke result toast (snackbar)-->
   <string name="revoke_ok">Schlüssel erfolgreich widerrufen.</string>
   <string name="revoke_fail">Fehler beim Widerrufen des Schlüssels!</string>
@@ -619,6 +620,7 @@
   <string name="key_list_fab_qr_code">QR-Code einscannen</string>
   <string name="key_list_fab_search">Schlüsselsuche</string>
   <string name="key_list_fab_import">Aus Datei importieren</string>
+  <string name="key_list_dummy_title">Du hast noch keine Schlüssel!</string>
   <!--Key view-->
   <string name="key_view_action_edit">Bearbeiten</string>
   <string name="key_view_action_encrypt">Text verschlüsseln</string>
@@ -626,6 +628,7 @@
   <string name="key_view_action_certify">Schlüssel bestätigen</string>
   <string name="key_view_action_update">Vom Schlüsselserver aktualisieren</string>
   <string name="key_view_action_share_with">Teilen über...</string>
+  <string name="key_view_action_share_ssh_with">Teile als öffentlicher SSH-Schlüssel mit...</string>
   <string name="key_view_action_share_nfc">Über NFC teilen</string>
   <string name="key_view_action_upload">Auf Schlüsselserver hochladen</string>
   <string name="key_view_tab_main">Informationen</string>
@@ -689,11 +692,17 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">Diese Identität wurde widerrufen. Dies kann nicht rückgängig gemacht werden.</string>
   <string name="edit_key_edit_subkey_title">Wähle eine Aktion aus!</string>
+  <string-array name="edit_key_edit_subkey">
+    <item>Ablaufdatum ändern</item>
+    <item>Unterschlüssel widerrufen</item>
+    <item>Unterschlüssel kürzen</item>
+  </string-array>
   <string name="edit_key_new_subkey">neuer Unterschlüssel</string>
   <string name="edit_key_select_usage">Bitte Verwendungszweck des Schlüssels auswählen!</string>
   <string name="edit_key_error_add_identity">Füge mindestens eine Identität hinzu!</string>
   <string name="edit_key_error_add_subkey">Füge mindestens einen Unterschlüssel hinzu!</string>
   <string name="edit_key_error_bad_security_token_algo">Algorithmus wird vom Security-Token nicht unterstützt!</string>
+  <string name="edit_key_error_bad_security_token_size">RSA Schlüssel mit weniger als 2048 bits werden seit der OpenPGP-Card Spezifikation 3.x nicht mehr von Security-Tokens unterstützt!</string>
   <string name="edit_key_error_bad_security_token_curve">Kurve vom Security-Token nicht unterstützt!</string>
   <string name="edit_key_error_bad_security_token_stripped">Der Schlüssel kann nicht auf den Security-Token verschoben werden (Entweder abgeschnitten oder schon im Security-Token)!</string>
   <!--Create key-->
@@ -752,6 +761,7 @@
   <string name="drawer_close">Menü schließen</string>
   <string name="my_keys">Meine Schlüssel</string>
   <string name="nav_backup">Backup/Wiederherstellung</string>
+  <string name="nav_transfer">Sichere WiFi Übertragung</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Text eingeben</string>
   <!--certs-->
@@ -1035,38 +1045,6 @@
   <string name="msg_mf_uat_add_unknown">Unbekannter Benutzerattributstyp wird hinzugefügt</string>
   <string name="msg_mf_unlock_error">Fehler beim Entsperren des Schlüsselbundes!</string>
   <string name="msg_mf_unlock">Schlüsselbund wird entsperrt</string>
-  <!--Consolidate-->
-  <string name="msg_con">Datenbank wird zusammengeführt</string>
-  <string name="msg_con_error_bad_state">Zusammenführung wurde gestartet, während keine Datenbank zwischengespeichert war! Dies ist wahrscheinlich ein Programmierfehler, bitte reiche einen Fehlerbericht ein!</string>
-  <string name="msg_con_error_concurrent">Zusammenführung wurde abgebrochen, läuft bereits in einem anderen Thread!</string>
-  <string name="msg_con_save_secret">Private Schlüsselbünde werden gespeichert</string>
-  <string name="msg_con_save_public">Öffentliche Schlüsselbünde werden gespeichert</string>
-  <string name="msg_con_db_clear">Datenbank wird geleert</string>
-  <string name="msg_con_success">Datenbank wurde erfolgreich zusammengeführt!</string>
-  <string name="msg_con_critical_in">Beginne kritische Phase!</string>
-  <string name="msg_con_critical_out">Verlasse kritische Phase</string>
-  <string name="msg_con_delete_public">Lösche Zwischenspeicherdatei des öffentlichen Schlüsselbundes</string>
-  <string name="msg_con_delete_secret">Lösche Zwischenspeicherdatei des privaten Schlüsselbundes</string>
-  <string name="msg_con_error_db">Fehler beim Öffnen der Datenbank!</string>
-  <string name="msg_con_error_io_public">Ein-/Ausgabefehler beim Schreiben von öffentlichen Schlüsseln in den Zwischenspeicher!</string>
-  <string name="msg_con_error_io_secret">Ein-/Ausgabefehler beim Schreiben von privaten Schlüsseln in den Zwischenspeicher!</string>
-  <string name="msg_con_error_public">Fehler beim Reimportieren der öffentlichen Schlüssel!</string>
-  <string name="msg_con_error_secret">Fehler beim Reimportieren der privaten Schlüssel!</string>
-  <string name="msg_con_recover">Zusammenführungsvorgang wird fortgesetzt</string>
-  <string name="msg_con_recursive">Rekursive Zusammenführung wird übersprungen</string>
-  <string name="msg_con_recover_unknown">Zusammenführungsvorgang aus unbekanntem Zustand wird fortgesetzt</string>
-  <plurals name="msg_con_reimport_public">
-    <item quantity="one">Ein öffentlicher Schlüssel wird reimportiert</item>
-    <item quantity="other">%d öffentliche Schlüssel werden reimportiert</item>
-  </plurals>
-  <string name="msg_con_reimport_public_skip">Keine öffentlichen Schlüssel für Reimport, überspringe...</string>
-  <plurals name="msg_con_reimport_secret">
-    <item quantity="one">Ein privater Schlüssel wird reimportiert</item>
-    <item quantity="other">%d private Schlüssel werden reimportiert</item>
-  </plurals>
-  <string name="msg_con_reimport_secret_skip">Keine privaten Schlüssel für Reimport, überspringe...</string>
-  <string name="msg_con_warn_delete_public">Ausnahmefehler beim Löschen der öffentlichen Zwischenspeicherdatei</string>
-  <string name="msg_con_warn_delete_secret">Ausnahmefehler beim Löschen der privaten Zwischenspeicherdatei</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Schlüsselvorgang wird ausgeführt</string>
   <string name="msg_ed_caching_new">Neues Passwort wird zwischengespeichert</string>
@@ -1183,6 +1161,8 @@
   <string name="msg_pse_sigcrypting">Daten werden mit Signatur verschlüsselt</string>
   <string name="msg_pse">Signier- und/oder Verschlüsselungsvorgang wird gestartet</string>
   <string name="msg_pse_symmetric">Bereite symmetrische Verschlüsselung vor</string>
+  <!--Messages for Authentication operation-->
+  <string name="msg_auth_error_bad_passphrase">Falsches Passwort!</string>
   <string name="msg_crt_certifying">Beglaubigungen werden erzeugt</string>
   <plurals name="msg_crt_certify_uids">
     <item quantity="one">Eine User-ID von Schlüssel %2$s wird beglaubigt</item>
@@ -1257,7 +1237,6 @@
   </plurals>
   <string name="msg_del_key">Lösche Schlüssel %s</string>
   <string name="msg_del_key_fail">Fehler beim Löschen von Schlüssel %s</string>
-  <string name="msg_del_consolidate">Datenbank wird nach Löschung des privaten Schlüssels zusammengeführt</string>
   <plurals name="msg_del_ok">
     <item quantity="one">Schlüssel erfolgreich gelöscht</item>
     <item quantity="other">%d Schlüssel erfolgreich gelöscht</item>
@@ -1449,6 +1428,7 @@
   <string name="security_token_status_partly">Security-Token stimmt überein und ist teilweise mit dem Schlüssel verbunden</string>
   <string name="security_token_create">Halte den Security-Token gegen die Rückseite deines Geräts.</string>
   <string name="btn_reset">Zurücksetzen</string>
+  <string name="security_token_radio_reset">Token zurücksetzen</string>
   <string name="security_token_reset_warning">Das Zurücksetzen des Security-Tokens zerstört die darauf gespeicherten Schlüssel vollständig. Mit diesen Schlüssel verschlüsselte Nachrichten/Dateien können danach nicht mehr entschlüsselt werden!</string>
   <string name="snack_security_token_other">Es ist ein anderer Schlüssel auf dem Security-Token  gespeichert!</string>
   <string name="security_token_error">Fehler: %s</string>
@@ -1617,12 +1597,39 @@
     <item>50 Euro</item>
     <item>100 Euro</item>
   </string-array>
+  <string name="redirect_import_key_no">Schließen</string>
+  <string name="button_allow">Erlauben</string>
+  <string name="button_cancel">Abbrechen</string>
+  <string name="title_key_status">Key Status</string>
   <string name="cap_title_confirm">Andere Schlüssel bestätigen</string>
   <string name="cap_cert_ok">Dieser Schlüssel kann andere Schlüssel bestätigen.</string>
   <string name="cap_title_decrypt">Nachrichten entschlüsseln</string>
   <string name="key_health_expired_title">Abgelaufen</string>
+  <string name="key_health_revoked_title">Widerrufen</string>
   <string name="key_health_insecure_title">Unsicher</string>
+  <string name="keyserver_title_published">Veröffentlicht</string>
+  <string name="keyserver_title_not_published">Nicht veröffentlicht</string>
   <string name="keyserver_title_unknown">Schlüsselserver Status: unbekannt</string>
   <string name="keyserver_last_updated">Zuletzt geprüft: %s</string>
   <string name="keyserver_last_updated_never">Zuletzt geprüft: Nie</string>
+  <string name="dialog_insecure_title">Sicherheitswarnung</string>
+  <string name="dialog_insecure_button_ok">Okay, verstanden.</string>
+  <string name="button_scan">Einlesen</string>
+  <string name="button_import">Import</string>
+  <string name="transfer_status_connected">Verbunden</string>
+  <string name="transfer_status_disconnected">Getrennt!</string>
+  <string name="transfer_error_generic_msg">Kommunikationsfehler: %s</string>
+  <string name="transfer_connecting">Verbindung wird aufgebaut …</string>
+  <string name="first_time_secure_wifi_transfer">Sichere WiFi Übertragung</string>
+  <string name="menu_secure_wifi_transfer">Sichere WiFi Übertragung</string>
+  <string name="transfer_confirm_cancel">Abbrechen</string>
+  <string name="transfer_confirm_ok">Absenden</string>
+  <string name="token_reset_confirm_ok">Zurücksetzen</string>
+  <string name="token_result_not_found">Schlüssel nicht gefunden!</string>
+  <string name="token_action_reset">Security-Token zurücksetzen</string>
+  <string name="token_action_import">Import</string>
+  <string name="token_menu_view_log">Log ansehen</string>
+  <string name="token_unlock_ok">Entsperren</string>
+  <string name="token_hint_admin_pin">Admin-PIN</string>
+  <string name="token_hint_new_pin">Neue PIN</string>
 </resources>

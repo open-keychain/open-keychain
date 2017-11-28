@@ -3,18 +3,78 @@
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
+  <string name="title_encrypt_text">Kryptér</string>
+  <string name="title_encrypt_files">Kryptér</string>
+  <string name="title_decrypt">Afkryptér</string>
+  <string name="title_preferences">Indstillinger</string>
+  <string name="title_api_registered_apps">Apps</string>
+  <string name="title_import_keys">Importér nøgler</string>
+  <string name="title_help">Hjælp</string>
+  <string name="title_log_display">Log</string>
+  <string name="title_advanced_key_info">Avanceret</string>
   <!--section-->
+  <string name="section_certify">Bekræft</string>
+  <string name="section_actions">Handlinger</string>
+  <string name="section_share_key">Nøgle</string>
+  <string name="section_key_server">Nøgleserver</string>
+  <string name="section_fingerprint">Fingeraftryk</string>
+  <string name="section_encrypt">Kryptér</string>
   <!--button-->
+  <string name="btn_save">Gem</string>
+  <string name="btn_do_not_save">Annuller</string>
+  <string name="btn_delete">Slet</string>
+  <string name="btn_okay">Okay</string>
+  <string name="btn_next">Næste</string>
+  <string name="btn_back">Tilbage</string>
+  <string name="btn_no">Nej</string>
+  <string name="btn_share_decrypted_text">Del</string>
+  <string name="btn_unlock">Lås op</string>
+  <string name="btn_add_keyserver">Tilføje</string>
   <!--Content Description-->
   <!--menu-->
+  <string name="menu_preferences">Indstillinger</string>
+  <string name="menu_help">Hjælp</string>
+  <string name="menu_delete_key">Slet nøgle</string>
+  <string name="menu_search">Søg</string>
+  <string name="menu_open">Åbn</string>
+  <string name="menu_select_all">Vælg alle</string>
+  <string name="menu_advanced">Avanceret</string>
+  <string name="menu_keyserver_add">Tilføje</string>
   <!--label-->
+  <string name="label_message">Tekst</string>
+  <string name="label_file">Fil</string>
+  <string name="label_passphrase">Adgangskode</string>
+  <string name="label_unlock">Låser op…</string>
+  <string name="label_key_id">Nøgle ID</string>
+  <string name="label_key_type">Type</string>
+  <string name="label_expiry">Ophør</string>
+  <string name="label_usage">Forbrug</string>
+  <string name="label_name">Navn</string>
+  <string name="label_email">Email</string>
+  <string name="label_fingerprint">Fingeraftryk</string>
+  <string name="label_hidden_recipients">Skjul modtagere</string>
+  <string name="label_enter_keyserver_url">URL</string>
+  <string name="label_enter_smartpgp_authority_name">Navn</string>
+  <string name="pref_facebook">Facebook</string>
   <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="label_experimental_settings_desc_title">Advarsel</string>
   <!--Proxy Preferences-->
+  <string name="pref_proxy_tor_title">Aktiver Tor</string>
+  <string name="pref_proxy_host_title">Proxy-vært</string>
+  <string name="pref_proxy_port_title">Proxy-port</string>
+  <string name="pref_proxy_type_title">Proxy-type</string>
   <!--proxy type choices and values-->
+  <string name="pref_proxy_type_choice_http">HTTP</string>
   <!--OrbotHelper strings-->
   <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_install">Installer</string>
+  <string name="orbot_install_dialog_cancel">Annuller</string>
   <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_cancel">Annuller</string>
   <!--choice-->
+  <string name="choice_none">Ingen</string>
+  <string name="usage_encrypt">Kryptér</string>
+  <string name="error">Fejl</string>
   <!--sentences-->
   <!--errors
          no punctuation, all lowercase,
@@ -23,6 +83,7 @@
   <!--results shown after decryption/verification-->
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
+  <string name="progress_cancel">Annuller</string>
   <!--action strings-->
   <!--key bit length selections-->
   <!--elliptic curve names-->
@@ -32,30 +93,52 @@
     <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
   <!--Help-->
+  <string name="help_tab_start">Start</string>
+  <string name="help_tab_faq">FAQ</string>
+  <string name="help_tab_changelog">Ændringslog</string>
+  <string name="help_tab_about">Om</string>
+  <string name="help_about_version">Version:</string>
+  <string name="help_tab_donations">Doner</string>
   <!--Import-->
+  <string name="import_tab_keyserver">Nøgleserver</string>
+  <string name="btn_import">Importér</string>
+  <string name="btn_refresh">Genopfrisk</string>
   <!--Generic result toast-->
+  <string name="snackbar_details">Detaljer</string>
   <!--Import result toast-->
   <!--Delete result toast-->
   <!--Revoke result toast (snackbar)-->
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
+  <string name="api_settings_save">Gem</string>
+  <string name="api_settings_cancel">Annuller</string>
+  <string name="api_settings_advanced">Avanceret</string>
+  <string name="api_settings_settings">Indstillinger</string>
   <!--Share-->
   <!--retry upload dialog-->
   <!--Delete or revoke private key dialog-->
   <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <!--Key view-->
+  <string name="key_view_action_edit">Ændre</string>
+  <string name="key_view_tab_start">Start</string>
+  <string name="key_view_tab_share">Del</string>
   <!--Key trust-->
   <!--keybase proof stuff-->
+  <string name="keybase_verify">Verificer</string>
   <!--Edit key-->
   <!--Create key-->
   <!--View key-->
   <!--Add/Edit keyserver-->
   <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
+  <string name="nav_apps">Apps</string>
   <!--hints-->
   <!--certs-->
+  <string name="cert_none">ingen</string>
+  <string name="cert_revoke">tilbagekaldt</string>
+  <string name="cert_verify_ok">OK</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
@@ -63,25 +146,63 @@
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
-  <!--Consolidate-->
   <!--Edit Key (higher level than modify)-->
   <!--Promote key-->
   <!--Other messages used in OperationLogs-->
   <!--Messages for DecryptVerify operation-->
   <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl_ok">OK</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <!--Messages for Authentication operation-->
   <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_pwd">Adgangskode</string>
   <!--Keyserver sync-->
   <!--First Time-->
+  <string name="backup_section">Sikkerhedskopiér</string>
   <!--unsorted-->
+  <string name="label_cert_type">Type</string>
+  <string name="key_unavailable">ikke tilgængelig</string>
+  <string name="unknown">ukendt</string>
   <!--Android Account-->
+  <string name="account_privacy_title">Privatliv</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <string name="passphrase">Adgangskode</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="nfc_settings">Indstillinger</string>
+  <string name="snack_security_token_view">Gennemse</string>
+  <string name="snack_security_token_import">Importér</string>
+  <string name="btn_reset">Nulstille</string>
+  <string name="linked_create_verify">Verificer</string>
   <!--Other Linked Identity strings-->
+  <string name="btn_finish">Afslut</string>
+  <string name="linked_title_twitter">Twitter</string>
+  <string name="linked_button_verify">Verificer</string>
+  <string name="linked_button_retry">Forsøg igen</string>
+  <string name="linked_button_confirm">Bekræft</string>
+  <string name="linked_button_view">Gennemse</string>
+  <string name="linked_text_error">Fejl</string>
+  <string name="share_log_dialog_share_button">Del</string>
+  <string name="share_log_dialog_cancel_button">Annuller</string>
+  <string name="menu_uids_save">Gem</string>
+  <string name="prompt_fidesmo_pgp_install_button_positive">Installer</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">Annuller</string>
+  <string name="prompt_fidesmo_app_install_button_positive">Installer</string>
+  <string name="prompt_fidesmo_app_install_button_negative">Annuller</string>
+  <string name="redirect_import_key_no">Luk</string>
+  <string name="button_cancel">Annuller</string>
+  <string name="keyserver_title_published">Publiceret</string>
+  <string name="button_import">Importér</string>
+  <string name="transfer_status_connected">Forbundet</string>
+  <string name="transfer_connecting">Forbinder...</string>
+  <string name="transfer_confirm_cancel">Annuller</string>
+  <string name="transfer_confirm_ok">Send</string>
+  <string name="token_reset_confirm_ok">Nulstille</string>
+  <string name="token_action_import">Importér</string>
+  <string name="token_unlock_ok">Lås op</string>
 </resources>

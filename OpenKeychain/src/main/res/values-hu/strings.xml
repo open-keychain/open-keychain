@@ -24,29 +24,96 @@
   <string name="title_send_key">Feltöltés kulcsszerverre</string>
   <string name="title_backup">Kulcs exportálása</string>
   <string name="title_key_details">Kulcs adatai</string>
+  <string name="title_help">Súgó</string>
+  <string name="title_log_display">Log</string>
+  <string name="title_advanced_key_info">Haladó</string>
   <string name="title_manage_my_keys">Kulcsaim kezelés</string>
   <!--section-->
+  <string name="section_user_ids">Személyazonosságok</string>
   <string name="section_security_token">Biztonsági token</string>
   <string name="section_keys">Alkulcsok</string>
+  <string name="section_gui">Felület</string>
+  <string name="section_certify">Megerősít</string>
+  <string name="section_actions">Műveletek</string>
+  <string name="section_share_key">Kulcs</string>
+  <string name="section_key_server">Kulcsszerver</string>
+  <string name="section_fingerprint">Ujjlenyomat</string>
+  <string name="section_encrypt">Titkosítás</string>
   <!--button-->
+  <string name="btn_save">Mentés</string>
+  <string name="btn_view_log">Log megtekintése</string>
+  <string name="btn_do_not_save">Mégse</string>
+  <string name="btn_delete">Töröl</string>
+  <string name="btn_okay">OK</string>
+  <string name="btn_next">Következő</string>
+  <string name="btn_back">Vissza</string>
+  <string name="btn_no">Nem</string>
+  <string name="btn_share_decrypted_text">Megoszt</string>
+  <string name="btn_unlock">Feloldás</string>
+  <string name="btn_add_keyserver">Hozzáad</string>
   <!--Content Description-->
   <!--menu-->
+  <string name="menu_preferences">Beállítások</string>
+  <string name="menu_help">Súgó</string>
+  <string name="menu_delete_key">Kulcs Törlése</string>
+  <string name="menu_manage_keys">Kulcsaim kezelés</string>
+  <string name="menu_search">Keresés</string>
+  <string name="menu_open">Megnyitás</string>
+  <string name="menu_change_password">Jelszó módosítása</string>
+  <string name="menu_advanced">Haladó</string>
+  <string name="menu_keyserver_add">Hozzáad</string>
   <!--label-->
+  <string name="label_message">Szöveg</string>
+  <string name="label_file">Fájl</string>
+  <string name="label_file_colon">Fájl:</string>
+  <string name="label_passphrase">Jelszó</string>
+  <string name="label_pin">PIN</string>
+  <string name="label_key_id">Kulcs ID</string>
+  <string name="label_key_type">Típus</string>
+  <string name="label_expiry">Lejárat</string>
+  <string name="label_usage">Használat</string>
+  <string name="label_name">Név</string>
+  <string name="label_email">Email</string>
+  <string name="label_fingerprint">Ujjlenyomat</string>
+  <string name="label_hidden_recipients">Címzettek elrejtése</string>
+  <string name="label_enter_keyserver_url">URL</string>
+  <string name="label_theme">Téma</string>
+  <string name="label_enter_smartpgp_authority_name">Név</string>
+  <string name="pref_keyserver">OpenPGP kulcsszerverek</string>
+  <string name="pref_facebook">Facebook</string>
   <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="label_experimental_settings_desc_title">Figyelmeztetés</string>
   <!--Proxy Preferences-->
+  <string name="pref_proxy_tor_title">Tor bekapcsolása</string>
+  <string name="pref_proxy_host_title">Proxy címe</string>
+  <string name="pref_proxy_port_title">Proxy port</string>
+  <string name="pref_proxy_type_title">Proxy típus</string>
   <!--proxy type choices and values-->
+  <string name="pref_proxy_type_choice_http">HTTP</string>
   <!--OrbotHelper strings-->
   <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_install">Telepít</string>
+  <string name="orbot_install_dialog_cancel">Mégse</string>
   <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_cancel">Mégse</string>
   <!--choice-->
+  <string name="choice_none">Egyik sem</string>
+  <string name="choice_1hour">1 óra</string>
+  <string name="usage_sign">Aláírás</string>
+  <string name="usage_encrypt">Titkosítás</string>
+  <string name="error">Hiba</string>
   <!--sentences-->
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
   <!--errors without preceding Error:-->
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_encrypted">Titkosított</string>
+  <string name="decrypt_result_not_encrypted">Nem titkosított</string>
+  <string name="decrypt_result_action_show">Megjelenít</string>
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
+  <string name="progress_cancel">Mégse</string>
   <!--action strings-->
   <!--key bit length selections-->
   <!--elliptic curve names-->
@@ -56,30 +123,59 @@
     <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
   <!--Help-->
+  <string name="help_tab_start">Indítás</string>
+  <string name="help_tab_faq">GYIK</string>
+  <string name="help_tab_changelog">Változások</string>
+  <string name="help_tab_about">Névjegy</string>
+  <string name="help_about_version">Verzió:</string>
+  <string name="help_tab_donations">Támogatás</string>
   <!--Import-->
+  <string name="import_tab_keyserver">Kulcsszerver</string>
+  <string name="btn_import">Importálás</string>
+  <string name="btn_refresh">Frissítés</string>
   <!--Generic result toast-->
+  <string name="snackbar_details">Részletek</string>
   <!--Import result toast-->
   <!--Delete result toast-->
   <!--Revoke result toast (snackbar)-->
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
+  <string name="api_settings_no_key">Nincs kulcs kiválasztva</string>
+  <string name="api_settings_save">Mentés</string>
+  <string name="api_settings_cancel">Mégse</string>
+  <string name="api_settings_advanced">Haladó</string>
+  <string name="api_settings_settings">Beállítások</string>
   <!--Share-->
   <!--retry upload dialog-->
+  <string name="retry_up_dialog_title">Feltöltés sikertelen</string>
   <!--Delete or revoke private key dialog-->
   <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <!--Key view-->
+  <string name="key_view_action_edit">Szerkesztés</string>
+  <string name="key_view_tab_start">Indítás</string>
+  <string name="key_view_tab_share">Megoszt</string>
+  <string name="key_view_tab_keys">Alkulcsok</string>
   <!--Key trust-->
   <!--keybase proof stuff-->
+  <string name="keybase_verify">Megerősít</string>
   <!--Edit key-->
+  <string name="edit_key_action_change_passphrase">Jelszó megváltoztatása</string>
   <!--Create key-->
+  <string name="create_key_passphrases_not_equal">A jelszavak nem egyeznek</string>
+  <string name="create_key_yubi_key_pin">PIN</string>
   <!--View key-->
   <!--Add/Edit keyserver-->
   <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
+  <string name="nav_keys">Kulcsok</string>
+  <string name="nav_apps">Alkalmazások</string>
   <!--hints-->
   <!--certs-->
+  <string name="cert_none">semmi</string>
+  <string name="cert_revoke">visszavont</string>
+  <string name="cert_verify_ok">OK</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
@@ -87,25 +183,68 @@
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
-  <!--Consolidate-->
   <!--Edit Key (higher level than modify)-->
   <!--Promote key-->
   <!--Other messages used in OperationLogs-->
   <!--Messages for DecryptVerify operation-->
   <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl_ok">OK</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <!--Messages for Authentication operation-->
   <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_pwd">Jelszó</string>
   <!--Keyserver sync-->
   <!--First Time-->
+  <string name="backup_section">Mentés</string>
   <!--unsorted-->
+  <string name="label_user_id">Identitás</string>
+  <string name="label_cert_type">Típus</string>
+  <string name="key_unavailable">nem elérhető</string>
+  <string name="unknown">ismeretlen</string>
+  <string name="key_colon">Kulcs:</string>
   <!--Android Account-->
+  <string name="account_privacy_title">Adatvédelem</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <string name="passphrase">Jelszó</string>
+  <string name="set_passphrase">Jelszó megadása</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="nfc_settings">Beállítások</string>
+  <string name="snack_security_token_view">Megtekintés</string>
+  <string name="snack_security_token_import">Importálás</string>
+  <string name="btn_reset">Visszaállít</string>
+  <string name="security_token_error_unknown">Ismeretlen hiba</string>
+  <string name="linked_create_verify">Megerősít</string>
   <!--Other Linked Identity strings-->
+  <string name="btn_finish">Befejezés</string>
+  <string name="linked_title_twitter">Twitter</string>
+  <string name="linked_button_verify">Megerősít</string>
+  <string name="linked_button_retry">Ismétlés</string>
+  <string name="linked_button_confirm">Megerősít</string>
+  <string name="linked_button_view">Megtekintés</string>
+  <string name="linked_text_error">Hiba</string>
+  <string name="share_log_dialog_share_button">Megoszt</string>
+  <string name="share_log_dialog_cancel_button">Mégse</string>
+  <string name="menu_uids_save">Mentés</string>
+  <string name="prompt_fidesmo_pgp_install_button_positive">Telepít</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">Mégse</string>
+  <string name="prompt_fidesmo_app_install_button_positive">Telepít</string>
+  <string name="prompt_fidesmo_app_install_button_negative">Mégse</string>
+  <string name="redirect_import_key_no">Bezár</string>
+  <string name="button_cancel">Mégse</string>
+  <string name="keyserver_title_published">Közzétett</string>
+  <string name="button_import">Importálás</string>
+  <string name="transfer_status_connected">Csatlakozva</string>
+  <string name="transfer_connecting">Csatlakozás...</string>
+  <string name="transfer_confirm_cancel">Mégse</string>
+  <string name="transfer_confirm_ok">Küldés</string>
+  <string name="token_reset_confirm_ok">Visszaállít</string>
+  <string name="token_action_import">Importálás</string>
+  <string name="token_unlock_ok">Feloldás</string>
+  <string name="token_hint_new_pin">Új PIN</string>
 </resources>

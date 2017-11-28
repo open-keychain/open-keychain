@@ -109,6 +109,7 @@
   <string name="menu_manage_keys">Gestisci mie chiavi</string>
   <string name="menu_search">Cerca</string>
   <string name="menu_open">Apri</string>
+  <string name="menu_read_clipboard">Leggi dagli appunti</string>
   <string name="menu_nfc_preferences">Impostazioni NFC</string>
   <string name="menu_beam_preferences">Impostazioni Beam</string>
   <string name="menu_encrypt_to">Codifica su...</string>
@@ -149,6 +150,7 @@
   <string name="label_message_compression">Compressione testo</string>
   <string name="label_file_compression">Compressione file</string>
   <string name="label_key_id">ID Chiave</string>
+  <string name="label_key_id_colon">ID chiave:</string>
   <string name="label_key_created">Chiave creata %s</string>
   <string name="label_key_type">Tipo</string>
   <string name="label_creation">Creazione</string>
@@ -174,6 +176,7 @@
   <string name="label_enter_keyserver_url">URL</string>
   <string name="label_keyserver_dialog_delete">Cancella server chiavi</string>
   <string name="label_theme">Tema</string>
+  <string name="label_enter_smartpgp_authority_name">Nome</string>
   <string name="pref_keyserver">Server chiavi OpenPGP</string>
   <string name="pref_keyserver_summary">Cerca chiavi su server chiavi OpenPGP selezionati (protocollo HKP)</string>
   <string name="pref_keybase">keybase.io</string>
@@ -260,8 +263,10 @@
   <string name="ecc_p256">ECC P-256</string>
   <string name="ecc_p256_description_html">dimensione file minuscola, considerato sicuro fino al 2040 &lt;br/&gt; &lt;u&gt;sperimentale e non supportato da tutte le implementazioni&lt;/u&gt;</string>
   <string name="ecc_p384">ECC P-384</string>
+  <string name="ecc_p384_description_html">dimensione file minuscola, considerato sicuro fino al 2040 &lt;br/&gt; &lt;u&gt;sperimentale e non supportato da tutte le implementazioni&lt;/u&gt;</string>
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">dimensione file piccola, considerato sicuro fino al 2040+ &lt;br/&gt; &lt;u&gt;sperimentale e non supportato da tutte le implementazioni&lt;/u&gt;</string>
+  <string name="ecc_eddsa_description_html">dimensione file piccola, considerato sicuro fino al 2040+ &lt;br/&gt; &lt;u&gt;sperimentale e non supportato da tutte le implementazioni&lt;/u&gt;</string>
   <string name="usage_sign">Firma</string>
   <string name="usage_encrypt">Codifica</string>
   <string name="usage_sign_and_encrypt">Firma &amp; Codifica</string>
@@ -415,8 +420,6 @@
   <string name="progress_verifying_integrity">verifica integrita\'...</string>
   <string name="progress_deleting_securely">eliminazione sicura di \'%s\'...</string>
   <string name="progress_deleting">cancellazione chiavi...</string>
-  <string name="progress_con_saving">consolidazione: salvataggio della cache...</string>
-  <string name="progress_con_reimport">consolidazione: reimportazione...</string>
   <string name="progress_verifying_keyserver_connection">verifica della connessione...</string>
   <string name="progress_starting_orbot">Avvio di Orbot in corso...</string>
   <!--action strings-->
@@ -650,6 +653,11 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">Questa identità è stata revocata. Ciò non può essere annullato.</string>
   <string name="edit_key_edit_subkey_title">Seleziona un azione!</string>
+  <string-array name="edit_key_edit_subkey">
+    <item>Cambia Scadenza</item>
+    <item>Revoca Sottochiave</item>
+    <item>Pulisci Sottochiave</item>
+  </string-array>
   <string name="edit_key_new_subkey">nuova sottochiave</string>
   <string name="edit_key_select_usage">Seleziona l\'uso della chiave!</string>
   <string name="edit_key_error_add_identity">Aggiungi almeno una identità</string>
@@ -815,6 +823,8 @@
   <string name="msg_is_db_exception">Errore Banca Dati!</string>
   <string name="msg_is_importing_subkeys">Elaborazione sottochiavi segrete</string>
   <string name="msg_is_error_io_exc">Errore codifica portachiavi</string>
+  <string name="msg_is_merge_public">Fusione dati importati nel portachiavi pubblico esistente</string>
+  <string name="msg_is_merge_secret">Fusione dati importati nel portachiavi segreto esistente</string>
   <string name="msg_is_pubring_generate">Generazione portachiavi pubblico da portachiavi privato</string>
   <string name="msg_is_subkey_nonexistent">Sottochiave %s non disponibile nella chiave segreta</string>
   <string name="msg_is_subkey_ok">Sottochiave segreta %s marcata come disponibile</string>
@@ -826,6 +836,8 @@
   <string name="msg_kc_secret">Canonicalizzazione portachiavi segreto %s</string>
   <string name="msg_kc_error_v3">Questa è una chiave OpenPGP versione 3, è deprecata e non più supportata!</string>
   <string name="msg_kc_master">Elaborazione chiave principale</string>
+  <string name="msg_kc_master_bad_type">Rimozione certificato della chiave principale di tipo sconosciuto (%s)</string>
+  <string name="msg_kc_master_bad_time">Rimozione certificato di revoca del portachiavi con marca temporale futura</string>
   <string name="msg_kc_revoke_dup">Rimozione certificato di revoca del portachiavi ridondante</string>
   <string name="msg_kc_sub">Elaborazione sottochiave %s</string>
   <string name="msg_kc_sub_bad">Rimozione certificato vincolante di sottochiave non valido</string>
@@ -894,35 +906,6 @@
   <string name="msg_mf_uid_error_empty">ID Utente non può essere vuoto!</string>
   <string name="msg_mf_unlock_error">Errore di apertura portachiavi!</string>
   <string name="msg_mf_unlock">Apertura portachiavi</string>
-  <!--Consolidate-->
-  <string name="msg_con">Consolidazione database</string>
-  <string name="msg_con_error_bad_state">Il consolidamento è stato avviato mentre nessun database è stato memorizzato nella cache! Questo è probabilmente un errore di programmazione, si prega di aprire un bug report.</string>
-  <string name="msg_con_error_concurrent">Consolidamento interrotto, già in esecuzione su un altro processo!</string>
-  <string name="msg_con_save_secret">Salvataggio portachiavi privati</string>
-  <string name="msg_con_save_public">Salvataggio portachiavi pubblico</string>
-  <string name="msg_con_db_clear">Pulizia database</string>
-  <string name="msg_con_success">Consolidamento database con successo</string>
-  <string name="msg_con_critical_in">Ingresso fase critica</string>
-  <string name="msg_con_critical_out">Uscita fase critica</string>
-  <string name="msg_con_delete_public">Eliminazione del file di cache del portachiavi pubblico</string>
-  <string name="msg_con_delete_secret">Eliminazione del file di cache del portachiavi privato</string>
-  <string name="msg_con_error_db">Errore nell\'apertura del database</string>
-  <string name="msg_con_error_io_public">Errore di IO durante la scrittura delle chiavi pubbliche nella cache!</string>
-  <string name="msg_con_error_io_secret">Errore di IO durante la scrittura delle chiavi private nella cache!</string>
-  <string name="msg_con_error_public">Errore nella re-importazione delle chiavi pubbliche!</string>
-  <string name="msg_con_error_secret">Errore nella re-importazione delle chiavi private!</string>
-  <plurals name="msg_con_reimport_public">
-    <item quantity="one">Reimportazione di una chiave pubblica</item>
-    <item quantity="other">Reimportazione di %d chiavi pubbliche</item>
-  </plurals>
-  <string name="msg_con_reimport_public_skip">Nessuna chiave pubblica da reimportare, proseguo...</string>
-  <plurals name="msg_con_reimport_secret">
-    <item quantity="one">Reimportazione di una chiave privata</item>
-    <item quantity="other">Reimportazione di %d chiavi private</item>
-  </plurals>
-  <string name="msg_con_reimport_secret_skip">Nessuna chiave privata da reimportare, proseguo...</string>
-  <string name="msg_con_warn_delete_public">Eccezione durante la eliminazione del file di cache pubblico</string>
-  <string name="msg_con_warn_delete_secret">Eccezione durante la eliminazione del file di cache privato</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed_error_key_not_found">Chiave non trovata.</string>
   <!--Promote key-->
@@ -958,11 +941,14 @@
   <string name="msg_vl_ok">OK</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <string name="msg_pse_asymmetric">Preparazione chiavi pubbliche per la codifica</string>
   <string name="msg_pse_compressing">Preparazione compressione</string>
   <string name="msg_pse_encrypting">Codifica dati in corso</string>
   <string name="msg_pse_error_bad_passphrase">Password errata!</string>
   <string name="msg_pse_error_nfc">Errore dati NFC!</string>
   <string name="msg_pse_error_pgp">Errore interno di PGP!</string>
+  <string name="msg_pse_error_unlock">Errore sconosciuto durante apertura chiave!</string>
+  <!--Messages for Authentication operation-->
   <string name="msg_crt_error_nothing">Nessuna chiave certificata!</string>
   <string name="msg_crt_saving">Salvataggio portachiavi in corso</string>
   <string name="msg_crt_success">Identità certificata correttamente</string>
@@ -973,12 +959,14 @@
     <item quantity="one">Importazione della chiave</item>
     <item quantity="other">Importazione di %d chiavi</item>
   </plurals>
+  <string name="msg_import_fetch_error_not_found">Chiave non trovata!</string>
   <string name="msg_backup_error_db">Errore banca dati!</string>
   <string name="msg_backup_error_io">Errore di input/output!</string>
   <string name="msg_upload_server">Server: %s</string>
   <string name="msg_upload_key">ID chiave: %s</string>
   <string name="msg_upload_error_not_found">Chiave non trovata!</string>
   <string name="msg_del_error_empty">Niente da cancellare!</string>
+  <string name="msg_del_error_multi_secret">Le chiavi segrete possono essere cancellate solo individualmente!</string>
   <plurals name="msg_del">
     <item quantity="one">Cancellazione di una chiave</item>
     <item quantity="other">Cancellazione di %d chiavi</item>
@@ -1000,8 +988,15 @@
   <string name="msg_data_mime_charset">Il set di caratteri è \'%s\'</string>
   <string name="msg_data_mime_charset_unknown">Il set di caratteri è sconosciuto, oppure i dati non sono testo.</string>
   <string name="msg_get_success">Scaricamento completato!</string>
+  <string name="msg_get_too_many_responses">La query di ricerca della chiave ha generato troppi risultati. Per favore ridefinisci la tua ricerca!</string>
+  <string name="msg_get_query_too_short">Query di ricerca troppo. Per favore ridefinisci la tua ricerca!</string>
+  <string name="msg_get_query_too_short_or_too_many_responses">In entrambi i casi sono state trovate troppe o nessuna chiave. Si prega di migliorare la vostra ricerca!</string>
+  <string name="msg_download_query_failed">C\'è stato un errore durante la ricerca delle chiavi.</string>
   <!--Messages for Keybase Verification operation-->
+  <string name="msg_keybase_error_key_mismatch">L\'impronta della chiave non corrisponde con quella della prova</string>
+  <string name="msg_keybase_error_dns_fail">Recupero DNS TXT Record fallito</string>
   <string name="msg_keybase_error_specific">%s</string>
+  <string name="msg_keybase_error_msg_payload_mismatch">La prova decifrata non corrisponde con il valore previsto</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_clear">Cancella password</string>
@@ -1038,6 +1033,7 @@
   <string name="error_no_encrypt_subkey">Nessuna sottochiave di codifica disponibile!</string>
   <string name="contact_show_key">Mostra chiave (%s)</string>
   <string name="error_no_file_selected">Seleziona almeno un file da codificare!</string>
+  <string name="error_multi_files">Il salvataggio di più file non è supportato. Questa è una limitazione corrente di Android.</string>
   <string name="error_empty_text">Digitare del testo da codificare!</string>
   <string name="key_colon">Chiave:</string>
   <string name="user_id_none"><![CDATA[<none>]]></string>
@@ -1059,6 +1055,7 @@
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="unlocked">Sbloccata</string>
   <string name="nfc_settings">Impostazioni</string>
+  <string name="snack_security_token_view">Mostra</string>
   <string name="snack_security_token_import">Importa</string>
   <string name="security_token_serial_no">N° seriale: %s</string>
   <string name="security_token_key_holder_not_set"><![CDATA[Key holder: <not set>]]></string>
@@ -1150,4 +1147,25 @@
     <item>50 EUR</item>
     <item>100 EUR</item>
   </string-array>
+  <string name="redirect_import_key_no">Chiudi</string>
+  <string name="button_allow">Abilita</string>
+  <string name="button_cancel">Annulla</string>
+  <string name="key_health_expired_title">Scaduti</string>
+  <string name="key_health_revoked_title">Revocato</string>
+  <string name="keyserver_title_published">Pubblicato</string>
+  <string name="dialog_insecure_title">Avviso di Protezione</string>
+  <string name="dialog_insecure_button_ok">Ho capito</string>
+  <string name="button_import">Importa</string>
+  <string name="transfer_status_connected">Connesso</string>
+  <string name="transfer_status_disconnected">Disconnesso!</string>
+  <string name="transfer_connecting">Connessione in corso...</string>
+  <string name="transfer_confirm_cancel">Annulla</string>
+  <string name="transfer_confirm_ok">Invia</string>
+  <string name="token_reset_confirm_ok">Reset</string>
+  <string name="token_result_not_found">Chiave non trovata!</string>
+  <string name="token_action_import">Importa</string>
+  <string name="token_menu_view_log">Mostra registro</string>
+  <string name="token_unlock_ok">Sblocca</string>
+  <string name="token_hint_admin_pin">Admin PIN</string>
+  <string name="token_hint_new_pin">Nuovo PIN</string>
 </resources>

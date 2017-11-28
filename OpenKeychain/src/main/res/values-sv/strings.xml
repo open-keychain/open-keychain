@@ -46,7 +46,6 @@
   <string name="section_cloud_search">Nyckelsökning</string>
   <string name="section_cloud_search_summary">Nyckelserver, keybase.io</string>
   <string name="section_passphrase_cache">Lösenord och PIN-koder</string>
-  <string name="section_passphrase_cache_summary">Hantering, användargränssnitt, kom ihåg tid</string>
   <string name="section_proxy_settings">Nätverksanonymitet</string>
   <string name="section_proxy_settings_summary">Tor, proxyinställningar</string>
   <string name="section_gui">Gränssnitt</string>
@@ -110,6 +109,8 @@
   <string name="menu_delete_key">Radera nyckel</string>
   <string name="menu_manage_keys">Hantera mina nycklar</string>
   <string name="menu_search">Sök</string>
+  <string name="menu_open">Öppen</string>
+  <string name="menu_read_clipboard">Läs från urklipp</string>
   <string name="menu_nfc_preferences">NFC-inställningar</string>
   <string name="menu_beam_preferences">Beam-inställningar</string>
   <string name="menu_encrypt_to">Kryptera till…</string>
@@ -149,7 +150,9 @@
   <string name="label_message_compression">Textkompression</string>
   <string name="label_file_compression">Filkompression</string>
   <string name="label_key_id">Nyckel-ID</string>
+  <string name="label_key_id_colon">Nyckel-ID</string>
   <string name="label_key_created">Nyckel skapad %s</string>
+  <string name="label_key_type">Typ</string>
   <string name="label_creation">Skapande</string>
   <string name="label_expiry">Går ut</string>
   <string name="label_usage">Användning</string>
@@ -172,6 +175,7 @@
   <string name="label_enter_keyserver_url">URL</string>
   <string name="label_keyserver_dialog_delete">Ta bort nyckelserver</string>
   <string name="label_theme">Tema</string>
+  <string name="label_enter_smartpgp_authority_name">Namn</string>
   <string name="pref_keyserver">OpenPGP-nyckelservrar</string>
   <string name="pref_keyserver_summary">Sök nycklar på valda OpenPGP-nyckelservrar (HKP-protokollet)</string>
   <string name="pref_keybase">keybase.io</string>
@@ -219,6 +223,7 @@
   <string name="orbot_start_dialog_start">Starta Orbot</string>
   <string name="orbot_start_dialog_cancel">Avbryt</string>
   <string name="orbot_start_dialog_ignore_tor">Använd inte Tor</string>
+  <string name="none"><![CDATA[<none>]]></string>
   <plurals name="n_keys">
     <item quantity="one">1 nyckel</item>
     <item quantity="other">%d nycklar</item>
@@ -401,8 +406,6 @@
   <string name="progress_verifying_integrity">verifierar integritet…</string>
   <string name="progress_deleting_securely">raderar \'%s\' säkert… </string>
   <string name="progress_deleting">raderar nycklar…</string>
-  <string name="progress_con_saving">konsolidera: sparar till cache…</string>
-  <string name="progress_con_reimport">konsolidera: återimporterar…</string>
   <string name="progress_starting_orbot">Startar Orbot…</string>
   <!--action strings-->
   <string name="hint_cloud_search_hint">Söker via Namn, E-post...</string>
@@ -444,6 +447,7 @@
   <string name="import_qr_code_button">Skanna QR-kod</string>
   <string name="import_qr_code_text">Håll din kamera över QR-koden!</string>
   <string name="btn_import">Importera</string>
+  <string name="btn_refresh">Uppdatera</string>
   <!--Generic result toast-->
   <string name="snackbar_details">Detaljer</string>
   <string name="with_warnings">, med varningar</string>
@@ -503,6 +507,8 @@
   <string name="intent_send_encrypt">Kryptera med OpenKeychain</string>
   <string name="intent_send_decrypt">Dekryptera med OpenKeychain</string>
   <!--Remote API-->
+  <string name="api_settings_show_info">Visa avancerad information</string>
+  <string name="api_settings_hide_info">Göm avancerad information</string>
   <string name="api_settings_no_key">Ingen nyckel vald</string>
   <string name="api_settings_select_key">Välj nyckel</string>
   <string name="api_settings_create_key">Skapa ny nyckel</string>
@@ -656,9 +662,11 @@
   <string name="msg_ip_bad_type_secret">Försökte att importera hemlig nyckelring som öppen. Detta är en bugg, skicka en felrapport!</string>
   <string name="msg_ip_delete_old_fail">Ingen gammal nyckel raderad (skapa en ny?)</string>
   <string name="msg_ip_delete_old_ok">Raderade gammal nyckel från databas</string>
+  <string name="msg_ip_encode_fail">Operationen misslyckades på grund av ett kodningsfel</string>
   <string name="msg_ip_error_op_exc">Operationen misslyckades på grund av ett databasfel</string>
   <string name="msg_ip_error_remote_ex">Operationen misslyckades på grund av ett internt fel</string>
   <string name="msg_ip">Importerar öppen nyckelring %s</string>
+  <string name="msg_ip_fingerprint_ok">Kontroll av fingeravtyck OK</string>
   <string name="msg_ip_insert_keyring">Kodar nyckelringens data</string>
   <string name="msg_ip_insert_keys">Läser nycklar</string>
   <string name="msg_ip_prepare">Förebereder databasoperationer</string>
@@ -775,6 +783,7 @@
   <string name="msg_kc_uid_revoke_old">Tar bort föråldrat återkallelsecertifikat för användar-ID \'%s\'</string>
   <string name="msg_kc_uid_no_cert">Inget giltigt eget-certifikat hittades för användar-ID \'%s\', tar bort från nyckelring</string>
   <string name="msg_kc_uid_remove">Tar bort ogiltigt användar-ID \'%s\'</string>
+  <string name="msg_kc_uat_unknown">Bearbetar användarattribut av okänd typ</string>
   <string name="msg_kc_uat_remove">Tar bort ogiltigt användarattribut</string>
   <!--Keyring merging log entries-->
   <string name="msg_mg_error_heterogeneous">Försökte att slå ihop nyckelringar med olika fingeravtryck!</string>
@@ -816,28 +825,6 @@
   <string name="msg_mf_uid_revoke">Återkallar användar-ID %s</string>
   <string name="msg_mf_uid_error_empty">Användar-ID får inte vara tomt!</string>
   <string name="msg_mf_unlock">Låser upp nyckelring</string>
-  <!--Consolidate-->
-  <string name="msg_con">Konsoliderar databas</string>
-  <string name="msg_con_error_bad_state">Konsolidering startade medan ingen databas var cachad! Detta är förmodligen ett programmeringsfel, skicka en buggrapport.</string>
-  <string name="msg_con_save_secret">Sparar hemliga nyckelringar</string>
-  <string name="msg_con_save_public">Sparar öppen nyckelringar</string>
-  <string name="msg_con_db_clear">Rensar databas</string>
-  <string name="msg_con_success">Konsoliderade databas</string>
-  <string name="msg_con_delete_public">Raderar cache-fil för öppen nyckelring</string>
-  <string name="msg_con_delete_secret">Tar bort cache-fil för hemlig nyckelring</string>
-  <string name="msg_con_error_db">Fel när databas skulle öppnas!</string>
-  <string name="msg_con_error_public">Fel när öppen nycklar skulle återimporteras!</string>
-  <string name="msg_con_error_secret">Fel när hemliga nycklar skulle återimporteras!</string>
-  <plurals name="msg_con_reimport_public">
-    <item quantity="one">Återimporterar en publik nyckel</item>
-    <item quantity="other">Återimporterar %d öppna nycklar</item>
-  </plurals>
-  <string name="msg_con_reimport_public_skip">Inga öppna nycklar att återimportera, hoppar över…</string>
-  <plurals name="msg_con_reimport_secret">
-    <item quantity="one">Återimporterar en hemlig nyckel</item>
-    <item quantity="other">Återimporterar %d hemliga nycklar</item>
-  </plurals>
-  <string name="msg_con_reimport_secret_skip">Inga hemliga nycklar att återimportera, hoppar över…</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Utför nyckeloperation</string>
   <string name="msg_ed_caching_new">Cachelagra nytt lösenord</string>
@@ -877,6 +864,7 @@
   <string name="msg_vl_clear_meta_file">Filnamn: %s</string>
   <string name="msg_vl_clear_meta_mime">MIME-typ: %s</string>
   <string name="msg_vl_clear_meta_size">Filstorlek: %s</string>
+  <string name="msg_vl_clear_signature_check">Verifierar signaturdata</string>
   <string name="msg_vl_error_integrity_check">Fel vid integritetskontroll!</string>
   <string name="msg_vl_ok">Ok</string>
   <!--Messages for SignEncrypt operation-->
@@ -886,8 +874,10 @@
   <string name="msg_pse_asymmetric">Förbereder öppna nycklar för kryptering</string>
   <string name="msg_pse_compressing">Förbereder komprimering</string>
   <string name="msg_pse_encrypting">Krypterar data</string>
+  <string name="msg_pse_error_key_sign">Den valda signeringsnyckeln kan inte signera data!</string>
   <string name="msg_pse_error_nfc">NFC datafel!</string>
   <string name="msg_pse_error_pgp">Internt OpenPGP-fel!</string>
+  <string name="msg_pse_error_unlock">Okänt fel vid upplåsning av nyckel</string>
   <string name="msg_pse_key_ok">Kryptering för nyckel: %s</string>
   <string name="msg_pse_key_unknown">Saknad nyckel för kryptering: %s</string>
   <string name="msg_pse_key_warn">Dålig nyckel för kryptering: %s</string>
@@ -897,6 +887,7 @@
   <string name="msg_pse_sigcrypting">Krypterar data med signatur</string>
   <string name="msg_pse">Startar signerings- och/eller krypteringsprocedur</string>
   <string name="msg_pse_symmetric">Förbereder symmetrisk kryptering</string>
+  <!--Messages for Authentication operation-->
   <string name="msg_crt_error_master_not_found">Huvudnyckel hittades inte!</string>
   <string name="msg_crt_error_nothing">Inga nycklar certifierade!</string>
   <string name="msg_crt_error_unlock">Fel vid upplåsning av huvudnyckel!</string>
@@ -910,6 +901,7 @@
     <item quantity="one">Importerar nyckel</item>
     <item quantity="other">Importerar %d nycklar</item>
   </plurals>
+  <string name="msg_import_fetch_error_not_found">Nyckel hittades inte!</string>
   <string name="msg_import_fetch_keyserver">Hämtar från nyckelserver: %s</string>
   <string name="msg_import_fetch_keyserver_ok">Nyckelhämtning lyckades</string>
   <string name="msg_import_keyserver">Använder nyckelserver %s</string>
@@ -924,10 +916,12 @@
   <string name="msg_backup_all">Säkerhetskopiering med alla nycklar</string>
   <string name="msg_backup_public">Skapa säkerhetskopia av öppen nyckel %s</string>
   <string name="msg_backup_secret">Skapa säkerhetskopia av hemlig nyckel %s</string>
+  <string name="msg_backup_error_db">Databasfel!</string>
   <string name="msg_backup_success">Säkerhetskopieringen lyckades</string>
   <string name="msg_upload_proxy_direct">Använder proxy: Ingen</string>
   <string name="msg_upload_proxy_tor">Använder proxy: TOR</string>
   <string name="msg_upload_proxy">Använder proxy: %s</string>
+  <string name="msg_upload_error_not_found">Nyckel hittades inte!</string>
   <string name="msg_del_error_empty">Inget att radera!</string>
   <string name="msg_del_error_multi_secret">Hemliga nycklar kan bara raderas var för sig!</string>
   <plurals name="msg_del">
@@ -951,20 +945,27 @@
   <string name="msg_lv_match">Söker efter token</string>
   <string name="msg_bench_enc_time">Krypteringstid: %ss</string>
   <string name="msg_bench_enc_time_avg">Genomsnittlig tidsåtgång för att kryptera 5 MB: %ss</string>
+  <string name="msg_get_success">Hämtning lyckades!</string>
+  <string name="msg_get_no_valid_keys">Inga giltiga nycklar hittades i fil/urklipp!</string>
   <string name="msg_get_too_many_responses">Nyckel sökfråga gav alltför många kandidater. Vänligen förfina din förfråga!</string>
   <string name="msg_get_query_too_short">Sökfråga för kort. Vänligen förfina din förfråga!</string>
+  <string name="msg_get_query_too_short_or_too_many_responses">Ingen eller för många nycklar har hittats. Förbättra din förfrågan!</string>
   <string name="msg_download_query_failed">Ett fel uppstod vid sökning efter nycklar.</string>
   <!--Messages for Keybase Verification operation-->
+  <string name="msg_keybase_error_dns_fail">Hämtning av DNS TXT-post misslyckades</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_pwd">Password</string>
   <!--Keyserver sync-->
   <string name="keyserver_sync_orbot_notif_title">Synkronisering från servrar kräver Orbot</string>
+  <string name="keyserver_sync_orbot_notif_start">Starta Orbot</string>
   <!--First Time-->
   <string name="first_time_text1">Ta tillbaka din integritet med OpenKeychain!</string>
   <string name="first_time_create_key">Skapa min nyckel</string>
   <string name="first_time_import_key">Importera nyckel från fil</string>
   <string name="first_time_security_token">Använd säkerhetstoken</string>
   <string name="first_time_skip">Hoppa över inställning</string>
+  <string name="first_time_blank_security_token">Vill du använda denna tomma säkerhetstoken med OpenKeychain?\n\nVänligen ta bort säkerhetstoken nu, du kommer att frågas när den behövs igen!</string>
   <string name="first_time_blank_security_token_yes">Använd denna säkerhetstoken</string>
   <string name="backup_text">Säkerhetskopior som innehåller dina egna nycklar får aldrig delas med andra personer!</string>
   <string name="backup_all">Alla nycklar + dina egna nycklar</string>
@@ -988,6 +989,7 @@
   <string name="key_unavailable">otillgänglig</string>
   <string name="secret_cannot_multiple">Dina egna nycklar kan bara raderas var för sig!</string>
   <string name="title_view_cert">Visa certifikatinformation</string>
+  <string name="unknown">okänd</string>
   <string name="can_sign_not">kan inte signera</string>
   <string name="error_no_encrypt_subkey">Ingen krypteringsundernyckel tillgänglig!</string>
   <string name="contact_show_key">Visa nyckel (%s)</string>
@@ -1029,6 +1031,7 @@
   <string name="security_token_create">Håll säkerhetstoken mot baksidan av din enhet.</string>
   <string name="btn_reset">Återställ</string>
   <string name="security_token_error">Fel: %s</string>
+  <string name="security_token_error_unknown">Okänt fel</string>
   <string name="security_token_error_try_again">Försök igen</string>
   <string name="btn_delete_original">Radera ursprunglig fil</string>
   <string name="snack_encrypt_filenames_on">Filnamn <b>är</b> krypterad.</string>
@@ -1061,6 +1064,7 @@
   <string name="linked_title_twitter">Twitter</string>
   <string name="card_linked_identity">Länkad identitet</string>
   <string name="linked_button_verify">Verifiera</string>
+  <string name="linked_button_retry">Försök igen</string>
   <string name="linked_button_confirm">Bekräfta</string>
   <string name="linked_button_view">Visa</string>
   <string name="linked_text_verifying">Verifierar...</string>
@@ -1109,4 +1113,20 @@
     <item>50 EUR</item>
     <item>100 EUR</item>
   </string-array>
+  <string name="redirect_import_key_no">Stäng</string>
+  <string name="button_cancel">Avbryt</string>
+  <string name="key_health_expired_title">Utgången</string>
+  <string name="key_health_revoked_title">Upphävd</string>
+  <string name="dialog_insecure_button_ok">Förstått</string>
+  <string name="button_import">Importera</string>
+  <string name="transfer_status_connected">Ansluten</string>
+  <string name="transfer_connecting">Ansluter...</string>
+  <string name="transfer_confirm_cancel">Avbryt</string>
+  <string name="transfer_confirm_ok">Skicka</string>
+  <string name="token_reset_confirm_ok">Återställ</string>
+  <string name="token_result_not_found">Nyckel hittades inte!</string>
+  <string name="token_action_import">Importera</string>
+  <string name="token_menu_view_log">Visa logg</string>
+  <string name="token_unlock_ok">Lås upp</string>
+  <string name="token_hint_admin_pin">Administratör PIN</string>
 </resources>

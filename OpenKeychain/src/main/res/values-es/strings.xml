@@ -48,7 +48,7 @@
   <string name="section_cloud_search">Búsqueda de claves</string>
   <string name="section_cloud_search_summary">Servidor de claves, keybase.io</string>
   <string name="section_passphrase_cache">Contraseñas y PINs</string>
-  <string name="section_passphrase_cache_summary">Manejo, interfaz de usuario, periodo de recuerdo</string>
+  <string name="section_passphrase_cache_summary">Manejo</string>
   <string name="section_proxy_settings">Anonimato en la red</string>
   <string name="section_proxy_settings_summary">Tor, configuración de proxy</string>
   <string name="section_gui">Interfaz</string>
@@ -337,6 +337,7 @@
   <string name="no_keys_exported">No se han exportado claves.</string>
   <string name="key_creation_el_gamal_info">Nota: Sólo las subclaves soportan ElGamal.</string>
   <string name="key_not_found">No se puede encontrar la clave %08X.</string>
+  <string name="authentication_subkey_not_found">Esta clave no tiene una subclave de autentificación.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d clave secreta (privada) errónea ignorada. Quizá exportó con la opción\n --export-secret-subkeys\nAsegúrese de que exporta con\n --export-secret-keys\nen su lugar.\"</item>
     <item quantity="other">%d claves secretas (privadas) erróneas ignoradas. Quizá exportó con la opción\n --export-secret-subkeys\nAsegúrese de que exporta con\n --export-secret-keys\nen su lugar.\"</item>
@@ -452,8 +453,7 @@
   <string name="progress_verifying_integrity">verificando la integridad...</string>
   <string name="progress_deleting_securely">borrando \'%s\' de forma segura…</string>
   <string name="progress_deleting">borrando claves...</string>
-  <string name="progress_con_saving">consolidar: guardando en caché...</string>
-  <string name="progress_con_reimport">consolidar: reimportando...</string>
+  <string name="progress_update_trust">actualizando información de confianza...</string>
   <string name="progress_verifying_keyserver_connection">Verificando conexión...</string>
   <string name="progress_starting_orbot">Iniciando Orbot...</string>
   <!--action strings-->
@@ -640,6 +640,7 @@
   <string name="key_view_action_certify">Confirmar clave</string>
   <string name="key_view_action_update">Actualizar desde el servidor de claves</string>
   <string name="key_view_action_share_with">Compartir con...</string>
+  <string name="key_view_action_share_ssh_with">Compartir como clave pública SSH con...</string>
   <string name="key_view_action_share_nfc">Compartir por NFC</string>
   <string name="key_view_action_upload">Subir al servidor de claves</string>
   <string name="key_view_tab_main">Información principal</string>
@@ -1057,38 +1058,6 @@
   <string name="msg_mf_uat_add_unknown">Añadiendo atributo de usuario de tipo desconocido</string>
   <string name="msg_mf_unlock_error">¡Error desbloqueando juego de claves!</string>
   <string name="msg_mf_unlock">Desbloqueando juego de claves (keyring)</string>
-  <!--Consolidate-->
-  <string name="msg_con">Consolidando base de datos</string>
-  <string name="msg_con_error_bad_state">¡La consolidación se inició cuando ninguna base de datos estaba en caché! Probablemente esto es un error de programación, por favor, consigne un informe de fallo.</string>
-  <string name="msg_con_error_concurrent">¡Consolidación abortada, ejecutándose ya en otro hilo!</string>
-  <string name="msg_con_save_secret">Guardando juegos de claves secretas (privadas)</string>
-  <string name="msg_con_save_public">Guardando juegos de claves públicas</string>
-  <string name="msg_con_db_clear">Limpiando base de datos</string>
-  <string name="msg_con_success">Base de datos consolidada con éxito</string>
-  <string name="msg_con_critical_in">Entrando en fase crítica</string>
-  <string name="msg_con_critical_out">Abandonando fase crítica</string>
-  <string name="msg_con_delete_public">Borrando fichero de caché del juego de claves públicas</string>
-  <string name="msg_con_delete_secret">Borrando fichero de caché del juego de claves secretas (privadas)</string>
-  <string name="msg_con_error_db">¡Error al abrir la base de datos!</string>
-  <string name="msg_con_error_io_public">¡Error de E/S al escribir claves públicas en caché!</string>
-  <string name="msg_con_error_io_secret">¡Error de E/S al escribir claves secretas (privadas) en caché!</string>
-  <string name="msg_con_error_public">¡Error al reimportar claves públicas!</string>
-  <string name="msg_con_error_secret">¡Error reimportando claves secretas (privadas)!</string>
-  <string name="msg_con_recover">Retomando el proceso de consolidación</string>
-  <string name="msg_con_recursive">Omitiendo consolidación recursiva</string>
-  <string name="msg_con_recover_unknown">Retomando el proceso de consolidación desde un estado desconocido</string>
-  <plurals name="msg_con_reimport_public">
-    <item quantity="one">Reimportando una clave pública</item>
-    <item quantity="other">Reimportando %d claves públicas</item>
-  </plurals>
-  <string name="msg_con_reimport_public_skip">No hay claves públicas a reimportar, omitiendo...</string>
-  <plurals name="msg_con_reimport_secret">
-    <item quantity="one">Reimportando una clave secreta (privada)</item>
-    <item quantity="other">Reimportando %d claves secretas (privadas)</item>
-  </plurals>
-  <string name="msg_con_reimport_secret_skip">No hay claves públicas a reimportar, omitiendo...</string>
-  <string name="msg_con_warn_delete_public">Excepción al borrar el fichero de caché de claves públicas</string>
-  <string name="msg_con_warn_delete_secret">Excepción al borrar el fichero de caché de claves secretas (privadas)</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Realizando operación en la clave</string>
   <string name="msg_ed_caching_new">Guardando en caché la nueva contraseña</string>
@@ -1208,6 +1177,18 @@
   <string name="msg_pse_sigcrypting">Cifrando datos con firma</string>
   <string name="msg_pse">Iniciando operación de firmado y/o cifrado</string>
   <string name="msg_pse_symmetric">Preparando cifrado simétrico</string>
+  <!--Messages for Authentication operation-->
+  <string name="msg_auth">Iniciando operación de autentificación</string>
+  <string name="msg_auth_error_key_auth">No se pudo encontrar la clave de autentificación seleccionada</string>
+  <string name="msg_auth_error_key_not_allowed">La clave seleccionada para autentificación no está permitida</string>
+  <string name="msg_auth_error_revoked_or_expired">La clave revocada/caducada no se puede usar para autentificación</string>
+  <string name="msg_auth_error_unlock">¡Error desconocido al desbloquear clave!</string>
+  <string name="msg_auth_pending_nfc">Se requiere un token NFC, solicitando su presentación al usuario...</string>
+  <string name="msg_auth_pending_passphrase">Se requiere contraseña, solicitando su introducción al usuario...</string>
+  <string name="msg_auth_error_bad_passphrase">¡Contraseña errónea!</string>
+  <string name="msg_auth_error_nfc">¡Error de datos de NFC!</string>
+  <string name="msg_auth_error_sig">¡Se encontró una excepción con la firma OpenPGP!</string>
+  <string name="msg_auth_ok">¡La operación de autentificación se completó con éxito!</string>
   <string name="msg_crt_certifying">Generando certificaciones</string>
   <plurals name="msg_crt_certify_uids">
     <item quantity="one">Certificando una identidad de usuario para la clave %2$s</item>
@@ -1282,7 +1263,6 @@
   </plurals>
   <string name="msg_del_key">Borrando clave %s</string>
   <string name="msg_del_key_fail">No se pudo borrar clave %s</string>
-  <string name="msg_del_consolidate">Consolidando base de datos después del borrado de clave secreta (privada)</string>
   <plurals name="msg_del_ok">
     <item quantity="one">Clave borrada con éxito</item>
     <item quantity="other">%d claves borradas con éxito</item>
@@ -1475,7 +1455,7 @@
   <string name="security_token_status_partly">El token de seguridad coincide, está parcialmente ligado a la clave</string>
   <string name="security_token_create">Sostenga el token de seguridad contra la parte trasera de su dispositivo.</string>
   <string name="security_token_reset_or_import">El token de seguridad ya contiene una clave.</string>
-  <string name="btn_reset">Reiniciar</string>
+  <string name="btn_reset">Reinicializar</string>
   <string name="security_token_radio_use_existing">Usar la clave existente</string>
   <string name="security_token_radio_reset">Reinicializar token</string>
   <string name="security_token_reset_warning">Reinicializar el token de seguridad destruirá por completo las claves que almacene. ¡Acto seguido no podrá descifrar los mensajes/ficheros cifrados con esta clave!</string>
@@ -1497,6 +1477,7 @@
   <string name="security_token_error_header">El token de seguridad informó de byte %s no válido.</string>
   <string name="security_token_error_tag_lost">El token de seguridad ha sido retirado antes de tiempo. Mantenga el token de seguridad junto a la parte trasera hasta que la operación finalice.</string>
   <string name="security_token_error_iso_dep_not_supported">El token de seguridad no soporta el estándar de comunicación (ISO-DEP, ISO 14443-4) requerido</string>
+  <string name="security_token_error_generic">Error de comunicación. Lo más probable es que el token de seguridad haya sido retirado demasiado pronto.</string>
   <string name="security_token_error_try_again">Inténtelo de nuevo</string>
   <string name="btn_delete_original">Borrar fichero original</string>
   <string name="snack_encrypt_filenames_on">Los nombres de fichero <b>están</b> cifrados.</string>
@@ -1688,6 +1669,8 @@
   <string name="key_health_ok_subtitle">No se encontraron problemas de clave.</string>
   <string name="key_health_divert_title">Saludable (token de seguridad)</string>
   <string name="key_health_divert_subtitle">No se encontraron problemas de clave.</string>
+  <string name="key_health_divert_partial_title">Saludable (Token parcial)</string>
+  <string name="key_health_divert_partial_subtitle">Pulse para más detalles</string>
   <string name="key_health_expired_title">Caducada</string>
   <string name="key_health_expired_subtitle">Esta clave no debería usarse nunca más.</string>
   <string name="key_health_revoked_title">Revocada</string>
@@ -1738,6 +1721,7 @@
   <string name="dialog_insecure_button_undo">Des-suprimir</string>
   <string name="dialog_insecure_button_view_key">Ver clave</string>
   <string name="dialog_insecure_button_ok">Comprendido</string>
+  <string name="usage_authentication">Autentificación</string>
   <string name="identity_context_forget">Olvidar</string>
   <string name="button_scan">Escanear</string>
   <string name="button_more_info">Más información</string>
@@ -1770,7 +1754,7 @@
   <string name="transfer_error_wifi_text_instructions_ssid">Asegúrese de que está en la red \"%s\", y luego vuelva a escanear.</string>
   <string name="status_check_key">Comprobando estado de la clave...</string>
   <string name="status_search_local">Buscando en la lista de claves...</string>
-  <string name="status_search_uri">Buscando en el URI del token...</string>
+  <string name="status_search_uri">Buscando en la URL del token...</string>
   <string name="status_search_keyserver">Buscando en los servidores de claves...</string>
   <string name="status_import">Importando clave...</string>
   <string name="status_token_promote">Estableciendo clave...</string>
@@ -1784,35 +1768,38 @@
   <string name="token_result_key_found">¡Se encontró la clave!</string>
   <string name="token_result_token_ok">¡Listo para usar!</string>
   <string name="token_result_empty">El token está vacío</string>
+  <string name="token_put_key_unsupported">Por favor, configure este token de seguridad usando GnuPG. OpenKeychain actualmente sólo soporta firmado/descifrado con este token de seguridad.</string>
   <string name="token_action_retry">Reintentar búsqueda</string>
   <string name="token_action_load_from_file">Cargar desde fichero</string>
   <string name="token_action_reset">Reinicializar token de seguridad</string>
   <string name="token_action_import">Importar</string>
   <string name="token_action_view_key">Ver clave</string>
   <string name="token_action_setup">Establecer una nueva clave</string>
-  <string name="token_action_unlock">Desbloquear usando el PIN del admin</string>
+  <string name="token_action_unlock">Desbloquear usando el PIN de administrador</string>
   <string name="token_unlock_attempts_none">Ha agotado los intentos de desbloqueo</string>
   <plurals name="token_unlock_attempts">
     <item quantity="one">Le queda 1 intento</item>
     <item quantity="other">Le quedan %d intentos</item>
   </plurals>
-  <string name="token_error_locked_indefinitely">Demasiados intentos de reinicialización. ¡El token está bloqueado de forma irrevocable!</string>
+  <string name="token_error_locked_indefinitely">Demasiados intentos de reinicialización. ¡El token no se puede desbloquear!</string>
+  <string name="token_error_cannot_reset_gnuk_old">The Inicio del Token/Nitrokey Gnuk no soporta reinicialización hasta la versión 1.2.5</string>
+  <string name="token_error_cannot_reset">Este token de seguridad no soporta la reinicialización</string>
   <string name="token_menu_change_pin">Cambiar PIN</string>
   <string name="token_menu_view_log">Ver registro</string>
   <string name="token_unlock_ok">Desbloquear</string>
-  <string name="token_hint_admin_pin">PIN del admin</string>
-  <string name="token_hint_new_pin">PIN nuevo</string>
-  <string name="token_hint_new_pin_repeat">PIN nuevo (repetir)</string>
-  <string name="token_error_admin_min8">¡El PIN del admin debe tener al menos 8 caracteres!</string>
-  <string name="token_error_pin_min6">¡El PIN nuevo debe tener al menos 6 caracteres!</string>
-  <string name="token_error_pin_repeat">¡El PIN no coincide!</string>
+  <string name="token_hint_admin_pin">PIN de administrador</string>
+  <string name="token_hint_new_pin">Nuevo PIN</string>
+  <string name="token_hint_new_pin_repeat">Nuevo PIN (repetir)</string>
+  <string name="token_error_admin_min8">¡El PIN de administrador debe tener al menos 8 caracteres!</string>
+  <string name="token_error_pin_min6">¡El nuevo PIN debe tener al menos 6 caracteres!</string>
+  <string name="token_error_pin_repeat">¡Los PINs no coinciden!</string>
   <string name="msg_ret_curi_error_io">¡Error al leer datos!</string>
   <string name="msg_ret_curi_error_no_match">No se encontró clave coincidente</string>
   <string name="msg_ret_curi_error_not_found">¡No se pudo abrir el fichero!</string>
   <string name="msg_ret_curi_found">Clave encontrada: %s</string>
   <string name="msg_ret_curi_mismatch">La clave no coincide</string>
   <string name="msg_ret_curi_ok">Se encontró la clave</string>
-  <string name="msg_ret_curi_open">Abriendo URI: %s</string>
+  <string name="msg_ret_curi_open">Abriendo URL: %s</string>
   <string name="msg_ret_curi_start">Cargando clave desde fichero o documento...</string>
   <string name="msg_ret_ks_error">¡Error desconocido al buscar clave!</string>
   <string name="msg_ret_ks_error_not_found">No se encontró clave</string>
@@ -1828,12 +1815,22 @@
   <string name="msg_ret_local_ok">Se encontró la clave</string>
   <string name="msg_ret_local_secret">La clave local contiene material de clave secreta/privada</string>
   <string name="msg_ret_local_start">Buscando clave en la lista de claves locales...</string>
-  <string name="msg_ret_uri_error_fetch">¡Error desconocido al descargar URI!</string>
+  <string name="msg_ret_uri_error_fetch">¡Error desconocido al descargar URL!</string>
   <string name="msg_ret_uri_error_parse">¡El URI del token está mal formado!</string>
-  <string name="msg_ret_uri_error_no_match">No se encontró clave coincidente en el URI</string>
-  <string name="msg_ret_uri_fetching">Descargando URI: %s</string>
+  <string name="msg_ret_uri_error_no_match">No se encontró clave correspondiente en la URL</string>
+  <string name="msg_ret_uri_fetching">Descargando URL: %s</string>
   <string name="msg_ret_uri_ok">Se encontró la clave</string>
-  <string name="msg_ret_uri_start">Buscando clave en el URI del token...</string>
-  <string name="msg_ret_uri_null">No hay URI guardado en el token de seguridad</string>
+  <string name="msg_ret_uri_start">Buscando clave en la URL del token...</string>
+  <string name="msg_ret_uri_null">No hay URL alguna guardada en el token de seguridad</string>
   <string name="msg_ret_uri_test">Comprobando si la clave encontrada coincide: %s</string>
+  <string name="msg_trust">Actualizando información de confianza...</string>
+  <string name="msg_trust_ok">¡Operación de actualización completada!</string>
+  <string name="msg_trust_initialize">Inicializando caché de firma de clave</string>
+  <string name="msg_trust_key">Actualizando claves firmadas por %s</string>
+  <string name="msg_trust_count_none">No hay claves que actualizar</string>
+  <plurals name="msg_trust_count">
+    <item quantity="one">Actualizando 1 clave</item>
+    <item quantity="other">Actualizando %d claves</item>
+  </plurals>
+  <string name="button_locate_nfc">¿Dónde está mi lector NFC?</string>
 </resources>

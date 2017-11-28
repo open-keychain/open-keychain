@@ -8,33 +8,82 @@
   <string name="title_encrypt_files">एन्क्रिप्ट</string>
   <string name="title_decrypt">डिक्रिप्ट </string>
   <string name="title_add_subkey">उपकुंजी जोड़ें</string>
+  <string name="title_change_master_key">मास्टर कुंजी बदले</string>
   <string name="title_edit_key">संपादित कुंजी</string>
   <string name="title_linked_create">एक  लिंक्डन  पहचान बनाने</string>
   <string name="title_preferences">सेटिंग</string>
   <string name="title_api_registered_apps">एप्लिकेशन</string>
   <string name="title_change_passphrase">पासवर्ड परिवर्तन </string>
+  <string name="title_import_keys">कुंजियाँ आयात करें</string>
+  <string name="title_export_key">बैकअप कुंजी</string>
+  <string name="title_export_keys">बैकअप कुंजियाँ</string>
+  <string name="title_key_not_found">कुंजी नहीं मिली</string>
+  <string name="title_backup">बैकअप कुंजी</string>
+  <string name="title_key_details">कुंजी विवरण</string>
+  <string name="title_help">सहायता</string>
+  <string name="title_log_display">लॉग</string>
+  <string name="title_advanced_key_info">उन्नत</string>
   <!--section-->
+  <string name="section_keys">उपकुंजियाँ</string>
+  <string name="section_share_key">कुंजी</string>
   <string name="section_encrypt">एन्क्रिप्ट</string>
   <!--button-->
+  <string name="btn_save">बचाना</string>
+  <string name="btn_view_log">लॉग देखें</string>
+  <string name="btn_do_not_save">रद्द करें</string>
+  <string name="btn_delete">हटाएँ</string>
+  <string name="btn_okay">ठीक है</string>
+  <string name="btn_next">अगला</string>
+  <string name="btn_back">पिछला</string>
+  <string name="btn_no">नहीं</string>
+  <string name="btn_create_key">कुंजी बनाएं</string>
+  <string name="btn_copy_decrypted_text">क्लिपबोर्ड पर कॉपी करें</string>
+  <string name="btn_unlock">अनलॉक</string>
+  <string name="btn_add_keyserver">डालो</string>
   <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">सेटिंग</string>
+  <string name="menu_help">सहायता</string>
+  <string name="menu_search">खोजें </string>
+  <string name="menu_open">खोलें </string>
+  <string name="menu_change_password">पासवर्ड बदलें</string>
+  <string name="menu_advanced">उन्नत</string>
+  <string name="menu_keyserver_add">डालो</string>
   <!--label-->
+  <string name="label_message">पाठ्यांश</string>
+  <string name="label_passphrase">पासवर्ड</string>
+  <string name="label_pin">पिन</string>
+  <string name="label_name">नाम</string>
+  <string name="label_email">ईमेल</string>
+  <string name="label_enter_keyserver_url">यूआरएल</string>
+  <string name="label_enter_smartpgp_authority_name">नाम</string>
   <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="label_experimental_settings_desc_title">चेतावनी</string>
   <!--Proxy Preferences-->
+  <string name="pref_proxy_tor_title">टॉर सक्षम करें</string>
+  <string name="pref_proxy_host_title">छद्म मेजबान</string>
+  <string name="pref_proxy_port_title">प्रॉक्सी पोर्ट</string>
+  <string name="pref_proxy_type_title">प्रॉक्सी प्रकार</string>
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
   <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_cancel">रद्द करना</string>
   <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_cancel">रद्द करना</string>
   <!--choice-->
+  <string name="choice_none">कुछ भी नहीं</string>
+  <string name="usage_encrypt">एन्क्रिप्ट</string>
+  <string name="error">त्रुटि</string>
   <!--sentences-->
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
   <!--errors without preceding Error:-->
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_action_show">दिखाना</string>
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
+  <string name="progress_cancel">रद्द करना</string>
   <!--action strings-->
   <!--key bit length selections-->
   <!--elliptic curve names-->
@@ -44,7 +93,12 @@
     <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
   <!--Help-->
+  <string name="help_tab_start">प्रारंभ</string>
+  <string name="help_tab_changelog">परिवर्तनसूची।</string>
+  <string name="help_tab_about">बारे में</string>
+  <string name="help_about_version">संस्करण:</string>
   <!--Import-->
+  <string name="btn_import">आयात</string>
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
@@ -52,6 +106,9 @@
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
+  <string name="api_settings_save">बचाना</string>
+  <string name="api_settings_cancel">रद्द करना</string>
+  <string name="api_settings_advanced">उन्नत</string>
   <string name="api_settings_settings">सेटिंग</string>
   <!--Share-->
   <!--retry upload dialog-->
@@ -59,19 +116,26 @@
   <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <!--Key view-->
+  <string name="key_view_tab_start">प्रारंभ</string>
+  <string name="key_view_tab_keys">उपकुंजियाँ</string>
   <!--Key trust-->
   <!--keybase proof stuff-->
   <!--Edit key-->
-  <string name="edit_key_action_change_passphrase">
-पासवर्ड परिवर्तन </string>
+  <string name="edit_key_action_change_passphrase">पासवर्ड परिवर्तन </string>
   <!--Create key-->
+  <string name="create_key_passphrases_not_equal">पासवर्ड मेल नहीं खाते</string>
+  <string name="create_key_yubi_key_pin">पिन</string>
   <!--View key-->
   <!--Add/Edit keyserver-->
   <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
   <string name="nav_apps">एप्लिकेशन</string>
+  <string name="drawer_open">ओपन नेविगेशन दराज</string>
+  <string name="drawer_close">बंद नेविगेशन दराज</string>
   <!--hints-->
   <!--certs-->
+  <string name="cert_none">कोई भी नहीं</string>
+  <string name="cert_verify_ok">ठीक</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
@@ -79,26 +143,56 @@
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
-  <!--Consolidate-->
   <!--Edit Key (higher level than modify)-->
   <!--Promote key-->
   <!--Other messages used in OperationLogs-->
   <!--Messages for DecryptVerify operation-->
   <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl_ok">ठीक</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <!--Messages for Authentication operation-->
   <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_pwd">पासवर्ड</string>
   <!--Keyserver sync-->
   <!--First Time-->
   <!--unsorted-->
   <!--Android Account-->
+  <string name="account_privacy_title">एकांत</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <string name="passphrase">पासवर्ड</string>
+  <string name="passphrase_again">फिर</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="nfc_settings">सेटिंग</string>
+  <string name="snack_security_token_view">राय</string>
+  <string name="snack_security_token_import">आयात</string>
+  <string name="btn_reset">रीसेट करें</string>
+  <string name="security_token_error_unknown">अज्ञात त्रुटि</string>
   <!--Other Linked Identity strings-->
+  <string name="btn_finish">समाप्त</string>
+  <string name="linked_title_github">गीथहब</string>
+  <string name="linked_title_twitter">ट्विटर</string>
+  <string name="linked_button_view">राय</string>
+  <string name="linked_text_error">त्रुटि</string>
+  <string name="share_log_dialog_cancel_button">रद्द करना</string>
+  <string name="menu_uids_save">बचाना</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">रद्द करना</string>
+  <string name="prompt_fidesmo_app_install_button_negative">रद्द करना</string>
+  <string name="redirect_import_key_no">बंद करे</string>
+  <string name="button_allow">अनुमति दें</string>
+  <string name="button_cancel">रद्द करना</string>
+  <string name="dialog_insecure_button_ok">समझ गया</string>
+  <string name="button_import">आयात</string>
+  <string name="transfer_status_connected">जुड़े हुए</string>
+  <string name="transfer_connecting">कनेक्ट हो रहा है ...</string>
+  <string name="transfer_confirm_cancel">रद्द करना</string>
+  <string name="transfer_confirm_ok">भेजना</string>
+  <string name="token_reset_confirm_ok">रीसेट करें</string>
+  <string name="token_action_import">आयात</string>
+  <string name="token_unlock_ok">अनलॉक</string>
 </resources>

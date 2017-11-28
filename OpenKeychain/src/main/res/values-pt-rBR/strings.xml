@@ -47,7 +47,6 @@
   <string name="section_cloud_search">Buscar chave</string>
   <string name="section_cloud_search_summary">Keyserver, keybase.io</string>
   <string name="section_passphrase_cache">Senhas e PINs</string>
-  <string name="section_passphrase_cache_summary">Manipulação, interface de usuário, lembrete de tempo</string>
   <string name="section_proxy_settings">Anonimato de rede</string>
   <string name="section_proxy_settings_summary">Tor, Configuração de Proxy</string>
   <string name="section_gui">Interface</string>
@@ -111,6 +110,8 @@
   <string name="menu_delete_key">Excluir chave</string>
   <string name="menu_manage_keys">Gerenciar minhas chaves</string>
   <string name="menu_search">Buscar</string>
+  <string name="menu_open">Abrir</string>
+  <string name="menu_read_clipboard">Ler da área de transferência</string>
   <string name="menu_nfc_preferences">Configurações NFC</string>
   <string name="menu_beam_preferences">Configurações de feixe</string>
   <string name="menu_encrypt_to">Encriptar para...</string>
@@ -150,6 +151,7 @@
   <string name="label_message_compression">Compressão de texto</string>
   <string name="label_file_compression">Compressão de arquivo</string>
   <string name="label_key_id">ID da chave</string>
+  <string name="label_key_id_colon"> Identificação da Chave:</string>
   <string name="label_key_created">Chave criada %s</string>
   <string name="label_key_type">Tipo</string>
   <string name="label_creation">Criação</string>
@@ -175,6 +177,7 @@
   <string name="label_enter_keyserver_url">URL</string>
   <string name="label_keyserver_dialog_delete">Excluir servidor de chave</string>
   <string name="label_theme">Tema</string>
+  <string name="label_enter_smartpgp_authority_name">Nome</string>
   <string name="pref_keyserver">Servidores de chaves OpenPGP</string>
   <string name="pref_keyserver_summary">Pesquisar chaves em servidores de chaves OpenPGP selecionados (protocolo HKP)</string>
   <string name="pref_keybase">keybase.io</string>
@@ -260,8 +263,10 @@
   <string name="rsa_4096_description_html">maior tamanho, considerada segura até 2040+</string>
   <string name="ecc_p256">ECC P-256</string>
   <string name="ecc_p256_description_html">tamanho muito reduzido, considerada segura até 2040 &lt;br/&gt; &lt;u&gt;experimental e não suportada por todas as implementações&lt;/u&gt;</string>
+  <string name="ecc_p384_description_html">tamanho muito reduzido, considerada segura até 2040 &lt;br/&gt; &lt;u&gt;experimental e não suportada por todas as implementações&lt;/u&gt;</string>
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">tamanho muito reduzido, considerada segura até 2040+ &lt;br/&gt; &lt;u&gt;experimental e não suportada por todas as implementações&lt;/u&gt;</string>
+  <string name="ecc_eddsa_description_html">tamanho muito reduzido, considerada segura até 2040+ &lt;br/&gt; &lt;u&gt;experimental e não suportada por todas as implementações&lt;/u&gt;</string>
   <string name="usage_none">Nenhuma (vínculo de sub-chave apenas)</string>
   <string name="usage_sign">Assinar</string>
   <string name="usage_encrypt">Encriptar</string>
@@ -419,8 +424,6 @@
   <string name="progress_verifying_integrity">Verificando integridade</string>
   <string name="progress_deleting_securely">excluindo \'%s\' seguramente…</string>
   <string name="progress_deleting">Excluindo chaves...</string>
-  <string name="progress_con_saving">consolidar: salvando para o cache...</string>
-  <string name="progress_con_reimport">consolidar: reimportando...</string>
   <string name="progress_verifying_keyserver_connection">Verificando conexão</string>
   <string name="progress_starting_orbot">Iniciando Orbot...</string>
   <!--action strings-->
@@ -464,6 +467,7 @@
   <string name="import_qr_code_button">Ler QR Code</string>
   <string name="import_qr_code_text">Coloque sua câmera sobre o QR Code!</string>
   <string name="btn_import">Importar</string>
+  <string name="btn_refresh">Recarregar</string>
   <!--Generic result toast-->
   <string name="snackbar_details">Detalhes</string>
   <string name="with_warnings">, com advertências</string>
@@ -981,38 +985,6 @@
   <string name="msg_mf_uat_add_unknown">Adicionando atributo de usuário de tipo desconhecido</string>
   <string name="msg_mf_unlock_error">Erro ao desbloquear o chaveiro!</string>
   <string name="msg_mf_unlock">Desbloqueando o chaveiro</string>
-  <!--Consolidate-->
-  <string name="msg_con">Consolidando o banco de dados</string>
-  <string name="msg_con_error_bad_state">A consolidação foi iniciada enquanto nenhum banco de dados estava no cache! Isto é provavelmente um erro programático, por favor, envie um relatório de erro!</string>
-  <string name="msg_con_error_concurrent">Consolidação abortada, já em execução em outro processo!</string>
-  <string name="msg_con_save_secret">Salvando chaveiros secretos</string>
-  <string name="msg_con_save_public">Salvando chaveiros públicos</string>
-  <string name="msg_con_db_clear">Limpando o banco de dados</string>
-  <string name="msg_con_success">Banco de dados consolidado com sucesso</string>
-  <string name="msg_con_critical_in">Entrando em fase crítica</string>
-  <string name="msg_con_critical_out">Saindo de fase crítica</string>
-  <string name="msg_con_delete_public">Excluindo o arquivo de cache do chaveiro público</string>
-  <string name="msg_con_delete_secret">Excluindo o arquivo de cache do chaveiro secreto</string>
-  <string name="msg_con_error_db">Erro ao abrir o banco de dados!</string>
-  <string name="msg_con_error_io_public">Erro de entrada/saída ao gravar chaves públicas no cache!</string>
-  <string name="msg_con_error_io_secret">Erro de entrada/saída ao gravar chaves secretas no cache!</string>
-  <string name="msg_con_error_public">Erro reimportando chaves públicas!</string>
-  <string name="msg_con_error_secret">Erro reimportando chaves secretas!</string>
-  <string name="msg_con_recover">Retomando o processo de consolidação</string>
-  <string name="msg_con_recursive">Ignorando consolidação recursiva</string>
-  <string name="msg_con_recover_unknown">Retomando o processo de consolidação de um estado desconhecido</string>
-  <plurals name="msg_con_reimport_public">
-    <item quantity="one">Reimportando uma chave pública</item>
-    <item quantity="other">Reimportando %d chaves públicas</item>
-  </plurals>
-  <string name="msg_con_reimport_public_skip">Nenhuma chave pública a reimportar, ignorando...</string>
-  <plurals name="msg_con_reimport_secret">
-    <item quantity="one">Reimportando uma chave secreta</item>
-    <item quantity="other">Reimportando %d chaves secretas</item>
-  </plurals>
-  <string name="msg_con_reimport_secret_skip">Nenhuma chave secreta a reimportar, ignorando...</string>
-  <string name="msg_con_warn_delete_public">Exceção ao excluir o arquivo de cache público</string>
-  <string name="msg_con_warn_delete_secret">Exceção ao excluir o arquivo de cache secreto</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Executando operação de chave</string>
   <string name="msg_ed_caching_new">Armazendo nova senha em cache</string>
@@ -1126,6 +1098,7 @@
   <string name="msg_pse_sigcrypting">Encriptando dados com assinatura</string>
   <string name="msg_pse">Iniciando operação de assinatura e/ou encriptação</string>
   <string name="msg_pse_symmetric">Preparando encriptação simétrica</string>
+  <!--Messages for Authentication operation-->
   <string name="msg_crt_certifying">Gerando certificações</string>
   <plurals name="msg_crt_certify_uids">
     <item quantity="one">Certificando uma ID de usuário para a chave %2$s</item>
@@ -1157,6 +1130,7 @@
   </plurals>
   <string name="msg_import_fetch_error_decode">Erro ao decodificar a chave recuperada!</string>
   <string name="msg_import_fetch_error">A chave não pôde ser recuperada! (Problemas de rede?)</string>
+  <string name="msg_import_fetch_error_not_found">Chave não encontrada</string>
   <string name="msg_import_fetch_error_keyserver">Não foi possível recuperar a chave dos servidores: %s</string>
   <string name="msg_import_fetch_error_keyserver_secret">Não é possível importar uma chave secreta de um servidor e chaves!</string>
   <string name="msg_import_fetch_keybase">Recuperando do keybase.io: %s</string>
@@ -1199,7 +1173,6 @@
   </plurals>
   <string name="msg_del_key">Excluindo chave %s</string>
   <string name="msg_del_key_fail">Falha ao excluir chave %s</string>
-  <string name="msg_del_consolidate">Consolidar banco de dados após excluir chave secreta</string>
   <plurals name="msg_del_ok">
     <item quantity="one">Chave excluída com sucesso</item>
     <item quantity="other">%d chaves excluídas com sucesso</item>
@@ -1326,6 +1299,7 @@
   <string name="key_unavailable">indisponível</string>
   <string name="secret_cannot_multiple">Suas próprias chaves só podem ser excluídas individualmente!</string>
   <string name="title_view_cert">Exibir Detalhes do Certificado</string>
+  <string name="unknown">desconhecido</string>
   <string name="can_sign_not">não pode assinar</string>
   <string name="error_no_encrypt_subkey">Nenhuma sub-chave de encriptação disponível!</string>
   <string name="contact_show_key">Exibir chave (%s)</string>
@@ -1546,4 +1520,26 @@
     <item>50 Euro</item>
     <item>100 Euro</item>
   </string-array>
+  <string name="redirect_import_key_no">Fechar</string>
+  <string name="button_allow">Permitir</string>
+  <string name="button_cancel">Cancelar</string>
+  <string name="key_health_expired_title">Expirado</string>
+  <string name="key_health_revoked_title">Revogada</string>
+  <string name="keyserver_title_published">Publicado</string>
+  <string name="keyserver_title_not_published">Não Publicado</string>
+  <string name="dialog_insecure_title">Aviso de Segurança</string>
+  <string name="dialog_insecure_button_ok">Entendi</string>
+  <string name="button_import">Importar</string>
+  <string name="transfer_status_connected">Conectado</string>
+  <string name="transfer_error_generic_msg">Erro de comunicação: %s</string>
+  <string name="transfer_connecting">Conectando...</string>
+  <string name="transfer_confirm_cancel">Cancelar</string>
+  <string name="transfer_confirm_ok">Enviar</string>
+  <string name="token_reset_confirm_ok">Resetar</string>
+  <string name="token_result_not_found">Chave não encontrada</string>
+  <string name="token_action_reset">Redefinir Token de Segurança</string>
+  <string name="token_action_import">Importar</string>
+  <string name="token_unlock_ok">Abrir</string>
+  <string name="token_hint_admin_pin">PIN Administrativo</string>
+  <string name="token_hint_new_pin">Novo PIN</string>
 </resources>

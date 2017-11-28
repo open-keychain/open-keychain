@@ -4,11 +4,11 @@
 
 [OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
 
-License: GPLv3+
+الرخصة : GPLv3+
 
 [//]: # (NOTE: Alphabetic ordering)
 
-## Main Developers
+## المطورون الرئيسيون
   * Dominik Schürmann (Maintainer)
   * Vincent Breitmoser
 
@@ -61,7 +61,7 @@ License: GPLv3+
 
 [//]: # (NOTE: Alphabetic ordering)
 
-## Libraries
+## المكتبات
   * [Android Support Libraries](http://developer.android.com/tools/support-library/index.html) (Apache License v2)
   * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Apache License v2)
   * [HtmlTextView](https://github.com/sufficientlysecure/html-textview) (Apache License v2)

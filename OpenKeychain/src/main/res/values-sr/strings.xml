@@ -46,7 +46,6 @@
   <string name="section_cloud_search">Претрага кључа</string>
   <string name="section_cloud_search_summary">Сервер кључева, keybase.io</string>
   <string name="section_passphrase_cache">Лозинке и пинови</string>
-  <string name="section_passphrase_cache_summary">Руковање, корисничко сучеље, време памћења</string>
   <string name="section_proxy_settings">Анонимност на мрежи</string>
   <string name="section_proxy_settings_summary">Тор, поставке проксија</string>
   <string name="section_gui">Сучеље</string>
@@ -110,6 +109,8 @@
   <string name="menu_delete_key">Обриши кључ</string>
   <string name="menu_manage_keys">Управљај мојим кључевима</string>
   <string name="menu_search">Претрага</string>
+  <string name="menu_open">Otvori</string>
+  <string name="menu_read_clipboard">Учитај са клипборда</string>
   <string name="menu_nfc_preferences">НФЦ поставке</string>
   <string name="menu_beam_preferences">Поставке Снопа</string>
   <string name="menu_encrypt_to">Шифруј у…</string>
@@ -174,6 +175,7 @@
   <string name="label_enter_keyserver_url">УРЛ</string>
   <string name="label_keyserver_dialog_delete">Обриши сервер кључева</string>
   <string name="label_theme">Тема</string>
+  <string name="label_enter_smartpgp_authority_name">Име</string>
   <string name="pref_keyserver">Сервери ОпенПГП кључева</string>
   <string name="pref_keyserver_summary">Тражи кључеве на изабраним ОпенПГП серверима кључева (ХКП протокол)</string>
   <string name="pref_keybase">keybase.io</string>
@@ -413,8 +415,6 @@
   <string name="progress_verifying_integrity">проверавам интегритет…</string>
   <string name="progress_deleting_securely">бришем „%s“ сигурно…</string>
   <string name="progress_deleting">бришем кључеве…</string>
-  <string name="progress_con_saving">учвршћивање: уписујем у кеш…</string>
-  <string name="progress_con_reimport">учвршћивање: поново увозим…</string>
   <string name="progress_verifying_keyserver_connection">проверавам везу…</string>
   <string name="progress_starting_orbot">Покрећем Орбот…</string>
   <!--action strings-->
@@ -458,6 +458,7 @@
   <string name="import_qr_code_button">Очитај бар-кôд</string>
   <string name="import_qr_code_text">Усмерите камеру на бар-кôд!</string>
   <string name="btn_import">Увези</string>
+  <string name="btn_refresh">Освежи</string>
   <!--Generic result toast-->
   <string name="snackbar_details">Детаљи</string>
   <string name="with_warnings">, са упозорењима</string>
@@ -661,6 +662,11 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">Идентитет је опозван. Ово не може да се поништи.</string>
   <string name="edit_key_edit_subkey_title">Изаберите радњу!</string>
+  <string-array name="edit_key_edit_subkey">
+    <item>Измени истицање</item>
+    <item>Опозови поткључ</item>
+    <item>Оголи поткључ</item>
+  </string-array>
   <string name="edit_key_new_subkey">нови поткључ</string>
   <string name="edit_key_select_usage">Одредите коришћење кључа!</string>
   <string name="edit_key_error_add_identity">Додајте бар један идентитет!</string>
@@ -987,40 +993,6 @@
   <string name="msg_mf_uat_add_unknown">Додајем кориснички атрибут непознатог типа</string>
   <string name="msg_mf_unlock_error">Грешка откључавања привеска!</string>
   <string name="msg_mf_unlock">Откључавам привезак</string>
-  <!--Consolidate-->
-  <string name="msg_con">Учвршћујем базу података</string>
-  <string name="msg_con_error_bad_state">Учвршћивање покренуто док база података није била кеширана! Ово је вероватно грешка у програмирању, поднесите извештај о грешци.</string>
-  <string name="msg_con_error_concurrent">Учвршћивање прекинуто, већ је у току на другој нити!</string>
-  <string name="msg_con_save_secret">Уписујем тајне привеске</string>
-  <string name="msg_con_save_public">Уписујем јавне привеске</string>
-  <string name="msg_con_db_clear">Чистим базу података</string>
-  <string name="msg_con_success">База података је успешно учвршћена</string>
-  <string name="msg_con_critical_in">Долазим у критичну фазу</string>
-  <string name="msg_con_critical_out">Напуштам критичну фазу</string>
-  <string name="msg_con_delete_public">Бришем фајл кеша јавног привеска</string>
-  <string name="msg_con_delete_secret">Бришем фајл кеша тајног привеска</string>
-  <string name="msg_con_error_db">Грешка отварања базе података!</string>
-  <string name="msg_con_error_io_public">У/И грешка при упису јавних кључева у кеш!</string>
-  <string name="msg_con_error_io_secret">У/И грешка при упису тајних кључева у кеш!</string>
-  <string name="msg_con_error_public">Грешка поновног увоза јавних кључева!</string>
-  <string name="msg_con_error_secret">Грешка поновног увоза тајних кључева!</string>
-  <string name="msg_con_recover">Настављам поступак учвршћивања</string>
-  <string name="msg_con_recursive">Прескачем рекурзивно учвршћивање</string>
-  <string name="msg_con_recover_unknown">Настављам поступак учвршћивања из непознатог стања</string>
-  <plurals name="msg_con_reimport_public">
-    <item quantity="one">Поново увозим %d јавни кључ</item>
-    <item quantity="few">Поново увозим %d јавна кључа</item>
-    <item quantity="other">Поново увозим %d јавних кључева</item>
-  </plurals>
-  <string name="msg_con_reimport_public_skip">Нема јавних кључева за поновно увожење, прескачем…</string>
-  <plurals name="msg_con_reimport_secret">
-    <item quantity="one">Поново увозим %d тајни кључ</item>
-    <item quantity="few">Поново увозим %d тајна кључа</item>
-    <item quantity="other">Поново увозим %d тајних кључева</item>
-  </plurals>
-  <string name="msg_con_reimport_secret_skip">Нема тајних кључева за поновно увожење, прескачем…</string>
-  <string name="msg_con_warn_delete_public">Изузетак при брисању фајла јавног кеша</string>
-  <string name="msg_con_warn_delete_secret">Изузетак при брисању фајла тајног кеша</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Извршавам радњу на кључу</string>
   <string name="msg_ed_caching_new">Кеширам нову лозинку</string>
@@ -1133,6 +1105,7 @@
   <string name="msg_pse_sigcrypting">Шифрујем податке са потписом</string>
   <string name="msg_pse">Почињем радњу потписивања и/или шифровања</string>
   <string name="msg_pse_symmetric">Припремам симетрично шифровање</string>
+  <!--Messages for Authentication operation-->
   <string name="msg_crt_certifying">Генеришем сертификате</string>
   <plurals name="msg_crt_certify_uids">
     <item quantity="one">Потврђујем кориснички ИД за кључ %2$s</item>
@@ -1167,6 +1140,7 @@
   </plurals>
   <string name="msg_import_fetch_error_decode">Грешка декодирања добављеног привеска!</string>
   <string name="msg_import_fetch_error">Не могох да добавим кључ! (Проблеми са мрежом?)</string>
+  <string name="msg_import_fetch_error_not_found">Кључ није нађен!</string>
   <string name="msg_import_fetch_error_keyserver">Не могох да добавим кључ са сервера кључева: %s</string>
   <string name="msg_import_fetch_error_keyserver_secret">Не могу да увезем тајни кључ са сервера кључева!</string>
   <string name="msg_import_fetch_keybase">Добављам са keybase.io: %s</string>
@@ -1211,7 +1185,6 @@
   </plurals>
   <string name="msg_del_key">Бришем кључ %s</string>
   <string name="msg_del_key_fail">Брисање кључа %s није успело</string>
-  <string name="msg_del_consolidate">Учвршћујем базу података након брисања тајног кључа</string>
   <plurals name="msg_del_ok">
     <item quantity="one">Успешно обрисан кључ</item>
     <item quantity="few">Успешно обрисана %d кључа</item>
@@ -1335,6 +1308,7 @@
   <string name="key_unavailable">недоступан</string>
   <string name="secret_cannot_multiple">Сопствене кључеве можете брисати само појединачно!</string>
   <string name="title_view_cert">Прикажи детаље сертификата</string>
+  <string name="unknown">непознат</string>
   <string name="can_sign_not">не може да потпише</string>
   <string name="error_no_encrypt_subkey">Поткључ за шифровање није доступан!</string>
   <string name="contact_show_key">Прикажи кључ (%s)</string>
@@ -1374,8 +1348,10 @@
   <string name="draw_lockpattern">Нацртајте шаблон</string>
   <string name="nfc_title">НФЦ</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="nfc_wrong_tag">Погрешна ознака. Покушајте поново.</string>
   <string name="enable_nfc">Активирајте НФЦ у поставкама</string>
   <string name="no_nfc_support">Овај уређај не подржава НФЦ</string>
+  <string name="nfc_write_successful">Успешно уписах на НФЦ ознаку</string>
   <string name="unlocked">Откључан</string>
   <string name="nfc_settings">Поставке</string>
   <string name="snack_security_token_view">Прикажи</string>
@@ -1533,4 +1509,21 @@
     <item>50 евра</item>
     <item>100 евра</item>
   </string-array>
+  <string name="redirect_import_key_no">Zatvori</string>
+  <string name="button_allow">Dozvoli</string>
+  <string name="button_cancel">Odustani</string>
+  <string name="title_key_status">Стање кључа</string>
+  <string name="key_health_revoked_title">Опозван</string>
+  <string name="keyserver_title_not_published">Није објављено</string>
+  <string name="dialog_insecure_button_ok">Jasno</string>
+  <string name="button_import">Uvezi</string>
+  <string name="transfer_error_generic_msg">Грешка комуникације: %s</string>
+  <string name="transfer_confirm_cancel">Odustani</string>
+  <string name="transfer_confirm_ok">Šalji</string>
+  <string name="token_reset_confirm_ok">Ресетуј</string>
+  <string name="token_result_not_found">Кључ није нађен!</string>
+  <string name="token_action_import">Uvezi</string>
+  <string name="token_menu_view_log">Прикажи дневник</string>
+  <string name="token_unlock_ok">Откључај</string>
+  <string name="token_hint_admin_pin">Администраторски ПИН</string>
 </resources>

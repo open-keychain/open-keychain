@@ -3,17 +3,28 @@
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
+  <string name="title_help">Auxilium</string>
   <!--section-->
   <!--button-->
+  <string name="btn_save">Memorare</string>
+  <string name="btn_do_not_save">Claudere</string>
+  <string name="btn_no">Non</string>
   <!--Content Description-->
   <!--menu-->
+  <string name="menu_help">Auxilium</string>
+  <string name="menu_search">Quaerere</string>
   <!--label-->
+  <string name="label_name">Nomen</string>
+  <string name="label_email">Sententia litterarum in linea</string>
+  <string name="label_enter_smartpgp_authority_name">Nomen</string>
   <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
   <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_cancel">Claudere</string>
   <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_cancel">Claudere</string>
   <!--choice-->
   <!--sentences-->
   <!--errors
@@ -23,6 +34,7 @@
   <!--results shown after decryption/verification-->
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
+  <string name="progress_cancel">Claudere</string>
   <!--action strings-->
   <!--key bit length selections-->
   <!--elliptic curve names-->
@@ -32,6 +44,8 @@
     <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
   <!--Help-->
+  <string name="help_tab_changelog">Historia mutationum</string>
+  <string name="help_tab_donations">Dona</string>
   <!--Import-->
   <!--Generic result toast-->
   <!--Import result toast-->
@@ -40,6 +54,8 @@
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
+  <string name="api_settings_save">Memorare</string>
+  <string name="api_settings_cancel">Claudere</string>
   <!--Share-->
   <!--retry upload dialog-->
   <!--Delete or revoke private key dialog-->
@@ -48,6 +64,7 @@
   <!--Key view-->
   <!--Key trust-->
   <!--keybase proof stuff-->
+  <string name="keybase_verify">Probare</string>
   <!--Edit key-->
   <!--Create key-->
   <!--View key-->
@@ -56,6 +73,7 @@
   <!--Navigation Drawer-->
   <!--hints-->
   <!--certs-->
+  <string name="cert_none">nihil</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
@@ -63,7 +81,6 @@
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
-  <!--Consolidate-->
   <!--Edit Key (higher level than modify)-->
   <!--Promote key-->
   <!--Other messages used in OperationLogs-->
@@ -71,6 +88,7 @@
   <!--Messages for VerifySignedLiteralData operation-->
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <!--Messages for Authentication operation-->
   <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
@@ -79,9 +97,18 @@
   <!--First Time-->
   <!--unsorted-->
   <!--Android Account-->
+  <string name="account_privacy_title">Abdititudo</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="linked_create_verify">Probare</string>
   <!--Other Linked Identity strings-->
+  <string name="linked_button_verify">Probare</string>
+  <string name="share_log_dialog_cancel_button">Claudere</string>
+  <string name="menu_uids_save">Memorare</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">Claudere</string>
+  <string name="prompt_fidesmo_app_install_button_negative">Claudere</string>
+  <string name="button_cancel">Claudere</string>
+  <string name="transfer_confirm_cancel">Claudere</string>
 </resources>

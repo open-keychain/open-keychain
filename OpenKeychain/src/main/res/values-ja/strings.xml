@@ -48,7 +48,6 @@
   <string name="section_cloud_search">鍵検索</string>
   <string name="section_cloud_search_summary">鍵サーバ, keybase.io</string>
   <string name="section_passphrase_cache">パスワードとPIN</string>
-  <string name="section_passphrase_cache_summary">取り扱い、ユーザインタフェース、忘れない時間</string>
   <string name="section_proxy_settings">ネットワーク匿名性</string>
   <string name="section_proxy_settings_summary">Tor、Proxyの設定</string>
   <string name="section_gui">インタフェース</string>
@@ -451,8 +450,6 @@
   <string name="progress_verifying_integrity">完全性の検証中...</string>
   <string name="progress_deleting_securely">\'%s\' を完全に削除中…</string>
   <string name="progress_deleting">鍵の削除中...</string>
-  <string name="progress_con_saving">統合: キャッシュへ保存…</string>
-  <string name="progress_con_reimport">統合: 再インポート中…</string>
   <string name="progress_verifying_keyserver_connection">接続の検証中...</string>
   <string name="progress_starting_orbot">Orbotを始める...</string>
   <!--action strings-->
@@ -686,6 +683,11 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">このIDは破棄されています。続けることができません。</string>
   <string name="edit_key_edit_subkey_title">アクションを選んでください!</string>
+  <string-array name="edit_key_edit_subkey">
+    <item>期限の変更</item>
+    <item>副鍵の破棄</item>
+    <item>副鍵のストリップ</item>
+  </string-array>
   <string name="edit_key_new_subkey">新しい副鍵</string>
   <string name="edit_key_select_usage">使用する鍵を選択してください!</string>
   <string name="edit_key_error_add_identity">最低でも1つのユーザIDを追加!</string>
@@ -1030,36 +1032,6 @@
   <string name="msg_mf_uat_add_unknown">不明な型のユーザー属性の追加中</string>
   <string name="msg_mf_unlock_error">鍵輪のロック解除エラー!</string>
   <string name="msg_mf_unlock">鍵輪のロック解除中</string>
-  <!--Consolidate-->
-  <string name="msg_con">データベースの統合中</string>
-  <string name="msg_con_error_bad_state">データベースでキャッシュせずに統合が開始されています! これはおそらくプログラムエラーなので、バグレポートでファイルの提出をお願いします!</string>
-  <string name="msg_con_error_concurrent">統合を中断しました、すでに他のスレッドで動いているためです!</string>
-  <string name="msg_con_save_secret">秘密鍵の鍵輪を保存中</string>
-  <string name="msg_con_save_public">公開鍵の鍵輪を保存中</string>
-  <string name="msg_con_db_clear">データベースの消去中</string>
-  <string name="msg_con_success">データベースの統合が成功しました</string>
-  <string name="msg_con_critical_in">クリティカルなフェーズに入りました</string>
-  <string name="msg_con_critical_out">クリティカルなフェーズを抜けました</string>
-  <string name="msg_con_delete_public">公開鍵輪のキャッシュファイルを削除中</string>
-  <string name="msg_con_delete_secret">秘密鍵輪のキャッシュファイルを削除中</string>
-  <string name="msg_con_error_db">データベースオープン中のエラー!</string>
-  <string name="msg_con_error_io_public">キャッシュに公開鍵を書く際にI/Oエラー!</string>
-  <string name="msg_con_error_io_secret">キャッシュに秘密鍵を書く際にI/Oエラー!</string>
-  <string name="msg_con_error_public">公開鍵の再インポートのエラー!</string>
-  <string name="msg_con_error_secret">秘密鍵の再インポートのエラー!</string>
-  <string name="msg_con_recover">統合整理処理のレジューム</string>
-  <string name="msg_con_recursive">再帰統合処理をスキップ</string>
-  <string name="msg_con_recover_unknown">不明な状態からの統合整理処理のレジューム</string>
-  <plurals name="msg_con_reimport_public">
-    <item quantity="other">%d の公開鍵を再インポート中</item>
-  </plurals>
-  <string name="msg_con_reimport_public_skip">再インポートで公開鍵がありません、スキップします...</string>
-  <plurals name="msg_con_reimport_secret">
-    <item quantity="other">%d の秘密鍵を再インポート中</item>
-  </plurals>
-  <string name="msg_con_reimport_secret_skip">再インポートで秘密鍵がありません、スキップします...</string>
-  <string name="msg_con_warn_delete_public">公開鍵キャッシュファイルの削除例外</string>
-  <string name="msg_con_warn_delete_secret">秘密鍵のキャッシュファイルを削除中に例外発生</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">キー操作の実行</string>
   <string name="msg_ed_caching_new">新しいパスワードをキャッシュ</string>
@@ -1179,6 +1151,7 @@
   <string name="msg_pse_sigcrypting">データを署名付きで暗号化中</string>
   <string name="msg_pse">署名/暗号化操作を開始します</string>
   <string name="msg_pse_symmetric">対称暗号の準備</string>
+  <!--Messages for Authentication operation-->
   <string name="msg_crt_certifying">検証の生成中</string>
   <plurals name="msg_crt_certify_uids">
     <item quantity="other">%1$d のユーザIDで鍵 %2$s の検証中</item>
@@ -1248,7 +1221,6 @@
   </plurals>
   <string name="msg_del_key">鍵 %s の削除中</string>
   <string name="msg_del_key_fail">鍵 %s の削除に失敗</string>
-  <string name="msg_del_consolidate">秘密鍵削除後のデータベースの統合</string>
   <plurals name="msg_del_ok">
     <item quantity="other">%d 個の鍵の削除に成功</item>
   </plurals>
@@ -1644,6 +1616,7 @@
   <string name="key_health_ok_subtitle">鍵に問題はありません。</string>
   <string name="key_health_divert_title">ヘルス (セキュリティトークン)</string>
   <string name="key_health_divert_subtitle">鍵に問題はありません。</string>
+  <string name="key_health_divert_partial_subtitle">詳細はクリック</string>
   <string name="key_health_expired_title">期限切れ</string>
   <string name="key_health_expired_subtitle">この鍵はもう使用しないでください。</string>
   <string name="key_health_revoked_title">破棄</string>
@@ -1724,4 +1697,12 @@
   <string name="transfer_error_wifi_text">接続に失敗しました!</string>
   <string name="transfer_error_wifi_text_instructions">同じネットワーク上にいることを確認してから、もう一度スキャンしてください。</string>
   <string name="transfer_error_wifi_text_instructions_ssid">\"%s\" ネットワークにいることを確認して、もう一度スキャンしてください。</string>
+  <string name="token_reset_confirm_ok">リセット</string>
+  <string name="token_result_not_found">鍵が見当りません!</string>
+  <string name="token_action_reset">セキュリティトークンのリセット</string>
+  <string name="token_action_import">インポート</string>
+  <string name="token_action_view_key">鍵を表示</string>
+  <string name="token_menu_view_log">ログを見る</string>
+  <string name="token_unlock_ok">ロック解除</string>
+  <string name="token_hint_admin_pin">管理者PIN</string>
 </resources>
