@@ -62,7 +62,7 @@ public class ContactSyncAdapterService extends Service {
 
             new ContactHelper(ContactSyncAdapterService.this).writeKeysToContacts();
 
-            importKeys();
+//            importKeys();
         }
 
         @Override
@@ -94,47 +94,6 @@ public class ContactSyncAdapterService extends Service {
             NotificationManagerCompat.from(ContactSyncAdapterService.this)
                     .notify(NOTIFICATION_ID_SYNC_SETTINGS, mBuilder.build());
         }
-    }
-
-    private static void importKeys() {
-        // TODO: Import is currently disabled, until we implement proper origin management
-//            importDone.set(false);
-//            KeychainApplication.setupAccountAsNeeded(ContactSyncAdapterService.this);
-//            EmailKeyHelper.importContacts(getContext(), new Messenger(new Handler(Looper.getMainLooper(),
-//                    new Handler.Callback() {
-//                        @Override
-//                        public boolean handleMessage(Message msg) {
-//                            Bundle data = msg.getInputData();
-//                            switch (msg.arg1) {
-//                                case KeychainIntentServiceHandler.MESSAGE_OKAY:
-//                                    Log.d(Constants.TAG, "Syncing... Done.");
-//                                    synchronized (importDone) {
-//                                        importDone.set(true);
-//                                        importDone.notifyAll();
-//                                    }
-//                                    return true;
-//                                case KeychainIntentServiceHandler.MESSAGE_UPDATE_PROGRESS:
-//                                    if (data.containsKey(KeychainIntentServiceHandler.DATA_PROGRESS) &&
-//                                            data.containsKey(KeychainIntentServiceHandler.DATA_PROGRESS_MAX)) {
-//                                        Log.d(Constants.TAG, "Syncing... Progress: " +
-//                                                data.getInt(KeychainIntentServiceHandler.DATA_PROGRESS) + "/" +
-//                                                data.getInt(KeychainIntentServiceHandler.DATA_PROGRESS_MAX));
-//                                        return false;
-//                                    }
-//                                default:
-//                                    Log.d(Constants.TAG, "Syncing... " + msg.toString());
-//                                    return false;
-//                            }
-//                        }
-//                    })));
-//            synchronized (importDone) {
-//                try {
-//                    if (!importDone.get()) importDone.wait();
-//                } catch (InterruptedException e) {
-//                    Log.w(Constants.TAG, e);
-//                    return;
-//                }
-//            }
     }
 
     @Override
@@ -187,4 +146,46 @@ public class ContactSyncAdapterService extends Service {
             new ContactHelper(context).deleteAllContacts();
         }
     }
+
+// TODO: Import is currently disabled, until we implement proper origin management
+//    private static void importKeys() {
+//            importDone.set(false);
+//            KeychainApplication.setupAccountAsNeeded(ContactSyncAdapterService.this);
+//            EmailKeyHelper.importContacts(getContext(), new Messenger(new Handler(Looper.getMainLooper(),
+//                    new Handler.Callback() {
+//                        @Override
+//                        public boolean handleMessage(Message msg) {
+//                            Bundle data = msg.getInputData();
+//                            switch (msg.arg1) {
+//                                case KeychainIntentServiceHandler.MESSAGE_OKAY:
+//                                    Log.d(Constants.TAG, "Syncing... Done.");
+//                                    synchronized (importDone) {
+//                                        importDone.set(true);
+//                                        importDone.notifyAll();
+//                                    }
+//                                    return true;
+//                                case KeychainIntentServiceHandler.MESSAGE_UPDATE_PROGRESS:
+//                                    if (data.containsKey(KeychainIntentServiceHandler.DATA_PROGRESS) &&
+//                                            data.containsKey(KeychainIntentServiceHandler.DATA_PROGRESS_MAX)) {
+//                                        Log.d(Constants.TAG, "Syncing... Progress: " +
+//                                                data.getInt(KeychainIntentServiceHandler.DATA_PROGRESS) + "/" +
+//                                                data.getInt(KeychainIntentServiceHandler.DATA_PROGRESS_MAX));
+//                                        return false;
+//                                    }
+//                                default:
+//                                    Log.d(Constants.TAG, "Syncing... " + msg.toString());
+//                                    return false;
+//                            }
+//                        }
+//                    })));
+//            synchronized (importDone) {
+//                try {
+//                    if (!importDone.get()) importDone.wait();
+//                } catch (InterruptedException e) {
+//                    Log.w(Constants.TAG, e);
+//                    return;
+//                }
+//            }
+//    }
+
 }

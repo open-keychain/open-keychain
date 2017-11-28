@@ -119,7 +119,10 @@ public final class Constants {
         public static final String LANGUAGE = "language";
         public static final String KEY_SERVERS = "keyServers";
         public static final String PREF_VERSION = "keyServersDefaultVersion";
-        public static final String FIRST_TIME = "firstTime";
+        // false if first time wizard has been finished
+        public static final String FIRST_TIME_WIZARD = "firstTime";
+        // false if app has been started at least once (also from background etc)
+        public static final String FIRST_TIME_APP = "firstTimeApp";
         public static final String CACHED_CONSOLIDATE = "cachedConsolidate";
         public static final String SEARCH_KEYSERVER = "search_keyserver_pref";
         public static final String SEARCH_KEYBASE = "search_keybase_pref";
