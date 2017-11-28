@@ -25,11 +25,8 @@ package org.sufficientlysecure.keychain.ui.base;
 import java.io.IOException;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.TagLostException;
@@ -61,6 +58,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+
 
 public abstract class BaseSecurityTokenActivity extends BaseActivity
         implements OnDiscoveredTagListener, UsbConnectionDispatcher.OnDiscoveredUsbDeviceListener {
@@ -114,6 +112,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         onSecurityTokenError(error);
     }
 
+    @Override
     public void tagDiscovered(Tag tag) {
         // Actual NFC operations are executed in doInBackground to not block the UI thread
         if (!mTagHandlingEnabled) {
@@ -124,15 +123,13 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         securityTokenDiscovered(nfcTransport);
     }
 
-    public void usbDeviceDiscovered(UsbDevice usbDevice) {
+    @Override
+    public void usbTransportDiscovered(UsbTransport usbTransport) {
         // Actual USB operations are executed in doInBackground to not block the UI thread
         if (!mTagHandlingEnabled) {
             return;
         }
 
-        UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
-
-        UsbTransport usbTransport = new UsbTransport(usbDevice, usbManager);
         securityTokenDiscovered(usbTransport);
     }
 

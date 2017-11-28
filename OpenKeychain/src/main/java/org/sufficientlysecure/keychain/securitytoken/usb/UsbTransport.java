@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.securitytoken.usb;
 
 import java.io.IOException;
 
+import android.content.Context;
 import android.hardware.usb.UsbConstants;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
@@ -39,6 +40,8 @@ import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TransportType;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
 import org.sufficientlysecure.keychain.util.Log;
+import org.sufficientlysecure.keychain.util.Preferences;
+
 
 /**
  * Based on USB CCID Specification rev. 1.1
@@ -72,10 +75,19 @@ public class UsbTransport implements Transport {
     private UsbDeviceConnection usbConnection;
     private UsbInterface usbInterface;
     private CcidTransportProtocol ccidTransportProtocol;
+    private boolean allowUntestedUsbTokens;
 
-    public UsbTransport(UsbDevice usbDevice, UsbManager usbManager) {
+    public static UsbTransport createUsbTransport(Context context, UsbDevice usbDevice) {
+        UsbManager usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
+        boolean allowUntestedUsbTokens = Preferences.getPreferences(context).getExperimentalUsbAllowUntested();
+
+        return new UsbTransport(usbDevice, usbManager, allowUntestedUsbTokens);
+    }
+
+    private UsbTransport(UsbDevice usbDevice, UsbManager usbManager, boolean allowUntestedUsbTokens) {
         this.usbDevice = usbDevice;
         this.usbManager = usbManager;
+        this.allowUntestedUsbTokens = allowUntestedUsbTokens;
     }
 
     @Override
@@ -135,7 +147,7 @@ public class UsbTransport implements Transport {
         }
 
         boolean tokenTypeSupported = SecurityTokenInfo.SUPPORTED_USB_TOKENS.contains(getTokenTypeIfAvailable());
-        if (!tokenTypeSupported) {
+        if (!allowUntestedUsbTokens && !tokenTypeSupported) {
             usbConnection.close();
             usbConnection = null;
             throw new UnsupportedUsbTokenException();
