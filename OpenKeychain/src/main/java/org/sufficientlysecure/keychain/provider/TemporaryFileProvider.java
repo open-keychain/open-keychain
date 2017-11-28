@@ -32,12 +32,13 @@ import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.DatabaseUtil;
 import org.sufficientlysecure.keychain.util.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -268,12 +269,17 @@ public class TemporaryFileProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        if (uri == null || uri.getLastPathSegment() == null) {
+        if (uri == null
+                || (uri.getLastPathSegment() == null && selection == null)) {
             return 0;
         }
 
-        selection = DatabaseUtil.concatenateWhere(selection, TemporaryFileColumns.COLUMN_UUID + "=?");
-        selectionArgs = DatabaseUtil.appendSelectionArgs(selectionArgs, new String[]{uri.getLastPathSegment()});
+        if (uri.getLastPathSegment() != null && selection != null) {
+            selection = String.format(Locale.ENGLISH, "(%s) AND (%s)",
+                    selection, TemporaryFileColumns.COLUMN_UUID + "=?");
+            selectionArgs = Arrays.copyOf(selectionArgs, selectionArgs.length + 1);
+            selectionArgs[selectionArgs.length] = uri.getLastPathSegment();
+        }
 
         Cursor files = db.getReadableDatabase().query(TABLE_FILES, new String[]{TemporaryFileColumns.COLUMN_UUID}, selection,
                 selectionArgs, null, null, null);
