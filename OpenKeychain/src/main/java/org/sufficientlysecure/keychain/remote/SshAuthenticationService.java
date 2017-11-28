@@ -192,15 +192,15 @@ public class SshAuthenticationService extends Service {
         } else if (authResult.success()) {
             byte[] rawSignature = authResult.getSignature();
             byte[] sshSignature;
-            if (authSubKeyAlgorithm == PublicKeyAlgorithmTags.ECDSA) {
-                sshSignature = SshSignatureConverter.getSshSignatureEcDsa(rawSignature, authSubKeyCurveOid);
-            } else {
-                try {
+            try {
+                if (authSubKeyAlgorithm == PublicKeyAlgorithmTags.ECDSA) {
+                    sshSignature = SshSignatureConverter.getSshSignatureEcDsa(rawSignature, authSubKeyCurveOid);
+                } else {
                     sshSignature = SshSignatureConverter.getSshSignature(rawSignature, authSubKeyAlgorithm);
-                } catch (NoSuchAlgorithmException e) {
-                    return createExceptionErrorResult(SshAuthenticationApiError.INTERNAL_ERROR,
-                            "Error converting signature", e);
                 }
+            } catch (NoSuchAlgorithmException e) {
+                return createExceptionErrorResult(SshAuthenticationApiError.INTERNAL_ERROR,
+                        "Error converting signature", e);
             }
             return new SigningResponse(sshSignature).toIntent();
         } else {
@@ -351,7 +351,7 @@ public class SshAuthenticationService extends Service {
         SshPublicKey sshPublicKey = new SshPublicKey(publicKey);
         try {
             sshPublicKeyBlob = sshPublicKey.getEncodedKey();
-        } catch (PgpGeneralException e) {
+        } catch (PgpGeneralException | NoSuchAlgorithmException e) {
             return createExceptionErrorResult(SshAuthenticationApiError.GENERIC_ERROR,
                     "Error converting public key to SSH format", e);
         }

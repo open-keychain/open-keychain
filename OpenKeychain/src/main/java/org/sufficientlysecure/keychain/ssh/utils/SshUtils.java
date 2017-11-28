@@ -17,9 +17,11 @@
 
 package org.sufficientlysecure.keychain.ssh.utils;
 
+import java.security.NoSuchAlgorithmException;
+
 public class SshUtils {
 
-    public static String getCurveName(String curveOid) {
+    public static String getCurveName(String curveOid) throws NoSuchAlgorithmException {
         // see RFC5656 section 10.{1,2}
         switch (curveOid) {
             // REQUIRED curves
@@ -32,26 +34,26 @@ public class SshUtils {
 
             // RECOMMENDED curves
             case "1.3.132.0.1":
-                return     "1.3.132.0.1";
+                return "1.3.132.0.1";
             case "1.2.840.10045.3.1.1":
-                return  "1.2.840.10045.3.1.1";
+                return "1.2.840.10045.3.1.1";
             case "1.3.132.0.33":
-                return     "1.3.132.0.33";
+                return "1.3.132.0.33";
             case "1.3.132.0.26":
-                return     "1.3.132.0.26";
+                return "1.3.132.0.26";
             case "1.3.132.0.27":
-                return     "1.3.132.0.27";
+                return "1.3.132.0.27";
             case "1.3.132.0.16":
-                return     "1.3.132.0.16";
+                return "1.3.132.0.16";
             case "1.3.132.0.36":
-                return     "1.3.132.0.36";
+                return "1.3.132.0.36";
             case "1.3.132.0.37":
-                return     "1.3.132.0.37";
+                return "1.3.132.0.37";
             case "1.3.132.0.38":
-                return     "1.3.132.0.38";
+                return "1.3.132.0.38";
 
             default:
-                return null;
+                throw new NoSuchAlgorithmException("Can't translate curve OID to SSH curve identifier");
         }
     }
 }

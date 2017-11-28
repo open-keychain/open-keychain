@@ -29,6 +29,8 @@ import org.sufficientlysecure.keychain.ssh.key.SshEd25519PublicKey;
 import org.sufficientlysecure.keychain.ssh.key.SshRSAPublicKey;
 import org.sufficientlysecure.keychain.ssh.utils.SshUtils;
 
+import java.security.NoSuchAlgorithmException;
+
 public class SshPublicKey {
     private final static String TAG = "SshPublicKey";
 
@@ -38,7 +40,7 @@ public class SshPublicKey {
         mPublicKey = publicKey;
     }
 
-    public String getEncodedKey() throws PgpGeneralException {
+    public String getEncodedKey() throws PgpGeneralException, NoSuchAlgorithmException {
         PGPPublicKey key = mPublicKey.getPublicKey();
 
         switch (key.getAlgorithm()) {
@@ -51,9 +53,8 @@ public class SshPublicKey {
             case PGPPublicKey.DSA:
                 return encodeDSAKey(key);
             default:
-                break;
+                throw new PgpGeneralException("Unknown key algorithm");
         }
-        throw new PgpGeneralException("Unknown algorithm");
     }
 
     private String encodeRSAKey(PGPPublicKey publicKey) {
@@ -64,7 +65,7 @@ public class SshPublicKey {
         return pubkey.getPublicKeyBlob();
     }
 
-    private String encodeECKey(PGPPublicKey publicKey) {
+    private String encodeECKey(PGPPublicKey publicKey) throws NoSuchAlgorithmException {
         ECPublicBCPGKey publicBCPGKey = (ECPublicBCPGKey) publicKey.getPublicKeyPacket().getKey();
 
         String curveName = SshUtils.getCurveName(mPublicKey.getCurveOid());

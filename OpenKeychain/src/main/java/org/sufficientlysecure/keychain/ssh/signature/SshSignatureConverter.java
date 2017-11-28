@@ -128,7 +128,7 @@ public class SshSignatureConverter {
         return signature.getBytes();
     }
 
-    public static byte[] getSshSignatureEcDsa(byte[] rawSignature, String curveOid) {
+    public static byte[] getSshSignatureEcDsa(byte[] rawSignature, String curveOid) throws NoSuchAlgorithmException {
         SshEncodedData signature = new SshEncodedData();
         signature.putString("ecdsa-sha2-" + SshUtils.getCurveName(curveOid));
         signature.putString(getEcDsaSignatureBlob(rawSignature));
