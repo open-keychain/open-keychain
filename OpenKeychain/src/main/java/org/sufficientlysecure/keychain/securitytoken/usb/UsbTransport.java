@@ -134,6 +134,13 @@ public class UsbTransport implements Transport {
             throw new UsbTransportException("USB error: failed to connect to device");
         }
 
+        boolean tokenTypeSupported = SecurityTokenInfo.SUPPORTED_USB_TOKENS.contains(getTokenTypeIfAvailable());
+        if (!tokenTypeSupported) {
+            usbConnection.close();
+            usbConnection = null;
+            throw new UnsupportedUsbTokenException();
+        }
+
         if (!usbConnection.claimInterface(usbInterface, true)) {
             throw new UsbTransportException("USB error: failed to claim interface");
         }

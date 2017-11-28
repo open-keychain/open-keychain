@@ -189,9 +189,10 @@ public class SecurityTokenConnection {
     @VisibleForTesting
     void connectToDevice(Context context) throws IOException {
         // Connect on transport layer
-        mCardCapabilities = new CardCapabilities();
-
         mTransport.connect();
+
+        // dummy instance for initial communicate() calls
+        mCardCapabilities = new CardCapabilities();
 
         determineTokenType();
 
@@ -546,7 +547,7 @@ public class SecurityTokenConnection {
         }
 
         // Now we're ready to communicate with the token.
-        byte[] keyBytes = null;
+        byte[] keyBytes;
 
         try {
             secretKey.unlock(passphrase);
