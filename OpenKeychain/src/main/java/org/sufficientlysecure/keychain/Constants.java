@@ -143,6 +143,7 @@ public final class Constants {
         public static final String EXPERIMENTAL_ENABLE_WORD_CONFIRM = "experimentalEnableWordConfirm";
         public static final String EXPERIMENTAL_ENABLE_LINKED_IDENTITIES = "experimentalEnableLinkedIdentities";
         public static final String EXPERIMENTAL_ENABLE_KEYBASE = "experimentalEnableKeybase";
+        public static final String EXPERIMENTAL_USB_ALLOW_UNTESTED = "experimentalUsbAllowUntested";
         public static final String EXPERIMENTAL_SMARTPGP_VERIFY_AUTHORITY = "smartpgp_authorities_pref";
         public static final String EXPERIMENTAL_SMARTPGP_AUTHORITIES = "smartpgp_authorities";
 

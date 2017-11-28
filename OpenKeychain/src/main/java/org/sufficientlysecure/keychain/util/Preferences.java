@@ -402,6 +402,10 @@ public class Preferences {
         return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_ENABLE_KEYBASE, false);
     }
 
+    public boolean getExperimentalUsbAllowUntested() {
+        return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_USB_ALLOW_UNTESTED, false);
+    }
+
     public boolean getExperimentalSmartPGPAuthoritiesEnable() {
         return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_SMARTPGP_VERIFY_AUTHORITY, false);
     }

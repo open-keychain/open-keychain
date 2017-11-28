@@ -26,6 +26,7 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransport;
 import org.sufficientlysecure.keychain.ui.UsbEventReceiverActivity;
 import org.sufficientlysecure.keychain.util.Log;
 
@@ -50,7 +51,7 @@ public class UsbConnectionDispatcher {
                             false);
                     if (permission) {
                         Log.d(Constants.TAG, "Got permission for " + usbDevice.getDeviceName());
-                        mListener.usbDeviceDiscovered(usbDevice);
+                        sendUsbTransportDiscovered(usbDevice);
                     }
                     break;
                 }
@@ -82,17 +83,24 @@ public class UsbConnectionDispatcher {
         // Note: we don't check devices VID/PID because
         // we check for permission instead.
         // We should have permission only for matching devices
-        for (UsbDevice device : mUsbManager.getDeviceList().values()) {
-            if (mUsbManager.hasPermission(device)) {
-                if (mListener != null) {
-                    mListener.usbDeviceDiscovered(device);
-                }
+        for (UsbDevice usbDevice : mUsbManager.getDeviceList().values()) {
+            if (mUsbManager.hasPermission(usbDevice)) {
+                sendUsbTransportDiscovered(usbDevice);
                 break;
             }
         }
     }
 
+    private void sendUsbTransportDiscovered(UsbDevice usbDevice) {
+        if (mListener == null) {
+            return;
+        }
+
+        UsbTransport usbTransport = UsbTransport.createUsbTransport(mActivity.getBaseContext(), usbDevice);
+        mListener.usbTransportDiscovered(usbTransport);
+    }
+
     public interface OnDiscoveredUsbDeviceListener {
-        void usbDeviceDiscovered(UsbDevice usbDevice);
+        void usbTransportDiscovered(UsbTransport usbTransport);
     }
 }

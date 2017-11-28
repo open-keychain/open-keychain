@@ -3,8 +3,10 @@ package org.sufficientlysecure.keychain.securitytoken;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -100,7 +102,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
         NITROKEY_START_1_25_AND_NEWER, GNUK_OLD, GNUK_1_25_AND_NEWER, LEDGER_NANO_S, UNKNOWN
     }
 
-    private static final HashSet<TokenType> SUPPORTED_USB_TOKENS = new HashSet<>(Arrays.asList(
+    public static final Set<TokenType> SUPPORTED_USB_TOKENS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
             TokenType.YUBIKEY_NEO,
             TokenType.YUBIKEY_4,
             TokenType.NITROKEY_PRO,
@@ -109,23 +111,16 @@ public abstract class SecurityTokenInfo implements Parcelable {
             TokenType.NITROKEY_START_1_25_AND_NEWER,
             TokenType.GNUK_OLD,
             TokenType.GNUK_1_25_AND_NEWER
-    ));
+    )));
 
-    private static final HashSet<TokenType> SUPPORTED_USB_SETUP = new HashSet<>(Arrays.asList(
+    private static final Set<TokenType> SUPPORTED_USB_SETUP = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
             TokenType.YUBIKEY_NEO,
             TokenType.YUBIKEY_4,
             TokenType.NITROKEY_PRO,
             TokenType.NITROKEY_STORAGE,
             TokenType.NITROKEY_START_1_25_AND_NEWER,
             TokenType.GNUK_1_25_AND_NEWER
-    ));
-
-    public boolean isSecurityTokenSupported() {
-        boolean isKnownSupported = SUPPORTED_USB_TOKENS.contains(getTokenType());
-        boolean isNfcTransport = getTransportType() == TransportType.NFC;
-
-        return isKnownSupported || isNfcTransport;
-    }
+    )));
 
     public boolean isPutKeySupported() {
         boolean isKnownSupported = SUPPORTED_USB_SETUP.contains(getTokenType());

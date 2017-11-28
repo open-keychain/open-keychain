@@ -25,11 +25,8 @@ package org.sufficientlysecure.keychain.ui.base;
 import java.io.IOException;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbManager;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.TagLostException;
@@ -48,6 +45,7 @@ import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
 import org.sufficientlysecure.keychain.securitytoken.UsbConnectionDispatcher;
+import org.sufficientlysecure.keychain.securitytoken.usb.UnsupportedUsbTokenException;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransport;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
@@ -61,6 +59,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+
 
 public abstract class BaseSecurityTokenActivity extends BaseActivity
         implements OnDiscoveredTagListener, UsbConnectionDispatcher.OnDiscoveredUsbDeviceListener {
@@ -114,6 +113,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         onSecurityTokenError(error);
     }
 
+    @Override
     public void tagDiscovered(Tag tag) {
         // Actual NFC operations are executed in doInBackground to not block the UI thread
         if (!mTagHandlingEnabled) {
@@ -124,15 +124,13 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         securityTokenDiscovered(nfcTransport);
     }
 
-    public void usbDeviceDiscovered(UsbDevice usbDevice) {
+    @Override
+    public void usbTransportDiscovered(UsbTransport usbTransport) {
         // Actual USB operations are executed in doInBackground to not block the UI thread
         if (!mTagHandlingEnabled) {
             return;
         }
 
-        UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
-
-        UsbTransport usbTransport = new UsbTransport(usbDevice, usbManager);
         securityTokenDiscovered(usbTransport);
     }
 
@@ -234,6 +232,11 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
 
     private void handleSecurityTokenError(SecurityTokenConnection stConnection, IOException e) {
         Log.d(Constants.TAG, "Exception in handleSecurityTokenError", e);
+
+        if (e instanceof UnsupportedUsbTokenException) {
+            onSecurityTokenError(getString(R.string.security_token_not_supported));
+            return;
+        }
 
         if (e instanceof TagLostException) {
             onSecurityTokenError(getString(R.string.security_token_error_tag_lost));
