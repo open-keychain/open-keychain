@@ -18,6 +18,9 @@
 package org.sufficientlysecure.keychain.service;
 
 
+import java.util.Date;
+import java.util.Iterator;
+
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -35,18 +38,18 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
+import org.sufficientlysecure.keychain.service.PassphraseCache.OnDeleteListener;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 
-import java.util.Date;
 
 /**
  * This service runs in its own process, but is available to all other processes as the main
@@ -100,9 +103,24 @@ public class PassphraseCacheService extends Service {
 
     private BroadcastReceiver mIntentReceiver;
 
-    private LongSparseArray<CachedPassphrase> mPassphraseCache = new LongSparseArray<>();
-
     Context mContext;
+
+    PassphraseCache<CachedPassphrase> passphraseCache = new PassphraseCache<>(
+            new OnDeleteListener<CachedPassphrase>() {
+                @Override
+                public void onDelete(CachedPassphrase cachedPassphrase) {
+                    if (cachedPassphrase.passphrase != null) {
+                        // clean internal char[] from memory!
+                        cachedPassphrase.passphrase.removeFromMemory();
+                    }
+
+                    AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                    if (am != null) {
+                        am.cancel(
+                                PassphraseCacheService.buildIntent(getBaseContext(), cachedPassphrase.referenceKeyId));
+                    }
+                }
+            });
 
     public static class KeyNotFoundException extends Exception {
         public KeyNotFoundException() {
@@ -233,11 +251,11 @@ public class PassphraseCacheService extends Service {
         // passphrase for symmetric encryption?
         if (masterKeyId == Constants.key.symmetric) {
             Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for symmetric encryption");
-            CachedPassphrase cachedPassphrase = mPassphraseCache.get(Constants.key.symmetric);
+            CachedPassphrase cachedPassphrase = passphraseCache.get(Constants.key.symmetric);
             if (cachedPassphrase == null) {
                 return null;
             }
-            return cachedPassphrase.mPassphrase;
+            return cachedPassphrase.passphrase;
         }
 
         // try to get master key id which is used as an identifier for cached passphrases
@@ -258,7 +276,7 @@ public class PassphraseCacheService extends Service {
         }
 
         // get cached passphrase
-        CachedPassphrase cachedPassphrase = mPassphraseCache.get(subKeyId);
+        CachedPassphrase cachedPassphrase = passphraseCache.get(subKeyId);
         if (cachedPassphrase == null) {
 
             // If we cache strictly by subkey, exit early
@@ -274,7 +292,7 @@ public class PassphraseCacheService extends Service {
                 return null;
             }
 
-            cachedPassphrase = mPassphraseCache.get(masterKeyId);
+            cachedPassphrase = passphraseCache.get(masterKeyId);
             // If we cache strictly by subkey, exit early
             if (cachedPassphrase == null) {
                 Log.d(Constants.TAG, "PassphraseCacheService: keyring passphrase not (yet) cached, returning null");
@@ -284,7 +302,7 @@ public class PassphraseCacheService extends Service {
 
         }
 
-        return cachedPassphrase.mPassphrase;
+        return cachedPassphrase.passphrase;
     }
 
     /**
@@ -303,12 +321,14 @@ public class PassphraseCacheService extends Service {
 
                     if (action.equals(BROADCAST_ACTION_PASSPHRASE_CACHE_SERVICE)) {
                         long keyId = intent.getLongExtra(EXTRA_KEY_ID, -1);
-                        removeTimeoutedPassphrase(keyId);
+                        passphraseCache.removeByReferenceId(keyId);
                     }
 
                     if (action.equals(Intent.ACTION_SCREEN_OFF)) {
                         removeScreenLockPassphrases();
                     }
+
+                    updateService();
                 }
             };
 
@@ -322,7 +342,7 @@ public class PassphraseCacheService extends Service {
     /**
      * Build pending intent that is executed by alarm manager to time out a specific passphrase
      */
-    private static PendingIntent buildIntent(Context context, long referenceKeyId) {
+    static PendingIntent buildIntent(Context context, long referenceKeyId) {
         Intent intent = new Intent(BROADCAST_ACTION_PASSPHRASE_CACHE_SERVICE);
         intent.putExtra(EXTRA_KEY_ID, referenceKeyId);
         // request code should be unique for each PendingIntent, thus keyId is used
@@ -364,11 +384,14 @@ public class PassphraseCacheService extends Service {
 
                 CachedPassphrase cachedPassphrase;
                 if (timeoutTtl == 0L) {
-                    cachedPassphrase = CachedPassphrase.getPassphraseLock(passphrase, primaryUserID);
+                    cachedPassphrase = CachedPassphrase.getPassphraseLock(
+                            masterKeyId, referenceKeyId, passphrase, primaryUserID);
                 } else if (timeoutTtl >= Integer.MAX_VALUE) {
-                    cachedPassphrase = CachedPassphrase.getPassphraseNoTimeout(passphrase, primaryUserID);
+                    cachedPassphrase = CachedPassphrase.getPassphraseNoTimeout(
+                            masterKeyId, referenceKeyId, passphrase, primaryUserID);
                 } else {
-                    cachedPassphrase = CachedPassphrase.getPassphraseTtlTimeout(passphrase, primaryUserID, timeoutTtl);
+                    cachedPassphrase = CachedPassphrase.getPassphraseTtlTimeout(
+                            masterKeyId, referenceKeyId, passphrase, primaryUserID, timeoutTtl);
 
                     long triggerTime = new Date().getTime() + (timeoutTtl * 1000);
                     // register new alarm with keyId for this passphrase
@@ -376,7 +399,7 @@ public class PassphraseCacheService extends Service {
                     am.set(AlarmManager.RTC_WAKEUP, triggerTime, buildIntent(this, referenceKeyId));
                 }
 
-                mPassphraseCache.put(referenceKeyId, cachedPassphrase);
+                passphraseCache.put(referenceKeyId, cachedPassphrase);
 
                 break;
             }
@@ -411,31 +434,14 @@ public class PassphraseCacheService extends Service {
                 break;
             }
             case ACTION_PASSPHRASE_CACHE_CLEAR: {
-                AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-
                 if (intent.hasExtra(EXTRA_SUBKEY_ID) && intent.hasExtra(EXTRA_KEY_ID)) {
+                    long masterKeyId = intent.getLongExtra(EXTRA_KEY_ID, 0L);
+                    passphraseCache.removeByReferenceId(masterKeyId);
 
-                    long referenceKeyId;
-                    if (Preferences.getPreferences(mContext).getPassphraseCacheSubs()) {
-                        referenceKeyId = intent.getLongExtra(EXTRA_SUBKEY_ID, 0L);
-                    } else {
-                        referenceKeyId = intent.getLongExtra(EXTRA_KEY_ID, 0L);
-                    }
-                    // Stop specific ttl alarm and
-                    am.cancel(buildIntent(this, referenceKeyId));
-                    mPassphraseCache.delete(referenceKeyId);
-
+                    long subKeyId = intent.getLongExtra(EXTRA_SUBKEY_ID, 0L);
+                    passphraseCache.removeByReferenceId(subKeyId);
                 } else {
-
-                    // Stop all ttl alarms
-                    for (int i = 0; i < mPassphraseCache.size(); i++) {
-                        CachedPassphrase cachedPassphrase = mPassphraseCache.valueAt(i);
-                        if (cachedPassphrase.mTimeoutMode == TimeoutMode.TTL) {
-                            am.cancel(buildIntent(this, mPassphraseCache.keyAt(i)));
-                        }
-                    }
-                    mPassphraseCache.clear();
-
+                    passphraseCache.clearAll();
                 }
                 break;
             }
@@ -450,44 +456,20 @@ public class PassphraseCacheService extends Service {
         return START_STICKY;
     }
 
-    /** Called when one specific passphrase for keyId timed out. */
-    private void removeTimeoutedPassphrase(long keyId) {
-
-        CachedPassphrase cPass = mPassphraseCache.get(keyId);
-        if (cPass != null) {
-            if (cPass.mPassphrase != null) {
-                // clean internal char[] from memory!
-                cPass.mPassphrase.removeFromMemory();
-            }
-            // remove passphrase object
-            mPassphraseCache.remove(keyId);
-        }
-
-        Log.d(Constants.TAG, "PassphraseCacheService Timeout of keyId " + keyId + ", removed from memory!");
-
-        updateService();
-    }
-
     private void removeScreenLockPassphrases() {
-
-        for (int i = 0; i < mPassphraseCache.size(); ) {
-            CachedPassphrase cPass = mPassphraseCache.valueAt(i);
-            if (cPass.mTimeoutMode == TimeoutMode.LOCK) {
-                // remove passphrase object
-                mPassphraseCache.removeAt(i);
-                continue;
+        Iterator<CachedPassphrase> it = passphraseCache.iterateCachedPassphrases();
+        while (it.hasNext()) {
+            CachedPassphrase cPass = it.next();
+            if (cPass.timeoutMode == TimeoutMode.LOCK) {
+                it.remove();
             }
-            // only do this if we didn't remove at, which continues loop by reducing size!
-            i += 1;
         }
 
         Log.d(Constants.TAG, "PassphraseCacheService Removing all cached-until-lock passphrases from memory!");
-
-        updateService();
     }
 
     private void updateService() {
-        if (mPassphraseCache.size() > 0) {
+        if (passphraseCache.count() > 0) {
             startForeground(Constants.Notification.PASSPHRASE_CACHE, getNotification());
         } else {
             // stop whole service if no cached passphrases remaining
@@ -499,10 +481,11 @@ public class PassphraseCacheService extends Service {
 
     private Notification getNotification() {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        int cachedPassphraseCount = passphraseCache.count();
         builder.setSmallIcon(R.drawable.ic_stat_notify_24dp)
                 .setColor(getResources().getColor(R.color.primary))
                 .setContentTitle(getResources().getQuantityString(R.plurals.passp_cache_notif_n_keys,
-                        mPassphraseCache.size(), mPassphraseCache.size()))
+                        cachedPassphraseCount, cachedPassphraseCount))
                 .setContentText(getString(R.string.passp_cache_notif_touch_to_clear))
                 .setPriority(NotificationCompat.PRIORITY_MIN);
 
@@ -511,8 +494,9 @@ public class PassphraseCacheService extends Service {
         inboxStyle.setBigContentTitle(getString(R.string.passp_cache_notif_keys));
 
         // Moves events into the big view
-        for (int i = 0; i < mPassphraseCache.size(); i++) {
-            inboxStyle.addLine(mPassphraseCache.valueAt(i).mPrimaryUserId);
+        Iterator<CachedPassphrase> it = passphraseCache.iterateCachedPassphrases();
+        while (it.hasNext()) {
+            inboxStyle.addLine(it.next().primaryUserId);
         }
 
         // Moves the big view style object into the notification object.
@@ -574,30 +558,37 @@ public class PassphraseCacheService extends Service {
         NEVER, TTL, LOCK
     }
 
-    private static class CachedPassphrase {
-        private String mPrimaryUserId;
-        private Passphrase mPassphrase;
-        private TimeoutMode mTimeoutMode;
-        private Long mTimeoutTime;
+    static class CachedPassphrase {
+        final private String primaryUserId;
+        final Passphrase passphrase;
+        final private TimeoutMode timeoutMode;
+        final private Long timeoutTime;
+        final long masterKeyId;
+        final long referenceKeyId;
 
-        private CachedPassphrase(Passphrase passphrase, String primaryUserId, TimeoutMode timeoutMode, Long timeoutTime) {
-            mPassphrase = passphrase;
-            mPrimaryUserId = primaryUserId;
-            mTimeoutMode = timeoutMode;
-            mTimeoutTime = timeoutTime;
+        private CachedPassphrase(long masterKeyId, long referenceKeyId, Passphrase passphrase, String primaryUserId, TimeoutMode timeoutMode, Long timeoutTime) {
+            this.passphrase = passphrase;
+            this.primaryUserId = primaryUserId;
+            this.timeoutMode = timeoutMode;
+            this.timeoutTime = timeoutTime;
+            this.masterKeyId = masterKeyId;
+            this.referenceKeyId = referenceKeyId;
         }
 
-        static CachedPassphrase getPassphraseNoTimeout(Passphrase passphrase, String primaryUserId) {
-            return new CachedPassphrase(passphrase, primaryUserId, TimeoutMode.NEVER, null);
+        static CachedPassphrase getPassphraseNoTimeout(long masterKeyId, long referenceKeyId, Passphrase passphrase,
+                String primaryUserId) {
+            return new CachedPassphrase(masterKeyId, referenceKeyId, passphrase, primaryUserId, TimeoutMode.NEVER, null);
         }
 
-        static CachedPassphrase getPassphraseTtlTimeout(Passphrase passphrase, String primaryUserId, long timeoutTime) {
-            return new CachedPassphrase(passphrase, primaryUserId, TimeoutMode.TTL, timeoutTime);
+        static CachedPassphrase getPassphraseTtlTimeout(long masterKeyId, long referenceKeyId, Passphrase passphrase,
+                String primaryUserId, long timeoutTime) {
+            return new CachedPassphrase(
+                    masterKeyId, referenceKeyId, passphrase, primaryUserId, TimeoutMode.TTL, timeoutTime);
         }
 
-        static CachedPassphrase getPassphraseLock(Passphrase passphrase, String primaryUserId) {
-            return new CachedPassphrase(passphrase, primaryUserId, TimeoutMode.LOCK, null);
+        static CachedPassphrase getPassphraseLock(long masterKeyId, long referenceKeyId, Passphrase passphrase,
+                String primaryUserId) {
+            return new CachedPassphrase(masterKeyId, referenceKeyId, passphrase, primaryUserId, TimeoutMode.LOCK, null);
         }
     }
-
 }
