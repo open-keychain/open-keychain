@@ -67,19 +67,28 @@ public class TemporaryFileProvider extends ContentProvider {
     private static final String TABLE_FILES = "files";
     public static final String AUTHORITY = Constants.TEMP_FILE_PROVIDER_AUTHORITY;
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
-    private static final int DB_VERSION = 3;
+    private static final int DB_VERSION = 4;
 
     interface TemporaryFileColumns {
         String COLUMN_UUID = "id";
         String COLUMN_NAME = "name";
         String COLUMN_TIME = "time";
         String COLUMN_TYPE = "mimetype";
+        String COLUMN_MASTER_KEY_ID = "masterKeyId";
     }
 
     private static final String TEMP_FILES_DIR = "temp";
     private static File tempFilesDir;
 
     private static Pattern UUID_PATTERN = Pattern.compile("[a-fA-F0-9-]+");
+
+    public static Uri createFile(Context context, String targetName, String mimeType, Long encryptionMasterKeyId) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TemporaryFileColumns.COLUMN_NAME, targetName);
+        contentValues.put(TemporaryFileColumns.COLUMN_TYPE, mimeType);
+        contentValues.put(TemporaryFileColumns.COLUMN_MASTER_KEY_ID, encryptionMasterKeyId);
+        return context.getContentResolver().insert(CONTENT_URI, contentValues);
+    }
 
     public static Uri createFile(Context context, String targetName, String mimeType) {
         ContentValues contentValues = new ContentValues();
@@ -97,6 +106,15 @@ public class TemporaryFileProvider extends ContentProvider {
     public static Uri createFile(Context context) {
         ContentValues contentValues = new ContentValues();
         return context.getContentResolver().insert(CONTENT_URI, contentValues);
+    }
+
+    public static void setAssociatedKeyId(Context context, Uri uri, long masterKeyId) {
+        if (!AUTHORITY.equals(uri.getAuthority())) {
+            throw new IllegalArgumentException("Invalid uri type!");
+        }
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TemporaryFileColumns.COLUMN_MASTER_KEY_ID, masterKeyId);
+        context.getContentResolver().update(uri, contentValues, null, null);
     }
 
     public static int setName(Context context, Uri uri, String name) {
@@ -119,6 +137,14 @@ public class TemporaryFileProvider extends ContentProvider {
         );
     }
 
+    public static void cleanUpForMasterKeyId(Context context, long masterKeyId) {
+        context.getContentResolver().delete(
+                CONTENT_URI,
+                TemporaryFileColumns.COLUMN_MASTER_KEY_ID + "= ?",
+                new String[] { Long.toString(masterKeyId) }
+        );
+    }
+
     private class TemporaryStorageDatabase extends SQLiteOpenHelper {
 
         public TemporaryStorageDatabase(Context context) {
@@ -131,7 +157,8 @@ public class TemporaryFileProvider extends ContentProvider {
                     TemporaryFileColumns.COLUMN_UUID + " TEXT PRIMARY KEY, " +
                     TemporaryFileColumns.COLUMN_NAME + " TEXT, " +
                     TemporaryFileColumns.COLUMN_TYPE + " TEXT, " +
-                    TemporaryFileColumns.COLUMN_TIME + " INTEGER" +
+                    TemporaryFileColumns.COLUMN_TIME + " INTEGER, " +
+                    TemporaryFileColumns.COLUMN_MASTER_KEY_ID + " INTEGER" +
                     ");");
         }
 
@@ -149,6 +176,9 @@ public class TemporaryFileProvider extends ContentProvider {
                             ");");
                 case 2:
                     db.execSQL("ALTER TABLE files ADD COLUMN " + TemporaryFileColumns.COLUMN_TYPE + " TEXT");
+
+                case 3:
+                    db.execSQL("ALTER TABLE files ADD COLUMN " + TemporaryFileColumns.COLUMN_MASTER_KEY_ID + " INTEGER");
             }
         }
     }
@@ -295,8 +325,10 @@ public class TemporaryFileProvider extends ContentProvider {
         if (values.size() != 1) {
             throw new UnsupportedOperationException("Update supported only for one field at a time!");
         }
-        if (!values.containsKey(TemporaryFileColumns.COLUMN_NAME) && !values.containsKey(TemporaryFileColumns.COLUMN_TYPE)) {
-            throw new UnsupportedOperationException("Update supported only for name and type field!");
+        if (!values.containsKey(TemporaryFileColumns.COLUMN_NAME) &&
+                !values.containsKey(TemporaryFileColumns.COLUMN_TYPE) &&
+                !values.containsKey(TemporaryFileColumns.COLUMN_MASTER_KEY_ID)) {
+            throw new UnsupportedOperationException("Update supported only for name, type and key id fields!");
         }
         if (selection != null || selectionArgs != null) {
             throw new UnsupportedOperationException("Update supported only for plain uri!");

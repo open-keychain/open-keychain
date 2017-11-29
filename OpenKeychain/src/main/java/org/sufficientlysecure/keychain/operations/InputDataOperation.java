@@ -89,6 +89,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
         Uri currentInputUri;
 
         DecryptVerifyResult decryptResult = null;
+        final Long encryptionMasterKeyId;
 
         PgpDecryptVerifyInputParcel decryptInput = input.getDecryptInput();
 
@@ -126,9 +127,17 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                 TemporaryFileProvider.setName(mContext, currentInputUri, meta.getFilename());
                 TemporaryFileProvider.setMimeType(mContext, currentInputUri, meta.getMimeType());
             }
-
+            if (decryptResult.getDecryptionResult() != null) {
+                encryptionMasterKeyId = decryptResult.getDecryptionResult().getEncryptionMasterKeyId();
+                if (encryptionMasterKeyId != null) {
+                    TemporaryFileProvider.setAssociatedKeyId(mContext, currentInputUri, encryptionMasterKeyId);
+                }
+            } else {
+                encryptionMasterKeyId = null;
+            }
         } else {
             currentInputUri = input.getInputUri();
+            encryptionMasterKeyId = null;
         }
 
         // don't even attempt if we know the data isn't suitable for mime content, or if we have a filename
@@ -202,7 +211,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
                 log.add(LogType.MSG_DATA_DETACHED_RAW, 3);
 
-                uncheckedSignedDataUri = TemporaryFileProvider.createFile(mContext, mFilename, "text/plain");
+                uncheckedSignedDataUri = TemporaryFileProvider.createFile(mContext, mFilename, "text/plain", encryptionMasterKeyId);
                 OutputStream out = mContext.getContentResolver().openOutputStream(uncheckedSignedDataUri, "w");
 
                 if (out == null) {
@@ -327,7 +336,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
                 }
                 log.add(LogType.MSG_DATA_MIME_TYPE, 3, mimeType);
 
-                Uri uri = TemporaryFileProvider.createFile(mContext, mFilename, mimeType);
+                Uri uri = TemporaryFileProvider.createFile(mContext, mFilename, mimeType, encryptionMasterKeyId);
                 OutputStream out = mContext.getContentResolver().openOutputStream(uri, "w");
 
                 if (out == null) {

@@ -216,6 +216,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         HashSet<Long> skippedDisallowedEncryptionKeys = new HashSet<>();
         KeySecurityProblem encryptionKeySecurityProblem = null;
+        Long encryptionMasterKeyId = null;
 
         // convenience method to return with error
         public EncryptStreamResult with(DecryptVerifyResult result) {
@@ -318,6 +319,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
                 // if this worked out so far, the data is encrypted
                 decryptionResultBuilder.setEncrypted(true);
+                decryptionResultBuilder.setEncryptionMasterKeyId(esResult.encryptionMasterKeyId);
                 if (esResult.sessionKey != null && esResult.decryptedSessionKey != null) {
                     decryptionResultBuilder.setSessionKey(esResult.sessionKey, esResult.decryptedSessionKey);
                     cryptoInput = cryptoInput.withCryptoData(esResult.sessionKey, esResult.decryptedSessionKey);
@@ -667,6 +669,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                                     cryptoInput));
                         }
                     }
+
+                    result.encryptionMasterKeyId = canonicalizedSecretKeyRing.getMasterKeyId();
 
                     // check for insecure encryption key
                     KeySecurityProblem keySecurityProblem =

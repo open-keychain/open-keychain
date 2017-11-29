@@ -28,6 +28,7 @@ class OpenPgpDecryptionResultBuilder {
     private boolean isEncrypted = false;
     private byte[] sessionKey;
     private byte[] decryptedSessionKey;
+    private Long encryptionMasterKeyId;
 
     public void setInsecure(boolean insecure) {
         this.isInsecure = insecure;
@@ -40,12 +41,14 @@ class OpenPgpDecryptionResultBuilder {
     public OpenPgpDecryptionResult build() {
         if (isInsecure) {
             Log.d(Constants.TAG, "RESULT_INSECURE");
-            return new OpenPgpDecryptionResult(OpenPgpDecryptionResult.RESULT_INSECURE, sessionKey, decryptedSessionKey);
+            return new OpenPgpDecryptionResult(OpenPgpDecryptionResult.RESULT_INSECURE, sessionKey, decryptedSessionKey,
+                    encryptionMasterKeyId);
         }
 
         if (isEncrypted) {
             Log.d(Constants.TAG, "RESULT_ENCRYPTED");
-            return new OpenPgpDecryptionResult(OpenPgpDecryptionResult.RESULT_ENCRYPTED, sessionKey, decryptedSessionKey);
+            return new OpenPgpDecryptionResult(OpenPgpDecryptionResult.RESULT_ENCRYPTED, sessionKey,
+                    decryptedSessionKey, encryptionMasterKeyId);
         }
 
         Log.d(Constants.TAG, "RESULT_NOT_ENCRYPTED");
@@ -59,5 +62,9 @@ class OpenPgpDecryptionResultBuilder {
         }
         this.sessionKey = sessionKey;
         this.decryptedSessionKey = decryptedSessionKey;
+    }
+
+    public void setEncryptionMasterKeyId(Long encryptionMasterKeyId) {
+        this.encryptionMasterKeyId = encryptionMasterKeyId;
     }
 }

@@ -119,6 +119,8 @@ public class PassphraseCacheService extends Service {
                         am.cancel(
                                 PassphraseCacheService.buildIntent(getBaseContext(), cachedPassphrase.referenceKeyId));
                     }
+
+                    TemporaryFileProvider.cleanUpForMasterKeyId(getBaseContext(), cachedPassphrase.masterKeyId);
                 }
             });
 
