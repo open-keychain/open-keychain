@@ -268,12 +268,15 @@ public class TemporaryFileProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        if (uri == null || uri.getLastPathSegment() == null) {
+        if (uri == null) {
             return 0;
         }
 
-        selection = DatabaseUtil.concatenateWhere(selection, TemporaryFileColumns.COLUMN_UUID + "=?");
-        selectionArgs = DatabaseUtil.appendSelectionArgs(selectionArgs, new String[]{uri.getLastPathSegment()});
+        String fileUuidFromUri = uri.getLastPathSegment();
+        if (fileUuidFromUri != null) {
+            selection = DatabaseUtil.concatenateWhere(selection, TemporaryFileColumns.COLUMN_UUID + "=?");
+            selectionArgs = DatabaseUtil.appendSelectionArgs(selectionArgs, new String[]{ fileUuidFromUri });
+        }
 
         Cursor files = db.getReadableDatabase().query(TABLE_FILES, new String[]{TemporaryFileColumns.COLUMN_UUID}, selection,
                 selectionArgs, null, null, null);
