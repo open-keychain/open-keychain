@@ -82,7 +82,8 @@ public class KeyLoader extends AsyncTaskLoader<List<KeyInfo>> {
         ArrayList<KeyInfo> keyInfos = new ArrayList<>();
         Cursor cursor;
 
-        String selection = QUERY_WHERE + " AND " + keySelector.getSelection();
+        String additionalSelection = keySelector.getSelection();
+        String selection = QUERY_WHERE + (additionalSelection != null ? " AND " + additionalSelection : "");
         cursor = contentResolver.query(keySelector.getKeyRingUri(), QUERY_PROJECTION, selection, null, QUERY_ORDER);
 
         if (cursor == null) {
@@ -160,6 +161,7 @@ public class KeyLoader extends AsyncTaskLoader<List<KeyInfo>> {
     @AutoValue
     public abstract static class KeySelector {
         public abstract Uri getKeyRingUri();
+        @Nullable
         public abstract String getSelection();
 
         static KeySelector create(Uri keyRingUri, String selection) {
