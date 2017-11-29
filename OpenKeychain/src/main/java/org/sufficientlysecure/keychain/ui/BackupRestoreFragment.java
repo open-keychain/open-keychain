@@ -254,7 +254,7 @@ public class BackupRestoreFragment extends Fragment {
     }
 
     private void restore() {
-        FileHelper.openDocument(this, null, "*/*", false, REQUEST_CODE_INPUT);
+        FileHelper.openDocument(this, "*/*", false, REQUEST_CODE_INPUT);
     }
 
 }

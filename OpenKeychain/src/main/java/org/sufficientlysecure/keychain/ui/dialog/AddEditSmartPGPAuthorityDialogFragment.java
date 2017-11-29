@@ -122,7 +122,7 @@ public class AddEditSmartPGPAuthorityDialogFragment extends DialogFragment imple
         mAuthorityAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FileHelper.openDocument(AddEditSmartPGPAuthorityDialogFragment.this, null, "*/*", false,
+                FileHelper.openDocument(AddEditSmartPGPAuthorityDialogFragment.this, "*/*", false,
                                         EncryptFilesFragment.REQUEST_CODE_INPUT);
             }
         });

@@ -317,7 +317,7 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
 
     @Override
     public void showFileSelectDialog() {
-        FileHelper.openDocument(this, null, "*/*", false, REQUEST_CODE_OPEN_FILE);
+        FileHelper.openDocument(this, "*/*", false, REQUEST_CODE_OPEN_FILE);
     }
 
     @Override

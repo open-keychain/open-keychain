@@ -211,9 +211,7 @@ public class EncryptFilesFragment
     }
 
     private void addInputUri() {
-        FileHelper.openDocument(EncryptFilesFragment.this, mFilesAdapter.getModelCount() == 0 ?
-                        null : mFilesAdapter.getModelItem(mFilesAdapter.getModelCount() - 1).inputUri,
-                "*/*", true, REQUEST_CODE_INPUT);
+        FileHelper.openDocument(EncryptFilesFragment.this, "*/*", true, REQUEST_CODE_INPUT);
     }
 
     public void addInputUri(Intent data) {

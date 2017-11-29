@@ -82,7 +82,7 @@ public class EncryptDecryptFragment extends Fragment {
         mDecryptFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FileHelper.openDocument(EncryptDecryptFragment.this, null, "*/*", false, REQUEST_CODE_INPUT);
+                FileHelper.openDocument(EncryptDecryptFragment.this, "*/*", false, REQUEST_CODE_INPUT);
             }
         });
 

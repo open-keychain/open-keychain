@@ -100,26 +100,23 @@ public class FileHelper {
         fragment.startActivityForResult(intent, requestCode);
     }
 
-    public static void openDocument(Fragment fragment, Uri last, String mimeType, boolean multiple, int requestCode) {
+    public static void openDocument(Fragment fragment, String mimeType, boolean multiple, int requestCode) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
                 && hasOpenDocumentIntent(fragment.getContext())) {
             openDocumentKitKat(fragment, mimeType, multiple, requestCode);
         } else {
-            openDocumentPreKitKat(fragment, last, mimeType, multiple, requestCode);
+            openDocumentPreKitKat(fragment, mimeType, multiple, requestCode);
         }
     }
 
     /** Opens the preferred installed file manager on Android and shows a toast
      * if no manager is installed. */
-    private static void openDocumentPreKitKat(
-            Fragment fragment, Uri last, String mimeType, boolean multiple, int requestCode) {
-
+    private static void openDocumentPreKitKat(Fragment fragment, String mimeType, boolean multiple, int requestCode) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         if (Build.VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN_MR2) {
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, multiple);
         }
-        intent.setData(last);
         intent.setType(mimeType);
 
         try {

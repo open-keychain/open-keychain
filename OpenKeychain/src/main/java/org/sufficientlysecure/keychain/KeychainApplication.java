@@ -84,14 +84,6 @@ public class KeychainApplication extends Application {
         }
         */
 
-        // Create OpenKeychain directory on sdcard if not existing
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            if (!Constants.Path.APP_DIR.exists() && !Constants.Path.APP_DIR.mkdirs()) {
-                // ignore this for now, it's not crucial
-                // that the directory doesn't exist at this point
-            }
-        }
-
         brandGlowEffect(getApplicationContext(),
                 FormattingUtils.getColorFromAttr(getApplicationContext(), R.attr.colorPrimary));
 

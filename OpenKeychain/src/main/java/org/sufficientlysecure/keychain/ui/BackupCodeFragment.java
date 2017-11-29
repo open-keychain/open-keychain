@@ -18,6 +18,15 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.io.File;
+import java.io.IOException;
+import java.security.SecureRandom;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Random;
+
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
@@ -60,14 +69,6 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Passphrase;
-
-import java.io.File;
-import java.io.IOException;
-import java.security.SecureRandom;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Random;
 
 public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringParcel, ExportResult>
         implements OnBackStackChangedListener {
@@ -556,6 +557,11 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         // for kitkat and above, we have the document api
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             FileHelper.saveDocument(this, filename, Constants.MIME_TYPE_ENCRYPTED_ALTERNATE, REQUEST_SAVE);
+            return;
+        }
+
+        if (!Constants.Path.APP_DIR.mkdirs()) {
+            Notify.create(activity, R.string.snack_backup_error_saving, Style.ERROR).show();
             return;
         }
 
