@@ -277,21 +277,15 @@
             android:name=".ui.DisplayTextActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
-            android:parentActivityName=".ui.MainActivity"
-            android:windowSoftInputMode="stateHidden">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
+            android:windowSoftInputMode="stateHidden"
+            android:taskAffinity="org.sufficientlysecure.keychain.decrypt">
         </activity>
         <activity
             android:name=".ui.DecryptActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
-            android:parentActivityName=".ui.MainActivity"
-            android:windowSoftInputMode="stateHidden">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
+            android:windowSoftInputMode="stateHidden"
+            android:taskAffinity="org.sufficientlysecure.keychain.decrypt">
 
             <!-- VIEW with mimeTypes  -->
             <intent-filter android:label="@string/intent_send_decrypt">
