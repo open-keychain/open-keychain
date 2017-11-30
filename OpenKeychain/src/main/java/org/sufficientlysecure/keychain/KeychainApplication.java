@@ -24,7 +24,10 @@ import java.util.HashMap;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Application;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -113,6 +116,17 @@ public class KeychainApplication extends Application {
         TlsCertificatePinning.addPinnedCertificate("api.keybase.io", getAssets(), "api.keybase.io.CA.cer");
 
         TemporaryFileProvider.cleanUp(this);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            registerReceiver(new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    startService(new Intent(KeychainApplication.this, ClipboardListenerService.class));
+                }
+            }, new IntentFilter(Intent.ACTION_SCREEN_ON));
+
+            startService(new Intent(KeychainApplication.this, ClipboardListenerService.class));
+        }
     }
 
     /**
