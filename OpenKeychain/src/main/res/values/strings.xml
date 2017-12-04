@@ -533,6 +533,7 @@
     <string name="help_tab_wot">"Key Confirmation"</string>
     <string name="help_tab_nfc_beam">"NFC Beam"</string>
     <string name="help_tab_changelog">"Changelog"</string>
+    <string name="help_tab_license">"Licenses"</string>
     <string name="help_tab_about">"About"</string>
     <string name="help_about_version">"Version:"</string>
     <string name="help_tab_donations">"Donate"</string>
