@@ -42,7 +42,8 @@ public class HelpActivity extends BaseActivity {
     public static final int TAB_FAQ = 2;
     public static final int TAB_DONATE = 3;
     public static final int TAB_CHANGELOG = 4;
-    public static final int TAB_ABOUT = 5;
+    public static final int TAB_LICENSES = 5;
+    public static final int TAB_ABOUT = 6;
 
     // Google Play
     private static final String[] GOOGLE_PLAY_CATALOG = new String[]{"keychain.donation.1",
@@ -117,6 +118,11 @@ public class HelpActivity extends BaseActivity {
         changelogBundle.putInt(HelpMarkdownFragment.ARG_MARKDOWN_RES, R.raw.help_changelog);
         mTabsAdapter.addTab(HelpMarkdownFragment.class, changelogBundle,
                 getString(R.string.help_tab_changelog));
+
+        Bundle licensesBundle = new Bundle();
+        licensesBundle.putInt(HelpMarkdownFragment.ARG_MARKDOWN_RES, R.raw.help_licenses);
+        mTabsAdapter.addTab(HelpMarkdownFragment.class, licensesBundle,
+                getString(R.string.help_tab_license));
 
         mTabsAdapter.addTab(HelpAboutFragment.class, null,
                 getString(R.string.help_tab_about));
