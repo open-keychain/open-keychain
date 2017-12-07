@@ -70,6 +70,8 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <!-- storage group -->
     <!--
         No need on >= Android 4.4 for WRITE_EXTERNAL_STORAGE, because we use Storage Access Framework,
@@ -116,6 +118,12 @@
             <intent-filter>
                 <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />
                 <data android:scheme="package"/>
+            </intent-filter>
+        </receiver>
+        <!-- broadcast receiver for listening to  -->
+        <receiver android:name=".service.BootCompletedBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
         <!-- singleTop for NFC dispatch, see SecurityTokenOperationActivity -->
@@ -269,21 +277,15 @@
             android:name=".ui.DisplayTextActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
-            android:parentActivityName=".ui.MainActivity"
-            android:windowSoftInputMode="stateHidden">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
+            android:windowSoftInputMode="stateHidden"
+            android:taskAffinity="org.sufficientlysecure.keychain.decrypt">
         </activity>
         <activity
             android:name=".ui.DecryptActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
-            android:parentActivityName=".ui.MainActivity"
-            android:windowSoftInputMode="stateHidden">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
+            android:windowSoftInputMode="stateHidden"
+            android:taskAffinity="org.sufficientlysecure.keychain.decrypt">
 
             <!-- VIEW with mimeTypes  -->
             <intent-filter android:label="@string/intent_send_decrypt">
@@ -1022,6 +1024,12 @@
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/sync_adapter_keys" />
         </service>
+
+        <!-- Clipboard monitor -->
+        <service
+            android:name=".ClipboardListenerService"
+            android:exported="false"
+            />
 
         <!-- Storage Provider for temporary decrypted files.
              For security considerations, read class! -->

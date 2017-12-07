@@ -1986,5 +1986,9 @@
     <string name="button_locate_nfc">"Where is my NFC reader?"</string>
     <string name="label_usb_untested_summary">If enabled, USB Smartcard readers can be used that have not been properly tested.</string>
     <string name="label_usb_untested">Allow untested USB Devices</string>
+    <string name="notify_clipboard_key_title">OpenPGP key found in clipboard</string>
+    <string name="notify_clipboard_key_text">Click to import</string>
+    <string name="notify_clipboard_msg_title">Encrypted data found in clipboard</string>
+    <string name="notify_clipboard_msg_text">Click to decrypt</string>
 
 </resources>
