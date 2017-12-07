@@ -65,8 +65,11 @@ public class OkHttpClientFactory {
 
         // If a pinned cert is available, use it!
         // NOTE: this fails gracefully back to "no pinning" if no cert is available.
-        if (url != null && TlsCertificatePinning.getPinnedSslSocketFactory(url) != null) {
-            builder.sslSocketFactory(TlsCertificatePinning.getPinnedSslSocketFactory(url));
+        TlsCertificatePinning tlsCertificatePinning = new TlsCertificatePinning(url);
+        boolean isHttpsProtocol = "https".equals(url.getProtocol());
+        boolean isPinAvailable = tlsCertificatePinning.isPinAvailable();
+        if (isHttpsProtocol && isPinAvailable) {
+            tlsCertificatePinning.pinCertificate(builder);
         }
 
         return builder.build();

@@ -366,8 +366,9 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
             URI keyserverUriHttp = keyserver.getUrlURI();
 
             // check TLS pinning only for non-Tor keyservers
-            if (onlyTrustedKeyserver
-                    && TlsCertificatePinning.getPinnedSslSocketFactory(keyserverUriHttp.toURL()) == null) {
+            TlsCertificatePinning tlsCertificatePinning = new TlsCertificatePinning(keyserverUriHttp.toURL());
+            boolean isPinAvailable = tlsCertificatePinning.isPinAvailable();
+            if (onlyTrustedKeyserver && !isPinAvailable) {
                 Log.w(Constants.TAG, "No pinned certificate for this host in OpenKeychain's assets.");
                 reason = VerifyReturn.NO_PINNED_CERTIFICATE;
                 return reason;
