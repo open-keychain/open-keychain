@@ -187,34 +187,9 @@ The full coding style can be found at http://source.android.com/source/code-styl
 3. Start code inspection and see the results by selecting Analyze > Inspect Code from Android-Studio.
 
 ## Licenses
-OpenKechain is licensed under GPLv3+.
-The full license text can be found in the [LICENSE file](https://github.com/open-keychain/open-keychain/blob/HEAD/LICENSE).
-Some parts and some libraries are Apache License v2, MIT X11 License (see below).
 
-> This program is free software: you can redistribute it and/or modify
-> it under the terms of the GNU General Public License as published by
-> the Free Software Foundation, either version 3 of the License, or
-> (at your option) any later version.
-> 
-> This program is distributed in the hope that it will be useful,
-> but WITHOUT ANY WARRANTY; without even the implied warranty of
-> MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> GNU General Public License for more details.
-> 
-> You should have received a copy of the GNU General Public License
-> along with this program.  If not, see <http://www.gnu.org/licenses/>.
+Copyright 2017 Schürmann & Breitmoser GbR
 
+Licensed under the [GPLv3](https://github.com/open-keychain/open-keychain/blob/HEAD/LICENSE).
 
-### Libraries
-
-See [In-app about screen](https://github.com/open-keychain/open-keychain/blob/HEAD/OpenKeychain/src/main/res/raw/help_about.md)
-
-### Images
-* Actionbar icons  
-  http://developer.android.com/design/downloads/index.html#action-bar-icon-pack
-
-* QR Code Actionbar icon  
-  https://github.com/openintents/openintents/blob/master/extensions/qrcode_ext/icons/ic_menu_qr_code/ic_menu_qr_code_holo_light/ic_menu_qr_code.svg
-
-* Key status icons by the ModernPGP working group  
-  https://github.com/ModernPGP
+Google Play and the Google Play logo are trademarks of Google Inc.

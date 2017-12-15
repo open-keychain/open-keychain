@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2014 Dominik Schürmann <dominik@dominikschuermann.de>
- * Copyright (C) 2014 Vincent Breitmoser <v.breitmoser@mugenguild.com>
+ * Copyright (C) 2017 Schürmann & Breitmoser GbR
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,9 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package org.sufficientlysecure.keychain.service;
-
 
 import android.os.Parcelable;
 import android.support.annotation.Nullable;

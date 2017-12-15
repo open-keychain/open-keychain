@@ -1,9 +1,5 @@
 /*
- * Copyright (C) 2013-2015 Dominik Schürmann <dominik@dominikschuermann.de>
- * Copyright (C) 2015 Vincent Breitmoser <v.breitmoser@mugenguild.com>
- * Copyright (C) 2013-2014 Signe Rüsch
- * Copyright (C) 2013-2014 Philipp Jakubeit
- * Copyright (C) 2016 Nikita Mikhailov <nikita.s.mikhailov@gmail.com>
+ * Copyright (C) 2017 Schürmann & Breitmoser GbR
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
