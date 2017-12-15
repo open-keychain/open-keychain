@@ -400,10 +400,6 @@ public class Preferences {
 
     // experimental prefs
 
-    public boolean getExperimentalEnableWordConfirm() {
-        return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_ENABLE_WORD_CONFIRM, false);
-    }
-
     public boolean getExperimentalEnableLinkedIdentities() {
         return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_ENABLE_LINKED_IDENTITIES, false);
     }

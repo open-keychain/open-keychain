@@ -40,10 +40,4 @@
         android:visible="false"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/menu_key_view_certify_fingerprint_word"
-        android:title="@string/menu_certify_fingerprint_phrases"
-        android:visible="false"
-        app:showAsAction="never" />
-
 </menu>

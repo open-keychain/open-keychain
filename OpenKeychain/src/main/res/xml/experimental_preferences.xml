@@ -7,13 +7,6 @@
 
     <SwitchPreference
         android:defaultValue="false"
-        android:key="experimentalEnableWordConfirm"
-        android:persistent="true"
-        android:summary="@string/label_experimental_settings_word_confirm_summary"
-        android:title="@string/label_experimental_settings_word_confirm_title" />
-
-    <SwitchPreference
-        android:defaultValue="false"
         android:key="experimentalEnableLinkedIdentities"
         android:persistent="true"
         android:summary="@string/label_experimental_settings_linked_identities_summary"

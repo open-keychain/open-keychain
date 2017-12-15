@@ -30,8 +30,6 @@ public class CertifyFingerprintActivity extends BaseActivity {
 
     protected Uri mDataUri;
 
-    public static final String EXTRA_ENABLE_WORD_CONFIRM = "enable_word_confirm";
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +40,6 @@ public class CertifyFingerprintActivity extends BaseActivity {
             finish();
             return;
         }
-        boolean enableWordConfirm = getIntent().getBooleanExtra(EXTRA_ENABLE_WORD_CONFIRM, false);
 
         setFullScreenDialogClose(new View.OnClickListener() {
             @Override
@@ -53,7 +50,7 @@ public class CertifyFingerprintActivity extends BaseActivity {
 
         Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
 
-        startFragment(savedInstanceState, mDataUri, enableWordConfirm);
+        startFragment(savedInstanceState, mDataUri);
     }
 
     @Override
@@ -61,7 +58,7 @@ public class CertifyFingerprintActivity extends BaseActivity {
         setContentView(R.layout.certify_fingerprint_activity);
     }
 
-    private void startFragment(Bundle savedInstanceState, Uri dataUri, boolean enableWordConfirm) {
+    private void startFragment(Bundle savedInstanceState, Uri dataUri) {
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
         // we could end up with overlapping fragments.
@@ -70,7 +67,7 @@ public class CertifyFingerprintActivity extends BaseActivity {
         }
 
         // Create an instance of the fragment
-        CertifyFingerprintFragment frag = CertifyFingerprintFragment.newInstance(dataUri, enableWordConfirm);
+        CertifyFingerprintFragment frag = CertifyFingerprintFragment.newInstance(dataUri);
 
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
