@@ -35,7 +35,6 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.experimental.SentenceConfirm;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -50,7 +49,6 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
     static final int REQUEST_CERTIFY = 1;
 
     public static final String ARG_DATA_URI = "uri";
-    public static final String ARG_ENABLE_PHRASES_CONFIRM = "enable_word_confirm";
 
     private TextView mActionYes;
     private TextView mFingerprint;
@@ -60,16 +58,14 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
     private static final int LOADER_ID_UNIFIED = 0;
 
     private Uri mDataUri;
-    private boolean mEnablePhrasesConfirm;
 
     /**
      * Creates new instance of this fragment
      */
-    public static CertifyFingerprintFragment newInstance(Uri dataUri, boolean enablePhrasesConfirm) {
+    public static CertifyFingerprintFragment newInstance(Uri dataUri) {
         CertifyFingerprintFragment frag = new CertifyFingerprintFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_DATA_URI, dataUri);
-        args.putBoolean(ARG_ENABLE_PHRASES_CONFIRM, enablePhrasesConfirm);
 
         frag.setArguments(args);
 
@@ -113,13 +109,6 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
             Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
             getActivity().finish();
             return;
-        }
-        mEnablePhrasesConfirm = getArguments().getBoolean(ARG_ENABLE_PHRASES_CONFIRM);
-
-        if (mEnablePhrasesConfirm) {
-            mIntro.setText(R.string.certify_fingerprint_text_phrases);
-            mHeader.setText(R.string.section_phrases);
-            mActionYes.setText(R.string.btn_match_phrases);
         }
 
         loadData(dataUri);
@@ -169,11 +158,7 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
                 if (data.moveToFirst()) {
                     byte[] fingerprintBlob = data.getBlob(INDEX_UNIFIED_FINGERPRINT);
 
-                    if (mEnablePhrasesConfirm) {
-                        displayWordConfirm(fingerprintBlob);
-                    } else {
-                        displayHexConfirm(fingerprintBlob);
-                    }
+                    displayHexConfirm(fingerprintBlob);
 
                     break;
                 }
@@ -186,20 +171,6 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
     private void displayHexConfirm(byte[] fingerprintBlob) {
         String fingerprint = KeyFormattingUtils.convertFingerprintToHex(fingerprintBlob);
         mFingerprint.setText(KeyFormattingUtils.formatFingerprint(fingerprint));
-    }
-
-    private void displayWordConfirm(byte[] fingerprintBlob) {
-        String fingerprint;
-        try {
-            fingerprint = new SentenceConfirm(getActivity()).fromBytes(fingerprintBlob, 20);
-        } catch (IOException e) {
-            fingerprint = "-";
-            Log.e(Constants.TAG, "Problem when creating sentence!", e);
-        }
-
-        mFingerprint.setTextSize(18);
-        mFingerprint.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        mFingerprint.setText(fingerprint);
     }
 
     /**
