@@ -67,6 +67,7 @@
                 android:paddingLeft="16dp"
                 android:paddingRight="10dp"
                 android:text="@string/first_time_security_token"
+                android:singleLine="true"
                 android:textAllCaps="true"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_alignParentTop="true"
