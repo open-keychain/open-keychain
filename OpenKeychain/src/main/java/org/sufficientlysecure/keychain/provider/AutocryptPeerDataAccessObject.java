@@ -24,13 +24,44 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.net.Uri;
+import android.text.format.DateUtils;
 
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
 
 
 public class AutocryptPeerDataAccessObject {
-    private final SimpleContentResolverInterface mQueryInterface;
+    private static final long AUTOCRYPT_DISCOURAGE_THRESHOLD_MILLIS = 35 * DateUtils.DAY_IN_MILLIS;
+
+    private static final String[] PROJECTION_AUTOCRYPT_QUERY = {
+            ApiAutocryptPeer.LAST_SEEN,
+            ApiAutocryptPeer.MASTER_KEY_ID,
+            ApiAutocryptPeer.LAST_SEEN_KEY,
+            ApiAutocryptPeer.IS_MUTUAL,
+            ApiAutocryptPeer.KEY_IS_REVOKED,
+            ApiAutocryptPeer.KEY_IS_EXPIRED,
+            ApiAutocryptPeer.KEY_IS_VERIFIED,
+            ApiAutocryptPeer.GOSSIP_MASTER_KEY_ID,
+            ApiAutocryptPeer.GOSSIP_LAST_SEEN_KEY,
+            ApiAutocryptPeer.GOSSIP_KEY_IS_REVOKED,
+            ApiAutocryptPeer.GOSSIP_KEY_IS_EXPIRED,
+            ApiAutocryptPeer.GOSSIP_KEY_IS_VERIFIED,
+    };
+    private static final int INDEX_LAST_SEEN = 0;
+    private static final int INDEX_MASTER_KEY_ID = 1;
+    private static final int INDEX_LAST_SEEN_KEY = 2;
+    private static final int INDEX_STATE = 3;
+    private static final int INDEX_KEY_IS_REVOKED = 4;
+    private static final int INDEX_KEY_IS_EXPIRED = 5;
+    private static final int INDEX_KEY_IS_VERIFIED = 6;
+    private static final int INDEX_GOSSIP_MASTER_KEY_ID = 7;
+    private static final int INDEX_GOSSIP_LAST_SEEN_KEY = 8;
+    private static final int INDEX_GOSSIP_KEY_IS_REVOKED = 9;
+    private static final int INDEX_GOSSIP_KEY_IS_EXPIRED = 10;
+    private static final int INDEX_GOSSIP_KEY_IS_VERIFIED = 11;
+
+    private final SimpleContentResolverInterface queryInterface;
     private final String packageName;
 
 
@@ -38,7 +69,7 @@ public class AutocryptPeerDataAccessObject {
         this.packageName = packageName;
 
         final ContentResolver contentResolver = context.getContentResolver();
-        mQueryInterface = new SimpleContentResolverInterface() {
+        queryInterface = new SimpleContentResolverInterface() {
             @Override
             public Cursor query(Uri contentUri, String[] projection, String selection, String[] selectionArgs,
                     String sortOrder) {
@@ -63,12 +94,12 @@ public class AutocryptPeerDataAccessObject {
     }
 
     public AutocryptPeerDataAccessObject(SimpleContentResolverInterface queryInterface, String packageName) {
-        mQueryInterface = queryInterface;
+        this.queryInterface = queryInterface;
         this.packageName = packageName;
     }
 
     public Long getMasterKeyIdForAutocryptPeer(String autocryptId) {
-        Cursor cursor = mQueryInterface.query(
+        Cursor cursor = queryInterface.query(
                 ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), null, null, null, null);
 
         try {
@@ -86,7 +117,7 @@ public class AutocryptPeerDataAccessObject {
     }
 
     public Date getLastSeen(String autocryptId) {
-        Cursor cursor = mQueryInterface.query(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId),
+        Cursor cursor = queryInterface.query(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId),
                 null, null, null, null);
 
         try {
@@ -103,7 +134,7 @@ public class AutocryptPeerDataAccessObject {
     }
 
     public Date getLastSeenKey(String autocryptId) {
-        Cursor cursor = mQueryInterface.query(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId),
+        Cursor cursor = queryInterface.query(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId),
                 null, null, null, null);
 
         try {
@@ -119,38 +150,112 @@ public class AutocryptPeerDataAccessObject {
         return null;
     }
 
-    public void updateToResetState(String autocryptId, Date effectiveDate) {
-        updateAutocryptState(autocryptId, effectiveDate, null, ApiAutocryptPeer.RESET);
+    public void updateLastSeen(String autocryptId, Date date) {
+        ContentValues cv = new ContentValues();
+        cv.put(ApiAutocryptPeer.LAST_SEEN, date.getTime());
+        queryInterface
+                .update(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), cv, null, null);
     }
 
-    public void updateToSelectedState(String autocryptId, long masterKeyId) {
-        updateAutocryptState(autocryptId, new Date(), masterKeyId, ApiAutocryptPeer.SELECTED);
-    }
-
-    public void updateToGossipState(String autocryptId, Date effectiveDate, long masterKeyId) {
-        updateAutocryptState(autocryptId, effectiveDate, masterKeyId, ApiAutocryptPeer.GOSSIP);
-    }
-
-    public void updateToMutualState(String autocryptId, Date effectiveDate, long masterKeyId) {
-        updateAutocryptState(autocryptId, effectiveDate, masterKeyId, ApiAutocryptPeer.MUTUAL);
-    }
-
-    public void updateToAvailableState(String autocryptId, Date effectiveDate, long masterKeyId) {
-        updateAutocryptState(autocryptId, effectiveDate, masterKeyId, ApiAutocryptPeer.AVAILABLE);
-    }
-
-    private void updateAutocryptState(String autocryptId, Date date, Long masterKeyId, int status) {
+    public void updateKey(String autocryptId, Date effectiveDate, long masterKeyId, boolean isMutual) {
         ContentValues cv = new ContentValues();
         cv.put(ApiAutocryptPeer.MASTER_KEY_ID, masterKeyId);
-        cv.put(ApiAutocryptPeer.LAST_SEEN, date.getTime());
-        if (masterKeyId != null) {
-            cv.put(ApiAutocryptPeer.LAST_SEEN_KEY, masterKeyId);
-        }
-        cv.put(ApiAutocryptPeer.STATE, status);
-        mQueryInterface.update(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), cv, null, null);
+        cv.put(ApiAutocryptPeer.LAST_SEEN_KEY, effectiveDate.getTime());
+        cv.put(ApiAutocryptPeer.IS_MUTUAL, isMutual ? 1 : 0);
+        queryInterface
+                .update(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), cv, null, null);
+    }
+
+    public void updateKeyGossip(String autocryptId, Date effectiveDate, long masterKeyId) {
+        ContentValues cv = new ContentValues();
+        cv.put(ApiAutocryptPeer.GOSSIP_MASTER_KEY_ID, masterKeyId);
+        cv.put(ApiAutocryptPeer.GOSSIP_LAST_SEEN_KEY, effectiveDate.getTime());
+        queryInterface
+                .update(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), cv, null, null);
     }
 
     public void delete(String autocryptId) {
-        mQueryInterface.delete(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), null, null);
+        queryInterface.delete(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), null, null);
+    }
+
+    public AutocryptPeerStateResult getAutocryptState(String autocryptId) {
+                /*
+Determine if encryption is possible
+If there is no peers[to-addr], then set ui-recommendation to disable, and terminate.
+
+For the purposes of the rest of this recommendation, if either public_key or gossip_key is revoked, expired, or otherwise known to be unusable for encryption, then treat that key as though it were null (not present).
+
+If both public_key and gossip_key are null, then set ui-recommendation to disable and terminate.
+
+Otherwise, we derive the recommendation using a two-phase algorithm. The first phase computes the preliminary-recommendation.
+
+Preliminary Recommendation
+If public_key is null, then set target-keys[to-addr] to gossip_key and set preliminary-recommendation to discourage and skip to the Deciding to Encrypt by Default.
+
+Otherwise, set target-keys[to-addr] to public_key.
+
+If autocrypt_timestamp is more than 35 days older than last_seen, set preliminary-recommendation to discourage.
+
+Otherwise, set preliminary-recommendation to available.
+                 */
+
+        Cursor cursor = queryInterface.query(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId),
+                PROJECTION_AUTOCRYPT_QUERY, null, null, null);
+        try {
+            if (!cursor.moveToFirst()) {
+                return new AutocryptPeerStateResult(AutocryptState.DISABLE, null, false);
+            }
+
+            boolean hasKey = !cursor.isNull(INDEX_MASTER_KEY_ID);
+            boolean isRevoked = cursor.getInt(INDEX_KEY_IS_REVOKED) != 0;
+            boolean isExpired = cursor.getInt(INDEX_KEY_IS_EXPIRED) != 0;
+            if (hasKey && !isRevoked && !isExpired) {
+                long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
+                long lastSeen = cursor.getLong(INDEX_LAST_SEEN);
+                long lastSeenKey = cursor.getLong(INDEX_LAST_SEEN_KEY);
+                boolean isVerified = cursor.getInt(INDEX_KEY_IS_VERIFIED) != 0;
+                if (lastSeenKey < (lastSeen - AUTOCRYPT_DISCOURAGE_THRESHOLD_MILLIS)) {
+                    return new AutocryptPeerStateResult(AutocryptState.DISCOURAGED_OLD, masterKeyId, isVerified);
+                }
+
+                boolean isMutual = cursor.getInt(INDEX_STATE) != 0;
+                if (isMutual) {
+                    return new AutocryptPeerStateResult(AutocryptState.MUTUAL, masterKeyId, isVerified);
+                } else {
+                    return new AutocryptPeerStateResult(AutocryptState.AVAILABLE, masterKeyId, isVerified);
+                }
+            }
+
+            boolean gossipHasKey = !cursor.isNull(INDEX_GOSSIP_MASTER_KEY_ID);
+            boolean gossipIsRevoked = cursor.getInt(INDEX_GOSSIP_KEY_IS_REVOKED) != 0;
+            boolean gossipIsExpired = cursor.getInt(INDEX_GOSSIP_KEY_IS_EXPIRED) != 0;
+            boolean isVerified = cursor.getInt(INDEX_GOSSIP_KEY_IS_VERIFIED) != 0;
+            if (gossipHasKey && !gossipIsRevoked && !gossipIsExpired) {
+                System.err.println("xx");
+                long masterKeyId = cursor.getLong(INDEX_GOSSIP_MASTER_KEY_ID);
+                return new AutocryptPeerStateResult(AutocryptState.DISCOURAGED_GOSSIP, masterKeyId, isVerified);
+            }
+
+            return new AutocryptPeerStateResult(AutocryptState.DISABLE, null, false);
+        } finally {
+            cursor.close();
+        }
+    }
+
+    public static class AutocryptPeerStateResult {
+        public final Long masterKeyId;
+        public final AutocryptState autocryptState;
+        public final boolean isVerified;
+
+        AutocryptPeerStateResult(AutocryptState autocryptState, Long masterKeyId, boolean isVerified) {
+            this.autocryptState = autocryptState;
+            this.masterKeyId = masterKeyId;
+            this.isVerified = isVerified;
+        }
+
+    }
+
+    public enum AutocryptState {
+        DISABLE, DISCOURAGED_OLD, DISCOURAGED_GOSSIP, AVAILABLE, MUTUAL
     }
 }

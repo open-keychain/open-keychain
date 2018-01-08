@@ -54,7 +54,7 @@ import timber.log.Timber;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 24;
+    private static final int DATABASE_VERSION = 25;
     private Context mContext;
 
     public interface Tables {
@@ -173,10 +173,12 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             "CREATE TABLE IF NOT EXISTS " + Tables.API_AUTOCRYPT_PEERS + " ("
                     + ApiAutocryptPeerColumns.PACKAGE_NAME + " TEXT NOT NULL, "
                     + ApiAutocryptPeerColumns.IDENTIFIER + " TEXT NOT NULL, "
-                    + ApiAutocryptPeerColumns.LAST_SEEN + " INTEGER NOT NULL, "
-                    + ApiAutocryptPeerColumns.LAST_SEEN_KEY + " INTEGER NOT NULL, "
-                    + ApiAutocryptPeerColumns.STATE + " INTEGER NOT NULL, "
+                    + ApiAutocryptPeerColumns.LAST_SEEN + " INTEGER, "
+                    + ApiAutocryptPeerColumns.LAST_SEEN_KEY + " INTEGER NULL, "
+                    + ApiAutocryptPeerColumns.IS_MUTUAL + " INTEGER NULL, "
                     + ApiAutocryptPeerColumns.MASTER_KEY_ID + " INTEGER NULL, "
+                    + ApiAutocryptPeerColumns.GOSSIP_MASTER_KEY_ID + " INTEGER NULL, "
+                    + ApiAutocryptPeerColumns.GOSSIP_LAST_SEEN_KEY + " INTEGER NULL, "
                     + "PRIMARY KEY(" + ApiAutocryptPeerColumns.PACKAGE_NAME + ", "
                         + ApiAutocryptPeerColumns.IDENTIFIER + "), "
                     + "FOREIGN KEY(" + ApiAutocryptPeerColumns.PACKAGE_NAME + ") REFERENCES "
@@ -406,6 +408,10 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                         + "PRIMARY KEY(master_key_id, signer_key_id), "
                         + "FOREIGN KEY(master_key_id) REFERENCES keyrings_public(master_key_id) ON DELETE CASCADE"
                         + ")");
+
+            case 24:
+                db.execSQL("DROP TABLE api_autocrypt_peers");
+                db.execSQL(CREATE_API_AUTOCRYPT_PEERS);
         }
     }
 

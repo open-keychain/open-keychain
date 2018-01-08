@@ -103,9 +103,13 @@ public class KeychainContract {
         String PACKAGE_NAME = "package_name";
         String IDENTIFIER = "identifier";
         String LAST_SEEN = "last_updated";
-        String LAST_SEEN_KEY = "last_seen_key";
-        String STATE = "state";
+
         String MASTER_KEY_ID = "master_key_id";
+        String LAST_SEEN_KEY = "last_seen_key";
+        String IS_MUTUAL = "is_mutual";
+
+        String GOSSIP_MASTER_KEY_ID = "gossip_master_key_id";
+        String GOSSIP_LAST_SEEN_KEY = "gossip_last_seen_key";
     }
 
     public static final String CONTENT_AUTHORITY = Constants.PROVIDER_AUTHORITY;
@@ -371,12 +375,12 @@ public class KeychainContract {
     public static class ApiAutocryptPeer implements ApiAutocryptPeerColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_AUTOCRYPT_PEERS).build();
-
-        public static final int RESET = 0;
-        public static final int GOSSIP = 1;
-        public static final int SELECTED = 2;
-        public static final int AVAILABLE = 3;
-        public static final int MUTUAL = 4;
+        public static final String KEY_IS_REVOKED = "key_is_revoked";
+        public static final String KEY_IS_EXPIRED = "key_is_expired";
+        public static final String KEY_IS_VERIFIED = "key_is_verified";
+        public static final String GOSSIP_KEY_IS_REVOKED = "gossip_key_is_revoked";
+        public static final String GOSSIP_KEY_IS_EXPIRED = "gossip_key_is_expired";
+        public static final String GOSSIP_KEY_IS_VERIFIED = "gossip_key_is_verified";
 
         public static Uri buildByKeyUri(Uri uri) {
             return CONTENT_URI.buildUpon().appendPath(PATH_BY_KEY_ID).appendPath(uri.getPathSegments().get(1)).build();

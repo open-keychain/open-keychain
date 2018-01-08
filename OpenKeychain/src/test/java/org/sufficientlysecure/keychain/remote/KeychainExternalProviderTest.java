@@ -207,13 +207,13 @@ public class KeychainExternalProviderTest {
         insertSecretKeyringFrom("/test-keys/testring.sec");
         insertPublicKeyringFrom("/test-keys/testring.pub");
 
-        autocryptPeerDao.updateToAvailableState("tid", new Date(), KEY_ID_PUBLIC);
+        autocryptPeerDao.updateKey(AUTOCRYPT_PEER, new Date(), KEY_ID_PUBLIC, false);
 
         Cursor cursor = contentResolver.query(
                 AutocryptStatus.CONTENT_URI, new String[] {
                         AutocryptStatus.ADDRESS, AutocryptStatus.UID_KEY_STATUS, AutocryptStatus.UID_ADDRESS,
-                        AutocryptStatus.AUTOCRYPT_KEY_STATUS, AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID,
-                        AutocryptStatus.AUTOCRYPT_PEER_STATE
+                        AutocryptStatus.AUTOCRYPT_PEER_STATE,
+                        AutocryptStatus.AUTOCRYPT_KEY_STATUS, AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID
                 },
                 null, new String [] { AUTOCRYPT_PEER }, null
             );
@@ -223,9 +223,36 @@ public class KeychainExternalProviderTest {
         assertEquals("tid", cursor.getString(0));
         assertTrue(cursor.isNull(1));
         assertEquals(null, cursor.getString(2));
-        assertEquals(KeychainExternalContract.KEY_STATUS_UNVERIFIED, cursor.getInt(3));
-        assertEquals(KEY_ID_PUBLIC, cursor.getLong(4));
-        assertEquals(AutocryptStatus.AUTOCRYPT_PEER_AVAILABLE, cursor.getInt(5));
+        assertEquals(AutocryptStatus.AUTOCRYPT_PEER_AVAILABLE, cursor.getInt(3));
+        assertEquals(KeychainExternalContract.KEY_STATUS_UNVERIFIED, cursor.getInt(4));
+        assertEquals(KEY_ID_PUBLIC, cursor.getLong(5));
+        assertFalse(cursor.moveToNext());
+    }
+
+    @Test
+    public void testAutocryptStatus_autocryptPeer_withMutualKey() throws Exception {
+        insertSecretKeyringFrom("/test-keys/testring.sec");
+        insertPublicKeyringFrom("/test-keys/testring.pub");
+
+        autocryptPeerDao.updateKey(AUTOCRYPT_PEER, new Date(), KEY_ID_PUBLIC, true);
+
+        Cursor cursor = contentResolver.query(
+                AutocryptStatus.CONTENT_URI, new String[] {
+                        AutocryptStatus.ADDRESS, AutocryptStatus.UID_KEY_STATUS, AutocryptStatus.UID_ADDRESS,
+                        AutocryptStatus.AUTOCRYPT_PEER_STATE,
+                        AutocryptStatus.AUTOCRYPT_KEY_STATUS, AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID
+                },
+                null, new String [] { AUTOCRYPT_PEER }, null
+        );
+
+        assertNotNull(cursor);
+        assertTrue(cursor.moveToFirst());
+        assertEquals("tid", cursor.getString(0));
+        assertTrue(cursor.isNull(1));
+        assertEquals(null, cursor.getString(2));
+        assertEquals(AutocryptStatus.AUTOCRYPT_PEER_MUTUAL, cursor.getInt(3));
+        assertEquals(KeychainExternalContract.KEY_STATUS_UNVERIFIED, cursor.getInt(4));
+        assertEquals(KEY_ID_PUBLIC, cursor.getLong(5));
         assertFalse(cursor.moveToNext());
     }
 
@@ -234,13 +261,13 @@ public class KeychainExternalProviderTest {
         insertSecretKeyringFrom("/test-keys/testring.sec");
         insertPublicKeyringFrom("/test-keys/testring.pub");
 
-        autocryptPeerDao.updateToAvailableState("tid", new Date(), KEY_ID_PUBLIC);
+        autocryptPeerDao.updateKey("tid", new Date(), KEY_ID_PUBLIC, false);
         certifyKey(KEY_ID_SECRET, KEY_ID_PUBLIC, USER_ID_1);
 
         Cursor cursor = contentResolver.query(
                 AutocryptStatus.CONTENT_URI, new String[] {
                         AutocryptStatus.ADDRESS, AutocryptStatus.UID_KEY_STATUS, AutocryptStatus.UID_ADDRESS,
-                        AutocryptStatus.AUTOCRYPT_KEY_STATUS, AutocryptStatus.AUTOCRYPT_PEER_STATE },
+                        AutocryptStatus.AUTOCRYPT_PEER_STATE, AutocryptStatus.AUTOCRYPT_KEY_STATUS },
                 null, new String [] { AUTOCRYPT_PEER }, null
         );
 
@@ -249,8 +276,8 @@ public class KeychainExternalProviderTest {
         assertEquals("tid", cursor.getString(0));
         assertEquals(KeychainExternalContract.KEY_STATUS_UNAVAILABLE, cursor.getInt(1));
         assertEquals(null, cursor.getString(2));
-        assertEquals(KeychainExternalContract.KEY_STATUS_VERIFIED, cursor.getInt(3));
-        assertEquals(AutocryptStatus.AUTOCRYPT_PEER_AVAILABLE, cursor.getInt(4));
+        assertEquals(AutocryptStatus.AUTOCRYPT_PEER_AVAILABLE, cursor.getInt(3));
+        assertEquals(KeychainExternalContract.KEY_STATUS_VERIFIED, cursor.getInt(4));
         assertFalse(cursor.moveToNext());
     }
 
@@ -259,7 +286,7 @@ public class KeychainExternalProviderTest {
         Cursor cursor = contentResolver.query(
                 AutocryptStatus.CONTENT_URI, new String[] {
                         AutocryptStatus.ADDRESS, AutocryptStatus.UID_KEY_STATUS, AutocryptStatus.UID_ADDRESS,
-                        AutocryptStatus.AUTOCRYPT_KEY_STATUS, AutocryptStatus.AUTOCRYPT_PEER_STATE },
+                        AutocryptStatus.AUTOCRYPT_PEER_STATE, AutocryptStatus.AUTOCRYPT_KEY_STATUS },
                 null, new String [] { AUTOCRYPT_PEER }, null
         );
 
@@ -268,8 +295,8 @@ public class KeychainExternalProviderTest {
         assertEquals("tid", cursor.getString(0));
         assertEquals(KeychainExternalContract.KEY_STATUS_UNAVAILABLE, cursor.getInt(1));
         assertEquals(null, cursor.getString(2));
-        assertEquals(KeychainExternalContract.KEY_STATUS_UNAVAILABLE, cursor.getInt(3));
-        assertEquals(AutocryptStatus.AUTOCRYPT_PEER_RESET, cursor.getInt(4));
+        assertEquals(AutocryptStatus.AUTOCRYPT_PEER_DISABLED, cursor.getInt(3));
+        assertTrue(cursor.isNull(4));
         assertFalse(cursor.moveToNext());
     }
 
@@ -278,13 +305,13 @@ public class KeychainExternalProviderTest {
         insertSecretKeyringFrom("/test-keys/testring.sec");
         insertPublicKeyringFrom("/test-keys/testring.pub");
 
-        autocryptPeerDao.updateToGossipState("tid", new Date(), KEY_ID_PUBLIC);
+        autocryptPeerDao.updateKeyGossip("tid", new Date(), KEY_ID_PUBLIC);
         autocryptPeerDao.delete("tid");
 
         Cursor cursor = contentResolver.query(
                 AutocryptStatus.CONTENT_URI, new String[] {
                         AutocryptStatus.ADDRESS, AutocryptStatus.UID_KEY_STATUS, AutocryptStatus.UID_ADDRESS,
-                        AutocryptStatus.AUTOCRYPT_KEY_STATUS, AutocryptStatus.AUTOCRYPT_PEER_STATE },
+                        AutocryptStatus.AUTOCRYPT_PEER_STATE, AutocryptStatus.AUTOCRYPT_KEY_STATUS },
                 null, new String [] { AUTOCRYPT_PEER }, null
         );
 
@@ -293,8 +320,8 @@ public class KeychainExternalProviderTest {
         assertEquals("tid", cursor.getString(0));
         assertEquals(KeychainExternalContract.KEY_STATUS_UNAVAILABLE, cursor.getInt(1));
         assertEquals(null, cursor.getString(2));
-        assertEquals(KeychainExternalContract.KEY_STATUS_UNAVAILABLE, cursor.getInt(3));
-        assertEquals(AutocryptStatus.AUTOCRYPT_PEER_RESET, cursor.getInt(4));
+        assertEquals(AutocryptStatus.AUTOCRYPT_PEER_DISABLED, cursor.getInt(3));
+        assertTrue(cursor.isNull(4));
         assertFalse(cursor.moveToNext());
     }
 
@@ -303,13 +330,13 @@ public class KeychainExternalProviderTest {
         insertSecretKeyringFrom("/test-keys/testring.sec");
         insertPublicKeyringFrom("/test-keys/testring.pub");
 
-        autocryptPeerDao.updateToGossipState("tid", new Date(), KEY_ID_PUBLIC);
+        autocryptPeerDao.updateKeyGossip(AUTOCRYPT_PEER, new Date(), KEY_ID_PUBLIC);
         certifyKey(KEY_ID_SECRET, KEY_ID_PUBLIC, USER_ID_1);
 
         Cursor cursor = contentResolver.query(
                 AutocryptStatus.CONTENT_URI, new String[] {
                         AutocryptStatus.ADDRESS, AutocryptStatus.UID_KEY_STATUS, AutocryptStatus.UID_ADDRESS,
-                        AutocryptStatus.AUTOCRYPT_KEY_STATUS, AutocryptStatus.AUTOCRYPT_PEER_STATE },
+                        AutocryptStatus.AUTOCRYPT_PEER_STATE, AutocryptStatus.AUTOCRYPT_KEY_STATUS },
                 null, new String [] { AUTOCRYPT_PEER }, null
         );
 
@@ -318,11 +345,12 @@ public class KeychainExternalProviderTest {
         assertEquals("tid", cursor.getString(0));
         assertEquals(KeychainExternalContract.KEY_STATUS_UNAVAILABLE, cursor.getInt(1));
         assertEquals(null, cursor.getString(2));
-        assertEquals(KeychainExternalContract.KEY_STATUS_VERIFIED, cursor.getInt(3));
-        assertEquals(AutocryptStatus.AUTOCRYPT_PEER_GOSSIP, cursor.getInt(4));
+        assertEquals(AutocryptStatus.AUTOCRYPT_PEER_GOSSIP, cursor.getInt(3));
+        assertEquals(KeychainExternalContract.KEY_STATUS_VERIFIED, cursor.getInt(4));
         assertFalse(cursor.moveToNext());
     }
 
+/*
     @Test
     public void testAutocryptStatus_stateSelected() throws Exception {
         insertSecretKeyringFrom("/test-keys/testring.sec");
@@ -334,7 +362,7 @@ public class KeychainExternalProviderTest {
         Cursor cursor = contentResolver.query(
                 AutocryptStatus.CONTENT_URI, new String[] {
                         AutocryptStatus.ADDRESS, AutocryptStatus.UID_KEY_STATUS, AutocryptStatus.UID_ADDRESS,
-                        AutocryptStatus.AUTOCRYPT_KEY_STATUS, AutocryptStatus.AUTOCRYPT_PEER_STATE },
+                        AutocryptStatus.AUTOCRYPT_PEER_STATE, AutocryptStatus.AUTOCRYPT_KEY_STATUS },
                 null, new String [] { AUTOCRYPT_PEER }, null
         );
 
@@ -343,10 +371,11 @@ public class KeychainExternalProviderTest {
         assertEquals("tid", cursor.getString(0));
         assertEquals(KeychainExternalContract.KEY_STATUS_UNAVAILABLE, cursor.getInt(1));
         assertEquals(null, cursor.getString(2));
-        assertEquals(KeychainExternalContract.KEY_STATUS_VERIFIED, cursor.getInt(3));
-        assertEquals(AutocryptStatus.AUTOCRYPT_PEER_SELECTED, cursor.getInt(4));
+        assertEquals(AutocryptStatus.AUTOCRYPT_PEER_SELECTED, cursor.getInt(3));
+        assertEquals(KeychainExternalContract.KEY_STATUS_VERIFIED, cursor.getInt(4));
         assertFalse(cursor.moveToNext());
     }
+*/
 
     @Test
     public void testAutocryptStatus_withConfirmedKey() throws Exception {
@@ -367,7 +396,7 @@ public class KeychainExternalProviderTest {
         assertEquals(MAIL_ADDRESS_1, cursor.getString(0));
         assertEquals(KeychainExternalContract.KEY_STATUS_VERIFIED, cursor.getInt(1));
         assertEquals(USER_ID_1, cursor.getString(2));
-        assertEquals(AutocryptStatus.AUTOCRYPT_PEER_RESET, cursor.getInt(3));
+        assertEquals(AutocryptStatus.AUTOCRYPT_PEER_DISABLED, cursor.getInt(3));
         assertFalse(cursor.moveToNext());
     }
 

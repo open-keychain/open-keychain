@@ -42,7 +42,6 @@ import android.support.annotation.Nullable;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.openintents.openpgp.AutocryptPeerUpdate;
-import org.openintents.openpgp.AutocryptPeerUpdate.PreferEncrypt;
 import org.openintents.openpgp.IOpenPgpService;
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpError;
@@ -65,17 +64,14 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem;
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
 import org.sufficientlysecure.keychain.provider.OverriddenWarningsRepository;
-import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.AutocryptState;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResult;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResultStatus;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
@@ -203,20 +199,8 @@ public class OpenPgpService extends Service {
     private Intent encryptAndSignImpl(Intent data, InputStream inputStream,
             OutputStream outputStream, boolean sign, boolean isQueryAutocryptStatus) {
         try {
-            boolean asciiArmor = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
-            String originalFilename = data.getStringExtra(OpenPgpApi.EXTRA_ORIGINAL_FILENAME);
-            if (originalFilename == null) {
-                originalFilename = "";
-            }
-
             PgpSignEncryptData.Builder pgpData = PgpSignEncryptData.builder()
-                    .setEnableAsciiArmorOutput(asciiArmor)
                     .setVersionHeader(null);
-
-            boolean enableCompression = data.getBooleanExtra(OpenPgpApi.EXTRA_ENABLE_COMPRESSION, true);
-            if (!enableCompression) {
-                pgpData.setCompressionAlgorithm(OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED);
-            }
 
             if (sign) {
                 Intent signKeyIdIntent = getSignKeyMasterId(data);
@@ -240,13 +224,25 @@ public class OpenPgpService extends Service {
             KeyIdResult keyIdResult = mKeyIdExtractor.returnKeyIdsFromIntent(data, false,
                     mApiPermissionHelper.getCurrentCallingPackage());
 
-            boolean isOpportunistic = data.getBooleanExtra(OpenPgpApi.EXTRA_OPPORTUNISTIC_ENCRYPTION, false);
             KeyIdResultStatus keyIdResultStatus = keyIdResult.getStatus();
             if (isQueryAutocryptStatus) {
                 return getAutocryptStatusResult(keyIdResult);
             }
 
+            boolean asciiArmor = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
+            pgpData.setEnableAsciiArmorOutput(asciiArmor);
+
+            boolean enableCompression = data.getBooleanExtra(OpenPgpApi.EXTRA_ENABLE_COMPRESSION, true);
+            pgpData.setCompressionAlgorithm(enableCompression ? OpenKeychainCompressionAlgorithmTags.USE_DEFAULT :
+                    OpenKeychainCompressionAlgorithmTags.UNCOMPRESSED);
+
+            String originalFilename = data.getStringExtra(OpenPgpApi.EXTRA_ORIGINAL_FILENAME);
+            if (originalFilename == null) {
+                originalFilename = "";
+            }
+
             if (keyIdResult.hasKeySelectionPendingIntent()) {
+                boolean isOpportunistic = data.getBooleanExtra(OpenPgpApi.EXTRA_OPPORTUNISTIC_ENCRYPTION, false);
                 if ((keyIdResultStatus == KeyIdResultStatus.MISSING || keyIdResultStatus == KeyIdResultStatus.NO_KEYS ||
                         keyIdResultStatus == KeyIdResultStatus.NO_KEYS_ERROR) && isOpportunistic) {
                     return createErrorResultIntent(OpenPgpError.OPPORTUNISTIC_MISSING_KEYS,
@@ -309,8 +305,8 @@ public class OpenPgpService extends Service {
         result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
         result.putExtra(OpenPgpApi.RESULT_KEYS_CONFIRMED, keyIdResult.isAllKeysConfirmed());
 
-        AutocryptState combinedAutocryptState = keyIdResult.getCombinedAutocryptState();
-        if (combinedAutocryptState == null) {
+        int combinedAutocryptState = keyIdResult.getAutocryptRecommendation();
+        if (combinedAutocryptState == AutocryptStatus.AUTOCRYPT_PEER_DISABLED) {
             switch (keyIdResult.getStatus()) {
                 case NO_KEYS:
                 case NO_KEYS_ERROR:
@@ -334,18 +330,17 @@ public class OpenPgpService extends Service {
         }
 
         switch (combinedAutocryptState) {
-            case EXTERNAL:
-            case SELECTED:
-            case GOSSIP:
-            case RESET: {
+            case AutocryptStatus.AUTOCRYPT_PEER_DISCOURAGED_OLD:
+            case AutocryptStatus.AUTOCRYPT_PEER_GOSSIP: {
                 result.putExtra(OpenPgpApi.RESULT_AUTOCRYPT_STATUS, OpenPgpApi.AUTOCRYPT_STATUS_DISCOURAGE);
                 break;
             }
-            case AVAILABLE: {
+            case AutocryptStatus.AUTOCRYPT_PEER_AVAILABLE_EXTERNAL:
+            case AutocryptStatus.AUTOCRYPT_PEER_AVAILABLE: {
                 result.putExtra(OpenPgpApi.RESULT_AUTOCRYPT_STATUS, OpenPgpApi.AUTOCRYPT_STATUS_AVAILABLE);
                 break;
             }
-            case MUTUAL: {
+            case AutocryptStatus.AUTOCRYPT_PEER_MUTUAL: {
                 result.putExtra(OpenPgpApi.RESULT_AUTOCRYPT_STATUS, OpenPgpApi.AUTOCRYPT_STATUS_MUTUAL);
                 break;
             }
@@ -387,9 +382,7 @@ public class OpenPgpService extends Service {
             byte[] detachedSignature = data.getByteArrayExtra(OpenPgpApi.EXTRA_DETACHED_SIGNATURE);
             String senderAddress = data.getStringExtra(OpenPgpApi.EXTRA_SENDER_ADDRESS);
 
-            AutocryptPeerDataAccessObject autocryptPeerentityDao = new AutocryptPeerDataAccessObject(
-                    getBaseContext(), mApiPermissionHelper.getCurrentCallingPackage());
-            updateAutocryptPeerStateFromIntent(data, autocryptPeerentityDao, false);
+            updateAutocryptPeerImpl(data);
 
             PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(this, mKeyRepository, progressable);
 
@@ -474,63 +467,6 @@ public class OpenPgpService extends Service {
         String packageName = mApiPermissionHelper.getCurrentCallingPackage();
         result.putExtra(OpenPgpApi.RESULT_INSECURE_DETAIL_INTENT,
                 mApiPendingIntentFactory.createSecurityProblemIntent(packageName, securityProblem, supportOverride));
-    }
-
-    private String updateAutocryptPeerStateFromIntent(Intent data, AutocryptPeerDataAccessObject autocryptPeerDao,
-            boolean isGossip)
-            throws PgpGeneralException, IOException {
-        String autocryptPeerId = data.getStringExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_ID);
-        AutocryptPeerUpdate autocryptPeerUpdate = data.getParcelableExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_UPDATE);
-
-        return updateAutocryptPeerState(autocryptPeerId, autocryptPeerUpdate, autocryptPeerDao, isGossip);
-    }
-
-    private String updateAutocryptPeerState(String autocryptPeerId, AutocryptPeerUpdate autocryptPeerUpdate,
-            AutocryptPeerDataAccessObject autocryptPeerDao, boolean isGossip)
-            throws PgpGeneralException, IOException {
-        if (autocryptPeerUpdate == null) {
-            return null;
-        }
-
-        Long newMasterKeyId;
-        if (autocryptPeerUpdate.hasKeyData()) {
-            UncachedKeyRing uncachedKeyRing = UncachedKeyRing.decodeFromData(autocryptPeerUpdate.getKeyData());
-            if (uncachedKeyRing.isSecret()) {
-                Timber.e("Found secret key in autocrypt id! - Ignoring");
-                return null;
-            }
-            // this will merge if the key already exists - no worries!
-            KeyWritableRepository.create(this).savePublicKeyRing(uncachedKeyRing);
-            newMasterKeyId = uncachedKeyRing.getMasterKeyId();
-        } else {
-            newMasterKeyId = null;
-        }
-
-        Date lastSeen = autocryptPeerDao.getLastSeen(autocryptPeerId);
-        Date effectiveDate = autocryptPeerUpdate.getEffectiveDate();
-        if (newMasterKeyId == null) {
-            if (!isGossip && effectiveDate.after(lastSeen)) {
-                autocryptPeerDao.updateToResetState(autocryptPeerId, effectiveDate);
-            }
-            return autocryptPeerId;
-        }
-
-        Date lastSeenKey = autocryptPeerDao.getLastSeenKey(autocryptPeerId);
-        if (lastSeenKey != null && effectiveDate.before(lastSeenKey)) {
-            return autocryptPeerId;
-        }
-
-        if (lastSeen == null || effectiveDate.after(lastSeen)) {
-            if (isGossip) {
-                autocryptPeerDao.updateToGossipState(autocryptPeerId, effectiveDate, newMasterKeyId);
-            } else if (autocryptPeerUpdate.getPreferEncrypt() == PreferEncrypt.MUTUAL) {
-                autocryptPeerDao.updateToMutualState(autocryptPeerId, effectiveDate, newMasterKeyId);
-            } else {
-                autocryptPeerDao.updateToAvailableState(autocryptPeerId, effectiveDate, newMasterKeyId);
-            }
-        }
-
-        return autocryptPeerId;
     }
 
     private void processDecryptionResultForResultIntent(int targetApiVersion, Intent result,
@@ -627,7 +563,7 @@ public class OpenPgpService extends Service {
     }
 
     private OpenPgpSignatureResult processAutocryptPeerInfoToSignatureResult(OpenPgpSignatureResult signatureResult,
-            String autocryptPeerentity) {
+            String autocryptPeerId) {
         boolean hasValidSignature =
                 signatureResult.getResult() == OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED ||
                 signatureResult.getResult() == OpenPgpSignatureResult.RESULT_VALID_KEY_UNCONFIRMED;
@@ -637,11 +573,17 @@ public class OpenPgpService extends Service {
 
         AutocryptPeerDataAccessObject autocryptPeerentityDao = new AutocryptPeerDataAccessObject(getBaseContext(),
                 mApiPermissionHelper.getCurrentCallingPackage());
-        Long autocryptPeerMasterKeyId = autocryptPeerentityDao.getMasterKeyIdForAutocryptPeer(autocryptPeerentity);
+        Long autocryptPeerMasterKeyId = autocryptPeerentityDao.getMasterKeyIdForAutocryptPeer(autocryptPeerId);
 
         long masterKeyId = signatureResult.getKeyId();
         if (autocryptPeerMasterKeyId == null) {
-            autocryptPeerentityDao.updateToGossipState(autocryptPeerentity, new Date(), masterKeyId);
+            // TODO
+//            Date now = new Date();
+//            Date effectiveTime = signatureResult.getSignatureTimestamp();
+//            if (effectiveTime.after(now)) {
+//                effectiveTime = now;
+//            }
+//            autocryptPeerentityDao.updateKeyGossip(autocryptPeerId, effectiveTime, masterKeyId);
             return signatureResult.withAutocryptPeerResult(AutocryptPeerResult.NEW);
         } else  if (masterKeyId == autocryptPeerMasterKeyId) {
             return signatureResult.withAutocryptPeerResult(AutocryptPeerResult.OK);
@@ -811,22 +753,25 @@ public class OpenPgpService extends Service {
 
     private Intent updateAutocryptPeerImpl(Intent data) {
         try {
-            AutocryptPeerDataAccessObject autocryptPeerentityDao = new AutocryptPeerDataAccessObject(getBaseContext(),
+            AutocryptPeerDataAccessObject autocryptPeerDao = new AutocryptPeerDataAccessObject(getBaseContext(),
                     mApiPermissionHelper.getCurrentCallingPackage());
+            AutocryptInteractor autocryptInteractor = AutocryptInteractor.getInstance(getBaseContext(), autocryptPeerDao);
 
             if (data.hasExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_ID) &&
                     data.hasExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_UPDATE)) {
-                updateAutocryptPeerStateFromIntent(data, autocryptPeerentityDao, false);
-            } else if (data.hasExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_GOSSIP_UPDATES)) {
+                String autocryptPeerId = data.getStringExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_ID);
+                AutocryptPeerUpdate autocryptPeerUpdate = data.getParcelableExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_UPDATE);
+
+                autocryptInteractor.updateAutocryptPeerState(autocryptPeerId, autocryptPeerUpdate);
+            }
+
+            if (data.hasExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_GOSSIP_UPDATES)) {
                 Bundle updates = data.getBundleExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_GOSSIP_UPDATES);
                 for (String address : updates.keySet()) {
-                    Log.d(Constants.TAG, "Updating gossip state: " + address);
+                    Timber.d(Constants.TAG, "Updating gossip state: " + address);
                     AutocryptPeerUpdate update = updates.getParcelable(address);
-                    updateAutocryptPeerState(address, update, autocryptPeerentityDao, true);
+                    autocryptInteractor.updateAutocryptPeerGossipState(address, update);
                 }
-            } else {
-                throw new IllegalArgumentException("need to specify both autocrypt_peer_id and" +
-                        "autocrypt_peer_update, or autocrypt_peer_gossip_updates!");
             }
 
             Intent result = new Intent();
