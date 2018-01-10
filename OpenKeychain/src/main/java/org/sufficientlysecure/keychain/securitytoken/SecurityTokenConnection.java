@@ -47,7 +47,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TransportType;
-import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
@@ -832,12 +831,13 @@ public class SecurityTokenConnection {
 
                 boolean isLastCommand = (i == totalCommands - 1);
                 if (!isLastCommand && !lastResponse.isSuccess()) {
-                    throw new UsbTransportException("Failed to chain apdu (last SW: " + lastResponse.getSw() + ")");
+                    throw new IOException("Failed to chain apdu " +
+                            "(" + i + "/" + (totalCommands-1) + ", last SW: " + lastResponse.getSw() + ")");
                 }
             }
         }
         if (lastResponse == null) {
-            throw new UsbTransportException("Can't transmit command");
+            throw new IOException("Can't transmit command");
         }
 
         ByteArrayOutputStream result = new ByteArrayOutputStream();
