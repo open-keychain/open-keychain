@@ -830,8 +830,8 @@ public class SecurityTokenConnection {
                 CommandApdu chainedApdu = chainedApdus.get(i);
                 lastResponse = mTransport.transceive(chainedApdu);
 
-                boolean isLastCommand = i < totalCommands - 1;
-                if (isLastCommand && !lastResponse.isSuccess()) {
+                boolean isLastCommand = (i == totalCommands - 1);
+                if (!isLastCommand && !lastResponse.isSuccess()) {
                     throw new UsbTransportException("Failed to chain apdu (last SW: " + lastResponse.getSw() + ")");
                 }
             }
