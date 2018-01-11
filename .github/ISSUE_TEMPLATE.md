@@ -27,6 +27,7 @@
 ## Your Environment
 <!--- Include relevant details about the environment you experienced the bug in -->
 * Android Version: 
+* Device Model: 
 * OpenKeychain Version: 
 * From Google Play or F-Droid?: 
  
