@@ -144,7 +144,7 @@ public class SecurityTokenChangePinOperationActivity extends BaseSecurityTokenAc
         Passphrase adminPin = new Passphrase(changePinInput.getAdminPin());
         ModifyPinTokenOp.create(stConnection, adminPin).modifyPw1Pin(changePinInput.getNewPin().getBytes());
 
-        resultTokenInfo = stConnection.getTokenInfo();
+        resultTokenInfo = stConnection.readTokenInfo();
     }
 
     @Override

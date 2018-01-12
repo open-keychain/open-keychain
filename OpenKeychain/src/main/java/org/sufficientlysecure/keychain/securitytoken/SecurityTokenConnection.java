@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.securitytoken;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.List;
 
 import android.content.Context;
@@ -153,7 +152,7 @@ public class SecurityTokenConnection {
     }
 
     public void refreshConnectionCapabilities() throws IOException {
-        byte[] rawOpenPgpCapabilities = getData(0x00, 0x6E);
+        byte[] rawOpenPgpCapabilities = readData(0x00, 0x6E);
 
         OpenPgpCapabilities openPgpCapabilities = OpenPgpCapabilities.fromBytes(rawOpenPgpCapabilities);
         setConnectionCapabilities(openPgpCapabilities);
@@ -360,7 +359,7 @@ public class SecurityTokenConnection {
 
     // endregion
 
-    private byte[] getData(int p1, int p2) throws IOException {
+    private byte[] readData(int p1, int p2) throws IOException {
         ResponseApdu response = communicate(commandFactory.createGetDataCommand(p1, p2));
         if (!response.isSuccess()) {
             throw new CardException("Failed to get pw status bytes", response.getSw());
@@ -369,32 +368,31 @@ public class SecurityTokenConnection {
     }
 
 
-    public String getUrl() throws IOException {
-        byte[] data = getData(0x5F, 0x50);
+    private String readUrl() throws IOException {
+        byte[] data = readData(0x5F, 0x50);
         return new String(data).trim();
     }
 
-    public byte[] getUserId() throws IOException {
-        return getData(0x00, 0x65);
+    private byte[] readUserId() throws IOException {
+        return readData(0x00, 0x65);
     }
 
-    public SecurityTokenInfo getTokenInfo() throws IOException {
+    public SecurityTokenInfo readTokenInfo() throws IOException {
         byte[][] fingerprints = new byte[3][];
         fingerprints[0] = openPgpCapabilities.getFingerprintSign();
         fingerprints[1] = openPgpCapabilities.getFingerprintEncrypt();
         fingerprints[2] = openPgpCapabilities.getFingerprintAuth();
 
         byte[] aid = openPgpCapabilities.getAid();
-        String userId = parseHolderName(getUserId());
-        String url = getUrl();
+        String userId = parseHolderName(readUserId());
+        String url = readUrl();
         byte[] pwInfo = openPgpCapabilities.getPwStatusBytes();
         boolean hasLifeCycleManagement = cardCapabilities.hasLifeCycleManagement();
 
         TransportType transportType = transport.getTransportType();
 
-        return SecurityTokenInfo
-                .create(transportType, tokenType, fingerprints, aid, userId, url, pwInfo[4], pwInfo[6],
-                        hasLifeCycleManagement);
+        return SecurityTokenInfo.create(transportType, tokenType, fingerprints, aid, userId, url, pwInfo[4], pwInfo[6],
+                hasLifeCycleManagement);
     }
 
 

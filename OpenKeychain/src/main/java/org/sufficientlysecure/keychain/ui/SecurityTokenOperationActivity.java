@@ -39,7 +39,6 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.securitytoken.KeyType;
 import org.sufficientlysecure.keychain.securitytoken.operations.ModifyPinTokenOp;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
@@ -305,7 +304,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
             }
             case SECURITY_TOKEN_RESET_CARD: {
                 ResetAndWipeTokenOp.create(stConnection).resetAndWipeToken();
-                mResultTokenInfo = stConnection.getTokenInfo();
+                mResultTokenInfo = stConnection.readTokenInfo();
 
                 break;
             }

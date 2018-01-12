@@ -1,7 +1,6 @@
 package org.sufficientlysecure.keychain.securitytoken;
 
 
-import java.io.IOException;
 import java.util.LinkedList;
 
 import org.bouncycastle.util.encoders.Hex;
@@ -13,10 +12,6 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLog;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TransportType;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -106,7 +101,7 @@ public class SecurityTokenConnectionTest {
         expect("00ca5f5000", "9000");
 
 
-        securityTokenConnection.getTokenInfo();
+        securityTokenConnection.readTokenInfo();
 
         verifyDialog();
     }

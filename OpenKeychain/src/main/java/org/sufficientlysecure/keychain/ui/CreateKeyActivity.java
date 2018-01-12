@@ -140,7 +140,7 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
             return;
         }
 
-        tokenInfo = stConnection.getTokenInfo();
+        tokenInfo = stConnection.readTokenInfo();
     }
 
     @Override

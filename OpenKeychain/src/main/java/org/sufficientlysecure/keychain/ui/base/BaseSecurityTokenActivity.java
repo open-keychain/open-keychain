@@ -82,7 +82,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
      * Override to implement SecurityToken operations (background thread)
      */
     protected void doSecurityTokenInBackground(SecurityTokenConnection stConnection) throws IOException {
-        tokenInfo = stConnection.getTokenInfo();
+        tokenInfo = stConnection.readTokenInfo();
         Log.d(Constants.TAG, "Security Token: " + tokenInfo);
     }
 
@@ -260,7 +260,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
 
                 SecurityTokenInfo tokeninfo = null;
                 try {
-                    tokeninfo = stConnection.getTokenInfo();
+                    tokeninfo = stConnection.readTokenInfo();
                 } catch (IOException e2) {
                     // don't care
                 }
@@ -278,7 +278,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
                 case 0x6982: {
                     SecurityTokenInfo tokeninfo = null;
                     try {
-                        tokeninfo = stConnection.getTokenInfo();
+                        tokeninfo = stConnection.readTokenInfo();
                     } catch (IOException e2) {
                         // don't care
                     }
