@@ -1,17 +1,22 @@
-package org.sufficientlysecure.keychain.securitytoken;
+package org.sufficientlysecure.keychain.securitytoken.operations;
 
 
 import java.io.IOException;
 
+import org.sufficientlysecure.keychain.securitytoken.CardException;
+import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
+import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 
-public class ResetAndWipeUseCase {
+
+public class ResetAndWipeTokenOp {
     private final SecurityTokenConnection connection;
 
-    public static ResetAndWipeUseCase create(SecurityTokenConnection connection) {
-        return new ResetAndWipeUseCase(connection);
+    public static ResetAndWipeTokenOp create(SecurityTokenConnection connection) {
+        return new ResetAndWipeTokenOp(connection);
     }
 
-    private ResetAndWipeUseCase(SecurityTokenConnection connection) {
+    private ResetAndWipeTokenOp(SecurityTokenConnection connection) {
         this.connection = connection;
     }
 

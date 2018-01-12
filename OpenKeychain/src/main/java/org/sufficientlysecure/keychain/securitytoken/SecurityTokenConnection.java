@@ -152,7 +152,7 @@ public class SecurityTokenConnection {
         tokenType = TokenType.UNKNOWN;
     }
 
-    void refreshConnectionCapabilities() throws IOException {
+    public void refreshConnectionCapabilities() throws IOException {
         byte[] rawOpenPgpCapabilities = getData(0x00, 0x6E);
 
         OpenPgpCapabilities openPgpCapabilities = new OpenPgpCapabilities(rawOpenPgpCapabilities);
@@ -177,7 +177,7 @@ public class SecurityTokenConnection {
      * @param commandApdu short or extended APDU to transceive
      * @return response from the card
      */
-    ResponseApdu communicate(CommandApdu commandApdu) throws IOException {
+    public ResponseApdu communicate(CommandApdu commandApdu) throws IOException {
         commandApdu = smEncryptIfAvailable(commandApdu);
 
         ResponseApdu lastResponse;
@@ -296,7 +296,7 @@ public class SecurityTokenConnection {
 
     // region pin management
 
-    void verifyPinForSignature() throws IOException {
+    public void verifyPinForSignature() throws IOException {
         if (isPw1ValidatedForSignature) {
             return;
         }
@@ -315,7 +315,7 @@ public class SecurityTokenConnection {
         isPw1ValidatedForSignature = true;
     }
 
-    void verifyPinForOther() throws IOException {
+    public void verifyPinForOther() throws IOException {
         if (isPw1ValidatedForOther) {
             return;
         }
@@ -334,7 +334,7 @@ public class SecurityTokenConnection {
         isPw1ValidatedForOther = true;
     }
 
-    void verifyAdminPin(Passphrase adminPin) throws IOException {
+    public void verifyAdminPin(Passphrase adminPin) throws IOException {
         if (isPw3Validated) {
             return;
         }
@@ -348,13 +348,13 @@ public class SecurityTokenConnection {
         isPw3Validated = true;
     }
 
-    void invalidateSingleUsePw1() {
+    public void invalidateSingleUsePw1() {
         if (!openPgpCapabilities.isPw1ValidForMultipleSignatures()) {
             isPw1ValidatedForSignature = false;
         }
     }
 
-    void invalidatePw3() {
+    public void invalidatePw3() {
         isPw3Validated = false;
     }
 
@@ -415,15 +415,15 @@ public class SecurityTokenConnection {
         return tokenType;
     }
 
-    OpenPgpCapabilities getOpenPgpCapabilities() {
+    public OpenPgpCapabilities getOpenPgpCapabilities() {
         return openPgpCapabilities;
     }
 
-    OpenPgpCommandApduFactory getCommandFactory() {
+    public OpenPgpCommandApduFactory getCommandFactory() {
         return commandFactory;
     }
 
-    byte[] getPwStatusBytes() {
+    public byte[] getPwStatusBytes() {
         return openPgpCapabilities.getPwStatusBytes();
     }
 

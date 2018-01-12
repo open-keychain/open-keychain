@@ -1,23 +1,27 @@
-package org.sufficientlysecure.keychain.securitytoken;
+package org.sufficientlysecure.keychain.securitytoken.operations;
 
 
 import java.io.IOException;
 
+import org.sufficientlysecure.keychain.securitytoken.CardException;
+import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
+import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 
-public class ModifyPinUseCase {
+public class ModifyPinTokenOp {
     private static final int MAX_PW3_LENGTH_INDEX = 3;
     private static final int MIN_PW3_LENGTH = 8;
 
     private final SecurityTokenConnection connection;
     private final Passphrase adminPin;
 
-    public static ModifyPinUseCase create(SecurityTokenConnection connection, Passphrase adminPin) {
-        return new ModifyPinUseCase(connection, adminPin);
+    public static ModifyPinTokenOp create(SecurityTokenConnection connection, Passphrase adminPin) {
+        return new ModifyPinTokenOp(connection, adminPin);
     }
 
-    private ModifyPinUseCase(SecurityTokenConnection connection,
+    private ModifyPinTokenOp(SecurityTokenConnection connection,
             Passphrase adminPin) {
         this.connection = connection;
         this.adminPin = adminPin;

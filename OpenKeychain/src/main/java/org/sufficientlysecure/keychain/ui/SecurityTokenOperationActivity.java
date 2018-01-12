@@ -40,13 +40,13 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.securitytoken.KeyType;
-import org.sufficientlysecure.keychain.securitytoken.ModifyPinUseCase;
+import org.sufficientlysecure.keychain.securitytoken.operations.ModifyPinTokenOp;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
-import org.sufficientlysecure.keychain.securitytoken.PsoDecryptUseCase;
-import org.sufficientlysecure.keychain.securitytoken.SecurityTokenPsoSignUseCase;
-import org.sufficientlysecure.keychain.securitytoken.SecurityTokenChangeKeyUseCase;
-import org.sufficientlysecure.keychain.securitytoken.ResetAndWipeUseCase;
+import org.sufficientlysecure.keychain.securitytoken.operations.PsoDecryptTokenOp;
+import org.sufficientlysecure.keychain.securitytoken.operations.SecurityTokenPsoSignTokenOp;
+import org.sufficientlysecure.keychain.securitytoken.operations.SecurityTokenChangeKeyTokenOp;
+import org.sufficientlysecure.keychain.securitytoken.operations.ResetAndWipeTokenOp;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -210,10 +210,10 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     throw new IOException("Couldn't find subkey for key to token operation.");
                 }
 
-                PsoDecryptUseCase psoDecryptUseCase = PsoDecryptUseCase.create(stConnection);
+                PsoDecryptTokenOp psoDecryptTokenOp = PsoDecryptTokenOp.create(stConnection);
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] encryptedSessionKey = mRequiredInput.mInputData[i];
-                    byte[] decryptedSessionKey = psoDecryptUseCase
+                    byte[] decryptedSessionKey = psoDecryptTokenOp
                             .verifyAndDecryptSessionKey(encryptedSessionKey, publicKeyRing.getPublicKey(tokenKeyId));
                     mInputParcel = mInputParcel.withCryptoData(encryptedSessionKey, decryptedSessionKey);
                 }
@@ -229,7 +229,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
 
                 mInputParcel = mInputParcel.withSignatureTime(mRequiredInput.mSignatureTime);
 
-                SecurityTokenPsoSignUseCase psoSignUseCase = SecurityTokenPsoSignUseCase.create(stConnection);
+                SecurityTokenPsoSignTokenOp psoSignUseCase = SecurityTokenPsoSignTokenOp.create(stConnection);
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] hash = mRequiredInput.mInputData[i];
                     int algo = mRequiredInput.mSignAlgos[i];
@@ -246,7 +246,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     throw new IOException(getString(R.string.error_wrong_security_token));
                 }
 
-                SecurityTokenPsoSignUseCase psoSignUseCase = SecurityTokenPsoSignUseCase.create(stConnection);
+                SecurityTokenPsoSignTokenOp psoSignUseCase = SecurityTokenPsoSignTokenOp.create(stConnection);
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] hash = mRequiredInput.mInputData[i];
                     int algo = mRequiredInput.mSignAlgos[i];
@@ -290,21 +290,21 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                         throw new IOException("Unable to get cached passphrase!");
                     }
 
-                    SecurityTokenChangeKeyUseCase putKeyUseCase = SecurityTokenChangeKeyUseCase.create(stConnection);
+                    SecurityTokenChangeKeyTokenOp putKeyUseCase = SecurityTokenChangeKeyTokenOp.create(stConnection);
                     putKeyUseCase.changeKey(key, passphrase, adminPin);
 
                     // TODO: Is this really used anywhere?
                     mInputParcel = mInputParcel.withCryptoData(subkeyBytes, tokenSerialNumber);
                 }
 
-                ModifyPinUseCase.create(stConnection, adminPin).modifyPw1andPw3Pins(newPin, newAdminPin);
+                ModifyPinTokenOp.create(stConnection, adminPin).modifyPw1andPw3Pins(newPin, newAdminPin);
 
                 SecurityTokenConnection.clearCachedConnections();
 
                 break;
             }
             case SECURITY_TOKEN_RESET_CARD: {
-                ResetAndWipeUseCase.create(stConnection).resetAndWipeToken();
+                ResetAndWipeTokenOp.create(stConnection).resetAndWipeToken();
                 mResultTokenInfo = stConnection.getTokenInfo();
 
                 break;

@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.securitytoken;
+package org.sufficientlysecure.keychain.securitytoken.operations;
 
 
 import java.io.IOException;
@@ -12,19 +12,29 @@ import android.support.annotation.VisibleForTesting;
 
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
+import org.sufficientlysecure.keychain.securitytoken.CardException;
+import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
+import org.sufficientlysecure.keychain.securitytoken.ECKeyFormat;
+import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
+import org.sufficientlysecure.keychain.securitytoken.KeyType;
+import org.sufficientlysecure.keychain.securitytoken.OpenPgpCapabilities;
+import org.sufficientlysecure.keychain.securitytoken.RSAKeyFormat;
+import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 
-public class SecurityTokenChangeKeyUseCase {
+public class SecurityTokenChangeKeyTokenOp {
     private static final byte[] BLANK_FINGERPRINT = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
     private final SecurityTokenConnection connection;
 
-    public static SecurityTokenChangeKeyUseCase create(SecurityTokenConnection stConnection) {
-        return new SecurityTokenChangeKeyUseCase(stConnection);
+    public static SecurityTokenChangeKeyTokenOp create(SecurityTokenConnection stConnection) {
+        return new SecurityTokenChangeKeyTokenOp(stConnection);
     }
 
-    private SecurityTokenChangeKeyUseCase(SecurityTokenConnection connection) {
+    private SecurityTokenChangeKeyTokenOp(SecurityTokenConnection connection) {
         this.connection = connection;
     }
 

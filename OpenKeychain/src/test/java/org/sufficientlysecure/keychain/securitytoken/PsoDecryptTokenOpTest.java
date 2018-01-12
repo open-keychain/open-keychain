@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
+import org.sufficientlysecure.keychain.securitytoken.operations.PsoDecryptTokenOp;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -14,7 +15,7 @@ import static org.mockito.Mockito.when;
 
 
 @RunWith(KeychainTestRunner.class)
-public class PsoDecryptUseCaseTest {
+public class PsoDecryptTokenOpTest {
     private static final byte[] RSA_ENC_SESSIONKEY_MPI = Hex.decode(
             "07ff7b9ff36f70da1fe7a6b59168c24a7e5b48a938c4f970de46524a06ebf4a9175a9737cf2e6f30957110b31db7" +
                     "0e9a2992401b1d5e99389f976356f4e3a28ff537362e7ce14b81200e21d4f0e77d46bd89f3a54ca06062289148a5938748" +
@@ -24,7 +25,7 @@ public class PsoDecryptUseCaseTest {
                     "51265229bcbb0da5d5aeb4eafbad9779");
     private SecurityTokenConnection securityTokenConnection;
     private OpenPgpCommandApduFactory commandFactory;
-    private PsoDecryptUseCase useCase;
+    private PsoDecryptTokenOp useCase;
 
     private CommandApdu dummyCommandApdu = mock(CommandApdu.class);
 
@@ -35,7 +36,7 @@ public class PsoDecryptUseCaseTest {
         commandFactory = mock(OpenPgpCommandApduFactory.class);
         when(securityTokenConnection.getCommandFactory()).thenReturn(commandFactory);
 
-        useCase = PsoDecryptUseCase.create(securityTokenConnection);
+        useCase = PsoDecryptTokenOp.create(securityTokenConnection);
     }
 
     @Test

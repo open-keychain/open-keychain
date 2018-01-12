@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.securitytoken;
+package org.sufficientlysecure.keychain.securitytoken.operations;
 
 
 import java.io.IOException;
@@ -22,21 +22,28 @@ import org.bouncycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
+import org.sufficientlysecure.keychain.securitytoken.CardException;
+import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
+import org.sufficientlysecure.keychain.securitytoken.ECKeyFormat;
+import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
+import org.sufficientlysecure.keychain.securitytoken.KeyType;
+import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 
 
 /** This class implements the PSO:DECIPHER operation, as specified in OpenPGP card spec / 7.2.11 (p52 in v3.0.1).
  *
  * See https://www.g10code.com/docs/openpgp-card-3.0.pdf
  */
-public class PsoDecryptUseCase {
+public class PsoDecryptTokenOp {
     private final SecurityTokenConnection connection;
     private final JcaKeyFingerprintCalculator fingerprintCalculator;
 
-    public static PsoDecryptUseCase create(SecurityTokenConnection connection) {
-        return new PsoDecryptUseCase(connection, new JcaKeyFingerprintCalculator());
+    public static PsoDecryptTokenOp create(SecurityTokenConnection connection) {
+        return new PsoDecryptTokenOp(connection, new JcaKeyFingerprintCalculator());
     }
 
-    private PsoDecryptUseCase(SecurityTokenConnection connection,
+    private PsoDecryptTokenOp(SecurityTokenConnection connection,
             JcaKeyFingerprintCalculator jcaKeyFingerprintCalculator) {
         this.connection = connection;
         this.fingerprintCalculator = jcaKeyFingerprintCalculator;

@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("unused") // just expose all included data
-class OpenPgpCapabilities {
+public class OpenPgpCapabilities {
     private final static int MASK_SM = 1 << 7;
     private final static int MASK_KEY_IMPORT = 1 << 5;
     private final static int MASK_ATTRIBUTES_CHANGABLE = 1 << 2;
@@ -42,12 +42,12 @@ class OpenPgpCapabilities {
     private byte[] mFingerprints;
     private byte[] mPwStatusBytes;
 
-    OpenPgpCapabilities(byte[] data) throws IOException {
+    public OpenPgpCapabilities(byte[] data) throws IOException {
         mKeyFormats = new HashMap<>();
         updateWithData(data);
     }
 
-    void updateWithData(byte[] data) throws IOException {
+    private void updateWithData(byte[] data) throws IOException {
         Iso7816TLV[] tlvs = Iso7816TLV.readList(data, true);
         if (tlvs.length == 1 && tlvs[0].mT == 0x6E) {
             tlvs = ((Iso7816TLV.Iso7816CompositeTLV) tlvs[0]).mSubs;
@@ -142,7 +142,7 @@ class OpenPgpCapabilities {
         return mHasSM;
     }
 
-    boolean isAttributesChangable() {
+    public boolean isAttributesChangable() {
         return mAttriburesChangable;
     }
 
@@ -166,7 +166,7 @@ class OpenPgpCapabilities {
         return mMaxRspLen;
     }
 
-    KeyFormat getFormatForKeyType(KeyType keyType) {
+    public KeyFormat getFormatForKeyType(KeyType keyType) {
         return mKeyFormats.get(keyType);
     }
 

@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.securitytoken;
+package org.sufficientlysecure.keychain.securitytoken.operations;
 
 
 import java.io.ByteArrayOutputStream;
@@ -12,17 +12,25 @@ import org.bouncycastle.bcpg.HashAlgorithmTags;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.securitytoken.CardException;
+import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
+import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
+import org.sufficientlysecure.keychain.securitytoken.KeyType;
+import org.sufficientlysecure.keychain.securitytoken.OpenPgpCapabilities;
+import org.sufficientlysecure.keychain.securitytoken.RSAKeyFormat;
+import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.util.Log;
 
 
-public class SecurityTokenPsoSignUseCase {
+public class SecurityTokenPsoSignTokenOp {
     private final SecurityTokenConnection connection;
 
-    public static SecurityTokenPsoSignUseCase create(SecurityTokenConnection connection) {
-        return new SecurityTokenPsoSignUseCase(connection);
+    public static SecurityTokenPsoSignTokenOp create(SecurityTokenConnection connection) {
+        return new SecurityTokenPsoSignTokenOp(connection);
     }
 
-    private SecurityTokenPsoSignUseCase(SecurityTokenConnection connection) {
+    private SecurityTokenPsoSignTokenOp(SecurityTokenConnection connection) {
         this.connection = connection;
     }
 

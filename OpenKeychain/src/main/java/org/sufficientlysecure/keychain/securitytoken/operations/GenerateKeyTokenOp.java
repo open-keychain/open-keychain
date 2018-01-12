@@ -1,19 +1,22 @@
-package org.sufficientlysecure.keychain.securitytoken;
+package org.sufficientlysecure.keychain.securitytoken.operations;
 
 
 import java.io.IOException;
 
+import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
+import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 
-public class GenerateKeyUseCase {
+public class GenerateKeyTokenOp {
     private final SecurityTokenConnection connection;
 
-    public static GenerateKeyUseCase create(SecurityTokenConnection connection) {
-        return new GenerateKeyUseCase(connection);
+    public static GenerateKeyTokenOp create(SecurityTokenConnection connection) {
+        return new GenerateKeyTokenOp(connection);
     }
 
-    private GenerateKeyUseCase(SecurityTokenConnection connection) {
+    private GenerateKeyTokenOp(SecurityTokenConnection connection) {
         this.connection = connection;
     }
 

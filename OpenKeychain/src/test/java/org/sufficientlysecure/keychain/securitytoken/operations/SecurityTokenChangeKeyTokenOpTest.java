@@ -1,31 +1,25 @@
-package org.sufficientlysecure.keychain.securitytoken;
+package org.sufficientlysecure.keychain.securitytoken.operations;
 
-
-import java.io.IOException;
-import java.util.LinkedList;
 
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.AdditionalMatchers;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLog;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
-import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TransportType;
+import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
+import org.sufficientlysecure.keychain.securitytoken.KeyType;
+import org.sufficientlysecure.keychain.securitytoken.OpenPgpCapabilities;
+import org.sufficientlysecure.keychain.securitytoken.OpenPgpCommandApduFactory;
+import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,8 +27,8 @@ import static org.mockito.Mockito.when;
 
 @SuppressWarnings("WeakerAccess")
 @RunWith(KeychainTestRunner.class)
-public class SecurityTokenChangeKeyUseCaseTest {
-    SecurityTokenChangeKeyUseCase useCase;
+public class SecurityTokenChangeKeyTokenOpTest {
+    SecurityTokenChangeKeyTokenOp useCase;
     OpenPgpCommandApduFactory commandFactory;
     SecurityTokenConnection securityTokenConnection;
 
@@ -49,7 +43,7 @@ public class SecurityTokenChangeKeyUseCaseTest {
         commandFactory = mock(OpenPgpCommandApduFactory.class);
         when(securityTokenConnection.getCommandFactory()).thenReturn(commandFactory);
 
-        useCase = SecurityTokenChangeKeyUseCase.create(securityTokenConnection);
+        useCase = SecurityTokenChangeKeyTokenOp.create(securityTokenConnection);
 
     }
 
@@ -128,6 +122,6 @@ public class SecurityTokenChangeKeyUseCaseTest {
     }
 
     UncachedKeyRing readRingFromResource(String name) throws Exception {
-        return UncachedKeyRing.fromStream(SecurityTokenChangeKeyUseCaseTest.class.getResourceAsStream(name)).next();
+        return UncachedKeyRing.fromStream(SecurityTokenChangeKeyTokenOpTest.class.getResourceAsStream(name)).next();
     }
 }
