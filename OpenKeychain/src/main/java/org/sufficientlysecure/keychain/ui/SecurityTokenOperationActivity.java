@@ -212,7 +212,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] encryptedSessionKey = mRequiredInput.mInputData[i];
                     byte[] decryptedSessionKey = psoDecryptUseCase
-                            .decryptSessionKey(encryptedSessionKey, publicKeyRing.getPublicKey(tokenKeyId));
+                            .verifyAndDecryptSessionKey(encryptedSessionKey, publicKeyRing.getPublicKey(tokenKeyId));
                     mInputParcel = mInputParcel.withCryptoData(encryptedSessionKey, decryptedSessionKey);
                 }
                 break;

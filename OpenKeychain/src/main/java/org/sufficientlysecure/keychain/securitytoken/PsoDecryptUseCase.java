@@ -24,142 +24,151 @@ import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 
 
+/** This class implements the PSO:DECIPHER operation, as specified in OpenPGP card spec / 7.2.11 (p52 in v3.0.1).
+ *
+ * See https://www.g10code.com/docs/openpgp-card-3.0.pdf
+ */
 public class PsoDecryptUseCase {
     private final SecurityTokenConnection connection;
     private final JcaKeyFingerprintCalculator fingerprintCalculator;
 
     public static PsoDecryptUseCase create(SecurityTokenConnection connection) {
-        return new PsoDecryptUseCase(connection);
+        return new PsoDecryptUseCase(connection, new JcaKeyFingerprintCalculator());
     }
 
-    private PsoDecryptUseCase(SecurityTokenConnection connection) {
+    private PsoDecryptUseCase(SecurityTokenConnection connection,
+            JcaKeyFingerprintCalculator jcaKeyFingerprintCalculator) {
         this.connection = connection;
-        this.fingerprintCalculator = new JcaKeyFingerprintCalculator();
+        this.fingerprintCalculator = jcaKeyFingerprintCalculator;
     }
 
-    public byte[] decryptSessionKey(@NonNull byte[] encryptedSessionKey,
-            CanonicalizedPublicKey publicKey)
+    public byte[] verifyAndDecryptSessionKey(@NonNull byte[] encryptedSessionKeyMpi, CanonicalizedPublicKey publicKey)
             throws IOException {
-        final KeyFormat kf = connection.getOpenPgpCapabilities().getFormatForKeyType(KeyType.ENCRYPT);
-
         connection.verifyPinForOther();
 
-        byte[] data;
-        byte[] dataLen;
-        int pLen = 0;
-
-        X9ECParameters x9Params;
-
+        KeyFormat kf = connection.getOpenPgpCapabilities().getFormatForKeyType(KeyType.ENCRYPT);
         switch (kf.keyFormatType()) {
             case RSAKeyFormatType:
-                data = Arrays.copyOfRange(encryptedSessionKey, 2, encryptedSessionKey.length);
-                if (data[0] != 0) {
-                    data = Arrays.prepend(data, (byte) 0x00);
-                }
-                break;
+                return decryptSessionKeyRsa(encryptedSessionKeyMpi);
 
             case ECKeyFormatType:
-                pLen = ((((encryptedSessionKey[0] & 0xff) << 8) + (encryptedSessionKey[1] & 0xff)) + 7) / 8;
-                data = new byte[pLen];
-
-                System.arraycopy(encryptedSessionKey, 2, data, 0, pLen);
-
-                final ECKeyFormat eckf = (ECKeyFormat) kf;
-                x9Params = NISTNamedCurves.getByOID(eckf.getCurveOID());
-
-                final ECPoint p = x9Params.getCurve().decodePoint(data);
-                if (!p.isValid()) {
-                    throw new CardException("Invalid EC point!");
-                }
-
-                data = p.getEncoded(false);
-
-                if (data.length < 128) {
-                    dataLen = new byte[]{(byte) data.length};
-                } else {
-                    dataLen = new byte[]{(byte) 0x81, (byte) data.length};
-                }
-                data = Arrays.concatenate(Hex.decode("86"), dataLen, data);
-
-                if (data.length < 128) {
-                    dataLen = new byte[]{(byte) data.length};
-                } else {
-                    dataLen = new byte[]{(byte) 0x81, (byte) data.length};
-                }
-                data = Arrays.concatenate(Hex.decode("7F49"), dataLen, data);
-
-                if (data.length < 128) {
-                    dataLen = new byte[]{(byte) data.length};
-                } else {
-                    dataLen = new byte[]{(byte) 0x81, (byte) data.length};
-                }
-                data = Arrays.concatenate(Hex.decode("A6"), dataLen, data);
-                break;
+                return decryptSessionKeyEcdh(encryptedSessionKeyMpi, (ECKeyFormat) kf, publicKey);
 
             default:
                 throw new CardException("Unknown encryption key type!");
         }
+    }
 
-        CommandApdu command = connection.getCommandFactory().createDecipherCommand(data);
+    private byte[] decryptSessionKeyRsa(byte[] encryptedSessionKeyMpi) throws IOException {
+        int mpiLength = getMpiLength(encryptedSessionKeyMpi);
+        if (mpiLength != encryptedSessionKeyMpi.length - 2) {
+            throw new IOException("Malformed RSA session key!");
+        }
+
+        byte[] psoDecipherPayload = new byte[mpiLength + 1];
+        psoDecipherPayload[0] = (byte) 0x00; // RSA Padding Indicator Byte
+        System.arraycopy(encryptedSessionKeyMpi, 2, psoDecipherPayload, 1, mpiLength);
+
+        CommandApdu command = connection.getCommandFactory().createDecipherCommand(psoDecipherPayload);
         ResponseApdu response = connection.communicate(command);
 
         if (!response.isSuccess()) {
             throw new CardException("Deciphering with Security token failed on receive", response.getSw());
         }
 
-        switch (connection.getOpenPgpCapabilities().getFormatForKeyType(KeyType.ENCRYPT).keyFormatType()) {
-            case RSAKeyFormatType:
-                return response.getData();
+        return response.getData();
+    }
 
-            /* From 3.x OpenPGP card specification :
-               In case of ECDH the card supports a partial decrypt only.
-               With its own private key and the given public key the card calculates a shared secret
-               in compliance with the Elliptic Curve Key Agreement Scheme from Diffie-Hellman.
-               The shared secret is returned in the response, all other calculation for deciphering
-               are done outside of the card.
+    private byte[] decryptSessionKeyEcdh(byte[] encryptedSessionKeyMpi, ECKeyFormat eckf, CanonicalizedPublicKey publicKey)
+            throws IOException {
+        int mpiLength = getMpiLength(encryptedSessionKeyMpi);
+        byte[] encryptedPoint = Arrays.copyOfRange(encryptedSessionKeyMpi, 2, mpiLength);
 
-               The shared secret obtained is a KEK (Key Encryption Key) that is used to wrap the
-               session key.
-
-               From rfc6637#section-13 :
-               This document explicitly discourages the use of algorithms other than AES as a KEK algorithm.
-               */
-            case ECKeyFormatType:
-                data = response.getData();
-
-                final byte[] keyEnc = new byte[encryptedSessionKey[pLen + 2]];
-
-                System.arraycopy(encryptedSessionKey, 2 + pLen + 1, keyEnc, 0, keyEnc.length);
-
-                try {
-                    final MessageDigest kdf = MessageDigest.getInstance(MessageDigestUtils.getDigestName(publicKey.getSecurityTokenHashAlgorithm()));
-
-                    kdf.update(new byte[]{(byte) 0, (byte) 0, (byte) 0, (byte) 1});
-                    kdf.update(data);
-                    kdf.update(publicKey.createUserKeyingMaterial(fingerprintCalculator));
-
-                    final byte[] kek = kdf.digest();
-                    final Cipher c = Cipher.getInstance("AESWrap");
-
-                    c.init(Cipher.UNWRAP_MODE, new SecretKeySpec(kek, 0, publicKey.getSecurityTokenSymmetricKeySize() / 8, "AES"));
-
-                    final Key paddedSessionKey = c.unwrap(keyEnc, "Session", Cipher.SECRET_KEY);
-
-                    Arrays.fill(kek, (byte) 0);
-
-                    return PGPPad.unpadSessionData(paddedSessionKey.getEncoded());
-                } catch (NoSuchAlgorithmException e) {
-                    throw new CardException("Unknown digest/encryption algorithm!");
-                } catch (NoSuchPaddingException e) {
-                    throw new CardException("Unknown padding algorithm!");
-                } catch (PGPException e) {
-                    throw new CardException(e.getMessage());
-                } catch (InvalidKeyException e) {
-                    throw new CardException("Invalid KEK!");
-                }
-
-            default:
-                throw new CardException("Unknown encryption key type!");
+        X9ECParameters x9Params = NISTNamedCurves.getByOID(eckf.getCurveOID());
+        ECPoint p = x9Params.getCurve().decodePoint(encryptedPoint);
+        if (!p.isValid()) {
+            throw new CardException("Invalid EC point!");
         }
+
+        byte[] psoDecipherPayload = p.getEncoded(false);
+
+        byte[] dataLen;
+        if (psoDecipherPayload.length < 128) {
+            dataLen = new byte[]{(byte) psoDecipherPayload.length};
+        } else {
+            dataLen = new byte[]{(byte) 0x81, (byte) psoDecipherPayload.length};
+        }
+        psoDecipherPayload = Arrays.concatenate(Hex.decode("86"), dataLen, psoDecipherPayload);
+
+        if (psoDecipherPayload.length < 128) {
+            dataLen = new byte[]{(byte) psoDecipherPayload.length};
+        } else {
+            dataLen = new byte[]{(byte) 0x81, (byte) psoDecipherPayload.length};
+        }
+        psoDecipherPayload = Arrays.concatenate(Hex.decode("7F49"), dataLen, psoDecipherPayload);
+
+        if (psoDecipherPayload.length < 128) {
+            dataLen = new byte[]{(byte) psoDecipherPayload.length};
+        } else {
+            dataLen = new byte[]{(byte) 0x81, (byte) psoDecipherPayload.length};
+        }
+        psoDecipherPayload = Arrays.concatenate(Hex.decode("A6"), dataLen, psoDecipherPayload);
+
+        CommandApdu command = connection.getCommandFactory().createDecipherCommand(psoDecipherPayload);
+        ResponseApdu response = connection.communicate(command);
+
+        if (!response.isSuccess()) {
+            throw new CardException("Deciphering with Security token failed on receive", response.getSw());
+        }
+
+        /* From 3.x OpenPGP card specification :
+           In case of ECDH the card supports a partial decrypt only.
+           With its own private key and the given public key the card calculates a shared secret
+           in compliance with the Elliptic Curve Key Agreement Scheme from Diffie-Hellman.
+           The shared secret is returned in the response, all other calculation for deciphering
+           are done outside of the card.
+
+           The shared secret obtained is a KEK (Key Encryption Key) that is used to wrap the
+           session key.
+
+           From rfc6637#section-13 :
+           This document explicitly discourages the use of algorithms other than AES as a KEK algorithm.
+       */
+        byte[] keyEncryptionKey = response.getData();
+
+        final byte[] keyEnc = new byte[encryptedSessionKeyMpi[mpiLength + 2]];
+
+        System.arraycopy(encryptedSessionKeyMpi, 2 + mpiLength + 1, keyEnc, 0, keyEnc.length);
+
+        try {
+            final MessageDigest kdf = MessageDigest.getInstance(MessageDigestUtils.getDigestName(publicKey.getSecurityTokenHashAlgorithm()));
+
+            kdf.update(new byte[]{(byte) 0, (byte) 0, (byte) 0, (byte) 1});
+            kdf.update(keyEncryptionKey);
+            kdf.update(publicKey.createUserKeyingMaterial(fingerprintCalculator));
+
+            byte[] kek = kdf.digest();
+            Cipher c = Cipher.getInstance("AESWrap");
+
+            c.init(Cipher.UNWRAP_MODE, new SecretKeySpec(kek, 0, publicKey.getSecurityTokenSymmetricKeySize() / 8, "AES"));
+
+            Key paddedSessionKey = c.unwrap(keyEnc, "Session", Cipher.SECRET_KEY);
+
+            Arrays.fill(kek, (byte) 0);
+
+            return PGPPad.unpadSessionData(paddedSessionKey.getEncoded());
+        } catch (NoSuchAlgorithmException e) {
+            throw new CardException("Unknown digest/encryption algorithm!");
+        } catch (NoSuchPaddingException e) {
+            throw new CardException("Unknown padding algorithm!");
+        } catch (PGPException e) {
+            throw new CardException(e.getMessage());
+        } catch (InvalidKeyException e) {
+            throw new CardException("Invalid KEK!");
+        }
+    }
+
+    private int getMpiLength(byte[] multiPrecisionInteger) {
+        return ((((multiPrecisionInteger[0] & 0xff) << 8) + (multiPrecisionInteger[1] & 0xff)) + 7) / 8;
     }
 }

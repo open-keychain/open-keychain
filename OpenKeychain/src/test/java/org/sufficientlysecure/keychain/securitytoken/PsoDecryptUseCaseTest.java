@@ -6,9 +6,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
-import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
-import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TransportType;
-import org.sufficientlysecure.keychain.util.Passphrase;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -58,7 +55,7 @@ public class PsoDecryptUseCaseTest {
         when(commandFactory.createDecipherCommand(any(byte[].class))).thenReturn(dummyCommandApdu);
         when(securityTokenConnection.communicate(dummyCommandApdu)).thenReturn(dummyResponseApdu);
 
-        byte[] response = useCase.decryptSessionKey(RSA_ENC_SESSIONKEY_MPI, null);
+        byte[] response = useCase.verifyAndDecryptSessionKey(RSA_ENC_SESSIONKEY_MPI, null);
 
         assertArrayEquals(Hex.decode("01020304"), response);
     }
