@@ -144,7 +144,7 @@ public class SecurityTokenPsoSignUseCase {
         CommandApdu command = connection.getCommandFactory().createComputeDigitalSignatureCommand(data);
         ResponseApdu response = connection.communicate(command);
 
-        connection.maybeInvalidatePw1();
+        connection.invalidateSingleUsePw1();
 
         if (!response.isSuccess()) {
             throw new CardException("Failed to sign", response.getSw());

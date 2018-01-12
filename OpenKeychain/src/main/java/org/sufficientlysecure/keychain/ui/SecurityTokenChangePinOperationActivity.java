@@ -32,6 +32,7 @@ import android.widget.ViewAnimator;
 import nordpol.android.NfcGuideView;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.securitytoken.ModifyPinUseCase;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.service.input.SecurityTokenChangePinParcel;
@@ -141,7 +142,7 @@ public class SecurityTokenChangePinOperationActivity extends BaseSecurityTokenAc
     @Override
     protected void doSecurityTokenInBackground(SecurityTokenConnection stConnection) throws IOException {
         Passphrase adminPin = new Passphrase(changePinInput.getAdminPin());
-        stConnection.resetPin(changePinInput.getNewPin().getBytes(), adminPin);
+        ModifyPinUseCase.create(stConnection, adminPin).modifyPw1Pin(changePinInput.getNewPin().getBytes());
 
         resultTokenInfo = stConnection.getTokenInfo();
     }

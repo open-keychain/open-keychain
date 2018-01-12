@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.securitytoken.KeyType;
+import org.sufficientlysecure.keychain.securitytoken.ModifyPinUseCase;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.securitytoken.PsoDecryptUseCase;
@@ -296,11 +297,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     mInputParcel = mInputParcel.withCryptoData(subkeyBytes, tokenSerialNumber);
                 }
 
-                // First set Admin PIN, then PIN.
-                // Order is important for Gnuk, otherwise it will be set up in "admin less mode".
-                // http://www.fsij.org/doc-gnuk/gnuk-passphrase-setting.html#set-up-pw1-pw3-and-reset-code
-                stConnection.modifyPw3Pin(newAdminPin, adminPin);
-                stConnection.resetPin(newPin, new Passphrase(new String(newAdminPin)));
+                ModifyPinUseCase.create(stConnection, adminPin).modifyPw1andPw3Pins(newPin, newAdminPin);
 
                 SecurityTokenConnection.clearCachedConnections();
 
