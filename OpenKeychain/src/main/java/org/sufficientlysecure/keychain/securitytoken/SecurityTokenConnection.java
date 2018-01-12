@@ -48,26 +48,27 @@ public class SecurityTokenConnection {
     private static SecurityTokenConnection sCachedInstance;
 
     @NonNull
-    private final Transport mTransport;
+    private final Transport transport;
     @Nullable
-    private final Passphrase mPin;
+    private final Passphrase cachedPin;
     private final OpenPgpCommandApduFactory commandFactory;
 
     private TokenType tokenType;
-    private CardCapabilities mCardCapabilities;
-    private OpenPgpCapabilities mOpenPgpCapabilities;
-    private SecureMessaging mSecureMessaging;
+    private CardCapabilities cardCapabilities;
+    private OpenPgpCapabilities openPgpCapabilities;
 
-    private boolean mPw1ValidatedForSignature;
-    private boolean mPw1ValidatedForDecrypt; // Mode 82 does other things; consider renaming?
-    private boolean mPw3Validated;
+    private SecureMessaging secureMessaging;
+
+    private boolean isPw1ValidatedForSignature; // Mode 81
+    private boolean isPw1ValidatedForOther; // Mode 82
+    private boolean isPw3Validated;
 
 
     public static SecurityTokenConnection getInstanceForTransport(
             @NonNull Transport transport, @Nullable Passphrase pin) {
         if (sCachedInstance == null || !sCachedInstance.isPersistentConnectionAllowed() ||
-                !sCachedInstance.isConnected() || !sCachedInstance.mTransport.equals(transport) ||
-                (pin != null && !pin.equals(sCachedInstance.mPin))) {
+                !sCachedInstance.isConnected() || !sCachedInstance.transport.equals(transport) ||
+                (pin != null && !pin.equals(sCachedInstance.cachedPin))) {
             sCachedInstance = new SecurityTokenConnection(transport, pin, new OpenPgpCommandApduFactory());
         }
         return sCachedInstance;
@@ -81,14 +82,14 @@ public class SecurityTokenConnection {
     @VisibleForTesting
     SecurityTokenConnection(@NonNull Transport transport, @Nullable Passphrase pin,
             OpenPgpCommandApduFactory commandFactory) {
-        this.mTransport = transport;
-        this.mPin = pin;
+        this.transport = transport;
+        this.cachedPin = pin;
 
         this.commandFactory = commandFactory;
     }
 
     OpenPgpCapabilities getOpenPgpCapabilities() {
-        return mOpenPgpCapabilities;
+        return openPgpCapabilities;
     }
 
     OpenPgpCommandApduFactory getCommandFactory() {
@@ -96,8 +97,8 @@ public class SecurityTokenConnection {
     }
 
     void maybeInvalidatePw1() {
-        if (!mOpenPgpCapabilities.isPw1ValidForMultipleSignatures()) {
-            mPw1ValidatedForSignature = false;
+        if (!openPgpCapabilities.isPw1ValidForMultipleSignatures()) {
+            isPw1ValidatedForSignature = false;
         }
     }
 
@@ -128,10 +129,10 @@ public class SecurityTokenConnection {
     @VisibleForTesting
     void connectToDevice(Context context) throws IOException {
         // Connect on transport layer
-        mTransport.connect();
+        transport.connect();
 
         // dummy instance for initial communicate() calls
-        mCardCapabilities = new CardCapabilities();
+        cardCapabilities = new CardCapabilities();
 
         determineTokenType();
 
@@ -144,15 +145,15 @@ public class SecurityTokenConnection {
 
         refreshConnectionCapabilities();
 
-        mPw1ValidatedForSignature = false;
-        mPw1ValidatedForDecrypt = false;
-        mPw3Validated = false;
+        isPw1ValidatedForSignature = false;
+        isPw1ValidatedForOther = false;
+        isPw3Validated = false;
 
-        if (mOpenPgpCapabilities.isHasSCP11bSM()) {
+        if (openPgpCapabilities.isHasSCP11bSM()) {
             try {
                 SCP11bSecureMessaging.establish(this, context, commandFactory);
             } catch (SecureMessagingException e) {
-                mSecureMessaging = null;
+                secureMessaging = null;
                 Log.e(Constants.TAG, "failed to establish secure messaging", e);
             }
         }
@@ -160,7 +161,7 @@ public class SecurityTokenConnection {
 
     @VisibleForTesting
     void determineTokenType() throws IOException {
-        tokenType = mTransport.getTokenTypeIfAvailable();
+        tokenType = transport.getTokenTypeIfAvailable();
         if (tokenType != null) {
             return;
         }
@@ -192,12 +193,12 @@ public class SecurityTokenConnection {
 
     @VisibleForTesting
     void setConnectionCapabilities(OpenPgpCapabilities openPgpCapabilities) throws IOException {
-        this.mOpenPgpCapabilities = openPgpCapabilities;
-        this.mCardCapabilities = new CardCapabilities(openPgpCapabilities.getHistoricalBytes());
+        this.openPgpCapabilities = openPgpCapabilities;
+        this.cardCapabilities = new CardCapabilities(openPgpCapabilities.getHistoricalBytes());
     }
 
     public void resetPin(byte[] newPin, Passphrase adminPin) throws IOException {
-        if (!mPw3Validated) {
+        if (!isPw3Validated) {
             verifyAdminPin(adminPin);
         }
 
@@ -236,7 +237,7 @@ public class SecurityTokenConnection {
         CommandApdu changePin = commandFactory.createChangePw3Command(pin, newAdminPin);
         ResponseApdu response = communicate(changePin);
 
-        mPw3Validated = false;
+        isPw3Validated = false;
 
         if (!response.isSuccess()) {
             throw new CardException("Failed to change PIN", response.getSw());
@@ -247,35 +248,35 @@ public class SecurityTokenConnection {
      * Verifies the user's PW1 with the appropriate mode.
      */
     void verifyPinForSignature() throws IOException {
-        if (mPw1ValidatedForSignature) {
+        if (isPw1ValidatedForSignature) {
             return;
         }
 
-        if (mPin == null) {
+        if (cachedPin == null) {
             throw new IllegalStateException("Connection not initialized with Pin!");
         }
-        byte[] pin = mPin.toStringUnsafe().getBytes();
+        byte[] pin = cachedPin.toStringUnsafe().getBytes();
 
         ResponseApdu response = communicate(commandFactory.createVerifyPw1ForSignatureCommand(pin));
         if (!response.isSuccess()) {
             throw new CardException("Bad PIN!", response.getSw());
         }
 
-        mPw1ValidatedForSignature = true;
+        isPw1ValidatedForSignature = true;
     }
 
     /**
      * Verifies the user's PW1 with the appropriate mode.
      */
     void verifyPinForOther() throws IOException {
-        if (mPw1ValidatedForDecrypt) {
+        if (isPw1ValidatedForOther) {
             return;
         }
-        if (mPin == null) {
+        if (cachedPin == null) {
             throw new IllegalStateException("Connection not initialized with Pin!");
         }
 
-        byte[] pin = mPin.toStringUnsafe().getBytes();
+        byte[] pin = cachedPin.toStringUnsafe().getBytes();
 
         // Command APDU for VERIFY command (page 32)
         ResponseApdu response = communicate(commandFactory.createVerifyPw1ForOtherCommand(pin));
@@ -283,14 +284,14 @@ public class SecurityTokenConnection {
             throw new CardException("Bad PIN!", response.getSw());
         }
 
-        mPw1ValidatedForDecrypt = true;
+        isPw1ValidatedForOther = true;
     }
 
     /**
      * Verifies the user's PW1 or PW3 with the appropriate mode.
      */
     void verifyAdminPin(Passphrase adminPin) throws IOException {
-        if (mPw3Validated) {
+        if (isPw3Validated) {
             return;
         }
         // Command APDU for VERIFY command (page 32)
@@ -300,7 +301,7 @@ public class SecurityTokenConnection {
             throw new CardException("Bad PIN!", response.getSw());
         }
 
-        mPw3Validated = true;
+        isPw3Validated = true;
     }
 
     /**
@@ -310,7 +311,7 @@ public class SecurityTokenConnection {
      * @return The fingerprints of all subkeys in a contiguous byte array.
      */
     public byte[] getFingerprints() throws IOException {
-        return mOpenPgpCapabilities.getFingerprints();
+        return openPgpCapabilities.getFingerprints();
     }
 
     /**
@@ -319,11 +320,11 @@ public class SecurityTokenConnection {
      * @return Seven bytes in fixed format, plus 0x9000 status word at the end.
      */
     private byte[] getPwStatusBytes() throws IOException {
-        return mOpenPgpCapabilities.getPwStatusBytes();
+        return openPgpCapabilities.getPwStatusBytes();
     }
 
     public byte[] getAid() throws IOException {
-        return mOpenPgpCapabilities.getAid();
+        return openPgpCapabilities.getAid();
     }
 
     public String getUrl() throws IOException {
@@ -353,9 +354,9 @@ public class SecurityTokenConnection {
      * @throws IOException
      */
     ResponseApdu communicate(CommandApdu apdu) throws IOException {
-        if ((mSecureMessaging != null) && mSecureMessaging.isEstablished()) {
+        if ((secureMessaging != null) && secureMessaging.isEstablished()) {
             try {
-                apdu = mSecureMessaging.encryptAndSign(apdu);
+                apdu = secureMessaging.encryptAndSign(apdu);
             } catch (SecureMessagingException e) {
                 clearSecureMessaging();
                 throw new IOException("secure messaging encrypt/sign failure : " + e.getMessage());
@@ -364,16 +365,16 @@ public class SecurityTokenConnection {
 
         ResponseApdu lastResponse = null;
         // Transmit
-        if (mCardCapabilities.hasExtended()) {
-            lastResponse = mTransport.transceive(apdu);
+        if (cardCapabilities.hasExtended()) {
+            lastResponse = transport.transceive(apdu);
         } else if (commandFactory.isSuitableForShortApdu(apdu)) {
             CommandApdu shortApdu = commandFactory.createShortApdu(apdu);
-            lastResponse = mTransport.transceive(shortApdu);
-        } else if (mCardCapabilities.hasChaining()) {
+            lastResponse = transport.transceive(shortApdu);
+        } else if (cardCapabilities.hasChaining()) {
             List<CommandApdu> chainedApdus = commandFactory.createChainedApdus(apdu);
             for (int i = 0, totalCommands = chainedApdus.size(); i < totalCommands; i++) {
                 CommandApdu chainedApdu = chainedApdus.get(i);
-                lastResponse = mTransport.transceive(chainedApdu);
+                lastResponse = transport.transceive(chainedApdu);
 
                 boolean isLastCommand = (i == totalCommands - 1);
                 if (!isLastCommand && !lastResponse.isSuccess()) {
@@ -393,7 +394,7 @@ public class SecurityTokenConnection {
         while (lastResponse.getSw1() == APDU_SW1_RESPONSE_AVAILABLE) {
             // GET RESPONSE ISO/IEC 7816-4 par.7.6.1
             CommandApdu getResponse = commandFactory.createGetResponseCommand(lastResponse.getSw2());
-            lastResponse = mTransport.transceive(getResponse);
+            lastResponse = transport.transceive(getResponse);
             result.write(lastResponse.getData());
         }
 
@@ -402,9 +403,9 @@ public class SecurityTokenConnection {
 
         lastResponse = ResponseApdu.fromBytes(result.toByteArray());
 
-        if ((mSecureMessaging != null) && mSecureMessaging.isEstablished()) {
+        if ((secureMessaging != null) && secureMessaging.isEstablished()) {
             try {
-                lastResponse = mSecureMessaging.verifyAndDecrypt(lastResponse);
+                lastResponse = secureMessaging.verifyAndDecrypt(lastResponse);
             } catch (SecureMessagingException e) {
                 clearSecureMessaging();
                 throw new IOException("secure messaging verify/decrypt failure : " + e.getMessage());
@@ -433,7 +434,7 @@ public class SecurityTokenConnection {
             throw new IOException("Invalid key slot");
         }
 
-        if (!mPw3Validated) {
+        if (!isPw3Validated) {
             verifyAdminPin(adminPin);
         }
 
@@ -516,12 +517,12 @@ public class SecurityTokenConnection {
     }
 
     public boolean isPersistentConnectionAllowed() {
-        return mTransport.isPersistentConnectionAllowed() &&
-                (mSecureMessaging == null || !mSecureMessaging.isEstablished());
+        return transport.isPersistentConnectionAllowed() &&
+                (secureMessaging == null || !secureMessaging.isEstablished());
     }
 
     public boolean isConnected() {
-        return mTransport.isConnected();
+        return transport.isConnected();
     }
 
     public TokenType getTokenType() {
@@ -529,15 +530,15 @@ public class SecurityTokenConnection {
     }
 
     public void clearSecureMessaging() {
-        if (mSecureMessaging != null) {
-            mSecureMessaging.clearSession();
+        if (secureMessaging != null) {
+            secureMessaging.clearSession();
         }
-        mSecureMessaging = null;
+        secureMessaging = null;
     }
 
-    void setSecureMessaging(final SecureMessaging sm) {
+    void setSecureMessaging(SecureMessaging sm) {
         clearSecureMessaging();
-        mSecureMessaging = sm;
+        secureMessaging = sm;
     }
 
     public SecurityTokenInfo getTokenInfo() throws IOException {
@@ -554,18 +555,12 @@ public class SecurityTokenConnection {
         String userId = getUserId();
         String url = getUrl();
         byte[] pwInfo = getPwStatusBytes();
-        boolean hasLifeCycleManagement = mCardCapabilities.hasLifeCycleManagement();
+        boolean hasLifeCycleManagement = cardCapabilities.hasLifeCycleManagement();
 
-        TransportType transportType = mTransport.getTransportType();
+        TransportType transportType = transport.getTransportType();
 
         return SecurityTokenInfo
                 .create(transportType, tokenType, fingerprints, aid, userId, url, pwInfo[4], pwInfo[6],
                         hasLifeCycleManagement);
-    }
-
-    public static double parseOpenPgpVersion(final byte[] aid) {
-        float minv = aid[7];
-        while (minv > 0) minv /= 10.0;
-        return aid[6] + minv;
     }
 }
