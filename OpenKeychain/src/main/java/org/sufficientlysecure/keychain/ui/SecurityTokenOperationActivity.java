@@ -45,6 +45,7 @@ import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.securitytoken.PsoDecryptUseCase;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenPsoSignUseCase;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenChangeKeyUseCase;
+import org.sufficientlysecure.keychain.securitytoken.ResetAndWipeUseCase;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -306,7 +307,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                 break;
             }
             case SECURITY_TOKEN_RESET_CARD: {
-                stConnection.resetAndWipeToken();
+                ResetAndWipeUseCase.create(stConnection).resetAndWipeToken();
                 mResultTokenInfo = stConnection.getTokenInfo();
 
                 break;

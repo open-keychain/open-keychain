@@ -449,52 +449,6 @@ public class SecurityTokenConnection {
     }
 
     /**
-     * Resets security token, which deletes all keys and data objects.
-     * This works by entering a wrong PIN and then Admin PIN 4 times respectively.
-     * Afterwards, the token is reactivated.
-     */
-    public void resetAndWipeToken() throws IOException {
-        // try wrong PIN 4 times until counter goes to C0
-        byte[] pin = "XXXXXX".getBytes();
-        for (int i = 0; i <= 4; i++) {
-            // Command APDU for VERIFY command (page 32)
-            ResponseApdu response = communicate(commandFactory.createVerifyPw1ForSignatureCommand(pin));
-            if (response.isSuccess()) {
-                throw new CardException("Should never happen, XXXXXX has been accepted!", response.getSw());
-            }
-        }
-
-        // try wrong Admin PIN 4 times until counter goes to C0
-        byte[] adminPin = "XXXXXXXX".getBytes();
-        for (int i = 0; i <= 4; i++) {
-            // Command APDU for VERIFY command (page 32)
-            ResponseApdu response = communicate(commandFactory.createVerifyPw3Command(adminPin));
-            if (response.isSuccess()) { // Should NOT accept!
-                throw new CardException("Should never happen, XXXXXXXX has been accepted", response.getSw());
-            }
-        }
-
-        // secure messaging must be disabled before reactivation
-        clearSecureMessaging();
-
-        // reactivate token!
-        // NOTE: keep the order here! First execute _both_ reactivate commands. Before checking _both_ responses
-        // If a token is in a bad state and reactivate1 fails, it could still be reactivated with reactivate2
-        CommandApdu reactivate1 = commandFactory.createReactivate1Command();
-        CommandApdu reactivate2 = commandFactory.createReactivate2Command();
-        ResponseApdu response1 = communicate(reactivate1);
-        ResponseApdu response2 = communicate(reactivate2);
-        if (!response1.isSuccess()) {
-            throw new CardException("Reactivating failed!", response1.getSw());
-        }
-        if (!response2.isSuccess()) {
-            throw new CardException("Reactivating failed!", response2.getSw());
-        }
-
-        refreshConnectionCapabilities();
-    }
-
-    /**
      * Return the fingerprint from application specific data stored on tag, or
      * null if it doesn't exist.
      *
