@@ -78,6 +78,7 @@ import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequireAnyDecryptPassphraseBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.CharsetVerifier;
 import org.sufficientlysecure.keychain.util.FileHelper;
@@ -581,6 +582,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
         Iterator<?> it = enc.getEncryptedDataObjects();
 
+        RequireAnyDecryptPassphraseBuilder requirePassphraseBuilder = new RequireAnyDecryptPassphraseBuilder();
+
         // go through all objects and find one we can decrypt
         while (it.hasNext()) {
             Object obj = it.next();
@@ -644,7 +647,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                         passphrase = null;
                     } else if (secretKeyType == SecretKeyType.PASSPHRASE_EMPTY) {
                         passphrase = new Passphrase("");
-                    } else if (cryptoInput.hasPassphrase()) {
+                    } else if (cryptoInput.hasPassphraseForSubkey(subKeyId)) {
                         passphrase = cryptoInput.getPassphrase();
                     } else {
                         // if no passphrase was explicitly set try to get it from the cache service
@@ -660,9 +663,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                         // if passphrase was not cached, return here indicating that a passphrase is missing!
                         if (passphrase == null) {
                             log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
-                            return result.with(new DecryptVerifyResult(log,
-                                    RequiredInputParcel.createRequiredDecryptPassphrase(masterKeyId, subKeyId),
-                                    cryptoInput));
+                            requirePassphraseBuilder.add(masterKeyId, subKeyId);
+                            continue;
                         }
                     }
 
@@ -708,7 +710,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
                 // if no passphrase is given, return here
                 // indicating that a passphrase is missing!
-                if (!cryptoInput.hasPassphrase()) {
+                if (!cryptoInput.hasPassphraseForSymmetric()) {
 
                     try {
                         passphrase = getCachedPassphrase(key.symmetric);
@@ -734,6 +736,10 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 // break out of while, only decrypt the first packet
                 break;
             }
+        }
+
+        if (!asymmetricPacketFound && !requirePassphraseBuilder.isEmpty()) {
+            return result.with(new DecryptVerifyResult(log, requirePassphraseBuilder.build(), cryptoInput));
         }
 
         // More data, just acknowledge and ignore.

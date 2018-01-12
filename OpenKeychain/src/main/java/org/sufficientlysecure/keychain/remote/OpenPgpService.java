@@ -162,7 +162,7 @@ public class OpenPgpService extends Service {
             // override passphrase in input parcel if given by API call
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
                 inputParcel = inputParcel.withPassphrase(
-                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
+                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)), null);
             }
 
             // execute PGP operation!
@@ -266,7 +266,7 @@ public class OpenPgpService extends Service {
             // override passphrase in input parcel if given by API call
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
                 inputParcel = inputParcel.withPassphrase(
-                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
+                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)), null);
             }
 
             // TODO this is not correct!
@@ -372,7 +372,7 @@ public class OpenPgpService extends Service {
             // override passphrase in input parcel if given by API call
             if (data.hasExtra(OpenPgpApi.EXTRA_PASSPHRASE)) {
                 cryptoInput = cryptoInput.withPassphrase(
-                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)));
+                        new Passphrase(data.getCharArrayExtra(OpenPgpApi.EXTRA_PASSPHRASE)), null);
             }
             if (data.hasExtra(OpenPgpApi.EXTRA_DECRYPTION_RESULT)) {
                 OpenPgpDecryptionResult decryptionResult = data.getParcelableExtra(OpenPgpApi.EXTRA_DECRYPTION_RESULT);

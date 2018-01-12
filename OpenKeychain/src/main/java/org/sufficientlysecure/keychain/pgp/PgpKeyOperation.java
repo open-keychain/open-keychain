@@ -453,7 +453,7 @@ public class PgpKeyOperation {
         }
 
         // Do we require a passphrase? If so, pass it along
-        if (!isDivertToCard(masterSecretKey) && !cryptoInput.hasPassphrase()) {
+        if (!isDivertToCard(masterSecretKey) && !cryptoInput.hasPassphraseForSubkey(masterSecretKey.getKeyID())) {
             log.add(LogType.MSG_MF_REQUIRE_PASSPHRASE, indent);
             return new PgpEditKeyResult(log, RequiredInputParcel.createRequiredSignPassphrase(
                     masterSecretKey.getKeyID(), masterSecretKey.getKeyID(),
@@ -1276,7 +1276,7 @@ public class PgpKeyOperation {
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         }
 
-        if (!cryptoInput.hasPassphrase()) {
+        if (!cryptoInput.hasPassphraseForSubkey(nonDummy.getKeyID())) {
             log.add(LogType.MSG_MF_REQUIRE_PASSPHRASE, indent);
 
             return new PgpEditKeyResult(log, RequiredInputParcel.createRequiredSignPassphrase(
