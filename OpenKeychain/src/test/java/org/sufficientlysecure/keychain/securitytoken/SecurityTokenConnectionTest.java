@@ -177,7 +177,8 @@ public class SecurityTokenConnectionTest {
                 "e2702d93e9316b6176726121dd29c8a8b75ec19e1deb09e4cc3b95b054541d", "9000");
 
 
-        securityTokenConnection.putKey(KeyType.SIGN, signKey, new Passphrase("123456"), new Passphrase("12345678"));
+        SecurityTokenChangeKeyUseCase changeKeyUseCase = SecurityTokenChangeKeyUseCase.create(securityTokenConnection);
+        changeKeyUseCase.putKey(KeyType.SIGN, signKey, new Passphrase("123456"), new Passphrase("12345678"));
 
 
         verifyDialog();

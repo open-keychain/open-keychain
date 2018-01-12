@@ -42,6 +42,9 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.securitytoken.KeyType;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
+import org.sufficientlysecure.keychain.securitytoken.PsoDecryptUseCase;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenPsoSignUseCase;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenChangeKeyUseCase;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -205,9 +208,10 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     throw new IOException("Couldn't find subkey for key to token operation.");
                 }
 
+                PsoDecryptUseCase psoDecryptUseCase = PsoDecryptUseCase.create(stConnection);
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] encryptedSessionKey = mRequiredInput.mInputData[i];
-                    byte[] decryptedSessionKey = stConnection
+                    byte[] decryptedSessionKey = psoDecryptUseCase
                             .decryptSessionKey(encryptedSessionKey, publicKeyRing.getPublicKey(tokenKeyId));
                     mInputParcel = mInputParcel.withCryptoData(encryptedSessionKey, decryptedSessionKey);
                 }
@@ -223,10 +227,11 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
 
                 mInputParcel = mInputParcel.withSignatureTime(mRequiredInput.mSignatureTime);
 
+                SecurityTokenPsoSignUseCase psoSignUseCase = SecurityTokenPsoSignUseCase.create(stConnection);
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] hash = mRequiredInput.mInputData[i];
                     int algo = mRequiredInput.mSignAlgos[i];
-                    byte[] signedHash = stConnection.calculateSignature(hash, algo);
+                    byte[] signedHash = psoSignUseCase.calculateSignature(hash, algo);
                     mInputParcel = mInputParcel.withCryptoData(hash, signedHash);
                 }
                 break;
@@ -239,10 +244,11 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     throw new IOException(getString(R.string.error_wrong_security_token));
                 }
 
+                SecurityTokenPsoSignUseCase psoSignUseCase = SecurityTokenPsoSignUseCase.create(stConnection);
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] hash = mRequiredInput.mInputData[i];
                     int algo = mRequiredInput.mSignAlgos[i];
-                    byte[] signedHash = stConnection.calculateAuthenticationSignature(hash, algo);
+                    byte[] signedHash = psoSignUseCase.calculateAuthenticationSignature(hash, algo);
                     mInputParcel = mInputParcel.withCryptoData(hash, signedHash);
 
                 }
@@ -282,7 +288,8 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                         throw new IOException("Unable to get cached passphrase!");
                     }
 
-                    stConnection.changeKey(key, passphrase, adminPin);
+                    SecurityTokenChangeKeyUseCase putKeyUseCase = SecurityTokenChangeKeyUseCase.create(stConnection);
+                    putKeyUseCase.changeKey(key, passphrase, adminPin);
 
                     // TODO: Is this really used anywhere?
                     mInputParcel = mInputParcel.withCryptoData(subkeyBytes, tokenSerialNumber);
