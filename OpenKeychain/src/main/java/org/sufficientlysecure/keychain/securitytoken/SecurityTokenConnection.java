@@ -88,26 +88,7 @@ public class SecurityTokenConnection {
         this.commandFactory = commandFactory;
     }
 
-    OpenPgpCapabilities getOpenPgpCapabilities() {
-        return openPgpCapabilities;
-    }
-
-    OpenPgpCommandApduFactory getCommandFactory() {
-        return commandFactory;
-    }
-
-    private String getHolderName(byte[] name) {
-        try {
-            return (new String(name, 4, name[3])).replace('<', ' ');
-        } catch (IndexOutOfBoundsException e) {
-            // try-catch for https://github.com/FluffyKaon/OpenPGP-Card
-            // Note: This should not happen, but happens with
-            // https://github.com/FluffyKaon/OpenPGP-Card, thus return an empty string for now!
-
-            Log.e(Constants.TAG, "Couldn't get holder name, returning empty string!", e);
-            return "";
-        }
-    }
+    // region connection management
 
     public void connectIfNecessary(Context context) throws IOException {
         if (isConnected()) {
@@ -143,14 +124,7 @@ public class SecurityTokenConnection {
         isPw1ValidatedForOther = false;
         isPw3Validated = false;
 
-        if (openPgpCapabilities.isHasSCP11bSM()) {
-            try {
-                SCP11bSecureMessaging.establish(this, context, commandFactory);
-            } catch (SecureMessagingException e) {
-                secureMessaging = null;
-                Log.e(Constants.TAG, "failed to establish secure messaging", e);
-            }
-        }
+        smEstablishIfAvailable(context);
     }
 
     @VisibleForTesting
@@ -190,6 +164,137 @@ public class SecurityTokenConnection {
         this.openPgpCapabilities = openPgpCapabilities;
         this.cardCapabilities = new CardCapabilities(openPgpCapabilities.getHistoricalBytes());
     }
+
+    // endregion
+
+    // region communication
+
+    /**
+     * Transceives APDU
+     * Splits extended APDU into short APDUs and chains them if necessary
+     * Performs GET RESPONSE command(ISO/IEC 7816-4 par.7.6.1) on retrieving if necessary
+     *
+     * @param commandApdu short or extended APDU to transceive
+     * @return response from the card
+     */
+    ResponseApdu communicate(CommandApdu commandApdu) throws IOException {
+        commandApdu = smEncryptIfAvailable(commandApdu);
+
+        ResponseApdu lastResponse;
+
+        lastResponse = transceiveWithChaining(commandApdu);
+        lastResponse = readChainedResponseIfAvailable(lastResponse);
+
+        lastResponse = smDecryptIfAvailable(lastResponse);
+
+        return lastResponse;
+    }
+
+    @NonNull
+    private ResponseApdu transceiveWithChaining(CommandApdu commandApdu) throws IOException {
+        if (cardCapabilities.hasExtended()) {
+            return transport.transceive(commandApdu);
+        } else if (commandFactory.isSuitableForShortApdu(commandApdu)) {
+            CommandApdu shortApdu = commandFactory.createShortApdu(commandApdu);
+            return transport.transceive(shortApdu);
+        } else if (cardCapabilities.hasChaining()) {
+            ResponseApdu lastResponse = null;
+
+            List<CommandApdu> chainedApdus = commandFactory.createChainedApdus(commandApdu);
+            for (int i = 0, totalCommands = chainedApdus.size(); i < totalCommands; i++) {
+                CommandApdu chainedApdu = chainedApdus.get(i);
+                lastResponse = transport.transceive(chainedApdu);
+
+                boolean isLastCommand = (i == totalCommands - 1);
+                if (!isLastCommand && !lastResponse.isSuccess()) {
+                    throw new IOException("Failed to chain apdu " +
+                            "(" + i + "/" + (totalCommands-1) + ", last SW: " + lastResponse.getSw() + ")");
+                }
+            }
+
+            if (lastResponse == null) {
+                throw new IllegalStateException();
+            }
+
+            return lastResponse;
+        } else {
+            throw new IOException("Command too long, and chaining unavailable");
+        }
+    }
+
+    @NonNull
+    private ResponseApdu readChainedResponseIfAvailable(ResponseApdu lastResponse) throws IOException {
+        if (lastResponse.getSw1() != APDU_SW1_RESPONSE_AVAILABLE) {
+            return lastResponse;
+        }
+
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        result.write(lastResponse.getData());
+
+        do {
+            // GET RESPONSE ISO/IEC 7816-4 par.7.6.1
+            CommandApdu getResponse = commandFactory.createGetResponseCommand(lastResponse.getSw2());
+            lastResponse = transport.transceive(getResponse);
+            result.write(lastResponse.getData());
+        } while (lastResponse.getSw1() == APDU_SW1_RESPONSE_AVAILABLE);
+
+        result.write(lastResponse.getSw1());
+        result.write(lastResponse.getSw2());
+
+        return ResponseApdu.fromBytes(result.toByteArray());
+    }
+
+    // endregion
+
+    // region secure messaging
+
+    private void smEstablishIfAvailable(Context context) throws IOException {
+        if (!openPgpCapabilities.isHasSCP11bSM()) {
+            return;
+        }
+
+        try {
+            secureMessaging = SCP11bSecureMessaging.establish(this, context, commandFactory);
+        } catch (SecureMessagingException e) {
+            secureMessaging = null;
+            Log.e(Constants.TAG, "failed to establish secure messaging", e);
+        }
+    }
+
+    private CommandApdu smEncryptIfAvailable(CommandApdu apdu) throws IOException {
+        if (secureMessaging == null || !secureMessaging.isEstablished()) {
+            return apdu;
+        }
+        try {
+            return secureMessaging.encryptAndSign(apdu);
+        } catch (SecureMessagingException e) {
+            clearSecureMessaging();
+            throw new IOException("secure messaging encrypt/sign failure : " + e.getMessage());
+        }
+    }
+
+    private ResponseApdu smDecryptIfAvailable(ResponseApdu response) throws IOException {
+        if (secureMessaging == null || !secureMessaging.isEstablished()) {
+            return response;
+        }
+        try {
+            return secureMessaging.verifyAndDecrypt(response);
+        } catch (SecureMessagingException e) {
+            clearSecureMessaging();
+            throw new IOException("secure messaging verify/decrypt failure : " + e.getMessage());
+        }
+    }
+
+    public void clearSecureMessaging() {
+        if (secureMessaging != null) {
+            secureMessaging.clearSession();
+        }
+        secureMessaging = null;
+    }
+
+    // endregion
+
+    // region pin management
 
     void verifyPinForSignature() throws IOException {
         if (isPw1ValidatedForSignature) {
@@ -253,37 +358,7 @@ public class SecurityTokenConnection {
         isPw3Validated = false;
     }
 
-    /**
-     * Return fingerprints of all keys from application specific data stored
-     * on tag, or null if data not available.
-     *
-     * @return The fingerprints of all subkeys in a contiguous byte array.
-     */
-    public byte[] getFingerprints() throws IOException {
-        return openPgpCapabilities.getFingerprints();
-    }
-
-    /**
-     * Return the PW Status Bytes from the token. This is a simple DO; no TLV decoding needed.
-     *
-     * @return Seven bytes in fixed format, plus 0x9000 status word at the end.
-     */
-    byte[] getPwStatusBytes() throws IOException {
-        return openPgpCapabilities.getPwStatusBytes();
-    }
-
-    public byte[] getAid() throws IOException {
-        return openPgpCapabilities.getAid();
-    }
-
-    public String getUrl() throws IOException {
-        byte[] data = getData(0x5F, 0x50);
-        return new String(data).trim();
-    }
-
-    public String getUserId() throws IOException {
-        return getHolderName(getData(0x00, 0x65));
-    }
+    // endregion
 
     private byte[] getData(int p1, int p2) throws IOException {
         ResponseApdu response = communicate(commandFactory.createGetDataCommand(p1, p2));
@@ -293,98 +368,39 @@ public class SecurityTokenConnection {
         return response.getData();
     }
 
-    /**
-     * Transceives APDU
-     * Splits extended APDU into short APDUs and chains them if necessary
-     * Performs GET RESPONSE command(ISO/IEC 7816-4 par.7.6.1) on retrieving if necessary
-     *
-     * @param apdu short or extended APDU to transceive
-     * @return response from the card
-     * @throws IOException
-     */
-    ResponseApdu communicate(CommandApdu apdu) throws IOException {
-        if ((secureMessaging != null) && secureMessaging.isEstablished()) {
-            try {
-                apdu = secureMessaging.encryptAndSign(apdu);
-            } catch (SecureMessagingException e) {
-                clearSecureMessaging();
-                throw new IOException("secure messaging encrypt/sign failure : " + e.getMessage());
-            }
-        }
 
-        ResponseApdu lastResponse = null;
-        // Transmit
-        if (cardCapabilities.hasExtended()) {
-            lastResponse = transport.transceive(apdu);
-        } else if (commandFactory.isSuitableForShortApdu(apdu)) {
-            CommandApdu shortApdu = commandFactory.createShortApdu(apdu);
-            lastResponse = transport.transceive(shortApdu);
-        } else if (cardCapabilities.hasChaining()) {
-            List<CommandApdu> chainedApdus = commandFactory.createChainedApdus(apdu);
-            for (int i = 0, totalCommands = chainedApdus.size(); i < totalCommands; i++) {
-                CommandApdu chainedApdu = chainedApdus.get(i);
-                lastResponse = transport.transceive(chainedApdu);
-
-                boolean isLastCommand = (i == totalCommands - 1);
-                if (!isLastCommand && !lastResponse.isSuccess()) {
-                    throw new IOException("Failed to chain apdu " +
-                            "(" + i + "/" + (totalCommands-1) + ", last SW: " + lastResponse.getSw() + ")");
-                }
-            }
-        }
-        if (lastResponse == null) {
-            throw new IOException("Can't transmit command");
-        }
-
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
-        result.write(lastResponse.getData());
-
-        // Receive
-        while (lastResponse.getSw1() == APDU_SW1_RESPONSE_AVAILABLE) {
-            // GET RESPONSE ISO/IEC 7816-4 par.7.6.1
-            CommandApdu getResponse = commandFactory.createGetResponseCommand(lastResponse.getSw2());
-            lastResponse = transport.transceive(getResponse);
-            result.write(lastResponse.getData());
-        }
-
-        result.write(lastResponse.getSw1());
-        result.write(lastResponse.getSw2());
-
-        lastResponse = ResponseApdu.fromBytes(result.toByteArray());
-
-        if ((secureMessaging != null) && secureMessaging.isEstablished()) {
-            try {
-                lastResponse = secureMessaging.verifyAndDecrypt(lastResponse);
-            } catch (SecureMessagingException e) {
-                clearSecureMessaging();
-                throw new IOException("secure messaging verify/decrypt failure : " + e.getMessage());
-            }
-        }
-
-        return lastResponse;
+    public String getUrl() throws IOException {
+        byte[] data = getData(0x5F, 0x50);
+        return new String(data).trim();
     }
 
-    /**
-     * Return the fingerprint from application specific data stored on tag, or
-     * null if it doesn't exist.
-     *
-     * @param keyType key type
-     * @return The fingerprint of the requested key, or null if not found.
-     */
-    public byte[] getKeyFingerprint(@NonNull KeyType keyType) throws IOException {
-        byte[] data = getFingerprints();
-        if (data == null) {
-            return null;
+    public byte[] getUserId() throws IOException {
+        return getData(0x00, 0x65);
+    }
+
+    public SecurityTokenInfo getTokenInfo() throws IOException {
+        byte[] rawFingerprints = openPgpCapabilities.getFingerprints();
+
+        byte[][] fingerprints = new byte[rawFingerprints.length / 20][];
+        ByteBuffer buf = ByteBuffer.wrap(rawFingerprints);
+        for (int i = 0; i < rawFingerprints.length / 20; i++) {
+            fingerprints[i] = new byte[20];
+            buf.get(fingerprints[i]);
         }
 
-        // return the master key fingerprint
-        ByteBuffer fpbuf = ByteBuffer.wrap(data);
-        byte[] fp = new byte[20];
-        fpbuf.position(keyType.getIdx() * 20);
-        fpbuf.get(fp, 0, 20);
+        byte[] aid = getAid();
+        String userId = parseHolderName(getUserId());
+        String url = getUrl();
+        byte[] pwInfo = getPwStatusBytes();
+        boolean hasLifeCycleManagement = cardCapabilities.hasLifeCycleManagement();
 
-        return fp;
+        TransportType transportType = transport.getTransportType();
+
+        return SecurityTokenInfo
+                .create(transportType, tokenType, fingerprints, aid, userId, url, pwInfo[4], pwInfo[6],
+                        hasLifeCycleManagement);
     }
+
 
     public boolean isPersistentConnectionAllowed() {
         return transport.isPersistentConnectionAllowed() &&
@@ -399,38 +415,48 @@ public class SecurityTokenConnection {
         return tokenType;
     }
 
-    public void clearSecureMessaging() {
-        if (secureMessaging != null) {
-            secureMessaging.clearSession();
-        }
-        secureMessaging = null;
+    OpenPgpCapabilities getOpenPgpCapabilities() {
+        return openPgpCapabilities;
     }
 
-    void setSecureMessaging(SecureMessaging sm) {
-        clearSecureMessaging();
-        secureMessaging = sm;
+    OpenPgpCommandApduFactory getCommandFactory() {
+        return commandFactory;
     }
 
-    public SecurityTokenInfo getTokenInfo() throws IOException {
-        byte[] rawFingerprints = getFingerprints();
+    byte[] getPwStatusBytes() {
+        return openPgpCapabilities.getPwStatusBytes();
+    }
 
-        byte[][] fingerprints = new byte[rawFingerprints.length / 20][];
-        ByteBuffer buf = ByteBuffer.wrap(rawFingerprints);
-        for (int i = 0; i < rawFingerprints.length / 20; i++) {
-            fingerprints[i] = new byte[20];
-            buf.get(fingerprints[i]);
+    public byte[] getAid() {
+        return openPgpCapabilities.getAid();
+    }
+
+    public byte[] getKeyFingerprint(@NonNull KeyType keyType) {
+        byte[] data = openPgpCapabilities.getFingerprints();
+        if (data == null) {
+            return null;
         }
 
-        byte[] aid = getAid();
-        String userId = getUserId();
-        String url = getUrl();
-        byte[] pwInfo = getPwStatusBytes();
-        boolean hasLifeCycleManagement = cardCapabilities.hasLifeCycleManagement();
+        // return the master key fingerprint
+        ByteBuffer fpbuf = ByteBuffer.wrap(data);
+        byte[] fp = new byte[20];
+        fpbuf.position(keyType.getIdx() * 20);
+        fpbuf.get(fp, 0, 20);
 
-        TransportType transportType = transport.getTransportType();
+        return fp;
+    }
 
-        return SecurityTokenInfo
-                .create(transportType, tokenType, fingerprints, aid, userId, url, pwInfo[4], pwInfo[6],
-                        hasLifeCycleManagement);
+
+    private static String parseHolderName(byte[] name) {
+        try {
+            return (new String(name, 4, name[3])).replace('<', ' ');
+        } catch (IndexOutOfBoundsException e) {
+            // try-catch for https://github.com/FluffyKaon/OpenPGP-Card
+            // Note: This should not happen, but happens with
+            // https://github.com/FluffyKaon/OpenPGP-Card, thus return an empty string for now!
+
+            Log.e(Constants.TAG, "Couldn't get holder name, returning empty string!", e);
+            return "";
+        }
     }
 }
