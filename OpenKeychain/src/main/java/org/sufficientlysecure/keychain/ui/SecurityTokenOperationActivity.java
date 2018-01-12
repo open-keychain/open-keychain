@@ -194,7 +194,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
         switch (mRequiredInput.mType) {
             case SECURITY_TOKEN_DECRYPT: {
                 long tokenKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(
-                        stConnection.getKeyFingerprint(KeyType.ENCRYPT));
+                        stConnection.getOpenPgpCapabilities().getFingerprintEncrypt());
 
                 if (tokenKeyId != mRequiredInput.getSubKeyId()) {
                     throw new IOException(getString(R.string.error_wrong_security_token));
@@ -221,7 +221,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
             }
             case SECURITY_TOKEN_SIGN: {
                 long tokenKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(
-                        stConnection.getKeyFingerprint(KeyType.SIGN));
+                        stConnection.getOpenPgpCapabilities().getFingerprintSign());
 
                 if (tokenKeyId != mRequiredInput.getSubKeyId()) {
                     throw new IOException(getString(R.string.error_wrong_security_token));
@@ -240,7 +240,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
             }
             case SECURITY_TOKEN_AUTH: {
                 long tokenKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(
-                        stConnection.getKeyFingerprint(KeyType.AUTH));
+                        stConnection.getOpenPgpCapabilities().getFingerprintAuth());
 
                 if (tokenKeyId != mRequiredInput.getSubKeyId()) {
                     throw new IOException(getString(R.string.error_wrong_security_token));
@@ -280,7 +280,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     long subkeyId = buf.getLong();
 
                     CanonicalizedSecretKey key = secretKeyRing.getSecretKey(subkeyId);
-                    byte[] tokenSerialNumber = Arrays.copyOf(stConnection.getAid(), 16);
+                    byte[] tokenSerialNumber = Arrays.copyOf(stConnection.getOpenPgpCapabilities().getAid(), 16);
 
                     Passphrase passphrase;
                     try {

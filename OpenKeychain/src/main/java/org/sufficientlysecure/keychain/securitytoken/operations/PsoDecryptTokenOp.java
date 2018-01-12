@@ -53,7 +53,7 @@ public class PsoDecryptTokenOp {
             throws IOException {
         connection.verifyPinForOther();
 
-        KeyFormat kf = connection.getOpenPgpCapabilities().getFormatForKeyType(KeyType.ENCRYPT);
+        KeyFormat kf = connection.getOpenPgpCapabilities().getEncryptKeyFormat();
         switch (kf.keyFormatType()) {
             case RSAKeyFormatType:
                 return decryptSessionKeyRsa(encryptedSessionKeyMpi);

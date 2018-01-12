@@ -11,7 +11,6 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 
 
 public class ModifyPinTokenOp {
-    private static final int MAX_PW3_LENGTH_INDEX = 3;
     private static final int MIN_PW3_LENGTH = 8;
 
     private final SecurityTokenConnection connection;
@@ -41,9 +40,8 @@ public class ModifyPinTokenOp {
     private void modifyPw1PinWithEffectiveAdminPin(Passphrase effectiveAdminPin, byte[] newPin) throws IOException {
         connection.verifyAdminPin(effectiveAdminPin);
 
-        final int MAX_PW1_LENGTH_INDEX = 1;
-        byte[] pwStatusBytes = connection.getPwStatusBytes();
-        if (newPin.length < 6 || newPin.length > pwStatusBytes[MAX_PW1_LENGTH_INDEX]) {
+        int maxPw1Length = connection.getOpenPgpCapabilities().getPw3MaxLength();
+        if (newPin.length < 6 || newPin.length > maxPw1Length) {
             throw new IOException("Invalid PIN length");
         }
 
@@ -60,9 +58,9 @@ public class ModifyPinTokenOp {
      * conformance to the token's requirements for key length.
      */
     private void modifyPw3Pin(byte[] newAdminPin) throws IOException {
-        byte[] pwStatusBytes = connection.getPwStatusBytes();
+        int maxPw3Length = connection.getOpenPgpCapabilities().getPw3MaxLength();
 
-        if (newAdminPin.length < MIN_PW3_LENGTH || newAdminPin.length > pwStatusBytes[MAX_PW3_LENGTH_INDEX]) {
+        if (newAdminPin.length < MIN_PW3_LENGTH || newAdminPin.length > maxPw3Length) {
             throw new IOException("Invalid PIN length");
         }
 

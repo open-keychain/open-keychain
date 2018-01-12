@@ -41,7 +41,7 @@ public class PsoDecryptTokenOpTest {
 
     @Test
     public void testRsaDecrypt() throws Exception {
-        OpenPgpCapabilities openPgpCapabilities = new OpenPgpCapabilities(
+        OpenPgpCapabilities openPgpCapabilities = OpenPgpCapabilities.fromBytes(
                 Hex.decode("6e81de4f10d27600012401020000060364311500005f520f0073000080000000000000000000007381b7c00af" +
                                 "00000ff04c000ff00ffc106010800001103c206010800001103c306010800001103c407007f7f7f03" +
                                 "0303c53c4ec5fee25c4e89654d58cad8492510a89d3c3d8468da7b24e15bfc624c6a792794f15b759" +

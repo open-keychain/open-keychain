@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPrivateCrtKey;
+import java.util.Arrays;
 
 import android.support.annotation.VisibleForTesting;
 
@@ -174,14 +175,15 @@ public class SecurityTokenChangeKeyTokenOp {
     private boolean isSlotEmpty(KeyType keyType) throws IOException {
         // Note: special case: This should not happen, but happens with
         // https://github.com/FluffyKaon/OpenPGP-Card, thus for now assume true
-        if (connection.getKeyFingerprint(keyType) == null) {
+        if (connection.getOpenPgpCapabilities().getKeyFingerprint(keyType) == null) {
             return true;
         }
 
         return keyMatchesFingerPrint(keyType, BLANK_FINGERPRINT);
     }
 
-    private boolean keyMatchesFingerPrint(KeyType keyType, byte[] fingerprint) throws IOException {
-        return java.util.Arrays.equals(connection.getKeyFingerprint(keyType), fingerprint);
+    private boolean keyMatchesFingerPrint(KeyType keyType, byte[] expectedFingerprint) throws IOException {
+        byte[] actualFp = connection.getOpenPgpCapabilities().getKeyFingerprint(keyType);
+        return Arrays.equals(actualFp, expectedFingerprint);
     }
 }

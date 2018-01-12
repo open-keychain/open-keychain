@@ -155,7 +155,7 @@ public class SecurityTokenConnection {
     public void refreshConnectionCapabilities() throws IOException {
         byte[] rawOpenPgpCapabilities = getData(0x00, 0x6E);
 
-        OpenPgpCapabilities openPgpCapabilities = new OpenPgpCapabilities(rawOpenPgpCapabilities);
+        OpenPgpCapabilities openPgpCapabilities = OpenPgpCapabilities.fromBytes(rawOpenPgpCapabilities);
         setConnectionCapabilities(openPgpCapabilities);
     }
 
@@ -249,7 +249,7 @@ public class SecurityTokenConnection {
     // region secure messaging
 
     private void smEstablishIfAvailable(Context context) throws IOException {
-        if (!openPgpCapabilities.isHasSCP11bSM()) {
+        if (!openPgpCapabilities.isHasAesSm()) {
             return;
         }
 
@@ -379,19 +379,15 @@ public class SecurityTokenConnection {
     }
 
     public SecurityTokenInfo getTokenInfo() throws IOException {
-        byte[] rawFingerprints = openPgpCapabilities.getFingerprints();
+        byte[][] fingerprints = new byte[3][];
+        fingerprints[0] = openPgpCapabilities.getFingerprintSign();
+        fingerprints[1] = openPgpCapabilities.getFingerprintEncrypt();
+        fingerprints[2] = openPgpCapabilities.getFingerprintAuth();
 
-        byte[][] fingerprints = new byte[rawFingerprints.length / 20][];
-        ByteBuffer buf = ByteBuffer.wrap(rawFingerprints);
-        for (int i = 0; i < rawFingerprints.length / 20; i++) {
-            fingerprints[i] = new byte[20];
-            buf.get(fingerprints[i]);
-        }
-
-        byte[] aid = getAid();
+        byte[] aid = openPgpCapabilities.getAid();
         String userId = parseHolderName(getUserId());
         String url = getUrl();
-        byte[] pwInfo = getPwStatusBytes();
+        byte[] pwInfo = openPgpCapabilities.getPwStatusBytes();
         boolean hasLifeCycleManagement = cardCapabilities.hasLifeCycleManagement();
 
         TransportType transportType = transport.getTransportType();
@@ -421,29 +417,6 @@ public class SecurityTokenConnection {
 
     public OpenPgpCommandApduFactory getCommandFactory() {
         return commandFactory;
-    }
-
-    public byte[] getPwStatusBytes() {
-        return openPgpCapabilities.getPwStatusBytes();
-    }
-
-    public byte[] getAid() {
-        return openPgpCapabilities.getAid();
-    }
-
-    public byte[] getKeyFingerprint(@NonNull KeyType keyType) {
-        byte[] data = openPgpCapabilities.getFingerprints();
-        if (data == null) {
-            return null;
-        }
-
-        // return the master key fingerprint
-        ByteBuffer fpbuf = ByteBuffer.wrap(data);
-        byte[] fp = new byte[20];
-        fpbuf.position(keyType.getIdx() * 20);
-        fpbuf.get(fp, 0, 20);
-
-        return fp;
     }
 
 

@@ -144,7 +144,7 @@ public class SecurityTokenPsoSignTokenOp {
         connection.verifyPinForSignature();
 
         OpenPgpCapabilities openPgpCapabilities = connection.getOpenPgpCapabilities();
-        KeyFormat signKeyFormat = openPgpCapabilities.getFormatForKeyType(KeyType.SIGN);
+        KeyFormat signKeyFormat = openPgpCapabilities.getSignKeyFormat();
 
         byte[] data = prepareData(hash, hashAlgo, signKeyFormat);
 
@@ -171,7 +171,7 @@ public class SecurityTokenPsoSignTokenOp {
         connection.verifyPinForOther();
 
         OpenPgpCapabilities openPgpCapabilities = connection.getOpenPgpCapabilities();
-        KeyFormat authKeyFormat = openPgpCapabilities.getFormatForKeyType(KeyType.AUTH);
+        KeyFormat authKeyFormat = openPgpCapabilities.getAuthKeyFormat();
 
         byte[] data = prepareData(hash, hashAlgo, authKeyFormat);
 

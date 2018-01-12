@@ -90,7 +90,7 @@ public class SecurityTokenConnectionTest {
     public void test_getTokenInfo() throws Exception {
         SecurityTokenConnection securityTokenConnection =
                 new SecurityTokenConnection(transport, new Passphrase("123456"), new OpenPgpCommandApduFactory());
-        OpenPgpCapabilities openPgpCapabilities = new OpenPgpCapabilities(
+        OpenPgpCapabilities openPgpCapabilities = OpenPgpCapabilities.fromBytes(
                 Hex.decode(
                         "6e81de4f10d27600012401020000060364311500005f520f0073000080000000000000000000007381b7c00af" +
                                 "00000ff04c000ff00ffc106010800001103c206010800001103c306010800001103c407007f7f7f03" +
@@ -107,7 +107,6 @@ public class SecurityTokenConnectionTest {
 
 
         securityTokenConnection.getTokenInfo();
-
 
         verifyDialog();
     }
