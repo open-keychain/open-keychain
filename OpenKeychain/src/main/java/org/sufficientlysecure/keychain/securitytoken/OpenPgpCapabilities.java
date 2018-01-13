@@ -102,6 +102,14 @@ public abstract class OpenPgpCapabilities {
         return getPwStatusBytes()[MAX_PW3_LENGTH_INDEX];
     }
 
+    public int getPw1TriesLeft() {
+        return getPwStatusBytes()[4];
+    }
+
+    public int getPw3TriesLeft() {
+        return getPwStatusBytes()[6];
+    }
+
     @AutoValue.Builder
     @SuppressWarnings("UnusedReturnValue")
     abstract static class Builder {

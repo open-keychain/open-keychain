@@ -10,6 +10,8 @@ import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 
 
 public class ResetAndWipeTokenOp {
+    private static final byte[] INVALID_PIN = "XXXXXXXXXXX".getBytes();
+
     private final SecurityTokenConnection connection;
 
     public static ResetAndWipeTokenOp create(SecurityTokenConnection connection) {
@@ -26,41 +28,16 @@ public class ResetAndWipeTokenOp {
      * Afterwards, the token is reactivated.
      */
     public void resetAndWipeToken() throws IOException {
-        // try wrong PIN 4 times until counter goes to C0
-        byte[] pin = "XXXXXX".getBytes();
-        CommandApdu verifyPw1ForSignatureCommand =
-                connection.getCommandFactory().createVerifyPw1ForSignatureCommand(pin);
-        for (int i = 0; i <= 4; i++) {
-            // Command APDU for VERIFY command (page 32)
-            ResponseApdu response = connection.communicate(verifyPw1ForSignatureCommand);
-            if (response.isSuccess()) {
-                throw new CardException("Should never happen, XXXXXX has been accepted!", response.getSw());
-            }
-        }
-
-        // try wrong Admin PIN 4 times until counter goes to C0
-        byte[] adminPin = "XXXXXXXX".getBytes();
-        CommandApdu verifyPw3Command = connection.getCommandFactory().createVerifyPw3Command(adminPin);
-        for (int i = 0; i <= 4; i++) {
-            // Command APDU for VERIFY command (page 32)
-            ResponseApdu response = connection.communicate(
-                    verifyPw3Command);
-            if (response.isSuccess()) { // Should NOT accept!
-                throw new CardException("Should never happen, XXXXXXXX has been accepted", response.getSw());
-            }
-        }
+        exhausePw1Tries();
+        exhaustPw3Tries();
 
         // secure messaging must be disabled before reactivation
         connection.clearSecureMessaging();
 
-        // reactivate token!
         // NOTE: keep the order here! First execute _both_ reactivate commands. Before checking _both_ responses
         // If a token is in a bad state and reactivate1 fails, it could still be reactivated with reactivate2
         CommandApdu reactivate1 = connection.getCommandFactory().createReactivate1Command();
-        ResponseApdu response1 = connection.communicate(reactivate1);
-        if (!response1.isSuccess()) {
-            throw new CardException("Reactivating failed!", response1.getSw());
-        }
+        connection.communicate(reactivate1);
 
         CommandApdu reactivate2 = connection.getCommandFactory().createReactivate2Command();
         ResponseApdu response2 = connection.communicate(reactivate2);
@@ -69,5 +46,30 @@ public class ResetAndWipeTokenOp {
         }
 
         connection.refreshConnectionCapabilities();
+    }
+
+    private void exhausePw1Tries() throws IOException {
+        CommandApdu verifyPw1ForSignatureCommand =
+                connection.getCommandFactory().createVerifyPw1ForSignatureCommand(INVALID_PIN);
+
+        int pw1TriesLeft = Math.max(3, connection.getOpenPgpCapabilities().getPw1TriesLeft());
+        for (int i = 0; i < pw1TriesLeft; i++) {
+            ResponseApdu response = connection.communicate(verifyPw1ForSignatureCommand);
+            if (response.isSuccess()) {
+                throw new CardException("Should never happen, PIN XXXXXXXX has been accepted!", response.getSw());
+            }
+        }
+    }
+
+    private void exhaustPw3Tries() throws IOException {
+        CommandApdu verifyPw3Command = connection.getCommandFactory().createVerifyPw3Command(INVALID_PIN);
+
+        int pw3TriesLeft = Math.max(3, connection.getOpenPgpCapabilities().getPw3TriesLeft());
+        for (int i = 0; i < pw3TriesLeft; i++) {
+            ResponseApdu response = connection.communicate(verifyPw3Command);
+            if (response.isSuccess()) { // Should NOT accept!
+                throw new CardException("Should never happen, PIN XXXXXXXX has been accepted!", response.getSw());
+            }
+        }
     }
 }

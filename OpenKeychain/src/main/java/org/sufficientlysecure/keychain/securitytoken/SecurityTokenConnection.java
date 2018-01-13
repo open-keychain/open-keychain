@@ -386,13 +386,14 @@ public class SecurityTokenConnection {
         byte[] aid = openPgpCapabilities.getAid();
         String userId = parseHolderName(readUserId());
         String url = readUrl();
-        byte[] pwInfo = openPgpCapabilities.getPwStatusBytes();
+        int pw1TriesLeft = openPgpCapabilities.getPw1TriesLeft();
+        int pw3TriesLeft = openPgpCapabilities.getPw3TriesLeft();
         boolean hasLifeCycleManagement = cardCapabilities.hasLifeCycleManagement();
 
         TransportType transportType = transport.getTransportType();
 
-        return SecurityTokenInfo.create(transportType, tokenType, fingerprints, aid, userId, url, pwInfo[4], pwInfo[6],
-                hasLifeCycleManagement);
+        return SecurityTokenInfo.create(transportType, tokenType, fingerprints, aid, userId, url, pw1TriesLeft,
+                pw3TriesLeft, hasLifeCycleManagement);
     }
 
 
