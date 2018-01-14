@@ -32,8 +32,9 @@ import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPrivateCrtKey;
 
 
-class SecurityTokenUtils {
-    static byte[] attributesFromSecretKey(KeyType slot, CanonicalizedSecretKey secretKey, KeyFormat formatForKeyType)
+public class SecurityTokenUtils {
+    public static byte[] attributesFromSecretKey(KeyType slot, CanonicalizedSecretKey secretKey,
+            KeyFormat formatForKeyType)
             throws IOException {
         if (secretKey.isRSA()) {
             return attributesForRsaKey(secretKey.getBitStrength(), (RSAKeyFormat) formatForKeyType);
@@ -73,7 +74,7 @@ class SecurityTokenUtils {
         return attrs;
     }
 
-    static byte[] createRSAPrivKeyTemplate(RSAPrivateCrtKey secretKey, KeyType slot,
+    public static byte[] createRSAPrivKeyTemplate(RSAPrivateCrtKey secretKey, KeyType slot,
             RSAKeyFormat format) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream(),
                 template = new ByteArrayOutputStream(),
@@ -141,7 +142,7 @@ class SecurityTokenUtils {
         return res.toByteArray();
     }
 
-    static byte[] createECPrivKeyTemplate(ECPrivateKey secretKey, ECPublicKey publicKey, KeyType slot,
+    public static byte[] createECPrivKeyTemplate(ECPrivateKey secretKey, ECPublicKey publicKey, KeyType slot,
             ECKeyFormat format) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream(),
                 template = new ByteArrayOutputStream(),

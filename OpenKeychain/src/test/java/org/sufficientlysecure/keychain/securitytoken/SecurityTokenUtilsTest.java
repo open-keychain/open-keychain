@@ -208,7 +208,7 @@ public class SecurityTokenUtilsTest extends Mockito {
                 "00000000000000000000000000000000000000cd0c5741e8695741e8695741e8" +
                 "69");
 
-        OpenPgpCapabilities caps = new OpenPgpCapabilities(data);
+        OpenPgpCapabilities caps = OpenPgpCapabilities.fromBytes(data);
 
         Assert.assertEquals(caps.isHasSM(), true);
     }

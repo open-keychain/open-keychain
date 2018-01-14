@@ -55,6 +55,7 @@ import java.security.spec.InvalidParameterSpecException;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.support.annotation.CheckResult;
 import android.support.annotation.NonNull;
 
 import javax.crypto.BadPaddingException;
@@ -272,7 +273,9 @@ class SCP11bSecureMessaging implements SecureMessaging {
     }
 
 
-    static void establish(final SecurityTokenConnection t, final Context ctx, OpenPgpCommandApduFactory commandFactory)
+    @CheckResult
+    static SecureMessaging establish(final SecurityTokenConnection t, final Context ctx,
+            OpenPgpCommandApduFactory commandFactory)
             throws SecureMessagingException, IOException {
 
         CommandApdu cmd;
@@ -478,7 +481,7 @@ class SCP11bSecureMessaging implements SecureMessaging {
             final SCP11bSecureMessaging sm = new SCP11bSecureMessaging();
             sm.setKeys(sEnc, sMac, sRmac, receipt);
 
-            t.setSecureMessaging(sm);
+            return sm;
 
         } catch (InvalidKeySpecException e) {
             throw new SecureMessagingException("invalid key specification : " + e.getMessage());

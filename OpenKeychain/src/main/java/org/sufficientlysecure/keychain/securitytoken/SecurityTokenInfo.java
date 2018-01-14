@@ -166,6 +166,13 @@ public abstract class SecurityTokenInfo implements Parcelable {
         return Version.create(matcher.group(1));
     }
 
+    public double getOpenPgpVersion() {
+        byte[] aid = getAid();
+        float minv = aid[7];
+        while (minv > 0) minv /= 10.0;
+        return aid[6] + minv;
+    }
+
     @AutoValue
     public static abstract class Version implements Comparable<Version> {
 

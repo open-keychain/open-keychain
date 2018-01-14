@@ -18,159 +18,231 @@
 package org.sufficientlysecure.keychain.securitytoken;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.ByteBuffer;
+
+import android.support.annotation.NonNull;
+
+import com.google.auto.value.AutoValue;
+import org.jetbrains.annotations.Nullable;
+
 
 @SuppressWarnings("unused") // just expose all included data
-class OpenPgpCapabilities {
+@AutoValue
+public abstract class OpenPgpCapabilities {
     private final static int MASK_SM = 1 << 7;
     private final static int MASK_KEY_IMPORT = 1 << 5;
     private final static int MASK_ATTRIBUTES_CHANGABLE = 1 << 2;
 
-    private byte[] mAid;
-    private byte[] mHistoricalBytes;
+    private static final int MAX_PW1_LENGTH_INDEX = 1;
+    private static final int MAX_PW3_LENGTH_INDEX = 3;
 
-    private boolean mHasSM;
-    private boolean mAttriburesChangable;
-    private boolean mHasKeyImport;
+    public abstract byte[] getAid();
+    abstract byte[] getHistoricalBytes();
 
-    private int mSMType;
-    private int mMaxCmdLen;
-    private int mMaxRspLen;
+    @Nullable
+    @SuppressWarnings("mutable")
+    public abstract byte[] getFingerprintSign();
+    @Nullable
+    @SuppressWarnings("mutable")
+    public abstract byte[] getFingerprintEncrypt();
+    @Nullable
+    @SuppressWarnings("mutable")
+    public abstract byte[] getFingerprintAuth();
+    public abstract byte[] getPwStatusBytes();
 
-    private Map<KeyType, KeyFormat> mKeyFormats;
-    private byte[] mFingerprints;
-    private byte[] mPwStatusBytes;
+    public abstract KeyFormat getSignKeyFormat();
+    public abstract KeyFormat getEncryptKeyFormat();
+    public abstract KeyFormat getAuthKeyFormat();
 
-    OpenPgpCapabilities(byte[] data) throws IOException {
-        mKeyFormats = new HashMap<>();
-        updateWithData(data);
+    abstract boolean isHasKeyImport();
+    public abstract boolean isAttributesChangable();
+
+    abstract boolean isHasSM();
+    abstract boolean isHasAesSm();
+    abstract boolean isHasScp11bSm();
+
+    @Nullable
+    abstract Integer getMaxCmdLen();
+    @Nullable
+    abstract Integer getMaxRspLen();
+
+    public static OpenPgpCapabilities fromBytes(byte[] rawOpenPgpCapabilities) throws IOException {
+        Iso7816TLV[] parsedTlvData = Iso7816TLV.readList(rawOpenPgpCapabilities, true);
+        return new AutoValue_OpenPgpCapabilities.Builder().updateWithTLV(parsedTlvData).build();
     }
 
-    void updateWithData(byte[] data) throws IOException {
-        Iso7816TLV[] tlvs = Iso7816TLV.readList(data, true);
-        if (tlvs.length == 1 && tlvs[0].mT == 0x6E) {
-            tlvs = ((Iso7816TLV.Iso7816CompositeTLV) tlvs[0]).mSubs;
+    public KeyFormat getFormatForKeyType(@NonNull KeyType keyType) {
+        switch (keyType) {
+            case SIGN: return getSignKeyFormat();
+            case ENCRYPT: return getEncryptKeyFormat();
+            case AUTH: return getAuthKeyFormat();
         }
+        return null;
+    }
 
-        for (Iso7816TLV tlv : tlvs) {
-            switch (tlv.mT) {
-                case 0x4F:
-                    mAid = tlv.mV;
-                    break;
-                case 0x5F52:
-                    mHistoricalBytes = tlv.mV;
-                    break;
-                case 0x73:
-                    parseDdo((Iso7816TLV.Iso7816CompositeTLV) tlv);
-                    break;
-                case 0xC0:
-                    parseExtendedCaps(tlv.mV);
-                    break;
-                case 0xC1:
-                    mKeyFormats.put(KeyType.SIGN, KeyFormat.fromBytes(tlv.mV));
-                    break;
-                case 0xC2:
-                    mKeyFormats.put(KeyType.ENCRYPT, KeyFormat.fromBytes(tlv.mV));
-                    break;
-                case 0xC3:
-                    mKeyFormats.put(KeyType.AUTH, KeyFormat.fromBytes(tlv.mV));
-                    break;
-                case 0xC4:
-                    mPwStatusBytes = tlv.mV;
-                    break;
-                case 0xC5:
-                    mFingerprints = tlv.mV;
-                    break;
-            }
+    @Nullable
+    public byte[] getKeyFingerprint(@NonNull KeyType keyType) {
+        switch (keyType) {
+            case SIGN: return getFingerprintSign();
+            case ENCRYPT: return getFingerprintEncrypt();
+            case AUTH: return getFingerprintAuth();
         }
-    }
-
-    private void parseDdo(Iso7816TLV.Iso7816CompositeTLV tlvs) {
-        for (Iso7816TLV tlv : tlvs.mSubs) {
-            switch (tlv.mT) {
-                case 0xC0:
-                    parseExtendedCaps(tlv.mV);
-                    break;
-                case 0xC1:
-                    mKeyFormats.put(KeyType.SIGN, KeyFormat.fromBytes(tlv.mV));
-                    break;
-                case 0xC2:
-                    mKeyFormats.put(KeyType.ENCRYPT, KeyFormat.fromBytes(tlv.mV));
-                    break;
-                case 0xC3:
-                    mKeyFormats.put(KeyType.AUTH, KeyFormat.fromBytes(tlv.mV));
-                    break;
-                case 0xC4:
-                    mPwStatusBytes = tlv.mV;
-                    break;
-                case 0xC5:
-                    mFingerprints = tlv.mV;
-                    break;
-            }
-        }
-    }
-
-    private void parseExtendedCaps(byte[] v) {
-        mHasSM = (v[0] & MASK_SM) != 0;
-        mHasKeyImport = (v[0] & MASK_KEY_IMPORT) != 0;
-        mAttriburesChangable = (v[0] & MASK_ATTRIBUTES_CHANGABLE) != 0;
-
-        mSMType = v[1];
-
-        mMaxCmdLen = (v[6] << 8) + v[7];
-        mMaxRspLen = (v[8] << 8) + v[9];
-    }
-
-    byte[] getAid() {
-        return mAid;
-    }
-
-    byte[] getPwStatusBytes() {
-        return mPwStatusBytes;
+        return null;
     }
 
     boolean isPw1ValidForMultipleSignatures() {
-        return mPwStatusBytes[0] == 1;
+        return getPwStatusBytes()[0] == 1;
     }
 
-    byte[] getHistoricalBytes() {
-        return mHistoricalBytes;
+    public int getPw1MaxLength() {
+        return getPwStatusBytes()[MAX_PW1_LENGTH_INDEX];
     }
 
-    boolean isHasSM() {
-        return mHasSM;
+    public int getPw3MaxLength() {
+        return getPwStatusBytes()[MAX_PW3_LENGTH_INDEX];
     }
 
-    boolean isAttributesChangable() {
-        return mAttriburesChangable;
+    public int getPw1TriesLeft() {
+        return getPwStatusBytes()[4];
     }
 
-    boolean isHasKeyImport() {
-        return mHasKeyImport;
+    public int getPw3TriesLeft() {
+        return getPwStatusBytes()[6];
     }
 
-    boolean isHasAESSM() {
-        return isHasSM() && ((mSMType == 1) || (mSMType == 2));
-    }
+    @AutoValue.Builder
+    @SuppressWarnings("UnusedReturnValue")
+    abstract static class Builder {
+        abstract Builder aid(byte[] mV);
+        abstract Builder historicalBytes(byte[] historicalBytes);
 
-    boolean isHasSCP11bSM() {
-        return isHasSM() && (mSMType == 3);
-    }
+        abstract Builder fingerprintSign(byte[] fingerprint);
+        abstract Builder fingerprintEncrypt(byte[] fingerprint);
+        abstract Builder fingerprintAuth(byte[] fingerprint);
 
-    int getMaxCmdLen() {
-        return mMaxCmdLen;
-    }
+        abstract Builder pwStatusBytes(byte[] mV);
+        abstract Builder authKeyFormat(KeyFormat keyFormat);
+        abstract Builder encryptKeyFormat(KeyFormat keyFormat);
+        abstract Builder signKeyFormat(KeyFormat keyFormat);
 
-    int getMaxRspLen() {
-        return mMaxRspLen;
-    }
 
-    KeyFormat getFormatForKeyType(KeyType keyType) {
-        return mKeyFormats.get(keyType);
-    }
+        abstract Builder hasKeyImport(boolean hasKeyImport);
+        abstract Builder attributesChangable(boolean attributesChangable);
 
-    public byte[] getFingerprints() {
-        return mFingerprints;
+        abstract Builder hasSM(boolean hasSm);
+        abstract Builder hasAesSm(boolean hasAesSm);
+        abstract Builder hasScp11bSm(boolean hasScp11bSm);
+
+        abstract Builder maxCmdLen(Integer maxCommandLen);
+        abstract Builder maxRspLen(Integer MaxResponseLen);
+
+        abstract OpenPgpCapabilities build();
+
+        public Builder() {
+            hasKeyImport(false);
+            attributesChangable(false);
+            hasSM(false);
+            hasAesSm(false);
+            hasScp11bSm(false);
+        }
+
+        Builder updateWithTLV(Iso7816TLV[] tlvs) {
+            if (tlvs.length == 1 && tlvs[0].mT == 0x6E) {
+                tlvs = ((Iso7816TLV.Iso7816CompositeTLV) tlvs[0]).mSubs;
+            }
+
+            for (Iso7816TLV tlv : tlvs) {
+                switch (tlv.mT) {
+                    case 0x4F:
+                        aid(tlv.mV);
+                        break;
+                    case 0x5F52:
+                        historicalBytes(tlv.mV);
+                        break;
+                    case 0x73:
+                        parseDdo((Iso7816TLV.Iso7816CompositeTLV) tlv);
+                        break;
+                    case 0xC0:
+                        parseExtendedCaps(tlv.mV);
+                        break;
+                    case 0xC1:
+                        signKeyFormat(KeyFormat.fromBytes(tlv.mV));
+                        break;
+                    case 0xC2:
+                        encryptKeyFormat(KeyFormat.fromBytes(tlv.mV));
+                        break;
+                    case 0xC3:
+                        authKeyFormat(KeyFormat.fromBytes(tlv.mV));
+                        break;
+                    case 0xC4:
+                        pwStatusBytes(tlv.mV);
+                        break;
+                    case 0xC5:
+                        parseFingerprints(tlv.mV);
+                        break;
+                }
+            }
+
+            return this;
+        }
+
+        private void parseDdo(Iso7816TLV.Iso7816CompositeTLV tlvs) {
+            for (Iso7816TLV tlv : tlvs.mSubs) {
+                switch (tlv.mT) {
+                    case 0xC0:
+                        parseExtendedCaps(tlv.mV);
+                        break;
+                    case 0xC1:
+                        signKeyFormat(KeyFormat.fromBytes(tlv.mV));
+                        break;
+                    case 0xC2:
+                        encryptKeyFormat(KeyFormat.fromBytes(tlv.mV));
+                        break;
+                    case 0xC3:
+                        authKeyFormat(KeyFormat.fromBytes(tlv.mV));
+                        break;
+                    case 0xC4:
+                        pwStatusBytes(tlv.mV);
+                        break;
+                    case 0xC5:
+                        parseFingerprints(tlv.mV);
+                        break;
+                }
+            }
+        }
+
+        private void parseFingerprints(byte[] mV) {
+            ByteBuffer fpBuf = ByteBuffer.wrap(mV);
+
+            byte[] buf;
+
+            buf = new byte[20];
+            fpBuf.get(buf);
+            fingerprintSign(buf);
+
+            buf = new byte[20];
+            fpBuf.get(buf);
+            fingerprintEncrypt(buf);
+
+            buf = new byte[20];
+            fpBuf.get(buf);
+            fingerprintAuth(buf);
+        }
+
+         private void parseExtendedCaps(byte[] v) {
+             hasKeyImport((v[0] & MASK_KEY_IMPORT) != 0);
+             attributesChangable((v[0] & MASK_ATTRIBUTES_CHANGABLE) != 0);
+
+             if ((v[0] & MASK_SM) != 0) {
+                 hasSM(true);
+                 int smType = v[1];
+                 hasAesSm(smType == 1 || smType == 2);
+                 hasScp11bSm(smType == 3);
+             }
+
+             maxCmdLen((v[6] << 8) + v[7]);
+             maxRspLen((v[8] << 8) + v[9]);
+         }
+
     }
 }

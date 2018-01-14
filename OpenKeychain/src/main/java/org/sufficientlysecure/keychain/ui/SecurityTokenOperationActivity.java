@@ -39,9 +39,13 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.securitytoken.KeyType;
+import org.sufficientlysecure.keychain.securitytoken.operations.ModifyPinTokenOp;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
+import org.sufficientlysecure.keychain.securitytoken.operations.PsoDecryptTokenOp;
+import org.sufficientlysecure.keychain.securitytoken.operations.SecurityTokenPsoSignTokenOp;
+import org.sufficientlysecure.keychain.securitytoken.operations.SecurityTokenChangeKeyTokenOp;
+import org.sufficientlysecure.keychain.securitytoken.operations.ResetAndWipeTokenOp;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -189,7 +193,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
         switch (mRequiredInput.mType) {
             case SECURITY_TOKEN_DECRYPT: {
                 long tokenKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(
-                        stConnection.getKeyFingerprint(KeyType.ENCRYPT));
+                        stConnection.getOpenPgpCapabilities().getFingerprintEncrypt());
 
                 if (tokenKeyId != mRequiredInput.getSubKeyId()) {
                     throw new IOException(getString(R.string.error_wrong_security_token));
@@ -205,17 +209,18 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     throw new IOException("Couldn't find subkey for key to token operation.");
                 }
 
+                PsoDecryptTokenOp psoDecryptTokenOp = PsoDecryptTokenOp.create(stConnection);
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] encryptedSessionKey = mRequiredInput.mInputData[i];
-                    byte[] decryptedSessionKey = stConnection
-                            .decryptSessionKey(encryptedSessionKey, publicKeyRing.getPublicKey(tokenKeyId));
+                    byte[] decryptedSessionKey = psoDecryptTokenOp
+                            .verifyAndDecryptSessionKey(encryptedSessionKey, publicKeyRing.getPublicKey(tokenKeyId));
                     mInputParcel = mInputParcel.withCryptoData(encryptedSessionKey, decryptedSessionKey);
                 }
                 break;
             }
             case SECURITY_TOKEN_SIGN: {
                 long tokenKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(
-                        stConnection.getKeyFingerprint(KeyType.SIGN));
+                        stConnection.getOpenPgpCapabilities().getFingerprintSign());
 
                 if (tokenKeyId != mRequiredInput.getSubKeyId()) {
                     throw new IOException(getString(R.string.error_wrong_security_token));
@@ -223,26 +228,28 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
 
                 mInputParcel = mInputParcel.withSignatureTime(mRequiredInput.mSignatureTime);
 
+                SecurityTokenPsoSignTokenOp psoSignUseCase = SecurityTokenPsoSignTokenOp.create(stConnection);
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] hash = mRequiredInput.mInputData[i];
                     int algo = mRequiredInput.mSignAlgos[i];
-                    byte[] signedHash = stConnection.calculateSignature(hash, algo);
+                    byte[] signedHash = psoSignUseCase.calculateSignature(hash, algo);
                     mInputParcel = mInputParcel.withCryptoData(hash, signedHash);
                 }
                 break;
             }
             case SECURITY_TOKEN_AUTH: {
                 long tokenKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(
-                        stConnection.getKeyFingerprint(KeyType.AUTH));
+                        stConnection.getOpenPgpCapabilities().getFingerprintAuth());
 
                 if (tokenKeyId != mRequiredInput.getSubKeyId()) {
                     throw new IOException(getString(R.string.error_wrong_security_token));
                 }
 
+                SecurityTokenPsoSignTokenOp psoSignUseCase = SecurityTokenPsoSignTokenOp.create(stConnection);
                 for (int i = 0; i < mRequiredInput.mInputData.length; i++) {
                     byte[] hash = mRequiredInput.mInputData[i];
                     int algo = mRequiredInput.mSignAlgos[i];
-                    byte[] signedHash = stConnection.calculateAuthenticationSignature(hash, algo);
+                    byte[] signedHash = psoSignUseCase.calculateAuthenticationSignature(hash, algo);
                     mInputParcel = mInputParcel.withCryptoData(hash, signedHash);
 
                 }
@@ -272,7 +279,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     long subkeyId = buf.getLong();
 
                     CanonicalizedSecretKey key = secretKeyRing.getSecretKey(subkeyId);
-                    byte[] tokenSerialNumber = Arrays.copyOf(stConnection.getAid(), 16);
+                    byte[] tokenSerialNumber = Arrays.copyOf(stConnection.getOpenPgpCapabilities().getAid(), 16);
 
                     Passphrase passphrase;
                     try {
@@ -282,25 +289,22 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                         throw new IOException("Unable to get cached passphrase!");
                     }
 
-                    stConnection.changeKey(key, passphrase, adminPin);
+                    SecurityTokenChangeKeyTokenOp putKeyUseCase = SecurityTokenChangeKeyTokenOp.create(stConnection);
+                    putKeyUseCase.changeKey(key, passphrase, adminPin);
 
                     // TODO: Is this really used anywhere?
                     mInputParcel = mInputParcel.withCryptoData(subkeyBytes, tokenSerialNumber);
                 }
 
-                // First set Admin PIN, then PIN.
-                // Order is important for Gnuk, otherwise it will be set up in "admin less mode".
-                // http://www.fsij.org/doc-gnuk/gnuk-passphrase-setting.html#set-up-pw1-pw3-and-reset-code
-                stConnection.modifyPw3Pin(newAdminPin, adminPin);
-                stConnection.resetPin(newPin, new Passphrase(new String(newAdminPin)));
+                ModifyPinTokenOp.create(stConnection, adminPin).modifyPw1andPw3Pins(newPin, newAdminPin);
 
                 SecurityTokenConnection.clearCachedConnections();
 
                 break;
             }
             case SECURITY_TOKEN_RESET_CARD: {
-                stConnection.resetAndWipeToken();
-                mResultTokenInfo = stConnection.getTokenInfo();
+                ResetAndWipeTokenOp.create(stConnection).resetAndWipeToken();
+                mResultTokenInfo = stConnection.readTokenInfo();
 
                 break;
             }
