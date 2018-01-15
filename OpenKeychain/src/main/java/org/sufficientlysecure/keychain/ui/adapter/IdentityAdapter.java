@@ -39,7 +39,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter.ViewHolder;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.IdentityInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.LinkedIdInfo;
-import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.TrustIdInfo;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.AutocryptPeerInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.UserIdInfo;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
@@ -79,8 +79,8 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
 
         int viewType = getItemViewType(position);
         if (viewType == VIEW_TYPE_USER_ID) {
-            if (info instanceof TrustIdInfo) {
-                ((UserIdViewHolder) holder).bind((TrustIdInfo) info);
+            if (info instanceof AutocryptPeerInfo) {
+                ((UserIdViewHolder) holder).bind((AutocryptPeerInfo) info);
             } else {
                 ((UserIdViewHolder) holder).bind((UserIdInfo) info);
             }
@@ -107,7 +107,7 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
     @Override
     public int getItemViewType(int position) {
         IdentityInfo info = data.get(position);
-        if (info instanceof UserIdInfo || info instanceof TrustIdInfo) {
+        if (info instanceof UserIdInfo || info instanceof AutocryptPeerInfo) {
             return VIEW_TYPE_USER_ID;
         } else if (info instanceof LinkedIdInfo) {
             return VIEW_TYPE_LINKED_ID;
@@ -236,21 +236,21 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
             });
         }
 
-        public void bind(TrustIdInfo info) {
+        public void bind(AutocryptPeerInfo info) {
             if (info.getUserIdInfo() != null) {
                 bindUserIdInfo(info.getUserIdInfo());
             } else {
                 vName.setVisibility(View.GONE);
                 vComment.setVisibility(View.GONE);
 
-                vAddress.setText(info.getTrustId());
+                vAddress.setText(info.getIdentity());
                 vAddress.setTypeface(null, Typeface.NORMAL);
             }
 
             vIcon.setImageDrawable(info.getAppIcon());
             vMore.setVisibility(View.VISIBLE);
 
-            itemView.setClickable(info.getTrustIdIntent() != null);
+            itemView.setClickable(info.getAutocryptPeerIntent() != null);
         }
 
         public void bind(UserIdInfo info) {

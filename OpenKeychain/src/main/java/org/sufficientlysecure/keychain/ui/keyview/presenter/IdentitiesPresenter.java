@@ -42,7 +42,7 @@ import org.sufficientlysecure.keychain.ui.keyview.LinkedIdViewFragment;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.IdentityInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.LinkedIdInfo;
-import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.TrustIdInfo;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.AutocryptPeerInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.UserIdInfo;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -129,8 +129,8 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
             showLinkedId((LinkedIdInfo) info);
         } else if (info instanceof UserIdInfo) {
             showUserIdInfo((UserIdInfo) info);
-        } else if (info instanceof TrustIdInfo) {
-            Intent autocryptPeerIntent = ((TrustIdInfo) info).getTrustIdIntent();
+        } else if (info instanceof AutocryptPeerInfo) {
+            Intent autocryptPeerIntent = ((AutocryptPeerInfo) info).getAutocryptPeerIntent();
             if (autocryptPeerIntent != null) {
                 viewKeyMvpView.startActivity(autocryptPeerIntent);
             }
@@ -176,7 +176,7 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
     }
 
     public void onClickForgetIdentity(int position) {
-        TrustIdInfo info = (TrustIdInfo) identitiesAdapter.getInfo(position);
+        AutocryptPeerInfo info = (AutocryptPeerInfo) identitiesAdapter.getInfo(position);
         if (info == null) {
             Timber.e("got a 'forget' click on a bad trust id");
             return;
@@ -184,7 +184,7 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
 
         AutocryptPeerDataAccessObject autocryptPeerDao =
                 new AutocryptPeerDataAccessObject(context, info.getPackageName());
-        autocryptPeerDao.delete(info.getTrustId());
+        autocryptPeerDao.delete(info.getIdentity());
     }
 
     public interface IdentitiesMvpView {
