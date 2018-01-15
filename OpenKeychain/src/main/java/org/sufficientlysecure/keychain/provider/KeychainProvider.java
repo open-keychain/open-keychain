@@ -754,16 +754,18 @@ public class KeychainProvider extends ContentProvider {
 
                 qb.setTables(Tables.API_AUTOCRYPT_PEERS +
                         " LEFT JOIN " + Tables.KEYS + " AS ac_key" +
-                        " ON (ac_key." + Keys.MASTER_KEY_ID + " = " + Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.MASTER_KEY_ID + ")" +
+                            " ON (ac_key." + Keys.MASTER_KEY_ID + " = " + Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.MASTER_KEY_ID +
+                                " AND ac_key." + Keys.RANK + " = 0)" +
                         " LEFT JOIN " + Tables.KEYS + " AS gossip_key" +
-                        " ON (gossip_key." + Keys.MASTER_KEY_ID + " = " + ApiAutocryptPeer.GOSSIP_MASTER_KEY_ID + ")"
+                            " ON (gossip_key." + Keys.MASTER_KEY_ID + " = " + ApiAutocryptPeer.GOSSIP_MASTER_KEY_ID +
+                                " AND gossip_key." + Keys.RANK + " = 0)"
                 );
 
                 if (match == AUTOCRYPT_PEERS_BY_MASTER_KEY_ID) {
                     long masterKeyId = Long.parseLong(uri.getLastPathSegment());
 
-                    selection = Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.MASTER_KEY_ID + " = ?";
-                    selectionArgs = new String[] { Long.toString(masterKeyId) };
+                    qb.appendWhere(Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.MASTER_KEY_ID + " = ");
+                    qb.appendWhere(Long.toString(masterKeyId));
                 } else if (match == AUTOCRYPT_PEERS_BY_PACKAGE_NAME) {
                     String packageName = uri.getPathSegments().get(2);
 
