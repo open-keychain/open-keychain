@@ -231,7 +231,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_OVERRIDDEN_WARNINGS);
         db.execSQL(CREATE_API_AUTOCRYPT_PEERS);
 
-        db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysColumns.RANK + ");");
+        db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysColumns.RANK + ", " + KeysColumns.MASTER_KEY_ID + ");");
         db.execSQL("CREATE INDEX uids_by_rank ON user_packets (" + UserPacketsColumns.RANK + ", "
                 + UserPacketsColumns.USER_ID + ", " + UserPacketsColumns.MASTER_KEY_ID + ");");
         db.execSQL("CREATE INDEX verified_certs ON certs ("
@@ -415,6 +415,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 db.execSQL("DROP TABLE api_autocrypt_peers");
                 db.execSQL(CREATE_API_AUTOCRYPT_PEERS);
                 db.execSQL("CREATE INDEX uids_by_email ON user_packets (email);");
+                db.execSQL("DROP INDEX keys_by_rank");
+                db.execSQL("CREATE INDEX keys_by_rank ON keys(rank, master_key_id);");
         }
     }
 
