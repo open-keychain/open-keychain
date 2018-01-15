@@ -236,6 +236,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 + UserPacketsColumns.USER_ID + ", " + UserPacketsColumns.MASTER_KEY_ID + ");");
         db.execSQL("CREATE INDEX verified_certs ON certs ("
                 + CertsColumns.VERIFIED + ", " + CertsColumns.MASTER_KEY_ID + ");");
+        db.execSQL("CREATE INDEX uids_by_email ON user_packets ("
+                + UserPacketsColumns.EMAIL + ");");
 
         Preferences.getPreferences(mContext).setKeySignaturesTableInitialized();
     }
@@ -412,6 +414,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             case 24:
                 db.execSQL("DROP TABLE api_autocrypt_peers");
                 db.execSQL(CREATE_API_AUTOCRYPT_PEERS);
+                db.execSQL("CREATE INDEX uids_by_email ON user_packets (email);");
         }
     }
 

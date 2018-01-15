@@ -717,14 +717,10 @@ public class KeychainProvider extends ContentProvider {
             case AUTOCRYPT_PEERS_BY_MASTER_KEY_ID:
             case AUTOCRYPT_PEERS_BY_PACKAGE_NAME:
             case AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID: {
-                if (selection != null || selectionArgs != null) {
-                    throw new UnsupportedOperationException();
-                }
-
                 long unixSeconds = new Date().getTime() / 1000;
 
                 HashMap<String, String> projectionMap = new HashMap<>();
-                projectionMap.put(ApiAutocryptPeer._ID, "oid AS " + ApiAutocryptPeer._ID);
+                projectionMap.put(ApiAutocryptPeer._ID, Tables.API_AUTOCRYPT_PEERS + ".oid AS " + ApiAutocryptPeer._ID);
                 projectionMap.put(ApiAutocryptPeer.IDENTIFIER, ApiAutocryptPeer.IDENTIFIER);
                 projectionMap.put(ApiAutocryptPeer.PACKAGE_NAME, ApiAutocryptPeer.PACKAGE_NAME);
                 projectionMap.put(ApiAutocryptPeer.LAST_SEEN, ApiAutocryptPeer.LAST_SEEN);
@@ -771,8 +767,8 @@ public class KeychainProvider extends ContentProvider {
                 } else if (match == AUTOCRYPT_PEERS_BY_PACKAGE_NAME) {
                     String packageName = uri.getPathSegments().get(2);
 
-                    selection = Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.PACKAGE_NAME + " = ?";
-                    selectionArgs = new String[] { packageName };
+                    qb.appendWhere(Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.PACKAGE_NAME + " = ");
+                    qb.appendWhereEscapeString(packageName);
                 } else { // AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID
                     String packageName = uri.getPathSegments().get(2);
                     String autocryptPeer = uri.getPathSegments().get(3);

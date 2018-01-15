@@ -386,6 +386,10 @@ public class KeychainContract {
             return CONTENT_URI.buildUpon().appendPath(PATH_BY_KEY_ID).appendPath(uri.getPathSegments().get(1)).build();
         }
 
+        public static Uri buildByPackageName(String packageName) {
+            return CONTENT_URI.buildUpon().appendPath(PATH_BY_PACKAGE_NAME).appendPath(packageName).build();
+        }
+
         public static Uri buildByPackageNameAndAutocryptId(String packageName, String autocryptPeer) {
             return CONTENT_URI.buildUpon().appendPath(PATH_BY_PACKAGE_NAME).appendPath(packageName).appendPath(autocryptPeer).build();
         }

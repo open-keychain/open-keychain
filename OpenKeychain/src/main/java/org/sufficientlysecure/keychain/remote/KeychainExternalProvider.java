@@ -22,6 +22,7 @@ import java.security.AccessControlException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -53,6 +54,7 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
+import org.sufficientlysecure.keychain.provider.KeychainProvider;
 import org.sufficientlysecure.keychain.provider.SimpleContentResolverInterface;
 import org.sufficientlysecure.keychain.util.CloseDatabaseCursorFactory;
 import timber.log.Timber;
@@ -66,6 +68,8 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
     private static final int API_APPS = 301;
     private static final int API_APPS_BY_PACKAGE_NAME = 302;
+
+    private static final int AUTOCRYPT_PEERS_BY_PACKAGE_NAME = 602;
 
     public static final String TEMP_TABLE_QUERIED_ADDRESSES = "queried_addresses";
     public static final String TEMP_TABLE_COLUMN_ADDRES = "address";
@@ -98,6 +102,9 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
         // can only query status of calling app - for internal use only!
         matcher.addURI(KeychainContract.CONTENT_AUTHORITY, KeychainContract.BASE_API_APPS + "/*", API_APPS_BY_PACKAGE_NAME);
+
+        matcher.addURI(KeychainContract.CONTENT_AUTHORITY, KeychainContract.BASE_AUTOCRYPT_PEERS + "/" +
+                KeychainContract.PATH_BY_PACKAGE_NAME + "/*", AUTOCRYPT_PEERS_BY_PACKAGE_NAME);
 
         return matcher;
     }
@@ -138,6 +145,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs,
                         String sortOrder) {
         Timber.v("query(uri=" + uri + ", proj=" + Arrays.toString(projection) + ")");
+        long startTime = System.currentTimeMillis();
 
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
@@ -239,7 +247,8 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                         TEMP_TABLE_COLUMN_ADDRES + " TEXT NOT NULL PRIMARY KEY, " +
                         AutocryptStatus.UID_KEY_STATUS + " INT, " +
                         AutocryptStatus.UID_ADDRESS + " TEXT, " +
-                        AutocryptStatus.UID_MASTER_KEY_ID + " TEXT, " +
+                        AutocryptStatus.UID_MASTER_KEY_ID + " INT, " +
+                        AutocryptStatus.UID_CANDIDATES + " INT, " +
                         AutocryptStatus.AUTOCRYPT_KEY_STATUS + " INT, " +
                         AutocryptStatus.AUTOCRYPT_PEER_STATE + " INT, " +
                         AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID + " INT" +
@@ -250,48 +259,26 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                     db.insert(TEMP_TABLE_QUERIED_ADDRESSES, null, cv);
                 }
 
-                long unixSeconds = System.currentTimeMillis() / 1000;
-                db.execSQL("REPLACE INTO " + TEMP_TABLE_QUERIED_ADDRESSES +
-                        "(" + TEMP_TABLE_COLUMN_ADDRES + ", " + AutocryptStatus.UID_KEY_STATUS + ", " + AutocryptStatus.UID_ADDRESS + ")" +
-                        " SELECT " + TEMP_TABLE_COLUMN_ADDRES + ", " +
-                                "CASE ( MIN (certs_user_id." + Certs.VERIFIED + " ) ) "
-                                // remap to keep this provider contract independent from our internal representation
-                                + " WHEN " + Certs.VERIFIED_SELF + " THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
-                                + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + KeychainExternalContract.KEY_STATUS_VERIFIED
-                                + " WHEN NULL THEN NULL"
-                                + " END AS " + AutocryptStatus.UID_KEY_STATUS +
-                        ", " + Tables.USER_PACKETS + "." + UserPackets.USER_ID +
-                        " FROM " + TEMP_TABLE_QUERIED_ADDRESSES
-                            + " JOIN " + Tables.USER_PACKETS + " ON ("
-                            + Tables.USER_PACKETS + "." + UserPackets.USER_ID + " IS NOT NULL"
-                            + " AND " + Tables.USER_PACKETS + "." + UserPackets.EMAIL + " LIKE " + TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES
-                            + ")"
-                            + " JOIN " + Tables.CERTS + " AS certs_user_id ON ("
-                            + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = certs_user_id." + Certs.MASTER_KEY_ID
-                            + " AND " + Tables.USER_PACKETS + "." + UserPackets.RANK + " = certs_user_id." + Certs.RANK
-                            + ")"
-                        + " WHERE (EXISTS (SELECT * FROM " + Tables.KEYS + " WHERE "
-                                + Tables.KEYS + "." + Keys.KEY_ID + " = " + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID
-                                + " AND " + Tables.KEYS + "." + Keys.IS_REVOKED + " = 0"
-                                + " AND NOT " + "(" + Tables.KEYS + "." + Keys.EXPIRY + " IS NOT NULL AND " + Tables.KEYS + "." + Keys.EXPIRY
-                                + " < " + unixSeconds + ")"
-                                + ")) OR " + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " IS NULL"
-                        + " GROUP BY " + TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES
-                );
+                boolean isWildcardSelector = selectionArgs.length == 1 && selectionArgs[0].contains("%");
 
-                AutocryptPeerDataAccessObject autocryptPeerDao =
-                        new AutocryptPeerDataAccessObject(getContext(), callingPackageName);
-                for (String autocryptId : selectionArgs) {
-                    AutocryptPeerStateResult autocryptState = autocryptPeerDao.getAutocryptState(autocryptId);
-                    cv.put(AutocryptStatus.AUTOCRYPT_PEER_STATE, getPeerStateValue(autocryptState.autocryptState));
-                    if (autocryptState.masterKeyId != null) {
-                        cv.put(AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID, autocryptState.masterKeyId);
-                        cv.put(AutocryptStatus.AUTOCRYPT_KEY_STATUS, autocryptState.isVerified ?
-                                KeychainExternalContract.KEY_STATUS_VERIFIED : KeychainExternalContract.KEY_STATUS_UNVERIFIED);
-                    }
-                    System.err.println(cv.toString());
-                    db.update(TEMP_TABLE_QUERIED_ADDRESSES, cv,
-                            TEMP_TABLE_COLUMN_ADDRES + "=?", new String [] { autocryptId });
+                List<String> plist = Arrays.asList(projection);
+
+                boolean queriesUidResult = plist.contains(AutocryptStatus.UID_KEY_STATUS) ||
+                        plist.contains(AutocryptStatus.UID_ADDRESS) ||
+                        plist.contains(AutocryptStatus.UID_MASTER_KEY_ID) ||
+                        plist.contains(AutocryptStatus.UID_CANDIDATES);
+                if (queriesUidResult) {
+                    fillTempTableWithUidResult(db, isWildcardSelector);
+                }
+
+                boolean queriesAutocryptResult = plist.contains(AutocryptStatus.AUTOCRYPT_PEER_STATE) ||
+                        plist.contains(AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID) ||
+                        plist.contains(AutocryptStatus.AUTOCRYPT_KEY_STATUS);
+                if (isWildcardSelector && queriesAutocryptResult) {
+                    throw new UnsupportedOperationException("Cannot wildcard-query autocrypt results!");
+                }
+                if (!isWildcardSelector && queriesAutocryptResult) {
+                    fillTempTableWithAutocryptResult(selectionArgs, db, callingPackageName, cv);
                 }
 
                 qb.setTables(TEMP_TABLE_QUERIED_ADDRESSES);
@@ -315,6 +302,11 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
                 break;
             }
+
+            case AUTOCRYPT_PEERS_BY_PACKAGE_NAME:
+                KeychainProvider keychainProvider = new KeychainProvider();
+                keychainProvider.attachInfo(getContext(), null);
+                return keychainProvider.query(uri, projection, selection, selectionArgs, sortOrder);
 
             default: {
                 throw new IllegalArgumentException("Unknown URI " + uri + " (" + match + ")");
@@ -341,8 +333,100 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
         }
 
         Timber.d("Query: " + qb.buildQuery(projection, selection, groupBy, null, orderBy, null));
+        Timber.d(Constants.TAG, "Query took %s ms", (System.currentTimeMillis() - startTime));
 
         return cursor;
+    }
+
+    private void fillTempTableWithAutocryptResult(String[] selectionArgs, SQLiteDatabase db, String callingPackageName,
+            ContentValues cv) {
+        AutocryptPeerDataAccessObject autocryptPeerDao =
+                new AutocryptPeerDataAccessObject(this, callingPackageName);
+        Map<String,AutocryptPeerStateResult> autocryptStates = autocryptPeerDao.getAutocryptState(selectionArgs);
+
+        for (String autocryptId : selectionArgs) {
+            cv.clear();
+
+            AutocryptPeerStateResult peerResult = autocryptStates.get(autocryptId);
+            if (peerResult == null) {
+                cv.put(AutocryptStatus.AUTOCRYPT_PEER_STATE, AutocryptStatus.AUTOCRYPT_PEER_DISABLED);
+            } else {
+                cv.put(AutocryptStatus.AUTOCRYPT_PEER_STATE, getPeerStateValue(peerResult.autocryptState));
+                if (peerResult.masterKeyId != null) {
+                    cv.put(AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID, peerResult.masterKeyId);
+                    cv.put(AutocryptStatus.AUTOCRYPT_KEY_STATUS, peerResult.isVerified ?
+                            KeychainExternalContract.KEY_STATUS_VERIFIED :
+                            KeychainExternalContract.KEY_STATUS_UNVERIFIED);
+                }
+            }
+
+            db.update(TEMP_TABLE_QUERIED_ADDRESSES, cv,TEMP_TABLE_COLUMN_ADDRES + "=?",
+                    new String[] { autocryptId });
+        }
+    }
+
+    private void fillTempTableWithUidResult(SQLiteDatabase db, boolean isWildcardSelector) {
+        String cmpOperator = isWildcardSelector ? " LIKE " : " = ";
+        long unixSeconds = System.currentTimeMillis() / 1000;
+        db.execSQL("REPLACE INTO " + TEMP_TABLE_QUERIED_ADDRESSES +
+                "(" + TEMP_TABLE_COLUMN_ADDRES + ", " + AutocryptStatus.UID_KEY_STATUS + ", " +
+                AutocryptStatus.UID_ADDRESS + ", " + AutocryptStatus.UID_MASTER_KEY_ID
+                + ", " + AutocryptStatus.UID_CANDIDATES + ")" +
+                " SELECT " + TEMP_TABLE_COLUMN_ADDRES + ", " +
+                "CASE ( MIN (" + Tables.CERTS + "." + Certs.VERIFIED + " ) ) "
+                // remap to keep this provider contract independent from our internal representation
+                + " WHEN " + Certs.VERIFIED_SELF + " THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
+                + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + KeychainExternalContract.KEY_STATUS_VERIFIED
+                + " END AS " + AutocryptStatus.UID_KEY_STATUS
+                + ", " + Tables.USER_PACKETS + "." + UserPackets.USER_ID
+                + ", " + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID
+                + ", COUNT(DISTINCT " + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + ")"
+                + " FROM " + TEMP_TABLE_QUERIED_ADDRESSES
+                + " LEFT JOIN " + Tables.USER_PACKETS + " ON ("
+                + Tables.USER_PACKETS + "." + UserPackets.EMAIL + cmpOperator +
+                TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES
+                + ")"
+                + " LEFT JOIN " + Tables.CERTS + " ON ("
+                + Tables.CERTS + "." + Certs.MASTER_KEY_ID + " = " + Tables.USER_PACKETS + "." +
+                UserPackets.MASTER_KEY_ID
+                + " AND " + Tables.CERTS + "." + Certs.RANK + " = " + Tables.USER_PACKETS + "." +
+                UserPackets.RANK
+                + " AND " + Tables.CERTS + "." + Certs.VERIFIED + " > 0"
+                + ")"
+                + " WHERE (EXISTS (SELECT 1 FROM " + Tables.KEYS + " WHERE "
+                + Tables.KEYS + "." + Keys.KEY_ID + " = " + Tables.USER_PACKETS + "." +
+                UserPackets.MASTER_KEY_ID
+                + " AND " + Tables.KEYS + "." + Keys.RANK + " = 0"
+                + " AND " + Tables.KEYS + "." + Keys.IS_REVOKED + " = 0"
+                + " AND NOT " + "(" + Tables.KEYS + "." + Keys.EXPIRY + " IS NOT NULL AND " + Tables.KEYS +
+                "." + Keys.EXPIRY
+                + " < " + unixSeconds + ")"
+                + ")) OR " + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " IS NULL"
+                + " GROUP BY " + TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES);
+    }
+
+    private void explainQuery(SQLiteDatabase db, String sql) {
+        Cursor explainCursor = db.rawQuery("EXPLAIN QUERY PLAN " + sql, new String[0]);
+
+        // this is a debugging feature, we can be a little careless
+        explainCursor.moveToFirst();
+
+        StringBuilder line = new StringBuilder();
+        for (int i = 0; i < explainCursor.getColumnCount(); i++) {
+            line.append(explainCursor.getColumnName(i)).append(", ");
+        }
+        Timber.d(Constants.TAG, line.toString());
+
+        while (!explainCursor.isAfterLast()) {
+            line = new StringBuilder();
+            for (int i = 0; i < explainCursor.getColumnCount(); i++) {
+                line.append(explainCursor.getString(i)).append(", ");
+            }
+            Timber.d(Constants.TAG, line.toString());
+            explainCursor.moveToNext();
+        }
+
+        explainCursor.close();
     }
 
     private int getPeerStateValue(AutocryptState autocryptState) {

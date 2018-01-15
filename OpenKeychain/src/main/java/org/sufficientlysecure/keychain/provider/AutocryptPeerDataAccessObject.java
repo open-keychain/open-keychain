@@ -19,12 +19,13 @@ package org.sufficientlysecure.keychain.provider;
 
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.text.format.DateUtils;
 
@@ -35,6 +36,7 @@ public class AutocryptPeerDataAccessObject {
     private static final long AUTOCRYPT_DISCOURAGE_THRESHOLD_MILLIS = 35 * DateUtils.DAY_IN_MILLIS;
 
     private static final String[] PROJECTION_AUTOCRYPT_QUERY = {
+            ApiAutocryptPeer.IDENTIFIER,
             ApiAutocryptPeer.LAST_SEEN,
             ApiAutocryptPeer.MASTER_KEY_ID,
             ApiAutocryptPeer.LAST_SEEN_KEY,
@@ -48,18 +50,19 @@ public class AutocryptPeerDataAccessObject {
             ApiAutocryptPeer.GOSSIP_KEY_IS_EXPIRED,
             ApiAutocryptPeer.GOSSIP_KEY_IS_VERIFIED,
     };
-    private static final int INDEX_LAST_SEEN = 0;
-    private static final int INDEX_MASTER_KEY_ID = 1;
-    private static final int INDEX_LAST_SEEN_KEY = 2;
-    private static final int INDEX_STATE = 3;
-    private static final int INDEX_KEY_IS_REVOKED = 4;
-    private static final int INDEX_KEY_IS_EXPIRED = 5;
-    private static final int INDEX_KEY_IS_VERIFIED = 6;
-    private static final int INDEX_GOSSIP_MASTER_KEY_ID = 7;
-    private static final int INDEX_GOSSIP_LAST_SEEN_KEY = 8;
-    private static final int INDEX_GOSSIP_KEY_IS_REVOKED = 9;
-    private static final int INDEX_GOSSIP_KEY_IS_EXPIRED = 10;
-    private static final int INDEX_GOSSIP_KEY_IS_VERIFIED = 11;
+    private static final int INDEX_IDENTIFIER = 0;
+    private static final int INDEX_LAST_SEEN = 1;
+    private static final int INDEX_MASTER_KEY_ID = 2;
+    private static final int INDEX_LAST_SEEN_KEY = 3;
+    private static final int INDEX_STATE = 4;
+    private static final int INDEX_KEY_IS_REVOKED = 5;
+    private static final int INDEX_KEY_IS_EXPIRED = 6;
+    private static final int INDEX_KEY_IS_VERIFIED = 7;
+    private static final int INDEX_GOSSIP_MASTER_KEY_ID = 8;
+    private static final int INDEX_GOSSIP_LAST_SEEN_KEY = 9;
+    private static final int INDEX_GOSSIP_KEY_IS_REVOKED = 10;
+    private static final int INDEX_GOSSIP_KEY_IS_EXPIRED = 11;
+    private static final int INDEX_GOSSIP_KEY_IS_VERIFIED = 12;
 
     private final SimpleContentResolverInterface queryInterface;
     private final String packageName;
@@ -178,7 +181,7 @@ public class AutocryptPeerDataAccessObject {
         queryInterface.delete(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), null, null);
     }
 
-    public AutocryptPeerStateResult getAutocryptState(String autocryptId) {
+    public Map<String,AutocryptPeerStateResult> getAutocryptState(String... autocryptIds) {
                 /*
 Determine if encryption is possible
 If there is no peers[to-addr], then set ui-recommendation to disable, and terminate.
@@ -199,47 +202,70 @@ If autocrypt_timestamp is more than 35 days older than last_seen, set preliminar
 Otherwise, set preliminary-recommendation to available.
                  */
 
-        Cursor cursor = queryInterface.query(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId),
-                PROJECTION_AUTOCRYPT_QUERY, null, null, null);
+        Map<String,AutocryptPeerStateResult> result = new HashMap<>();
+        StringBuilder selection = new StringBuilder(ApiAutocryptPeer.IDENTIFIER + " IN (?");
+        for (int i = 1; i < autocryptIds.length; i++) {
+            selection.append(",?");
+        }
+        selection.append(")");
+
+        Cursor cursor = queryInterface.query(ApiAutocryptPeer.buildByPackageName(packageName),
+                PROJECTION_AUTOCRYPT_QUERY, selection.toString(), autocryptIds, null);
         try {
-            if (!cursor.moveToFirst()) {
-                return new AutocryptPeerStateResult(AutocryptState.DISABLE, null, false);
-            }
+            while (cursor.moveToNext()) {
+                String autocryptId = cursor.getString(INDEX_IDENTIFIER);
 
-            boolean hasKey = !cursor.isNull(INDEX_MASTER_KEY_ID);
-            boolean isRevoked = cursor.getInt(INDEX_KEY_IS_REVOKED) != 0;
-            boolean isExpired = cursor.getInt(INDEX_KEY_IS_EXPIRED) != 0;
-            if (hasKey && !isRevoked && !isExpired) {
-                long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
-                long lastSeen = cursor.getLong(INDEX_LAST_SEEN);
-                long lastSeenKey = cursor.getLong(INDEX_LAST_SEEN_KEY);
-                boolean isVerified = cursor.getInt(INDEX_KEY_IS_VERIFIED) != 0;
-                if (lastSeenKey < (lastSeen - AUTOCRYPT_DISCOURAGE_THRESHOLD_MILLIS)) {
-                    return new AutocryptPeerStateResult(AutocryptState.DISCOURAGED_OLD, masterKeyId, isVerified);
+                boolean hasKey = !cursor.isNull(INDEX_MASTER_KEY_ID);
+                boolean isRevoked = cursor.getInt(INDEX_KEY_IS_REVOKED) != 0;
+                boolean isExpired = cursor.getInt(INDEX_KEY_IS_EXPIRED) != 0;
+                if (hasKey && !isRevoked && !isExpired) {
+                    long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
+                    long lastSeen = cursor.getLong(INDEX_LAST_SEEN);
+                    long lastSeenKey = cursor.getLong(INDEX_LAST_SEEN_KEY);
+                    boolean isVerified = cursor.getInt(INDEX_KEY_IS_VERIFIED) != 0;
+                    if (lastSeenKey < (lastSeen - AUTOCRYPT_DISCOURAGE_THRESHOLD_MILLIS)) {
+                        AutocryptPeerStateResult peerResult = new AutocryptPeerStateResult(
+                                AutocryptState.DISCOURAGED_OLD, masterKeyId, isVerified);
+                        result.put(autocryptId, peerResult);
+                        continue;
+                    }
+
+                    boolean isMutual = cursor.getInt(INDEX_STATE) != 0;
+                    if (isMutual) {
+                        AutocryptPeerStateResult peerResult = new AutocryptPeerStateResult(
+                                AutocryptState.MUTUAL, masterKeyId, isVerified);
+                        result.put(autocryptId, peerResult);
+                        continue;
+                    } else {
+                        AutocryptPeerStateResult peerResult = new AutocryptPeerStateResult(
+                                AutocryptState.AVAILABLE, masterKeyId, isVerified);
+                        result.put(autocryptId, peerResult);
+                        continue;
+                    }
                 }
 
-                boolean isMutual = cursor.getInt(INDEX_STATE) != 0;
-                if (isMutual) {
-                    return new AutocryptPeerStateResult(AutocryptState.MUTUAL, masterKeyId, isVerified);
-                } else {
-                    return new AutocryptPeerStateResult(AutocryptState.AVAILABLE, masterKeyId, isVerified);
+                boolean gossipHasKey = !cursor.isNull(INDEX_GOSSIP_MASTER_KEY_ID);
+                boolean gossipIsRevoked = cursor.getInt(INDEX_GOSSIP_KEY_IS_REVOKED) != 0;
+                boolean gossipIsExpired = cursor.getInt(INDEX_GOSSIP_KEY_IS_EXPIRED) != 0;
+                boolean isVerified = cursor.getInt(INDEX_GOSSIP_KEY_IS_VERIFIED) != 0;
+                if (gossipHasKey && !gossipIsRevoked && !gossipIsExpired) {
+                    long masterKeyId = cursor.getLong(INDEX_GOSSIP_MASTER_KEY_ID);
+                    AutocryptPeerStateResult peerResult =
+                            new AutocryptPeerStateResult(
+                                    AutocryptState.DISCOURAGED_GOSSIP, masterKeyId, isVerified);
+                    result.put(autocryptId, peerResult);
+                    continue;
                 }
-            }
 
-            boolean gossipHasKey = !cursor.isNull(INDEX_GOSSIP_MASTER_KEY_ID);
-            boolean gossipIsRevoked = cursor.getInt(INDEX_GOSSIP_KEY_IS_REVOKED) != 0;
-            boolean gossipIsExpired = cursor.getInt(INDEX_GOSSIP_KEY_IS_EXPIRED) != 0;
-            boolean isVerified = cursor.getInt(INDEX_GOSSIP_KEY_IS_VERIFIED) != 0;
-            if (gossipHasKey && !gossipIsRevoked && !gossipIsExpired) {
-                System.err.println("xx");
-                long masterKeyId = cursor.getLong(INDEX_GOSSIP_MASTER_KEY_ID);
-                return new AutocryptPeerStateResult(AutocryptState.DISCOURAGED_GOSSIP, masterKeyId, isVerified);
+                AutocryptPeerStateResult peerResult = new AutocryptPeerStateResult(
+                        AutocryptState.DISABLE, null, false);
+                result.put(autocryptId, peerResult);
             }
-
-            return new AutocryptPeerStateResult(AutocryptState.DISABLE, null, false);
         } finally {
             cursor.close();
         }
+
+        return result;
     }
 
     public static class AutocryptPeerStateResult {
