@@ -762,7 +762,9 @@ public class OpenPgpService extends Service {
                 String autocryptPeerId = data.getStringExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_ID);
                 AutocryptPeerUpdate autocryptPeerUpdate = data.getParcelableExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_UPDATE);
 
-                autocryptInteractor.updateAutocryptPeerState(autocryptPeerId, autocryptPeerUpdate);
+                if (autocryptPeerUpdate != null) {
+                    autocryptInteractor.updateAutocryptPeerState(autocryptPeerId, autocryptPeerUpdate);
+                }
             }
 
             if (data.hasExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_GOSSIP_UPDATES)) {
@@ -770,7 +772,9 @@ public class OpenPgpService extends Service {
                 for (String address : updates.keySet()) {
                     Timber.d(Constants.TAG, "Updating gossip state: " + address);
                     AutocryptPeerUpdate update = updates.getParcelable(address);
-                    autocryptInteractor.updateAutocryptPeerGossipState(address, update);
+                    if (update != null) {
+                        autocryptInteractor.updateAutocryptPeerGossipState(address, update);
+                    }
                 }
             }
 

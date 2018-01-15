@@ -1114,42 +1114,25 @@ public class KeychainProvider extends ContentProvider {
                     break;
                 }
                 case AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID: {
-                    ContentValues actualValues = new ContentValues();
                     String packageName = uri.getPathSegments().get(2);
-                    actualValues.put(ApiAutocryptPeer.PACKAGE_NAME, packageName);
-                    actualValues.put(ApiAutocryptPeer.IDENTIFIER, uri.getLastPathSegment());
+                    String identifier = uri.getLastPathSegment();
+                    values.put(ApiAutocryptPeer.PACKAGE_NAME, packageName);
+                    values.put(ApiAutocryptPeer.IDENTIFIER, identifier);
 
-                    Long newLastSeen = values.getAsLong(ApiAutocryptPeer.LAST_SEEN);
-                    if (newLastSeen != null) {
-                        actualValues.put(ApiAutocryptPeer.LAST_SEEN, newLastSeen);
-                        db.replace(Tables.API_AUTOCRYPT_PEERS, null, actualValues);
-                        break;
+                    int updated = db.update(Tables.API_AUTOCRYPT_PEERS, values,
+                            ApiAutocryptPeer.PACKAGE_NAME + "=? AND " + ApiAutocryptPeer.IDENTIFIER + "=?",
+                            new String[] { packageName, identifier });
+                    if (updated == 0) {
+                        db.insertOrThrow(Tables.API_AUTOCRYPT_PEERS, null, values);
                     }
 
                     Long masterKeyId = values.getAsLong(ApiAutocryptPeer.MASTER_KEY_ID);
                     if (masterKeyId != null) {
-                        Long lastSeenKey = values.getAsLong(ApiAutocryptPeer.LAST_SEEN_KEY);
-                        Long preferEncryptState = values.getAsLong(ApiAutocryptPeer.IS_MUTUAL);
-
-                        actualValues.put(ApiAutocryptPeer.MASTER_KEY_ID, masterKeyId);
-                        actualValues.put(ApiAutocryptPeer.LAST_SEEN_KEY, lastSeenKey);
-                        actualValues.put(ApiAutocryptPeer.IS_MUTUAL, preferEncryptState);
-
-                        db.replace(Tables.API_AUTOCRYPT_PEERS, null, actualValues);
                         contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(masterKeyId), null);
-                        break;
                     }
-
                     Long gossipMasterKeyId = values.getAsLong(ApiAutocryptPeer.GOSSIP_MASTER_KEY_ID);
-                    if (gossipMasterKeyId != null) {
-                        Long gossipLastSeenKey = values.getAsLong(ApiAutocryptPeer.GOSSIP_LAST_SEEN_KEY);
-
-                        actualValues.put(ApiAutocryptPeer.GOSSIP_MASTER_KEY_ID, gossipMasterKeyId);
-                        actualValues.put(ApiAutocryptPeer.GOSSIP_LAST_SEEN_KEY, gossipLastSeenKey);
-
-                        db.replace(Tables.API_AUTOCRYPT_PEERS, null, actualValues);
+                    if (gossipMasterKeyId != null && !gossipMasterKeyId.equals(masterKeyId)) {
                         contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(gossipMasterKeyId), null);
-                        break;
                     }
 
                     break;

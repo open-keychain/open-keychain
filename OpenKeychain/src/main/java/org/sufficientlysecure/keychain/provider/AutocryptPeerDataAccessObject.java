@@ -153,6 +153,23 @@ public class AutocryptPeerDataAccessObject {
         return null;
     }
 
+    public Date getLastSeenGossip(String autocryptId) {
+        Cursor cursor = queryInterface.query(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId),
+                null, null, null, null);
+
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                long lastUpdated = cursor.getColumnIndex(ApiAutocryptPeer.GOSSIP_LAST_SEEN_KEY);
+                return new Date(lastUpdated);
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return null;
+    }
+
     public void updateLastSeen(String autocryptId, Date date) {
         ContentValues cv = new ContentValues();
         cv.put(ApiAutocryptPeer.LAST_SEEN, date.getTime());
