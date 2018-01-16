@@ -366,7 +366,7 @@ public class KeychainProvider extends ContentProvider {
                         "(" + Tables.KEYS + "." + Keys.EXPIRY + " IS NOT NULL AND " + Tables.KEYS + "." + Keys.EXPIRY
                                 + " < " + new Date().getTime() / 1000 + ") AS " + KeyRings.IS_EXPIRED);
                 projectionMap.put(KeyRings.API_KNOWN_TO_PACKAGE_NAMES,
-                        "GROUP_CONCAT(aTI." + ApiAutocryptPeer.PACKAGE_NAME + ") AS "
+                        "GROUP_CONCAT(DISTINCT aTI." + ApiAutocryptPeer.PACKAGE_NAME + ") AS "
                         + KeyRings.API_KNOWN_TO_PACKAGE_NAMES);
                 qb.setProjectionMap(projectionMap);
 
