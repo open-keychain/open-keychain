@@ -18,15 +18,16 @@
 package org.sufficientlysecure.keychain.provider;
 
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.text.format.DateUtils;
 
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
@@ -198,85 +199,14 @@ public class AutocryptPeerDataAccessObject {
         queryInterface.delete(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), null, null);
     }
 
-    public Map<String,AutocryptPeerStateResult> getAutocryptState(String... autocryptIds) {
-                /*
-Determine if encryption is possible
-If there is no peers[to-addr], then set ui-recommendation to disable, and terminate.
+    public List<AutocryptRecommendationResult> determineAutocryptRecommendations(String... autocryptIds) {
+        List<AutocryptRecommendationResult> result = new ArrayList<>(autocryptIds.length);
 
-For the purposes of the rest of this recommendation, if either public_key or gossip_key is revoked, expired, or otherwise known to be unusable for encryption, then treat that key as though it were null (not present).
-
-If both public_key and gossip_key are null, then set ui-recommendation to disable and terminate.
-
-Otherwise, we derive the recommendation using a two-phase algorithm. The first phase computes the preliminary-recommendation.
-
-Preliminary Recommendation
-If public_key is null, then set target-keys[to-addr] to gossip_key and set preliminary-recommendation to discourage and skip to the Deciding to Encrypt by Default.
-
-Otherwise, set target-keys[to-addr] to public_key.
-
-If autocrypt_timestamp is more than 35 days older than last_seen, set preliminary-recommendation to discourage.
-
-Otherwise, set preliminary-recommendation to available.
-                 */
-
-        Map<String,AutocryptPeerStateResult> result = new HashMap<>();
-        StringBuilder selection = new StringBuilder(ApiAutocryptPeer.IDENTIFIER + " IN (?");
-        for (int i = 1; i < autocryptIds.length; i++) {
-            selection.append(",?");
-        }
-        selection.append(")");
-
-        Cursor cursor = queryInterface.query(ApiAutocryptPeer.buildByPackageName(packageName),
-                PROJECTION_AUTOCRYPT_QUERY, selection.toString(), autocryptIds, null);
+        Cursor cursor = queryAutocryptPeerData(autocryptIds);
         try {
             while (cursor.moveToNext()) {
-                String autocryptId = cursor.getString(INDEX_IDENTIFIER);
-
-                boolean hasKey = !cursor.isNull(INDEX_MASTER_KEY_ID);
-                boolean isRevoked = cursor.getInt(INDEX_KEY_IS_REVOKED) != 0;
-                boolean isExpired = cursor.getInt(INDEX_KEY_IS_EXPIRED) != 0;
-                if (hasKey && !isRevoked && !isExpired) {
-                    long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
-                    long lastSeen = cursor.getLong(INDEX_LAST_SEEN);
-                    long lastSeenKey = cursor.getLong(INDEX_LAST_SEEN_KEY);
-                    boolean isVerified = cursor.getInt(INDEX_KEY_IS_VERIFIED) != 0;
-                    if (lastSeenKey < (lastSeen - AUTOCRYPT_DISCOURAGE_THRESHOLD_MILLIS)) {
-                        AutocryptPeerStateResult peerResult = new AutocryptPeerStateResult(
-                                AutocryptState.DISCOURAGED_OLD, masterKeyId, isVerified);
-                        result.put(autocryptId, peerResult);
-                        continue;
-                    }
-
-                    boolean isMutual = cursor.getInt(INDEX_STATE) != 0;
-                    if (isMutual) {
-                        AutocryptPeerStateResult peerResult = new AutocryptPeerStateResult(
-                                AutocryptState.MUTUAL, masterKeyId, isVerified);
-                        result.put(autocryptId, peerResult);
-                        continue;
-                    } else {
-                        AutocryptPeerStateResult peerResult = new AutocryptPeerStateResult(
-                                AutocryptState.AVAILABLE, masterKeyId, isVerified);
-                        result.put(autocryptId, peerResult);
-                        continue;
-                    }
-                }
-
-                boolean gossipHasKey = !cursor.isNull(INDEX_GOSSIP_MASTER_KEY_ID);
-                boolean gossipIsRevoked = cursor.getInt(INDEX_GOSSIP_KEY_IS_REVOKED) != 0;
-                boolean gossipIsExpired = cursor.getInt(INDEX_GOSSIP_KEY_IS_EXPIRED) != 0;
-                boolean isVerified = cursor.getInt(INDEX_GOSSIP_KEY_IS_VERIFIED) != 0;
-                if (gossipHasKey && !gossipIsRevoked && !gossipIsExpired) {
-                    long masterKeyId = cursor.getLong(INDEX_GOSSIP_MASTER_KEY_ID);
-                    AutocryptPeerStateResult peerResult =
-                            new AutocryptPeerStateResult(
-                                    AutocryptState.DISCOURAGED_GOSSIP, masterKeyId, isVerified);
-                    result.put(autocryptId, peerResult);
-                    continue;
-                }
-
-                AutocryptPeerStateResult peerResult = new AutocryptPeerStateResult(
-                        AutocryptState.DISABLE, null, false);
-                result.put(autocryptId, peerResult);
+                AutocryptRecommendationResult peerResult = determineAutocryptRecommendation(cursor);
+                result.add(peerResult);
             }
         } finally {
             cursor.close();
@@ -285,12 +215,81 @@ Otherwise, set preliminary-recommendation to available.
         return result;
     }
 
-    public static class AutocryptPeerStateResult {
+    /** Determines Autocrypt "ui-recommendation", according to spec.
+     * See https://autocrypt.org/level1.html#recommendations-for-single-recipient-messages
+     */
+    private AutocryptRecommendationResult determineAutocryptRecommendation(Cursor cursor) {
+        String peerId = cursor.getString(INDEX_IDENTIFIER);
+
+        AutocryptRecommendationResult keyRecommendation = determineAutocryptKeyRecommendation(peerId, cursor);
+        if (keyRecommendation != null) return keyRecommendation;
+
+        AutocryptRecommendationResult gossipRecommendation = determineAutocryptGossipRecommendation(peerId, cursor);
+        if (gossipRecommendation != null) return gossipRecommendation;
+
+        return new AutocryptRecommendationResult(peerId, AutocryptState.DISABLE, null, false);
+    }
+
+    @Nullable
+    private AutocryptRecommendationResult determineAutocryptKeyRecommendation(String peerId, Cursor cursor) {
+        boolean hasKey = !cursor.isNull(INDEX_MASTER_KEY_ID);
+        boolean isRevoked = cursor.getInt(INDEX_KEY_IS_REVOKED) != 0;
+        boolean isExpired = cursor.getInt(INDEX_KEY_IS_EXPIRED) != 0;
+        if (!hasKey || isRevoked || isExpired) {
+            return null;
+        }
+
+        long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
+        long lastSeen = cursor.getLong(INDEX_LAST_SEEN);
+        long lastSeenKey = cursor.getLong(INDEX_LAST_SEEN_KEY);
+        boolean isVerified = cursor.getInt(INDEX_KEY_IS_VERIFIED) != 0;
+        if (lastSeenKey < (lastSeen - AUTOCRYPT_DISCOURAGE_THRESHOLD_MILLIS)) {
+            return new AutocryptRecommendationResult(peerId, AutocryptState.DISCOURAGED_OLD, masterKeyId, isVerified);
+        }
+
+        boolean isMutual = cursor.getInt(INDEX_STATE) != 0;
+        if (isMutual) {
+            return new AutocryptRecommendationResult(peerId, AutocryptState.MUTUAL, masterKeyId, isVerified);
+        } else {
+            return new AutocryptRecommendationResult(peerId, AutocryptState.AVAILABLE, masterKeyId, isVerified);
+        }
+    }
+
+    @Nullable
+    private AutocryptRecommendationResult determineAutocryptGossipRecommendation(String peerId, Cursor cursor) {
+        boolean gossipHasKey = !cursor.isNull(INDEX_GOSSIP_MASTER_KEY_ID);
+        boolean gossipIsRevoked = cursor.getInt(INDEX_GOSSIP_KEY_IS_REVOKED) != 0;
+        boolean gossipIsExpired = cursor.getInt(INDEX_GOSSIP_KEY_IS_EXPIRED) != 0;
+        boolean isVerified = cursor.getInt(INDEX_GOSSIP_KEY_IS_VERIFIED) != 0;
+
+        if (!gossipHasKey || gossipIsRevoked || gossipIsExpired) {
+            return null;
+        }
+
+        long masterKeyId = cursor.getLong(INDEX_GOSSIP_MASTER_KEY_ID);
+        return new AutocryptRecommendationResult(peerId, AutocryptState.DISCOURAGED_GOSSIP, masterKeyId, isVerified);
+    }
+
+    private Cursor queryAutocryptPeerData(String[] autocryptIds) {
+        StringBuilder selection = new StringBuilder(ApiAutocryptPeer.IDENTIFIER + " IN (?");
+        for (int i = 1; i < autocryptIds.length; i++) {
+            selection.append(",?");
+        }
+        selection.append(")");
+
+        return queryInterface.query(ApiAutocryptPeer.buildByPackageName(packageName),
+                PROJECTION_AUTOCRYPT_QUERY, selection.toString(), autocryptIds, null);
+    }
+
+    public static class AutocryptRecommendationResult {
+        public final String peerId;
         public final Long masterKeyId;
         public final AutocryptState autocryptState;
         public final boolean isVerified;
 
-        AutocryptPeerStateResult(AutocryptState autocryptState, Long masterKeyId, boolean isVerified) {
+        AutocryptRecommendationResult(String peerId, AutocryptState autocryptState, Long masterKeyId,
+                boolean isVerified) {
+            this.peerId = peerId;
             this.autocryptState = autocryptState;
             this.masterKeyId = masterKeyId;
             this.isVerified = isVerified;

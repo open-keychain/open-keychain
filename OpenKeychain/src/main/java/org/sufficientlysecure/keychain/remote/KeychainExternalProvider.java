@@ -22,7 +22,6 @@ import java.security.AccessControlException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -41,7 +40,7 @@ import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
-import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject.AutocryptPeerStateResult;
+import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject.AutocryptRecommendationResult;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject.AutocryptState;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
@@ -249,8 +248,8 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                         AutocryptStatus.UID_ADDRESS + " TEXT, " +
                         AutocryptStatus.UID_MASTER_KEY_ID + " INT, " +
                         AutocryptStatus.UID_CANDIDATES + " INT, " +
+                        AutocryptStatus.AUTOCRYPT_PEER_STATE + " INT DEFAULT " + AutocryptStatus.AUTOCRYPT_PEER_DISABLED + ", " +
                         AutocryptStatus.AUTOCRYPT_KEY_STATUS + " INT, " +
-                        AutocryptStatus.AUTOCRYPT_PEER_STATE + " INT, " +
                         AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID + " INT" +
                         ");");
                 ContentValues cv = new ContentValues();
@@ -278,7 +277,9 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                     throw new UnsupportedOperationException("Cannot wildcard-query autocrypt results!");
                 }
                 if (!isWildcardSelector && queriesAutocryptResult) {
-                    fillTempTableWithAutocryptResult(selectionArgs, db, callingPackageName, cv);
+                    AutocryptPeerDataAccessObject autocryptPeerDao =
+                            new AutocryptPeerDataAccessObject(this, callingPackageName);
+                    fillTempTableWithAutocryptRecommendations(db, autocryptPeerDao, selectionArgs);
                 }
 
                 qb.setTables(TEMP_TABLE_QUERIED_ADDRESSES);
@@ -338,30 +339,30 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
         return cursor;
     }
 
-    private void fillTempTableWithAutocryptResult(String[] selectionArgs, SQLiteDatabase db, String callingPackageName,
-            ContentValues cv) {
-        AutocryptPeerDataAccessObject autocryptPeerDao =
-                new AutocryptPeerDataAccessObject(this, callingPackageName);
-        Map<String,AutocryptPeerStateResult> autocryptStates = autocryptPeerDao.getAutocryptState(selectionArgs);
+    private void fillTempTableWithAutocryptRecommendations(SQLiteDatabase db,
+            AutocryptPeerDataAccessObject autocryptPeerDao, String[] peerIds) {
+        List<AutocryptRecommendationResult> autocryptStates =
+                autocryptPeerDao.determineAutocryptRecommendations(peerIds);
 
-        for (String autocryptId : selectionArgs) {
+        fillTempTableWithAutocryptRecommendations(db, autocryptStates);
+    }
+
+    private void fillTempTableWithAutocryptRecommendations(SQLiteDatabase db,
+            List<AutocryptRecommendationResult> autocryptRecommendations) {
+        ContentValues cv = new ContentValues();
+        for (AutocryptRecommendationResult peerResult : autocryptRecommendations) {
             cv.clear();
 
-            AutocryptPeerStateResult peerResult = autocryptStates.get(autocryptId);
-            if (peerResult == null) {
-                cv.put(AutocryptStatus.AUTOCRYPT_PEER_STATE, AutocryptStatus.AUTOCRYPT_PEER_DISABLED);
-            } else {
-                cv.put(AutocryptStatus.AUTOCRYPT_PEER_STATE, getPeerStateValue(peerResult.autocryptState));
-                if (peerResult.masterKeyId != null) {
-                    cv.put(AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID, peerResult.masterKeyId);
-                    cv.put(AutocryptStatus.AUTOCRYPT_KEY_STATUS, peerResult.isVerified ?
-                            KeychainExternalContract.KEY_STATUS_VERIFIED :
-                            KeychainExternalContract.KEY_STATUS_UNVERIFIED);
-                }
+            cv.put(AutocryptStatus.AUTOCRYPT_PEER_STATE, getPeerStateValue(peerResult.autocryptState));
+            if (peerResult.masterKeyId != null) {
+                cv.put(AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID, peerResult.masterKeyId);
+                cv.put(AutocryptStatus.AUTOCRYPT_KEY_STATUS, peerResult.isVerified ?
+                        KeychainExternalContract.KEY_STATUS_VERIFIED :
+                        KeychainExternalContract.KEY_STATUS_UNVERIFIED);
             }
 
             db.update(TEMP_TABLE_QUERIED_ADDRESSES, cv,TEMP_TABLE_COLUMN_ADDRES + "=?",
-                    new String[] { autocryptId });
+                    new String[] { peerResult.peerId });
         }
     }
 
