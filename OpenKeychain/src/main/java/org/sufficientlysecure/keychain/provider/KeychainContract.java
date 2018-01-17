@@ -102,7 +102,7 @@ public class KeychainContract {
     interface ApiAutocryptPeerColumns {
         String PACKAGE_NAME = "package_name";
         String IDENTIFIER = "identifier";
-        String LAST_SEEN = "last_updated";
+        String LAST_SEEN = "last_seen";
 
         String MASTER_KEY_ID = "master_key_id";
         String LAST_SEEN_KEY = "last_seen_key";
