@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.remote.ui.dialog;
 
 
+import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
@@ -120,8 +121,8 @@ class RemoteDeduplicatePresenter implements LoaderCallbacks<List<KeyInfo>> {
             return;
         }
 
-        // long masterKeyId = keyInfoData.get(selectedItem).getMasterKeyId();
-        // autocryptPeerDao.updateToSelectedState(duplicateAddress, masterKeyId);
+         long masterKeyId = keyInfoData.get(selectedItem).getMasterKeyId();
+         autocryptPeerDao.updateKeyGossip(duplicateAddress, new Date(), masterKeyId);
 
         view.finish();
     }
