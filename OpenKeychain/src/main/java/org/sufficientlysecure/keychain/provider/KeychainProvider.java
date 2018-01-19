@@ -353,6 +353,8 @@ public class KeychainProvider extends ContentProvider {
                         "kE." + Keys.KEY_ID + " AS " + KeyRings.HAS_ENCRYPT);
                 projectionMap.put(KeyRings.HAS_SIGN_SECRET,
                         "kS." + Keys.KEY_ID + " AS " + KeyRings.HAS_SIGN_SECRET);
+                projectionMap.put(KeyRings.HAS_AUTHENTICATE,
+                        "kA." + Keys.KEY_ID + " AS " + KeyRings.HAS_AUTHENTICATE);
                 projectionMap.put(KeyRings.HAS_AUTHENTICATE_SECRET,
                         "kA." + Keys.KEY_ID + " AS " + KeyRings.HAS_AUTHENTICATE_SECRET);
                 projectionMap.put(KeyRings.HAS_CERTIFY_SECRET,
@@ -409,6 +411,16 @@ public class KeychainProvider extends ContentProvider {
                                 + " AND ( kS." + Keys.EXPIRY + " IS NULL OR kS." + Keys.EXPIRY
                                     + " >= " + new Date().getTime() / 1000 + " )"
                             + ")" : "")
+                        + (plist.contains(KeyRings.HAS_AUTHENTICATE) ?
+                            " LEFT JOIN " + Tables.KEYS + " AS kA ON ("
+                                    +"kA." + Keys.MASTER_KEY_ID
+                                    + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                                    + " AND kA." + Keys.IS_REVOKED + " = 0"
+                                    + " AND kA." + Keys.IS_SECURE + " = 1"
+                                    + " AND kA." + Keys.CAN_AUTHENTICATE + " = 1"
+                                    + " AND ( kA." + Keys.EXPIRY + " IS NULL OR kA." + Keys.EXPIRY
+                                    + " >= " + new Date().getTime() / 1000 + " )"
+                                    + ")" : "")
                         + (plist.contains(KeyRings.HAS_AUTHENTICATE_SECRET) ?
                             " LEFT JOIN " + Tables.KEYS + " AS kA ON ("
                                     +"kA." + Keys.MASTER_KEY_ID

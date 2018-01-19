@@ -217,8 +217,23 @@ public class CachedPublicKeyRing extends KeyRing {
         }
     }
 
-    public boolean hasAuthentication() throws PgpKeyNotFoundException {
+    public boolean hasSecretAuthentication() throws PgpKeyNotFoundException {
         return getSecretAuthenticationId() != 0;
+    }
+
+    public long getAuthenticationId() throws PgpKeyNotFoundException {
+        try {
+            Object data = mKeyRepository.getGenericData(mUri,
+                    KeyRings.HAS_AUTHENTICATE,
+                    KeyRepository.FIELD_TYPE_INTEGER);
+            return (Long) data;
+        } catch(KeyWritableRepository.NotFoundException e) {
+            throw new PgpKeyNotFoundException(e);
+        }
+    }
+
+    public boolean hasAuthentication() throws PgpKeyNotFoundException {
+        return getAuthenticationId() != 0;
     }
 
     @Override
