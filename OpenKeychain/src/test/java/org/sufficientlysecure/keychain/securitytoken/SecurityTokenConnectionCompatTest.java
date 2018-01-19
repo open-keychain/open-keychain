@@ -19,17 +19,17 @@ package org.sufficientlysecure.keychain.securitytoken;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
+import org.sufficientlysecure.keychain.securitytoken.operations.PsoDecryptTokenOp;
 
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 
 @RunWith(KeychainTestRunner.class)
@@ -52,7 +52,7 @@ public class SecurityTokenConnectionCompatTest {
     */
 
     @Test
-    public void testPrePostEquals() {
+    public void testPrePostEquals() throws Exception {
         List<String> preApdus = decryptPre_ee8cd38();
         List<String> postApdus = decryptNow();
 
@@ -80,11 +80,9 @@ public class SecurityTokenConnectionCompatTest {
         return apduData;
     }
 
-    public List<String> decryptNow() {
-        int mpiLength = ((((encryptedSessionKey[0] & 0xff) << 8) + (encryptedSessionKey[1] & 0xff)) + 7) / 8;
-        byte[] psoDecipherPayload = new byte[mpiLength + 1];
-        psoDecipherPayload[0] = (byte) 0x00;
-        System.arraycopy(encryptedSessionKey, 2, psoDecipherPayload, 1, mpiLength);
+    public List<String> decryptNow() throws Exception {
+        PsoDecryptTokenOp psoDecryptTokenOp = PsoDecryptTokenOp.create(mock(SecurityTokenConnection.class));
+        byte[] psoDecipherPayload = psoDecryptTokenOp.getRsaOperationPayload(encryptedSessionKey);
 
         CommandApdu command = openPgpCommandApduFactory.createDecipherCommand(psoDecipherPayload);
         List<CommandApdu> chainedApdus = openPgpCommandApduFactory.createChainedApdus(command);
