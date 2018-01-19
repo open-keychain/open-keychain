@@ -214,11 +214,11 @@ android {
         debug {
             // ProGuard disabled for debug builds, instead multidex is enabled!
             // faster consecutive build times for developing, https://github.com/open-keychain/open-keychain/pull/2247
-            minifyEnabled false
-            //proguardFiles = buildTypes.release.proguardFiles
-            //testProguardFiles 'proguard-rules-test.pro'
-            
-            multiDexEnabled true
+            minifyEnabled true
+            proguardFiles = buildTypes.release.proguardFiles
+            testProguardFiles 'proguard-rules-test.pro'
+
+            multiDexEnabled false
 
             applicationIdSuffix ".debug"
 
