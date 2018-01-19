@@ -28,7 +28,7 @@ import org.bouncycastle.util.encoders.Hex;
 
 
 public class OpenPgpCommandApduFactory {
-    private static final int MAX_APDU_NC = 255;
+    private static final int MAX_APDU_NC = 254;
     private static final int MAX_APDU_NC_EXT = 65535;
 
     private static final int MAX_APDU_NE = 256;
