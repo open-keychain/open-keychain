@@ -104,7 +104,7 @@ public class PsoDecryptTokenOp {
         }
 
         byte[] psoDecipherPayload = new byte[mpiLength + 1];
-        psoDecipherPayload[0] = 0x00; // RSA Padding Indicator Byte
+        psoDecipherPayload[0] = (byte) encryptedSessionKeyMpi[1]; // RSA Padding Indicator Byte // TODO THIS IS INCORRECT, FOR DEBUGGING ONLY!!!
         System.arraycopy(encryptedSessionKeyMpi, 2, psoDecipherPayload, 1, mpiLength);
         return psoDecipherPayload;
     }
