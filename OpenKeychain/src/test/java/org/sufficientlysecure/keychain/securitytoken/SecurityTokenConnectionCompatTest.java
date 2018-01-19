@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mock;
 
 
 @RunWith(KeychainTestRunner.class)
-@Ignore("Only for reference right now")
+//@Ignore("Only for reference right now")
 public class SecurityTokenConnectionCompatTest {
     private byte[] encryptedSessionKey;
     private OpenPgpCommandApduFactory openPgpCommandApduFactory;
