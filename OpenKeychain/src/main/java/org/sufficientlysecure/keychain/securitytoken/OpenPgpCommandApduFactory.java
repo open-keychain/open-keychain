@@ -28,7 +28,9 @@ import org.bouncycastle.util.encoders.Hex;
 
 
 public class OpenPgpCommandApduFactory {
-    private static final int MAX_APDU_NC = 255;
+    // The spec allows 255, but for compatibility with non-compliant tokens we use 254 here
+    // See https://github.com/open-keychain/open-keychain/issues/2049
+    private static final int MAX_APDU_NC = 254;
     private static final int MAX_APDU_NC_EXT = 65535;
 
     private static final int MAX_APDU_NE = 256;
