@@ -216,7 +216,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         try {
             masterKeyId = keyRepository.getCachedPublicKeyRing(mDataUri).extractOrGetMasterKeyId();
             CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(masterKeyId);
-            authSubKeyId = cachedPublicKeyRing.getSecretAuthenticationId();
+            authSubKeyId = cachedPublicKeyRing.getAuthenticationId();
         } catch (PgpKeyNotFoundException e) {
             Log.e(Constants.TAG, "key not found!", e);
         }
@@ -232,7 +232,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         String content;
         long masterKeyId = keyRepository.getCachedPublicKeyRing(mDataUri).extractOrGetMasterKeyId();
         if (asSshKey) {
-            long authSubKeyId = keyRepository.getCachedPublicKeyRing(masterKeyId).getSecretAuthenticationId();
+            long authSubKeyId = keyRepository.getCachedPublicKeyRing(masterKeyId).getAuthenticationId();
             CanonicalizedPublicKey publicKey = keyRepository.getCanonicalizedPublicKeyRing(masterKeyId)
                                                             .getPublicKey(authSubKeyId);
             SshPublicKey sshPublicKey = new SshPublicKey(publicKey);
