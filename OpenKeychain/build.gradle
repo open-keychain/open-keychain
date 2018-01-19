@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'witness'
 apply plugin: 'jacoco'
-apply plugin: 'com.github.kt3k.coveralls'
+// apply plugin: 'com.github.kt3k.coveralls'
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
@@ -361,9 +361,9 @@ task jacocoTestReport(type:JacocoReport, dependsOn: "testFdroidDebugWithTestCove
 }
 
 // Fix for: No report file available: [/home/travis/build/open-keychain/open-keychain/OpenKeychain/build/reports/cobertura/coverage.xml, /home/travis/build/open-keychain/open-keychain/OpenKeychain/build/reports/jacoco/test/jacocoTestReport.xml]
-coveralls {
-    jacocoReportPath 'build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml'
-}
+// coveralls {
+    // jacocoReportPath 'build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml'
+// }
 
 // NOTE: This disables Lint!
 tasks.whenTaskAdded { task ->
