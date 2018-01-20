@@ -25,6 +25,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
 
+import android.util.Log;
+
+
 public class Utf8Util {
 
     public static boolean isValidUTF8(byte[] input) {
@@ -46,7 +49,7 @@ public class Utf8Util {
         try {
             return charsetDecoder.decode(ByteBuffer.wrap(input)).toString();
         } catch (CharacterCodingException e) {
-            LibLog.e(LibConstants.TAG, "Decoding failed!", e);
+            Log.e(LibConstants.TAG, "Decoding failed!", e);
             return charsetDecoder.replacement();
         }
     }
