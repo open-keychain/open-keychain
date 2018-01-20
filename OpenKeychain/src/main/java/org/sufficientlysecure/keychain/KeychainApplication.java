@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
+import timber.log.Timber.DebugTree;
 
 
 public class KeychainApplication extends Application {
@@ -72,6 +73,8 @@ public class KeychainApplication extends Application {
          */
         PRNGFixes.apply();
         Timber.d("Bouncy Castle set and PRNG Fixes applied!");
+
+        updateLoggingStatus();
 
         /*
         if (Constants.DEBUG) {
@@ -169,6 +172,14 @@ public class KeychainApplication extends Application {
                 androidEdge.setColorFilter(brandColor, PorterDuff.Mode.SRC_IN);
             } catch (Exception ignored) {
             }
+        }
+    }
+
+    private void updateLoggingStatus() {
+        Timber.uprootAll();
+        boolean enableDebugLogging = BuildConfig.DEBUG;
+        if (enableDebugLogging) {
+            Timber.plant(new DebugTree());
         }
     }
 }
