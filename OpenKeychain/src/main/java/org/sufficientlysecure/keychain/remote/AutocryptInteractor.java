@@ -94,7 +94,7 @@ class AutocryptInteractor {
         // 4. Set peers[gossip-addr].gossip_key to the value of the keydata attribute.
         Long newMasterKeyId = saveKeyringResult.savedMasterKeyId;
 
-        autocryptPeerDao.updateKeyGossip(autocryptPeerId, effectiveDate, newMasterKeyId);
+        autocryptPeerDao.updateKeyGossipFromAutocrypt(autocryptPeerId, effectiveDate, newMasterKeyId);
     }
 
     @Nullable

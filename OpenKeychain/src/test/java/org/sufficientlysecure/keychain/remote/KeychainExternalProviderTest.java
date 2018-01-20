@@ -305,7 +305,7 @@ public class KeychainExternalProviderTest {
         insertSecretKeyringFrom("/test-keys/testring.sec");
         insertPublicKeyringFrom("/test-keys/testring.pub");
 
-        autocryptPeerDao.updateKeyGossip("tid", new Date(), KEY_ID_PUBLIC);
+        autocryptPeerDao.updateKeyGossipFromAutocrypt("tid", new Date(), KEY_ID_PUBLIC);
         autocryptPeerDao.delete("tid");
 
         Cursor cursor = contentResolver.query(
@@ -330,7 +330,7 @@ public class KeychainExternalProviderTest {
         insertSecretKeyringFrom("/test-keys/testring.sec");
         insertPublicKeyringFrom("/test-keys/testring.pub");
 
-        autocryptPeerDao.updateKeyGossip(AUTOCRYPT_PEER, new Date(), KEY_ID_PUBLIC);
+        autocryptPeerDao.updateKeyGossipFromAutocrypt(AUTOCRYPT_PEER, new Date(), KEY_ID_PUBLIC);
         certifyKey(KEY_ID_SECRET, KEY_ID_PUBLIC, USER_ID_1);
 
         Cursor cursor = contentResolver.query(

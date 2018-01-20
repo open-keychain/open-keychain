@@ -122,7 +122,7 @@ class RemoteDeduplicatePresenter implements LoaderCallbacks<List<KeyInfo>> {
         }
 
          long masterKeyId = keyInfoData.get(selectedItem).getMasterKeyId();
-         autocryptPeerDao.updateKeyGossip(duplicateAddress, new Date(), masterKeyId);
+         autocryptPeerDao.updateKeyGossipFromDedup(duplicateAddress, new Date(), masterKeyId);
 
         view.finish();
     }

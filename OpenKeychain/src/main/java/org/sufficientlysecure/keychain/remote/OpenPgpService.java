@@ -577,13 +577,12 @@ public class OpenPgpService extends Service {
 
         long masterKeyId = signatureResult.getKeyId();
         if (autocryptPeerMasterKeyId == null) {
-            // TODO
-//            Date now = new Date();
-//            Date effectiveTime = signatureResult.getSignatureTimestamp();
-//            if (effectiveTime.after(now)) {
-//                effectiveTime = now;
-//            }
-//            autocryptPeerentityDao.updateKeyGossip(autocryptPeerId, effectiveTime, masterKeyId);
+            Date now = new Date();
+            Date effectiveTime = signatureResult.getSignatureTimestamp();
+            if (effectiveTime.after(now)) {
+                effectiveTime = now;
+            }
+            autocryptPeerentityDao.updateKeyGossipFromSignature(autocryptPeerId, effectiveTime, masterKeyId);
             return signatureResult.withAutocryptPeerResult(AutocryptPeerResult.NEW);
         } else  if (masterKeyId == autocryptPeerMasterKeyId) {
             return signatureResult.withAutocryptPeerResult(AutocryptPeerResult.OK);

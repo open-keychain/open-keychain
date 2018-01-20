@@ -729,6 +729,7 @@ public class KeychainProvider extends ContentProvider {
                 projectionMap.put(ApiAutocryptPeer.LAST_SEEN_KEY, ApiAutocryptPeer.LAST_SEEN_KEY);
                 projectionMap.put(ApiAutocryptPeer.GOSSIP_MASTER_KEY_ID, ApiAutocryptPeer.GOSSIP_MASTER_KEY_ID);
                 projectionMap.put(ApiAutocryptPeer.GOSSIP_LAST_SEEN_KEY, ApiAutocryptPeer.GOSSIP_LAST_SEEN_KEY);
+                projectionMap.put(ApiAutocryptPeer.GOSSIP_ORIGIN, ApiAutocryptPeer.GOSSIP_ORIGIN);
                 projectionMap.put(ApiAutocryptPeer.KEY_IS_REVOKED, "ac_key." + Keys.IS_REVOKED + " AS " + ApiAutocryptPeer.KEY_IS_REVOKED);
                 projectionMap.put(ApiAutocryptPeer.KEY_IS_EXPIRED, "(CASE" +
                                 " WHEN ac_key." + Keys.EXPIRY + " IS NULL THEN 0" +

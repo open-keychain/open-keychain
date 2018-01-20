@@ -187,10 +187,23 @@ public class AutocryptPeerDataAccessObject {
                 .update(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), cv, null, null);
     }
 
-    public void updateKeyGossip(String autocryptId, Date effectiveDate, long masterKeyId) {
+    public void updateKeyGossipFromAutocrypt(String autocryptId, Date effectiveDate, long masterKeyId) {
+        updateKeyGossip(autocryptId, effectiveDate, masterKeyId, ApiAutocryptPeer.GOSSIP_ORIGIN_AUTOCRYPT);
+    }
+
+    public void updateKeyGossipFromSignature(String autocryptId, Date effectiveDate, long masterKeyId) {
+        updateKeyGossip(autocryptId, effectiveDate, masterKeyId, ApiAutocryptPeer.GOSSIP_ORIGIN_SIGNATURE);
+    }
+
+    public void updateKeyGossipFromDedup(String autocryptId, Date effectiveDate, long masterKeyId) {
+        updateKeyGossip(autocryptId, effectiveDate, masterKeyId, ApiAutocryptPeer.GOSSIP_ORIGIN_DEDUP);
+    }
+
+    private void updateKeyGossip(String autocryptId, Date effectiveDate, long masterKeyId, int origin) {
         ContentValues cv = new ContentValues();
         cv.put(ApiAutocryptPeer.GOSSIP_MASTER_KEY_ID, masterKeyId);
         cv.put(ApiAutocryptPeer.GOSSIP_LAST_SEEN_KEY, effectiveDate.getTime());
+        cv.put(ApiAutocryptPeer.GOSSIP_ORIGIN, origin);
         queryInterface
                 .update(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), cv, null, null);
     }

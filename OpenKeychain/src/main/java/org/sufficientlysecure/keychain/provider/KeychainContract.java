@@ -110,6 +110,7 @@ public class KeychainContract {
 
         String GOSSIP_MASTER_KEY_ID = "gossip_master_key_id";
         String GOSSIP_LAST_SEEN_KEY = "gossip_last_seen_key";
+        String GOSSIP_ORIGIN = "gossip_origin";
     }
 
     public static final String CONTENT_AUTHORITY = Constants.PROVIDER_AUTHORITY;
@@ -381,6 +382,10 @@ public class KeychainContract {
         public static final String GOSSIP_KEY_IS_REVOKED = "gossip_key_is_revoked";
         public static final String GOSSIP_KEY_IS_EXPIRED = "gossip_key_is_expired";
         public static final String GOSSIP_KEY_IS_VERIFIED = "gossip_key_is_verified";
+
+        public static final int GOSSIP_ORIGIN_AUTOCRYPT = 0;
+        public static final int GOSSIP_ORIGIN_SIGNATURE = 10;
+        public static final int GOSSIP_ORIGIN_DEDUP = 20;
 
         public static Uri buildByKeyUri(Uri uri) {
             return CONTENT_URI.buildUpon().appendPath(PATH_BY_KEY_ID).appendPath(uri.getPathSegments().get(1)).build();
