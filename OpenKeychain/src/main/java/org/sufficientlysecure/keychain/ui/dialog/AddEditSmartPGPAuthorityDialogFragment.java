@@ -42,11 +42,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.EncryptFilesFragment;
 import org.sufficientlysecure.keychain.util.FileHelper;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 
 public class AddEditSmartPGPAuthorityDialogFragment extends DialogFragment implements OnEditorActionListener {
@@ -305,9 +304,9 @@ public class AddEditSmartPGPAuthorityDialogFragment extends DialogFragment imple
         try {
             mMessenger.send(msg);
         } catch (RemoteException e) {
-            Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+            Timber.w(e, "Exception sending message, Is handler present?");
         } catch (NullPointerException e) {
-            Log.w(Constants.TAG, "Messenger is null!", e);
+            Timber.w(e, "Messenger is null!");
         }
     }
 }

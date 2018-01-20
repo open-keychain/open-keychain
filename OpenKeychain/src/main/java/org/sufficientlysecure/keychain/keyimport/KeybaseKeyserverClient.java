@@ -22,11 +22,10 @@ import com.textuality.keybase.lib.KeybaseQuery;
 import com.textuality.keybase.lib.Match;
 import com.textuality.keybase.lib.User;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.network.OkHttpKeybaseClient;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
+import timber.log.Timber;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +59,7 @@ public class KeybaseKeyserverClient implements KeyserverClient {
                 results.add(makeEntry(match, query));
             }
         } catch (KeybaseException e) {
-            Log.e(Constants.TAG, "keybase result parsing error", e);
+            Timber.e(e, "keybase result parsing error");
             throw new QueryFailedException("Unexpected structure in keybase search result: " + e.getMessage());
         }
 

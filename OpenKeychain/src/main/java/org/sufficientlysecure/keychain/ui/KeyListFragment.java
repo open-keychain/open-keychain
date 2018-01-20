@@ -68,8 +68,9 @@ import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.FabContainer;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
+
 
 public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         implements SearchView.OnQueryTextListener,
@@ -381,7 +382,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
                     Notify.create(getActivity(), "Restored debug_backup.db", Notify.Style.OK).show();
                     getActivity().getContentResolver().notifyChange(KeychainContract.KeyRings.CONTENT_URI, null);
                 } catch (IOException e) {
-                    Log.e(Constants.TAG, "IO Error", e);
+                    Timber.e(e, "IO Error");
                     Notify.create(getActivity(), "IO Error " + e.getMessage(), Notify.Style.ERROR).show();
                 }
                 return true;
@@ -391,7 +392,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
                     KeychainDatabase.debugBackup(getActivity(), false);
                     Notify.create(getActivity(), "Backup to debug_backup.db completed", Notify.Style.OK).show();
                 } catch (IOException e) {
-                    Log.e(Constants.TAG, "IO Error", e);
+                    Timber.e(e, "IO Error");
                     Notify.create(getActivity(), "IO Error: " + e.getMessage(), Notify.Style.ERROR).show();
                 }
                 return true;
@@ -422,7 +423,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
 
     @Override
     public boolean onQueryTextChange(String s) {
-        Log.d(Constants.TAG, "onQueryTextChange s:" + s);
+        Timber.d("onQueryTextChange s: %s", s);
         // Called when the action bar search text has changed.  Update the
         // search filter, and restart the loader to do a new query with this
         // filter.

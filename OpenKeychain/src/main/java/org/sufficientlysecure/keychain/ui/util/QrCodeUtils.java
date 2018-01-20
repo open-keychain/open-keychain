@@ -28,9 +28,8 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.KeychainApplication;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 import java.util.Hashtable;
 import java.util.Locale;
@@ -87,7 +86,7 @@ public class QrCodeUtils {
 
             return bitmap;
         } catch (WriterException e) {
-            Log.e(Constants.TAG, "QrCodeUtils", e);
+            Timber.e(e, "QrCodeUtils");
             return null;
         }
 

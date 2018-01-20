@@ -25,10 +25,10 @@ import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransport;
 import org.sufficientlysecure.keychain.ui.UsbEventReceiverActivity;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class UsbConnectionDispatcher {
     private Activity mActivity;
@@ -50,7 +50,7 @@ public class UsbConnectionDispatcher {
                     boolean permission = intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED,
                             false);
                     if (permission) {
-                        Log.d(Constants.TAG, "Got permission for " + usbDevice.getDeviceName());
+                        Timber.d("Got permission for " + usbDevice.getDeviceName());
                         sendUsbTransportDiscovered(usbDevice);
                     }
                     break;

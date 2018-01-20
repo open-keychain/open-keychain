@@ -33,7 +33,7 @@ import org.bouncycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.bouncycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -103,7 +103,7 @@ public class WrappedSignature {
             }
         } catch (PGPException e) {
             // no matter
-            Log.e(Constants.TAG, "exception reading embedded signatures", e);
+            Timber.e(e, "exception reading embedded signatures");
         }
         return sigs;
     }
@@ -229,11 +229,11 @@ public class WrappedSignature {
         PGPSignatureList signatures = null;
         try {
             if ((signatures = (PGPSignatureList) factory.nextObject()) == null || signatures.isEmpty()) {
-                Log.e(Constants.TAG, "No signatures given!");
+                Timber.e("No signatures given!");
                 return null;
             }
         } catch (IOException e) {
-            Log.e(Constants.TAG, "Error while converting to PGPSignature!", e);
+            Timber.e(e, "Error while converting to PGPSignature!");
             return null;
         }
 

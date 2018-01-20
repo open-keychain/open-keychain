@@ -34,10 +34,9 @@ import android.os.Binder;
 
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.util.OpenPgpApi;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 
 /**
@@ -86,13 +85,13 @@ public class ApiPermissionHelper {
                 return null;
             } else {
                 String packageName = getCurrentCallingPackage();
-                Log.d(Constants.TAG, "isAllowed packageName: " + packageName);
+                Timber.d("isAllowed packageName: " + packageName);
 
                 byte[] packageCertificate;
                 try {
                     packageCertificate = getPackageCertificate(packageName);
                 } catch (NameNotFoundException e) {
-                    Log.e(Constants.TAG, "Should not happen, returning!", e);
+                    Timber.e(e, "Should not happen, returning!");
                     // return error
                     Intent result = new Intent();
                     result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
@@ -100,7 +99,7 @@ public class ApiPermissionHelper {
                             new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
                     return result;
                 }
-                Log.e(Constants.TAG, "Not allowed to use service! return PendingIntent for registration!");
+                Timber.e("Not allowed to use service! return PendingIntent for registration!");
 
                 PendingIntent pi = piFactory.createRegisterPendingIntent(data, packageName, packageCertificate);
 
@@ -112,7 +111,7 @@ public class ApiPermissionHelper {
                 return result;
             }
         } catch (WrongPackageCertificateException e) {
-            Log.e(Constants.TAG, "wrong signature!", e);
+            Timber.e(e, "wrong signature!");
 
             PendingIntent pi = piFactory.createErrorPendingIntent(data, mContext.getString(R.string.api_error_wrong_signature));
 
@@ -159,7 +158,7 @@ public class ApiPermissionHelper {
         // No plans to support sharedUserIds due to many bugs connected to them:
         // http://java-hamster.blogspot.de/2010/05/androids-shareduserid.html
         String currentPkg = callingPackages[0];
-        Log.d(Constants.TAG, "currentPkg: " + currentPkg);
+        Timber.d("currentPkg: " + currentPkg);
 
         return currentPkg;
     }
@@ -187,7 +186,7 @@ public class ApiPermissionHelper {
             }
         }
 
-        Log.e(Constants.TAG, "Uid is NOT allowed!");
+        Timber.e("Uid is NOT allowed!");
         return false;
     }
 
@@ -197,16 +196,16 @@ public class ApiPermissionHelper {
      * @throws WrongPackageCertificateException
      */
     public boolean isPackageAllowed(String packageName) throws WrongPackageCertificateException {
-        Log.d(Constants.TAG, "isPackageAllowed packageName: " + packageName);
+        Timber.d("isPackageAllowed packageName: " + packageName);
 
         byte[] storedPackageCert = mApiDao.getApiAppCertificate(packageName);
 
         boolean isKnownPackage = storedPackageCert != null;
         if (!isKnownPackage) {
-            Log.d(Constants.TAG, "Package is NOT allowed! packageName: " + packageName);
+            Timber.d("Package is NOT allowed! packageName: " + packageName);
             return false;
         }
-        Log.d(Constants.TAG, "Package is allowed! packageName: " + packageName);
+        Timber.d("Package is allowed! packageName: " + packageName);
 
         byte[] currentPackageCert;
         try {
@@ -217,7 +216,7 @@ public class ApiPermissionHelper {
 
         boolean packageCertMatchesStored = Arrays.equals(currentPackageCert, storedPackageCert);
         if (packageCertMatchesStored) {
-            Log.d(Constants.TAG,"Package certificate matches expected.");
+            Timber.d("Package certificate matches expected.");
             return true;
         }
 

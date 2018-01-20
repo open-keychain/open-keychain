@@ -53,9 +53,9 @@ import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
+import timber.log.Timber;
 
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -262,7 +262,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         if ((Boolean) newValue) {
                             boolean installed = OrbotHelper.isOrbotInstalled(activity);
                             if (!installed) {
-                                Log.d(Constants.TAG, "Prompting to install Tor");
+                                Timber.d("Prompting to install Tor");
                                 OrbotHelper.getPreferenceInstallDialogFragment().show(activity.getFragmentManager(),
                                         "installDialog");
                                 // don't let the user check the box until he's installed orbot

@@ -29,7 +29,6 @@ import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
@@ -39,9 +38,9 @@ import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
 
 
 public class KeychainApplication extends Application {
@@ -72,7 +71,7 @@ public class KeychainApplication extends Application {
          * LinuxPRNGSecureRandomProvider(), 1) for Android <= SDK 17
          */
         PRNGFixes.apply();
-        Log.d(Constants.TAG, "Bouncy Castle set and PRNG Fixes applied!");
+        Timber.d("Bouncy Castle set and PRNG Fixes applied!");
 
         /*
         if (Constants.DEBUG) {
@@ -127,7 +126,7 @@ public class KeychainApplication extends Application {
             Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
             if (accounts.length == 0) {
                 if (!manager.addAccountExplicitly(account, null, null)) {
-                    Log.d(Constants.TAG, "error when adding account via addAccountExplicitly");
+                    Timber.d("error when adding account via addAccountExplicitly");
                     return null;
                 } else {
                     return account;
@@ -136,7 +135,7 @@ public class KeychainApplication extends Application {
                 return accounts[0];
             }
         } catch (SecurityException e) {
-            Log.e(Constants.TAG, "SecurityException when adding the account", e);
+            Timber.e(e, "SecurityException when adding the account");
             Toast.makeText(context, R.string.reinstall_openkeychain, Toast.LENGTH_LONG).show();
             return null;
         }

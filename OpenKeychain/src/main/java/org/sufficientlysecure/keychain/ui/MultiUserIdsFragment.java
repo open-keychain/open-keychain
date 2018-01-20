@@ -32,15 +32,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import org.openintents.openpgp.util.OpenPgpUtils;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.ui.adapter.MultiUserIdsAdapter;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 import java.util.ArrayList;
 
@@ -90,7 +87,7 @@ public class MultiUserIdsFragment extends Fragment implements LoaderManager.Load
 
         mPubMasterKeyIds = getActivity().getIntent().getLongArrayExtra(EXTRA_KEY_IDS);
         if (mPubMasterKeyIds == null) {
-            Log.e(Constants.TAG, "List of key ids to certify missing!");
+            Timber.e("List of key ids to certify missing!");
             getActivity().finish();
             return;
         }
@@ -184,7 +181,7 @@ public class MultiUserIdsFragment extends Fragment implements LoaderManager.Load
             // Remember for next loop
             lastName = name;
 
-            Log.d(Constants.TAG, Long.toString(masterKeyId, 16) + (grouped ? "grouped" : "not grouped"));
+            Timber.d(Long.toString(masterKeyId, 16) + (grouped ? "grouped" : "not grouped"));
 
             if (!subGrouped) {
                 // 1. This name should NOT be grouped with the previous, so we flush the buffer

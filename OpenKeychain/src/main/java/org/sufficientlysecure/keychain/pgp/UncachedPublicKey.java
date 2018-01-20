@@ -17,6 +17,14 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+
 import org.bouncycastle.bcpg.ECPublicBCPGKey;
 import org.bouncycastle.bcpg.SignatureSubpacketTags;
 import org.bouncycastle.openpgp.PGPPublicKey;
@@ -26,15 +34,8 @@ import org.bouncycastle.openpgp.PGPUserAttributeSubpacketVector;
 import org.bouncycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.IterableIterator;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Utf8Util;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
+import timber.log.Timber;
 
 public class UncachedPublicKey {
     protected final PGPPublicKey mPublicKey;
@@ -374,7 +375,7 @@ public class UncachedPublicKey {
         long valid = mPublicKey.getValidSeconds();
 
         if (valid > Integer.MAX_VALUE) {
-            Log.e(Constants.TAG, "error, expiry time too large");
+            Timber.e("error, expiry time too large");
             return null;
         }
         if (valid == 0) {

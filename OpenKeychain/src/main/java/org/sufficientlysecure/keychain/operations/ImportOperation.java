@@ -35,7 +35,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.FacebookKeyserverClient;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
@@ -62,11 +61,12 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IteratorWithSize;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
+import timber.log.Timber;
+
 
 /**
  * An operation class which implements high level import
@@ -248,7 +248,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
 
                 log.add(result, 2);
             } catch (IOException | PgpGeneralException e) {
-                Log.e(Constants.TAG, "Encountered bad key on import!", e);
+                Timber.e(e, "Encountered bad key on import!");
                 ++badKeys;
             }
 
@@ -400,7 +400,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
         } catch (KeyserverClient.QueryNotFoundException e) {
             throw e;
         } catch (KeyserverClient.QueryFailedException e) {
-            Log.d(Constants.TAG, "query failed", e);
+            Timber.d(e, "query failed");
             log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER, 3, e.getMessage());
             return null;
         }
@@ -426,7 +426,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
             return keybaseKey;
         } catch (KeyserverClient.QueryFailedException e) {
             // download failed, too bad. just proceed
-            Log.e(Constants.TAG, "query failed", e);
+            Timber.e(e, "query failed");
             log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER, 3, e.getMessage());
             return null;
         }
@@ -452,7 +452,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
             return facebookKey;
         } catch (KeyserverClient.QueryFailedException e) {
             // download failed, too bad. just proceed
-            Log.e(Constants.TAG, "query failed", e);
+            Timber.e(e, "query failed");
             log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER, 3, e.getMessage());
             return null;
         }
@@ -515,7 +515,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
     private ImportKeyResult multiThreadedKeyImport(List<ParcelableKeyRing> keyList,
                                                    final HkpKeyserverAddress keyServer, final ParcelableProxy proxy,
                                                    final boolean skipSave) {
-        Log.d(Constants.TAG, "Multi-threaded key import starting");
+        Timber.d("Multi-threaded key import starting");
 
         final Iterator<ParcelableKeyRing> keyListIterator = keyList.iterator();
         final int totKeys = keyList.size();
@@ -555,8 +555,8 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
             try {
                 accumulator.accumulateKeyImport(importCompletionService.take().get());
             } catch (InterruptedException | ExecutionException e) {
-                Log.e(Constants.TAG, "A key could not be imported during multi-threaded " +
-                        "import", e);
+                Timber.e(e, "A key could not be imported during multi-threaded " +
+                        "import");
                 // do nothing?
                 if (e instanceof ExecutionException) {
                     // Since serialKeyRingImport does not throw any exceptions, this is what

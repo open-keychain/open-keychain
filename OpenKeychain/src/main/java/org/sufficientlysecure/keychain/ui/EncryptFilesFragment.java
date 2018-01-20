@@ -76,9 +76,10 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
+
 
 public class EncryptFilesFragment
         extends CachingCryptoOperationFragment<SignEncryptParcel, SignEncryptResult> {
@@ -901,7 +902,7 @@ public class EncryptFilesFragment
                 for (Uri inputUri : inputUris) {
                     ViewModel newModel = new ViewModel(mActivity, inputUri);
                     if (mDataset.contains(newModel)) {
-                        Log.e(Constants.TAG, "Skipped duplicate " + inputUri);
+                        Timber.e("Skipped duplicate " + inputUri);
                     } else {
                         mDataset.add(newModel);
                     }

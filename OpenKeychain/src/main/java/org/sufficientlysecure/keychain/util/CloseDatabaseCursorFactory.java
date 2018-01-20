@@ -7,9 +7,8 @@ import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteQuery;
-import android.util.Log;
 
-import org.sufficientlysecure.keychain.Constants;
+import timber.log.Timber;
 
 
 public class CloseDatabaseCursorFactory implements CursorFactory {
@@ -23,11 +22,11 @@ public class CloseDatabaseCursorFactory implements CursorFactory {
             final SQLiteDatabase db = getDatabase();
             super.close();
             if (db != null) {
-                Log.d(Constants.TAG, "Closing cursor: " + db.getPath());
+                Timber.d("Closing cursor: " + db.getPath());
                 try {
                     db.close();
                 } catch (Exception e) {
-                    Log.e(Constants.TAG, "Error closing db", e);
+                    Timber.e(e, "Error closing db");
                 }
             }
         }

@@ -37,6 +37,7 @@ import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusLoader.KeySubkeyStatus;
+import timber.log.Timber;
 
 
 public class SubkeyStatusLoader extends AsyncTaskLoader<KeySubkeyStatus> {
@@ -86,7 +87,7 @@ public class SubkeyStatusLoader extends AsyncTaskLoader<KeySubkeyStatus> {
     public KeySubkeyStatus loadInBackground() {
         Cursor cursor = contentResolver.query(Keys.buildKeysUri(masterKeyId), PROJECTION, null, null, null);
         if (cursor == null) {
-            Log.e(Constants.TAG, "Error loading key items!");
+            Timber.e("Error loading key items!");
             return null;
         }
 

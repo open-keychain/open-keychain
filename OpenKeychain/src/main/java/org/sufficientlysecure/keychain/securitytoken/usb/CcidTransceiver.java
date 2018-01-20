@@ -27,13 +27,13 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
-import android.util.Log;
 
 import com.google.auto.value.AutoValue;
 import org.bouncycastle.util.Arrays;
-import org.bouncycastle.util.encoders.Hex;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException.UsbCcidErrorException;
+import timber.log.Timber;
+
+import static org.bouncycastle.util.encoders.Hex.toHexString;
 
 
 public class CcidTransceiver {
@@ -87,14 +87,14 @@ public class CcidTransceiver {
 
         CcidDataBlock response = null;
         for (CcidDescription.Voltage v : usbCcidDescription.getVoltages()) {
-            Log.v(Constants.TAG, "CCID: attempting to power on with voltage " + v.toString());
+            Timber.v("CCID: attempting to power on with voltage " + v.toString());
             try {
                 response = iccPowerOnVoltage(v.powerOnValue);
             } catch (UsbCcidErrorException e) {
                 if (e.getErrorResponse().getError() == 7) { // Power select error
-                    Log.v(Constants.TAG, "CCID: failed to power on with voltage " + v.toString());
+                    Timber.v("CCID: failed to power on with voltage " + v.toString());
                     iccPowerOff();
-                    Log.v(Constants.TAG, "CCID: powered off");
+                    Timber.v("CCID: powered off");
                     continue;
                 }
 
@@ -109,8 +109,8 @@ public class CcidTransceiver {
 
         long elapsedTime = SystemClock.elapsedRealtime() - startTime;
 
-        Log.d(Constants.TAG, "Usb transport connected, took " + elapsedTime + "ms, ATR=" +
-                Hex.toHexString(response.getData()));
+        Timber.d("Usb transport connected, took " + elapsedTime + "ms, ATR=" +
+                toHexString(response.getData()));
 
         return response;
     }
@@ -176,7 +176,7 @@ public class CcidTransceiver {
         CcidDataBlock ccidDataBlock = receiveDataBlock(sequenceNumber);
 
         long elapsedTime = SystemClock.elapsedRealtime() - startTime;
-        Log.d(Constants.TAG, "USB XferBlock call took " + elapsedTime + "ms");
+        Timber.d("USB XferBlock call took " + elapsedTime + "ms");
 
         return ccidDataBlock;
     }
@@ -187,8 +187,7 @@ public class CcidTransceiver {
             ignoredBytes = usbConnection.bulkTransfer(
                     usbBulkIn, inputBuffer, inputBuffer.length, DEVICE_SKIP_TIMEOUT_MILLIS);
             if (ignoredBytes > 0) {
-                Log.e(Constants.TAG,
-                        "Skipped " + ignoredBytes + " bytes: " + Hex.toHexString(inputBuffer, 0, ignoredBytes));
+                Timber.e("Skipped " + ignoredBytes + " bytes: " + toHexString(inputBuffer, 0, ignoredBytes));
             }
         } while (ignoredBytes > 0);
     }

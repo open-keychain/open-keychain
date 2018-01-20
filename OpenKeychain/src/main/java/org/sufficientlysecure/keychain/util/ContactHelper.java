@@ -17,6 +17,17 @@
 
 package org.sufficientlysecure.keychain.util;
 
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+
 import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -40,16 +51,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
+import timber.log.Timber;
 
 public class ContactHelper {
 
@@ -490,7 +492,7 @@ public class ContactHelper {
             return true;
         }
 
-        Log.w(Constants.TAG, "READ_CONTACTS permission denied!");
+        Timber.w("READ_CONTACTS permission denied!");
         return false;
     }
 
@@ -515,7 +517,7 @@ public class ContactHelper {
                 boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
                 boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
 
-                Log.d(Constants.TAG, "masterKeyId: " + masterKeyId);
+                Timber.d("masterKeyId: " + masterKeyId);
 
                 deletedKeys.remove(masterKeyId);
 
@@ -524,7 +526,7 @@ public class ContactHelper {
                 // Do not store expired or revoked or unverified keys in contact db - and
                 // remove them if they already exist. Secret keys do not reach this point
                 if (isExpired || isRevoked || !isVerified) {
-                    Log.d(Constants.TAG, "Expired or revoked or unverified: Deleting masterKeyId "
+                    Timber.d("Expired or revoked or unverified: Deleting masterKeyId "
                             + masterKeyId);
                     if (masterKeyId != -1) {
                         deleteRawContactByMasterKeyId(masterKeyId);
@@ -533,11 +535,11 @@ public class ContactHelper {
 
                     // get raw contact to this master key id
                     long rawContactId = findRawContactId(masterKeyId);
-                    Log.d(Constants.TAG, "rawContactId: " + rawContactId);
+                    Timber.d("rawContactId: " + rawContactId);
 
                     // Create a new rawcontact with corresponding key if it does not exist yet
                     if (rawContactId == -1) {
-                        Log.d(Constants.TAG, "Insert new raw contact with masterKeyId " + masterKeyId);
+                        Timber.d("Insert new raw contact with masterKeyId " + masterKeyId);
 
                         insertContact(ops, masterKeyId);
                         writeContactKey(ops, rawContactId, masterKeyId, name);
@@ -550,7 +552,7 @@ public class ContactHelper {
                     try {
                         mContentResolver.applyBatch(ContactsContract.AUTHORITY, ops);
                     } catch (Exception e) {
-                        Log.w(Constants.TAG, e);
+                        Timber.w(e);
                     }
                 }
             }
@@ -559,7 +561,7 @@ public class ContactHelper {
 
         // Delete master key ids that are no longer present in OK
         for (Long masterKeyId : deletedKeys) {
-            Log.d(Constants.TAG, "Delete raw contact with masterKeyId " + masterKeyId);
+            Timber.d("Delete raw contact with masterKeyId " + masterKeyId);
             deleteRawContactByMasterKeyId(masterKeyId);
         }
     }
@@ -594,7 +596,7 @@ public class ContactHelper {
                     if (!existsInMainProfile) {
                         long rawContactId = -1;//new raw contact
 
-                        Log.d(Constants.TAG, "masterKeyId with secret " + masterKeyId);
+                        Timber.d("masterKeyId with secret " + masterKeyId);
 
                         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
                         insertMainProfileRawContact(ops, masterKeyId);
@@ -603,7 +605,7 @@ public class ContactHelper {
                         try {
                             mContentResolver.applyBatch(ContactsContract.AUTHORITY, ops);
                         } catch (Exception e) {
-                            Log.w(Constants.TAG, e);
+                            Timber.w(e);
                         }
                     }
                 }
@@ -614,7 +616,7 @@ public class ContactHelper {
 
         for (long masterKeyId : keysToDelete) {
             deleteMainProfileRawContactByMasterKeyId(masterKeyId);
-            Log.d(Constants.TAG, "Delete main profile raw contact with masterKeyId " + masterKeyId);
+            Timber.d("Delete main profile raw contact with masterKeyId " + masterKeyId);
         }
     }
 
@@ -684,7 +686,7 @@ public class ContactHelper {
         Uri deleteUri = ContactsContract.RawContacts.CONTENT_URI.buildUpon().
                 appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build();
 
-        Log.d(Constants.TAG, "Deleting all raw contacts associated to OK...");
+        Timber.d("Deleting all raw contacts associated to OK...");
         int delete = mContentResolver.delete(deleteUri,
                 ContactsContract.RawContacts.ACCOUNT_TYPE + "=?",
                 new String[]{

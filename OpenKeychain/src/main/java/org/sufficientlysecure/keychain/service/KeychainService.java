@@ -29,7 +29,6 @@ import android.os.Messenger;
 import android.os.Parcelable;
 import android.os.RemoteException;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.BackupOperation;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
 import org.sufficientlysecure.keychain.operations.BenchmarkOperation;
@@ -52,7 +51,8 @@ import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 /**
  * This Service contains all important long lasting operations for OpenKeychain. It receives Intents with
@@ -172,9 +172,9 @@ public class KeychainService extends Service implements Progressable {
         try {
             mMessenger.get().send(msg);
         } catch (RemoteException e) {
-            Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+            Timber.w(e, "Exception sending message, Is handler present?");
         } catch (NullPointerException e) {
-            Log.w(Constants.TAG, "Messenger is null!", e);
+            Timber.w(e, "Messenger is null!");
         }
     }
 
@@ -193,7 +193,7 @@ public class KeychainService extends Service implements Progressable {
      */
     @Override
     public void setProgress(String message, int progress, int max) {
-        Log.d(Constants.TAG, "Send message by setProgress with progress=" + progress + ", max="
+        Timber.d("Send message by setProgress with progress=" + progress + ", max="
                 + max);
 
         Bundle data = new Bundle();

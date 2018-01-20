@@ -32,7 +32,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.databinding.ImportKeysListItemBinding;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
@@ -53,8 +52,9 @@ import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
+import timber.log.Timber;
+
 
 public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.ViewHolder>
         implements ImportKeysResultListener {
@@ -230,7 +230,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                         new ParcelableFileCache<>(mActivity, ImportOperation.CACHE_FILE_NAME);
                 cache.writeCache(keyRing);
             } catch (IOException e) {
-                Log.e(Constants.TAG, "Problem writing cache file", e);
+                Timber.e(e, "Problem writing cache file");
                 Notify.create(mActivity, "Problem writing cache file!", Notify.Style.ERROR).show();
             }
 
@@ -260,12 +260,12 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         }
 
         boolean resultStatus = result.success();
-        Log.e(Constants.TAG, "getKey result: " + resultStatus);
+        Timber.e("getKey result: " + resultStatus);
         if (resultStatus) {
             ArrayList<CanonicalizedKeyRing> canKeyRings = result.mCanonicalizedKeyRings;
             if (canKeyRings.size() == 1) {
                 CanonicalizedKeyRing keyRing = canKeyRings.get(0);
-                Log.e(Constants.TAG, "Key ID: " + keyRing.getMasterKeyId() +
+                Timber.e("Key ID: " + keyRing.getMasterKeyId() +
                         "| isRev: " + keyRing.isRevoked() + "| isExp: " + keyRing.isExpired()
                         + "| isSec: " + keyRing.isSecure());
 

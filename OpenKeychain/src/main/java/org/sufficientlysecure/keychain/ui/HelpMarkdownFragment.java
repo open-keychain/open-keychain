@@ -28,8 +28,7 @@ import android.widget.ScrollView;
 import org.markdown4j.Markdown4jProcessor;
 import org.sufficientlysecure.htmltextview.HtmlResImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 import java.io.IOException;
 
@@ -71,7 +70,7 @@ public class HelpMarkdownFragment extends Fragment {
                     getActivity().getResources().openRawResource(mHtmlFile));
             text.setHtml(html, new HtmlResImageGetter(text));
         } catch (IOException e) {
-            Log.e(Constants.TAG, "IOException", e);
+            Timber.e(e, "IOException");
         }
 
         return scroller;

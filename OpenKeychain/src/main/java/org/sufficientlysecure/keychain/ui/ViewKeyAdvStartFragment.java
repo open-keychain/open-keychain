@@ -26,9 +26,8 @@ import android.view.ViewGroup;
 import org.markdown4j.Markdown4jProcessor;
 import org.sufficientlysecure.htmltextview.HtmlResImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 import java.io.IOException;
 
@@ -47,7 +46,7 @@ public class ViewKeyAdvStartFragment extends Fragment {
                     getActivity().getResources().openRawResource(R.raw.advanced));
             textView.setHtml(html, new HtmlResImageGetter(textView));
         } catch (IOException e) {
-            Log.e(Constants.TAG, "IOException", e);
+            Timber.e(e, "IOException");
         }
 
         return view;

@@ -25,8 +25,8 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class UsbEventReceiverActivity extends Activity {
     public static final String ACTION_USB_PERMISSION =
@@ -47,7 +47,7 @@ public class UsbEventReceiverActivity extends Activity {
             if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(intent.getAction())) {
                 UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
 
-                Log.d(Constants.TAG, "Requesting permission for " + usbDevice.getDeviceName());
+                Timber.d("Requesting permission for " + usbDevice.getDeviceName());
                 usbManager.requestPermission(usbDevice,
                         PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0));
             }

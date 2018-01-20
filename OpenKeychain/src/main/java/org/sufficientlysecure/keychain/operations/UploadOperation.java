@@ -23,7 +23,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverClient;
 import org.sufficientlysecure.keychain.keyimport.KeyserverClient.AddKeyException;
@@ -42,10 +41,10 @@ import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
+import timber.log.Timber;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -130,7 +129,7 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
             return null;
         } catch (IOException | PgpGeneralException e) {
             log.add(LogType.MSG_UPLOAD_ERROR_IO, 1);
-            Log.e(Constants.TAG, "error uploading key", e);
+            Timber.e(e, "error uploading key");
             return null;
         }
 
@@ -159,12 +158,12 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
             log.add(LogType.MSG_UPLOAD_SUCCESS, 1);
             return new UploadResult(UploadResult.RESULT_OK, log);
         } catch (IOException e) {
-            Log.e(Constants.TAG, "IOException", e);
+            Timber.e(e, "IOException");
 
             log.add(LogType.MSG_UPLOAD_ERROR_IO, 1);
             return new UploadResult(UploadResult.RESULT_ERROR, log);
         } catch (AddKeyException e) {
-            Log.e(Constants.TAG, "AddKeyException", e);
+            Timber.e(e, "AddKeyException");
 
             log.add(LogType.MSG_UPLOAD_ERROR_UPLOAD, 1);
             return new UploadResult(UploadResult.RESULT_ERROR, log);

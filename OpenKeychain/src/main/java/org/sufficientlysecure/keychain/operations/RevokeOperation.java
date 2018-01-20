@@ -22,7 +22,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.RevokeResult;
@@ -35,7 +34,8 @@ import org.sufficientlysecure.keychain.service.RevokeKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class RevokeOperation extends BaseReadWriteOperation<RevokeKeyringParcel> {
 
@@ -97,7 +97,7 @@ public class RevokeOperation extends BaseReadWriteOperation<RevokeKeyringParcel>
             }
 
         } catch (PgpKeyNotFoundException | KeyWritableRepository.NotFoundException e) {
-            Log.e(Constants.TAG, "could not find key to revoke", e);
+            Timber.e(e, "could not find key to revoke");
             log.add(OperationResult.LogType.MSG_REVOKE_ERROR_KEY_FAIL, 1);
             return new RevokeResult(RevokeResult.RESULT_ERROR, log, masterKeyId);
         }

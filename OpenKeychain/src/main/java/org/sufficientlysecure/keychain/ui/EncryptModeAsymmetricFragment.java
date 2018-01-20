@@ -44,8 +44,9 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner.OnKeyChangedListener;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import timber.log.Timber;
+
 
 public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
 
@@ -144,7 +145,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
                     mSignKeySpinner.setPreSelectedKeyId(signatureKeyId);
                 }
             } catch (PgpKeyNotFoundException e) {
-                Log.e(Constants.TAG, "key not found for signing!", e);
+                Timber.e(e, "key not found for signing!");
                 Notify.create(getActivity(), getString(R.string.error_preselect_sign_key,
                         KeyFormattingUtils.beautifyKeyId(signatureKeyId)),
                         Style.ERROR).show();
@@ -158,7 +159,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
                             mKeyRepository.getCanonicalizedPublicKeyRing(preselectedId);
                     mEncryptKeyView.addObject(new KeyItem(ring));
                 } catch (NotFoundException e) {
-                    Log.e(Constants.TAG, "key not found for encryption!", e);
+                    Timber.e(e, "key not found for encryption!");
                     Notify.create(getActivity(), getString(R.string.error_preselect_encrypt_key,
                             KeyFormattingUtils.beautifyKeyId(preselectedId)),
                             Style.ERROR).show();

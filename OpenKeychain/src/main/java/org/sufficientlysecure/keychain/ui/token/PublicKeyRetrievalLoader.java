@@ -57,6 +57,7 @@ import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.KeyRetr
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
 
 
 public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrievalResult> {
@@ -204,7 +205,7 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
                 log.add(LogType.MSG_RET_URI_ERROR_NO_MATCH, 1);
             } catch (IOException e) {
                 log.add(LogType.MSG_RET_URI_ERROR_FETCH, 1);
-                Log.e(Constants.TAG, "error retrieving key from uri", e);
+                Timber.e(e, "error retrieving key from uri");
             }
 
             return KeyRetrievalResult.createWithError(log);
@@ -245,7 +246,7 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
                 log.add(LogType.MSG_RET_KS_ERROR_NOT_FOUND, 1);
             } catch (QueryFailedException | IOException | PgpGeneralException e) {
                 log.add(LogType.MSG_RET_KS_ERROR, 1);
-                Log.e(Constants.TAG, "error retrieving key from keyserver", e);
+                Timber.e(e, "error retrieving key from keyserver");
             }
 
             return KeyRetrievalResult.createWithError(log);
@@ -290,7 +291,7 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
                 }
                 log.add(LogType.MSG_RET_CURI_ERROR_NO_MATCH, 1);
             } catch (IOException e) {
-                Log.e(Constants.TAG, "error reading keyring from file", e);
+                Timber.e(e, "error reading keyring from file");
                 log.add(LogType.MSG_RET_CURI_ERROR_IO, 1);
             }
 

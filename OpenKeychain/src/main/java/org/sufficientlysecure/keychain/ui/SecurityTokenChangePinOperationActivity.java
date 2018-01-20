@@ -30,7 +30,6 @@ import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import nordpol.android.NfcGuideView;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.securitytoken.operations.ModifyPinTokenOp;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
@@ -38,9 +37,9 @@ import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.service.input.SecurityTokenChangePinParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.OrientationUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import timber.log.Timber;
 
 
 /**
@@ -74,7 +73,7 @@ public class SecurityTokenChangePinOperationActivity extends BaseSecurityTokenAc
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(Constants.TAG, "NfcOperationActivity.onCreate");
+        Timber.d("NfcOperationActivity.onCreate");
 
         nfcGuideView = (NfcGuideView) findViewById(R.id.nfc_guide_view);
 

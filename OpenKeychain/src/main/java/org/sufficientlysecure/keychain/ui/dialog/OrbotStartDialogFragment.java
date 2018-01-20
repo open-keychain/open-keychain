@@ -32,11 +32,11 @@ import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.Button;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
+import timber.log.Timber;
+
 
 /**
  * displays a dialog asking the user to enable Tor
@@ -89,9 +89,9 @@ public class OrbotStartDialogFragment extends DialogFragment {
                 try {
                     messenger.send(msg);
                 } catch (RemoteException e) {
-                    Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+                    Timber.w(e, "Exception sending message, Is handler present?");
                 } catch (NullPointerException e) {
-                    Log.w(Constants.TAG, "Messenger is null!", e);
+                    Timber.w(e, "Messenger is null!");
                 }
 
             }
@@ -105,9 +105,9 @@ public class OrbotStartDialogFragment extends DialogFragment {
                 try {
                     messenger.send(msg);
                 } catch (RemoteException e) {
-                    Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+                    Timber.w(e, "Exception sending message, Is handler present?");
                 } catch (NullPointerException e) {
-                    Log.w(Constants.TAG, "Messenger is null!", e);
+                    Timber.w(e, "Messenger is null!");
                 }
             }
         });
@@ -153,9 +153,9 @@ public class OrbotStartDialogFragment extends DialogFragment {
             try {
                 messenger.send(msg);
             } catch (RemoteException e) {
-                Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+                Timber.w(e, "Exception sending message, Is handler present?");
             } catch (NullPointerException e) {
-                Log.w(Constants.TAG, "Messenger is null!", e);
+                Timber.w(e, "Messenger is null!");
             }
             dismiss();
         }

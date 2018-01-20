@@ -37,6 +37,8 @@ import org.sufficientlysecure.keychain.Constants.Pref;
 import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
+import timber.log.Timber;
+
 
 /**
  * Singleton Implementation of a Preference Helper
@@ -279,7 +281,7 @@ public class Preferences {
             case typeSocks:
                 return Proxy.Type.SOCKS;
             default:  // shouldn't happen
-                Log.e(Constants.TAG, "Invalid Proxy Type in preferences");
+                Timber.e("Invalid Proxy Type in preferences");
                 return null;
         }
     }
@@ -422,7 +424,7 @@ public class Preferences {
     }
 
     public void upgradePreferences(Context context) {
-        Log.d(Constants.TAG, "Upgrading preferences…");
+        Timber.d("Upgrading preferences…");
         int oldVersion = mSharedPreferences.getInt(Constants.Pref.PREF_VERSION, 0);
         boolean requiresUpgrade = oldVersion < Constants.Defaults.PREF_CURRENT_VERSION;
 

@@ -27,14 +27,14 @@ import android.os.RemoteException;
 import android.support.v4.app.FragmentActivity;
 import android.view.ContextThemeWrapper;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
+import timber.log.Timber;
+
 
 /**
  * Simply encapsulates a dialog. If orbot is not installed, it shows an install dialog, else a
@@ -165,7 +165,7 @@ public class OrbotRequiredDialogActivity extends FragmentActivity
             try {
                 mMessenger.send(msg);
             } catch (RemoteException e) {
-                Log.e(Constants.TAG, "Could not deliver message", e);
+                Timber.e(e, "Could not deliver message");
             }
         }
     }

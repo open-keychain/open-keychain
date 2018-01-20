@@ -32,7 +32,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.service.KeychainService;
@@ -44,7 +43,8 @@ import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.RetryUploadDialogActivity;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 /**
  * Designed to be integrated into activities or fragments used for CryptoOperations.
@@ -204,13 +204,13 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
      * @return true if requestCode was recognized, false otherwise
      */
     public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(Constants.TAG, "received activity result in OperationHelper");
+        Timber.d("received activity result in OperationHelper");
 
         if ((requestCode & HELPER_ID_BITMASK) != mHelperId) {
             // this wasn't meant for us to handle
             return false;
         }
-        Log.d(Constants.TAG, "handling activity result in OperationHelper");
+        Timber.d("handling activity result in OperationHelper");
         // filter out mHelperId from requestCode
         requestCode ^= mHelperId;
 
@@ -348,7 +348,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     }
 
     private void onHandleResult(final OperationResult result) {
-        Log.d(Constants.TAG, "Handling result in OperationHelper success: " + result.success());
+        Timber.d("Handling result in OperationHelper success: " + result.success());
 
         if (result instanceof InputPendingResult) {
             InputPendingResult pendingResult = (InputPendingResult) result;

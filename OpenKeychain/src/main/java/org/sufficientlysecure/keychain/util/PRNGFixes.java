@@ -29,6 +29,9 @@ import java.security.SecureRandom;
 import java.security.SecureRandomSpi;
 import java.security.Security;
 
+import timber.log.Timber;
+
+
 /**
  * Fixes for the output of the default PRNG having low entropy.
  * <p/>
@@ -245,8 +248,7 @@ public final class PRNGFixes {
             } catch (IOException e) {
                 // On a small fraction of devices /dev/urandom is not writable.
                 // Log and ignore.
-                Log.w(PRNGFixes.class.getSimpleName(),
-                        "Failed to mix seed into " + URANDOM_FILE);
+                Timber.w("Failed to mix seed into " + URANDOM_FILE);
             } finally {
                 mSeeded = true;
             }

@@ -41,11 +41,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class AppsListFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor>, OnItemClickListener {
@@ -106,7 +106,7 @@ public class AppsListFragment extends ListFragment implements
                     i.addCategory(Intent.CATEGORY_LAUNCHER);
                     startActivity(i);
                 } catch (PackageManager.NameNotFoundException e) {
-                    Log.e(Constants.TAG, "startApp", e);
+                    Timber.e(e, "startApp");
                 }
             }
         } else {
@@ -326,7 +326,7 @@ public class AppsListFragment extends ListFragment implements
             ImageView installIcon = (ImageView) view.findViewById(R.id.api_apps_adapter_install_icon);
 
             String packageName = cursor.getString(INDEX_PACKAGE_NAME);
-            Log.d(Constants.TAG, "packageName: " + packageName);
+            Timber.d("packageName: " + packageName);
             int installed = cursor.getInt(INDEX_INSTALLED);
             String name = cursor.getString(INDEX_NAME);
             int iconResName = cursor.getInt(INDEX_ICON_RES_ID);

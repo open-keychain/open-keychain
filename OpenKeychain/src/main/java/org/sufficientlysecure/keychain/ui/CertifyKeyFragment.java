@@ -46,8 +46,9 @@ import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
+
 
 public class CertifyKeyFragment
         extends CachingCryptoOperationFragment<CertifyActionsParcel, CertifyResult> {
@@ -75,7 +76,7 @@ public class CertifyKeyFragment
                         mCertifyKeySpinner.setPreSelectedKeyId(certifyKeyId);
                     }
                 } catch (PgpKeyNotFoundException e) {
-                    Log.e(Constants.TAG, "certify certify check failed", e);
+                    Timber.e(e, "certify certify check failed");
                 }
             }
         }

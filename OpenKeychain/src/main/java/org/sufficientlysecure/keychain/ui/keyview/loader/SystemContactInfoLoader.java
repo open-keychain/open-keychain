@@ -32,6 +32,7 @@ import android.util.Log;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SystemContactInfoLoader.SystemContactInfo;
 import org.sufficientlysecure.keychain.util.ContactHelper;
+import timber.log.Timber;
 
 
 public class SystemContactInfoLoader extends AsyncTaskLoader<SystemContactInfo> {
@@ -72,7 +73,7 @@ public class SystemContactInfoLoader extends AsyncTaskLoader<SystemContactInfo> 
                 }, null);
 
         if (cursor == null) {
-            Log.e(Constants.TAG, "Error loading key items!");
+            Timber.e("Error loading key items!");
             return null;
         }
 

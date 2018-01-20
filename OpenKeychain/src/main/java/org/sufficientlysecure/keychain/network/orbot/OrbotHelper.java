@@ -65,17 +65,17 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.dialog.SupportInstallDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.OrbotStartDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.PreferenceInstallDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
 
 import java.util.List;
+
 
 /**
  * This class is taken from the NetCipher library: https://github.com/guardianproject/NetCipher/
@@ -221,7 +221,7 @@ public class OrbotHelper {
      */
     public static boolean requestStartTor(Context context) {
         if (OrbotHelper.isOrbotInstalled(context)) {
-            Log.i("OrbotHelper", "requestStartTor " + context.getPackageName());
+            Timber.i("requestStartTor " + context.getPackageName());
             Intent intent = getOrbotStartIntent();
             intent.putExtra(EXTRA_PACKAGE_NAME, context.getPackageName());
             context.sendBroadcast(intent);
@@ -245,7 +245,7 @@ public class OrbotHelper {
 
         String foundPackageName = null;
         for (ResolveInfo r : resInfos) {
-            Log.i("OrbotHelper", "market: " + r.activityInfo.packageName);
+            Timber.i("market: " + r.activityInfo.packageName);
             if (TextUtils.equals(r.activityInfo.packageName, FDROID_PACKAGE_NAME)
                     || TextUtils.equals(r.activityInfo.packageName, PLAY_PACKAGE_NAME)) {
                 foundPackageName = r.activityInfo.packageName;
@@ -416,7 +416,7 @@ public class OrbotHelper {
         private ProgressDialog mProgressDialog;
 
         public void startOrbotAndListen(final Context context, final boolean showProgress) {
-            Log.d(Constants.TAG, "starting orbot listener");
+            Timber.d("starting orbot listener");
             if (showProgress) {
                 showProgressDialog(context);
             }
@@ -447,8 +447,8 @@ public class OrbotHelper {
                             break;
 
                     }
-                    Log.d(Constants.TAG, "Orbot silent start broadcast: " +
-                            intent.getStringExtra(OrbotHelper.EXTRA_STATUS));
+                    Timber.d("Orbot silent start broadcast: " +
+                            intent.getStringExtra(EXTRA_STATUS));
                 }
             };
             context.registerReceiver(receiver, new IntentFilter(OrbotHelper.ACTION_STATUS));

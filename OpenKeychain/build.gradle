@@ -88,6 +88,8 @@ dependencies {
         exclude module: 'recyclerview-v7'
     }
 
+    compile "com.jakewharton.timber:timber:4.5.1"
+
     compile 'org.glassfish:javax.annotation:10.0-b28'
     provided    "com.google.auto.value:auto-value:1.4.1"
     apt         "com.google.auto.value:auto-value:1.4.1"

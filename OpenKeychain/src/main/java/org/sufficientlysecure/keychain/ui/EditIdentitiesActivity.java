@@ -20,10 +20,10 @@ package org.sufficientlysecure.keychain.ui;
 import android.net.Uri;
 import android.os.Bundle;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class EditIdentitiesActivity extends BaseActivity {
 
@@ -33,7 +33,7 @@ public class EditIdentitiesActivity extends BaseActivity {
 
         Uri dataUri = getIntent().getData();
         if (dataUri == null) {
-            Log.e(Constants.TAG, "Either a key Uri or EXTRA_SAVE_KEYRING_PARCEL is required!");
+            Timber.e("Either a key Uri or EXTRA_SAVE_KEYRING_PARCEL is required!");
             finish();
             return;
         }

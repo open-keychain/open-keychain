@@ -31,12 +31,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
 import org.openintents.openpgp.util.OpenPgpApi;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 
 class OpenPgpServiceKeyIdExtractor {
@@ -158,7 +157,7 @@ class OpenPgpServiceKeyIdExtractor {
             }
 
             if (userIdEntries.size() != encryptionAddresses.length) {
-                Log.e(Constants.TAG, "Number of rows doesn't match number of retrieved rows! Probably a bug?");
+                Timber.e("Number of rows doesn't match number of retrieved rows! Probably a bug?");
             }
 
             allKeysConfirmed = !anyKeyNotVerified;

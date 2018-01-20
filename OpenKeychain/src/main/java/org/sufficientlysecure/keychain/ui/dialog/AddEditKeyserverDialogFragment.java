@@ -51,15 +51,15 @@ import android.widget.TextView.OnEditorActionListener;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
 import org.sufficientlysecure.keychain.network.TlsCertificatePinning;
 import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
+
 
 public class AddEditKeyserverDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "arg_messenger";
@@ -369,7 +369,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
             TlsCertificatePinning tlsCertificatePinning = new TlsCertificatePinning(keyserverUriHttp.toURL());
             boolean isPinAvailable = tlsCertificatePinning.isPinAvailable();
             if (onlyTrustedKeyserver && !isPinAvailable) {
-                Log.w(Constants.TAG, "No pinned certificate for this host in OpenKeychain's assets.");
+                Timber.w("No pinned certificate for this host in OpenKeychain's assets.");
                 reason = VerifyReturn.NO_PINNED_CERTIFICATE;
                 return reason;
             }
@@ -387,10 +387,10 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
                 clientTor.newCall(new Request.Builder().url(keyserverUriOnion.toURL()).build()).execute();
             }
         } catch (MalformedURLException | URISyntaxException e) {
-            Log.w(Constants.TAG, "Invalid keyserver URL entered by user.");
+            Timber.w("Invalid keyserver URL entered by user.");
             reason = VerifyReturn.INVALID_URL;
         } catch (IOException e) {
-            Log.w(Constants.TAG, "Could not connect to entered keyserver url");
+            Timber.w("Could not connect to entered keyserver url");
             reason = VerifyReturn.CONNECTION_FAILED;
         }
 
@@ -450,9 +450,9 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
         try {
             mMessenger.send(msg);
         } catch (RemoteException e) {
-            Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+            Timber.w(e, "Exception sending message, Is handler present?");
         } catch (NullPointerException e) {
-            Log.w(Constants.TAG, "Messenger is null!", e);
+            Timber.w(e, "Messenger is null!");
         }
     }
 }

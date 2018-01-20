@@ -33,7 +33,6 @@ import android.widget.AdapterView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
@@ -47,7 +46,7 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -111,9 +110,8 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
                     showRevokeDeleteDialog(name);
                 }
             } catch (KeyRepository.NotFoundException e) {
-                Log.e(Constants.TAG,
-                        "Secret key to delete not found at DeleteKeyDialogActivity for "
-                                + mMasterKeyIds[0], e);
+                Timber.e(e, "Secret key to delete not found at DeleteKeyDialogActivity for "
+                        + mMasterKeyIds[0]);
                 finish();
             }
         } else {

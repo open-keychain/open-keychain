@@ -90,10 +90,11 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.Securit
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.SecurityTokenSignOperationsBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Primes;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
+import timber.log.Timber;
+
 
 /**
  * This class is the single place where ALL operations that actually modify a PGP public or secret
@@ -286,7 +287,7 @@ public class PgpKeyOperation {
             log.add(LogType.MSG_CR_ERROR_UNKNOWN_ALGO, indent);
             return null;
         } catch(PGPException e) {
-            Log.e(Constants.TAG, "internal pgp error", e);
+            Timber.e(e, "internal pgp error");
             log.add(LogType.MSG_CR_ERROR_INTERNAL_PGP, indent);
             return null;
         }
@@ -364,10 +365,10 @@ public class PgpKeyOperation {
 
         } catch (PGPException e) {
             log.add(LogType.MSG_CR_ERROR_INTERNAL_PGP, indent);
-            Log.e(Constants.TAG, "pgp error encoding key", e);
+            Timber.e(e, "pgp error encoding key");
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         } catch (IOException e) {
-            Log.e(Constants.TAG, "io error encoding key", e);
+            Timber.e(e, "io error encoding key");
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         }
 
@@ -1137,15 +1138,15 @@ public class PgpKeyOperation {
             }
 
         } catch (IOException e) {
-            Log.e(Constants.TAG, "encountered IOException while modifying key", e);
+            Timber.e(e, "encountered IOException while modifying key");
             log.add(LogType.MSG_MF_ERROR_ENCODE, indent+1);
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         } catch (PGPException e) {
-            Log.e(Constants.TAG, "encountered pgp error while modifying key", e);
+            Timber.e(e, "encountered pgp error while modifying key");
             log.add(LogType.MSG_MF_ERROR_PGP, indent+1);
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         } catch (SignatureException e) {
-            Log.e(Constants.TAG, "encountered SignatureException while modifying key", e);
+            Timber.e(e, "encountered SignatureException while modifying key");
             log.add(LogType.MSG_MF_ERROR_SIG, indent+1);
             return new PgpEditKeyResult(PgpEditKeyResult.RESULT_ERROR, log, null);
         }

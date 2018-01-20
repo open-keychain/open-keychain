@@ -25,11 +25,11 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.OpenPgpSignatureResult.SenderStatusResult;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 /**
  * This class can be used to build OpenPgpSignatureResult objects based on several checks.
@@ -121,7 +121,7 @@ public class OpenPgpSignatureResultBuilder {
         try {
             setPrimaryUserId(signingRing.getPrimaryUserIdWithFallback());
         } catch (PgpKeyNotFoundException e) {
-            Log.d(Constants.TAG, "No primary user id in keyring with master key id " + signingRing.getMasterKeyId());
+            Timber.d("No primary user id in keyring with master key id " + signingRing.getMasterKeyId());
         }
         setSignatureKeyCertified(signingRing.getVerified() > 0);
 
@@ -168,35 +168,35 @@ public class OpenPgpSignatureResultBuilder {
 
     public OpenPgpSignatureResult build() {
         if (!mSignatureAvailable) {
-            Log.d(Constants.TAG, "RESULT_NO_SIGNATURE");
+            Timber.d("RESULT_NO_SIGNATURE");
             return OpenPgpSignatureResult.createWithNoSignature();
         }
 
         if (!mKnownKey) {
-            Log.d(Constants.TAG, "RESULT_KEY_MISSING");
+            Timber.d("RESULT_KEY_MISSING");
             return OpenPgpSignatureResult.createWithKeyMissing(mKeyId, mSignatureTimestamp);
         }
 
         if (!mValidSignature) {
-            Log.d(Constants.TAG, "RESULT_INVALID_SIGNATURE");
+            Timber.d("RESULT_INVALID_SIGNATURE");
             return OpenPgpSignatureResult.createWithInvalidSignature();
         }
 
         int signatureStatus;
         if (mIsKeyRevoked) {
-            Log.d(Constants.TAG, "RESULT_INVALID_KEY_REVOKED");
+            Timber.d("RESULT_INVALID_KEY_REVOKED");
             signatureStatus = OpenPgpSignatureResult.RESULT_INVALID_KEY_REVOKED;
         } else if (mIsKeyExpired) {
-            Log.d(Constants.TAG, "RESULT_INVALID_KEY_EXPIRED");
+            Timber.d("RESULT_INVALID_KEY_EXPIRED");
             signatureStatus = OpenPgpSignatureResult.RESULT_INVALID_KEY_EXPIRED;
         } else if (mInsecure) {
-            Log.d(Constants.TAG, "RESULT_INVALID_INSECURE");
+            Timber.d("RESULT_INVALID_INSECURE");
             signatureStatus = OpenPgpSignatureResult.RESULT_INVALID_KEY_INSECURE;
         } else if (mIsSignatureKeyCertified) {
-            Log.d(Constants.TAG, "RESULT_VALID_CONFIRMED");
+            Timber.d("RESULT_VALID_CONFIRMED");
             signatureStatus = OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED;
         } else {
-            Log.d(Constants.TAG, "RESULT_VALID_UNCONFIRMED");
+            Timber.d("RESULT_VALID_UNCONFIRMED");
             signatureStatus = OpenPgpSignatureResult.RESULT_VALID_KEY_UNCONFIRMED;
         }
 

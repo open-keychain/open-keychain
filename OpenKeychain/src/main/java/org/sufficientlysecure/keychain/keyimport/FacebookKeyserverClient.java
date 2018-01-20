@@ -32,15 +32,15 @@ import android.support.annotation.Nullable;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
+import timber.log.Timber;
+
 
 public class FacebookKeyserverClient implements KeyserverClient {
     private static final String FB_KEY_URL_FORMAT
@@ -69,10 +69,10 @@ public class FacebookKeyserverClient implements KeyserverClient {
             try {
                 entry.add(getEntry(keyRing, fbUsername));
             } catch (UnsupportedOperationException e) {
-                Log.e(Constants.TAG, "Parsing retrieved Facebook key failed!");
+                Timber.e("Parsing retrieved Facebook key failed!");
             }
         } catch (PgpGeneralException | IOException e) {
-            Log.e(Constants.TAG, "Failed parsing key from Facebook during search", e);
+            Timber.e(e, "Failed parsing key from Facebook during search");
             throw new QueryFailedException("No valid key found on Facebook");
         }
         return entry;
@@ -80,7 +80,7 @@ public class FacebookKeyserverClient implements KeyserverClient {
 
     @Override
     public String get(String fbUsername, ParcelableProxy proxy) throws QueryFailedException {
-        Log.d(Constants.TAG, "FacebookKeyserver get: " + fbUsername + " using Proxy: " + proxy.getProxy());
+        Timber.d("FacebookKeyserver get: " + fbUsername + " using Proxy: " + proxy.getProxy());
 
         String data = query(fbUsername, proxy);
 
@@ -98,7 +98,7 @@ public class FacebookKeyserverClient implements KeyserverClient {
     private String query(String fbUsername, ParcelableProxy proxy) throws QueryFailedException {
         try {
             URL url = new URL(String.format(FB_KEY_URL_FORMAT, fbUsername));
-            Log.d(Constants.TAG, "fetching from Facebook with: " + url + " proxy: " + proxy.getProxy());
+            Timber.d("fetching from Facebook with: " + url + " proxy: " + proxy.getProxy());
 
             /*
              * For some URLs such as https://www.facebook.com/adithya.abraham/publickey/download
@@ -125,7 +125,7 @@ public class FacebookKeyserverClient implements KeyserverClient {
             }
 
         } catch (IOException e) {
-            Log.e(Constants.TAG, "IOException at Facebook key download", e);
+            Timber.e(e, "IOException at Facebook key download");
             throw new QueryFailedException("Cannot connect to Facebook. "
                     + "Check your Internet connection!"
                     + (proxy.getProxy() == Proxy.NO_PROXY ? "" : " Using proxy " + proxy.getProxy()));
@@ -163,7 +163,7 @@ public class FacebookKeyserverClient implements KeyserverClient {
 
         try {
             if (key.isEC()) { // unsupported key format (ECDH or ECDSA)
-                Log.e(Constants.TAG, "ECDH/ECDSA key - not supported.");
+                Timber.e("ECDH/ECDSA key - not supported.");
                 throw new UnsupportedOperationException(
                         "ECDH/ECDSA keys not supported yet");
             }
@@ -172,7 +172,7 @@ public class FacebookKeyserverClient implements KeyserverClient {
             entry.setAlgorithm(KeyFormattingUtils.getAlgorithmInfo(algorithm, key.getBitStrength(),
                     key.getCurveOid()));
         } catch (NumberFormatException | NullPointerException e) {
-            Log.e(Constants.TAG, "Conversion for bit size, algorithm, or creation date failed.", e);
+            Timber.e(e, "Conversion for bit size, algorithm, or creation date failed.");
             // can't use this key
             throw new UnsupportedOperationException(
                     "Conversion for bit size, algorithm, or creation date failed.");

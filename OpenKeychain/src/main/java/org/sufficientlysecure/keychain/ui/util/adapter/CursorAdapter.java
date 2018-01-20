@@ -25,10 +25,9 @@ import android.database.DataSetObserver;
 import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.util.adapter.CursorAdapter.SimpleCursor;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -198,12 +197,12 @@ public abstract class CursorAdapter<C extends SimpleCursor, VH extends RecyclerV
 
     public boolean moveCursor(int position) {
         if (position >= getItemCount() || position < -1) {
-            Log.w(TAG, "Position: %d is invalid for this data set!");
+            Timber.w("Position: %d is invalid for this data set!");
             return false;
         }
 
         if (!mDataValid) {
-            Log.d(TAG, "Attempt to move cursor over invalid data set!");
+            Timber.d("Attempt to move cursor over invalid data set!");
         }
 
         return mCursor.moveToPosition(position);
@@ -322,7 +321,7 @@ public abstract class CursorAdapter<C extends SimpleCursor, VH extends RecyclerV
                     Constructor<T> constructor = type.getConstructor(Cursor.class);
                     return constructor.newInstance(cursor);
                 } catch (Exception e) {
-                    Log.e(Constants.TAG, "Could not create instance of cursor wrapper!", e);
+                    Timber.e(e, "Could not create instance of cursor wrapper!");
                 }
             }
 

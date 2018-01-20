@@ -30,10 +30,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.bouncycastle.util.encoders.Hex;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.remote.AppSettings;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -100,7 +99,7 @@ public class AppSettingsHeaderFragment extends Fragment {
 
             mPackageCertificate.setText(signature);
         } catch (NoSuchAlgorithmException e) {
-            Log.e(Constants.TAG, "Should not happen!", e);
+            Timber.e(e, "Should not happen!");
         }
     }
 

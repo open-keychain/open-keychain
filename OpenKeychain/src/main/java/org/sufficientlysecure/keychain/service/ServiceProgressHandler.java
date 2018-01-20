@@ -25,11 +25,11 @@ import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class ServiceProgressHandler extends Handler {
 
@@ -144,7 +144,7 @@ public class ServiceProgressHandler extends Handler {
                 break;
 
             default:
-                Log.e(Constants.TAG, "unknown handler message!");
+                Timber.e("unknown handler message!");
                 break;
         }
     }

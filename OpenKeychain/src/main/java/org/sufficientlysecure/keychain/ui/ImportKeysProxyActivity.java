@@ -43,9 +43,9 @@ import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.transfer.view.TransferFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IntentIntegratorSupportV4;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -94,11 +94,11 @@ public class ImportKeysProxyActivity extends FragmentActivity
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 handleActionNdefDiscovered(getIntent());
             } else {
-                Log.e(Constants.TAG, "Android Beam not supported by Android < 4.1");
+                Timber.e("Android Beam not supported by Android < 4.1");
                 finish();
             }
         } else {
-            Log.e(Constants.TAG, "No valid scheme or action given!");
+            Timber.e("No valid scheme or action given!");
             finish();
         }
     }
@@ -123,7 +123,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
                     resultCode, data);
 
             if (scanResult == null || scanResult.getFormatName() == null) {
-                Log.e(Constants.TAG, "scanResult or formatName null! Should not happen!");
+                Timber.e("scanResult or formatName null! Should not happen!");
                 finish();
                 return;
             }
@@ -142,7 +142,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
     private void processScannedContent(Uri uri) {
         String action = getIntent().getAction();
 
-        Log.d(Constants.TAG, "scanned: " + uri);
+        Timber.d("scanned: " + uri);
 
         // example: pgp+transfer:
         if (uri != null && uri.getScheme() != null && uri.getScheme().equalsIgnoreCase(Constants.SKT_SCHEME)) {

@@ -26,7 +26,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
@@ -37,7 +36,7 @@ import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.remote.ApiPermissionHelper;
 import org.sufficientlysecure.keychain.remote.ApiPermissionHelper.WrongPackageCertificateException;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 
 class RequestKeyPermissionPresenter {
@@ -83,7 +82,7 @@ class RequestKeyPermissionPresenter {
         try {
             setPackageInfo(packageName);
         } catch (NameNotFoundException e) {
-            Log.e(Constants.TAG, "Unable to find info of calling app!");
+            Timber.e("Unable to find info of calling app!");
             view.finishAsCancelled();
             return;
         }

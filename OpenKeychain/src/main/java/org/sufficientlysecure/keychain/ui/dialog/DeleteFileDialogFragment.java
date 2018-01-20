@@ -27,10 +27,9 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.util.FileHelper;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -107,7 +106,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
                                 continue;
                             }
                         } catch (Exception e) {
-                            Log.d(Constants.TAG, "Catched Exception, can happen when delete is not supported!", e);
+                            Timber.d(e, "Catched Exception, can happen when delete is not supported!");
                         }
                     }
 
@@ -116,7 +115,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
                             continue;
                         }
                     } catch (Exception e) {
-                        Log.d(Constants.TAG, "Catched Exception, can happen when delete is not supported!", e);
+                        Timber.d(e, "Catched Exception, can happen when delete is not supported!");
                     }
 
                     // some Uri's a ContentResolver fails to delete is handled by the java.io.File's delete

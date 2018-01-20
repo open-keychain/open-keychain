@@ -48,7 +48,6 @@ import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.linked.LinkedAttribute;
@@ -75,7 +74,8 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.SubtleAttentionSeeker;
 import org.sufficientlysecure.keychain.ui.widget.CertListWidget;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class LinkedIdViewFragment extends CryptoOperationFragment implements
         LoaderManager.LoaderCallbacks<Cursor>, OnBackStackChangedListener {
@@ -170,7 +170,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
                     loadIdentity(linkedId, certStatus);
 
                 } catch (IOException e) {
-                    Log.e(Constants.TAG, "error parsing identity", e);
+                    Timber.e(e, "error parsing identity");
                     Notify.create(getActivity(), "Error parsing identity!",
                             Notify.LENGTH_LONG, Style.ERROR).show();
                     finishFragment();

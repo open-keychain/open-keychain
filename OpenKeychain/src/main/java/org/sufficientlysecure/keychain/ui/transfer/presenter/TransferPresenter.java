@@ -42,7 +42,6 @@ import android.view.LayoutInflater;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.network.KeyTransferInteractor;
 import org.sufficientlysecure.keychain.network.KeyTransferInteractor.KeyTransferCallback;
@@ -62,7 +61,7 @@ import org.sufficientlysecure.keychain.ui.transfer.view.ReceivedSecretKeyList.Re
 import org.sufficientlysecure.keychain.ui.transfer.view.TransferSecretKeyList.OnClickTransferKeyListener;
 import org.sufficientlysecure.keychain.ui.transfer.view.TransferSecretKeyList.TransferKeyAdapter;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 
 @RequiresApi(api = VERSION_CODES.LOLLIPOP)
@@ -260,16 +259,16 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     @Override
     public void onDataReceivedOk(String receivedData) {
         if (sentData) {
-            Log.d(Constants.TAG, "received data, but we already sent a key! race condition, or other side misbehaving?");
+            Timber.d("received data, but we already sent a key! race condition, or other side misbehaving?");
             return;
         }
 
-        Log.d(Constants.TAG, "received data");
+        Timber.d("received data");
         UncachedKeyRing uncachedKeyRing;
         try {
             uncachedKeyRing = UncachedKeyRing.decodeFromData(receivedData.getBytes());
         } catch (PgpGeneralException | IOException | RuntimeException e) {
-            Log.e(Constants.TAG, "error parsing incoming key", e);
+            Timber.e(e, "error parsing incoming key");
             view.showErrorBadKey();
             return;
         }
@@ -286,7 +285,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
 
     @Override
     public void onDataSentOk(String passthrough) {
-        Log.d(Constants.TAG, "data sent ok!");
+        Timber.d("data sent ok!");
         final long masterKeyId = Long.parseLong(passthrough);
 
         new Handler().postDelayed(new Runnable() {

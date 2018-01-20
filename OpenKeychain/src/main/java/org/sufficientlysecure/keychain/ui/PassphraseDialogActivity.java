@@ -68,9 +68,10 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.Require
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.ui.widget.CacheTTLSpinner;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
+
 
 /**
  * We can not directly create a dialog on the application context.
@@ -124,7 +125,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 finish();
             }
         } catch (NotFoundException e) {
-            Log.e(Constants.TAG, "Key not found?!", e);
+            Timber.e(e, "Key not found?!");
             setResult(RESULT_CANCELED);
             finish();
         }
@@ -523,19 +524,19 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     }
 
                     // cache the new passphrase as specified in CryptoInputParcel
-                    Log.d(Constants.TAG, "Everything okay!");
+                    Timber.d("Everything okay!");
 
                     if (mRequiredInput.mSkipCaching) {
-                        Log.d(Constants.TAG, "Not caching entered passphrase!");
+                        Timber.d("Not caching entered passphrase!");
                     } else {
-                        Log.d(Constants.TAG, "Caching entered passphrase");
+                        Timber.d("Caching entered passphrase");
 
                         try {
                             PassphraseCacheService.addCachedPassphrase(getActivity(),
                                     unlockedKey.getRing().getMasterKeyId(), unlockedKey.getKeyId(), passphrase,
                                     unlockedKey.getRing().getPrimaryUserIdWithFallback(), timeToLiveSeconds);
                         } catch (PgpKeyNotFoundException e) {
-                            Log.e(Constants.TAG, "adding of a passphrase failed", e);
+                            Timber.e(e, "adding of a passphrase failed");
                         }
                     }
 

@@ -30,7 +30,6 @@ import android.support.v7.widget.LinearLayoutManager;
 
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.openintents.openpgp.util.OpenPgpUtils;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
@@ -40,7 +39,8 @@ import org.sufficientlysecure.keychain.remote.ui.adapter.SelectSignKeyAdapter;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 import org.sufficientlysecure.keychain.ui.util.adapter.CursorAdapter;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class SelectSignKeyIdListFragment extends RecyclerFragment<SelectSignKeyAdapter>
         implements SelectSignKeyAdapter.SelectSignKeyListener, LoaderManager.LoaderCallbacks<Cursor> {
@@ -182,8 +182,8 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<SelectSignKeyA
         mApiDao.addAllowedKeyIdForApp(allowedKeysUri, masterKeyId);
         mResult.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, masterKeyId);
 
-        Log.d(Constants.TAG, "allowedKeyId: " + masterKeyId);
-        Log.d(Constants.TAG, "allowedKeysUri: " + allowedKeysUri);
+        Timber.d("allowedKeyId: " + masterKeyId);
+        Timber.d("allowedKeysUri: " + allowedKeysUri);
 
         getActivity().setResult(Activity.RESULT_OK, mResult);
         getActivity().finish();

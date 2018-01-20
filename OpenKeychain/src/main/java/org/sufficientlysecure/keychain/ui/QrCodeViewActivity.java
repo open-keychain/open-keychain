@@ -35,7 +35,8 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class QrCodeViewActivity extends BaseActivity {
 
@@ -59,7 +60,7 @@ public class QrCodeViewActivity extends BaseActivity {
 
         Uri dataUri = getIntent().getData();
         if (dataUri == null) {
-            Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
+            Timber.e("Data missing. Should be Uri of key!");
             ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
             return;
         }
@@ -78,7 +79,7 @@ public class QrCodeViewActivity extends BaseActivity {
         try {
             byte[] blob = keyRepository.getCachedPublicKeyRing(dataUri).getFingerprint();
             if (blob == null) {
-                Log.e(Constants.TAG, "key not found!");
+                Timber.e("key not found!");
                 Notify.create(this, R.string.error_key_not_found, Style.ERROR).show();
                 ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
             }
@@ -101,7 +102,7 @@ public class QrCodeViewActivity extends BaseActivity {
                         }
                     });
         } catch (PgpKeyNotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
+            Timber.e(e, "key not found!");
             Notify.create(this, R.string.error_key_not_found, Style.ERROR).show();
             ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
         }

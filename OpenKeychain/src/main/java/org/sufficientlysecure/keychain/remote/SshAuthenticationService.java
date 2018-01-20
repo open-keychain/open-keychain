@@ -48,6 +48,7 @@ import org.sufficientlysecure.keychain.ssh.AuthenticationOperation;
 import org.sufficientlysecure.keychain.ssh.AuthenticationParcel;
 import org.sufficientlysecure.keychain.ssh.AuthenticationResult;
 import org.sufficientlysecure.keychain.ssh.signature.SshSignatureConverter;
+import timber.log.Timber;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
@@ -412,7 +413,7 @@ public class SshAuthenticationService extends Service {
     }
 
     private Intent createErrorResult(int errorCode, String errorMessage) {
-        Log.e(TAG, errorMessage);
+        Timber.e(errorMessage);
         Intent result = new Intent();
         result.putExtra(SshAuthenticationApi.EXTRA_ERROR, new SshAuthenticationApiError(errorCode, errorMessage));
         result.putExtra(SshAuthenticationApi.EXTRA_RESULT_CODE, SshAuthenticationApi.RESULT_CODE_ERROR);

@@ -22,7 +22,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.content.AsyncTaskLoader;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -32,8 +31,8 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.PositionAwareInputStream;
+import timber.log.Timber;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -70,7 +69,7 @@ public class ImportKeysListLoader
         }
 
         if (mState == null) {
-            Log.e(Constants.TAG, "Input data is null!");
+            Timber.e("Input data is null!");
             return mEntryListWrapper;
         }
 
@@ -123,7 +122,7 @@ public class ImportKeysListLoader
                 mData.add(new ImportKeysListEntry(mContext, it.next()));
             }
         } catch (IOException e) {
-            Log.e(Constants.TAG, "IOException on parsing key file! Return NoValidKeysException!", e);
+            Timber.e(e, "IOException on parsing key file! Return NoValidKeysException!");
             OperationResult.OperationLog log = new OperationResult.OperationLog();
             log.add(OperationResult.LogType.MSG_GET_NO_VALID_KEYS, 0);
             GetKeyResult getKeyResult = new GetKeyResult(GetKeyResult.RESULT_ERROR_NO_VALID_KEYS, log);

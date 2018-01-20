@@ -38,7 +38,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -68,8 +67,9 @@ import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyExpiryDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import timber.log.Timber;
+
 
 public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyringParcel, OperationResult>
         implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -168,7 +168,7 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
         Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
         SaveKeyringParcel saveKeyringParcel = getArguments().getParcelable(ARG_SAVE_KEYRING_PARCEL);
         if (dataUri == null && saveKeyringParcel == null) {
-            Log.e(Constants.TAG, "Either a key Uri or ARG_SAVE_KEYRING_PARCEL is required!");
+            Timber.e("Either a key Uri or ARG_SAVE_KEYRING_PARCEL is required!");
             getActivity().finish();
             return;
         }
@@ -195,7 +195,7 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
     private void loadData(Uri dataUri) {
         mDataUri = dataUri;
 
-        Log.i(Constants.TAG, "mDataUri: " + mDataUri);
+        Timber.i("mDataUri: " + mDataUri);
 
         // load the secret key ring. we do verify here that the passphrase is correct, so cached won't do
         try {

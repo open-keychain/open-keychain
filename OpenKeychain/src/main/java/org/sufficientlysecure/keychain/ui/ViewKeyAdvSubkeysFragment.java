@@ -39,7 +39,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ViewAnimator;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
@@ -54,7 +53,8 @@ import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.dialog.AddSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyExpiryDialogFragment;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -127,7 +127,7 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
 
         Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
         if (dataUri == null) {
-            Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
+            Timber.e("Data missing. Should be Uri of key!");
             getActivity().finish();
             return;
         }

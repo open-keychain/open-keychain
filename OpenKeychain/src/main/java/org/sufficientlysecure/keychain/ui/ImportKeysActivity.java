@@ -42,9 +42,9 @@ import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -176,7 +176,7 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
                         // action: search immediately
                         startListFragment(null, null, query, null);
                     } else {
-                        Log.e(Constants.TAG, "Query is empty!");
+                        Timber.e("Query is empty!");
                         return;
                     }
                 } else if (extras.containsKey(EXTRA_FINGERPRINT)) {
@@ -193,10 +193,8 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
                         startListFragment(null, null, query, null);
                     }
                 } else {
-                    Log.e(Constants.TAG,
-                            "IMPORT_KEY_FROM_KEYSERVER action needs to contain the 'query', 'key_id', or " +
-                                    "'fingerprint' extra!"
-                    );
+                    Timber.e("IMPORT_KEY_FROM_KEYSERVER action needs to contain the 'query', 'key_id', or " +
+                            "'fingerprint' extra!");
                     return;
                 }
                 break;
@@ -216,7 +214,7 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
                         dataUri.getScheme() + "://" + dataUri.getAuthority());
                 Preferences.CloudSearchPrefs cloudSearchPrefs = new Preferences.CloudSearchPrefs(
                         true, false, false, keyserver);
-                Log.d(Constants.TAG, "Using keyserver: " + keyserver);
+                Timber.d("Using keyserver: " + keyserver);
 
                 // process URL to get operation and query
                 String operation = dataUri.getQueryParameter("op");
@@ -352,7 +350,7 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
                     new ParcelableFileCache<>(this, ImportOperation.CACHE_FILE_NAME);
             cache.writeCache(entries.size(), keyRings.iterator());
         } catch (IOException e) {
-            Log.e(Constants.TAG, "Problem writing cache file", e);
+            Timber.e(e, "Problem writing cache file");
             Notify.create(this, "Problem writing cache file!", Notify.Style.ERROR).show();
             return;
         }

@@ -16,12 +16,14 @@
 
 package android.support.v4.widget;
 
+
+import java.util.ArrayList;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -37,7 +39,6 @@ import android.support.v4.view.accessibility.AccessibilityEventCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.support.v4.view.accessibility.AccessibilityRecordCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.FocusFinder;
 import android.view.KeyEvent;
@@ -49,11 +50,11 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.AnimationUtils;
-import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
-import java.util.ArrayList;
+import timber.log.Timber;
+
 
 /**
  * Workaround for bug in support lib. From https://code.google.com/p/android/issues/detail?id=177729
@@ -444,7 +445,7 @@ public class FlingNestedScrollView extends FrameLayout implements NestedScrollin
                     if(y != -1) {
                         int pointerIndex = MotionEventCompat.findPointerIndex(ev, y);
                         if(pointerIndex == -1) {
-                            Log.e("FlingNestedScrollView", "Invalid pointerId=" + y + " in onInterceptTouchEvent");
+                            Timber.e("Invalid pointerId=" + y + " in onInterceptTouchEvent");
                         } else {
                             int y1 = (int)MotionEventCompat.getY(ev, pointerIndex);
                             int yDiff = Math.abs(y1 - this.mLastMotionY);
@@ -521,7 +522,7 @@ public class FlingNestedScrollView extends FrameLayout implements NestedScrollin
             case 2:
                 int activePointerIndex = MotionEventCompat.findPointerIndex(ev, this.mActivePointerId);
                 if(activePointerIndex == -1) {
-                    Log.e("FlingNestedScrollView", "Invalid pointerId=" + this.mActivePointerId + " in onTouchEvent");
+                    Timber.e("Invalid pointerId=" + this.mActivePointerId + " in onTouchEvent");
                 } else {
                     int y = (int)MotionEventCompat.getY(ev, activePointerIndex);
                     int deltaY = this.mLastMotionY - y;

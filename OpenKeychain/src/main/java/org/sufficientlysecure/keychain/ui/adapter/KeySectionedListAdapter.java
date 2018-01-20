@@ -37,7 +37,6 @@ import android.widget.TextView;
 
 import com.futuremind.recyclerviewfastscroll.SectionTitleProvider;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -46,7 +45,7 @@ import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.adapter.CursorAdapter;
 import org.sufficientlysecure.keychain.ui.util.adapter.SectionCursorAdapter;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -221,7 +220,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
                 return VIEW_ITEM_TYPE_DUMMY;
             }
         } else {
-            Log.w(Constants.TAG, "Unable to determine key view type. "
+            Timber.w("Unable to determine key view type. "
                     + "Reason: Could not move cursor over dataset.");
         }
 
@@ -325,7 +324,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
                 }
             }
         } else {
-            Log.w(Constants.TAG, "Unable to determine section title. "
+            Timber.w("Unable to determine section title. "
                     + "Reason: Could not move cursor over dataset.");
             return null;
         }

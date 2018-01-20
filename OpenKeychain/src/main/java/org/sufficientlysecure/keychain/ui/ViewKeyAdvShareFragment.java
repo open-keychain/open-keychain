@@ -63,7 +63,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -202,7 +202,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
+            Timber.e(e, "key not found!");
         }
         Intent safeSlingerIntent = new Intent(getActivity(), SafeSlingerActivity.class);
         safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, keyId);
@@ -218,7 +218,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
             CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(masterKeyId);
             authSubKeyId = cachedPublicKeyRing.getSecretAuthenticationId();
         } catch (PgpKeyNotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
+            Timber.e(e, "key not found!");
         }
         return authSubKeyId != Constants.key.none;
     }
@@ -296,7 +296,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
 
                 sendIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
             } catch (FileNotFoundException e) {
-                Log.e(Constants.TAG, "Error creating temporary key share file!", e);
+                Timber.e(e, "Error creating temporary key share file!");
                 // no need for a snackbar because one sharing option doesn't work
                 // Notify.create(getActivity(), R.string.error_temp_file, Notify.Style.ERROR).show();
             }
@@ -306,10 +306,10 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
 
             startActivity(shareChooser);
         } catch (PgpGeneralException | IOException | NoSuchAlgorithmException e) {
-            Log.e(Constants.TAG, "error processing key!", e);
+            Timber.e(e, "error processing key!");
             Notify.create(activity, R.string.error_key_processing, Notify.Style.ERROR).show();
         } catch (PgpKeyNotFoundException | KeyRepository.NotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
+            Timber.e(e, "key not found!");
             Notify.create(activity, R.string.error_key_not_found, Notify.Style.ERROR).show();
         }
     }
@@ -375,7 +375,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
 
         Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
         if (dataUri == null) {
-            Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
+            Timber.e("Data missing. Should be Uri of key!");
             getActivity().finish();
             return;
         }
@@ -493,7 +493,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                     .getCachedPublicKeyRing(mDataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
+            Timber.e(e, "key not found!");
             Notify.create(getActivity(), "key not found", Style.ERROR).show();
             return;
         }

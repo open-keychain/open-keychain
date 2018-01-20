@@ -31,6 +31,10 @@ import java.io.IOException;
 
 import nordpol.IsoCard;
 import nordpol.android.AndroidCard;
+import timber.log.Timber;
+
+import static org.bouncycastle.util.encoders.Hex.toHexString;
+
 
 public class NfcTransport implements Transport {
     // timeout is set to 100 seconds to avoid cancellation during calculation
@@ -60,12 +64,12 @@ public class NfcTransport implements Transport {
     public ResponseApdu transceive(final CommandApdu data) throws IOException {
         byte[] rawCommand = data.toBytes();
         if (Constants.DEBUG) {
-            Log.d(Constants.TAG, "nfc out: " + Hex.toHexString(rawCommand));
+            Timber.d("nfc out: " + toHexString(rawCommand));
         }
 
         byte[] rawResponse = mIsoCard.transceive(rawCommand);
         if (Constants.DEBUG) {
-            Log.d(Constants.TAG, "nfc  in: " + Hex.toHexString(rawResponse));
+            Timber.d("nfc  in: " + toHexString(rawResponse));
         }
 
         return ResponseApdu.fromBytes(rawResponse);

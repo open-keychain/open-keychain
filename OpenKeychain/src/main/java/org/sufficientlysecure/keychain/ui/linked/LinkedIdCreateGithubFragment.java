@@ -65,7 +65,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.BuildConfig;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.linked.LinkedAttribute;
 import org.sufficientlysecure.keychain.linked.resources.GithubResource;
@@ -79,7 +78,8 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.widget.StatusIndicator;
 import org.sufficientlysecure.keychain.ui.widget.StatusIndicator.Status;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKeyringParcel,EditKeyResult> {
 
@@ -234,7 +234,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                     return;
                 }
 
-                Log.d(Constants.TAG, "response: " + result);
+                Timber.d("response: " + result);
 
                 if (result == null || result.optString("access_token", null) == null) {
                     setState(State.AUTH_ERROR);
@@ -314,7 +314,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
             protected void onPostExecute(JSONObject result) {
                 super.onPostExecute(result);
 
-                Log.d(Constants.TAG, "response: " + result);
+                Timber.d("response: " + result);
 
                 Activity activity = getActivity();
                 if (activity == null) {
@@ -551,7 +551,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
                     }
 
                     if (uri.getQueryParameter("error") != null) {
-                        Log.i(Constants.TAG, "got oauth error: " + uri.getQueryParameter("error"));
+                        Timber.i("got oauth error: " + uri.getQueryParameter("error"));
                         auth_dialog.dismiss();
                         return true;
                     }

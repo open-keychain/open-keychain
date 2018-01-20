@@ -19,9 +19,6 @@ package org.sufficientlysecure.keychain.network;
 
 import android.content.res.AssetManager;
 
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.Log;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -45,6 +42,8 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 import okhttp3.OkHttpClient;
+import timber.log.Timber;
+
 
 public class TlsCertificatePinning {
 
@@ -68,7 +67,7 @@ public class TlsCertificatePinning {
 
             sCertificatePins.put(host, baos.toByteArray());
         } catch (IOException e) {
-            Log.w(Constants.TAG, e);
+            Timber.w(e);
         }
     }
 
@@ -89,7 +88,7 @@ public class TlsCertificatePinning {
      * to URLs with passed certificate.
      */
     void pinCertificate(OkHttpClient.Builder builder) {
-        Log.d(Constants.TAG, "Pinning certificate for " + url);
+        Timber.d("Pinning certificate for " + url);
 
         // We don't use OkHttp's CertificatePinner since it can not be used to pin self-signed
         // certificate if such certificate is not accepted by TrustManager.

@@ -30,12 +30,11 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.remote.ui.dialog.KeyLoader.KeyInfo;
 import org.sufficientlysecure.keychain.remote.ui.dialog.KeyLoader.KeySelector;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 
 class RemoteDeduplicatePresenter implements LoaderCallbacks<List<KeyInfo>> {
@@ -68,7 +67,7 @@ class RemoteDeduplicatePresenter implements LoaderCallbacks<List<KeyInfo>> {
         try {
             setPackageInfo(packageName);
         } catch (NameNotFoundException e) {
-            Log.e(Constants.TAG, "Unable to find info of calling app!");
+            Timber.e("Unable to find info of calling app!");
             view.finishAsCancelled();
             return;
         }
@@ -113,11 +112,11 @@ class RemoteDeduplicatePresenter implements LoaderCallbacks<List<KeyInfo>> {
 
     void onClickSelect() {
         if (keyInfoData == null) {
-            Log.e(Constants.TAG, "got click on select with no data…?");
+            Timber.e("got click on select with no data…?");
             return;
         }
         if (selectedItem == null) {
-            Log.e(Constants.TAG, "got click on select with no selection…?");
+            Timber.e("got click on select with no selection…?");
             return;
         }
 

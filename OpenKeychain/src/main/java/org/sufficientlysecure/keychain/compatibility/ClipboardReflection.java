@@ -23,8 +23,8 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class ClipboardReflection {
 
@@ -37,7 +37,7 @@ public class ClipboardReflection {
 
         ClipData clip = clipboard.getPrimaryClip();
         if (clip == null || clip.getItemCount() == 0) {
-            Log.e(Constants.TAG, "No clipboard data!");
+            Timber.e("No clipboard data!");
             return null;
         }
 

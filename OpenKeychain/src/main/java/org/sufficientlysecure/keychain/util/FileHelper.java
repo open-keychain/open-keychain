@@ -54,6 +54,8 @@ import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import timber.log.Timber;
+
 
 /** This class offers a number of helper functions for saving documents.
  *
@@ -241,7 +243,7 @@ public class FileHelper {
                 if (br != null)
                     br.close();
             } catch (IOException e) {
-                Log.e(Constants.TAG, "Error closing file", e);
+                Timber.e(e, "Error closing file");
             }
         }
         return isEncrypted;

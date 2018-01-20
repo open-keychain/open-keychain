@@ -32,7 +32,6 @@ import android.os.Bundle;
 import nordpol.android.OnDiscoveredTagListener;
 import nordpol.android.TagDispatcher;
 import nordpol.android.TagDispatcherBuilder;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.securitytoken.CardException;
 import org.sufficientlysecure.keychain.securitytoken.NfcTransport;
@@ -53,8 +52,8 @@ import org.sufficientlysecure.keychain.ui.dialog.FidesmoInstallDialog;
 import org.sufficientlysecure.keychain.ui.dialog.FidesmoPgpInstallDialog;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import timber.log.Timber;
 
 
 public abstract class BaseSecurityTokenActivity extends BaseActivity
@@ -83,7 +82,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
      */
     protected void doSecurityTokenInBackground(SecurityTokenConnection stConnection) throws IOException {
         tokenInfo = stConnection.readTokenInfo();
-        Log.d(Constants.TAG, "Security Token: " + tokenInfo);
+        Timber.d("Security Token: " + tokenInfo);
     }
 
     /**
@@ -227,7 +226,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
     }
 
     private void handleSecurityTokenError(SecurityTokenConnection stConnection, IOException e) {
-        Log.d(Constants.TAG, "Exception in handleSecurityTokenError", e);
+        Timber.d(e, "Exception in handleSecurityTokenError");
 
         if (e instanceof UnsupportedUsbTokenException) {
             onSecurityTokenError(getString(R.string.security_token_not_supported));
@@ -387,7 +386,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
      */
     public void onPause() {
         super.onPause();
-        Log.d(Constants.TAG, "BaseNfcActivity.onPause");
+        Timber.d("BaseNfcActivity.onPause");
 
         mNfcTagDispatcher.disableExclusiveNfc();
     }
@@ -398,7 +397,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
      */
     public void onResume() {
         super.onResume();
-        Log.d(Constants.TAG, "BaseNfcActivity.onResume");
+        Timber.d("BaseNfcActivity.onResume");
         mNfcTagDispatcher.enableExclusiveNfc();
     }
 
@@ -474,7 +473,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
             mPackageManager.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
             mAppInstalled = true;
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(Constants.TAG, "App not installed on Android device");
+            Timber.e("App not installed on Android device");
             mAppInstalled = false;
         }
         return mAppInstalled;

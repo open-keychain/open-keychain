@@ -33,10 +33,13 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import timber.log.Timber;
 
 import java.util.Collection;
+
+import static java.lang.String.format;
+
 
 /**
  * This class supports a single, low-level, authentication operation.
@@ -83,7 +86,7 @@ public class AuthenticationOperation extends BaseOperation<AuthenticationParcel>
         log.add(LogType.MSG_AUTH, indent);
         indent += 1;
 
-        Log.d(TAG, data.toString());
+        Timber.d(data.toString());
 
         long opTime;
         long startTime = System.currentTimeMillis();
@@ -231,7 +234,7 @@ public class AuthenticationOperation extends BaseOperation<AuthenticationParcel>
         }
 
         opTime = System.currentTimeMillis() - startTime;
-        Log.d(TAG, "Authentication operation duration : " + String.format("%.2f", opTime / 1000.0) + "s");
+        Timber.d("Authentication operation duration : " + format("%.2f", opTime / 1000.0) + "s");
 
         log.add(LogType.MSG_AUTH_OK, indent);
         AuthenticationResult result = new AuthenticationResult(AuthenticationResult.RESULT_OK, log);

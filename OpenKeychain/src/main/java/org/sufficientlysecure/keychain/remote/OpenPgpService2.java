@@ -23,8 +23,7 @@ import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 
 import org.openintents.openpgp.IOpenPgpService2;
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -48,7 +47,7 @@ public class OpenPgpService2 extends OpenPgpService {
                 mOutputPipeMap.put(createKey(outputPipeId), pipe[1]);
                 return pipe[0];
             } catch (IOException e) {
-                Log.e(Constants.TAG, "IOException in OpenPgpService2", e);
+                Timber.e(e, "IOException in OpenPgpService2");
                 return null;
             }
 

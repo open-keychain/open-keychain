@@ -32,12 +32,12 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.transfer.view.TransferFragment;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
+
 
 public class CreateKeyStartFragment extends Fragment {
     public static final int REQUEST_CODE_IMPORT_KEY = 0x00007012;
@@ -149,7 +149,7 @@ public class CreateKeyStartFragment extends Fragment {
                 }
             }
         } else {
-            Log.e(Constants.TAG, "No valid request code!");
+            Timber.e("No valid request code!");
         }
     }
 

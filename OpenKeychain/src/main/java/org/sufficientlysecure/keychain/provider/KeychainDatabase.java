@@ -40,8 +40,8 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.OverriddenWarnings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
 
 
 /**
@@ -215,7 +215,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.w(Constants.TAG, "Creating database...");
+        Timber.w("Creating database...");
 
         db.execSQL(CREATE_KEYRINGS_PUBLIC);
         db.execSQL(CREATE_KEYRINGS_SECRET);
@@ -249,7 +249,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Log.d(Constants.TAG, "Upgrading db from " + oldVersion + " to " + newVersion);
+        Timber.d("Upgrading db from " + oldVersion + " to " + newVersion);
 
         switch (oldVersion) {
             case 1:

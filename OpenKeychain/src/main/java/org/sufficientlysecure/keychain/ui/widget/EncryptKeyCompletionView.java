@@ -38,14 +38,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import com.tokenautocomplete.TokenCompleteTextView;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter.KeyItem;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 
 public class EncryptKeyCompletionView extends TokenCompleteTextView<KeyItem>
@@ -103,7 +102,8 @@ public class EncryptKeyCompletionView extends TokenCompleteTextView<KeyItem>
         if (getContext() instanceof FragmentActivity) {
             mLoaderManager = ((FragmentActivity) getContext()).getSupportLoaderManager();
         } else {
-            Log.e(Constants.TAG, "EncryptKeyCompletionView must be attached to a FragmentActivity, this is " + getContext().getClass());
+            Timber.e("EncryptKeyCompletionView must be attached to a FragmentActivity, this is " +
+                    getContext().getClass());
         }
     }
 

@@ -45,9 +45,9 @@ import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.BenchmarkInputParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
+import timber.log.Timber;
 
 
 public class BenchmarkOperation extends BaseOperation<BenchmarkInputParcel> {
@@ -139,7 +139,7 @@ public class BenchmarkOperation extends BaseOperation<BenchmarkInputParcel> {
             iterationsFor100ms = iterations;
 
         } catch (PGPException e) {
-            Log.e(Constants.TAG, "internal error during benchmark", e);
+            Timber.e(e, "internal error during benchmark");
             log.add(LogType.MSG_INTERNAL_ERROR, 0);
             return new BenchmarkResult(BenchmarkResult.RESULT_ERROR, log);
         }

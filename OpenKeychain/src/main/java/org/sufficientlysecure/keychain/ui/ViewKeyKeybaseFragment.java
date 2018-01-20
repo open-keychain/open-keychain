@@ -44,7 +44,6 @@ import com.textuality.keybase.lib.KeybaseQuery;
 import com.textuality.keybase.lib.Proof;
 import com.textuality.keybase.lib.User;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.KeybaseVerificationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -52,11 +51,11 @@ import org.sufficientlysecure.keychain.service.KeybaseVerificationParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.network.OkHttpKeybaseClient;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
+import timber.log.Timber;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -124,7 +123,7 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
 
         Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
         if (dataUri == null) {
-            Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
+            Timber.e("Data missing. Should be Uri of key!");
             getActivity().finish();
             return;
         }

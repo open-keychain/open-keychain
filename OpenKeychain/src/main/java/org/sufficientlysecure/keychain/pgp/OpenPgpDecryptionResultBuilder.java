@@ -18,8 +18,8 @@
 package org.sufficientlysecure.keychain.pgp;
 
 import org.openintents.openpgp.OpenPgpDecryptionResult;
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 class OpenPgpDecryptionResultBuilder {
 
@@ -39,16 +39,16 @@ class OpenPgpDecryptionResultBuilder {
 
     public OpenPgpDecryptionResult build() {
         if (isInsecure) {
-            Log.d(Constants.TAG, "RESULT_INSECURE");
+            Timber.d("RESULT_INSECURE");
             return new OpenPgpDecryptionResult(OpenPgpDecryptionResult.RESULT_INSECURE, sessionKey, decryptedSessionKey);
         }
 
         if (isEncrypted) {
-            Log.d(Constants.TAG, "RESULT_ENCRYPTED");
+            Timber.d("RESULT_ENCRYPTED");
             return new OpenPgpDecryptionResult(OpenPgpDecryptionResult.RESULT_ENCRYPTED, sessionKey, decryptedSessionKey);
         }
 
-        Log.d(Constants.TAG, "RESULT_NOT_ENCRYPTED");
+        Timber.d("RESULT_NOT_ENCRYPTED");
         return new OpenPgpDecryptionResult(OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED);
     }
 

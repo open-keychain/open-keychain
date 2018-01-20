@@ -25,14 +25,12 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.openintents.openpgp.util.OpenPgpApi;
-import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
-import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class SelectSignKeyIdActivity extends BaseActivity {
 
@@ -74,10 +72,10 @@ public class SelectSignKeyIdActivity extends BaseActivity {
         mPreferredUserId = intent.getStringExtra(EXTRA_USER_ID);
         mData = intent.getParcelableExtra(EXTRA_DATA);
         if (appUri == null) {
-            Log.e(Constants.TAG, "Intent data missing. Should be Uri of app!");
+            Timber.e("Intent data missing. Should be Uri of app!");
             finish();
         } else {
-            Log.d(Constants.TAG, "uri: " + appUri);
+            Timber.d("uri: " + appUri);
             startListFragments(savedInstanceState, appUri, mData, mPreferredUserId);
         }
     }
@@ -123,7 +121,7 @@ public class SelectSignKeyIdActivity extends BaseActivity {
 //                        EditKeyResult result = data.getParcelableExtra(OperationResult.EXTRA_RESULT);
 //                        mSelectKeySpinner.setSelectedKeyId(result.mMasterKeyId);
                     } else {
-                        Log.e(Constants.TAG, "missing result!");
+                        Timber.e("missing result!");
                     }
                 }
                 break;

@@ -17,19 +17,19 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+
 import org.bouncycastle.openpgp.PGPKeyRing;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.bouncycastle.openpgp.PGPSecretKey;
 import org.bouncycastle.openpgp.PGPSecretKeyRing;
 import org.bouncycastle.openpgp.PGPSignature;
 import org.bouncycastle.openpgp.jcajce.JcaPGPObjectFactory;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.IterableIterator;
-import org.sufficientlysecure.keychain.util.Log;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
+import timber.log.Timber;
 
 public class CanonicalizedSecretKeyRing extends CanonicalizedKeyRing {
 
@@ -47,10 +47,10 @@ public class CanonicalizedSecretKeyRing extends CanonicalizedKeyRing {
         PGPKeyRing keyRing = null;
         try {
             if ((keyRing = (PGPKeyRing) factory.nextObject()) == null) {
-                Log.e(Constants.TAG, "No keys given!");
+                Timber.e("No keys given!");
             }
         } catch (IOException e) {
-            Log.e(Constants.TAG, "Error while converting to PGPKeyRing!", e);
+            Timber.e(e, "Error while converting to PGPKeyRing!");
         }
 
         mRing = (PGPSecretKeyRing) keyRing;
