@@ -15,7 +15,7 @@ android {
     if (project.hasProperty('rootProject.ext.compileSdkVersion')) {
         compileSdkVersion rootProject.ext.compileSdkVersion
     } else {
-        compileSdkVersion 25
+        compileSdkVersion 27
     }
     if (project.hasProperty('rootProject.ext.buildToolsVersion')) {
         buildToolsVersion rootProject.ext.buildToolsVersion

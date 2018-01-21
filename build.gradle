@@ -51,5 +51,6 @@ project(':extern:bouncycastle') {
 // SDK Version and Build Tools used by all subprojects
 // See http://tools.android.com/tech-docs/new-build-system/tips#TOC-Controlling-Android-properties-of-all-your-modules-from-the-main-project.
 ext {
-    compileSdkVersion = 25
+    compileSdkVersion = 27
+    buildToolsVersion = '27.0.3'
 }
