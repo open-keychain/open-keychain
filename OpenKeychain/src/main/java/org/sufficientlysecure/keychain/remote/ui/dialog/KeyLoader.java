@@ -42,7 +42,7 @@ public class KeyLoader extends AsyncTaskLoader<List<KeyInfo>> {
             KeyRings.MASTER_KEY_ID,
             KeyRings.CREATION,
             KeyRings.HAS_ENCRYPT,
-            KeyRings.HAS_AUTHENTICATE,
+            KeyRings.HAS_AUTHENTICATE_SECRET,
             KeyRings.HAS_ANY_SECRET,
             KeyRings.VERIFIED,
             KeyRings.NAME,
