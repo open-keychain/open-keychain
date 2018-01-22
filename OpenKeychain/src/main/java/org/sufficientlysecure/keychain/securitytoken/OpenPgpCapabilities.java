@@ -36,7 +36,9 @@ public abstract class OpenPgpCapabilities {
     private static final int MAX_PW1_LENGTH_INDEX = 1;
     private static final int MAX_PW3_LENGTH_INDEX = 3;
 
+    @SuppressWarnings("mutable")
     public abstract byte[] getAid();
+    @SuppressWarnings("mutable")
     abstract byte[] getHistoricalBytes();
 
     @Nullable
@@ -48,6 +50,7 @@ public abstract class OpenPgpCapabilities {
     @Nullable
     @SuppressWarnings("mutable")
     public abstract byte[] getFingerprintAuth();
+    @SuppressWarnings("mutable")
     public abstract byte[] getPwStatusBytes();
 
     public abstract KeyFormat getSignKeyFormat();

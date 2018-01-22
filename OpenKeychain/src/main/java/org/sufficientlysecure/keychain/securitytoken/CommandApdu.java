@@ -33,6 +33,7 @@ public abstract class CommandApdu {
     public abstract int getINS();
     public abstract int getP1();
     public abstract int getP2();
+    @SuppressWarnings("mutable")
     public abstract byte[] getData();
     public abstract int getNe();
 

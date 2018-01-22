@@ -28,6 +28,7 @@ import com.google.auto.value.AutoValue;
 public abstract class ResponseApdu {
     private static final int APDU_SW_SUCCESS = 0x9000;
 
+    @SuppressWarnings("mutable")
     public abstract byte[] getData();
     public abstract int getSw1();
     public abstract int getSw2();

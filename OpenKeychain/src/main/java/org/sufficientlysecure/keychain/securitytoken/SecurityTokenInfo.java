@@ -47,6 +47,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
 
     public abstract List<byte[]> getFingerprints();
     @Nullable
+    @SuppressWarnings("mutable")
     public abstract byte[] getAid();
     @Nullable
     public abstract String getUserId();

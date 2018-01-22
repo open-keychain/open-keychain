@@ -31,10 +31,12 @@ import com.google.auto.value.AutoValue;
 @AutoValue
 public abstract class ParcelableKeyRing implements Parcelable {
     @Nullable
+    @SuppressWarnings("mutable")
     public abstract byte[] getBytes();
 
     // dual role!
     @Nullable
+    @SuppressWarnings("mutable")
     public abstract byte[] getExpectedFingerprint();
     @Nullable
     public abstract String getKeyIdHex();

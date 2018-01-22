@@ -269,6 +269,7 @@ public class CcidTransceiver {
         public abstract byte getError();
         public abstract byte getChainParameter();
         @Nullable
+        @SuppressWarnings("mutable")
         public abstract byte[] getData();
 
         static CcidDataBlock parseHeaderFromBytes(byte[] headerBytes) {
