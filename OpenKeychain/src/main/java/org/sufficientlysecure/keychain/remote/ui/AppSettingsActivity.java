@@ -35,7 +35,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.bouncycastle.util.encoders.Hex;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
@@ -43,7 +42,8 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.dialog.AdvancedAppSettingsDialogFragment;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class AppSettingsActivity extends BaseActivity {
     private Uri mAppUri;
@@ -82,12 +82,12 @@ public class AppSettingsActivity extends BaseActivity {
         Intent intent = getIntent();
         mAppUri = intent.getData();
         if (mAppUri == null) {
-            Log.e(Constants.TAG, "Intent data missing. Should be Uri of app!");
+            Timber.e("Intent data missing. Should be Uri of app!");
             finish();
             return;
         }
 
-        Log.d(Constants.TAG, "uri: " + mAppUri);
+        Timber.d("uri: %s", mAppUri);
         loadData(savedInstanceState, mAppUri);
     }
 
@@ -142,7 +142,7 @@ public class AppSettingsActivity extends BaseActivity {
             byte[] digest = md.digest();
             certificate = new String(Hex.encode(digest));
         } catch (NoSuchAlgorithmException e) {
-            Log.e(Constants.TAG, "Should not happen!", e);
+            Timber.e(e, "Should not happen!");
         }
 
         AdvancedAppSettingsDialogFragment dialogFragment =
@@ -163,7 +163,7 @@ public class AppSettingsActivity extends BaseActivity {
             i.addCategory(Intent.CATEGORY_LAUNCHER);
             startActivity(i);
         } catch (PackageManager.NameNotFoundException e) {
-            Log.e(Constants.TAG, "startApp", e);
+            Timber.e(e, "startApp");
         }
     }
 
@@ -187,7 +187,7 @@ public class AppSettingsActivity extends BaseActivity {
         mAppIconView.setImageDrawable(appIcon);
 
         Uri allowedKeysUri = appUri.buildUpon().appendPath(KeychainContract.PATH_ALLOWED_KEYS).build();
-        Log.d(Constants.TAG, "allowedKeysUri: " + allowedKeysUri);
+        Timber.d("allowedKeysUri: " + allowedKeysUri);
         startListFragments(savedInstanceState, allowedKeysUri);
     }
 

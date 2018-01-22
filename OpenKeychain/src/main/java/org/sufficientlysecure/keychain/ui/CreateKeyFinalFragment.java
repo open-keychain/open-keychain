@@ -52,10 +52,10 @@ import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
 
 import java.util.Date;
 import java.util.Iterator;
@@ -435,7 +435,7 @@ public class CreateKeyFinalFragment extends Fragment {
         try {
             builder = SaveKeyringParcel.buildChangeKeyringParcel(key.getMasterKeyId(), key.getFingerprint());
         } catch (PgpKeyNotFoundException e) {
-            Log.e(Constants.TAG, "Key that should be moved to Security Token not found in database!");
+            Timber.e("Key that should be moved to Security Token not found in database!");
             return;
         }
 

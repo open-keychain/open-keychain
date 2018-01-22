@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.util;
 
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,7 +33,8 @@ import android.system.ErrnoException;
 import android.system.Os;
 import android.system.StructStat;
 
-import org.sufficientlysecure.keychain.Constants;
+import timber.log.Timber;
+
 
 /**
  * FileHelper methods which use Lollipop-exclusive API.
@@ -67,11 +69,11 @@ class FileHelperLollipop {
             try {
                 final StructStat st = Os.fstat(pfd.getFileDescriptor());
                 if (st.st_uid == android.os.Process.myUid()) {
-                    Log.e(Constants.TAG, "File is owned by the application itself, aborting!");
+                    Timber.e("File is owned by the application itself, aborting!");
                     throw new FileNotFoundException("Unable to create stream");
                 }
             } catch (ErrnoException e) {
-                Log.e(Constants.TAG, "fstat() failed: " + e);
+                Timber.e("fstat() failed: " + e);
                 throw new FileNotFoundException("fstat() failed");
             }
 

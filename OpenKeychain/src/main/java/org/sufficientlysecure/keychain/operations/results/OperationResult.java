@@ -24,7 +24,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
@@ -33,8 +32,8 @@ import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Showable;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.IterableIterator;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableCache;
+import timber.log.Timber;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -122,7 +121,7 @@ public abstract class OperationResult implements Parcelable {
             mType = type;
             mParameters = parameters;
             mIndent = indent;
-            Log.v(Constants.TAG, "log: " + this);
+            Timber.v("log: " + this);
         }
 
         /** Clones this LogEntryParcel, adding extra indent. Note that the parameter array is NOT cloned! */
@@ -206,7 +205,7 @@ public abstract class OperationResult implements Parcelable {
             super(type, indent, parameters);
             mSubResult = subResult;
 
-            Log.v(Constants.TAG, "log: " + this);
+            Timber.v("log: " + this);
         }
 
         public SubLogEntryParcel(Parcel source) {
@@ -264,7 +263,7 @@ public abstract class OperationResult implements Parcelable {
 
         LogEntryParcel entryParcel = mLog.getLast();
         if (entryParcel == null) {
-            Log.e(Constants.TAG, "Tried to show empty log!");
+            Timber.e("Tried to show empty log!");
             return Notify.create(activity, R.string.error_empty_log, Style.ERROR);
         }
         // special case: first parameter may be a quantity

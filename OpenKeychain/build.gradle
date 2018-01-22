@@ -88,6 +88,8 @@ dependencies {
         exclude module: 'recyclerview-v7'
     }
 
+    compile "com.jakewharton.timber:timber:4.5.1"
+
     compile 'org.glassfish:javax.annotation:10.0-b28'
     provided    "com.google.auto.value:auto-value:1.4.1"
     apt         "com.google.auto.value:auto-value:1.4.1"
@@ -154,6 +156,7 @@ dependencyVerification {
             'com.android.support:transition:36c688825a8c0e6e879e18886de83dc90673322822d5b606ee302f70fb558e16',
             'com.squareup.okio:okio:734269c3ebc5090e3b23566db558f421f0b4027277c79ad5d176b8ec168bb850',
             'com.fidesmo:nordpol-core:296e71b12884a9cd28cf00ab908973bbf776a90be1f23ac897380d91604e614d',
+            'com.jakewharton.timber:timber:d553d3d3e883ce7d061f1b21b95d6ee0840f3bfbf6d3bd51c5671f0b0f0b0091',
     ]
 }
 

@@ -26,7 +26,7 @@ import android.view.ViewGroup;
 import com.tonicartos.superslim.LayoutManager;
 
 import org.sufficientlysecure.keychain.ui.util.adapter.CursorAdapter.SimpleCursor;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 
 /**
@@ -92,8 +92,8 @@ public abstract class SectionCursorAdapter<C extends SimpleCursor, T, VH extends
                 mSectionMap.clear();
                 appendSections(getCursor());
             } catch (IllegalStateException e) {
-                Log.e(TAG, "Couldn't build sections. Perhaps you're moving the cursor" +
-                        "in #getSectionFromCursor(Cursor)?", e);
+                Timber.e(e, "Couldn't build sections. Perhaps you're moving the cursor" +
+                        "in #getSectionFromCursor(Cursor)?");
                 swapCursor(null);
 
                 mSectionMap.clear();

@@ -17,12 +17,6 @@
 
 package org.sufficientlysecure.keychain.util;
 
-import android.content.Context;
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.KeychainApplication;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -33,6 +27,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
+
+import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import org.sufficientlysecure.keychain.KeychainApplication;
+import timber.log.Timber;
 
 /**
  * When sending large data (over 1MB) through Androids Binder IPC you get
@@ -127,7 +128,7 @@ public class ParcelableFileCache<E extends Parcelable> {
         try {
             ois = new DataInputStream(new FileInputStream(tempFile));
         } catch (FileNotFoundException e) {
-            Log.e(Constants.TAG, "parcel import file not existing", e);
+            Timber.e(e, "parcel import file not existing");
             throw new IOException(e);
         }
 
@@ -165,7 +166,7 @@ public class ParcelableFileCache<E extends Parcelable> {
                     // aight
                     close();
                 } catch (IOException e) {
-                    Log.e(Constants.TAG, "Encountered IOException during cache read!", e);
+                    Timber.e(e, "Encountered IOException during cache read!");
                 }
 
             }

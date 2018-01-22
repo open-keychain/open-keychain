@@ -32,14 +32,13 @@ import org.bouncycastle.openpgp.PGPSignatureSubpacketGenerator;
 import org.bouncycastle.openpgp.PGPSignatureSubpacketVector;
 import org.bouncycastle.openpgp.PGPUserAttributeSubpacketVector;
 import org.bouncycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder.NfcInteractionNeeded;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.SecurityTokenSignOperationsBuilder;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 
 public class PgpCertifyOperation {
@@ -67,7 +66,7 @@ public class PgpCertifyOperation {
             PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
             if (creationTimestamp != null) {
                 spGen.setSignatureCreationTime(false, creationTimestamp);
-                Log.d(Constants.TAG, "For NFC: set sig creation time to " + creationTimestamp);
+                Timber.d("For NFC: set sig creation time to " + creationTimestamp);
             }
             PGPSignatureSubpacketVector packetVector = spGen.generate();
             signatureGenerator.setHashedSubpackets(packetVector);
@@ -115,7 +114,7 @@ public class PgpCertifyOperation {
 
             }
         } catch (PGPException e) {
-            Log.e(Constants.TAG, "signing error", e);
+            Timber.e(e, "signing error");
             return new PgpCertifyResult();
         }
 

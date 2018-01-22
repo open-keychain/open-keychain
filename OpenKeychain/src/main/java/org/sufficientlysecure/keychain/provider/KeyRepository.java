@@ -28,10 +28,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
@@ -43,6 +41,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
+import timber.log.Timber;
 
 
 public class KeyRepository {
@@ -339,7 +338,7 @@ public class KeyRepository {
             try {
                 data = mLocalPublicKeyStorage.readPublicKey(masterKeyId);
             } catch (IOException e) {
-                Log.e(Constants.TAG, "Error reading public key from storage!", e);
+                Timber.e(e, "Error reading public key from storage!");
                 throw new NotFoundException();
             }
         }

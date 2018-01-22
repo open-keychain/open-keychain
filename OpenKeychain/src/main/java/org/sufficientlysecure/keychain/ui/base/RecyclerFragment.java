@@ -31,9 +31,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 /*
  * Implementation of taken from the sourcecode of
@@ -262,7 +262,7 @@ public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
     private void checkDataSet() {
         boolean empty = treatAsEmpty(getItemCount());
 
-        Log.d("RecyclerFragment", "Dataset change detected! Count: "
+        Timber.d("Dataset change detected! Count: "
                 + getItemCount() + ", Empty: " + empty);
 
         if (emptyView != null) {
@@ -302,7 +302,7 @@ public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
         if (emptyView instanceof TextView) {
             ((TextView) emptyView).setText(text);
         } else {
-            Log.e(Constants.TAG, "Cannot set empty text on a view that is null" +
+            Timber.e("Cannot set empty text on a view that is null" +
                     "or not an instance of android.view.View!");
         }
     }

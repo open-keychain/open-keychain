@@ -28,7 +28,6 @@ import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.UploadResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -36,8 +35,8 @@ import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
 
 import java.util.ArrayList;
 
@@ -86,7 +85,7 @@ public class UploadKeyActivity extends BaseActivity
 
         mDataUri = getIntent().getData();
         if (mDataUri == null) {
-            Log.e(Constants.TAG, "Intent data missing. Should be Uri of key!");
+            Timber.e("Intent data missing. Should be Uri of key!");
             finish();
             return;
         }

@@ -30,9 +30,9 @@ import android.os.IBinder;
 import android.os.Message;
 import android.widget.Toast;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 /**
  * This service actually does nothing, it's sole task is to show a Toast if the use tries to create an account.
@@ -75,7 +75,7 @@ public class DummyAccountService extends Service {
 
         @Override
         public Bundle editProperties(AccountAuthenticatorResponse response, String accountType) {
-            Log.d(Constants.TAG, "DummyAccountService.editProperties");
+            Timber.d("DummyAccountService.editProperties");
             return null;
         }
 
@@ -84,41 +84,41 @@ public class DummyAccountService extends Service {
                                  String[] requiredFeatures, Bundle options) throws NetworkErrorException {
             response.onResult(new Bundle());
             toaster.toast(R.string.account_no_manual_account_creation);
-            Log.d(Constants.TAG, "DummyAccountService.addAccount");
+            Timber.d("DummyAccountService.addAccount");
             return null;
         }
 
         @Override
         public Bundle confirmCredentials(AccountAuthenticatorResponse response, Account account, Bundle options)
                 throws NetworkErrorException {
-            Log.d(Constants.TAG, "DummyAccountService.confirmCredentials");
+            Timber.d("DummyAccountService.confirmCredentials");
             return null;
         }
 
         @Override
         public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account, String authTokenType,
                                    Bundle options) throws NetworkErrorException {
-            Log.d(Constants.TAG, "DummyAccountService.getAuthToken");
+            Timber.d("DummyAccountService.getAuthToken");
             return null;
         }
 
         @Override
         public String getAuthTokenLabel(String authTokenType) {
-            Log.d(Constants.TAG, "DummyAccountService.getAuthTokenLabel");
+            Timber.d("DummyAccountService.getAuthTokenLabel");
             return null;
         }
 
         @Override
         public Bundle updateCredentials(AccountAuthenticatorResponse response, Account account, String authTokenType,
                                         Bundle options) throws NetworkErrorException {
-            Log.d(Constants.TAG, "DummyAccountService.updateCredentials");
+            Timber.d("DummyAccountService.updateCredentials");
             return null;
         }
 
         @Override
         public Bundle hasFeatures(AccountAuthenticatorResponse response, Account account, String[] features)
                 throws NetworkErrorException {
-            Log.d(Constants.TAG, "DummyAccountService.hasFeatures");
+            Timber.d("DummyAccountService.hasFeatures");
             return null;
         }
     }

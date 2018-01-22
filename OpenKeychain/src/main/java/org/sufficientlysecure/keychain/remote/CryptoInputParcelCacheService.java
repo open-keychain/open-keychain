@@ -32,7 +32,7 @@ import android.os.RemoteException;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -158,7 +158,7 @@ public class CryptoInputParcelCacheService extends Service {
             case MSG_GET_NOT_FOUND:
                 throw new InputParcelNotFound();
             default:
-                Log.e(Constants.TAG, "timeout!");
+                Timber.e("timeout!");
                 throw new InputParcelNotFound("should not happen!");
         }
     }
@@ -206,19 +206,19 @@ public class CryptoInputParcelCacheService extends Service {
                 try {
                     messenger.send(msg);
                 } catch (RemoteException e) {
-                    Log.e(Constants.TAG, "CryptoInputParcelCacheService: Sending message failed", e);
+                    Timber.e(e, "CryptoInputParcelCacheService: Sending message failed");
                 }
                 break;
             }
             default: {
-                Log.e(Constants.TAG, "CryptoInputParcelCacheService: Intent or Intent Action not supported!");
+                Timber.e("CryptoInputParcelCacheService: Intent or Intent Action not supported!");
                 break;
             }
         }
 
         if (mCache.size() <= 0) {
             // stop whole service if cache is empty
-            Log.d(Constants.TAG, "CryptoInputParcelCacheService: No passphrases remaining in memory, stopping service!");
+            Timber.d("CryptoInputParcelCacheService: No passphrases remaining in memory, stopping service!");
             stopSelf();
         }
 
@@ -229,13 +229,13 @@ public class CryptoInputParcelCacheService extends Service {
     public void onCreate() {
         super.onCreate();
         mContext = this;
-        Log.d(Constants.TAG, "CryptoInputParcelCacheService, onCreate()");
+        Timber.d("CryptoInputParcelCacheService, onCreate()");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(Constants.TAG, "CryptoInputParcelCacheService, onDestroy()");
+        Timber.d("CryptoInputParcelCacheService, onDestroy()");
     }
 
     @Override

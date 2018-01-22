@@ -83,9 +83,12 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.CharsetVerifier;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
+import timber.log.Timber;
+
+import static java.lang.String.format;
+
 
 public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInputParcel> {
 
@@ -112,7 +115,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 long inputSize = FileHelper.getFileSize(mContext, input.getInputUri(), 0);
                 inputData = new InputData(inputStream, inputSize);
             } catch (FileNotFoundException e) {
-                Log.e(Constants.TAG, "Input URI could not be opened: " + input.getInputUri(), e);
+                Timber.e(e, "Input URI could not be opened: " + input.getInputUri());
                 OperationLog log = new OperationLog();
                 log.add(LogType.MSG_DC_ERROR_INPUT, 1);
                 return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
@@ -125,7 +128,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             try {
                 outputStream = mContext.getContentResolver().openOutputStream(input.getOutputUri());
             } catch (FileNotFoundException e) {
-                Log.e(Constants.TAG, "Output URI could not be opened: " + input.getOutputUri(), e);
+                Timber.e(e, "Output URI could not be opened: " + input.getOutputUri());
                 OperationLog log = new OperationLog();
                 log.add(LogType.MSG_DC_ERROR_IO, 1);
                 return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
@@ -139,7 +142,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         }
 
         result.mOperationTime = System.currentTimeMillis() - startTime;
-        Log.d(Constants.TAG, "total time taken: " + String.format("%.2f", result.mOperationTime / 1000.0) + "s");
+        Timber.d("total time taken: " + format("%.2f", result.mOperationTime / 1000.0) + "s");
         return result;
 
     }
@@ -155,7 +158,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             InputData inputData, OutputStream outputStream) {
         try {
             if (input.getDetachedSignature() != null) {
-                Log.d(Constants.TAG, "Detached signature present, verifying with this signature only");
+                Timber.d("Detached signature present, verifying with this signature only");
 
                 return verifyDetachedSignature(input, inputData, outputStream, 0);
             } else {
@@ -165,7 +168,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 if (inputStream instanceof ArmoredInputStream) {
                     ArmoredInputStream aIn = (ArmoredInputStream) inputStream;
                     // it is ascii armored
-                    Log.d(Constants.TAG, "ASCII Armor Header Line: " + aIn.getArmorHeaderLine());
+                    Timber.d("ASCII Armor Header Line: " + aIn.getArmorHeaderLine());
 
                     if (aIn.isClearText()) {
                         // a cleartext signature, verify it with the other method
@@ -179,19 +182,19 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 }
             }
         } catch (PGPException e) {
-            Log.d(Constants.TAG, "PGPException", e);
+            Timber.d(e, "PGPException");
             OperationLog log = new OperationLog();
             log.add(LogType.MSG_DC_ERROR_PGP_EXCEPTION, 1);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         } catch (DecoderException | ArrayIndexOutOfBoundsException e) {
             // these can happen if assumptions in JcaPGPObjectFactory.nextObject() aren't
             // fulfilled, so we need to catch them here to handle this gracefully
-            Log.d(Constants.TAG, "data error", e);
+            Timber.d(e, "data error");
             OperationLog log = new OperationLog();
             log.add(LogType.MSG_DC_ERROR_IO, 1);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
         } catch (IOException e) {
-            Log.d(Constants.TAG, "IOException", e);
+            Timber.d(e, "IOException");
             OperationLog log = new OperationLog();
             log.add(LogType.MSG_DC_ERROR_IO, 1);
             return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
@@ -504,7 +507,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         }
 
         opTime = System.currentTimeMillis()-startTime;
-        Log.d(Constants.TAG, "decrypt time taken: " + String.format("%.2f", opTime / 1000.0) + "s, for "
+        Timber.d("decrypt time taken: " + format("%.2f", opTime / 1000.0) + "s, for "
                 + alreadyWritten + " bytes");
 
         // special treatment to detect pgp mime types
@@ -522,7 +525,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 alreadyWritten, charsetVerifier.getCharset());
 
         log.add(LogType.MSG_DC_CLEAR_META_MIME, indent + 1, mimeType);
-        Log.d(Constants.TAG, metadata.toString());
+        Timber.d(metadata.toString());
 
         indent -= 1;
 
@@ -613,9 +616,9 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
                     // allow only specific keys for decryption?
                     if (input.getAllowedKeyIds() != null) {
-                        Log.d(Constants.TAG, "encData.getKeyID(): " + subKeyId);
-                        Log.d(Constants.TAG, "mAllowedKeyIds: " + input.getAllowedKeyIds());
-                        Log.d(Constants.TAG, "masterKeyId: " + masterKeyId);
+                        Timber.d("encData.getKeyID(): " + subKeyId);
+                        Timber.d("mAllowedKeyIds: " + input.getAllowedKeyIds());
+                        Timber.d("masterKeyId: " + masterKeyId);
 
                         if (!input.getAllowedKeyIds().contains(masterKeyId)) {
                             // this key is in our db, but NOT allowed!
@@ -913,7 +916,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 signatureChecker.verifySignature(log, indent);
 
             } catch (SignatureException e) {
-                Log.d(Constants.TAG, "SignatureException", e);
+                Timber.d(e, "SignatureException");
                 return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
             }
         }

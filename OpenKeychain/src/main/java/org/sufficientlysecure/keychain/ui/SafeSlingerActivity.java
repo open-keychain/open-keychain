@@ -48,8 +48,9 @@ import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
+import timber.log.Timber;
+
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class SafeSlingerActivity extends BaseActivity
@@ -115,7 +116,7 @@ public class SafeSlingerActivity extends BaseActivity
             slingerIntent.putExtra(ExchangeConfig.extra.HOST_NAME, Constants.SAFESLINGER_SERVER);
             startActivityForResult(slingerIntent, REQUEST_CODE_SAFE_SLINGER);
         } catch (PgpKeyNotFoundException e) {
-            Log.e(Constants.TAG, "personal key not found", e);
+            Timber.e(e, "personal key not found");
         }
     }
 
@@ -131,7 +132,7 @@ public class SafeSlingerActivity extends BaseActivity
                 return;
             }
 
-            Log.d(Constants.TAG, "importKeys started");
+            Timber.d("importKeys started");
 
             // instead of giving the entries by Intent extra, cache them into a
             // file to prevent Java Binder problems on heavy imports
@@ -153,7 +154,7 @@ public class SafeSlingerActivity extends BaseActivity
                 mKeyserver = null;
                 mOperationHelper.cryptoOperation();
             } catch (IOException e) {
-                Log.e(Constants.TAG, "Problem writing cache file", e);
+                Timber.e(e, "Problem writing cache file");
                 Notify.create(this, "Problem writing cache file!", Notify.Style.ERROR).show();
             }
         } else {

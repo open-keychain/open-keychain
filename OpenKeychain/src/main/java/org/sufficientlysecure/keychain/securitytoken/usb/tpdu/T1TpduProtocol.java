@@ -21,12 +21,12 @@ package org.sufficientlysecure.keychain.securitytoken.usb.tpdu;
 import android.support.annotation.NonNull;
 
 import org.bouncycastle.util.Arrays;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransceiver;
 import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransceiver.CcidDataBlock;
 import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransportProtocol;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 /* T=1 Protocol, see http://www.icedev.se/proxmark3/docs/ISO-7816.pdf, Part 11 */
 public class T1TpduProtocol implements CcidTransportProtocol {
@@ -94,10 +94,10 @@ public class T1TpduProtocol implements CcidTransportProtocol {
             sentLength += len;
 
             if (responseBlock instanceof SBlock) {
-                Log.d(Constants.TAG, "S-Block received " + responseBlock);
+                Timber.d("S-Block received " + responseBlock);
                 // just ignore
             } else if (responseBlock instanceof RBlock) {
-                Log.d(Constants.TAG, "R-Block received " + responseBlock);
+                Timber.d("R-Block received " + responseBlock);
                 if (((RBlock) responseBlock).getError() != RBlock.RError.NO_ERROR) {
                     throw new UsbTransportException("R-Block reports error " + ((RBlock) responseBlock).getError());
                 }
@@ -123,7 +123,7 @@ public class T1TpduProtocol implements CcidTransportProtocol {
             Block responseBlock = blockFactory.fromBytes(response.getData());
 
             if (!(responseBlock instanceof IBlock)) {
-                Log.e(Constants.TAG, "Invalid response block received " + responseBlock);
+                Timber.e("Invalid response block received " + responseBlock);
                 throw new UsbTransportException("Response: invalid state - invalid block received");
             }
 

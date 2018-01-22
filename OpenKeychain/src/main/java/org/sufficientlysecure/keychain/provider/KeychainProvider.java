@@ -50,7 +50,10 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
+import static android.database.DatabaseUtils.dumpCursorToString;
+
 
 public class KeychainProvider extends ContentProvider {
 
@@ -296,7 +299,7 @@ public class KeychainProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs,
                         String sortOrder) {
-        Log.v(Constants.TAG, "query(uri=" + uri + ", proj=" + Arrays.toString(projection) + ")");
+        Timber.v("query(uri=" + uri + ", proj=" + Arrays.toString(projection) + ")");
 
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
@@ -457,7 +460,7 @@ public class KeychainProvider extends ContentProvider {
                                     + " AND tmp." + Keys.KEY_ID + " = " + subkey + ""
                                     + ")");
                         } catch(NumberFormatException e) {
-                            Log.e(Constants.TAG, "Malformed find by subkey query!", e);
+                            Timber.e(e, "Malformed find by subkey query!");
                             qb.appendWhere(" AND 0");
                         }
                         break;
@@ -510,7 +513,7 @@ public class KeychainProvider extends ContentProvider {
                                 + ")");
                         } else {
                             // TODO better way to do this?
-                            Log.e(Constants.TAG, "Malformed find by email query!");
+                            Timber.e("Malformed find by email query!");
                             qb.appendWhere(" AND 0");
                         }
                         break;
@@ -795,11 +798,10 @@ public class KeychainProvider extends ContentProvider {
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
         }
 
-        Log.d(Constants.TAG,
-                "Query: " + qb.buildQuery(projection, selection, null, null, orderBy, null));
+        Timber.d("Query: " + qb.buildQuery(projection, selection, null, null, orderBy, null));
 
         if (Constants.DEBUG && Constants.DEBUG_LOG_DB_QUERIES) {
-            Log.d(Constants.TAG, "Cursor: " + DatabaseUtils.dumpCursorToString(cursor));
+            Timber.d("Cursor: " + dumpCursorToString(cursor));
         }
 
         if (Constants.DEBUG && Constants.DEBUG_EXPLAIN_QUERIES) {
@@ -813,14 +815,14 @@ public class KeychainProvider extends ContentProvider {
             for (int i = 0; i < explainCursor.getColumnCount(); i++) {
                 line.append(explainCursor.getColumnName(i)).append(", ");
             }
-            Log.d(Constants.TAG, line.toString());
+            Timber.d(line.toString());
 
             while (!explainCursor.isAfterLast()) {
                 line = new StringBuilder();
                 for (int i = 0; i < explainCursor.getColumnCount(); i++) {
                     line.append(explainCursor.getString(i)).append(", ");
                 }
-                Log.d(Constants.TAG, line.toString());
+                Timber.d(line.toString());
                 explainCursor.moveToNext();
             }
 
@@ -835,7 +837,7 @@ public class KeychainProvider extends ContentProvider {
      */
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        Log.d(Constants.TAG, "insert(uri=" + uri + ", values=" + values.toString() + ")");
+        Timber.d("insert(uri=" + uri + ", values=" + values.toString() + ")");
 
         final SQLiteDatabase db = getDb().getWritableDatabase();
 
@@ -925,7 +927,7 @@ public class KeychainProvider extends ContentProvider {
             getContext().getContentResolver().notifyChange(uri, null);
 
         } catch (SQLiteConstraintException e) {
-            Log.d(Constants.TAG, "Constraint exception on insert! Entry already existing?", e);
+            Timber.d(e, "Constraint exception on insert! Entry already existing?");
         }
 
         return rowUri;
@@ -936,7 +938,7 @@ public class KeychainProvider extends ContentProvider {
      */
     @Override
     public int delete(Uri uri, String additionalSelection, String[] selectionArgs) {
-        Log.v(Constants.TAG, "delete(uri=" + uri + ")");
+        Timber.v("delete(uri=" + uri + ")");
 
         final SQLiteDatabase db = getDb().getWritableDatabase();
 
@@ -1028,7 +1030,7 @@ public class KeychainProvider extends ContentProvider {
      */
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        Log.v(Constants.TAG, "update(uri=" + uri + ", values=" + values.toString() + ")");
+        Timber.v("update(uri=" + uri + ", values=" + values.toString() + ")");
 
         final SQLiteDatabase db = getDb().getWritableDatabase();
         ContentResolver contentResolver = getContext().getContentResolver();
@@ -1109,7 +1111,7 @@ public class KeychainProvider extends ContentProvider {
             contentResolver.notifyChange(uri, null);
 
         } catch (SQLiteConstraintException e) {
-            Log.d(Constants.TAG, "Constraint exception on update! Entry already existing?", e);
+            Timber.d(e, "Constraint exception on update! Entry already existing?");
         }
 
         return count;

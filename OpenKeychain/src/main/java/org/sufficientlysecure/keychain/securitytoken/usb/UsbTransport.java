@@ -31,7 +31,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Pair;
 
-import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
 import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
@@ -39,8 +38,10 @@ import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TransportType;
 import org.sufficientlysecure.keychain.securitytoken.Transport;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
+
+import static org.bouncycastle.util.encoders.Hex.toHexString;
 
 
 /**
@@ -98,7 +99,7 @@ public class UsbTransport implements Transport {
             usbConnection = null;
         }
 
-        Log.d(Constants.TAG, "Usb transport disconnected");
+        Timber.d("Usb transport disconnected");
     }
 
     /**
@@ -158,7 +159,7 @@ public class UsbTransport implements Transport {
         }
 
         CcidDescription ccidDescription = CcidDescription.fromRawDescriptors(usbConnection.getRawDescriptors());
-        Log.d(Constants.TAG, "CCID Description: " + ccidDescription);
+        Timber.d("CCID Description: " + ccidDescription);
         CcidTransceiver transceiver = new CcidTransceiver(usbConnection, usbBulkIn, usbBulkOut, ccidDescription);
 
         ccidTransportProtocol = ccidDescription.getSuitableTransportProtocol();
@@ -175,12 +176,12 @@ public class UsbTransport implements Transport {
     public ResponseApdu transceive(CommandApdu data) throws UsbTransportException {
         byte[] rawCommand = data.toBytes();
         if (Constants.DEBUG) {
-            Log.d(Constants.TAG, "USB >> " + Hex.toHexString(rawCommand));
+            Timber.d("USB >> " + toHexString(rawCommand));
         }
 
         byte[] rawResponse = ccidTransportProtocol.transceive(rawCommand);
         if (Constants.DEBUG) {
-            Log.d(Constants.TAG, "USB << " + Hex.toHexString(rawResponse));
+            Timber.d("USB << " + toHexString(rawResponse));
         }
 
         return ResponseApdu.fromBytes(rawResponse);
@@ -252,7 +253,7 @@ public class UsbTransport implements Transport {
             }
         }
 
-        Log.d(Constants.TAG, "Unknown USB token. Vendor ID: " + usbDevice.getVendorId() + ", Product ID: " +
+        Timber.d("Unknown USB token. Vendor ID: " + usbDevice.getVendorId() + ", Product ID: " +
                 usbDevice.getProductId());
         return null;
     }

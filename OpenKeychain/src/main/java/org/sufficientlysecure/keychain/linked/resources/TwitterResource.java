@@ -37,6 +37,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.linked.LinkedTokenResource;
+import timber.log.Timber;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -207,15 +208,15 @@ public class TwitterResource extends LinkedTokenResource {
 
         } catch (HttpStatusException e) {
             // log verbose output to logcat
-            Log.e(Constants.TAG, "http error (" + e.getStatus() + "): " + e.getReason());
+            Timber.e("http error (" + e.getStatus() + "): " + e.getReason());
             log.add(LogType.MSG_LV_FETCH_ERROR, 1, Integer.toString(e.getStatus()));
         } catch (MalformedURLException e) {
             log.add(LogType.MSG_LV_FETCH_ERROR_URL, 1);
         } catch (IOException e) {
-            Log.e(Constants.TAG, "io error", e);
+            Timber.e(e, "io error");
             log.add(LogType.MSG_LV_FETCH_ERROR_IO, 1);
         } catch (JSONException e) {
-            Log.e(Constants.TAG, "json error", e);
+            Timber.e(e, "json error");
             log.add(LogType.MSG_LV_FETCH_ERROR_FORMAT, 1);
         }
 

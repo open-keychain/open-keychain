@@ -30,7 +30,6 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.view.View;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -46,8 +45,8 @@ import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.LinkedId
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.TrustIdInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.UserIdInfo;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
 
 
 public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> {
@@ -148,7 +147,7 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
             Uri dataUri = UserPackets.buildLinkedIdsUri(KeyRings.buildGenericKeyRingUri(masterKeyId));
             frag = LinkedIdViewFragment.newInstance(dataUri, info.getRank(), isSecret, masterKeyId);
         } catch (IOException e) {
-            Log.e(Constants.TAG, "IOException", e);
+            Timber.e(e, "IOException");
             return;
         }
 
@@ -179,7 +178,7 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
     public void onClickForgetIdentity(int position) {
         TrustIdInfo info = (TrustIdInfo) identitiesAdapter.getInfo(position);
         if (info == null) {
-            Log.e(Constants.TAG, "got a 'forget' click on a bad trust id");
+            Timber.e("got a 'forget' click on a bad trust id");
             return;
         }
 

@@ -30,7 +30,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -38,7 +37,8 @@ import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class LinkedIdWizard extends BaseActivity {
 
@@ -60,7 +60,7 @@ public class LinkedIdWizard extends BaseActivity {
             uri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(uri);
             CachedPublicKeyRing ring = KeyRepository.create(this).getCachedPublicKeyRing(uri);
             if (!ring.hasAnySecret()) {
-                Log.e(Constants.TAG, "Linked Identities can only be added to secret keys!");
+                Timber.e("Linked Identities can only be added to secret keys!");
                 finish();
                 return;
             }
@@ -68,7 +68,7 @@ public class LinkedIdWizard extends BaseActivity {
             mMasterKeyId = ring.extractOrGetMasterKeyId();
             mFingerprint = ring.getFingerprint();
         } catch (PgpKeyNotFoundException e) {
-            Log.e(Constants.TAG, "Invalid uri given, key does not exist!");
+            Timber.e("Invalid uri given, key does not exist!");
             finish();
             return;
         }

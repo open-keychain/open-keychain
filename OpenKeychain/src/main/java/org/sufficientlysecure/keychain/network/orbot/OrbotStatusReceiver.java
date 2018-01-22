@@ -22,8 +22,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 /**
  * BroadcastReceiver that receives Orbots status
@@ -58,18 +58,18 @@ public class OrbotStatusReceiver extends BroadcastReceiver {
             String status = intent.getStringExtra(OrbotHelper.EXTRA_STATUS);
             this.torRunning = (intent.getStringExtra(OrbotHelper.EXTRA_STATUS).equals(OrbotHelper.STATUS_ON));
 
-            Log.d(Constants.TAG, "Receiver: Orbot status: " + status);
+            Timber.d("Receiver: Orbot status: " + status);
             if (torRunning) {
                 Bundle extras = intent.getExtras();
 
                 if (extras.containsKey(EXTRA_PROXY_PORT_HTTP)) {
                     this.proxyPortHttp = extras.getInt(EXTRA_PROXY_PORT_HTTP, -1);
-                    Log.i(Constants.TAG, "Receiver: Orbot Http proxy at " + proxyPortHttp);
+                    Timber.i("Receiver: Orbot Http proxy at " + proxyPortHttp);
                 }
 
                 if (extras.containsKey(EXTRA_PROXY_PORT_SOCKS)) {
                     this.proxyPortSocks = extras.getInt(EXTRA_PROXY_PORT_SOCKS, -1);
-                    Log.i(Constants.TAG, "Receiver: Orbot Socks proxy at " + proxyPortSocks);
+                    Timber.i("Receiver: Orbot Socks proxy at " + proxyPortSocks);
                 }
             }
         }

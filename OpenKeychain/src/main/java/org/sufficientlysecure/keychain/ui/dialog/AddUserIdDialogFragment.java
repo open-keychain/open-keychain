@@ -38,12 +38,12 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
 import org.sufficientlysecure.keychain.ui.widget.NameEditText;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class AddUserIdDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "messenger";
@@ -193,9 +193,9 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
         try {
             mMessenger.send(msg);
         } catch (RemoteException e) {
-            Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+            Timber.w(e, "Exception sending message, Is handler present?");
         } catch (NullPointerException e) {
-            Log.w(Constants.TAG, "Messenger is null!", e);
+            Timber.w(e, "Messenger is null!");
         }
     }
 
@@ -214,9 +214,9 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
         try {
             mMessenger.send(msg);
         } catch (RemoteException e) {
-            Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+            Timber.w(e, "Exception sending message, Is handler present?");
         } catch (NullPointerException e) {
-            Log.w(Constants.TAG, "Messenger is null!", e);
+            Timber.w(e, "Messenger is null!");
         }
     }
 

@@ -67,8 +67,9 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Utf8Util;
+import timber.log.Timber;
+
 
 /** Wrapper around PGPKeyRing class, to be constructed from bytes.
  *
@@ -217,10 +218,9 @@ public class UncachedKeyRing {
                         // go through all objects in this block
                         Object obj;
                         while ((obj = mObjectFactory.nextObject()) != null) {
-                            Log.d(Constants.TAG, "Found class: " + obj.getClass());
+                            Timber.d("Found class: " + obj.getClass());
                             if (!(obj instanceof PGPKeyRing)) {
-                                Log.i(Constants.TAG,
-                                        "Skipping object of bad type " + obj.getClass().getName() + " in stream");
+                                Timber.i("Skipping object of bad type " + obj.getClass().getName() + " in stream");
                                 // skip object
                                 continue;
                             }

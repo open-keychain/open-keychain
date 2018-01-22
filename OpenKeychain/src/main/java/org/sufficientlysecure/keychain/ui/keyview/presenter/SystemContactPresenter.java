@@ -31,10 +31,9 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SystemContactInfoLoader;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SystemContactInfoLoader.SystemContactInfo;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 
 public class SystemContactPresenter implements LoaderCallbacks<SystemContactInfo> {
@@ -67,7 +66,7 @@ public class SystemContactPresenter implements LoaderCallbacks<SystemContactInfo
     public void startLoader(LoaderManager loaderManager) {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)
                 == PackageManager.PERMISSION_DENIED) {
-            Log.w(Constants.TAG, "loading linked system contact not possible READ_CONTACTS permission denied!");
+            Timber.w("loading linked system contact not possible READ_CONTACTS permission denied!");
             view.hideLinkedSystemContact();
             return;
         }

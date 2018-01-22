@@ -45,6 +45,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.IdentityInfo;
 import org.sufficientlysecure.keychain.ui.util.PackageIconGetter;
+import timber.log.Timber;
 
 
 public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
@@ -122,7 +123,7 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
         Cursor cursor = contentResolver.query(ApiAutocryptPeer.buildByMasterKeyId(masterKeyId),
                 TRUST_IDS_PROJECTION, null, null, null);
         if (cursor == null) {
-            Log.e(Constants.TAG, "Error loading trust ids!");
+            Timber.e("Error loading trust ids!");
             return;
         }
 
@@ -180,7 +181,7 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
         Cursor cursor = contentResolver.query(UserPackets.buildLinkedIdsUri(masterKeyId),
                 USER_PACKETS_PROJECTION, USER_IDS_WHERE, null, null);
         if (cursor == null) {
-            Log.e(Constants.TAG, "Error loading key items!");
+            Timber.e("Error loading key items!");
             return;
         }
 
@@ -198,7 +199,7 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
                         identities.add(identityInfo);
                     }
                 } catch (IOException e) {
-                    Log.e(Constants.TAG, "Failed parsing uri attribute", e);
+                    Timber.e(e, "Failed parsing uri attribute");
                 }
             }
         } finally {
@@ -210,7 +211,7 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
         Cursor cursor = contentResolver.query(UserPackets.buildUserIdsUri(masterKeyId),
                 USER_PACKETS_PROJECTION, USER_IDS_WHERE, null, null);
         if (cursor == null) {
-            Log.e(Constants.TAG, "Error loading key items!");
+            Timber.e("Error loading key items!");
             return;
         }
 

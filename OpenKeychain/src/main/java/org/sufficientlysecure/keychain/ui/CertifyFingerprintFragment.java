@@ -18,11 +18,8 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.io.IOException;
-
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -33,14 +30,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 
 public class CertifyFingerprintFragment extends LoaderFragment implements
@@ -106,7 +102,7 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
 
         Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
         if (dataUri == null) {
-            Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
+            Timber.e("Data missing. Should be Uri of key!");
             getActivity().finish();
             return;
         }
@@ -117,7 +113,7 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
     private void loadData(Uri dataUri) {
         mDataUri = dataUri;
 
-        Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
+        Timber.i("mDataUri: " + mDataUri.toString());
 
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
@@ -187,7 +183,7 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
+            Timber.e(e, "key not found!");
         }
         Intent certifyIntent = new Intent(getActivity(), CertifyKeyActivity.class);
         certifyIntent.putExtras(getActivity().getIntent());

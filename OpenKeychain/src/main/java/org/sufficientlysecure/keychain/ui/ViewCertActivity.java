@@ -34,7 +34,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
@@ -45,7 +44,8 @@ import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class ViewCertActivity extends BaseActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -100,7 +100,7 @@ public class ViewCertActivity extends BaseActivity
 
         mDataUri = getIntent().getData();
         if (mDataUri == null) {
-            Log.e(Constants.TAG, "Intent data missing. Should be Uri of key!");
+            Timber.e("Intent data missing. Should be Uri of key!");
             finish();
             return;
         }
@@ -195,7 +195,7 @@ public class ViewCertActivity extends BaseActivity
                     startActivity(viewIntent);
                 } catch (PgpKeyNotFoundException e) {
                     // TODO notify user of this, maybe offer download?
-                    Log.e(Constants.TAG, "key not found!", e);
+                    Timber.e(e, "key not found!");
                 }
             }
         });

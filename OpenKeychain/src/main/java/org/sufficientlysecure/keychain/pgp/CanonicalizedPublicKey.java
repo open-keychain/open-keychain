@@ -18,6 +18,14 @@
 package org.sufficientlysecure.keychain.pgp;
 
 
+import java.io.IOException;
+import java.security.PublicKey;
+import java.security.interfaces.ECPublicKey;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
 import org.bouncycastle.bcpg.ECDHPublicBCPGKey;
@@ -31,18 +39,9 @@ import org.bouncycastle.openpgp.operator.KeyFingerPrintCalculator;
 import org.bouncycastle.openpgp.operator.RFC6637Utils;
 import org.bouncycastle.openpgp.operator.jcajce.JcaPGPKeyConverter;
 import org.bouncycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
-import org.sufficientlysecure.keychain.util.Log;
-
-import java.io.IOException;
-import java.security.PublicKey;
-import java.security.interfaces.ECPublicKey;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
+import timber.log.Timber;
 
 /** Wrapper for a PGPPublicKey.
  *
@@ -185,7 +184,7 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
         long seconds = getValidSeconds();
 
         if (seconds > Integer.MAX_VALUE) {
-            Log.e(Constants.TAG, "error, expiry time too large");
+            Timber.e("error, expiry time too large");
             return null;
         }
         if (seconds == 0) {

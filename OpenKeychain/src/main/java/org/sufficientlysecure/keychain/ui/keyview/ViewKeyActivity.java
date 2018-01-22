@@ -106,9 +106,9 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
 
 
 public class ViewKeyActivity extends BaseSecurityTokenActivity implements
@@ -248,21 +248,21 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
         mDataUri = getIntent().getData();
         if (mDataUri == null) {
-            Log.e(Constants.TAG, "Data missing. Should be uri of key!");
+            Timber.e("Data missing. Should be uri of key!");
             finish();
             return;
         }
         if (mDataUri.getHost().equals(ContactsContract.AUTHORITY)) {
             mDataUri = new ContactHelper(this).dataUriFromContactUri(mDataUri);
             if (mDataUri == null) {
-                Log.e(Constants.TAG, "Contact Data missing. Should be uri of key!");
+                Timber.e("Contact Data missing. Should be uri of key!");
                 Toast.makeText(this, R.string.error_contacts_key_id_missing, Toast.LENGTH_LONG).show();
                 finish();
                 return;
             }
         }
 
-        Log.i(Constants.TAG, "mDataUri: " + mDataUri);
+        Timber.i("mDataUri: " + mDataUri);
 
         mActionEncryptFile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -665,7 +665,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             // used instead of startActivity set actionbar based on callingPackage
             startActivityForResult(intent, 0);
         } catch (PgpKeyNotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
+            Timber.e(e, "key not found!");
         }
     }
 
@@ -676,7 +676,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
         } catch (PgpKeyNotFoundException e) {
-            Log.e(Constants.TAG, "key not found!", e);
+            Timber.e(e, "key not found!");
         }
         Intent safeSlingerIntent = new Intent(this, SafeSlingerActivity.class);
         safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, keyId);

@@ -41,7 +41,7 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 
 /** This class is used to track the state of a single signature verification.
@@ -172,7 +172,7 @@ class PgpSignatureChecker {
                 onePassSignature = sigList.get(i);
                 return;
             } catch (KeyWritableRepository.NotFoundException e) {
-                Log.d(Constants.TAG, "key not found, trying next signature...");
+                Timber.d("key not found, trying next signature...");
             }
         }
     }
@@ -195,7 +195,7 @@ class PgpSignatureChecker {
                 signature = sigList.get(i);
                 return;
             } catch (KeyWritableRepository.NotFoundException e) {
-                Log.d(Constants.TAG, "key not found, trying next signature...");
+                Timber.d("key not found, trying next signature...");
             }
         }
     }

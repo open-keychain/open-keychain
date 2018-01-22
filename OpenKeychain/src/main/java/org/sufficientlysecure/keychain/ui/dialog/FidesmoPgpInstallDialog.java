@@ -25,9 +25,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class FidesmoPgpInstallDialog extends DialogFragment {
 
@@ -74,7 +74,7 @@ public class FidesmoPgpInstallDialog extends DialogFragment {
                     Uri.parse(mPgpInstallServiceUrl));
             startActivity(mPgpServiceIntent);
         } catch (IllegalArgumentException e) {
-            Log.e(Constants.TAG, "Error when parsing URI");
+            Timber.e("Error when parsing URI");
         }
     }
 }

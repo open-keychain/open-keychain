@@ -27,8 +27,8 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class PgpHelper {
 
@@ -84,14 +84,14 @@ public class PgpHelper {
     }
 
     public static String getPgpMessageContent(@NonNull CharSequence input) {
-        Log.dEscaped(Constants.TAG, "input: " + input);
+        Timber.d("input: %s");
 
         Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(input);
         if (matcher.matches()) {
             String text = matcher.group(1);
             text = fixPgpMessage(text);
 
-            Log.dEscaped(Constants.TAG, "input fixed: " + text);
+            Timber.d("input fixed: %s", text);
             return text;
         } else {
             matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(input);
@@ -99,7 +99,7 @@ public class PgpHelper {
                 String text = matcher.group(1);
                 text = fixPgpCleartextSignature(text);
 
-                Log.dEscaped(Constants.TAG, "input fixed: " + text);
+                Timber.d("input fixed: %s", text);
                 return text;
             } else {
                 return null;
@@ -108,7 +108,7 @@ public class PgpHelper {
     }
 
     public static String getPgpPublicKeyContent(@NonNull CharSequence input) {
-        Log.dEscaped(Constants.TAG, "input: " + input);
+        Timber.d("input: %s", input);
 
         Matcher matcher = PgpHelper.PGP_PUBLIC_KEY.matcher(input);
         if (!matcher.matches()) {
@@ -165,7 +165,7 @@ public class PgpHelper {
 
             Matcher matcher = KEYDATA_START_PATTERN.matcher(text);
             if (!matcher.find()) {
-                Log.e(Constants.TAG, "Could not find start of key data!");
+                Timber.e("Could not find start of key data!");
                 break;
             }
             int indexOfPubkeyMaterial = matcher.start(1);

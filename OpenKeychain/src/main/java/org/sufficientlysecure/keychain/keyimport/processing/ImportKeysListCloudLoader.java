@@ -21,7 +21,6 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v4.content.AsyncTaskLoader;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.keyimport.CloudSearch;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.KeyserverClient;
@@ -31,10 +30,10 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
+import timber.log.Timber;
 
 import java.util.ArrayList;
 
@@ -71,12 +70,12 @@ public class ImportKeysListCloudLoader
         mEntryListWrapper = new AsyncTaskResultWrapper<>(mEntryList, null);
 
         if (mState.mServerQuery == null) {
-            Log.e(Constants.TAG, "mServerQuery is null!");
+            Timber.e("mServerQuery is null!");
             return mEntryListWrapper;
         }
 
         if (mState.mServerQuery.startsWith("0x") && mState.mServerQuery.length() == 42) {
-            Log.d(Constants.TAG, "This search is based on a unique fingerprint. Enforce a fingerprint check!");
+            Timber.d("This search is based on a unique fingerprint. Enforce a fingerprint check!");
             queryServer(true);
         } else {
             queryServer(false);
@@ -148,7 +147,7 @@ public class ImportKeysListCloudLoader
             // add result to data
             if (enforceFingerprint) {
                 String fingerprintHex = mState.mServerQuery.substring(2);
-                Log.d(Constants.TAG, "fingerprint: " + fingerprintHex);
+                Timber.d("fingerprint: " + fingerprintHex);
                 // query must return only one result!
                 if (searchResult.size() == 1) {
                     if (fingerprintHex.length() != 40) {

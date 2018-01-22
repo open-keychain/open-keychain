@@ -56,8 +56,7 @@ import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 
 @RequiresApi(api = VERSION_CODES.LOLLIPOP)
@@ -171,12 +170,12 @@ public class KeyTransferInteractor {
 
                 try {
                     handleOpenConnection(socket);
-                    Log.d(Constants.TAG, "connection closed ok!");
+                    Timber.d("connection closed ok!");
                 } catch (SSLHandshakeException e) {
-                    Log.d(Constants.TAG, "ssl handshake error!", e);
+                    Timber.d(e, "ssl handshake error!");
                     invokeListener(CONNECTION_ERROR_CONNECT, null);
                 } catch (IOException e) {
-                    Log.e(Constants.TAG, "communication error!", e);
+                    Timber.e(e, "communication error!");
                     invokeListener(CONNECTION_ERROR_WHILE_CONNECTED, e.getLocalizedMessage());
                 }
             } finally {
@@ -200,7 +199,7 @@ public class KeyTransferInteractor {
 
                     socket = serverSocket.accept();
                 } catch (IOException e) {
-                    Log.e(Constants.TAG, "error while listening!", e);
+                    Timber.e(e, "error while listening!");
                     invokeListener(CONNECTION_ERROR_LISTEN, null);
                     return null;
                 }
@@ -214,7 +213,7 @@ public class KeyTransferInteractor {
                     socket = sslSocket;
                     socket.connect(new InetSocketAddress(InetAddress.getByName(clientHost), clientPort), TIMEOUT_CONNECTING);
                 } catch (IOException e) {
-                    Log.e(Constants.TAG, "error while connecting!", e);
+                    Timber.e(e, "error while connecting!");
                     if (e instanceof NoRouteToHostException) {
                         invokeListener(CONNECTION_ERROR_NO_ROUTE_TO_HOST, wifiSsid);
                     } else {
@@ -252,7 +251,7 @@ public class KeyTransferInteractor {
                     break;
                 }
             }
-            Log.d(Constants.TAG, "disconnected");
+            Timber.d("disconnected");
             invokeListener(CONNECTION_LOST, null);
         }
 
@@ -270,7 +269,7 @@ public class KeyTransferInteractor {
 
             boolean lineIsDelimiter = delimiterStart.equals(firstLine);
             if (!lineIsDelimiter) {
-                Log.d(Constants.TAG, "bad beginning of key block?");
+                Timber.d("bad beginning of key block?");
                 return false;
             }
 

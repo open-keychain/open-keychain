@@ -32,7 +32,7 @@ import android.provider.MediaStore;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.DatabaseUtil;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -136,7 +136,7 @@ public class TemporaryFileProvider extends ContentProvider {
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            Log.d(Constants.TAG, "Upgrading files db from " + oldVersion + " to " + newVersion);
+            Timber.d("Upgrading files db from %s to %s", oldVersion, newVersion);
 
             switch (oldVersion) {
                 case 1:
@@ -188,7 +188,7 @@ public class TemporaryFileProvider extends ContentProvider {
         try {
             file = getFile(uri);
         } catch (FileNotFoundException e) {
-            Log.e(Constants.TAG, "file not found!");
+            Timber.e("file not found!");
             return null;
         }
 
@@ -253,13 +253,13 @@ public class TemporaryFileProvider extends ContentProvider {
         values.put(TemporaryFileColumns.COLUMN_UUID, uuid);
         int insert = (int) db.getWritableDatabase().insert(TABLE_FILES, null, values);
         if (insert == -1) {
-            Log.e(Constants.TAG, "Insert failed!");
+            Timber.e("Insert failed!");
             return null;
         }
         try {
             getFile(uuid).createNewFile();
         } catch (IOException e) {
-            Log.e(Constants.TAG, "File creation failed!");
+            Timber.e("File creation failed!");
             return null;
         }
         return Uri.withAppendedPath(CONTENT_URI, uuid);

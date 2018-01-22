@@ -30,12 +30,12 @@ import android.view.LayoutInflater;
 
 import com.tonicartos.superslim.LayoutManager;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.adapter.CertSectionedListAdapter;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class ViewKeyAdvCertsFragment extends RecyclerFragment<CertSectionedListAdapter>
         implements LoaderManager.LoaderCallbacks<Cursor>, CertSectionedListAdapter.CertListListener {
@@ -68,7 +68,7 @@ public class ViewKeyAdvCertsFragment extends RecyclerFragment<CertSectionedListA
 
         Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
         if (dataUri == null) {
-            Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
+            Timber.e("Data missing. Should be Uri of key!");
             getActivity().finish();
             return;
         } else {

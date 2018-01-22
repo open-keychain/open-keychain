@@ -30,9 +30,8 @@ import android.widget.TextView;
 import org.markdown4j.Markdown4jProcessor;
 import org.sufficientlysecure.htmltextview.HtmlResImageGetter;
 import org.sufficientlysecure.htmltextview.HtmlTextView;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 import java.io.IOException;
 
@@ -54,7 +53,7 @@ public class HelpAboutFragment extends Fragment {
                     getActivity().getResources().openRawResource(R.raw.help_about));
             aboutTextView.setHtml(html, new HtmlResImageGetter(aboutTextView));
         } catch (IOException e) {
-            Log.e(Constants.TAG, "IOException", e);
+            Timber.e(e, "IOException");
         }
 
         return view;
@@ -73,7 +72,7 @@ public class HelpAboutFragment extends Fragment {
 
             result = String.format("%s (%s)", info.versionName, info.versionCode);
         } catch (NameNotFoundException e) {
-            Log.w(Constants.TAG, "Unable to get application version: " + e.getMessage());
+            Timber.w("Unable to get application version: " + e.getMessage());
             result = "Unable to get application version.";
         }
 

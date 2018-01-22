@@ -27,7 +27,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.DialogFragment;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,11 +40,11 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.widget.PassphraseEditText;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import timber.log.Timber;
+
 
 public class SetPassphraseDialogFragment extends DialogFragment implements OnEditorActionListener {
     private static final String ARG_MESSENGER = "messenger";
@@ -236,9 +235,9 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
         try {
             mMessenger.send(msg);
         } catch (RemoteException e) {
-            Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+            Timber.w(e, "Exception sending message, Is handler present?");
         } catch (NullPointerException e) {
-            Log.w(Constants.TAG, "Messenger is null!", e);
+            Timber.w(e, "Messenger is null!");
         }
     }
 }

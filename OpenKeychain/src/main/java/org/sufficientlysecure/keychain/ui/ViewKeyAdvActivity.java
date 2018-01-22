@@ -40,7 +40,6 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
@@ -50,7 +49,8 @@ import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class ViewKeyAdvActivity extends BaseActivity implements
         LoaderCallbacks<Cursor>, OnPageChangeListener {
@@ -95,14 +95,14 @@ public class ViewKeyAdvActivity extends BaseActivity implements
 
         mDataUri = getIntent().getData();
         if (mDataUri == null) {
-            Log.e(Constants.TAG, "Data missing. Should be uri of key!");
+            Timber.e("Data missing. Should be uri of key!");
             finish();
             return;
         }
         if (mDataUri.getHost().equals(ContactsContract.AUTHORITY)) {
             mDataUri = new ContactHelper(this).dataUriFromContactUri(mDataUri);
             if (mDataUri == null) {
-                Log.e(Constants.TAG, "Contact Data missing. Should be uri of key!");
+                Timber.e("Contact Data missing. Should be uri of key!");
                 Toast.makeText(this, R.string.error_contacts_key_id_missing, Toast.LENGTH_LONG).show();
                 finish();
                 return;

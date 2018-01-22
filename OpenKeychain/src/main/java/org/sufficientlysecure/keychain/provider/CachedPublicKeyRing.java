@@ -20,14 +20,14 @@ package org.sufficientlysecure.keychain.provider;
 
 import android.net.Uri;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 /** This implementation of KeyRing provides a cached view of PublicKeyRing
  * objects based on database queries exclusively.
@@ -77,7 +77,7 @@ public class CachedPublicKeyRing extends KeyRing {
             return Long.parseLong(firstSegment);
         } catch (NumberFormatException e) {
             // didn't work? oh well.
-            Log.d(Constants.TAG, "Couldn't get masterKeyId from URI, querying...");
+            Timber.d("Couldn't get masterKeyId from URI, querying...");
         }
         return getMasterKeyId();
     }

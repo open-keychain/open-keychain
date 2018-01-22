@@ -35,14 +35,12 @@ import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.TimeZone;
 
 public class EditSubkeyExpiryDialogFragment extends DialogFragment {
@@ -227,9 +225,9 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
         try {
             mMessenger.send(msg);
         } catch (RemoteException e) {
-            Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+            Timber.w(e, "Exception sending message, Is handler present?");
         } catch (NullPointerException e) {
-            Log.w(Constants.TAG, "Messenger is null!", e);
+            Timber.w(e, "Messenger is null!");
         }
     }
 }

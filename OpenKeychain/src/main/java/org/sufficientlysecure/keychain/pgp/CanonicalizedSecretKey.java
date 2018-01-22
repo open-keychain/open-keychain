@@ -37,14 +37,21 @@ import org.bouncycastle.openpgp.PGPSignatureGenerator;
 import org.bouncycastle.openpgp.PGPSignatureSubpacketGenerator;
 import org.bouncycastle.openpgp.operator.PBESecretKeyDecryptor;
 import org.bouncycastle.openpgp.operator.PGPContentSignerBuilder;
-import org.bouncycastle.openpgp.operator.jcajce.*;
+import org.bouncycastle.openpgp.operator.jcajce.CachingDataDecryptorFactory;
+import org.bouncycastle.openpgp.operator.jcajce.EdDsaAuthenticationContentSignerBuilder;
+import org.bouncycastle.openpgp.operator.jcajce.JcaPGPContentSignerBuilder;
+import org.bouncycastle.openpgp.operator.jcajce.JcaPGPKeyConverter;
+import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
+import org.bouncycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder;
+import org.bouncycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
+import org.bouncycastle.openpgp.operator.jcajce.SessionKeySecretKeyDecryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import timber.log.Timber;
 
 
 /**
@@ -204,7 +211,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             mPrivateKey = mSecretKey.extractPrivateKey(keyDecryptor);
             mPrivateKeyState = PRIVATE_KEY_STATE_UNLOCKED;
         } catch (PGPException e) {
-            Log.e(Constants.TAG, "Error extracting private key!", e);
+            Timber.e(e, "Error extracting private key!");
             return false;
         }
         if (mPrivateKey == null) {
@@ -241,7 +248,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             signatureGenerator.init(PGPSignature.DEFAULT_CERTIFICATION, mPrivateKey);
             return signatureGenerator;
         } catch (PGPException e) {
-            Log.e(Constants.TAG, "signing error", e);
+            Timber.e(e, "signing error");
             return null;
         }
     }

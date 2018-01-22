@@ -38,7 +38,6 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.LongSparseArray;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -67,9 +66,10 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.Utf8Util;
+import timber.log.Timber;
+
 
 /**
  * This class contains high level methods for database access. Despite its
@@ -514,7 +514,7 @@ public class KeyWritableRepository extends KeyRepository {
 
         } catch (IOException e) {
             log(LogType.MSG_IP_ERROR_IO_EXC);
-            Log.e(Constants.TAG, "IOException during import", e);
+            Timber.e(e, "IOException during import");
             return SaveKeyringResult.RESULT_ERROR;
         } finally {
             mIndent -= 1;
@@ -544,11 +544,11 @@ public class KeyWritableRepository extends KeyRepository {
 
         } catch (RemoteException e) {
             log(LogType.MSG_IP_ERROR_REMOTE_EX);
-            Log.e(Constants.TAG, "RemoteException during import", e);
+            Timber.e(e, "RemoteException during import");
             return SaveKeyringResult.RESULT_ERROR;
         } catch (OperationApplicationException e) {
             log(LogType.MSG_IP_ERROR_OP_EXC);
-            Log.e(Constants.TAG, "OperationApplicationException during import", e);
+            Timber.e(e, "OperationApplicationException during import");
             return SaveKeyringResult.RESULT_ERROR;
         }
 
@@ -602,7 +602,7 @@ public class KeyWritableRepository extends KeyRepository {
         try {
             mLocalPublicKeyStorage.deletePublicKey(masterKeyId);
         } catch (IOException e) {
-            android.util.Log.e(Constants.TAG, "Could not delete file!", e);
+            Timber.e(e, "Could not delete file!");
             return false;
         }
         mContentResolver.delete(ApiAutocryptPeer.buildByMasterKeyId(masterKeyId),null, null);
@@ -671,7 +671,7 @@ public class KeyWritableRepository extends KeyRepository {
                     return SaveKeyringResult.RESULT_ERROR;
                 }
             } catch (IOException e) {
-                Log.e(Constants.TAG, "Failed to encode key!", e);
+                Timber.e(e, "Failed to encode key!");
                 log(LogType.MSG_IS_ERROR_IO_EXC);
                 return SaveKeyringResult.RESULT_ERROR;
             }
@@ -1068,7 +1068,7 @@ public class KeyWritableRepository extends KeyRepository {
                     log.add(result, 1);
                     progress.setProgress(processedKeys++, totalKeys);
                 } catch (NotFoundException | PgpGeneralException | IOException e) {
-                    Log.e(Constants.TAG, "Error updating trust database", e);
+                    Timber.e(e, "Error updating trust database");
                     return new UpdateTrustResult(UpdateTrustResult.RESULT_ERROR, log);
                 }
             }

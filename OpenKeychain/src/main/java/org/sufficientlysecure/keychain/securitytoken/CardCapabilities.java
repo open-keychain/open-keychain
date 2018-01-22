@@ -17,10 +17,7 @@
 
 package org.sufficientlysecure.keychain.securitytoken;
 
-import org.bouncycastle.util.encoders.Hex;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
-import org.sufficientlysecure.keychain.util.Log;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;

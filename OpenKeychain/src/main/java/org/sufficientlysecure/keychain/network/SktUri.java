@@ -28,7 +28,8 @@ import com.google.auto.value.AutoValue;
 import org.bouncycastle.util.encoders.DecoderException;
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 @AutoValue
 abstract class SktUri {
@@ -76,7 +77,7 @@ abstract class SktUri {
                 try {
                     wifiSsid = new String(Hex.decode(optarg[1]));
                 } catch (DecoderException e) {
-                    Log.d(Constants.TAG, "error parsing ssid in skt uri, ignoring: " + input);
+                    Timber.d("error parsing ssid in skt uri, ignoring: " + input);
                 }
             }
         }

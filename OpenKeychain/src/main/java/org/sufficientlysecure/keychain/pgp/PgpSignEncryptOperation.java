@@ -72,9 +72,12 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
+import timber.log.Timber;
+
+import static java.lang.String.format;
+
 
 /**
  * This class supports a single, low-level, sign/encrypt operation.
@@ -98,7 +101,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
         try {
             NEW_LINE = "\r\n".getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
-            Log.e(Constants.TAG, "UnsupportedEncodingException", e);
+            Timber.e(e, "UnsupportedEncodingException");
         }
     }
 
@@ -186,7 +189,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
             compressionAlgorithm = PgpSecurityConstants.DEFAULT_COMPRESSION_ALGORITHM;
         }
 
-        Log.d(Constants.TAG, data.toString());
+        Timber.d(data.toString());
 
         ArmoredOutputStream armorOut = null;
         OutputStream out;
@@ -576,7 +579,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
             }
 
             opTime = System.currentTimeMillis() - startTime;
-            Log.d(Constants.TAG, "sign/encrypt time taken: " + String.format("%.2f", opTime / 1000.0) + "s");
+            Timber.d("sign/encrypt time taken: " + format("%.2f", opTime / 1000.0) + "s");
 
             // closing outputs
             // NOTE: closing needs to be done in the correct order!
@@ -635,7 +638,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 // construct micalg parameter according to https://tools.ietf.org/html/rfc3156#section-5
                 result.setMicAlgDigestName("pgp-" + digestName.toLowerCase());
             } catch (PGPException e) {
-                Log.e(Constants.TAG, "error setting micalg parameter!", e);
+                Timber.e(e, "error setting micalg parameter!");
             }
         }
         return result;

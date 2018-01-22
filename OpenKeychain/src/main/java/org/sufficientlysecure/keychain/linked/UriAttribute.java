@@ -18,10 +18,9 @@
 package org.sufficientlysecure.keychain.linked;
 
 import org.bouncycastle.util.Strings;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 import java.io.IOException;
 import java.net.URI;
@@ -67,7 +66,7 @@ public class UriAttribute {
             return new LinkedAttribute(uri, res);
 
         } catch (IllegalArgumentException e) {
-            Log.e(Constants.TAG, "error parsing uri in (suspected) linked id packet");
+            Timber.e("error parsing uri in (suspected) linked id packet");
             return null;
         }
     }

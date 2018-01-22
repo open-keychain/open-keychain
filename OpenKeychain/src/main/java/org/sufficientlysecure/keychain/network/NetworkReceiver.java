@@ -25,9 +25,9 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class NetworkReceiver extends BroadcastReceiver {
 
@@ -60,11 +60,11 @@ public class NetworkReceiver extends BroadcastReceiver {
         if (isEnabled) {
             pm.setComponentEnabledSetting(compName,
                     PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-            Log.d(Constants.TAG, "Wifi Receiver is enabled!");
+            Timber.d("Wifi Receiver is enabled!");
         } else {
             pm.setComponentEnabledSetting(compName,
                     PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-            Log.d(Constants.TAG, "Wifi Receiver is disabled!");
+            Timber.d("Wifi Receiver is disabled!");
         }
     }
 }

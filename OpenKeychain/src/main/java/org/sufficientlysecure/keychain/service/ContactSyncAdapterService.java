@@ -41,7 +41,8 @@ import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.SettingsActivity;
 import org.sufficientlysecure.keychain.util.ContactHelper;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class ContactSyncAdapterService extends Service {
 
@@ -58,7 +59,7 @@ public class ContactSyncAdapterService extends Service {
         @Override
         public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider,
                                   final SyncResult syncResult) {
-            Log.d(Constants.TAG, "Performing a contact sync!");
+            Timber.d("Performing a contact sync!");
 
             new ContactHelper(ContactSyncAdapterService.this).writeKeysToContacts();
 

@@ -62,8 +62,9 @@ import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
+
 
 public class EditIdentitiesFragment extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -140,7 +141,7 @@ public class EditIdentitiesFragment extends Fragment
 
         Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
         if (dataUri == null) {
-            Log.e(Constants.TAG, "Either a key Uri is required!");
+            Timber.e("Either a key Uri is required!");
             getActivity().finish();
             return;
         }
@@ -164,7 +165,7 @@ public class EditIdentitiesFragment extends Fragment
     private void loadData(Uri dataUri) {
         mDataUri = dataUri;
 
-        Log.i(Constants.TAG, "mDataUri: " + mDataUri);
+        Timber.i("mDataUri: " + mDataUri);
 
         // load the secret key ring. we do verify here that the passphrase is correct, so cached won't do
         try {

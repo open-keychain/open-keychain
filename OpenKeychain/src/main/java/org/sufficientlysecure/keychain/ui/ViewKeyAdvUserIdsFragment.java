@@ -38,7 +38,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ViewAnimator;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
@@ -53,7 +52,8 @@ import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -220,7 +220,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
 
         Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
         if (dataUri == null) {
-            Log.e(Constants.TAG, "Data missing. Should be Uri of key!");
+            Timber.e("Data missing. Should be Uri of key!");
             getActivity().finish();
             return;
         }
@@ -240,7 +240,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
     private void loadData(Uri dataUri) {
         mDataUri = dataUri;
 
-        Log.i(Constants.TAG, "mDataUri: " + mDataUri);
+        Timber.i("mDataUri: " + mDataUri);
 
         mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0);
         mUserIds.setAdapter(mUserIdsAdapter);

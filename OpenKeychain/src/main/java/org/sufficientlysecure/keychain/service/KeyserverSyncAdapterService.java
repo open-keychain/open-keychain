@@ -66,9 +66,10 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
+
 
 public class KeyserverSyncAdapterService extends Service {
 
@@ -215,7 +216,7 @@ public class KeyserverSyncAdapterService extends Service {
                     return;
                 }
             }
-            Log.d(Constants.TAG, "Performing a keyserver sync!");
+            Timber.d("Performing a keyserver sync!");
             PowerManager pm = (PowerManager) KeyserverSyncAdapterService.this
                     .getSystemService(Context.POWER_SERVICE);
             @SuppressWarnings("deprecation") // our min is API 15, deprecated only in 20
@@ -249,7 +250,7 @@ public class KeyserverSyncAdapterService extends Service {
      */
     private void handleUpdateResult(ImportKeyResult result, final int startId) {
         if (result.isPending()) {
-            Log.d(Constants.TAG, "Orbot required for sync but not running, attempting to start");
+            Timber.d("Orbot required for sync but not running, attempting to start");
             // result is pending due to Orbot not being started
             // try to start it silently, if disabled show notifications
             new OrbotHelper.SilentStartManager() {
@@ -275,13 +276,13 @@ public class KeyserverSyncAdapterService extends Service {
             // if we're killed before we get a response from Orbot, we need the intent to be
             // redelivered, so no stopSelf(int) here
         } else if (isUpdateCancelled()) {
-            Log.d(Constants.TAG, "Keyserver sync cancelled, postponing by" + SYNC_POSTPONE_TIME
+            Timber.d("Keyserver sync cancelled, postponing by" + SYNC_POSTPONE_TIME
                     + "ms");
             postponeSync();
             // postponeSync creates a new intent, so we don't need this to be redelivered
             stopSelf(startId);
         } else {
-            Log.d(Constants.TAG, "Keyserver sync completed: Updated: " + result.mUpdatedKeys
+            Timber.d("Keyserver sync completed: Updated: " + result.mUpdatedKeys
                     + " Failed: " + result.mBadKeys);
             // key sync completed successfully, we can stop
             stopSelf(startId);
@@ -337,7 +338,7 @@ public class KeyserverSyncAdapterService extends Service {
 
     private ImportKeyResult directUpdate(Context context, ArrayList<ParcelableKeyRing> keyList,
                                          CryptoInputParcel cryptoInputParcel) {
-        Log.d(Constants.TAG, "Starting normal update");
+        Timber.d("Starting normal update");
         ImportOperation importOp = new ImportOperation(context,
                 KeyWritableRepository.create(context), null);
         return importOp.execute(
@@ -356,7 +357,7 @@ public class KeyserverSyncAdapterService extends Service {
      */
     private ImportKeyResult staggeredUpdate(Context context, ArrayList<ParcelableKeyRing> keyList,
                                             CryptoInputParcel cryptoInputParcel) {
-        Log.d(Constants.TAG, "Starting staggered update");
+        Timber.d("Starting staggered update");
         // final int WEEK_IN_SECONDS = (int) TimeUnit.DAYS.toSeconds(7);
         // we are limiting our randomness to ORBOT_CIRCUIT_TIMEOUT_SECONDS for now
         final int WEEK_IN_SECONDS = 0;
@@ -383,11 +384,11 @@ public class KeyserverSyncAdapterService extends Service {
                 first = false;
             }
 
-            Log.d(Constants.TAG, "Updating key with a wait time of " + waitTime + "s");
+            Timber.d("Updating key with a wait time of " + waitTime + "s");
             try {
                 Thread.sleep(waitTime * 1000);
             } catch (InterruptedException e) {
-                Log.e(Constants.TAG, "Exception during sleep between key updates", e);
+                Timber.e(e, "Exception during sleep between key updates");
                 // skip this one
                 continue;
             }
@@ -445,7 +446,7 @@ public class KeyserverSyncAdapterService extends Service {
         ArrayList<Long> ignoreMasterKeyIds = new ArrayList<>();
         while (updatedKeysCursor != null && updatedKeysCursor.moveToNext()) {
             long masterKeyId = updatedKeysCursor.getLong(INDEX_UPDATED_KEYS_MASTER_KEY_ID);
-            Log.d(Constants.TAG, "Keyserver sync: Ignoring {" + masterKeyId + "} last updated at {"
+            Timber.d("Keyserver sync: Ignoring {" + masterKeyId + "} last updated at {"
                     + updatedKeysCursor.getLong(INDEX_LAST_UPDATED) + "}s");
             ignoreMasterKeyIds.add(masterKeyId);
         }
@@ -477,7 +478,7 @@ public class KeyserverSyncAdapterService extends Service {
             if (ignoreMasterKeyIds.contains(keyId)) {
                 continue;
             }
-            Log.d(Constants.TAG, "Keyserver sync: Updating {" + keyId + "}");
+            Timber.d("Keyserver sync: Updating {" + keyId + "}");
             byte[] fingerprint = keyCursor.getBlob(INDEX_FINGERPRINT);
             String hexKeyId = KeyFormattingUtils.convertKeyIdToHex(keyId);
             // we aren't updating from keybase as of now

@@ -60,6 +60,8 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
+
 
 public abstract class DecryptFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -424,7 +426,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
         int result = mSignatureResult.getResult();
         if (result != OpenPgpSignatureResult.RESULT_KEY_MISSING
                 && result != OpenPgpSignatureResult.RESULT_INVALID_SIGNATURE) {
-            Log.e(Constants.TAG, "got missing status for non-missing key, shouldn't happen!");
+            Timber.e("got missing status for non-missing key, shouldn't happen!");
         }
 
         String userId = mSignatureResult.getPrimaryUserId();

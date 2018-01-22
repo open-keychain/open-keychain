@@ -28,11 +28,10 @@ import android.os.RemoteException;
 import android.support.v7.app.AlertDialog;
 import android.view.ContextThemeWrapper;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
-import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class InstallDialogFragmentHelper {
     private static final String ARG_MESSENGER = "messenger";
@@ -80,9 +79,9 @@ public class InstallDialogFragmentHelper {
                         try {
                             messenger.send(msg);
                         } catch (RemoteException e) {
-                            Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+                            Timber.w(e, "Exception sending message, Is handler present?");
                         } catch (NullPointerException e) {
-                            Log.w(Constants.TAG, "Messenger is null!", e);
+                            Timber.w(e, "Messenger is null!");
                         }
                     }
                 });
@@ -100,9 +99,9 @@ public class InstallDialogFragmentHelper {
                         try {
                             messenger.send(msg);
                         } catch (RemoteException e) {
-                            Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+                            Timber.w(e, "Exception sending message, Is handler present?");
                         } catch (NullPointerException e) {
-                            Log.w(Constants.TAG, "Messenger is null!", e);
+                            Timber.w(e, "Messenger is null!");
                         }
                     }
                 }
@@ -118,9 +117,9 @@ public class InstallDialogFragmentHelper {
                             try {
                                 messenger.send(msg);
                             } catch (RemoteException e) {
-                                Log.w(Constants.TAG, "Exception sending message, Is handler present?", e);
+                                Timber.w(e, "Exception sending message, Is handler present?");
                             } catch (NullPointerException e) {
-                                Log.w(Constants.TAG, "Messenger is null!", e);
+                                Timber.w(e, "Messenger is null!");
                             }
                         }
                     }

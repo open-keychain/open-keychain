@@ -41,12 +41,13 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
+import timber.log.Timber;
+
+import static java.util.Locale.ENGLISH;
 
 
 public class HkpKeyserverClient implements KeyserverClient {
@@ -148,14 +149,14 @@ public class HkpKeyserverClient implements KeyserverClient {
                     .addQueryParameter("search", query)
                     .build();
 
-            Log.d(Constants.TAG, "Keyserver search: " + url + " using Proxy: " + proxy.getProxy());
+            Timber.d("Keyserver search: " + url + " using Proxy: " + proxy.getProxy());
 
             data = query(url, proxy);
         } catch (URISyntaxException e) {
             throw new IllegalStateException("Unsupported keyserver URI");
         } catch (HttpError e) {
             if (e.getData() != null) {
-                Log.d(Constants.TAG, "returned error data: " + e.getData().toLowerCase(Locale.ENGLISH));
+                Timber.d("returned error data: " + e.getData().toLowerCase(ENGLISH));
 
                 if (e.getData().toLowerCase(Locale.ENGLISH).contains("no keys found")) {
                     // NOTE: This is also a 404 error for some keyservers!
@@ -193,7 +194,7 @@ public class HkpKeyserverClient implements KeyserverClient {
                 // set key id only
                 entry.setKeyIdHex("0x" + fingerprintOrKeyId);
             } else {
-                Log.e(Constants.TAG, "Wrong length for fingerprint/long key id.");
+                Timber.e("Wrong length for fingerprint/long key id.");
                 // skip this key
                 continue;
             }
@@ -209,7 +210,7 @@ public class HkpKeyserverClient implements KeyserverClient {
                 calendar.setTimeInMillis(creationDate * 1000);
                 entry.setDate(calendar.getTime());
             } catch (NumberFormatException e) {
-                Log.e(Constants.TAG, "Conversation for bit size, algorithm, or creation date failed.", e);
+                Timber.e(e, "Conversation for bit size, algorithm, or creation date failed.");
                 // skip this key
                 continue;
             }
@@ -229,7 +230,7 @@ public class HkpKeyserverClient implements KeyserverClient {
                 }
                 entry.setExpired(expired);
             } catch (NullPointerException e) {
-                Log.e(Constants.TAG, "Check for revocation or expiry failed.", e);
+                Timber.e(e, "Check for revocation or expiry failed.");
                 // skip this key
                 continue;
             }
@@ -251,7 +252,7 @@ public class HkpKeyserverClient implements KeyserverClient {
                     } catch (UnsupportedEncodingException ignored) {
                         // will never happen, because "UTF8" is supported
                     } catch (IllegalArgumentException e) {
-                        Log.e(Constants.TAG, "User ID encoding broken", e);
+                        Timber.e(e, "User ID encoding broken");
                         // skip this user id
                         continue;
                     }
@@ -278,13 +279,13 @@ public class HkpKeyserverClient implements KeyserverClient {
                     .addQueryParameter("search", keyIdHex)
                     .build();
 
-            Log.d(Constants.TAG, "Keyserver get: " + url + " using Proxy: " + proxy.getProxy());
+            Timber.d("Keyserver get: " + url + " using Proxy: " + proxy.getProxy());
 
             data = query(url, proxy);
         } catch (URISyntaxException e) {
             throw new IllegalStateException("Unsupported keyserver URI");
         } catch (HttpError httpError) {
-            Log.d(Constants.TAG, "Failed to get key at HkpKeyserver", httpError);
+            Timber.d(httpError, "Failed to get key at HkpKeyserver");
             if (httpError.getCode() == 404) {
                 throw new KeyserverClient.QueryNotFoundException("not found");
             }
@@ -324,7 +325,7 @@ public class HkpKeyserverClient implements KeyserverClient {
 
             String responseBody = getResponseBodyAsUtf8(response);
 
-            Log.d(Constants.TAG, "Adding key with URL: " + url
+            Timber.d("Adding key with URL: " + url
                     + ", response code: " + response.code()
                     + ", body: " + responseBody);
 
@@ -333,10 +334,10 @@ public class HkpKeyserverClient implements KeyserverClient {
             }
 
         } catch (IOException e) {
-            Log.e(Constants.TAG, "IOException", e);
+            Timber.e(e, "IOException");
             throw new KeyserverClient.AddKeyException();
         } catch (URISyntaxException e) {
-            Log.e(Constants.TAG, "Unsupported keyserver URI", e);
+            Timber.e(e, "Unsupported keyserver URI");
             throw new KeyserverClient.AddKeyException();
         }
     }
@@ -373,7 +374,7 @@ public class HkpKeyserverClient implements KeyserverClient {
                 throw new HttpError(response.code(), responseBody);
             }
         } catch (IOException e) {
-            Log.e(Constants.TAG, "IOException at HkpKeyserver", e);
+            Timber.e(e, "IOException at HkpKeyserver");
             String proxyInfo = proxy.getProxy() == Proxy.NO_PROXY ? "" : " Using proxy " + proxy.getProxy();
             Throwable cause = e.getCause();
             String causeName = cause != null ? cause.getClass().getSimpleName() : "generic";

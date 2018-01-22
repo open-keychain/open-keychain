@@ -30,6 +30,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.ui.keyview.loader.KeyserverStatusLoader.KeyserverStatus;
+import timber.log.Timber;
 
 
 public class KeyserverStatusLoader extends AsyncTaskLoader<KeyserverStatus> {
@@ -62,7 +63,7 @@ public class KeyserverStatusLoader extends AsyncTaskLoader<KeyserverStatus> {
         Cursor cursor = contentResolver.query(UpdatedKeys.CONTENT_URI, PROJECTION,
                 UpdatedKeys.MASTER_KEY_ID + " = ?", new String[] { Long.toString(masterKeyId) }, null);
         if (cursor == null) {
-            Log.e(Constants.TAG, "Error loading key items!");
+            Timber.e("Error loading key items!");
             return null;
         }
 

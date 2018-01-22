@@ -19,10 +19,9 @@ package org.sufficientlysecure.keychain.keyimport;
 
 import android.support.annotation.NonNull;
 
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
 
 import java.net.Proxy;
 import java.util.ArrayList;
@@ -98,7 +97,7 @@ public class CloudSearch {
 
         if (!problems.isEmpty()) {
             for (KeyserverClient.CloudSearchFailureException e : problems) {
-                Log.d(Constants.TAG, "Cloud search exception: " + e.getLocalizedMessage());
+                Timber.d("Cloud search exception: " + e.getLocalizedMessage());
             }
 
             // only throw exception if we didn’t get any results

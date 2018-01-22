@@ -25,11 +25,10 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.remote.AppSettings;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 
 class RemoteRegisterPresenter {
@@ -61,7 +60,7 @@ class RemoteRegisterPresenter {
         try {
             setPackageInfo(packageName);
         } catch (NameNotFoundException e) {
-            Log.e(Constants.TAG, "Unable to find info of calling app!");
+            Timber.e("Unable to find info of calling app!");
             view.finishAsCancelled();
             return;
         }

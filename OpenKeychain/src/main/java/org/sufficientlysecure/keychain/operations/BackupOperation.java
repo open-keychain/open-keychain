@@ -46,7 +46,6 @@ import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
-import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
@@ -61,7 +60,7 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.CountingOutputStream;
 import org.sufficientlysecure.keychain.util.InputData;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 
 /**
@@ -259,7 +258,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             if (outStream != null) try {
                 outStream.close();
             } catch (Exception e) {
-                Log.e(Constants.TAG, "error closing stream", e);
+                Timber.e(e, "error closing stream");
             }
             cursor.close();
         }

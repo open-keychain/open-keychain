@@ -95,9 +95,9 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.ParcelableHashMap;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
 
 
 /**
@@ -321,7 +321,7 @@ public class DecryptListFragment
             FileHelper.copyUriData(activity, decryptedFileUri, saveUri);
             Notify.create(activity, R.string.file_saved, Style.OK).show();
         } catch (IOException e) {
-            Log.e(Constants.TAG, "error saving file", e);
+            Timber.e(e, "error saving file");
             Notify.create(activity, R.string.error_saving_file, Style.ERROR).show();
         }
     }
@@ -631,7 +631,7 @@ public class DecryptListFragment
             mCurrentInputUri = mPendingInputUris.remove(0);
         }
 
-        Log.d(Constants.TAG, "mCurrentInputUri=" + mCurrentInputUri);
+        Timber.d("mCurrentInputUri=" + mCurrentInputUri);
 
         if (!checkAndRequestReadPermission(activity, mCurrentInputUri)) {
             return null;
@@ -825,7 +825,7 @@ public class DecryptListFragment
                 Notify.create(activity, R.string.file_delete_none, Style.WARN).show();
             }
         } catch (Exception e) {
-            Log.e(Constants.TAG, "exception deleting file", e);
+            Timber.e(e, "exception deleting file");
             Notify.create(activity, R.string.file_delete_exception, Style.ERROR).show();
         }
 

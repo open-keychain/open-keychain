@@ -32,7 +32,6 @@ import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import nordpol.android.NfcGuideView;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
@@ -52,9 +51,10 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.OrientationUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import timber.log.Timber;
+
 
 /**
  * This class provides a communication interface to OpenPGP applications on ISO SmartCard compliant
@@ -92,7 +92,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(Constants.TAG, "NfcOperationActivity.onCreate");
+        Timber.d("NfcOperationActivity.onCreate");
 
         nfcGuideView = (NfcGuideView) findViewById(R.id.nfc_guide_view);
 

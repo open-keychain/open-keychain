@@ -32,7 +32,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
@@ -42,7 +41,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.PermissionsUtil;
 import org.sufficientlysecure.keychain.util.FileHelper;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 import java.io.IOException;
 
@@ -151,7 +150,7 @@ public class ImportKeysFileFragment extends Fragment {
         try {
             isEncrypted = FileHelper.isEncryptedFile(mActivity, mCurrentUri);
         } catch (IOException e) {
-            Log.e(Constants.TAG, "Error opening file", e);
+            Timber.e(e, "Error opening file");
 
             Notify.create(mActivity, R.string.error_bad_data, Style.ERROR).show();
             return;

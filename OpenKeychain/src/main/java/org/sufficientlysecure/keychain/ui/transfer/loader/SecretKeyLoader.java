@@ -31,6 +31,7 @@ import android.util.Log;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.transfer.loader.SecretKeyLoader.SecretKeyItem;
+import timber.log.Timber;
 
 
 public class SecretKeyLoader extends AsyncTaskLoader<List<SecretKeyItem>> {
@@ -63,7 +64,7 @@ public class SecretKeyLoader extends AsyncTaskLoader<List<SecretKeyItem>> {
         String where = KeyRings.HAS_ANY_SECRET + " = 1";
         Cursor cursor = contentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), PROJECTION, where, null, null);
         if (cursor == null) {
-            Log.e(Constants.TAG, "Error loading key items!");
+            Timber.e("Error loading key items!");
             return null;
         }
 

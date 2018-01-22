@@ -24,7 +24,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.json.JSONException;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.linked.resources.GenericHttpsResource;
 import org.sufficientlysecure.keychain.linked.resources.GithubResource;
 import org.sufficientlysecure.keychain.linked.resources.TwitterResource;
@@ -32,8 +31,8 @@ import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
+import timber.log.Timber;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -83,18 +82,18 @@ public abstract class LinkedTokenResource extends LinkedResource {
 
         if (!"openpgpid+token".equals(uri.getScheme())
                 && !"openpgpid+cookie".equals(uri.getScheme())) {
-            Log.e(Constants.TAG, "unknown uri scheme in (suspected) linked id packet");
+            Timber.e("unknown uri scheme in (suspected) linked id packet");
             return null;
         }
 
         if (!uri.isOpaque()) {
-            Log.e(Constants.TAG, "non-opaque uri in (suspected) linked id packet");
+            Timber.e("non-opaque uri in (suspected) linked id packet");
             return null;
         }
 
         String specific = uri.getSchemeSpecificPart();
         if (!specific.contains("@")) {
-            Log.e(Constants.TAG, "unknown uri scheme in linked id packet");
+            Timber.e("unknown uri scheme in linked id packet");
             return null;
         }
 
@@ -192,15 +191,15 @@ public abstract class LinkedTokenResource extends LinkedResource {
             res = fetchResource(context, log, 1);
         } catch (HttpStatusException e) {
             // log verbose output to logcat
-            Log.e(Constants.TAG, "http error (" + e.getStatus() + "): " + e.getReason());
+            Timber.e("http error (" + e.getStatus() + "): " + e.getReason());
             log.add(LogType.MSG_LV_FETCH_ERROR, 2, Integer.toString(e.getStatus()));
         } catch (MalformedURLException e) {
             log.add(LogType.MSG_LV_FETCH_ERROR_URL, 2);
         } catch (IOException e) {
-            Log.e(Constants.TAG, "io error", e);
+            Timber.e(e, "io error");
             log.add(LogType.MSG_LV_FETCH_ERROR_IO, 2);
         } catch (JSONException e) {
-            Log.e(Constants.TAG, "json error", e);
+            Timber.e(e, "json error");
             log.add(LogType.MSG_LV_FETCH_ERROR_FORMAT, 2);
         }
 
@@ -209,7 +208,7 @@ public abstract class LinkedTokenResource extends LinkedResource {
             return new LinkedVerifyResult(LinkedVerifyResult.RESULT_ERROR, log);
         }
 
-        Log.d(Constants.TAG, "Resource data: '" + res + "'");
+        Timber.d("Resource data: '" + res + "'");
 
         return verifyString(log, 1, res, fingerprint);
 
@@ -258,7 +257,7 @@ public abstract class LinkedTokenResource extends LinkedResource {
     public static String getResponseBody(Request request, String... pins)
             throws IOException, HttpStatusException {
 
-        Log.d("Connection to: " + request.url().url().getHost(), "");
+        Timber.d("");
         OkHttpClient client;
         if (pins != null) {
             client = OkHttpClientFactory.getSimpleClientPinned(getCertificatePinner(request.url().url().getHost(), pins));

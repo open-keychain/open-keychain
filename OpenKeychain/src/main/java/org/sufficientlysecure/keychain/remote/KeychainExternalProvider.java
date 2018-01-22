@@ -54,7 +54,8 @@ import org.sufficientlysecure.keychain.provider.KeychainExternalContract.Autocry
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
 import org.sufficientlysecure.keychain.provider.SimpleContentResolverInterface;
 import org.sufficientlysecure.keychain.util.CloseDatabaseCursorFactory;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class KeychainExternalProvider extends ContentProvider implements SimpleContentResolverInterface {
     private static final int EMAIL_STATUS = 101;
@@ -135,7 +136,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs,
                         String sortOrder) {
-        Log.v(Constants.TAG, "query(uri=" + uri + ", proj=" + Arrays.toString(projection) + ")");
+        Timber.v("query(uri=" + uri + ", proj=" + Arrays.toString(projection) + ")");
 
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
@@ -349,8 +350,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
             }
         }
 
-        Log.d(Constants.TAG,
-                "Query: " + qb.buildQuery(projection, selection, groupBy, null, orderBy, null));
+        Timber.d("Query: " + qb.buildQuery(projection, selection, groupBy, null, orderBy, null));
 
         return cursor;
     }

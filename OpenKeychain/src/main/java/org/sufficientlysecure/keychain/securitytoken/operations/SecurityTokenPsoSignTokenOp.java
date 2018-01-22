@@ -28,16 +28,14 @@ import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.bcpg.HashAlgorithmTags;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.securitytoken.CardException;
 import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
 import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
-import org.sufficientlysecure.keychain.securitytoken.KeyType;
 import org.sufficientlysecure.keychain.securitytoken.OpenPgpCapabilities;
 import org.sufficientlysecure.keychain.securitytoken.RSAKeyFormat;
 import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
 
 
 public class SecurityTokenPsoSignTokenOp {
@@ -54,7 +52,7 @@ public class SecurityTokenPsoSignTokenOp {
     private byte[] prepareDsi(byte[] hash, int hashAlgo) throws IOException {
         byte[] dsi;
 
-        Log.i(Constants.TAG, "Hash: " + hashAlgo);
+        Timber.i("Hash: " + hashAlgo);
         switch (hashAlgo) {
             case HashAlgorithmTags.SHA1:
                 if (hash.length != 20) {

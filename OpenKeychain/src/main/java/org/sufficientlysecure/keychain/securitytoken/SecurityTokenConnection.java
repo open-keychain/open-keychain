@@ -27,11 +27,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TransportType;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import timber.log.Timber;
 
 
 /**
@@ -256,7 +255,7 @@ public class SecurityTokenConnection {
             secureMessaging = SCP11bSecureMessaging.establish(this, context, commandFactory);
         } catch (SecureMessagingException e) {
             secureMessaging = null;
-            Log.e(Constants.TAG, "failed to establish secure messaging", e);
+            Timber.e(e, "failed to establish secure messaging");
         }
     }
 
@@ -427,7 +426,7 @@ public class SecurityTokenConnection {
             // Note: This should not happen, but happens with
             // https://github.com/FluffyKaon/OpenPGP-Card, thus return an empty string for now!
 
-            Log.e(Constants.TAG, "Couldn't get holder name, returning empty string!", e);
+            Timber.e(e, "Couldn't get holder name, returning empty string!");
             return "";
         }
     }

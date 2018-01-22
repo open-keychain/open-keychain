@@ -33,7 +33,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ListFragmentWorkaround;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
@@ -41,7 +40,8 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.KeySelectableAdapter;
 import org.sufficientlysecure.keychain.ui.widget.FixedListView;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String ARG_DATA_URI = "uri";
@@ -143,7 +143,7 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
         try {
             mApiDao.saveAllowedKeyIdsForApp(mDataUri, getSelectedMasterKeyIds());
         } catch (RemoteException | OperationApplicationException e) {
-            Log.e(Constants.TAG, "Problem saving allowed key ids!", e);
+            Timber.e(e, "Problem saving allowed key ids!");
         }
     }
 

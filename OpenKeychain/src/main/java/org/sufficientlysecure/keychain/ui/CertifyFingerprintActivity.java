@@ -21,10 +21,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
-import org.sufficientlysecure.keychain.util.Log;
+import timber.log.Timber;
+
 
 public class CertifyFingerprintActivity extends BaseActivity {
 
@@ -36,7 +36,7 @@ public class CertifyFingerprintActivity extends BaseActivity {
 
         mDataUri = getIntent().getData();
         if (mDataUri == null) {
-            Log.e(Constants.TAG, "Data missing. Should be uri of key!");
+            Timber.e("Data missing. Should be uri of key!");
             finish();
             return;
         }
@@ -48,7 +48,7 @@ public class CertifyFingerprintActivity extends BaseActivity {
             }
         });
 
-        Log.i(Constants.TAG, "mDataUri: " + mDataUri.toString());
+        Timber.i("mDataUri: " + mDataUri.toString());
 
         startFragment(savedInstanceState, mDataUri);
     }

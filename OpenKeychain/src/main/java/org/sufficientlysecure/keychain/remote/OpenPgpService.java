@@ -81,8 +81,9 @@ import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.util.InputData;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
+import timber.log.Timber;
+
 
 public class OpenPgpService extends Service {
     public static final int API_VERSION_WITH_KEY_INVALID_INSECURE = 8;
@@ -193,7 +194,7 @@ public class OpenPgpService extends Service {
                 throw new Exception(getString(errorMsg.mType.getMsgId()));
             }
         } catch (Exception e) {
-            Log.d(Constants.TAG, "signImpl", e);
+            Timber.d(e, "signImpl");
             return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
         }
     }
@@ -296,7 +297,7 @@ public class OpenPgpService extends Service {
                 throw new Exception(getString(errorMsg.mType.getMsgId()));
             }
         } catch (Exception e) {
-            Log.d(Constants.TAG, "encryptAndSignImpl", e);
+            Timber.d(e, "encryptAndSignImpl");
             return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
         }
     }
@@ -446,7 +447,7 @@ public class OpenPgpService extends Service {
             }
 
         } catch (Exception e) {
-            Log.e(Constants.TAG, "decryptAndVerifyImpl", e);
+            Timber.e(e, "decryptAndVerifyImpl");
             return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
         }
     }
@@ -486,7 +487,7 @@ public class OpenPgpService extends Service {
         if (autocryptPeerUpdate.hasKeyData()) {
             UncachedKeyRing uncachedKeyRing = UncachedKeyRing.decodeFromData(autocryptPeerUpdate.getKeyData());
             if (uncachedKeyRing.isSecret()) {
-                Log.e(Constants.TAG, "Found secret key in autocrypt id! - Ignoring");
+                Timber.e("Found secret key in autocrypt id! - Ignoring");
                 return null;
             }
             // this will merge if the key already exists - no worries!
@@ -669,7 +670,7 @@ public class OpenPgpService extends Service {
                         try {
                             outputStream.close();
                         } catch (IOException e) {
-                            Log.e(Constants.TAG, "IOException when closing OutputStream", e);
+                            Timber.e(e, "IOException when closing OutputStream");
                         }
                     }
                 }
@@ -689,7 +690,7 @@ public class OpenPgpService extends Service {
                 return result;
             }
         } catch (Exception e) {
-            Log.d(Constants.TAG, "getKeyImpl", e);
+            Timber.d(e, "getKeyImpl");
             return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
         }
     }
@@ -776,7 +777,7 @@ public class OpenPgpService extends Service {
                 return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, errorMsg);
             }
         } catch (Exception e) {
-            Log.d(Constants.TAG, "backupImpl", e);
+            Timber.d(e, "backupImpl");
             return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
         }
     }
@@ -797,7 +798,7 @@ public class OpenPgpService extends Service {
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
             return result;
         } catch (Exception e) {
-            Log.d(Constants.TAG, "exception in updateAutocryptPeerImpl", e);
+            Timber.d(e, "exception in updateAutocryptPeerImpl");
             return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
         }
     }
@@ -870,7 +871,8 @@ public class OpenPgpService extends Service {
     private final IOpenPgpService.Stub mBinder = new IOpenPgpService.Stub() {
         @Override
         public Intent execute(Intent data, ParcelFileDescriptor input, ParcelFileDescriptor output) {
-            Log.w(Constants.TAG, "You are using a deprecated service which may lead to truncated data on return, please use IOpenPgpService2!");
+            Timber.w(
+                    "You are using a deprecated service which may lead to truncated data on return, please use IOpenPgpService2!");
             return executeInternal(data, input, output);
         }
 
@@ -900,14 +902,14 @@ public class OpenPgpService extends Service {
                 try {
                     inputStream.close();
                 } catch (IOException e) {
-                    Log.e(Constants.TAG, "IOException when closing input ParcelFileDescriptor", e);
+                    Timber.e(e, "IOException when closing input ParcelFileDescriptor");
                 }
             }
             if (outputStream != null) {
                 try {
                     outputStream.close();
                 } catch (IOException e) {
-                    Log.e(Constants.TAG, "IOException when closing output ParcelFileDescriptor", e);
+                    Timber.e(e, "IOException when closing output ParcelFileDescriptor");
                 }
             }
         }
@@ -943,7 +945,8 @@ public class OpenPgpService extends Service {
             }
             case OpenPgpApi.ACTION_SIGN: {
                 // DEPRECATED: same as ACTION_CLEARTEXT_SIGN
-                Log.w(Constants.TAG, "You are using a deprecated API call, please use ACTION_CLEARTEXT_SIGN instead of ACTION_SIGN!");
+                Timber.w(
+                        "You are using a deprecated API call, please use ACTION_CLEARTEXT_SIGN instead of ACTION_SIGN!");
                 return signImpl(data, inputStream, outputStream, true);
             }
             case OpenPgpApi.ACTION_DETACHED_SIGN: {

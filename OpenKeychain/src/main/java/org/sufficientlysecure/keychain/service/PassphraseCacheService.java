@@ -42,9 +42,9 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.util.Log;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
 
 import java.util.Date;
 
@@ -122,7 +122,7 @@ public class PassphraseCacheService extends Service {
                                            Passphrase passphrase,
                                            String primaryUserId,
                                            int timeToLiveSeconds) {
-        Log.d(Constants.TAG, "PassphraseCacheService.addCachedPassphrase() for " + masterKeyId);
+        Timber.d("PassphraseCacheService.addCachedPassphrase() for " + masterKeyId);
 
         Intent intent = new Intent(context, PassphraseCacheService.class);
         intent.setAction(ACTION_PASSPHRASE_CACHE_ADD);
@@ -137,7 +137,7 @@ public class PassphraseCacheService extends Service {
     }
 
     public static void clearCachedPassphrase(Context context, long masterKeyId, long subKeyId) {
-        Log.d(Constants.TAG, "PassphraseCacheService.clearCachedPassphrase() for " + masterKeyId);
+        Timber.d("PassphraseCacheService.clearCachedPassphrase() for " + masterKeyId);
 
         Intent intent = new Intent(context, PassphraseCacheService.class);
         intent.setAction(ACTION_PASSPHRASE_CACHE_CLEAR);
@@ -149,7 +149,7 @@ public class PassphraseCacheService extends Service {
     }
 
     public static void clearCachedPassphrases(Context context) {
-        Log.d(Constants.TAG, "PassphraseCacheService.clearCachedPassphrase()");
+        Timber.d("PassphraseCacheService.clearCachedPassphrase()");
 
         Intent intent = new Intent(context, PassphraseCacheService.class);
         intent.setAction(ACTION_PASSPHRASE_CACHE_CLEAR);
@@ -164,7 +164,7 @@ public class PassphraseCacheService extends Service {
      * @return passphrase or null (if no passphrase is cached for this keyId)
      */
     public static Passphrase getCachedPassphrase(Context context, long masterKeyId, long subKeyId) throws KeyNotFoundException {
-        Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphrase() for masterKeyId "
+        Timber.d("PassphraseCacheService.getCachedPassphrase() for masterKeyId "
                 + masterKeyId + ", subKeyId " + subKeyId);
 
         Intent intent = new Intent(context, PassphraseCacheService.class);
@@ -216,7 +216,7 @@ public class PassphraseCacheService extends Service {
             case MSG_PASSPHRASE_CACHE_GET_KEY_NOT_FOUND:
                 throw new KeyNotFoundException();
             default:
-                Log.e(Constants.TAG, "timeout case!");
+                Timber.e("timeout case!");
                 throw new KeyNotFoundException("should not happen!");
         }
     }
@@ -232,7 +232,7 @@ public class PassphraseCacheService extends Service {
 
         // passphrase for symmetric encryption?
         if (masterKeyId == Constants.key.symmetric) {
-            Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for symmetric encryption");
+            Timber.d("PassphraseCacheService.getCachedPassphraseImpl() for symmetric encryption");
             CachedPassphrase cachedPassphrase = mPassphraseCache.get(Constants.key.symmetric);
             if (cachedPassphrase == null) {
                 return null;
@@ -241,7 +241,7 @@ public class PassphraseCacheService extends Service {
         }
 
         // try to get master key id which is used as an identifier for cached passphrases
-        Log.d(Constants.TAG, "PassphraseCacheService.getCachedPassphraseImpl() for masterKeyId "
+        Timber.d("PassphraseCacheService.getCachedPassphraseImpl() for masterKeyId "
                 + masterKeyId + ", subKeyId " + subKeyId);
 
         // get the type of key (from the database)
@@ -263,13 +263,13 @@ public class PassphraseCacheService extends Service {
 
             // If we cache strictly by subkey, exit early
             if (Preferences.getPreferences(mContext).getPassphraseCacheSubs()) {
-                Log.d(Constants.TAG, "PassphraseCacheService: specific subkey passphrase not (yet) cached, returning null");
+                Timber.d("PassphraseCacheService: specific subkey passphrase not (yet) cached, returning null");
                 // not really an error, just means the passphrase is not cached but not empty either
                 return null;
             }
 
             if (subKeyId == masterKeyId) {
-                Log.d(Constants.TAG, "PassphraseCacheService: masterkey passphrase not (yet) cached, returning null");
+                Timber.d("PassphraseCacheService: masterkey passphrase not (yet) cached, returning null");
                 // not really an error, just means the passphrase is not cached but not empty either
                 return null;
             }
@@ -277,7 +277,7 @@ public class PassphraseCacheService extends Service {
             cachedPassphrase = mPassphraseCache.get(masterKeyId);
             // If we cache strictly by subkey, exit early
             if (cachedPassphrase == null) {
-                Log.d(Constants.TAG, "PassphraseCacheService: keyring passphrase not (yet) cached, returning null");
+                Timber.d("PassphraseCacheService: keyring passphrase not (yet) cached, returning null");
                 // not really an error, just means the passphrase is not cached but not empty either
                 return null;
             }
@@ -299,7 +299,7 @@ public class PassphraseCacheService extends Service {
                 public void onReceive(Context context, Intent intent) {
                     String action = intent.getAction();
 
-                    Log.d(Constants.TAG, "PassphraseCacheService: Received broadcast...");
+                    Timber.d("PassphraseCacheService: Received broadcast...");
 
                     if (action.equals(BROADCAST_ACTION_PASSPHRASE_CACHE_SERVICE)) {
                         long keyId = intent.getLongExtra(EXTRA_KEY_ID, -1);
@@ -335,7 +335,7 @@ public class PassphraseCacheService extends Service {
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(Constants.TAG, "PassphraseCacheService.onStartCommand()");
+        Timber.d("PassphraseCacheService.onStartCommand()");
 
         if (intent == null || intent.getAction() == null) {
             updateService();
@@ -352,10 +352,10 @@ public class PassphraseCacheService extends Service {
                 Passphrase passphrase = intent.getParcelableExtra(EXTRA_PASSPHRASE);
                 String primaryUserID = intent.getStringExtra(EXTRA_USER_ID);
 
-                Log.d(Constants.TAG,
+                Timber.d(
                         "PassphraseCacheService: Received ACTION_PASSPHRASE_CACHE_ADD intent in onStartCommand() with masterkeyId: "
-                                + masterKeyId + ", subKeyId: " + subKeyId + ", ttl: " + timeoutTtl + ", usrId: " + primaryUserID
-                );
+                                + masterKeyId + ", subKeyId: " + subKeyId + ", ttl: " + timeoutTtl + ", usrId: " +
+                                primaryUserID);
 
                 // if we don't cache by specific subkey id, or the requested subkey is the master key,
                 // just add master key id to the cache, otherwise, add this specific subkey to the cache
@@ -389,7 +389,7 @@ public class PassphraseCacheService extends Service {
                 try {
                     // If only one of these is symmetric, error out!
                     if (masterKeyId == Constants.key.symmetric ^ subKeyId == Constants.key.symmetric) {
-                        Log.e(Constants.TAG, "PassphraseCacheService: Bad request, missing masterKeyId or subKeyId!");
+                        Timber.e("PassphraseCacheService: Bad request, missing masterKeyId or subKeyId!");
                         msg.what = MSG_PASSPHRASE_CACHE_GET_KEY_NOT_FOUND;
                     } else {
                         Passphrase passphrase = getCachedPassphraseImpl(masterKeyId, subKeyId);
@@ -399,14 +399,14 @@ public class PassphraseCacheService extends Service {
                         msg.setData(bundle);
                     }
                 } catch (KeyRepository.NotFoundException e) {
-                    Log.e(Constants.TAG, "PassphraseCacheService: Passphrase for unknown key was requested!");
+                    Timber.e("PassphraseCacheService: Passphrase for unknown key was requested!");
                     msg.what = MSG_PASSPHRASE_CACHE_GET_KEY_NOT_FOUND;
                 }
 
                 try {
                     messenger.send(msg);
                 } catch (RemoteException e) {
-                    Log.e(Constants.TAG, "PassphraseCacheService: Sending message failed", e);
+                    Timber.e(e, "PassphraseCacheService: Sending message failed");
                 }
                 break;
             }
@@ -440,7 +440,7 @@ public class PassphraseCacheService extends Service {
                 break;
             }
             default: {
-                Log.e(Constants.TAG, "PassphraseCacheService: Intent or Intent Action not supported!");
+                Timber.e("PassphraseCacheService: Intent or Intent Action not supported!");
                 break;
             }
         }
@@ -463,7 +463,7 @@ public class PassphraseCacheService extends Service {
             mPassphraseCache.remove(keyId);
         }
 
-        Log.d(Constants.TAG, "PassphraseCacheService Timeout of keyId " + keyId + ", removed from memory!");
+        Timber.d("PassphraseCacheService Timeout of keyId " + keyId + ", removed from memory!");
 
         updateService();
     }
@@ -481,7 +481,7 @@ public class PassphraseCacheService extends Service {
             i += 1;
         }
 
-        Log.d(Constants.TAG, "PassphraseCacheService Removing all cached-until-lock passphrases from memory!");
+        Timber.d("PassphraseCacheService Removing all cached-until-lock passphrases from memory!");
 
         updateService();
     }
@@ -491,7 +491,7 @@ public class PassphraseCacheService extends Service {
             startForeground(Constants.Notification.PASSPHRASE_CACHE, getNotification());
         } else {
             // stop whole service if no cached passphrases remaining
-            Log.d(Constants.TAG, "PassphraseCacheService: No passphrases remaining in memory, stopping service!");
+            Timber.d("PassphraseCacheService: No passphrases remaining in memory, stopping service!");
             stopForeground(true);
             stopSelf();
         }
@@ -544,7 +544,7 @@ public class PassphraseCacheService extends Service {
     public void onCreate() {
         super.onCreate();
         mContext = this;
-        Log.d(Constants.TAG, "PassphraseCacheService, onCreate()");
+        Timber.d("PassphraseCacheService, onCreate()");
 
         registerReceiver();
     }
@@ -552,7 +552,7 @@ public class PassphraseCacheService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(Constants.TAG, "PassphraseCacheService, onDestroy()");
+        Timber.d("PassphraseCacheService, onDestroy()");
 
         unregisterReceiver(mIntentReceiver);
     }
