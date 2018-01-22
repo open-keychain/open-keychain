@@ -94,6 +94,9 @@ dependencies {
     annotationProcessor "com.google.auto.value:auto-value:1.5"
     annotationProcessor "com.ryanharter.auto.value:auto-value-parcel:0.2.5"
     compile 'com.ryanharter.auto.value:auto-value-parcel-adapter:0.2.5'
+
+    compile "android.arch.lifecycle:extensions:1.0.0"
+    annotationProcessor "android.arch.lifecycle:compiler:1.0.0"
 }
 
 // Output of ./gradlew -q calculateChecksums
@@ -144,6 +147,13 @@ dependencyVerification {
         'com.squareup.okio:okio:734269c3ebc5090e3b23566db558f421f0b4027277c79ad5d176b8ec168bb850',
         'com.fidesmo:nordpol-core:296e71b12884a9cd28cf00ab908973bbf776a90be1f23ac897380d91604e614d',
         'com.jakewharton.timber:timber:d553d3d3e883ce7d061f1b21b95d6ee0840f3bfbf6d3bd51c5671f0b0f0b0091',
+        'android.arch.lifecycle:runtime:d0b36278878c82b838acc4308595bec61a3b5f6e7f2acc34172d7e071b2cf26d',
+        'android.arch.lifecycle:common:ff0215b54e7cbaaa898f8fd00e265ed6ea198859e10604bc1c5e78477df48b5c',
+        'android.arch.core:common:5192934cd73df32e2c15722ed7fc488dde90baaec9ae030010dd1a80fb4e74e1',
+        'android.arch.lifecycle:runtime:d0b36278878c82b838acc4308595bec61a3b5f6e7f2acc34172d7e071b2cf26d',
+        'android.arch.core:runtime:9e08fc5c4d6e48f58c6865b55ba0e72a88f907009407767274187a873e524734',
+        'android.arch.core:common:5192934cd73df32e2c15722ed7fc488dde90baaec9ae030010dd1a80fb4e74e1',
+        'android.arch.lifecycle:common:ff0215b54e7cbaaa898f8fd00e265ed6ea198859e10604bc1c5e78477df48b5c',
     ]
 }
 
