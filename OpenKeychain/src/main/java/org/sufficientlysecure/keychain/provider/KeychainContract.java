@@ -152,9 +152,10 @@ public class KeychainContract {
         public static final String IS_EXPIRED = "is_expired";
         public static final String HAS_ANY_SECRET = "has_any_secret";
         public static final String HAS_ENCRYPT = "has_encrypt";
-        public static final String HAS_SIGN = "has_sign";
-        public static final String HAS_CERTIFY = "has_certify";
+        public static final String HAS_SIGN_SECRET = "has_sign_secret";
+        public static final String HAS_CERTIFY_SECRET = "has_certify_secret";
         public static final String HAS_AUTHENTICATE = "has_authenticate";
+        public static final String HAS_AUTHENTICATE_SECRET = "has_authenticate_secret";
         public static final String HAS_DUPLICATE_USER_ID = "has_duplicate_user_id";
         public static final String API_KNOWN_TO_PACKAGE_NAMES = "known_to_apps";
 

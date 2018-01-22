@@ -354,12 +354,14 @@ public class KeychainProvider extends ContentProvider {
                                 + ")) AS " + KeyRings.HAS_ANY_SECRET);
                 projectionMap.put(KeyRings.HAS_ENCRYPT,
                         "kE." + Keys.KEY_ID + " AS " + KeyRings.HAS_ENCRYPT);
-                projectionMap.put(KeyRings.HAS_SIGN,
-                        "kS." + Keys.KEY_ID + " AS " + KeyRings.HAS_SIGN);
+                projectionMap.put(KeyRings.HAS_SIGN_SECRET,
+                        "kS." + Keys.KEY_ID + " AS " + KeyRings.HAS_SIGN_SECRET);
                 projectionMap.put(KeyRings.HAS_AUTHENTICATE,
                         "kA." + Keys.KEY_ID + " AS " + KeyRings.HAS_AUTHENTICATE);
-                projectionMap.put(KeyRings.HAS_CERTIFY,
-                        "kC." + Keys.KEY_ID + " AS " + KeyRings.HAS_CERTIFY);
+                projectionMap.put(KeyRings.HAS_AUTHENTICATE_SECRET,
+                        "kA." + Keys.KEY_ID + " AS " + KeyRings.HAS_AUTHENTICATE_SECRET);
+                projectionMap.put(KeyRings.HAS_CERTIFY_SECRET,
+                        "kC." + Keys.KEY_ID + " AS " + KeyRings.HAS_CERTIFY_SECRET);
                 projectionMap.put(KeyRings.IS_EXPIRED,
                         "(" + Tables.KEYS + "." + Keys.EXPIRY + " IS NOT NULL AND " + Tables.KEYS + "." + Keys.EXPIRY
                                 + " < " + new Date().getTime() / 1000 + ") AS " + KeyRings.IS_EXPIRED);
@@ -401,7 +403,7 @@ public class KeychainProvider extends ContentProvider {
                                 + " AND ( kE." + Keys.EXPIRY + " IS NULL OR kE." + Keys.EXPIRY
                                     + " >= " + new Date().getTime() / 1000 + " )"
                             + ")" : "")
-                        + (plist.contains(KeyRings.HAS_SIGN) ?
+                        + (plist.contains(KeyRings.HAS_SIGN_SECRET) ?
                             " LEFT JOIN " + Tables.KEYS + " AS kS ON ("
                                 +"kS." + Keys.MASTER_KEY_ID
                                     + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
@@ -419,11 +421,21 @@ public class KeychainProvider extends ContentProvider {
                                     + " AND kA." + Keys.IS_REVOKED + " = 0"
                                     + " AND kA." + Keys.IS_SECURE + " = 1"
                                     + " AND kA." + Keys.CAN_AUTHENTICATE + " = 1"
+                                    + " AND ( kA." + Keys.EXPIRY + " IS NULL OR kA." + Keys.EXPIRY
+                                    + " >= " + new Date().getTime() / 1000 + " )"
+                                    + ")" : "")
+                        + (plist.contains(KeyRings.HAS_AUTHENTICATE_SECRET) ?
+                            " LEFT JOIN " + Tables.KEYS + " AS kA ON ("
+                                    +"kA." + Keys.MASTER_KEY_ID
+                                    + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
+                                    + " AND kA." + Keys.IS_REVOKED + " = 0"
+                                    + " AND kA." + Keys.IS_SECURE + " = 1"
+                                    + " AND kA." + Keys.CAN_AUTHENTICATE + " = 1"
                                     + " AND kA." + Keys.HAS_SECRET + " > 1"
                                     + " AND ( kA." + Keys.EXPIRY + " IS NULL OR kA." + Keys.EXPIRY
                                     + " >= " + new Date().getTime() / 1000 + " )"
                                     + ")" : "")
-                        + (plist.contains(KeyRings.HAS_CERTIFY) ?
+                        + (plist.contains(KeyRings.HAS_CERTIFY_SECRET) ?
                             " LEFT JOIN " + Tables.KEYS + " AS kC ON ("
                                 +"kC." + Keys.MASTER_KEY_ID
                                 + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID

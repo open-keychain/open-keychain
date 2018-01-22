@@ -60,7 +60,7 @@ public class CertifyKeySpinner extends KeySpinner {
         Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingsUri();
 
         String[] projection = KeyAdapter.getProjectionWith(new String[] {
-                KeychainContract.KeyRings.HAS_CERTIFY,
+                KeychainContract.KeyRings.HAS_CERTIFY_SECRET,
         });
 
         String where = KeychainContract.KeyRings.HAS_ANY_SECRET + " = 1 AND "
@@ -79,7 +79,7 @@ public class CertifyKeySpinner extends KeySpinner {
         super.onLoadFinished(loader, data);
 
         if (loader.getId() == LOADER_ID) {
-            mIndexHasCertify = data.getColumnIndex(KeychainContract.KeyRings.HAS_CERTIFY);
+            mIndexHasCertify = data.getColumnIndex(KeychainContract.KeyRings.HAS_CERTIFY_SECRET);
 
             // If:
             // - no key has been pre-selected (e.g. by SageSlinger)

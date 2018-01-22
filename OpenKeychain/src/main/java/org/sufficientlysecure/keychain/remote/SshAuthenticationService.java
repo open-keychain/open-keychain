@@ -364,7 +364,7 @@ public class SshAuthenticationService extends Service {
             throws PgpKeyNotFoundException, KeyRepository.NotFoundException {
         KeyRepository keyRepository = KeyRepository.create(getApplicationContext());
         long authSubKeyId = keyRepository.getCachedPublicKeyRing(masterKeyId)
-                .getSecretAuthenticationId();
+                .getAuthenticationId();
         return keyRepository.getCanonicalizedPublicKeyRing(masterKeyId)
                 .getPublicKey(authSubKeyId);
     }

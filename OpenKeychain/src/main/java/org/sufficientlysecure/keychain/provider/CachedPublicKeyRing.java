@@ -158,7 +158,7 @@ public class CachedPublicKeyRing extends KeyRing {
     public boolean canCertify() throws PgpKeyNotFoundException {
         try {
             Object data = mKeyRepository.getGenericData(mUri,
-                    KeychainContract.KeyRings.HAS_CERTIFY,
+                    KeychainContract.KeyRings.HAS_CERTIFY_SECRET,
                     KeyRepository.FIELD_TYPE_NULL);
             return !((Boolean) data);
         } catch(KeyWritableRepository.NotFoundException e) {
@@ -192,7 +192,7 @@ public class CachedPublicKeyRing extends KeyRing {
     public long getSecretSignId() throws PgpKeyNotFoundException {
         try {
             Object data = mKeyRepository.getGenericData(mUri,
-                    KeyRings.HAS_SIGN,
+                    KeyRings.HAS_SIGN_SECRET,
                     KeyRepository.FIELD_TYPE_INTEGER);
             return (Long) data;
         } catch(KeyWritableRepository.NotFoundException e) {
@@ -209,6 +209,21 @@ public class CachedPublicKeyRing extends KeyRing {
     public long getSecretAuthenticationId() throws PgpKeyNotFoundException {
         try {
             Object data = mKeyRepository.getGenericData(mUri,
+                    KeyRings.HAS_AUTHENTICATE_SECRET,
+                    KeyRepository.FIELD_TYPE_INTEGER);
+            return (Long) data;
+        } catch(KeyWritableRepository.NotFoundException e) {
+            throw new PgpKeyNotFoundException(e);
+        }
+    }
+
+    public boolean hasSecretAuthentication() throws PgpKeyNotFoundException {
+        return getSecretAuthenticationId() != 0;
+    }
+
+    public long getAuthenticationId() throws PgpKeyNotFoundException {
+        try {
+            Object data = mKeyRepository.getGenericData(mUri,
                     KeyRings.HAS_AUTHENTICATE,
                     KeyRepository.FIELD_TYPE_INTEGER);
             return (Long) data;
@@ -218,7 +233,7 @@ public class CachedPublicKeyRing extends KeyRing {
     }
 
     public boolean hasAuthentication() throws PgpKeyNotFoundException {
-        return getSecretAuthenticationId() != 0;
+        return getAuthenticationId() != 0;
     }
 
     @Override

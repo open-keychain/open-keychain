@@ -81,7 +81,7 @@ class RemoteSelectAuthenticationKeyPresenter implements LoaderCallbacks<List<Key
 
     @Override
     public Loader<List<KeyInfo>> onCreateLoader(int id, Bundle args) {
-        String selection = KeyRings.HAS_ANY_SECRET + " != 0 AND " + KeyRings.HAS_AUTHENTICATE + " != 0";
+        String selection = KeyRings.HAS_AUTHENTICATE_SECRET + " != 0";
         KeySelector keySelector = KeySelector.create(
                 KeyRings.buildUnifiedKeyRingsUri(), selection);
         return new KeyLoader(context, context.getContentResolver(), keySelector);

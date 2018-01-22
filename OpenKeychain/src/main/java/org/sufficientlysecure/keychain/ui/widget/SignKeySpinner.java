@@ -49,7 +49,7 @@ public class SignKeySpinner extends KeySpinner {
         Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingsUri();
 
         String[] projection = KeyAdapter.getProjectionWith(new String[] {
-                KeychainContract.KeyRings.HAS_SIGN,
+                KeychainContract.KeyRings.HAS_SIGN_SECRET,
         });
 
         String where = KeychainContract.KeyRings.HAS_ANY_SECRET + " = 1";
@@ -66,7 +66,7 @@ public class SignKeySpinner extends KeySpinner {
         super.onLoadFinished(loader, data);
 
         if (loader.getId() == LOADER_ID) {
-            mIndexHasSign = data.getColumnIndex(KeychainContract.KeyRings.HAS_SIGN);
+            mIndexHasSign = data.getColumnIndex(KeychainContract.KeyRings.HAS_SIGN_SECRET);
         }
     }
 
