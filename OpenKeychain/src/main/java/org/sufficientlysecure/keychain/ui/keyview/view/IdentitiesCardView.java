@@ -46,11 +46,11 @@ public class IdentitiesCardView extends CardView implements IdentitiesMvpView {
 
         View view = LayoutInflater.from(context).inflate(R.layout.identities_card, this, true);
 
-        vIdentities = (RecyclerView) view.findViewById(R.id.view_key_user_ids);
+        vIdentities = view.findViewById(R.id.view_key_user_ids);
         vIdentities.setLayoutManager(new LinearLayoutManager(context));
         vIdentities.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL_LIST, false));
 
-        userIdsEditButton = (Button) view.findViewById(R.id.view_key_card_user_ids_edit);
+        userIdsEditButton = view.findViewById(R.id.view_key_card_user_ids_edit);
         userIdsEditButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,7 +60,7 @@ public class IdentitiesCardView extends CardView implements IdentitiesMvpView {
             }
         });
 
-        linkedIdsAddButton = (Button) view.findViewById(R.id.view_key_card_linked_ids_add);
+        linkedIdsAddButton = view.findViewById(R.id.view_key_card_linked_ids_add);
         linkedIdsAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

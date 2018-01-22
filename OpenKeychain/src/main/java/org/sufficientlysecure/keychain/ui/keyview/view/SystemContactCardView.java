@@ -46,9 +46,9 @@ public class SystemContactCardView extends CardView implements SystemContactMvpV
 
         View view = LayoutInflater.from(context).inflate(R.layout.system_contact_card, this, true);
 
-        vSystemContactLayout = (LinearLayout) view.findViewById(R.id.system_contact_layout);
-        vSystemContactName = (TextView) view.findViewById(R.id.system_contact_name);
-        vSystemContactPicture = (ImageView) view.findViewById(R.id.system_contact_picture);
+        vSystemContactLayout = view.findViewById(R.id.system_contact_layout);
+        vSystemContactName = view.findViewById(R.id.system_contact_name);
+        vSystemContactPicture = view.findViewById(R.id.system_contact_picture);
 
         vSystemContactLayout.setOnClickListener(this);
     }

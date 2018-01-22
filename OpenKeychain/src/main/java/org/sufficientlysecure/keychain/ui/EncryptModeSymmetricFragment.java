@@ -47,8 +47,8 @@ public class EncryptModeSymmetricFragment extends EncryptModeFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_symmetric_fragment, container, false);
 
-        mPassphrase = (EditText) view.findViewById(R.id.passphrase);
-        mPassphraseAgain = (EditText) view.findViewById(R.id.passphraseAgain);
+        mPassphrase = view.findViewById(R.id.passphrase);
+        mPassphraseAgain = view.findViewById(R.id.passphraseAgain);
 
         return view;
     }

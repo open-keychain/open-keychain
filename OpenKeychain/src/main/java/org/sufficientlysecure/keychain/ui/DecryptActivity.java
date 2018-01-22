@@ -93,7 +93,7 @@ public class DecryptActivity extends BaseActivity {
                     // Binary via content provider (could also be files)
                     // override uri to get stream from send
                     if (intent.hasExtra(Intent.EXTRA_STREAM)) {
-                        uris.add(intent.<Uri>getParcelableExtra(Intent.EXTRA_STREAM));
+                        uris.add(intent.getParcelableExtra(Intent.EXTRA_STREAM));
                     } else if (intent.hasExtra(Intent.EXTRA_TEXT)) {
                         String text = intent.getStringExtra(Intent.EXTRA_TEXT);
                         Uri uri = readToTempFile(text);

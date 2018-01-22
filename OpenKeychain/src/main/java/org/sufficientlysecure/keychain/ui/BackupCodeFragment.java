@@ -261,21 +261,21 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         mExecuteBackupOperation = args.getBoolean(ARG_EXECUTE_BACKUP_OPERATION, true);
 
         mCodeEditText = new EditText[6];
-        mCodeEditText[0] = (EditText) view.findViewById(R.id.backup_code_1);
-        mCodeEditText[1] = (EditText) view.findViewById(R.id.backup_code_2);
-        mCodeEditText[2] = (EditText) view.findViewById(R.id.backup_code_3);
-        mCodeEditText[3] = (EditText) view.findViewById(R.id.backup_code_4);
-        mCodeEditText[4] = (EditText) view.findViewById(R.id.backup_code_5);
-        mCodeEditText[5] = (EditText) view.findViewById(R.id.backup_code_6);
+        mCodeEditText[0] = view.findViewById(R.id.backup_code_1);
+        mCodeEditText[1] = view.findViewById(R.id.backup_code_2);
+        mCodeEditText[2] = view.findViewById(R.id.backup_code_3);
+        mCodeEditText[3] = view.findViewById(R.id.backup_code_4);
+        mCodeEditText[4] = view.findViewById(R.id.backup_code_5);
+        mCodeEditText[5] = view.findViewById(R.id.backup_code_6);
 
         {
             TextView[] codeDisplayText = new TextView[6];
-            codeDisplayText[0] = (TextView) view.findViewById(R.id.backup_code_display_1);
-            codeDisplayText[1] = (TextView) view.findViewById(R.id.backup_code_display_2);
-            codeDisplayText[2] = (TextView) view.findViewById(R.id.backup_code_display_3);
-            codeDisplayText[3] = (TextView) view.findViewById(R.id.backup_code_display_4);
-            codeDisplayText[4] = (TextView) view.findViewById(R.id.backup_code_display_5);
-            codeDisplayText[5] = (TextView) view.findViewById(R.id.backup_code_display_6);
+            codeDisplayText[0] = view.findViewById(R.id.backup_code_display_1);
+            codeDisplayText[1] = view.findViewById(R.id.backup_code_display_2);
+            codeDisplayText[2] = view.findViewById(R.id.backup_code_display_3);
+            codeDisplayText[3] = view.findViewById(R.id.backup_code_display_4);
+            codeDisplayText[4] = view.findViewById(R.id.backup_code_display_5);
+            codeDisplayText[5] = view.findViewById(R.id.backup_code_display_6);
 
             // set backup code in code TextViews
             char[] backupCode = mBackupCode.toCharArray();
@@ -293,9 +293,9 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         setupEditTextFocusNext(mCodeEditText);
         setupEditTextSuccessListener(mCodeEditText);
 
-        mStatusAnimator = (ToolableViewAnimator) view.findViewById(R.id.button_bar_animator);
-        mTitleAnimator = (ToolableViewAnimator) view.findViewById(R.id.title_animator);
-        mCodeFieldsAnimator = (ToolableViewAnimator) view.findViewById(R.id.code_animator);
+        mStatusAnimator = view.findViewById(R.id.button_bar_animator);
+        mTitleAnimator = view.findViewById(R.id.title_animator);
+        mCodeFieldsAnimator = view.findViewById(R.id.code_animator);
 
         View backupInput = view.findViewById(R.id.button_backup_input);
         backupInput.setOnClickListener(new OnClickListener() {

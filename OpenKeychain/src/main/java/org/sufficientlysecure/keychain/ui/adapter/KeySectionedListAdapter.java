@@ -363,13 +363,13 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
         KeyItemViewHolder(View itemView) {
             super(itemView);
 
-            mMainUserId = (TextView) itemView.findViewById(R.id.key_list_item_name);
-            mMainUserIdRest = (TextView) itemView.findViewById(R.id.key_list_item_email);
-            mStatus = (ImageView) itemView.findViewById(R.id.key_list_item_status_icon);
+            mMainUserId = itemView.findViewById(R.id.key_list_item_name);
+            mMainUserIdRest = itemView.findViewById(R.id.key_list_item_email);
+            mStatus = itemView.findViewById(R.id.key_list_item_status_icon);
             mSlinger = itemView.findViewById(R.id.key_list_item_slinger_view);
-            mSlingerButton = (ImageButton) itemView.findViewById(R.id.key_list_item_slinger_button);
-            mCreationDate = (TextView) itemView.findViewById(R.id.key_list_item_creation);
-            mTrustIdIcon = (ImageView) itemView.findViewById(R.id.key_list_item_tid_icon);
+            mSlingerButton = itemView.findViewById(R.id.key_list_item_slinger_button);
+            mCreationDate = itemView.findViewById(R.id.key_list_item_creation);
+            mTrustIdIcon = itemView.findViewById(R.id.key_list_item_tid_icon);
 
             itemView.setClickable(true);
             itemView.setLongClickable(true);
@@ -563,7 +563,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
 
         public KeyHeaderViewHolder(View itemView) {
             super(itemView);
-            mText1 = (TextView) itemView.findViewById(android.R.id.text1);
+            mText1 = itemView.findViewById(android.R.id.text1);
         }
 
         public void bind(String title) {

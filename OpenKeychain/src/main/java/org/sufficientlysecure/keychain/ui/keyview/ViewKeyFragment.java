@@ -91,11 +91,11 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView, O
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
         View view = inflater.inflate(R.layout.view_key_fragment, getContainer());
 
-        mIdentitiesCardView = (IdentitiesCardView) view.findViewById(R.id.card_identities);
+        mIdentitiesCardView = view.findViewById(R.id.card_identities);
 
-        mSystemContactCard = (SystemContactCardView) view.findViewById(R.id.linked_system_contact_card);
-        mKeyStatusHealth = (KeyHealthView) view.findViewById(R.id.key_status_health);
-        mKeyStatusKeyserver = (KeyserverStatusView) view.findViewById(R.id.key_status_keyserver);
+        mSystemContactCard = view.findViewById(R.id.linked_system_contact_card);
+        mKeyStatusHealth = view.findViewById(R.id.key_status_health);
+        mKeyStatusKeyserver = view.findViewById(R.id.key_status_keyserver);
 
         return root;
     }

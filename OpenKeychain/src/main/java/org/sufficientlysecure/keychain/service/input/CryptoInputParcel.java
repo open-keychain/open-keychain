@@ -65,7 +65,7 @@ public abstract class CryptoInputParcel implements Parcelable {
 
 
     public static CryptoInputParcel createCryptoInputParcel() {
-        return new AutoValue_CryptoInputParcel(null, null, null, true, null, Collections.<ByteBuffer,byte[]>emptyMap());
+        return new AutoValue_CryptoInputParcel(null, null, null, true, null, Collections.emptyMap());
     }
 
     public static CryptoInputParcel createCryptoInputParcel(Date signatureTime, Passphrase passphrase) {
@@ -73,11 +73,11 @@ public abstract class CryptoInputParcel implements Parcelable {
             signatureTime = new Date();
         }
         return new AutoValue_CryptoInputParcel(signatureTime, passphrase, null, true, null,
-                Collections.<ByteBuffer,byte[]>emptyMap());
+                Collections.emptyMap());
     }
 
     public static CryptoInputParcel createCryptoInputParcel(Passphrase passphrase) {
-        return new AutoValue_CryptoInputParcel(null, passphrase, null, true, null, Collections.<ByteBuffer,byte[]>emptyMap());
+        return new AutoValue_CryptoInputParcel(null, passphrase, null, true, null, Collections.emptyMap());
     }
 
     public static CryptoInputParcel createCryptoInputParcel(Date signatureTime) {
@@ -85,7 +85,7 @@ public abstract class CryptoInputParcel implements Parcelable {
             signatureTime = new Date();
         }
         return new AutoValue_CryptoInputParcel(signatureTime, null, null, true, null,
-                Collections.<ByteBuffer,byte[]>emptyMap());
+                Collections.emptyMap());
     }
 
     public static CryptoInputParcel createCryptoInputParcel(ParcelableProxy parcelableProxy) {

@@ -261,7 +261,7 @@ android {
 
     variantFilter { variant ->
         if(variant.buildType.name.equals('debug') && variant.getFlavors().get(0).name.equals('google')) {
-            variant.setIgnore(true);
+            variant.setIgnore(true)
         }
     }
 

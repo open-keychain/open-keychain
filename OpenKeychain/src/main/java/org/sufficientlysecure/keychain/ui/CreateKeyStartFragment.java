@@ -72,7 +72,7 @@ public class CreateKeyStartFragment extends Fragment {
         mCreateKey = view.findViewById(R.id.create_key_create_key_button);
         mImportKey = view.findViewById(R.id.create_key_import_button);
         mSecurityToken = view.findViewById(R.id.create_key_security_token_button);
-        mSkipOrCancel = (TextView) view.findViewById(R.id.create_key_cancel);
+        mSkipOrCancel = view.findViewById(R.id.create_key_cancel);
         mSecureDeviceSetup = view.findViewById(R.id.create_key_secure_device_setup);
 
         if (mCreateKeyActivity.mFirstTime) {

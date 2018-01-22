@@ -166,7 +166,7 @@ public class DeleteFileDialogFragment extends DialogFragment {
      */
     public interface OnDeletedListener {
 
-        public void onDeleted();
+        void onDeleted();
 
     }
 

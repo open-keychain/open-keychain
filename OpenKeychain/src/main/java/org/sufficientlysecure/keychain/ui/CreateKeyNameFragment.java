@@ -53,7 +53,7 @@ public class CreateKeyNameFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_key_name_fragment, container, false);
 
-        mNameEdit = (NameEditText) view.findViewById(R.id.create_key_name);
+        mNameEdit = view.findViewById(R.id.create_key_name);
         mBackButton = view.findViewById(R.id.create_key_back_button);
         mNextButton = view.findViewById(R.id.create_key_next_button);
 

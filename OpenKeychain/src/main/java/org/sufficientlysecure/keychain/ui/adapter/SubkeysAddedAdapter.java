@@ -73,21 +73,21 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
             // Not recycled, inflate a new view
             convertView = mInflater.inflate(R.layout.view_key_adv_subkey_item, parent, false);
             final ViewHolder holder = new ViewHolder();
-            holder.vKeyId = (TextView) convertView.findViewById(R.id.subkey_item_key_id);
-            holder.vKeyDetails = (TextView) convertView.findViewById(R.id.subkey_item_details);
-            holder.vKeyExpiry = (TextView) convertView.findViewById(R.id.subkey_item_expiry);
-            holder.vCertifyIcon = (ImageView) convertView.findViewById(R.id.subkey_item_ic_certify);
-            holder.vSignIcon = (ImageView) convertView.findViewById(R.id.subkey_item_ic_sign);
-            holder.vEncryptIcon = (ImageView) convertView.findViewById(R.id.subkey_item_ic_encrypt);
-            holder.vAuthenticateIcon = (ImageView) convertView.findViewById(R.id.subkey_item_ic_authenticate);
+            holder.vKeyId = convertView.findViewById(R.id.subkey_item_key_id);
+            holder.vKeyDetails = convertView.findViewById(R.id.subkey_item_details);
+            holder.vKeyExpiry = convertView.findViewById(R.id.subkey_item_expiry);
+            holder.vCertifyIcon = convertView.findViewById(R.id.subkey_item_ic_certify);
+            holder.vSignIcon = convertView.findViewById(R.id.subkey_item_ic_sign);
+            holder.vEncryptIcon = convertView.findViewById(R.id.subkey_item_ic_encrypt);
+            holder.vAuthenticateIcon = convertView.findViewById(R.id.subkey_item_ic_authenticate);
 
-            holder.vDelete = (ImageButton) convertView.findViewById(R.id.subkey_item_delete_button);
+            holder.vDelete = convertView.findViewById(R.id.subkey_item_delete_button);
             holder.vDelete.setVisibility(View.VISIBLE); // always visible
 
             // not used:
-            ImageView vEdit = (ImageView) convertView.findViewById(R.id.subkey_item_edit_image);
+            ImageView vEdit = convertView.findViewById(R.id.subkey_item_edit_image);
             vEdit.setVisibility(View.GONE);
-            ImageView vStatus = (ImageView) convertView.findViewById(R.id.subkey_item_status);
+            ImageView vStatus = convertView.findViewById(R.id.subkey_item_status);
             vStatus.setVisibility(View.GONE);
 
             convertView.setTag(holder);

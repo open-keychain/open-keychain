@@ -81,8 +81,8 @@ public class CertListWidget extends ViewAnimator
         super.onFinishInflate();
 
         View root = getRootView();
-        vCollapsed = (TextView) root.findViewById(R.id.cert_collapsed_list);
-        vExpanded = (ListView) root.findViewById(R.id.cert_expanded_list);
+        vCollapsed = root.findViewById(R.id.cert_collapsed_list);
+        vExpanded = root.findViewById(R.id.cert_expanded_list);
         vExpandButton = root.findViewById(R.id.cert_expand_button);
 
         // for now

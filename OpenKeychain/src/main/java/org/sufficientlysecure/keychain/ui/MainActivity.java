@@ -68,7 +68,7 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar = findViewById(R.id.toolbar);
         mToolbar.setTitle(R.string.app_name);
         setSupportActionBar(mToolbar);
 

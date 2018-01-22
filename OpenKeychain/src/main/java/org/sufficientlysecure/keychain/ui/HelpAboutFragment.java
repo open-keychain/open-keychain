@@ -42,10 +42,10 @@ public class HelpAboutFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.help_about_fragment, container, false);
 
-        TextView versionText = (TextView) view.findViewById(R.id.help_about_version);
+        TextView versionText = view.findViewById(R.id.help_about_version);
         versionText.setText(getString(R.string.help_about_version) + " " + getVersion());
 
-        HtmlTextView aboutTextView = (HtmlTextView) view.findViewById(R.id.help_about_text);
+        HtmlTextView aboutTextView = view.findViewById(R.id.help_about_text);
 
         // load markdown from raw resource
         try {

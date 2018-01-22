@@ -48,7 +48,7 @@ public class KeySelectableAdapter extends KeyAdapter implements OnItemClickListe
 
         public KeySelectableItemViewHolder(View view) {
             super(view);
-            mCheckbox = (CheckBox) view.findViewById(R.id.selected);
+            mCheckbox = view.findViewById(R.id.selected);
         }
 
         public void setCheckedState(boolean checked) {

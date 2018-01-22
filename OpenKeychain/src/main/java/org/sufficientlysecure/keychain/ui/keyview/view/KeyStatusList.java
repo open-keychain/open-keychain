@@ -50,13 +50,13 @@ public class KeyStatusList extends LinearLayout implements KeyStatusMvpView {
         vSignLayout = view.findViewById(R.id.cap_sign);
         vDecryptLayout = view.findViewById(R.id.cap_decrypt);
 
-        vCertText = (TextView) view.findViewById(R.id.cap_cert_text);
-        vSignText = (TextView) view.findViewById(R.id.cap_sign_text);
-        vDecryptText = (TextView) view.findViewById(R.id.cap_decrypt_text);
+        vCertText = view.findViewById(R.id.cap_cert_text);
+        vSignText = view.findViewById(R.id.cap_sign_text);
+        vDecryptText = view.findViewById(R.id.cap_decrypt_text);
 
-        vCertIcon = (ImageView) view.findViewById(R.id.cap_cert_icon);
-        vSignIcon = (ImageView) view.findViewById(R.id.cap_sign_icon);
-        vDecryptIcon = (ImageView) view.findViewById(R.id.cap_decrypt_icon);
+        vCertIcon = view.findViewById(R.id.cap_cert_icon);
+        vSignIcon = view.findViewById(R.id.cap_sign_icon);
+        vDecryptIcon = view.findViewById(R.id.cap_decrypt_icon);
 
         vCertToken = view.findViewById(R.id.cap_cert_security_token);
         vSignToken = view.findViewById(R.id.cap_sign_security_token);

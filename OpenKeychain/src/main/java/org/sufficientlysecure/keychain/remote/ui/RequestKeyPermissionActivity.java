@@ -92,8 +92,8 @@ public class RequestKeyPermissionActivity extends FragmentActivity {
             View view = LayoutInflater.from(theme).inflate(R.layout.api_remote_request_key_permission, null, false);
             alert.setView(view);
 
-            buttonAllow = (Button) view.findViewById(R.id.button_allow);
-            buttonCancel = (Button) view.findViewById(R.id.button_cancel);
+            buttonAllow = view.findViewById(R.id.button_allow);
+            buttonCancel = view.findViewById(R.id.button_cancel);
 
             setupListenersForPresenter();
             mvpView = createMvpView(view);
@@ -130,9 +130,9 @@ public class RequestKeyPermissionActivity extends FragmentActivity {
 
         @NonNull
         private RequestKeyPermissionMvpView createMvpView(View view) {
-            final TextView titleText = (TextView) view.findViewById(R.id.select_identity_key_title);
-            final TextView keyUserIdView = (TextView) view.findViewById(R.id.select_key_item_name);
-            final ImageView iconClientApp = (ImageView) view.findViewById(R.id.icon_client_app);
+            final TextView titleText = view.findViewById(R.id.select_identity_key_title);
+            final TextView keyUserIdView = view.findViewById(R.id.select_key_item_name);
+            final ImageView iconClientApp = view.findViewById(R.id.icon_client_app);
             final View keyUnavailableWarning = view.findViewById(R.id.requested_key_unavailable_warning);
             final View keyInfoLayout = view.findViewById(R.id.key_info_layout);
 

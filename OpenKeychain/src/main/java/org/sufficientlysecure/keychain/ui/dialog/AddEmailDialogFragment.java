@@ -79,7 +79,7 @@ public class AddEmailDialogFragment extends DialogFragment implements OnEditorAc
         View view = inflater.inflate(R.layout.add_email_dialog, null);
         alert.setView(view);
 
-        mEmail = (EmailEditText) view.findViewById(R.id.add_email_address);
+        mEmail = view.findViewById(R.id.add_email_address);
 
         alert.setPositiveButton(android.R.string.ok, new OnClickListener() {
             @Override

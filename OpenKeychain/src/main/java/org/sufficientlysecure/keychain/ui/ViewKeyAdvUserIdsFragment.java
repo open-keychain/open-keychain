@@ -85,8 +85,8 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
         View view = inflater.inflate(R.layout.view_key_adv_user_ids_fragment, getContainer());
 
-        mUserIds = (ListView) view.findViewById(R.id.view_key_user_ids);
-        mUserIdsAddedList = (ListView) view.findViewById(R.id.view_key_user_ids_added);
+        mUserIds = view.findViewById(R.id.view_key_user_ids);
+        mUserIdsAddedList = view.findViewById(R.id.view_key_user_ids_added);
         mUserIdsAddedLayout = view.findViewById(R.id.view_key_user_ids_add_layout);
 
         mUserIds.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -107,7 +107,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         footer.setLayoutParams(params);
         mUserIdsAddedList.addFooterView(footer, null, false);
 
-        mUserIdAddFabLayout = (ViewAnimator) view.findViewById(R.id.view_key_subkey_fab_layout);
+        mUserIdAddFabLayout = view.findViewById(R.id.view_key_subkey_fab_layout);
         view.findViewById(R.id.view_key_subkey_fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

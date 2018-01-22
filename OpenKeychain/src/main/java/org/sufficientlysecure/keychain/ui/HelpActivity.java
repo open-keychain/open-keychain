@@ -63,9 +63,9 @@ public class HelpActivity extends BaseActivity {
             }
         });
 
-        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        ViewPager viewPager = findViewById(R.id.pager);
         PagerSlidingTabStrip slidingTabLayout =
-                (PagerSlidingTabStrip) findViewById(R.id.sliding_tab_layout);
+                findViewById(R.id.sliding_tab_layout);
 
         mTabsAdapter = new PagerTabStripAdapter(this);
         viewPager.setAdapter(mTabsAdapter);

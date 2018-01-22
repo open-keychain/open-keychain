@@ -86,8 +86,8 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
         View view = inflater.inflate(R.layout.add_user_id_dialog, null);
         alert.setView(view);
 
-        mName = (NameEditText) view.findViewById(R.id.add_user_id_name);
-        mEmail = (EmailEditText) view.findViewById(R.id.add_user_id_address);
+        mName = view.findViewById(R.id.add_user_id_name);
+        mEmail = view.findViewById(R.id.add_user_id_address);
 
         mName.setText(predefinedName);
 

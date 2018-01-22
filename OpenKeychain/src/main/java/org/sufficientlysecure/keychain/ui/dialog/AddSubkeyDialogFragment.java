@@ -113,16 +113,16 @@ public class AddSubkeyDialogFragment extends DialogFragment {
         View view = mInflater.inflate(R.layout.add_subkey_dialog, null);
         dialog.setView(view);
 
-        mNoExpiryCheckBox = (CheckBox) view.findViewById(R.id.add_subkey_no_expiry);
-        mExpiryRow = (TableRow) view.findViewById(R.id.add_subkey_expiry_row);
-        mExpiryDatePicker = (DatePicker) view.findViewById(R.id.add_subkey_expiry_date_picker);
-        mKeyTypeSpinner = (Spinner) view.findViewById(R.id.add_subkey_type);
-        mUsageRadioGroup = (RadioGroup) view.findViewById(R.id.add_subkey_usage_group);
-        mUsageNone = (RadioButton) view.findViewById(R.id.add_subkey_usage_none);
-        mUsageSign = (RadioButton) view.findViewById(R.id.add_subkey_usage_sign);
-        mUsageEncrypt = (RadioButton) view.findViewById(R.id.add_subkey_usage_encrypt);
-        mUsageSignAndEncrypt = (RadioButton) view.findViewById(R.id.add_subkey_usage_sign_and_encrypt);
-        mUsageAuthentication = (RadioButton) view.findViewById(R.id.add_subkey_usage_authentication);
+        mNoExpiryCheckBox = view.findViewById(R.id.add_subkey_no_expiry);
+        mExpiryRow = view.findViewById(R.id.add_subkey_expiry_row);
+        mExpiryDatePicker = view.findViewById(R.id.add_subkey_expiry_date_picker);
+        mKeyTypeSpinner = view.findViewById(R.id.add_subkey_type);
+        mUsageRadioGroup = view.findViewById(R.id.add_subkey_usage_group);
+        mUsageNone = view.findViewById(R.id.add_subkey_usage_none);
+        mUsageSign = view.findViewById(R.id.add_subkey_usage_sign);
+        mUsageEncrypt = view.findViewById(R.id.add_subkey_usage_encrypt);
+        mUsageSignAndEncrypt = view.findViewById(R.id.add_subkey_usage_sign_and_encrypt);
+        mUsageAuthentication = view.findViewById(R.id.add_subkey_usage_authentication);
 
         if(mWillBeMasterKey) {
             dialog.setTitle(R.string.title_change_master_key);
@@ -351,8 +351,8 @@ public class AddSubkeyDialogFragment extends DialogFragment {
 
             Choice c = this.getItem(position);
 
-            TextView text1 = (TextView) convertView.findViewById(android.R.id.text1);
-            TextView text2 = (TextView) convertView.findViewById(android.R.id.text2);
+            TextView text1 = convertView.findViewById(android.R.id.text1);
+            TextView text2 = convertView.findViewById(android.R.id.text2);
 
             text1.setText(c.getName());
             text2.setText(Html.fromHtml(c.getDescription()));

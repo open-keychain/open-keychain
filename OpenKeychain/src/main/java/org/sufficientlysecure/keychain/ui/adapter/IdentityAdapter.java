@@ -140,10 +140,10 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
         public LinkedIdViewHolder(View view, final IdentityClickListener identityClickListener) {
             super(view);
 
-            vVerified = (ImageView) view.findViewById(R.id.linked_id_certified_icon);
-            vIcon = (ImageView) view.findViewById(R.id.linked_id_type_icon);
-            vTitle = (TextView) view.findViewById(R.id.linked_id_title);
-            vComment = (TextView) view.findViewById(R.id.linked_id_comment);
+            vVerified = view.findViewById(R.id.linked_id_certified_icon);
+            vIcon = view.findViewById(R.id.linked_id_type_icon);
+            vTitle = view.findViewById(R.id.linked_id_title);
+            vComment = view.findViewById(R.id.linked_id_comment);
 
             view.setOnClickListener(new OnClickListener() {
                 @Override
@@ -214,12 +214,12 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
         private UserIdViewHolder(View view, final IdentityClickListener identityClickListener) {
             super(view);
 
-            vName = (TextView) view.findViewById(R.id.user_id_item_name);
-            vAddress = (TextView) view.findViewById(R.id.user_id_item_address);
-            vComment = (TextView) view.findViewById(R.id.user_id_item_comment);
+            vName = view.findViewById(R.id.user_id_item_name);
+            vAddress = view.findViewById(R.id.user_id_item_address);
+            vComment = view.findViewById(R.id.user_id_item_comment);
 
-            vIcon = (ImageView) view.findViewById(R.id.trust_id_app_icon);
-            vMore = (ImageView) view.findViewById(R.id.user_id_item_more);
+            vIcon = view.findViewById(R.id.trust_id_app_icon);
+            vMore = view.findViewById(R.id.user_id_item_more);
 
             view.setOnClickListener(new OnClickListener() {
                 @Override

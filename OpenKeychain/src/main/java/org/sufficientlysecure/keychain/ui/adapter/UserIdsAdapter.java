@@ -56,13 +56,13 @@ public class UserIdsAdapter extends UserAttributesAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView vName = (TextView) view.findViewById(R.id.user_id_item_name);
-        TextView vAddress = (TextView) view.findViewById(R.id.user_id_item_address);
-        TextView vComment = (TextView) view.findViewById(R.id.user_id_item_comment);
-        ImageView vVerified = (ImageView) view.findViewById(R.id.user_id_item_certified);
-        ViewAnimator vVerifiedLayout = (ViewAnimator) view.findViewById(R.id.user_id_icon_animator);
+        TextView vName = view.findViewById(R.id.user_id_item_name);
+        TextView vAddress = view.findViewById(R.id.user_id_item_address);
+        TextView vComment = view.findViewById(R.id.user_id_item_comment);
+        ImageView vVerified = view.findViewById(R.id.user_id_item_certified);
+        ViewAnimator vVerifiedLayout = view.findViewById(R.id.user_id_icon_animator);
 
-        ImageView vDeleteButton = (ImageView) view.findViewById(R.id.user_id_item_delete_button);
+        ImageView vDeleteButton = view.findViewById(R.id.user_id_item_delete_button);
         vDeleteButton.setVisibility(View.GONE); // not used
 
         String userId = cursor.getString(INDEX_USER_ID);

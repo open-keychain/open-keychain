@@ -148,7 +148,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
             @Override
             public RevokeKeyringParcel createOperationInput() {
                 return RevokeKeyringParcel.createRevokeKeyringParcel(mMasterKeyIds[0], true,
-                        (HkpKeyserverAddress) getIntent().getParcelableExtra(EXTRA_KEYSERVER));
+                        getIntent().getParcelableExtra(EXTRA_KEYSERVER));
             }
 
             @Override
@@ -261,7 +261,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
             mInflateView = inflater.inflate(R.layout.view_key_delete_fragment, null);
             builder.setView(mInflateView);
 
-            mMainMessage = (TextView) mInflateView.findViewById(R.id.mainMessage);
+            mMainMessage = mInflateView.findViewById(R.id.mainMessage);
 
             // If only a single key has been selected
             if (masterKeyIds.length == 1) {
@@ -358,7 +358,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
             View view = inflater.inflate(R.layout.del_rev_dialog, null);
             builder.setView(view);
 
-            final Spinner spinner = (Spinner) view.findViewById(R.id.spinner);
+            final Spinner spinner = view.findViewById(R.id.spinner);
 
             builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 

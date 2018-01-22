@@ -73,12 +73,12 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
         View view = inflater.inflate(R.layout.certify_fingerprint_fragment, getContainer());
 
-        TextView actionNo = (TextView) view.findViewById(R.id.certify_fingerprint_button_no);
-        mActionYes = (TextView) view.findViewById(R.id.certify_fingerprint_button_yes);
+        TextView actionNo = view.findViewById(R.id.certify_fingerprint_button_no);
+        mActionYes = view.findViewById(R.id.certify_fingerprint_button_yes);
 
-        mFingerprint = (TextView) view.findViewById(R.id.certify_fingerprint_fingerprint);
-        mIntro = (TextView) view.findViewById(R.id.certify_fingerprint_intro);
-        mHeader = (TextView) view.findViewById(R.id.certify_fingerprint_fingerprint_header);
+        mFingerprint = view.findViewById(R.id.certify_fingerprint_fingerprint);
+        mIntro = view.findViewById(R.id.certify_fingerprint_intro);
+        mHeader = view.findViewById(R.id.certify_fingerprint_fingerprint_header);
 
         actionNo.setOnClickListener(new View.OnClickListener() {
             @Override

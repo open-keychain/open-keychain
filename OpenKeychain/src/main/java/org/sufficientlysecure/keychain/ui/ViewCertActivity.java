@@ -84,15 +84,15 @@ public class ViewCertActivity extends BaseActivity
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        mSigneeKey = (TextView) findViewById(R.id.signee_key);
-        mSigneeUid = (TextView) findViewById(R.id.signee_uid);
-        mAlgorithm = (TextView) findViewById(R.id.algorithm);
-        mType = (TextView) findViewById(R.id.signature_type);
-        mReason = (TextView) findViewById(R.id.reason);
-        mCreation = (TextView) findViewById(R.id.creation);
+        mSigneeKey = findViewById(R.id.signee_key);
+        mSigneeUid = findViewById(R.id.signee_uid);
+        mAlgorithm = findViewById(R.id.algorithm);
+        mType = findViewById(R.id.signature_type);
+        mReason = findViewById(R.id.reason);
+        mCreation = findViewById(R.id.creation);
 
-        mCertifierKey = (TextView) findViewById(R.id.signer_key_id);
-        mCertifierUid = (TextView) findViewById(R.id.signer_uid);
+        mCertifierKey = findViewById(R.id.signer_key_id);
+        mCertifierUid = findViewById(R.id.signer_uid);
 
         mRowReason = findViewById(R.id.row_reason);
 

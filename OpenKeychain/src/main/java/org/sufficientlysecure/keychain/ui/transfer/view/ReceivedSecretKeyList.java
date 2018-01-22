@@ -137,12 +137,12 @@ public class ReceivedSecretKeyList extends RecyclerView {
         ReceivedKeyViewHolder(View itemView) {
             super(itemView);
 
-            vName = (TextView) itemView.findViewById(R.id.key_list_item_name);
-            vEmail = (TextView) itemView.findViewById(R.id.key_list_item_email);
-            vCreation = (TextView) itemView.findViewById(R.id.key_list_item_creation);
+            vName = itemView.findViewById(R.id.key_list_item_name);
+            vEmail = itemView.findViewById(R.id.key_list_item_email);
+            vCreation = itemView.findViewById(R.id.key_list_item_creation);
 
             vImportButton = itemView.findViewById(R.id.button_import);
-            vState = (ViewAnimator) itemView.findViewById(R.id.transfer_state);
+            vState = itemView.findViewById(R.id.transfer_state);
         }
 
         private void bind(Context context, final ReceivedKeyItem item,

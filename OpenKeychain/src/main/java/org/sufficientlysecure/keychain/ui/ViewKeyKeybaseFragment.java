@@ -105,10 +105,10 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
         View view = inflater.inflate(R.layout.view_key_adv_keybase_fragment, getContainer());
         mInflater = inflater;
 
-        mReportHeader = (TextView) view.findViewById(R.id.view_key_trust_cloud_narrative);
-        mProofListing = (TableLayout) view.findViewById(R.id.view_key_proof_list);
+        mReportHeader = view.findViewById(R.id.view_key_trust_cloud_narrative);
+        mProofListing = view.findViewById(R.id.view_key_proof_list);
         mProofVerifyHeader = view.findViewById(R.id.view_key_proof_verify_header);
-        mProofVerifyDetail = (TextView) view.findViewById(R.id.view_key_proof_verify_detail);
+        mProofVerifyDetail = view.findViewById(R.id.view_key_proof_verify_detail);
         mReportHeader.setVisibility(View.GONE);
         mProofListing.setVisibility(View.GONE);
         mProofVerifyHeader.setVisibility(View.GONE);
@@ -337,8 +337,8 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
             int rowNumber = 1;
             for (CharSequence s : result.mProofs) {
                 TableRow row = (TableRow) mInflater.inflate(R.layout.view_key_adv_keybase_proof, null);
-                TextView number = (TextView) row.findViewById(R.id.proof_number);
-                TextView text = (TextView) row.findViewById(R.id.proof_text);
+                TextView number = row.findViewById(R.id.proof_number);
+                TextView text = row.findViewById(R.id.proof_text);
                 number.setText(Integer.toString(rowNumber++) + ". ");
                 text.setText(s);
                 text.setMovementMethod(LinkMovementMethod.getInstance());

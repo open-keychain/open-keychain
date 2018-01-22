@@ -87,9 +87,9 @@ public class CreateSecurityTokenAlgorithmFragment extends Fragment {
             }
         });
 
-        mSignKeySpinner = (Spinner) view.findViewById(R.id.create_key_yubi_key_algorithm_sign);
-        mDecKeySpinner = (Spinner) view.findViewById(R.id.create_key_yubi_key_algorithm_dec);
-        mAuthKeySpinner = (Spinner) view.findViewById(R.id.create_key_yubi_key_algorithm_auth);
+        mSignKeySpinner = view.findViewById(R.id.create_key_yubi_key_algorithm_sign);
+        mDecKeySpinner = view.findViewById(R.id.create_key_yubi_key_algorithm_dec);
+        mAuthKeySpinner = view.findViewById(R.id.create_key_yubi_key_algorithm_auth);
 
         ArrayList<Choice<SupportedKeyType>> choices = new ArrayList<>();
 
@@ -175,8 +175,8 @@ public class CreateSecurityTokenAlgorithmFragment extends Fragment {
 
             Choice c = this.getItem(position);
 
-            TextView text1 = (TextView) convertView.findViewById(android.R.id.text1);
-            TextView text2 = (TextView) convertView.findViewById(android.R.id.text2);
+            TextView text1 = convertView.findViewById(android.R.id.text1);
+            TextView text2 = convertView.findViewById(android.R.id.text2);
 
             text1.setText(c.getName());
             text2.setText(Html.fromHtml(c.getDescription()));

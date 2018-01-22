@@ -110,12 +110,12 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
             View view = LayoutInflater.from(theme).inflate(R.layout.remote_security_issue_dialog, null, false);
             alert.setView(view);
 
-            buttonGotIt = (Button) view.findViewById(R.id.button_allow);
-            buttonViewKey = (Button) view.findViewById(R.id.button_view_key);
-            buttonOverride = (Button) view.findViewById(R.id.button_override);
-            buttonOverrideUndo = (Button) view.findViewById(R.id.button_override_undo);
-            buttonOverrideBack = (Button) view.findViewById(R.id.button_override_back);
-            buttonOverrideConfirm = (Button) view.findViewById(R.id.button_override_confirm);
+            buttonGotIt = view.findViewById(R.id.button_allow);
+            buttonViewKey = view.findViewById(R.id.button_view_key);
+            buttonOverride = view.findViewById(R.id.button_override);
+            buttonOverrideUndo = view.findViewById(R.id.button_override_undo);
+            buttonOverrideBack = view.findViewById(R.id.button_override_back);
+            buttonOverrideConfirm = view.findViewById(R.id.button_override_confirm);
 
             setupListenersForPresenter();
             mvpView = createMvpView(view);
@@ -152,17 +152,17 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
 
         @NonNull
         private RemoteSecurityProblemView createMvpView(View view) {
-            final LinearLayout insecureWarningLayout = (LinearLayout) view.findViewById(R.id.insecure_warning_layout);
-            final ImageView iconClientApp = (ImageView) view.findViewById(R.id.icon_client_app);
-            final TextView explanationText = (TextView) insecureWarningLayout.findViewById(R.id.dialog_insecure_text);
+            final LinearLayout insecureWarningLayout = view.findViewById(R.id.insecure_warning_layout);
+            final ImageView iconClientApp = view.findViewById(R.id.icon_client_app);
+            final TextView explanationText = insecureWarningLayout.findViewById(R.id.dialog_insecure_text);
             final TextView recommendText =
-                    (TextView) insecureWarningLayout.findViewById(R.id.dialog_insecure_recommend_text);
+                    insecureWarningLayout.findViewById(R.id.dialog_insecure_recommend_text);
             final TextView overrideText =
-                    (TextView) insecureWarningLayout.findViewById(R.id.dialog_insecure_override_text);
+                    insecureWarningLayout.findViewById(R.id.dialog_insecure_override_text);
             final ToolableViewAnimator secondaryLayoutAnimator =
-                    (ToolableViewAnimator) insecureWarningLayout.findViewById(R.id.dialog_insecure_secondary_layout);
+                    insecureWarningLayout.findViewById(R.id.dialog_insecure_secondary_layout);
             final ToolableViewAnimator buttonBarAnimator =
-                    (ToolableViewAnimator) view.findViewById(R.id.dialog_insecure_button_bar);
+                    view.findViewById(R.id.dialog_insecure_button_bar);
 
             return new RemoteSecurityProblemView() {
                 private boolean layoutInitialized = false;

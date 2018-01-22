@@ -110,7 +110,7 @@ public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
             }
         });
 
-        mEditHandle = (EditText) view.findViewById(R.id.linked_create_twitter_handle);
+        mEditHandle = view.findViewById(R.id.linked_create_twitter_handle);
 
         return view;
     }

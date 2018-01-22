@@ -94,7 +94,7 @@ public class FlingNestedScrollView extends FrameLayout implements NestedScrollin
     private float mVerticalScrollFactor;
 
     public FlingNestedScrollView(Context context) {
-        this(context, (AttributeSet)null);
+        this(context, null);
     }
 
     public FlingNestedScrollView(Context context, AttributeSet attrs) {
@@ -176,7 +176,7 @@ public class FlingNestedScrollView extends FrameLayout implements NestedScrollin
         this.scrollBy(0, dyUnconsumed);
         int myConsumed = this.getScrollY() - oldScrollY;
         int myUnconsumed = dyUnconsumed - myConsumed;
-        this.dispatchNestedScroll(0, myConsumed, 0, myUnconsumed, (int[])null);
+        this.dispatchNestedScroll(0, myConsumed, 0, myUnconsumed, null);
     }
 
     public void onNestedPreScroll(View target, int dx, int dy, int[] consumed) {
@@ -1061,8 +1061,9 @@ public class FlingNestedScrollView extends FrameLayout implements NestedScrollin
             direction = 33;
         }
 
-        View nextFocus = previouslyFocusedRect == null?FocusFinder.getInstance().findNextFocus(this, (View)null, direction):FocusFinder.getInstance().findNextFocusFromRect(this, previouslyFocusedRect, direction);
-        return nextFocus == null?false:(this.isOffScreen(nextFocus)?false:nextFocus.requestFocus(direction, previouslyFocusedRect));
+        View nextFocus = previouslyFocusedRect == null?FocusFinder.getInstance().findNextFocus(this, null, direction):FocusFinder.getInstance().findNextFocusFromRect(this, previouslyFocusedRect, direction);
+        return nextFocus != null && (!this.isOffScreen(nextFocus) &&
+                nextFocus.requestFocus(direction, previouslyFocusedRect));
     }
 
     public boolean requestChildRectangleOnScreen(View child, Rect rectangle, boolean immediate) {

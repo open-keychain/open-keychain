@@ -63,10 +63,10 @@ public class AppSettingsHeaderFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.api_app_settings_fragment, container, false);
-        mAppNameView = (TextView) view.findViewById(R.id.api_app_settings_app_name);
-        mAppIconView = (ImageView) view.findViewById(R.id.api_app_settings_app_icon);
-        mPackageName = (TextView) view.findViewById(R.id.api_app_settings_package_name);
-        mPackageCertificate = (TextView) view.findViewById(R.id.api_app_settings_package_certificate);
+        mAppNameView = view.findViewById(R.id.api_app_settings_app_name);
+        mAppIconView = view.findViewById(R.id.api_app_settings_app_icon);
+        mPackageName = view.findViewById(R.id.api_app_settings_package_name);
+        mPackageCertificate = view.findViewById(R.id.api_app_settings_package_certificate);
         return view;
     }
 

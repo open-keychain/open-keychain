@@ -100,7 +100,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * Hack to get Toolbar in PreferenceActivity. See http://stackoverflow.com/a/26614696
      */
     private void setupToolbar() {
-        ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
+        ViewGroup root = findViewById(android.R.id.content);
         LinearLayout content = (LinearLayout) root.getChildAt(0);
         LinearLayout toolbarContainer = (LinearLayout) View.inflate(this, R.layout.preference_toolbar, null);
 
@@ -108,7 +108,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         toolbarContainer.addView(content);
         root.addView(toolbarContainer);
 
-        Toolbar toolbar = (Toolbar) toolbarContainer.findViewById(R.id.toolbar);
+        Toolbar toolbar = toolbarContainer.findViewById(R.id.toolbar);
 
         toolbar.setTitle(R.string.title_preferences);
         // noinspection deprecation, TODO use alternative in API level 21

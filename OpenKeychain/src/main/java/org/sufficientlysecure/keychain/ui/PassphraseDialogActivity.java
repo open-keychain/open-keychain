@@ -186,12 +186,12 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 alert.setView(view);
 
                 mBackupCodeEditText = new EditText[6];
-                mBackupCodeEditText[0] = (EditText) view.findViewById(R.id.backup_code_1);
-                mBackupCodeEditText[1] = (EditText) view.findViewById(R.id.backup_code_2);
-                mBackupCodeEditText[2] = (EditText) view.findViewById(R.id.backup_code_3);
-                mBackupCodeEditText[3] = (EditText) view.findViewById(R.id.backup_code_4);
-                mBackupCodeEditText[4] = (EditText) view.findViewById(R.id.backup_code_5);
-                mBackupCodeEditText[5] = (EditText) view.findViewById(R.id.backup_code_6);
+                mBackupCodeEditText[0] = view.findViewById(R.id.backup_code_1);
+                mBackupCodeEditText[1] = view.findViewById(R.id.backup_code_2);
+                mBackupCodeEditText[2] = view.findViewById(R.id.backup_code_3);
+                mBackupCodeEditText[3] = view.findViewById(R.id.backup_code_4);
+                mBackupCodeEditText[4] = view.findViewById(R.id.backup_code_5);
+                mBackupCodeEditText[5] = view.findViewById(R.id.backup_code_6);
 
                 setupEditTextFocusNext(mBackupCodeEditText);
 
@@ -205,13 +205,13 @@ public class PassphraseDialogActivity extends FragmentActivity {
             mLayout = (ViewAnimator) inflater.inflate(R.layout.passphrase_dialog, null);
             alert.setView(mLayout);
 
-            mPassphraseText = (TextView) mLayout.findViewById(R.id.passphrase_text);
-            mPassphraseEditText = (EditText) mLayout.findViewById(R.id.passphrase_passphrase);
+            mPassphraseText = mLayout.findViewById(R.id.passphrase_text);
+            mPassphraseEditText = mLayout.findViewById(R.id.passphrase_passphrase);
 
             View vTimeToLiveLayout = mLayout.findViewById(R.id.remember_layout);
             vTimeToLiveLayout.setVisibility(mRequiredInput.mSkipCaching ? View.GONE : View.VISIBLE);
 
-            mTimeToLiveSpinner = (CacheTTLSpinner) mLayout.findViewById(R.id.ttl_spinner);
+            mTimeToLiveSpinner = mLayout.findViewById(R.id.ttl_spinner);
             int ttlSeconds = Preferences.getPreferences(getContext()).getCacheTtlSeconds();
             mTimeToLiveSpinner.setSelectedTimeToLive(ttlSeconds);
 
@@ -293,7 +293,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
             mPassphraseEditText.setImeActionLabel(getString(android.R.string.ok), EditorInfo.IME_ACTION_DONE);
             mPassphraseEditText.setOnEditorActionListener(this);
 
-            final ImageButton keyboard = (ImageButton) mLayout.findViewById(R.id.passphrase_keyboard);
+            final ImageButton keyboard = mLayout.findViewById(R.id.passphrase_keyboard);
 
             if (keyType == CanonicalizedSecretKey.SecretKeyType.DIVERT_TO_CARD) {
                 if (Preferences.getPreferences(activity).useNumKeypadForSecurityTokenPin()) {

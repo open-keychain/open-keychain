@@ -76,7 +76,7 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View layout = super.onCreateView(inflater, container, savedInstanceState);
-        ListView lv = (ListView) layout.findViewById(android.R.id.list);
+        ListView lv = layout.findViewById(android.R.id.list);
         ViewGroup parent = (ViewGroup) lv.getParent();
 
         /*

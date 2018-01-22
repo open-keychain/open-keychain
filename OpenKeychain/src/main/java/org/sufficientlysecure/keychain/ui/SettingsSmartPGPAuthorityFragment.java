@@ -95,7 +95,7 @@ public class SettingsSmartPGPAuthorityFragment extends Fragment implements Recyc
         mAuthorities = new ArrayList<>(authorities);
         mAdapter = new AuthorityListAdapter(mAuthorities);
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.smartpgp_authority_recycler_view);
+        RecyclerView recyclerView = view.findViewById(R.id.smartpgp_authority_recycler_view);
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -316,8 +316,8 @@ public class SettingsSmartPGPAuthorityFragment extends Fragment implements Recyc
 
             public ViewHolder(View itemView) {
                 super(itemView);
-                outerLayout = (ViewGroup) itemView.findViewById(R.id.outer_layout);
-                authorityName = (TextView) itemView.findViewById(R.id.smartpgp_authority_tv);
+                outerLayout = itemView.findViewById(R.id.outer_layout);
+                authorityName = itemView.findViewById(R.id.smartpgp_authority_tv);
                 itemView.setClickable(true);
             }
 

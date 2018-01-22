@@ -301,7 +301,7 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
     private boolean isFingerprintValid(String fingerprint) {
         if (fingerprint == null || fingerprint.length() < 40) {
             Notify.create(this, R.string.import_qr_code_too_short_fingerprint, Notify.Style.ERROR)
-                    .show((ViewGroup) findViewById(R.id.import_snackbar));
+                    .show(findViewById(R.id.import_snackbar));
             return false;
         } else {
             return true;

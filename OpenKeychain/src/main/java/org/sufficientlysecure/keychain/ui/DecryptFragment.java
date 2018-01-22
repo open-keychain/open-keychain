@@ -89,20 +89,20 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
         super.onViewCreated(view, savedInstanceState);
 
         // NOTE: These views are inside the activity!
-        mResultLayout = (LinearLayout) getActivity().findViewById(R.id.result_main_layout);
+        mResultLayout = getActivity().findViewById(R.id.result_main_layout);
         mResultLayout.setVisibility(View.GONE);
-        mEncryptionIcon = (ImageView) getActivity().findViewById(R.id.result_encryption_icon);
-        mEncryptionText = (TextView) getActivity().findViewById(R.id.result_encryption_text);
-        mSignatureIcon = (ImageView) getActivity().findViewById(R.id.result_signature_icon);
-        mSignatureText = (TextView) getActivity().findViewById(R.id.result_signature_text);
+        mEncryptionIcon = getActivity().findViewById(R.id.result_encryption_icon);
+        mEncryptionText = getActivity().findViewById(R.id.result_encryption_text);
+        mSignatureIcon = getActivity().findViewById(R.id.result_signature_icon);
+        mSignatureText = getActivity().findViewById(R.id.result_signature_text);
         mSignatureLayout = getActivity().findViewById(R.id.result_signature_layout);
-        mSignatureName = (TextView) getActivity().findViewById(R.id.result_signature_name);
-        mSignatureEmail = (TextView) getActivity().findViewById(R.id.result_signature_email);
-        mSignatureAction = (TextView) getActivity().findViewById(R.id.result_signature_action);
+        mSignatureName = getActivity().findViewById(R.id.result_signature_name);
+        mSignatureEmail = getActivity().findViewById(R.id.result_signature_email);
+        mSignatureAction = getActivity().findViewById(R.id.result_signature_action);
 
         // Overlay
         mOverlayAnimator = (ViewAnimator) view;
-        Button vErrorOverlayButton = (Button) view.findViewById(R.id.decrypt_error_overlay_button);
+        Button vErrorOverlayButton = view.findViewById(R.id.decrypt_error_overlay_button);
         vErrorOverlayButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

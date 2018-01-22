@@ -45,7 +45,7 @@ public class QrCodeCaptureActivity extends FragmentActivity {
 
         setContentView(R.layout.qr_code_capture_activity);
 
-        barcodeScannerView = (CompoundBarcodeView) findViewById(R.id.zxing_barcode_scanner);
+        barcodeScannerView = findViewById(R.id.zxing_barcode_scanner);
         barcodeScannerView.setStatusText(getString(R.string.import_qr_code_text));
 
         if (savedInstanceState != null) {

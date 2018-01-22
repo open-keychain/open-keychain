@@ -50,9 +50,9 @@ public class KeyserverStatusView extends FrameLayout implements KeyserverStatusM
 
         vLayout = view.findViewById(R.id.keyserver_status_layout);
 
-        vTitle = (TextView) view.findViewById(R.id.keyserver_status_title);
-        vSubtitle = (TextView) view.findViewById(R.id.keyserver_status_subtitle);
-        vIcon = (ImageView) view.findViewById(R.id.keyserver_icon);
+        vTitle = view.findViewById(R.id.keyserver_status_title);
+        vSubtitle = view.findViewById(R.id.keyserver_status_subtitle);
+        vIcon = view.findViewById(R.id.keyserver_icon);
 //        vExpander = (ImageView) view.findViewById(R.id.key_health_expander);
     }
 

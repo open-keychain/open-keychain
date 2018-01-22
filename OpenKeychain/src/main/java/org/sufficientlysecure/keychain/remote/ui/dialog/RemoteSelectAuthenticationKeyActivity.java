@@ -140,10 +140,10 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
             View view = layoutInflater.inflate(R.layout.api_remote_select_authentication_key, null, false);
             alert.setView(view);
 
-            buttonSelect = (Button) view.findViewById(R.id.button_select);
-            buttonCancel = (Button) view.findViewById(R.id.button_cancel);
+            buttonSelect = view.findViewById(R.id.button_select);
+            buttonCancel = view.findViewById(R.id.button_cancel);
 
-            keyChoiceList = (RecyclerView) view.findViewById(R.id.authentication_key_list);
+            keyChoiceList = view.findViewById(R.id.authentication_key_list);
             keyChoiceList.setLayoutManager(new LinearLayoutManager(activity));
             keyChoiceList.addItemDecoration(
                     new DividerItemDecoration(activity, DividerItemDecoration.VERTICAL_LIST, true));
@@ -183,7 +183,7 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
 
         @NonNull
         private RemoteSelectAuthenticationKeyView createMvpView(View view, LayoutInflater layoutInflater) {
-            final ImageView iconClientApp = (ImageView) view.findViewById(R.id.icon_client_app);
+            final ImageView iconClientApp = view.findViewById(R.id.icon_client_app);
             final KeyChoiceAdapter keyChoiceAdapter = new KeyChoiceAdapter(layoutInflater, getResources());
             keyChoiceList.setAdapter(keyChoiceAdapter);
 
@@ -328,9 +328,9 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
         KeyChoiceViewHolder(View itemView) {
             super(itemView);
 
-            vName = (TextView) itemView.findViewById(R.id.key_list_item_name);
-            vCreation = (TextView) itemView.findViewById(R.id.key_list_item_creation);
-            vIcon = (ImageView) itemView.findViewById(R.id.key_list_item_icon);
+            vName = itemView.findViewById(R.id.key_list_item_name);
+            vCreation = itemView.findViewById(R.id.key_list_item_creation);
+            vIcon = itemView.findViewById(R.id.key_list_item_icon);
         }
 
         void bind(KeyInfo keyInfo, Drawable selectionIcon) {

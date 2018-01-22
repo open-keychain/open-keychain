@@ -59,7 +59,7 @@ public class UploadKeyActivity extends BaseActivity
         super.onCreate(savedInstanceState);
 
         mUploadButton = findViewById(R.id.upload_key_action_upload);
-        mKeyServerSpinner = (Spinner) findViewById(R.id.upload_key_keyserver);
+        mKeyServerSpinner = findViewById(R.id.upload_key_keyserver);
 
         MultiUserIdsFragment mMultiUserIdsFragment = (MultiUserIdsFragment)
                 getSupportFragmentManager().findFragmentById(R.id.multi_user_ids_fragment);

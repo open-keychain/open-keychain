@@ -104,13 +104,13 @@ public class CreateKeyFinalFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_key_final_fragment, container, false);
 
-        mNameEdit = (TextView) view.findViewById(R.id.name);
-        mEmailEdit = (TextView) view.findViewById(R.id.email);
-        mUploadCheckbox = (CheckBox) view.findViewById(R.id.create_key_upload);
+        mNameEdit = view.findViewById(R.id.name);
+        mEmailEdit = view.findViewById(R.id.email);
+        mUploadCheckbox = view.findViewById(R.id.create_key_upload);
         mBackButton = view.findViewById(R.id.create_key_back_button);
         mCreateButton = view.findViewById(R.id.create_key_next_button);
         mCustomKeyLayout = view.findViewById(R.id.custom_key_layout);
-        mCustomKeyRevertButton = (Button) view.findViewById(R.id.revert_key_configuration);
+        mCustomKeyRevertButton = view.findViewById(R.id.revert_key_configuration);
 
         CreateKeyActivity createKeyActivity = (CreateKeyActivity) getActivity();
 
@@ -261,7 +261,7 @@ public class CreateKeyFinalFragment extends Fragment {
         setHasOptionsMenu(true);
 
         if (savedInstanceState != null && savedInstanceState.containsKey(STATE_CUSTOM_CONFIGURATION)) {
-            keyConfigUseCustom(savedInstanceState.<SaveKeyringParcel>getParcelable(STATE_CUSTOM_CONFIGURATION));
+            keyConfigUseCustom(savedInstanceState.getParcelable(STATE_CUSTOM_CONFIGURATION));
         } else {
             keyConfigRevertToDefault();
         }

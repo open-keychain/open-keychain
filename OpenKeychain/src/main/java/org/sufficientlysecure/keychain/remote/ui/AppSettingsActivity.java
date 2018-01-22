@@ -61,8 +61,8 @@ public class AppSettingsActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAppNameView = (TextView) findViewById(R.id.api_app_settings_app_name);
-        mAppIconView = (ImageView) findViewById(R.id.api_app_settings_app_icon);
+        mAppNameView = findViewById(R.id.api_app_settings_app_name);
+        mAppIconView = findViewById(R.id.api_app_settings_app_icon);
 
         findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
             @Override

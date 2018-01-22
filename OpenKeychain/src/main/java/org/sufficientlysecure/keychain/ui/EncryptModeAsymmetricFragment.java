@@ -80,11 +80,11 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_asymmetric_fragment, container, false);
 
-        mSignKeySpinner = (KeySpinner) view.findViewById(R.id.sign);
-        mEncryptKeyView = (EncryptKeyCompletionView) view.findViewById(R.id.recipient_list);
+        mSignKeySpinner = view.findViewById(R.id.sign);
+        mEncryptKeyView = view.findViewById(R.id.recipient_list);
         mEncryptKeyView.setThreshold(1); // Start working from first character
 
-        final ViewAnimator vSignatureIcon = (ViewAnimator) view.findViewById(R.id.result_signature_icon);
+        final ViewAnimator vSignatureIcon = view.findViewById(R.id.result_signature_icon);
         mSignKeySpinner.setOnKeyChangedListener(new OnKeyChangedListener() {
             @Override
             public void onKeyChanged(long masterKeyId) {
@@ -95,7 +95,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
             }
         });
 
-        final ViewAnimator vEncryptionIcon = (ViewAnimator) view.findViewById(R.id.result_encryption_icon);
+        final ViewAnimator vEncryptionIcon = view.findViewById(R.id.result_encryption_icon);
         mEncryptKeyView.setTokenListener(new TokenListener<KeyItem>() {
             @Override
             public void onTokenAdded(KeyItem o) {

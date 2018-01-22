@@ -114,9 +114,9 @@ public class AddEditSmartPGPAuthorityDialogFragment extends DialogFragment imple
         View view = inflater.inflate(R.layout.add_smartpgp_authority_dialog, null);
         alert.setView(view);
 
-        mAuthorityAliasText = (EditText) view.findViewById(R.id.smartpgp_authority_alias_edit_text);
-        mAuthorityAliasTextLayout = (TextInputLayout) view.findViewById(R.id.smartpgp_authority_alias_edit_text_layout);
-        mAuthorityAdd = (Button) view.findViewById(R.id.smartpgp_authority_filename);
+        mAuthorityAliasText = view.findViewById(R.id.smartpgp_authority_alias_edit_text);
+        mAuthorityAliasTextLayout = view.findViewById(R.id.smartpgp_authority_alias_edit_text_layout);
+        mAuthorityAdd = view.findViewById(R.id.smartpgp_authority_filename);
 
         mAuthorityAdd.setOnClickListener(new View.OnClickListener() {
             @Override

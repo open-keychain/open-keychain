@@ -92,14 +92,14 @@ public class CertifyKeyFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.certify_key_fragment, null);
 
-        mCertifyKeySpinner = (CertifyKeySpinner) view.findViewById(R.id.certify_key_spinner);
-        mUploadKeyCheckbox = (CheckBox) view.findViewById(R.id.sign_key_upload_checkbox);
+        mCertifyKeySpinner = view.findViewById(R.id.certify_key_spinner);
+        mUploadKeyCheckbox = view.findViewById(R.id.sign_key_upload_checkbox);
         mMultiUserIdsFragment = (MultiUserIdsFragment)
                 getChildFragmentManager().findFragmentById(R.id.multi_user_ids_fragment);
 
         // make certify image gray, like action icons
         ImageView vActionCertifyImage =
-                (ImageView) view.findViewById(R.id.certify_key_action_certify_image);
+                view.findViewById(R.id.certify_key_action_certify_image);
         vActionCertifyImage.setColorFilter(FormattingUtils.getColorFromAttr(getActivity(), R.attr.colorTertiaryText),
                 PorterDuff.Mode.SRC_IN);
 

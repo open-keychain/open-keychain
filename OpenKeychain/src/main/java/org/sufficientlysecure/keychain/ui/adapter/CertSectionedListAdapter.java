@@ -97,9 +97,9 @@ public class CertSectionedListAdapter extends SectionCursorAdapter<CertCursor, S
             itemView.setClickable(true);
             itemView.setOnClickListener(this);
 
-            mSignerName = (TextView) itemView.findViewById(R.id.signerName);
-            mSignStatus = (TextView) itemView.findViewById(R.id.signStatus);
-            mSignerKeyId = (TextView) itemView.findViewById(R.id.signerKeyId);
+            mSignerName = itemView.findViewById(R.id.signerName);
+            mSignStatus = itemView.findViewById(R.id.signStatus);
+            mSignerKeyId = itemView.findViewById(R.id.signerKeyId);
         }
 
         public void bind(CertCursor cursor) {
@@ -154,7 +154,7 @@ public class CertSectionedListAdapter extends SectionCursorAdapter<CertCursor, S
 
         public CertSectionViewHolder(View itemView) {
             super(itemView);
-            mHeaderText = (TextView) itemView.findViewById(R.id.stickylist_header_text);
+            mHeaderText = itemView.findViewById(R.id.stickylist_header_text);
         }
 
         public void bind(String text) {
