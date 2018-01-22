@@ -1,5 +1,3 @@
-apply plugin: 'com.github.ben-manes.versions'
-
 buildscript {
     repositories {
         jcenter()
@@ -12,13 +10,6 @@ buildscript {
         classpath files('gradle-witness.jar')
         // bintray dependency to satisfy dependency of openpgp-api lib
         classpath 'com.novoda:bintray-release:0.8.0'
-
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3'
-
-        // allows to check for lib updates with "./gradlew dependencyUpdates -Drevision=release"
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0'
-
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
     }
 }
 
@@ -27,10 +18,6 @@ allprojects {
         jcenter()
         google()
     }
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '3.3'
 }
 
 subprojects {
