@@ -21,6 +21,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -74,7 +75,7 @@ public class RetryUploadDialogActivity extends FragmentActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     Intent intent = new Intent();
                     intent.putExtra(RESULT_CRYPTO_INPUT, getActivity()
-                            .getIntent().getParcelableExtra(EXTRA_CRYPTO_INPUT));
+                            .getIntent().<Parcelable>getParcelableExtra(EXTRA_CRYPTO_INPUT));
                     getActivity().setResult(RESULT_OK, intent);
                     getActivity().finish();
                 }
