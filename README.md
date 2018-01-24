@@ -47,9 +47,9 @@ Development mailinglist at https://lists.riseup.net/www/subscribe/openkeychain
 2. Get all external submodules with ``git submodule update --init --recursive``
 3. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
 4. Open the Android SDK Manager (shell command: ``android``).
-Expand the Tools directory and select "Android SDK Build-tools (Version 25.0.2)".
+Expand the Tools directory and select "Android SDK Build-tools (Version 27.0.3)".
 Expand the Extras directory and install "Android Support Library", as well as "Local Maven repository for Support Libraries"
-Select SDK Platform for API levels 25.
+Select SDK Platform for API levels 27.
 5. Export ANDROID_HOME pointing to your Android SDK
 6. Execute ``./gradlew assembleFdroidDebug``
 7. You can install the app with ``adb install -r OpenKeychain/build/outputs/apk/OpenKeychain-fdroid-debug.apk``
