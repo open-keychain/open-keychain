@@ -113,12 +113,12 @@ public class KeyAdapter extends CursorAdapter {
         public KeyItemViewHolder(View view) {
             mView = view;
             mLayoutData = view.findViewById(R.id.key_list_item_data);
-            mMainUserId = (TextView) view.findViewById(R.id.key_list_item_name);
-            mMainUserIdRest = (TextView) view.findViewById(R.id.key_list_item_email);
-            mStatus = (ImageView) view.findViewById(R.id.key_list_item_status_icon);
+            mMainUserId = view.findViewById(R.id.key_list_item_name);
+            mMainUserIdRest = view.findViewById(R.id.key_list_item_email);
+            mStatus = view.findViewById(R.id.key_list_item_status_icon);
             mSlinger = view.findViewById(R.id.key_list_item_slinger_view);
-            mSlingerButton = (ImageButton) view.findViewById(R.id.key_list_item_slinger_button);
-            mCreationDate = (TextView) view.findViewById(R.id.key_list_item_creation);
+            mSlingerButton = view.findViewById(R.id.key_list_item_slinger_button);
+            mCreationDate = view.findViewById(R.id.key_list_item_creation);
         }
 
         public void setData(Context context, KeyItem item, Highlighter highlighter, boolean enabled) {

@@ -152,18 +152,18 @@ public class SubkeysAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView vKeyId = (TextView) view.findViewById(R.id.subkey_item_key_id);
-        TextView vKeyDetails = (TextView) view.findViewById(R.id.subkey_item_details);
-        TextView vKeyExpiry = (TextView) view.findViewById(R.id.subkey_item_expiry);
-        ImageView vCertifyIcon = (ImageView) view.findViewById(R.id.subkey_item_ic_certify);
-        ImageView vSignIcon = (ImageView) view.findViewById(R.id.subkey_item_ic_sign);
-        ImageView vEncryptIcon = (ImageView) view.findViewById(R.id.subkey_item_ic_encrypt);
-        ImageView vAuthenticateIcon = (ImageView) view.findViewById(R.id.subkey_item_ic_authenticate);
-        ImageView vEditImage = (ImageView) view.findViewById(R.id.subkey_item_edit_image);
-        ImageView vStatus = (ImageView) view.findViewById(R.id.subkey_item_status);
+        TextView vKeyId = view.findViewById(R.id.subkey_item_key_id);
+        TextView vKeyDetails = view.findViewById(R.id.subkey_item_details);
+        TextView vKeyExpiry = view.findViewById(R.id.subkey_item_expiry);
+        ImageView vCertifyIcon = view.findViewById(R.id.subkey_item_ic_certify);
+        ImageView vSignIcon = view.findViewById(R.id.subkey_item_ic_sign);
+        ImageView vEncryptIcon = view.findViewById(R.id.subkey_item_ic_encrypt);
+        ImageView vAuthenticateIcon = view.findViewById(R.id.subkey_item_ic_authenticate);
+        ImageView vEditImage = view.findViewById(R.id.subkey_item_edit_image);
+        ImageView vStatus = view.findViewById(R.id.subkey_item_status);
 
         // not used:
-        ImageView deleteImage = (ImageView) view.findViewById(R.id.subkey_item_delete_button);
+        ImageView deleteImage = view.findViewById(R.id.subkey_item_delete_button);
         deleteImage.setVisibility(View.GONE);
 
         long keyId = cursor.getLong(INDEX_KEY_ID);
@@ -334,7 +334,7 @@ public class SubkeysAdapter extends CursorAdapter {
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         View view = mInflater.inflate(R.layout.view_key_adv_subkey_item, null);
         if (mDefaultTextColor == null) {
-            TextView keyId = (TextView) view.findViewById(R.id.subkey_item_key_id);
+            TextView keyId = view.findViewById(R.id.subkey_item_key_id);
             mDefaultTextColor = keyId.getTextColors();
         }
         return view;

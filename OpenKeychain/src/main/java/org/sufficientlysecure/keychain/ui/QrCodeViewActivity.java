@@ -65,8 +65,8 @@ public class QrCodeViewActivity extends BaseActivity {
             return;
         }
 
-        mQrCode = (ImageView) findViewById(R.id.qr_code_image);
-        mQrCodeLayout = (CardView) findViewById(R.id.qr_code_image_layout);
+        mQrCode = findViewById(R.id.qr_code_image);
+        mQrCodeLayout = findViewById(R.id.qr_code_image_layout);
 
         mQrCodeLayout.setOnClickListener(new View.OnClickListener() {
             @Override

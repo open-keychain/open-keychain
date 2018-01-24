@@ -86,8 +86,8 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
         View view = inflater.inflate(R.layout.view_key_adv_subkeys_fragment, getContainer());
 
-        mSubkeysList = (ListView) view.findViewById(R.id.view_key_subkeys);
-        mSubkeysAddedList = (ListView) view.findViewById(R.id.view_key_subkeys_added);
+        mSubkeysList = view.findViewById(R.id.view_key_subkeys);
+        mSubkeysAddedList = view.findViewById(R.id.view_key_subkeys_added);
         mSubkeysAddedLayout = view.findViewById(R.id.view_key_subkeys_add_layout);
 
         mSubkeysList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -108,7 +108,7 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
         footer.setLayoutParams(params);
         mSubkeysAddedList.addFooterView(footer, null, false);
 
-        mSubkeyAddFabLayout = (ViewAnimator) view.findViewById(R.id.view_key_subkey_fab_layout);
+        mSubkeyAddFabLayout = view.findViewById(R.id.view_key_subkey_fab_layout);
         view.findViewById(R.id.view_key_subkey_fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

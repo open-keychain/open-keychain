@@ -95,9 +95,9 @@ public class SetPassphraseDialogFragment extends DialogFragment implements OnEdi
         View view = inflater.inflate(R.layout.passphrase_repeat_dialog, null);
         alert.setView(view);
 
-        mPassphraseEditText = (PassphraseEditText) view.findViewById(R.id.passphrase_passphrase);
-        mPassphraseAgainEditText = (EditText) view.findViewById(R.id.passphrase_passphrase_again);
-        mNoPassphraseCheckBox = (CheckBox) view.findViewById(R.id.passphrase_no_passphrase);
+        mPassphraseEditText = view.findViewById(R.id.passphrase_passphrase);
+        mPassphraseAgainEditText = view.findViewById(R.id.passphrase_passphrase_again);
+        mNoPassphraseCheckBox = view.findViewById(R.id.passphrase_no_passphrase);
 
         mNoPassphraseCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

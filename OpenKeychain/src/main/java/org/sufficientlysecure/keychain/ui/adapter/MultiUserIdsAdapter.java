@@ -75,9 +75,9 @@ public class MultiUserIdsAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView vHeaderId = (TextView) view.findViewById(R.id.user_id_header);
-        TextView vName = (TextView) view.findViewById(R.id.user_id_item_name);
-        TextView vAddresses = (TextView) view.findViewById(R.id.user_id_item_addresses);
+        TextView vHeaderId = view.findViewById(R.id.user_id_header);
+        TextView vName = view.findViewById(R.id.user_id_item_name);
+        TextView vAddresses = view.findViewById(R.id.user_id_item_addresses);
 
         byte[] data = cursor.getBlob(1);
         int isHeader = cursor.getInt(2);
@@ -135,7 +135,7 @@ public class MultiUserIdsAdapter extends CursorAdapter {
             vAddresses.setVisibility(View.GONE);
         }
 
-        final CheckBox vCheckBox = (CheckBox) view.findViewById(R.id.user_id_item_check_box);
+        final CheckBox vCheckBox = view.findViewById(R.id.user_id_item_check_box);
         final int position = cursor.getPosition();
         vCheckBox.setOnCheckedChangeListener(null);
         vCheckBox.setChecked(mCheckStates.get(position));

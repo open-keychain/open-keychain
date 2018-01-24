@@ -86,7 +86,7 @@ public class LinkedIdCreateHttpsStep1Fragment extends Fragment {
             }
         });
 
-        mEditUri = (EditText) view.findViewById(R.id.linked_create_https_uri);
+        mEditUri = view.findViewById(R.id.linked_create_https_uri);
 
         mEditUri.addTextChangedListener(new TextWatcher() {
             @Override

@@ -103,7 +103,7 @@ public class EncryptFilesFragment
 
     private AfterEncryptAction mAfterEncryptAction;
     private enum AfterEncryptAction {
-        SAVE, SHARE, COPY;
+        SAVE, SHARE, COPY
     }
 
     private ArrayList<Uri> mOutputUris;
@@ -140,7 +140,7 @@ public class EncryptFilesFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_files_fragment, container, false);
-        mSelectedFiles = (RecyclerView) view.findViewById(R.id.selected_files_list);
+        mSelectedFiles = view.findViewById(R.id.selected_files_list);
 
         mSelectedFiles.addItemDecoration(new SpacesItemDecoration(
                 FormattingUtils.dpToPx(getActivity(), 4)));
@@ -797,10 +797,10 @@ public class EncryptFilesFragment
 
             public ViewHolder(View itemView) {
                 super(itemView);
-                filename = (TextView) itemView.findViewById(R.id.filename);
-                fileSize = (TextView) itemView.findViewById(R.id.filesize);
+                filename = itemView.findViewById(R.id.filename);
+                fileSize = itemView.findViewById(R.id.filesize);
                 removeButton = itemView.findViewById(R.id.action_remove_file_from_list);
-                thumbnail = (ImageView) itemView.findViewById(R.id.thumbnail);
+                thumbnail = itemView.findViewById(R.id.thumbnail);
             }
         }
 
@@ -809,7 +809,7 @@ public class EncryptFilesFragment
 
             public FooterHolder(View itemView) {
                 super(itemView);
-                mAddButton = (Button) itemView.findViewById(R.id.file_list_entry_add);
+                mAddButton = itemView.findViewById(R.id.file_list_entry_add);
             }
         }
 

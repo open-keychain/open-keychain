@@ -13,7 +13,7 @@ public class KeychainTestRunner extends RobolectricTestRunner {
     @Override
     protected Config buildGlobalConfig() {
         return new Config.Builder()
-                .setSdk(25)
+                .setSdk(27)
                 .setConstants(WorkaroundBuildConfig.class)
                 .build();
     }

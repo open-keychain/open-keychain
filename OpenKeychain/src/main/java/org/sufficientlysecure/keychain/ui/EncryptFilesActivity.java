@@ -55,7 +55,7 @@ public class EncryptFilesActivity extends EncryptActivity {
         if (Intent.ACTION_SEND.equals(action) && type != null) {
             // Files via content provider, override uri and action
             uris.clear();
-            uris.add(intent.<Uri>getParcelableExtra(Intent.EXTRA_STREAM));
+            uris.add(intent.getParcelableExtra(Intent.EXTRA_STREAM));
         }
 
         if (Intent.ACTION_SEND_MULTIPLE.equals(action) && type != null) {

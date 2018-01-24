@@ -117,9 +117,9 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
         this.layoutInflater = inflater;
         View view = inflater.inflate(R.layout.create_security_token_import_fragment, container, false);
 
-        statusLayoutGroup = (ViewGroup) view.findViewById(R.id.status_indicator_layout);
-        actionAnimator = (ToolableViewAnimator) view.findViewById(R.id.action_animator);
-        unlockSubtitle = (TextView) view.findViewById(R.id.button_unlock_subtitle);
+        statusLayoutGroup = view.findViewById(R.id.status_indicator_layout);
+        actionAnimator = view.findViewById(R.id.action_animator);
+        unlockSubtitle = view.findViewById(R.id.button_unlock_subtitle);
 
         view.findViewById(R.id.button_import).setOnClickListener(this);
         view.findViewById(R.id.button_view_key).setOnClickListener(this);
@@ -204,9 +204,9 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
 
         View line = layoutInflater.inflate(R.layout.status_indicator_line, statusLayoutGroup, false);
 
-        latestStatusIndicator = (StatusIndicator) line.findViewById(R.id.status_indicator);
+        latestStatusIndicator = line.findViewById(R.id.status_indicator);
         latestStatusIndicator.setDisplayedChild(Status.PROGRESS);
-        TextView latestStatusText = (TextView) line.findViewById(R.id.status_text);
+        TextView latestStatusText = line.findViewById(R.id.status_text);
         latestStatusText.setText(statusLine.stringRes);
 
         statusLayoutGroup.addView(line);
@@ -401,7 +401,7 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
             }
             case REQUEST_CODE_RESET: {
                 SecurityTokenInfo tokenInfo = data == null ? null :
-                        data.<SecurityTokenInfo>getParcelableExtra(SecurityTokenOperationActivity.RESULT_TOKEN_INFO);
+                        data.getParcelableExtra(SecurityTokenOperationActivity.RESULT_TOKEN_INFO);
                 if (resultCode == Activity.RESULT_OK) {
                     presenter.onSecurityTokenResetSuccess(tokenInfo);
                 } else {
@@ -411,7 +411,7 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
             }
             case REQUEST_CODE_CHANGE_PIN: {
                 SecurityTokenInfo tokenInfo = data == null ? null :
-                        data.<SecurityTokenInfo>getParcelableExtra(SecurityTokenOperationActivity.RESULT_TOKEN_INFO);
+                        data.getParcelableExtra(SecurityTokenOperationActivity.RESULT_TOKEN_INFO);
                 if (resultCode == Activity.RESULT_OK) {
                     presenter.onSecurityTokenChangePinSuccess(tokenInfo);
                 } else {

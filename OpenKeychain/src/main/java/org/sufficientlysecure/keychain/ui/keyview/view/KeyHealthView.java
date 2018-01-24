@@ -69,22 +69,22 @@ public class KeyHealthView extends LinearLayout implements KeyHealthMvpView, OnC
         View view = LayoutInflater.from(context).inflate(R.layout.key_health_card_content, this, true);
 
         vLayout = view.findViewById(R.id.key_health_layout);
-        vTitle = (TextView) view.findViewById(R.id.key_health_title);
-        vSubtitle = (TextView) view.findViewById(R.id.key_health_subtitle);
-        vIcon = (ImageView) view.findViewById(R.id.key_health_icon);
-        vExpander = (ImageView) view.findViewById(R.id.key_health_expander);
+        vTitle = view.findViewById(R.id.key_health_title);
+        vSubtitle = view.findViewById(R.id.key_health_subtitle);
+        vIcon = view.findViewById(R.id.key_health_icon);
+        vExpander = view.findViewById(R.id.key_health_expander);
 
         vLayout.setOnClickListener(this);
 
         vKeyStatusDivider = view.findViewById(R.id.key_health_divider);
-        vKeyStatusList = (KeyStatusList) view.findViewById(R.id.key_health_status_list);
+        vKeyStatusList = view.findViewById(R.id.key_health_status_list);
 
         vInsecureLayout = view.findViewById(R.id.key_insecure_layout);
-        vInsecureProblem = (TextView) view.findViewById(R.id.key_insecure_problem);
-        vInsecureSolution = (TextView) view.findViewById(R.id.key_insecure_solution);
+        vInsecureProblem = view.findViewById(R.id.key_insecure_problem);
+        vInsecureSolution = view.findViewById(R.id.key_insecure_solution);
 
         vExpiryLayout = view.findViewById(R.id.key_expiry_layout);
-        vExpiryText = (TextView) view.findViewById(R.id.key_expiry_text);
+        vExpiryText = view.findViewById(R.id.key_expiry_text);
     }
 
     private enum KeyHealthDisplayStatus {

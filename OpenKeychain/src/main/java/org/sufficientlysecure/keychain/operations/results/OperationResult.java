@@ -926,7 +926,6 @@ public abstract class OperationResult implements Parcelable {
         MSG_TRUST_INITIALIZE (LogLevel.INFO, R.string.msg_trust_initialize),
         MSG_TRUST_COUNT_NONE (LogLevel.DEBUG, R.string.msg_trust_count_none),
         MSG_TRUST_COUNT (LogLevel.DEBUG, R.plurals.msg_trust_count);
-        ;
 
         public final int mMsgId;
         public final LogLevel mLevel;

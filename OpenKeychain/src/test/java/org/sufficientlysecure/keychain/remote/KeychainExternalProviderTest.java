@@ -14,8 +14,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.res.builder.RobolectricPackageManager;
+import org.robolectric.shadows.ShadowBinder;
 import org.robolectric.shadows.ShadowLog;
+import org.robolectric.shadows.ShadowPackageManager;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.operations.CertifyOperation;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
@@ -23,17 +24,21 @@ import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
+import org.sufficientlysecure.keychain.provider.KeyRepositorySaveTest;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
-import org.sufficientlysecure.keychain.provider.KeyRepositorySaveTest;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.robolectric.Shadows.shadowOf;
 
 
 @SuppressWarnings("WeakerAccess")
@@ -49,6 +54,7 @@ public class KeychainExternalProviderTest {
     static final long KEY_ID_SECRET = 0x5D4DA4423C39122FL;
     static final long KEY_ID_PUBLIC = 0x9A282CE2AB44A382L;
     public static final String AUTOCRYPT_PEER = "tid";
+    public static final int PACKAGE_UID = 42;
 
 
     KeyWritableRepository databaseInteractor =
@@ -63,12 +69,14 @@ public class KeychainExternalProviderTest {
     public void setUp() throws Exception {
         ShadowLog.stream = System.out;
 
-        RobolectricPackageManager rpm = (RobolectricPackageManager) RuntimeEnvironment.getPackageManager();
-        rpm.setPackagesForUid(0, PACKAGE_NAME);
+        ShadowPackageManager packageManager = shadowOf(RuntimeEnvironment.application.getPackageManager());
+        packageManager.setPackagesForUid(PACKAGE_UID, PACKAGE_NAME);
         PackageInfo packageInfo = new PackageInfo();
         packageInfo.signatures = new Signature[] { new Signature(PACKAGE_SIGNATURE) };
         packageInfo.packageName = PACKAGE_NAME;
-        rpm.addPackage(packageInfo);
+        packageManager.addPackage(packageInfo);
+
+        ShadowBinder.setCallingUid(PACKAGE_UID);
 
         apiDao = new ApiDataAccessObject(RuntimeEnvironment.application);
         apiPermissionHelper = new ApiPermissionHelper(RuntimeEnvironment.application, apiDao);

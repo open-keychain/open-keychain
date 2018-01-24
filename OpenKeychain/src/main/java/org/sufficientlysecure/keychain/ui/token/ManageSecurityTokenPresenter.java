@@ -242,7 +242,7 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
                     return new KeyserverRetrievalLoader(context, tokenInfo.getFingerprints());
                 case LOADER_CONTENT_URI:
                     return new ContentUriRetrievalLoader(context, tokenInfo.getFingerprints(),
-                            args.<Uri>getParcelable(ARG_CONTENT_URI));
+                            args.getParcelable(ARG_CONTENT_URI));
             }
             throw new IllegalArgumentException("called with unknown loader id!");
         }

@@ -115,9 +115,9 @@ public class CreateSecurityTokenPinFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_yubi_key_pin_fragment, container, false);
 
-        mPin = (EditText) view.findViewById(R.id.create_yubi_key_pin);
-        mPinRepeat = (EditText) view.findViewById(R.id.create_yubi_key_pin_repeat);
-        mAdminPin = (TextView) view.findViewById(R.id.create_yubi_key_admin_pin);
+        mPin = view.findViewById(R.id.create_yubi_key_pin);
+        mPinRepeat = view.findViewById(R.id.create_yubi_key_pin_repeat);
+        mAdminPin = view.findViewById(R.id.create_yubi_key_admin_pin);
         mBackButton = view.findViewById(R.id.create_key_back_button);
         mNextButton = view.findViewById(R.id.create_key_next_button);
 

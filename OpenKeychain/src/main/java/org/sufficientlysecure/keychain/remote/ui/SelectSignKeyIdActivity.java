@@ -56,7 +56,7 @@ public class SelectSignKeyIdActivity extends BaseActivity {
                     }
                 });
 
-        TextView noneButton = (TextView) findViewById(R.id.api_select_sign_key_none);
+        TextView noneButton = findViewById(R.id.api_select_sign_key_none);
         noneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

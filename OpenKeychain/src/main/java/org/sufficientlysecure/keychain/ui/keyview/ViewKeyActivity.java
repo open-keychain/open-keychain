@@ -180,18 +180,18 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
         setTitle(null);
 
-        mStatusText = (TextView) findViewById(R.id.view_key_status);
-        mStatusImage = (ImageView) findViewById(R.id.view_key_status_image);
-        mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
-        mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        mStatusText = findViewById(R.id.view_key_status);
+        mStatusImage = findViewById(R.id.view_key_status_image);
+        mAppBarLayout = findViewById(R.id.app_bar_layout);
+        mCollapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
 
-        mActionEncryptFile = (ImageButton) findViewById(R.id.view_key_action_encrypt_files);
-        mActionEncryptText = (ImageButton) findViewById(R.id.view_key_action_encrypt_text);
-        mFab = (FloatingActionButton) findViewById(R.id.fab);
-        mPhoto = (ImageView) findViewById(R.id.view_key_photo);
-        mPhotoLayout = (FrameLayout) findViewById(R.id.view_key_photo_layout);
-        mQrCode = (ImageView) findViewById(R.id.view_key_qr_code);
-        mQrCodeLayout = (CardView) findViewById(R.id.view_key_qr_code_layout);
+        mActionEncryptFile = findViewById(R.id.view_key_action_encrypt_files);
+        mActionEncryptText = findViewById(R.id.view_key_action_encrypt_text);
+        mFab = findViewById(R.id.fab);
+        mPhoto = findViewById(R.id.view_key_photo);
+        mPhotoLayout = findViewById(R.id.view_key_photo_layout);
+        mQrCode = findViewById(R.id.view_key_qr_code);
+        mQrCodeLayout = findViewById(R.id.view_key_qr_code_layout);
 
         mRotateSpin = AnimationUtils.loadAnimation(this, R.anim.rotate_spin);
 
@@ -436,7 +436,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                     // use new passphrase!
                     mChangeUnlockParcel = ChangeUnlockParcel.createChangeUnlockParcel(
                             mMasterKeyId, mFingerprint,
-                            (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE)
+                            data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE)
                     );
 
                     mEditOpHelper.cryptoOperation();

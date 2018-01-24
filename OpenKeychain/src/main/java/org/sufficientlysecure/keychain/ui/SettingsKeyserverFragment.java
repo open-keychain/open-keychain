@@ -92,7 +92,7 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
 
         mAdapter = new KeyserverListAdapter(mKeyserversMutable);
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.keyserver_recycler_view);
+        RecyclerView recyclerView = view.findViewById(R.id.keyserver_recycler_view);
         // recyclerView.setHasFixedSize(true); // the size of the first item changes
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -312,11 +312,11 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
 
             public ViewHolder(View itemView) {
                 super(itemView);
-                outerLayout = (ViewGroup) itemView.findViewById(R.id.outer_layout);
-                selectedServerLabel = (TextView) itemView.findViewById(
+                outerLayout = itemView.findViewById(R.id.outer_layout);
+                selectedServerLabel = itemView.findViewById(
                         R.id.selected_keyserver_title);
-                keyserverUrl = (TextView) itemView.findViewById(R.id.keyserver_tv);
-                dragHandleView = (ImageView) itemView.findViewById(R.id.drag_handle);
+                keyserverUrl = itemView.findViewById(R.id.keyserver_tv);
+                dragHandleView = itemView.findViewById(R.id.drag_handle);
 
                 itemView.setClickable(true);
             }

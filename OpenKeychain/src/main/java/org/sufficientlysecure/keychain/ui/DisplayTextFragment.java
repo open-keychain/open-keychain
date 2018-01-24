@@ -95,7 +95,7 @@ public class DisplayTextFragment extends DecryptFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.decrypt_text_fragment, container, false);
-        mText = (TextView) view.findViewById(R.id.decrypt_text_plaintext);
+        mText = view.findViewById(R.id.decrypt_text_plaintext);
         return view;
     }
 

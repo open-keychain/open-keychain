@@ -85,10 +85,10 @@ public abstract class LinkedIdCreateFinalFragment extends CryptoOperationFragmen
             }
         });
 
-        mVerifyAnimator = (ViewAnimator) view.findViewById(R.id.verify_progress);
-        mVerifyImage = (ImageView) view.findViewById(R.id.verify_image);
-        mVerifyStatus = (TextView) view.findViewById(R.id.verify_status);
-        mVerifyButtonAnimator = (ViewAnimator) view.findViewById(R.id.verify_buttons);
+        mVerifyAnimator = view.findViewById(R.id.verify_progress);
+        mVerifyImage = view.findViewById(R.id.verify_image);
+        mVerifyStatus = view.findViewById(R.id.verify_status);
+        mVerifyButtonAnimator = view.findViewById(R.id.verify_buttons);
 
         view.findViewById(R.id.button_verify).setOnClickListener(new OnClickListener() {
             @Override

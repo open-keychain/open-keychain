@@ -129,12 +129,12 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
         View view = inflater.inflate(R.layout.add_keyserver_dialog, null);
         alert.setView(view);
 
-        mKeyserverEditText = (EditText) view.findViewById(R.id.keyserver_url_edit_text);
-        mKeyserverEditTextLayout = (TextInputLayout) view.findViewById(R.id.keyserver_url_edit_text_layout);
-        mKeyserverEditOnionText = (EditText) view.findViewById(R.id.keyserver_onion_edit_text);
-        mKeyserverEditOnionTextLayout = (TextInputLayout) view.findViewById(R.id.keyserver_onion_edit_text_layout);
-        mVerifyKeyserverCheckBox = (CheckBox) view.findViewById(R.id.verify_connection_checkbox);
-        mOnlyTrustedKeyserverCheckBox = (CheckBox) view.findViewById(R.id.only_trusted_keyserver_checkbox);
+        mKeyserverEditText = view.findViewById(R.id.keyserver_url_edit_text);
+        mKeyserverEditTextLayout = view.findViewById(R.id.keyserver_url_edit_text_layout);
+        mKeyserverEditOnionText = view.findViewById(R.id.keyserver_onion_edit_text);
+        mKeyserverEditOnionTextLayout = view.findViewById(R.id.keyserver_onion_edit_text_layout);
+        mVerifyKeyserverCheckBox = view.findViewById(R.id.verify_connection_checkbox);
+        mOnlyTrustedKeyserverCheckBox = view.findViewById(R.id.only_trusted_keyserver_checkbox);
         mVerifyKeyserverCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

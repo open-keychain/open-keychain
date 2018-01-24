@@ -93,8 +93,8 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
         View view = inflater.inflate(R.layout.view_key_adv_share_fragment, getContainer());
 
-        mFingerprintView = (TextView) view.findViewById(R.id.view_key_fingerprint);
-        mQrCode = (ImageView) view.findViewById(R.id.view_key_qr_code);
+        mFingerprintView = view.findViewById(R.id.view_key_fingerprint);
+        mQrCode = view.findViewById(R.id.view_key_qr_code);
 
         // We cache the QR code bitmap in its smallest possible size, then scale
         // it manually for the correct size whenever the layout of the ImageView
@@ -123,7 +123,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
                 }
             }
         });
-        mQrCodeLayout = (CardView) view.findViewById(R.id.view_key_qr_code_layout);
+        mQrCodeLayout = view.findViewById(R.id.view_key_qr_code_layout);
         mQrCodeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,7 +135,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         View vFingerprintClipboardButton = view.findViewById(R.id.view_key_action_fingerprint_clipboard);
         View vKeyShareButton = view.findViewById(R.id.view_key_action_key_share);
         View vKeyClipboardButton = view.findViewById(R.id.view_key_action_key_clipboard);
-        ImageButton vKeySafeSlingerButton = (ImageButton) view.findViewById(R.id.view_key_action_key_safeslinger);
+        ImageButton vKeySafeSlingerButton = view.findViewById(R.id.view_key_action_key_safeslinger);
         View vKeySshShareButton = view.findViewById(R.id.view_key_action_key_ssh_share);
         View vKeySshClipboardButton = view.findViewById(R.id.view_key_action_key_ssh_clipboard);
         View vKeyUploadButton = view.findViewById(R.id.view_key_action_upload);

@@ -579,7 +579,6 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         CanonicalizedSecretKey decryptionKey = null;
         CachingDataDecryptorFactory cachedKeyDecryptorFactory = new CachingDataDecryptorFactory(
                 Constants.BOUNCY_CASTLE_PROVIDER_NAME, cryptoInput.getCryptoData());
-        ;
 
         Passphrase passphrase = null;
 

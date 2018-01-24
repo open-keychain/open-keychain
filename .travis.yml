@@ -17,12 +17,12 @@ before_install:
 android:
   components:
     - tools
-    - android-25
+    - android-27
     - platform-tools
-    - build-tools-25.0.2
+    - build-tools-27.0.3
     - extra-android-support
     - extra-android-m2repository
-    - sys-img-armeabi-v7a-android-25
+    - sys-img-armeabi-v7a-android-27
   licenses:
     - 'android-sdk-preview-license-52d11cd2'
     - 'android-sdk-license-.+'

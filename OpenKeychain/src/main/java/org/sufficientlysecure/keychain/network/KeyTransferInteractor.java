@@ -31,8 +31,6 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.URISyntaxException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,22 +38,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import android.net.PskKeyManager;
 import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
-import javax.net.ssl.TrustManager;
 import timber.log.Timber;
 
 
@@ -159,7 +151,7 @@ public class KeyTransferInteractor {
 
         @Override
         public void run() {
-            SSLContext sslContext = createTlsPskSslContext(presharedKey);
+            SSLContext sslContext = TlsPskCompat.createTlsPskSslContext(presharedKey);
 
             Socket socket = null;
             try {
@@ -223,18 +215,6 @@ public class KeyTransferInteractor {
                 }
             }
             return socket;
-        }
-
-        private static SSLContext createTlsPskSslContext(byte[] presharedKey) {
-            try {
-                PresharedKeyManager pskKeyManager = new PresharedKeyManager(presharedKey);
-                SSLContext sslContext = SSLContext.getInstance("TLS");
-                sslContext.init(new KeyManager[] { pskKeyManager }, new TrustManager[0], null);
-
-                return sslContext;
-            } catch (KeyManagementException | NoSuchAlgorithmException e) {
-                throw new IllegalStateException(e);
-            }
         }
 
         private void handleOpenConnection(Socket socket) throws IOException {
@@ -441,34 +421,6 @@ public class KeyTransferInteractor {
             // ignore
         }
         return "";
-    }
-
-    private static class PresharedKeyManager extends PskKeyManager implements KeyManager {
-        byte[] presharedKey;
-
-        private PresharedKeyManager(byte[] presharedKey) {
-            this.presharedKey = presharedKey;
-        }
-
-        @Override
-        public String chooseClientKeyIdentity(String identityHint, Socket socket) {
-            return identityHint;
-        }
-
-        @Override
-        public String chooseClientKeyIdentity(String identityHint, SSLEngine engine) {
-            return identityHint;
-        }
-
-        @Override
-        public SecretKey getKey(String identityHint, String identity, Socket socket) {
-            return new SecretKeySpec(presharedKey, "AES");
-        }
-
-        @Override
-        public SecretKey getKey(String identityHint, String identity, SSLEngine engine) {
-            return new SecretKeySpec(presharedKey, "AES");
-        }
     }
 
     private static void closeQuietly(Closeable closeable) {

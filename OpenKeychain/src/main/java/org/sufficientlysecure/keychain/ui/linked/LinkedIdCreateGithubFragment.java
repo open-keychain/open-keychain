@@ -112,18 +112,18 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.linked_create_github_fragment, container, false);
 
-        mButtonContainer = (ViewAnimator) view.findViewById(R.id.button_container);
+        mButtonContainer = view.findViewById(R.id.button_container);
 
-        mStatus1 = (StatusIndicator) view.findViewById(R.id.linked_status_step1);
-        mStatus2 = (StatusIndicator) view.findViewById(R.id.linked_status_step2);
-        mStatus3 = (StatusIndicator) view.findViewById(R.id.linked_status_step3);
+        mStatus1 = view.findViewById(R.id.linked_status_step1);
+        mStatus2 = view.findViewById(R.id.linked_status_step2);
+        mStatus3 = view.findViewById(R.id.linked_status_step3);
 
-        mRetryButton = (Button) view.findViewById(R.id.button_retry);
+        mRetryButton = view.findViewById(R.id.button_retry);
 
         ((ImageView) view.findViewById(R.id.linked_id_type_icon)).setImageResource(R.drawable.linked_github);
         ((ImageView) view.findViewById(R.id.linked_id_certified_icon)).setImageResource(R.drawable.octo_link_24dp);
-        mLinkedIdTitle = (TextView) view.findViewById(R.id.linked_id_title);
-        mLinkedIdComment = (TextView) view.findViewById(R.id.linked_id_comment);
+        mLinkedIdTitle = view.findViewById(R.id.linked_id_title);
+        mLinkedIdComment = view.findViewById(R.id.linked_id_comment);
 
         view.findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -535,7 +535,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
 
         final Dialog auth_dialog = new Dialog(activity);
         auth_dialog.setContentView(R.layout.oauth_webview);
-        WebView web = (WebView) auth_dialog.findViewById(R.id.web_view);
+        WebView web = auth_dialog.findViewById(R.id.web_view);
         web.getSettings().setSaveFormData(false);
         web.getSettings().setJavaScriptEnabled(true);
         web.getSettings().setUserAgentString("OpenKeychain " + BuildConfig.VERSION_NAME);

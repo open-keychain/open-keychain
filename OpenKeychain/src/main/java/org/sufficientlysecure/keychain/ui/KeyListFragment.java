@@ -196,11 +196,11 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.key_list_fragment, container, false);
 
-        mFab = (FloatingActionsMenu) view.findViewById(R.id.fab_main);
+        mFab = view.findViewById(R.id.fab_main);
 
-        FloatingActionButton fabQrCode = (FloatingActionButton) view.findViewById(R.id.fab_add_qr_code);
-        FloatingActionButton fabCloud = (FloatingActionButton) view.findViewById(R.id.fab_add_cloud);
-        FloatingActionButton fabFile = (FloatingActionButton) view.findViewById(R.id.fab_add_file);
+        FloatingActionButton fabQrCode = view.findViewById(R.id.fab_add_qr_code);
+        FloatingActionButton fabCloud = view.findViewById(R.id.fab_add_cloud);
+        FloatingActionButton fabFile = view.findViewById(R.id.fab_add_file);
 
         fabQrCode.setOnClickListener(new OnClickListener() {
             @Override
@@ -246,8 +246,8 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         hideList(false);
 
         // click on search button (in empty view) starts query for search string
-        vSearchContainer = (ViewAnimator) activity.findViewById(R.id.search_container);
-        vSearchButton = (Button) activity.findViewById(R.id.search_button);
+        vSearchContainer = activity.findViewById(R.id.search_container);
+        vSearchButton = activity.findViewById(R.id.search_button);
         vSearchButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -261,7 +261,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         setAdapter(adapter);
         setLayoutManager(new LayoutManager(getActivity()));
 
-        FastScroller fastScroller = (FastScroller) getActivity().findViewById(R.id.fastscroll);
+        FastScroller fastScroller = getActivity().findViewById(R.id.fastscroll);
         fastScroller.setRecyclerView(getRecyclerView());
 
         // Prepare the loader. Either re-connect with an existing one,

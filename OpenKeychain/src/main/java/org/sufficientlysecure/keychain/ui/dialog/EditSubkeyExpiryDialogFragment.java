@@ -101,10 +101,10 @@ public class EditSubkeyExpiryDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.edit_subkey_expiry_dialog, null);
         alert.setView(view);
 
-        final CheckBox noExpiry = (CheckBox) view.findViewById(R.id.edit_subkey_expiry_no_expiry);
-        final DatePicker datePicker = (DatePicker) view.findViewById(R.id.edit_subkey_expiry_date_picker);
-        final TextView currentExpiry = (TextView) view.findViewById(R.id.edit_subkey_expiry_current_expiry);
-        final LinearLayout expiryLayout = (LinearLayout) view.findViewById(R.id.edit_subkey_expiry_layout);
+        final CheckBox noExpiry = view.findViewById(R.id.edit_subkey_expiry_no_expiry);
+        final DatePicker datePicker = view.findViewById(R.id.edit_subkey_expiry_date_picker);
+        final TextView currentExpiry = view.findViewById(R.id.edit_subkey_expiry_current_expiry);
+        final LinearLayout expiryLayout = view.findViewById(R.id.edit_subkey_expiry_layout);
 
         noExpiry.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

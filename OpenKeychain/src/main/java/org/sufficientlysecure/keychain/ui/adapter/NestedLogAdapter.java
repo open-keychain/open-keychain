@@ -152,8 +152,8 @@ public class NestedLogAdapter extends RecyclerView.Adapter<NestedLogAdapter.LogE
         public LogEntryViewHolder(View itemView) {
             super(itemView);
 
-            mLogText = (TextView) itemView.findViewById(R.id.log_text);
-            mLogImg = (ImageView) itemView.findViewById(R.id.log_img);
+            mLogText = itemView.findViewById(R.id.log_text);
+            mLogImg = itemView.findViewById(R.id.log_img);
         }
 
         public void bind(OperationResult.LogEntryParcel entry, int indentFactor) {
@@ -213,8 +213,8 @@ public class NestedLogAdapter extends RecyclerView.Adapter<NestedLogAdapter.LogE
             itemView.setClickable(true);
             itemView.setOnClickListener(this);
 
-            mSublogText = (TextView) itemView.findViewById(R.id.log_second_text);
-            mSublogImg = (ImageView) itemView.findViewById(R.id.log_second_img);
+            mSublogText = itemView.findViewById(R.id.log_second_text);
+            mSublogImg = itemView.findViewById(R.id.log_second_img);
         }
 
         @Override

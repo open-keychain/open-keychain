@@ -75,7 +75,7 @@ public class SafeSlingerActivity extends BaseActivity
 
         mMasterKeyId = getIntent().getLongExtra(EXTRA_MASTER_KEY_ID, 0);
 
-        NumberPicker picker = (NumberPicker) findViewById(R.id.safe_slinger_picker);
+        NumberPicker picker = findViewById(R.id.safe_slinger_picker);
         picker.setMinValue(2);
         picker.setMaxValue(10);
         picker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
@@ -85,7 +85,7 @@ public class SafeSlingerActivity extends BaseActivity
             }
         });
 
-        ImageView buttonIcon = (ImageView) findViewById(R.id.safe_slinger_button_image);
+        ImageView buttonIcon = findViewById(R.id.safe_slinger_button_image);
         buttonIcon.setColorFilter(FormattingUtils.getColorFromAttr(this, R.attr.colorTertiaryText),
                 PorterDuff.Mode.SRC_IN);
 

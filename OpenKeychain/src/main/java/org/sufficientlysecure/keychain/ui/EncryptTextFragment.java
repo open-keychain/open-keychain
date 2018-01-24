@@ -98,7 +98,7 @@ public class EncryptTextFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_text_fragment, container, false);
 
-        TextView textView = (TextView) view.findViewById(R.id.encrypt_text_text);
+        TextView textView = view.findViewById(R.id.encrypt_text_text);
         textView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

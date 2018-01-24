@@ -94,8 +94,8 @@ public class RemoteRegisterActivity extends FragmentActivity {
             View view = LayoutInflater.from(theme).inflate(R.layout.api_remote_register_app, null, false);
             alert.setView(view);
 
-            buttonAllow = (Button) view.findViewById(R.id.button_allow);
-            buttonCancel = (Button) view.findViewById(R.id.button_cancel);
+            buttonAllow = view.findViewById(R.id.button_allow);
+            buttonCancel = view.findViewById(R.id.button_cancel);
 
             setupListenersForPresenter();
             mvpView = createMvpView(view);
@@ -132,8 +132,8 @@ public class RemoteRegisterActivity extends FragmentActivity {
 
         @NonNull
         private RemoteRegisterView createMvpView(View view) {
-            final TextView titleText = (TextView) view.findViewById(R.id.api_register_text);
-            final ImageView iconClientApp = (ImageView) view.findViewById(R.id.icon_client_app);
+            final TextView titleText = view.findViewById(R.id.api_register_text);
+            final ImageView iconClientApp = view.findViewById(R.id.icon_client_app);
 
             return new RemoteRegisterView() {
                 @Override

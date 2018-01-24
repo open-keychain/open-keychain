@@ -45,7 +45,7 @@ public abstract class LoaderFragment extends Fragment {
         View root = inflater.inflate(R.layout.loader_layout, container, false);
 
         mContentShown = true;
-        mContainer = (ViewGroup) root.findViewById(R.id.loader_container);
+        mContainer = root.findViewById(R.id.loader_container);
         mProgressContainer = root.findViewById(R.id.loader_progress);
 
         // content is not shown (by visibility statuses in the layout files)

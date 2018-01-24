@@ -120,7 +120,7 @@ public class RemoteSelectPubKeyActivity extends BaseActivity {
                 });
 
         // set text on view
-        TextView textView = (TextView) findViewById(R.id.api_select_pub_keys_text);
+        TextView textView = findViewById(R.id.api_select_pub_keys_text);
         textView.setText(ssb, TextView.BufferType.SPANNABLE);
 
         // Load select pub keys fragment

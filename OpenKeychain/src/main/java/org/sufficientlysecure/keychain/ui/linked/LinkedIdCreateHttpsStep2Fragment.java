@@ -108,7 +108,7 @@ public class LinkedIdCreateHttpsStep2Fragment extends LinkedIdCreateFinalFragmen
                 }
             });
 
-            mEditUri = (EditText) view.findViewById(R.id.linked_create_https_uri);
+            mEditUri = view.findViewById(R.id.linked_create_https_uri);
             mEditUri.setText(mResourceUri.toString());
         }
 

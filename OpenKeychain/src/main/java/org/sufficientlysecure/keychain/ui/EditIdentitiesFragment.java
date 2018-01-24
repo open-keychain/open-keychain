@@ -108,9 +108,9 @@ public class EditIdentitiesFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.edit_identities_fragment, null);
 
-        mUploadKeyCheckbox = (CheckBox) view.findViewById(R.id.edit_identities_upload_checkbox);
-        mUserIdsList = (ListView) view.findViewById(R.id.edit_identities_user_ids);
-        mUserIdsAddedList = (ListView) view.findViewById(R.id.edit_identities_user_ids_added);
+        mUploadKeyCheckbox = view.findViewById(R.id.edit_identities_upload_checkbox);
+        mUserIdsList = view.findViewById(R.id.edit_identities_user_ids);
+        mUserIdsAddedList = view.findViewById(R.id.edit_identities_user_ids_added);
         mAddUserId = view.findViewById(R.id.edit_identities_add_user_id);
 
         // If this is a debug build, don't upload by default

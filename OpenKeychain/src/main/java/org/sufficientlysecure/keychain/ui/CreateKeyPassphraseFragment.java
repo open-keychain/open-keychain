@@ -91,9 +91,9 @@ public class CreateKeyPassphraseFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_key_passphrase_fragment, container, false);
 
-        mPassphraseEdit = (PassphraseEditText) view.findViewById(R.id.create_key_passphrase);
-        mPassphraseEditAgain = (EditText) view.findViewById(R.id.create_key_passphrase_again);
-        mShowPassphrase = (CheckBox) view.findViewById(R.id.create_key_show_passphrase);
+        mPassphraseEdit = view.findViewById(R.id.create_key_passphrase);
+        mPassphraseEditAgain = view.findViewById(R.id.create_key_passphrase_again);
+        mShowPassphrase = view.findViewById(R.id.create_key_show_passphrase);
         mBackButton = view.findViewById(R.id.create_key_back_button);
         mNextButton = view.findViewById(R.id.create_key_next_button);
 

@@ -37,8 +37,7 @@ public class ViewKeyAdvStartFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.view_key_adv_start_fragment, container, false);
 
-        HtmlTextView textView = (HtmlTextView)
-                view.findViewById(R.id.view_key_adv_start_text);
+        HtmlTextView textView = view.findViewById(R.id.view_key_adv_start_text);
 
         // load markdown from raw resource
         try {

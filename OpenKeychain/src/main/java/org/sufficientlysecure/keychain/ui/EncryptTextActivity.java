@@ -77,7 +77,7 @@ public class EncryptTextActivity extends EncryptActivity {
                 sharedText = extras.getString(Intent.EXTRA_TEXT);
             } else  if (extras.containsKey(Intent.EXTRA_STREAM)) {
                 try {
-                    sharedText = FileHelper.readTextFromUri(this, extras.<Uri>getParcelable(Intent.EXTRA_STREAM), null);
+                    sharedText = FileHelper.readTextFromUri(this, extras.getParcelable(Intent.EXTRA_STREAM), null);
                 } catch (IOException e) {
                     Toast.makeText(this, R.string.error_preparing_data, Toast.LENGTH_LONG).show();
                     finish();

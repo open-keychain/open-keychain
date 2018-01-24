@@ -66,15 +66,15 @@ public class UserIdsAddedAdapter extends ArrayAdapter<String> {
             // Not recycled, inflate a new view
             convertView = mInflater.inflate(R.layout.view_key_adv_user_id_item, null);
             final ViewHolder holder = new ViewHolder();
-            holder.vAddress = (TextView) convertView.findViewById(R.id.user_id_item_address);
-            holder.vName = (TextView) convertView.findViewById(R.id.user_id_item_name);
-            holder.vComment = (TextView) convertView.findViewById(R.id.user_id_item_comment);
-            holder.vDelete = (ImageButton) convertView.findViewById(R.id.user_id_item_delete_button);
+            holder.vAddress = convertView.findViewById(R.id.user_id_item_address);
+            holder.vName = convertView.findViewById(R.id.user_id_item_name);
+            holder.vComment = convertView.findViewById(R.id.user_id_item_comment);
+            holder.vDelete = convertView.findViewById(R.id.user_id_item_delete_button);
             holder.vDelete.setVisibility(View.VISIBLE); // always visible
 
             // not used:
             View certifiedLayout = convertView.findViewById(R.id.user_id_icon_animator);
-            ImageView editImage = (ImageView) convertView.findViewById(R.id.user_id_item_edit_image);
+            ImageView editImage = convertView.findViewById(R.id.user_id_item_edit_image);
             certifiedLayout.setVisibility(View.GONE);
             editImage.setVisibility(View.GONE);
 

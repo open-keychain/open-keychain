@@ -139,11 +139,11 @@ public class SelectEncryptKeyAdapter extends KeyCursorAdapter<SelectEncryptKeyAd
             super(itemView);
             itemView.setOnClickListener(this);
 
-            mUserIdText = (TextView) itemView.findViewById(R.id.select_key_item_name);
-            mUserIdRestText = (TextView) itemView.findViewById(R.id.select_key_item_email);
-            mCreationText = (TextView) itemView.findViewById(R.id.select_key_item_creation);
-            mStatusIcon = (ImageView) itemView.findViewById(R.id.select_key_item_status_icon);
-            mChecked = (CheckBox) itemView.findViewById(R.id.selected);
+            mUserIdText = itemView.findViewById(R.id.select_key_item_name);
+            mUserIdRestText = itemView.findViewById(R.id.select_key_item_email);
+            mCreationText = itemView.findViewById(R.id.select_key_item_creation);
+            mStatusIcon = itemView.findViewById(R.id.select_key_item_status_icon);
+            mChecked = itemView.findViewById(R.id.selected);
         }
 
         public void bind(PublicKeyCursor cursor, String query, boolean selected) {

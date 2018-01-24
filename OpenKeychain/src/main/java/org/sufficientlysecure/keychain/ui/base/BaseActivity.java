@@ -87,7 +87,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void initToolbar() {
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar = findViewById(R.id.toolbar);
         if (mToolbar != null) {
             setSupportActionBar(mToolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -121,7 +121,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 .getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
         final View customActionBarView = inflater.inflate(R.layout.full_screen_dialog, null);
 
-        TextView firstTextView = ((TextView) customActionBarView.findViewById(R.id.full_screen_dialog_done_text));
+        TextView firstTextView = customActionBarView.findViewById(R.id.full_screen_dialog_done_text);
         firstTextView.setText(doneText);
         customActionBarView.findViewById(R.id.full_screen_dialog_done).setOnClickListener(
                 doneOnClickListener);
@@ -174,12 +174,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         final View customActionBarView = inflater.inflate(
                 R.layout.full_screen_dialog_2, null);
 
-        TextView firstTextView = ((TextView) customActionBarView.findViewById(R.id.actionbar_done_text));
+        TextView firstTextView = customActionBarView.findViewById(R.id.actionbar_done_text);
         firstTextView.setText(firstText);
         firstTextView.setCompoundDrawablesWithIntrinsicBounds(firstDrawableId, 0, 0, 0);
         customActionBarView.findViewById(R.id.actionbar_done).setOnClickListener(
                 firstOnClickListener);
-        TextView secondTextView = ((TextView) customActionBarView.findViewById(R.id.actionbar_cancel_text));
+        TextView secondTextView = customActionBarView.findViewById(R.id.actionbar_cancel_text);
         secondTextView.setText(secondText);
         secondTextView.setCompoundDrawablesWithIntrinsicBounds(secondDrawableId, 0, 0, 0);
         customActionBarView.findViewById(R.id.actionbar_cancel).setOnClickListener(

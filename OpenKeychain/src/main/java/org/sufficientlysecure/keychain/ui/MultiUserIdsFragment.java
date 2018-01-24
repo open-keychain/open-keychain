@@ -76,7 +76,7 @@ public class MultiUserIdsFragment extends Fragment implements LoaderManager.Load
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.multi_user_ids_fragment, null);
 
-        mUserIds = (ListView) view.findViewById(R.id.view_key_user_ids);
+        mUserIds = view.findViewById(R.id.view_key_user_ids);
 
         return view;
     }

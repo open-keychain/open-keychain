@@ -90,8 +90,8 @@ public class ViewKeyAdvActivity extends BaseActivity implements
 
         mKeyRepository = KeyRepository.create(this);
 
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        mSlidingTabLayout = (PagerSlidingTabStrip) findViewById(R.id.sliding_tab_layout);
+        mViewPager = findViewById(R.id.pager);
+        mSlidingTabLayout = findViewById(R.id.sliding_tab_layout);
 
         mDataUri = getIntent().getData();
         if (mDataUri == null) {

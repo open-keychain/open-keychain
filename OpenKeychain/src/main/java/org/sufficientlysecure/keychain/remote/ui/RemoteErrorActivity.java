@@ -63,7 +63,7 @@ public class RemoteErrorActivity extends BaseActivity {
         );
 
         // set text on view
-        TextView textView = (TextView) findViewById(R.id.api_app_error_message_text);
+        TextView textView = findViewById(R.id.api_app_error_message_text);
         textView.setText(redErrorMessage);
     }
 

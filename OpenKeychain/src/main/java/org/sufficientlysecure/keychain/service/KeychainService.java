@@ -99,7 +99,7 @@ public class KeychainService extends Service implements Progressable {
                 Bundle extras = intent.getExtras();
 
                 // Set messenger for communication (for this particular thread)
-                mMessenger.set(extras.<Messenger>getParcelable(EXTRA_MESSENGER));
+                mMessenger.set(extras.getParcelable(EXTRA_MESSENGER));
 
                 // Input
                 Parcelable inputParcel = extras.getParcelable(EXTRA_OPERATION_INPUT);

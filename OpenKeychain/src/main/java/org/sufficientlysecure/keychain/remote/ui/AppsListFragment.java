@@ -321,9 +321,9 @@ public class AppsListFragment extends ListFragment implements
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
-            TextView text = (TextView) view.findViewById(R.id.api_apps_adapter_item_name);
-            ImageView icon = (ImageView) view.findViewById(R.id.api_apps_adapter_item_icon);
-            ImageView installIcon = (ImageView) view.findViewById(R.id.api_apps_adapter_install_icon);
+            TextView text = view.findViewById(R.id.api_apps_adapter_item_name);
+            ImageView icon = view.findViewById(R.id.api_apps_adapter_item_icon);
+            ImageView installIcon = view.findViewById(R.id.api_apps_adapter_install_icon);
 
             String packageName = cursor.getString(INDEX_PACKAGE_NAME);
             Timber.d("packageName: " + packageName);

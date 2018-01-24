@@ -86,10 +86,10 @@ public class CreateKeyEmailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_key_email_fragment, container, false);
 
-        mEmailEdit = (EmailEditText) view.findViewById(R.id.create_key_email);
+        mEmailEdit = view.findViewById(R.id.create_key_email);
         View backButton = view.findViewById(R.id.create_key_back_button);
         View nextButton = view.findViewById(R.id.create_key_next_button);
-        RecyclerView emailsRecyclerView = (RecyclerView) view.findViewById(R.id.create_key_emails);
+        RecyclerView emailsRecyclerView = view.findViewById(R.id.create_key_emails);
 
         // initial values
         mEmailEdit.setText(mCreateKeyActivity.mEmail);
@@ -286,8 +286,8 @@ public class CreateKeyEmailFragment extends Fragment {
 
             public ViewHolder(View itemView) {
                 super(itemView);
-                mTextView = (TextView) itemView.findViewById(R.id.create_key_email_item_email);
-                mDeleteButton = (ImageButton) itemView.findViewById(R.id.create_key_email_item_delete_button);
+                mTextView = itemView.findViewById(R.id.create_key_email_item_email);
+                mDeleteButton = itemView.findViewById(R.id.create_key_email_item_delete_button);
             }
         }
 
@@ -296,7 +296,7 @@ public class CreateKeyEmailFragment extends Fragment {
 
             public FooterHolder(View itemView) {
                 super(itemView);
-                mAddButton = (Button) itemView.findViewById(R.id.create_key_add_email);
+                mAddButton = itemView.findViewById(R.id.create_key_add_email);
             }
         }
 

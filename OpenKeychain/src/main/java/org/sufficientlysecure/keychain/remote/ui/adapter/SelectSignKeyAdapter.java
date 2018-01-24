@@ -129,10 +129,10 @@ public class SelectSignKeyAdapter extends KeyCursorAdapter<CursorAdapter.KeyCurs
             itemView.setClickable(true);
             itemView.setOnClickListener(this);
 
-            mUserIdText = (TextView) itemView.findViewById(R.id.select_key_item_name);
-            mUserIdRestText = (TextView) itemView.findViewById(R.id.select_key_item_email);
-            mCreationText = (TextView) itemView.findViewById(R.id.select_key_item_creation);
-            mStatusIcon = (ImageView) itemView.findViewById(R.id.select_key_item_status_icon);
+            mUserIdText = itemView.findViewById(R.id.select_key_item_name);
+            mUserIdRestText = itemView.findViewById(R.id.select_key_item_email);
+            mCreationText = itemView.findViewById(R.id.select_key_item_creation);
+            mStatusIcon = itemView.findViewById(R.id.select_key_item_status_icon);
         }
 
         public void bind(KeyCursor cursor, String query) {

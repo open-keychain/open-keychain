@@ -218,7 +218,11 @@ public class FileHelper {
      */
     public static Bitmap getThumbnail(Context context, Uri uri, Point size) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            return DocumentsContract.getDocumentThumbnail(context.getContentResolver(), uri, size, null);
+            try {
+                return DocumentsContract.getDocumentThumbnail(context.getContentResolver(), uri, size, null);
+            } catch (FileNotFoundException e) {
+                return null;
+            }
         } else {
             return null;
         }

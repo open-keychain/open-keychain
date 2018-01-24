@@ -131,10 +131,10 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.edit_key_fragment, superContainer, false);
 
-        mUserIdsList = (ListView) view.findViewById(R.id.edit_key_user_ids);
-        mSubkeysList = (ListView) view.findViewById(R.id.edit_key_keys);
-        mUserIdsAddedList = (ListView) view.findViewById(R.id.edit_key_user_ids_added);
-        mSubkeysAddedList = (ListView) view.findViewById(R.id.edit_key_subkeys_added);
+        mUserIdsList = view.findViewById(R.id.edit_key_user_ids);
+        mSubkeysList = view.findViewById(R.id.edit_key_keys);
+        mUserIdsAddedList = view.findViewById(R.id.edit_key_user_ids_added);
+        mSubkeysAddedList = view.findViewById(R.id.edit_key_subkeys_added);
         mChangePassphrase = view.findViewById(R.id.edit_key_action_change_passphrase);
         mAddUserId = view.findViewById(R.id.edit_key_action_add_user_id);
         mAddSubkey = view.findViewById(R.id.edit_key_action_add_key);
@@ -341,7 +341,7 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
                     // cache new returned passphrase!
                     mSkpBuilder.setNewUnlock(ChangeUnlockParcel.createChangeUnlockParcel(
                             mSkpBuilder.getMasterKeyId(), mSkpBuilder.getFingerprint(),
-                            (Passphrase) data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE)));
+                            data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE)));
                 }
             }
         };

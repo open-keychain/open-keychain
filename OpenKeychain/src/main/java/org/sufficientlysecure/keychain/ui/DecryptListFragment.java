@@ -165,7 +165,7 @@ public class DecryptListFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.decrypt_files_list_fragment, container, false);
 
-        RecyclerView vFilesList = (RecyclerView) view.findViewById(R.id.decrypted_files_list);
+        RecyclerView vFilesList = view.findViewById(R.id.decrypted_files_list);
 
         vFilesList.addItemDecoration(new SpacesItemDecoration(
                 FormattingUtils.dpToPx(getActivity(), 4)));
@@ -1203,9 +1203,9 @@ public class DecryptListFragment
 
             public SubViewHolder(View itemView) {
                 vFile = itemView.findViewById(R.id.file);
-                vFilename = (TextView) itemView.findViewById(R.id.filename);
-                vFilesize = (TextView) itemView.findViewById(R.id.filesize);
-                vThumbnail = (ImageView) itemView.findViewById(R.id.thumbnail);
+                vFilename = itemView.findViewById(R.id.filename);
+                vFilesize = itemView.findViewById(R.id.filesize);
+                vThumbnail = itemView.findViewById(R.id.thumbnail);
             }
         }
 
@@ -1215,22 +1215,22 @@ public class DecryptListFragment
         public ViewHolder(View itemView) {
             super(itemView);
 
-            vAnimator = (ViewAnimator) itemView.findViewById(R.id.view_animator);
+            vAnimator = itemView.findViewById(R.id.view_animator);
 
-            vProgress = (ProgressBar) itemView.findViewById(R.id.progress);
-            vProgressMsg = (TextView) itemView.findViewById(R.id.progress_msg);
+            vProgress = itemView.findViewById(R.id.progress);
+            vProgressMsg = itemView.findViewById(R.id.progress_msg);
 
-            vEncStatusIcon = (ImageView) itemView.findViewById(R.id.result_encryption_icon);
-            vEncStatusText = (TextView) itemView.findViewById(R.id.result_encryption_text);
+            vEncStatusIcon = itemView.findViewById(R.id.result_encryption_icon);
+            vEncStatusText = itemView.findViewById(R.id.result_encryption_text);
 
-            vSigStatusIcon = (ImageView) itemView.findViewById(R.id.result_signature_icon);
-            vSigStatusText = (TextView) itemView.findViewById(R.id.result_signature_text);
+            vSigStatusIcon = itemView.findViewById(R.id.result_signature_icon);
+            vSigStatusText = itemView.findViewById(R.id.result_signature_text);
             vSignatureLayout = itemView.findViewById(R.id.result_signature_layout);
-            vSignatureName = (TextView) itemView.findViewById(R.id.result_signature_name);
-            vSignatureMail = (TextView) itemView.findViewById(R.id.result_signature_email);
-            vSignatureAction = (ViewAnimator) itemView.findViewById(R.id.result_signature_action);
+            vSignatureName = itemView.findViewById(R.id.result_signature_name);
+            vSignatureMail = itemView.findViewById(R.id.result_signature_email);
+            vSignatureAction = itemView.findViewById(R.id.result_signature_action);
 
-            vFileList = (LinearLayout) itemView.findViewById(R.id.file_list);
+            vFileList = itemView.findViewById(R.id.file_list);
             for (int i = 0; i < vFileList.getChildCount(); i++) {
                 mFileHolderList.add(new SubViewHolder(vFileList.getChildAt(i)));
                 mCurrentFileListSize += 1;
@@ -1238,10 +1238,10 @@ public class DecryptListFragment
 
             vContextMenu = itemView.findViewById(R.id.context_menu);
 
-            vErrorMsg = (TextView) itemView.findViewById(R.id.result_error_msg);
-            vErrorViewLog = (ImageView) itemView.findViewById(R.id.result_error_log);
+            vErrorMsg = itemView.findViewById(R.id.result_error_msg);
+            vErrorViewLog = itemView.findViewById(R.id.result_error_log);
 
-            vCancelledRetry = (ImageView) itemView.findViewById(R.id.cancel_retry);
+            vCancelledRetry = itemView.findViewById(R.id.cancel_retry);
 
         }
 

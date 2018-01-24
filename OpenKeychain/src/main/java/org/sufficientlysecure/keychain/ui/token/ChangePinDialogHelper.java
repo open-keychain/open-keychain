@@ -43,9 +43,9 @@ class ChangePinDialogHelper {
 
         @SuppressLint("InflateParams") // it's a dialog, no root element
         View view = LayoutInflater.from(themedContext).inflate(R.layout.admin_pin_dialog, null, false);
-        final EditText adminPin = (EditText) view.findViewById(R.id.admin_pin_current);
-        final EditText newPin = (EditText) view.findViewById(R.id.pin_new);
-        final EditText newPinRepeat = (EditText) view.findViewById(R.id.pin_new_repeat);
+        final EditText adminPin = view.findViewById(R.id.admin_pin_current);
+        final EditText newPin = view.findViewById(R.id.pin_new);
+        final EditText newPinRepeat = view.findViewById(R.id.pin_new_repeat);
 
         AlertDialog dialog = new Builder(themedContext)
                 .setView(view)

@@ -94,7 +94,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
         super.onCreate(savedInstanceState);
         Timber.d("NfcOperationActivity.onCreate");
 
-        nfcGuideView = (NfcGuideView) findViewById(R.id.nfc_guide_view);
+        nfcGuideView = findViewById(R.id.nfc_guide_view);
 
         // prevent annoying orientation changes while fumbling with the device
         OrientationUtils.lockOrientation(this);
@@ -107,13 +107,13 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
 
         setTitle(R.string.security_token_nfc_text);
 
-        vAnimator = (ViewAnimator) findViewById(R.id.view_animator);
+        vAnimator = findViewById(R.id.view_animator);
         vAnimator.setDisplayedChild(0);
 
         nfcGuideView.setCurrentStatus(NfcGuideView.NfcGuideViewStatus.STARTING_POSITION);
 
-        vErrorText = (TextView) findViewById(R.id.security_token_activity_3_error_text);
-        vErrorTryAgainButton = (Button) findViewById(R.id.security_token_activity_3_error_try_again);
+        vErrorText = findViewById(R.id.security_token_activity_3_error_text);
+        vErrorTryAgainButton = findViewById(R.id.security_token_activity_3_error_try_again);
         vErrorTryAgainButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,7 +126,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                 nfcGuideView.setCurrentStatus(NfcGuideView.NfcGuideViewStatus.STARTING_POSITION);
             }
         });
-        Button vCancel = (Button) findViewById(R.id.security_token_activity_0_cancel);
+        Button vCancel = findViewById(R.id.security_token_activity_0_cancel);
         vCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

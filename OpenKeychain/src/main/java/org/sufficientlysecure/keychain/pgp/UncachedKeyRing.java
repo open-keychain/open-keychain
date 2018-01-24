@@ -255,8 +255,8 @@ public class UncachedKeyRing {
     }
 
     public interface IteratorWithIOThrow<E> {
-        public boolean hasNext() throws IOException;
-        public E next() throws IOException;
+        boolean hasNext() throws IOException;
+        E next() throws IOException;
     }
     public void encodeArmored(OutputStream out, String version) throws IOException {
         ArmoredOutputStream aos = new ArmoredOutputStream(out);

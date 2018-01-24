@@ -109,18 +109,18 @@ public class TransferFragment extends Fragment implements TransferMvpView {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.transfer_fragment, container, false);
 
-        vTransferAnimator = (ToolableViewAnimator) view.findViewById(R.id.transfer_animator);
+        vTransferAnimator = view.findViewById(R.id.transfer_animator);
 
-        vConnectionStatusText1 = (TextView) view.findViewById(R.id.connection_status_1);
-        vConnectionStatusText2 = (TextView) view.findViewById(R.id.connection_status_2);
-        vConnectionStatusView1 = (ConnectionStatusView) view.findViewById(R.id.connection_status_icon_1);
-        vConnectionStatusView2 = (ConnectionStatusView) view.findViewById(R.id.connection_status_icon_2);
-        vTransferKeyList = (RecyclerView) view.findViewById(R.id.transfer_key_list);
+        vConnectionStatusText1 = view.findViewById(R.id.connection_status_1);
+        vConnectionStatusText2 = view.findViewById(R.id.connection_status_2);
+        vConnectionStatusView1 = view.findViewById(R.id.connection_status_icon_1);
+        vConnectionStatusView2 = view.findViewById(R.id.connection_status_icon_2);
+        vTransferKeyList = view.findViewById(R.id.transfer_key_list);
         vTransferKeyListEmptyView = view.findViewById(R.id.transfer_key_list_empty);
-        vReceivedKeyList = (RecyclerView) view.findViewById(R.id.received_key_list);
-        vWifiErrorInstructions = (TextView) view.findViewById(R.id.transfer_wifi_error_instructions);
+        vReceivedKeyList = view.findViewById(R.id.received_key_list);
+        vWifiErrorInstructions = view.findViewById(R.id.transfer_wifi_error_instructions);
 
-        vQrCodeImage = (ImageView) view.findViewById(R.id.qr_code_image);
+        vQrCodeImage = view.findViewById(R.id.qr_code_image);
 
         view.findViewById(R.id.button_scan).setOnClickListener(new OnClickListener() {
             @Override
@@ -157,7 +157,7 @@ public class TransferFragment extends Fragment implements TransferMvpView {
 
         Intent activityIntent = getActivity().getIntent();
         if (activityIntent != null && activityIntent.hasExtra(EXTRA_OPENPGP_SKT_INFO)) {
-            presenter.onUiInitFromIntentUri(activityIntent.<Uri>getParcelableExtra(EXTRA_OPENPGP_SKT_INFO));
+            presenter.onUiInitFromIntentUri(activityIntent.getParcelableExtra(EXTRA_OPENPGP_SKT_INFO));
         }
     }
 

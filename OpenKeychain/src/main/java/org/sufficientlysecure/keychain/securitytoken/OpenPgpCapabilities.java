@@ -21,9 +21,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
-import org.jetbrains.annotations.Nullable;
 
 
 @SuppressWarnings("unused") // just expose all included data

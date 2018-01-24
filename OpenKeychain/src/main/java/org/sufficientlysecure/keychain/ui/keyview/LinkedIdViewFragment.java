@@ -270,10 +270,10 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
         private final TextSwitcher vText;
 
         ViewHolder(View root) {
-            vLinkedCerts = (CertListWidget) root.findViewById(R.id.linked_id_certs);
-            vKeySpinner = (CertifyKeySpinner) root.findViewById(R.id.cert_key_spinner);
+            vLinkedCerts = root.findViewById(R.id.linked_id_certs);
+            vKeySpinner = root.findViewById(R.id.cert_key_spinner);
             vKeySpinnerContainer = root.findViewById(R.id.cert_key_spincontainer);
-            vButtonSwitcher = (ViewAnimator) root.findViewById(R.id.button_animator);
+            vButtonSwitcher = root.findViewById(R.id.button_animator);
 
             mLinkedIdHolder = new IdentityAdapter.LinkedIdViewHolder(root, null);
 
@@ -282,11 +282,11 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
             vButtonConfirm = root.findViewById(R.id.button_confirm);
             vButtonView = root.findViewById(R.id.button_view);
 
-            vVerifyingContainer = (ViewAnimator) root.findViewById(R.id.linked_verify_container);
-            vItemCertified = (ViewAnimator) root.findViewById(R.id.linked_id_certified);
+            vVerifyingContainer = root.findViewById(R.id.linked_verify_container);
+            vItemCertified = root.findViewById(R.id.linked_id_certified);
 
-            vProgress = (ViewAnimator) root.findViewById(R.id.linked_cert_progress);
-            vText = (TextSwitcher) root.findViewById(R.id.linked_cert_text);
+            vProgress = root.findViewById(R.id.linked_cert_progress);
+            vText = root.findViewById(R.id.linked_cert_text);
         }
 
         enum VerifyState {

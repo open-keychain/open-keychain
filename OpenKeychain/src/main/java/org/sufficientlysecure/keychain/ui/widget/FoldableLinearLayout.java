@@ -134,7 +134,7 @@ public class FoldableLinearLayout extends LinearLayout {
                 Context.LAYOUT_INFLATER_SERVICE);
 
         mFoldableLayout = inflator.inflate(R.layout.foldable_linearlayout, this, true);
-        mFoldableContainer = (LinearLayout) mFoldableLayout.findViewById(R.id.foldableContainer);
+        mFoldableContainer = mFoldableLayout.findViewById(R.id.foldableContainer);
 
         // Push previously collected children into foldableContainer.
         for (int i = 0; i < childNum; i++) {
@@ -143,15 +143,15 @@ public class FoldableLinearLayout extends LinearLayout {
     }
 
     private void initialiseInnerViews() {
-        mFoldableIcon = (ImageView) mFoldableLayout.findViewById(R.id.foldableIcon);
+        mFoldableIcon = mFoldableLayout.findViewById(R.id.foldableIcon);
         mFoldableIcon.setImageResource(R.drawable.ic_expand_more_black_24dp);
-        mFoldableTextView = (TextView) mFoldableLayout.findViewById(R.id.foldableText);
+        mFoldableTextView = mFoldableLayout.findViewById(R.id.foldableText);
         mFoldableTextView.setText(mFoldedLabel);
 
         // retrieve and cache the system's short animation time
         mShortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-        LinearLayout foldableControl = (LinearLayout) mFoldableLayout.findViewById(R.id.foldableControl);
+        LinearLayout foldableControl = mFoldableLayout.findViewById(R.id.foldableControl);
         foldableControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
