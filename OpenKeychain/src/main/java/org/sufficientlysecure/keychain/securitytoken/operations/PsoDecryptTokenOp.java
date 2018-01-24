@@ -25,6 +25,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -43,7 +44,6 @@ import org.sufficientlysecure.keychain.securitytoken.CardException;
 import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
 import org.sufficientlysecure.keychain.securitytoken.ECKeyFormat;
 import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
-import org.sufficientlysecure.keychain.securitytoken.KeyType;
 import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 
@@ -84,14 +84,7 @@ public class PsoDecryptTokenOp {
     }
 
     private byte[] decryptSessionKeyRsa(byte[] encryptedSessionKeyMpi) throws IOException {
-        int mpiLength = getMpiLength(encryptedSessionKeyMpi);
-        if (mpiLength != encryptedSessionKeyMpi.length - 2) {
-            throw new IOException("Malformed RSA session key!");
-        }
-
-        byte[] psoDecipherPayload = new byte[mpiLength + 1];
-        psoDecipherPayload[0] = (byte) 0x00; // RSA Padding Indicator Byte
-        System.arraycopy(encryptedSessionKeyMpi, 2, psoDecipherPayload, 1, mpiLength);
+        byte[] psoDecipherPayload = getRsaOperationPayload(encryptedSessionKeyMpi);
 
         CommandApdu command = connection.getCommandFactory().createDecipherCommand(psoDecipherPayload);
         ResponseApdu response = connection.communicate(command);
@@ -101,6 +94,19 @@ public class PsoDecryptTokenOp {
         }
 
         return response.getData();
+    }
+
+    @VisibleForTesting
+    public byte[] getRsaOperationPayload(byte[] encryptedSessionKeyMpi) throws IOException {
+        int mpiLength = getMpiLength(encryptedSessionKeyMpi);
+        if (mpiLength != encryptedSessionKeyMpi.length - 2) {
+            throw new IOException("Malformed RSA session key!");
+        }
+
+        byte[] psoDecipherPayload = new byte[mpiLength + 1];
+        psoDecipherPayload[0] = 0x00; // RSA Padding Indicator Byte
+        System.arraycopy(encryptedSessionKeyMpi, 2, psoDecipherPayload, 1, mpiLength);
+        return psoDecipherPayload;
     }
 
     private byte[] decryptSessionKeyEcdh(byte[] encryptedSessionKeyMpi, ECKeyFormat eckf, CanonicalizedPublicKey publicKey)
