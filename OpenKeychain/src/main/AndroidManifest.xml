@@ -24,8 +24,7 @@
         For OI Filemanager it makes no difference, gpg files can't be associated
     -->
 
-    <!-- SDK levels are specified in build.gradle -->
-
+    <!-- The features are explicitly set to android:required="false" to disable all filtering on Google Play -->
     <uses-feature
         android:name="android.hardware.wifi"
         android:required="false" />
@@ -42,11 +41,11 @@
     <uses-feature
         android:name="android.hardware.screen.portrait"
         android:required="false" />
-
     <!-- For OTG tokens -->
     <uses-feature
         android:name="android.hardware.usb.host"
         android:required="false" />
+    <!-- camera features are set to android:required="false" by ZXing library -->
 
     <!-- TemporaryStorageProvider should be writable by OpenKeychain only, thus signature-level permission -->
     <permission
