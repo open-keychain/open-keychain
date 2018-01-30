@@ -247,7 +247,7 @@ public class SecurityTokenConnection {
     // region secure messaging
 
     private void smEstablishIfAvailable(Context context) throws IOException {
-        if (!openPgpCapabilities.isHasAesSm()) {
+        if (!openPgpCapabilities.isHasScp11bSm()) {
             return;
         }
 
