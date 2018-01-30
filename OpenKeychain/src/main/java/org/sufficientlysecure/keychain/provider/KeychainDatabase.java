@@ -24,6 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import android.content.Context;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -413,44 +414,47 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                         + ")");
 
             case 24:
-                db.beginTransaction();
-                db.execSQL("ALTER TABLE api_autocrypt_peers RENAME TO tmp");
-                db.execSQL("CREATE TABLE api_autocrypt_peers ("
-                        + "package_name TEXT NOT NULL, "
-                        + "identifier TEXT NOT NULL, "
-                        + "last_seen INTEGER, "
-                        + "last_seen_key INTEGER, "
-                        + "is_mutual INTEGER, "
-                        + "master_key_id INTEGER, "
-                        + "gossip_master_key_id INTEGER, "
-                        + "gossip_last_seen_key INTEGER, "
-                        + "gossip_origin INTEGER, "
-                        + "PRIMARY KEY(package_name, identifier), "
-                        + "FOREIGN KEY(package_name) REFERENCES api_apps (package_name) ON DELETE CASCADE"
-                    + ")");
-                // Note: Keys from Autocrypt 0.X with state == "reset" (0) are dropped
-                db.execSQL("INSERT INTO api_autocrypt_peers " +
-                        "(package_name, identifier, last_seen, gossip_last_seen_key, gossip_master_key_id, gossip_origin) " +
-                        "SELECT package_name, identifier, last_updated, last_seen_key, master_key_id, 0 " +
-                        "FROM tmp WHERE state = 1"); // Autocrypt 0.X, "gossip" -> now origin=autocrypt
-                db.execSQL("INSERT INTO api_autocrypt_peers " +
-                        "(package_name, identifier, last_seen, gossip_last_seen_key, gossip_master_key_id, gossip_origin) " +
-                        "SELECT package_name, identifier, last_updated, last_seen_key, master_key_id, 20 " +
-                        "FROM tmp WHERE state = 2"); // "selected" keys -> now origin=dedup
-                db.execSQL("INSERT INTO api_autocrypt_peers " +
-                        "(package_name, identifier, last_seen, last_seen_key, master_key_id, is_mutual) " +
-                        "SELECT package_name, identifier, last_updated, last_seen_key, master_key_id, 0 " +
+                try {
+                    db.beginTransaction();
+                    db.execSQL("ALTER TABLE api_autocrypt_peers RENAME TO tmp");
+                    db.execSQL("CREATE TABLE api_autocrypt_peers ("
+                            + "package_name TEXT NOT NULL, "
+                            + "identifier TEXT NOT NULL, "
+                            + "last_seen INTEGER, "
+                            + "last_seen_key INTEGER, "
+                            + "is_mutual INTEGER, "
+                            + "master_key_id INTEGER, "
+                            + "gossip_master_key_id INTEGER, "
+                            + "gossip_last_seen_key INTEGER, "
+                            + "gossip_origin INTEGER, "
+                            + "PRIMARY KEY(package_name, identifier), "
+                            + "FOREIGN KEY(package_name) REFERENCES api_apps (package_name) ON DELETE CASCADE"
+                            + ")");
+                    // Note: Keys from Autocrypt 0.X with state == "reset" (0) are dropped
+                    db.execSQL("INSERT INTO api_autocrypt_peers " +
+                            "(package_name, identifier, last_seen, gossip_last_seen_key, gossip_master_key_id, gossip_origin) " +
+                            "SELECT package_name, identifier, last_updated, last_seen_key, master_key_id, 0 " +
+                            "FROM tmp WHERE state = 1"); // Autocrypt 0.X, "gossip" -> now origin=autocrypt
+                    db.execSQL("INSERT INTO api_autocrypt_peers " +
+                            "(package_name, identifier, last_seen, gossip_last_seen_key, gossip_master_key_id, gossip_origin) " +
+                            "SELECT package_name, identifier, last_updated, last_seen_key, master_key_id, 20 " +
+                            "FROM tmp WHERE state = 2"); // "selected" keys -> now origin=dedup
+                    db.execSQL("INSERT INTO api_autocrypt_peers " +
+                            "(package_name, identifier, last_seen, last_seen_key, master_key_id, is_mutual) " +
+                            "SELECT package_name, identifier, last_updated, last_seen_key, master_key_id, 0 " +
                             "FROM tmp WHERE state = 3"); // Autocrypt 0.X, state = "available"
-                db.execSQL("INSERT INTO api_autocrypt_peers " +
-                        "(package_name, identifier, last_seen, last_seen_key, master_key_id, is_mutual) " +
-                        "SELECT package_name, identifier, last_updated, last_seen_key, master_key_id, 1 " +
+                    db.execSQL("INSERT INTO api_autocrypt_peers " +
+                            "(package_name, identifier, last_seen, last_seen_key, master_key_id, is_mutual) " +
+                            "SELECT package_name, identifier, last_updated, last_seen_key, master_key_id, 1 " +
                             "FROM tmp WHERE state = 4"); // from Autocrypt 0.X, state = "mutual"
-                db.execSQL("DROP TABLE tmp");
-                db.setTransactionSuccessful();
-                db.endTransaction();
+                    db.execSQL("DROP TABLE tmp");
+                    db.setTransactionSuccessful();
+                } finally {
+                    db.endTransaction();
+                }
 
+                db.execSQL("CREATE INDEX IF NOT EXISTS uids_by_email ON user_packets (email);");
                 db.execSQL("DROP INDEX keys_by_rank");
-                db.execSQL("CREATE INDEX uids_by_email ON user_packets (email);");
                 db.execSQL("CREATE INDEX keys_by_rank ON keys(rank, master_key_id);");
         }
     }
