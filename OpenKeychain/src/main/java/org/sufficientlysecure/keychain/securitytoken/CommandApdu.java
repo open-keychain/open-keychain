@@ -42,43 +42,39 @@ public abstract class CommandApdu {
     }
 
     public static CommandApdu create(int cla, int ins, int p1, int p2) {
-        return create(cla, ins, p1, p2, null, 0);
+        return create(cla, ins, p1, p2, null, 0, 0, 0);
     }
 
     public static CommandApdu create(int cla, int ins, int p1, int p2, int ne) {
-        return create(cla, ins, p1, p2, null, ne);
+        return create(cla, ins, p1, p2, null, 0, 0, ne);
     }
 
     public static CommandApdu create(int cla, int ins, int p1, int p2, byte[] data) {
-        return create(cla, ins, p1, p2, data, 0);
+        return create(cla, ins, p1, p2, data, 0, data.length, 0);
     }
 
     public static CommandApdu create(int cla, int ins, int p1, int p2, byte[] data, int dataOffset, int dataLength) {
-        if (data != null) {
-            data = Arrays.copyOfRange(data, dataOffset, dataOffset + dataLength);
-        }
-        return create(cla, ins, p1, p2, data, 0);
-    }
-
-    public static CommandApdu create(int cla, int ins, int p1, int p2, byte[] data, int dataOffset, int dataLength,
-            int ne) {
-        if (data != null) {
-            data = Arrays.copyOfRange(data, dataOffset, dataOffset + dataLength);
-        }
-        return create(cla, ins, p1, p2, data, ne);
+        return create(cla, ins, p1, p2, data, dataOffset, dataLength,0);
     }
 
     public static CommandApdu create(int cla, int ins, int p1, int p2, byte[] data, int ne) {
+        return create(cla, ins, p1, p2, data, 0, data.length, ne);
+    }
+
+    public static CommandApdu create(
+            int cla, int ins, int p1, int p2, byte[] data, int dataOffset, int dataLength, int ne) {
         if (ne < 0) {
             throw new IllegalArgumentException("ne must not be negative");
         }
         if (ne > 65536) {
             throw new IllegalArgumentException("ne is too large");
         }
-
-        if (data == null) {
+        if (data != null) {
+            data = Arrays.copyOfRange(data, dataOffset, dataOffset + dataLength);
+        } else {
             data = new byte[0];
         }
+
         return new AutoValue_CommandApdu(cla, ins, p1, p2, data, ne);
     }
 
