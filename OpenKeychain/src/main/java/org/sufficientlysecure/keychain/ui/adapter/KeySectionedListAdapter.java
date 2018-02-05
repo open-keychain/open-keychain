@@ -367,7 +367,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
             mMainUserIdRest = itemView.findViewById(R.id.key_list_item_email);
             mStatus = itemView.findViewById(R.id.key_list_item_status_icon);
             mSlinger = itemView.findViewById(R.id.key_list_item_slinger_view);
-            mSlingerButton = itemView.findViewById(R.id.key_list_item_slinger_button);
+            mSlingerButton = itemView.findViewById(R.id.key_list_item_action);
             mCreationDate = itemView.findViewById(R.id.key_list_item_creation);
             mTrustIdIcon = itemView.findViewById(R.id.key_list_item_tid_icon);
 
@@ -515,9 +515,9 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
         public void onClick(View v) {
             int pos = getAdapterPosition();
             switch (v.getId()) {
-                case R.id.key_list_item_slinger_button:
+                case R.id.key_list_item_action:
                     if (mListener != null) {
-                        mListener.onSlingerButtonClicked(getItemId());
+                        mListener.onItemActionButtonClicked(getItemId());
                     }
                     break;
 
@@ -642,7 +642,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
 
         void onKeyItemClicked(long masterKeyId);
 
-        void onSlingerButtonClicked(long masterKeyId);
+        void onItemActionButtonClicked(long masterKeyId);
 
         void onSelectionStateChanged(int selectedCount);
     }

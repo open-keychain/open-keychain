@@ -117,7 +117,7 @@ public class KeyAdapter extends CursorAdapter {
             mMainUserIdRest = view.findViewById(R.id.key_list_item_email);
             mStatus = view.findViewById(R.id.key_list_item_status_icon);
             mSlinger = view.findViewById(R.id.key_list_item_slinger_view);
-            mSlingerButton = view.findViewById(R.id.key_list_item_slinger_button);
+            mSlingerButton = view.findViewById(R.id.key_list_item_action);
             mCreationDate = view.findViewById(R.id.key_list_item_creation);
         }
 

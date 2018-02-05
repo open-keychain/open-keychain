@@ -18,10 +18,15 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.view.ViewCompat;
+import android.view.View;
 import android.widget.ImageView;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -38,6 +43,25 @@ import timber.log.Timber;
 
 public class QrCodeViewActivity extends BaseActivity {
     private ImageView qrCode;
+
+    public static void showQrCodeDialog(Activity activity, Uri keyUri) {
+        showQrCodeDialog(activity, keyUri, null);
+    }
+
+    public static void showQrCodeDialog(Activity activity, Uri keyUri, View transitionLayout) {
+        Intent qrCodeIntent = new Intent(activity, QrCodeViewActivity.class);
+
+        Bundle optionBundle = null;
+        if (transitionLayout != null) {
+            ViewCompat.setTransitionName(transitionLayout, "qr_code");
+            ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                    activity, transitionLayout, "qr_code");
+            optionBundle = activityOptions.toBundle();
+        }
+
+        qrCodeIntent.setData(keyUri);
+        ActivityCompat.startActivity(activity, qrCodeIntent, optionBundle);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

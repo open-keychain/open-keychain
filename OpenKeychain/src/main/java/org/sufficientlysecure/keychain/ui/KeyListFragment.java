@@ -40,7 +40,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ViewAnimator;
@@ -48,6 +47,7 @@ import android.widget.ViewAnimator;
 import com.futuremind.recyclerviewfastscroll.FastScroller;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.zxing.qrcode.encoder.QRCode;
 import com.tonicartos.superslim.LayoutManager;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -164,10 +164,8 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         }
 
         @Override
-        public void onSlingerButtonClicked(long masterKeyId) {
-            Intent safeSlingerIntent = new Intent(getActivity(), SafeSlingerActivity.class);
-            safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, masterKeyId);
-            startActivityForResult(safeSlingerIntent, REQUEST_ACTION);
+        public void onItemActionButtonClicked(long masterKeyId) {
+            QrCodeViewActivity.showQrCodeDialog(getActivity(), KeyRings.buildGenericKeyRingUri(masterKeyId));
         }
 
         @Override
@@ -202,26 +200,17 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         FloatingActionButton fabCloud = view.findViewById(R.id.fab_add_cloud);
         FloatingActionButton fabFile = view.findViewById(R.id.fab_add_file);
 
-        fabQrCode.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mFab.collapse();
-                scanQrCode();
-            }
+        fabQrCode.setOnClickListener(v -> {
+            mFab.collapse();
+            scanQrCode();
         });
-        fabCloud.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mFab.collapse();
-                searchCloud();
-            }
+        fabCloud.setOnClickListener(v -> {
+            mFab.collapse();
+            searchCloud();
         });
-        fabFile.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mFab.collapse();
-                importFile();
-            }
+        fabFile.setOnClickListener(v -> {
+            mFab.collapse();
+            importFile();
         });
 
 
@@ -248,12 +237,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         // click on search button (in empty view) starts query for search string
         vSearchContainer = activity.findViewById(R.id.search_container);
         vSearchButton = activity.findViewById(R.id.search_button);
-        vSearchButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startSearchForQuery();
-            }
-        });
+        vSearchButton.setOnClickListener(v -> startSearchForQuery());
 
         KeySectionedListAdapter adapter = new KeySectionedListAdapter(getContext(), null);
         adapter.setKeyListener(mKeyListener);

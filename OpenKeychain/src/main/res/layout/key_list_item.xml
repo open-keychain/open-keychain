@@ -67,7 +67,7 @@
         android:layout_height="?android:attr/listPreferredItemHeight"
         android:layout_gravity="center_vertical"
         android:orientation="horizontal"
-        tools:visibility="gone">
+        tools:visibility="visible">
 
         <View
             android:layout_width="1dip"
@@ -78,14 +78,16 @@
             android:background="?android:attr/listDivider" />
 
         <ImageButton
-            android:id="@+id/key_list_item_slinger_button"
+            android:id="@+id/key_list_item_action"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:src="@drawable/ic_repeat_grey_24dp"
+            android:src="@drawable/ic_qrcode_white_24dp"
             android:padding="16dp"
             android:background="?android:selectableItemBackground"
-            android:contentDescription="@string/cd_exchange_keys"/>
+            android:contentDescription="@string/cd_exchange_keys"
+            android:tint="@color/md_grey_700"
+            />
 
     </LinearLayout>
 

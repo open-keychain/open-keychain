@@ -46,6 +46,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -115,7 +116,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         LoaderManager.LoaderCallbacks<Cursor>,
         CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({REQUEST_QR_FINGERPRINT, REQUEST_BACKUP, REQUEST_CERTIFY, REQUEST_DELETE})
+    @IntDef({ REQUEST_QR_FINGERPRINT, REQUEST_BACKUP, REQUEST_CERTIFY, REQUEST_DELETE })
     private @interface RequestType {
     }
 
@@ -478,19 +479,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     }
 
     private void showQrCodeDialog() {
-        Intent qrCodeIntent = new Intent(this, QrCodeViewActivity.class);
-
-        // create the transition animation - the images in the layouts
-        // of both activities are defined with android:transitionName="qr_code"
-        Bundle opts = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ActivityOptions options = ActivityOptions
-                    .makeSceneTransitionAnimation(this, mQrCodeLayout, "qr_code");
-            opts = options.toBundle();
-        }
-
-        qrCodeIntent.setData(mDataUri);
-        ActivityCompat.startActivity(this, qrCodeIntent, opts);
+        QrCodeViewActivity.showQrCodeDialog(this, mDataUri, mQrCodeLayout);
     }
 
     private void startPassphraseActivity(int requestCode) {
@@ -528,7 +517,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     private void startBackupActivity() {
         Intent intent = new Intent(this, BackupActivity.class);
-        intent.putExtra(BackupActivity.EXTRA_MASTER_KEY_IDS, new long[]{mMasterKeyId});
+        intent.putExtra(BackupActivity.EXTRA_MASTER_KEY_IDS, new long[] { mMasterKeyId });
         intent.putExtra(BackupActivity.EXTRA_SECRET, true);
         startActivity(intent);
     }
@@ -537,7 +526,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         Intent deleteIntent = new Intent(this, DeleteKeyDialogActivity.class);
 
         deleteIntent.putExtra(DeleteKeyDialogActivity.EXTRA_DELETE_MASTER_KEY_IDS,
-                new long[]{mMasterKeyId});
+                new long[] { mMasterKeyId });
         deleteIntent.putExtra(DeleteKeyDialogActivity.EXTRA_HAS_SECRET, mIsSecret);
         if (mIsSecret) {
             // for upload in case key is secret
@@ -651,7 +640,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             long keyId = KeyRepository.create(this)
                     .getCachedPublicKeyRing(dataUri)
                     .extractOrGetMasterKeyId();
-            long[] encryptionKeyIds = new long[]{keyId};
+            long[] encryptionKeyIds = new long[] { keyId };
             Intent intent;
             if (text) {
                 intent = new Intent(this, EncryptTextActivity.class);
@@ -720,7 +709,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
 
     // These are the rows that we will retrieve.
-    static final String[] PROJECTION = new String[]{
+    static final String[] PROJECTION = new String[] {
             KeychainContract.KeyRings._ID,
             KeychainContract.KeyRings.MASTER_KEY_ID,
             KeychainContract.KeyRings.USER_ID,
@@ -837,7 +826,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                                     }
 
                                     mPhoto.setImageBitmap(photo);
-                                    mPhoto.setColorFilter(getResources().getColor(R.color.toolbar_photo_tint), PorterDuff.Mode.SRC_ATOP);
+                                    mPhoto.setColorFilter(getResources().getColor(R.color.toolbar_photo_tint),
+                                            PorterDuff.Mode.SRC_ATOP);
                                     mPhotoLayout.setVisibility(View.VISIBLE);
                                 }
                             };
