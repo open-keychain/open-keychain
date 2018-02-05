@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <include
         android:id="@+id/toolbar_include"
         layout="@layout/toolbar_standalone" />
 
     <LinearLayout
-        android:layout_below="@id/toolbar_include"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <android.support.v7.widget.CardView
             android:id="@+id/qr_code_image_layout"
@@ -21,7 +22,6 @@
             android:layout_margin="32dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:clickable="true"
             android:foreground="?android:attr/selectableItemBackground"
             app:cardBackgroundColor="@android:color/white"
             app:cardUseCompatPadding="true"
@@ -31,8 +31,24 @@
                 android:id="@+id/qr_code_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerInside"/>
+                android:scaleType="centerInside"
+                tools:src="@drawable/ic_qrcode_white_24dp"
+                tools:tint="#000"
+                tools:layout_width="300dp"
+                tools:layout_height="300dp"
+                />
         </android.support.v7.widget.CardView>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/view_key_fingerprint"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:typeface="monospace"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            tools:text="1234 5678 90ab cdef 1234\n1234 5678 90ab cdef 1234"/>
+
     </LinearLayout>
-</RelativeLayout>
+</LinearLayout>
