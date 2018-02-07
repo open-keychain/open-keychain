@@ -537,8 +537,6 @@ class SCP11bSecureMessaging implements SecureMessaging {
                 System.arraycopy(data, 0, pdata, 0, data.length);
                 pdata[data.length] = (byte)0x80;
 
-                Arrays.fill(data, (byte)0);
-
                 data = cipher.doFinal(pdata);
 
                 Arrays.fill(pdata, (byte)0);
@@ -564,8 +562,6 @@ class SCP11bSecureMessaging implements SecureMessaging {
 
             System.arraycopy(data, 0, odata, ooff, data.length);
             ooff += data.length;
-
-            Arrays.fill(data, (byte)0);
 
             final Mac mac = Mac.getInstance(SCP11_MAC_ALGO, PROVIDER);
             mac.init(mSMac);
