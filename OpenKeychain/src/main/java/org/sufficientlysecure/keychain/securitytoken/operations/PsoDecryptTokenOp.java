@@ -112,7 +112,7 @@ public class PsoDecryptTokenOp {
     private byte[] decryptSessionKeyEcdh(byte[] encryptedSessionKeyMpi, ECKeyFormat eckf, CanonicalizedPublicKey publicKey)
             throws IOException {
         int mpiLength = getMpiLength(encryptedSessionKeyMpi);
-        byte[] encryptedPoint = Arrays.copyOfRange(encryptedSessionKeyMpi, 2, mpiLength);
+        byte[] encryptedPoint = Arrays.copyOfRange(encryptedSessionKeyMpi, 2, 2 + mpiLength);
 
         X9ECParameters x9Params = NISTNamedCurves.getByOID(eckf.getCurveOID());
         ECPoint p = x9Params.getCurve().decodePoint(encryptedPoint);
