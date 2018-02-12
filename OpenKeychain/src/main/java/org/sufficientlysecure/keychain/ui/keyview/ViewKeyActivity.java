@@ -20,8 +20,8 @@ package org.sufficientlysecure.keychain.ui.keyview;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
@@ -106,7 +106,6 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
-import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
 
@@ -127,82 +126,80 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     public static final String EXTRA_DISPLAY_RESULT = "display_result";
     public static final String EXTRA_LINKED_TRANSITION = "linked_transition";
 
-    KeyRepository mKeyRepository;
+    KeyRepository keyRepository;
 
-    protected Uri mDataUri;
+    protected Uri dataUri;
 
     // For CryptoOperationHelper.Callback
-    private HkpKeyserverAddress mKeyserver;
-    private ArrayList<ParcelableKeyRing> mKeyList;
-    private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mImportOpHelper;
-    private CryptoOperationHelper<ChangeUnlockParcel, EditKeyResult> mEditOpHelper;
-    private ChangeUnlockParcel mChangeUnlockParcel;
+    private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> importOpHelper;
+    private CryptoOperationHelper<ChangeUnlockParcel, EditKeyResult> editOpHelper;
+    private ChangeUnlockParcel changeUnlockParcel;
 
-    private TextView mStatusText;
-    private ImageView mStatusImage;
-    private AppBarLayout mAppBarLayout;
-    private CollapsingToolbarLayout mCollapsingToolbarLayout;
+    private TextView statusText;
+    private ImageView statusImage;
+    private AppBarLayout appBarLayout;
+    private CollapsingToolbarLayout collapsingToolbarLayout;
 
-    private ImageButton mActionEncryptFile;
-    private ImageButton mActionEncryptText;
-    private FloatingActionButton mFab;
-    private ImageView mPhoto;
-    private FrameLayout mPhotoLayout;
-    private ImageView mQrCode;
-    private CardView mQrCodeLayout;
+    private ImageButton actionEncryptFile;
+    private ImageButton actionEncryptText;
+    private FloatingActionButton floatingActionButton;
+    private ImageView photoView;
+    private FrameLayout photoLayout;
+    private ImageView qrCodeView;
+    private CardView qrCodeLayout;
 
-    private byte[] mQrCodeLoaded;
+    private byte[] qrCodeLoaded;
 
     private static final int LOADER_ID_UNIFIED = 0;
 
-    private boolean mIsSecret = false;
-    private boolean mHasEncrypt = false;
-    private boolean mIsVerified = false;
-    private boolean mIsRevoked = false;
-    private boolean mIsSecure = true;
-    private boolean mIsExpired = false;
+    private boolean isSecret = false;
+    private boolean hasEncrypt = false;
+    private boolean isVerified = false;
+    private boolean isRevoked = false;
+    private boolean isSecure = true;
+    private boolean isExpired = false;
 
-    private MenuItem mRefreshItem;
-    private boolean mIsRefreshing;
-    private Animation mRotate, mRotateSpin;
-    private View mRefresh;
+    private MenuItem refreshItem;
+    private boolean isRefreshing;
+    private Animation rotate, rotateSpin;
+    private View refreshView;
 
-    private long mMasterKeyId;
-    private byte[] mFingerprint;
+    private long masterKeyId;
+    private byte[] fingerprint;
 
     @SuppressLint("InflateParams")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mKeyRepository = KeyRepository.create(this);
-        mImportOpHelper = new CryptoOperationHelper<>(1, this, this, null);
+        keyRepository = KeyRepository.create(this);
+        importOpHelper = new CryptoOperationHelper<>(1, this, this, null);
 
         setTitle(null);
 
-        mStatusText = findViewById(R.id.view_key_status);
-        mStatusImage = findViewById(R.id.view_key_status_image);
-        mAppBarLayout = findViewById(R.id.app_bar_layout);
-        mCollapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
+        statusText = findViewById(R.id.view_key_status);
+        statusImage = findViewById(R.id.view_key_status_image);
+        appBarLayout = findViewById(R.id.app_bar_layout);
+        collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
 
-        mActionEncryptFile = findViewById(R.id.view_key_action_encrypt_files);
-        mActionEncryptText = findViewById(R.id.view_key_action_encrypt_text);
-        mFab = findViewById(R.id.fab);
-        mPhoto = findViewById(R.id.view_key_photo);
-        mPhotoLayout = findViewById(R.id.view_key_photo_layout);
-        mQrCode = findViewById(R.id.view_key_qr_code);
-        mQrCodeLayout = findViewById(R.id.view_key_qr_code_layout);
+        actionEncryptFile = findViewById(R.id.view_key_action_encrypt_files);
+        actionEncryptText = findViewById(R.id.view_key_action_encrypt_text);
+        floatingActionButton = findViewById(R.id.fab);
+        photoView = findViewById(R.id.view_key_photo);
+        photoLayout = findViewById(R.id.view_key_photo_layout);
+        qrCodeView = findViewById(R.id.view_key_qr_code);
+        qrCodeLayout = findViewById(R.id.view_key_qr_code_layout);
 
-        mRotateSpin = AnimationUtils.loadAnimation(this, R.anim.rotate_spin);
+        rotateSpin = AnimationUtils.loadAnimation(this, R.anim.rotate_spin);
 
         //ContentDescriptionHint Listeners implemented
 
-        ContentDescriptionHint.setup(mActionEncryptFile);
-        ContentDescriptionHint.setup(mActionEncryptText);
-        ContentDescriptionHint.setup(mFab);
+        ContentDescriptionHint.setup(actionEncryptFile);
+        ContentDescriptionHint.setup(actionEncryptText);
+        ContentDescriptionHint.setup(floatingActionButton);
 
 
-        mRotateSpin.setAnimationListener(new AnimationListener() {
+        rotateSpin.setAnimationListener(new AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
 
@@ -210,9 +207,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                mRefreshItem.getActionView().clearAnimation();
-                mRefreshItem.setActionView(null);
-                mRefreshItem.setEnabled(true);
+                refreshItem.getActionView().clearAnimation();
+                refreshItem.setActionView(null);
+                refreshItem.setEnabled(true);
 
                 // this is a deferred call
                 supportInvalidateOptionsMenu();
@@ -223,9 +220,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
             }
         });
-        mRotate = AnimationUtils.loadAnimation(this, R.anim.rotate);
-        mRotate.setRepeatCount(Animation.INFINITE);
-        mRotate.setAnimationListener(new Animation.AnimationListener() {
+        rotate = AnimationUtils.loadAnimation(this, R.anim.rotate);
+        rotate.setRepeatCount(Animation.INFINITE);
+        rotate.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
 
@@ -238,23 +235,23 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
             @Override
             public void onAnimationRepeat(Animation animation) {
-                if (!mIsRefreshing) {
-                    mRefreshItem.getActionView().clearAnimation();
-                    mRefreshItem.getActionView().startAnimation(mRotateSpin);
+                if (!isRefreshing) {
+                    refreshItem.getActionView().clearAnimation();
+                    refreshItem.getActionView().startAnimation(rotateSpin);
                 }
             }
         });
-        mRefresh = getLayoutInflater().inflate(R.layout.indeterminate_progress, null);
+        refreshView = getLayoutInflater().inflate(R.layout.indeterminate_progress, null);
 
-        mDataUri = getIntent().getData();
-        if (mDataUri == null) {
+        dataUri = getIntent().getData();
+        if (dataUri == null) {
             Timber.e("Data missing. Should be uri of key!");
             finish();
             return;
         }
-        if (mDataUri.getHost().equals(ContactsContract.AUTHORITY)) {
-            mDataUri = new ContactHelper(this).dataUriFromContactUri(mDataUri);
-            if (mDataUri == null) {
+        if (dataUri.getHost().equals(ContactsContract.AUTHORITY)) {
+            dataUri = new ContactHelper(this).dataUriFromContactUri(dataUri);
+            if (dataUri == null) {
                 Timber.e("Contact Data missing. Should be uri of key!");
                 Toast.makeText(this, R.string.error_contacts_key_id_missing, Toast.LENGTH_LONG).show();
                 finish();
@@ -262,38 +259,20 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             }
         }
 
-        Timber.i("mDataUri: " + mDataUri);
+        Timber.i("dataUri: " + dataUri);
 
-        mActionEncryptFile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                encrypt(mDataUri, false);
-            }
-        });
-        mActionEncryptText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                encrypt(mDataUri, true);
+        actionEncryptFile.setOnClickListener(v -> encrypt(dataUri, false));
+        actionEncryptText.setOnClickListener(v -> encrypt(dataUri, true));
+
+        floatingActionButton.setOnClickListener(v -> {
+            if (isSecret) {
+                startSafeSlinger(dataUri);
+            } else {
+                scanQrCode();
             }
         });
 
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mIsSecret) {
-                    startSafeSlinger(mDataUri);
-                } else {
-                    scanQrCode();
-                }
-            }
-        });
-
-        mQrCodeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showQrCodeDialog();
-            }
-        });
+        qrCodeLayout.setOnClickListener(v -> showQrCodeDialog());
 
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
@@ -311,7 +290,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
         if (Preferences.getPreferences(this).getExperimentalEnableKeybase()) {
             FragmentManager manager = getSupportFragmentManager();
-            final ViewKeyKeybaseFragment keybaseFrag = ViewKeyKeybaseFragment.newInstance(mDataUri);
+            final ViewKeyKeybaseFragment keybaseFrag = ViewKeyKeybaseFragment.newInstance(dataUri);
             manager.beginTransaction()
                     .replace(R.id.view_key_keybase_fragment, keybaseFrag)
                     .commit();
@@ -327,7 +306,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.key_view, menu);
-        mRefreshItem = menu.findItem(R.id.menu_key_view_refresh);
+        refreshItem = menu.findItem(R.id.menu_key_view_refresh);
         return true;
     }
 
@@ -361,20 +340,16 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             }
             case R.id.menu_key_view_advanced: {
                 Intent advancedIntent = new Intent(this, ViewKeyAdvActivity.class);
-                advancedIntent.setData(mDataUri);
+                advancedIntent.setData(dataUri);
                 startActivity(advancedIntent);
                 return true;
             }
             case R.id.menu_key_view_refresh: {
-                try {
-                    updateFromKeyserver(mDataUri, mKeyRepository);
-                } catch (PgpKeyNotFoundException e) {
-                    Notify.create(this, R.string.error_key_not_found, Notify.Style.ERROR).show();
-                }
+                updateFromKeyserver();
                 return true;
             }
             case R.id.menu_key_view_certify_fingerprint: {
-                certifyFingerprint(mDataUri);
+                certifyFingerprint(dataUri);
                 return true;
             }
         }
@@ -384,13 +359,13 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem backupKey = menu.findItem(R.id.menu_key_view_backup);
-        backupKey.setVisible(mIsSecret);
-        menu.findItem(R.id.menu_key_view_skt).setVisible(mIsSecret);
+        backupKey.setVisible(isSecret);
+        menu.findItem(R.id.menu_key_view_skt).setVisible(isSecret);
         MenuItem changePassword = menu.findItem(R.id.menu_key_change_password);
-        changePassword.setVisible(mIsSecret);
+        changePassword.setVisible(isSecret);
 
         MenuItem certifyFingerprint = menu.findItem(R.id.menu_key_view_certify_fingerprint);
-        certifyFingerprint.setVisible(!mIsSecret && !mIsVerified && !mIsExpired && !mIsRevoked);
+        certifyFingerprint.setVisible(!isSecret && !isVerified && !isExpired && !isRevoked);
 
         return true;
     }
@@ -400,7 +375,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                 = new CryptoOperationHelper.Callback<ChangeUnlockParcel, EditKeyResult>() {
             @Override
             public ChangeUnlockParcel createOperationInput() {
-                return mChangeUnlockParcel;
+                return changeUnlockParcel;
             }
 
             @Override
@@ -424,7 +399,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             }
         };
 
-        mEditOpHelper = new CryptoOperationHelper<>(2, this, editKeyCallback, R.string.progress_building_key);
+        editOpHelper = new CryptoOperationHelper<>(2, this, editKeyCallback, R.string.progress_building_key);
 
         // Message is received after passphrase is cached
         Handler returnHandler = new Handler() {
@@ -434,12 +409,12 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                     Bundle data = message.getData();
 
                     // use new passphrase!
-                    mChangeUnlockParcel = ChangeUnlockParcel.createChangeUnlockParcel(
-                            mMasterKeyId, mFingerprint,
+                    changeUnlockParcel = ChangeUnlockParcel.createChangeUnlockParcel(
+                            masterKeyId, fingerprint,
                             data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE)
                     );
 
-                    mEditOpHelper.cryptoOperation();
+                    editOpHelper.cryptoOperation();
                 }
             }
         };
@@ -472,7 +447,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     private void certifyImmediate() {
         Intent intent = new Intent(this, CertifyKeyActivity.class);
-        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[] { mMasterKeyId });
+        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[] { masterKeyId });
 
         startActivityForResult(intent, REQUEST_CERTIFY);
     }
@@ -485,11 +460,11 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         Bundle opts = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ActivityOptions options = ActivityOptions
-                    .makeSceneTransitionAnimation(this, mQrCodeLayout, "qr_code");
+                    .makeSceneTransitionAnimation(this, qrCodeLayout, "qr_code");
             opts = options.toBundle();
         }
 
-        qrCodeIntent.setData(mDataUri);
+        qrCodeIntent.setData(dataUri);
         ActivityCompat.startActivity(this, qrCodeIntent, opts);
     }
 
@@ -498,7 +473,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         if (keyHasPassphrase()) {
             Intent intent = new Intent(this, PassphraseDialogActivity.class);
             RequiredInputParcel requiredInput =
-                    RequiredInputParcel.createRequiredDecryptPassphrase(mMasterKeyId, mMasterKeyId);
+                    RequiredInputParcel.createRequiredDecryptPassphrase(masterKeyId, masterKeyId);
             requiredInput.mSkipCaching = true;
             intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
             startActivityForResult(intent, requestCode);
@@ -510,7 +485,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     private boolean keyHasPassphrase() {
         try {
             SecretKeyType secretKeyType =
-                    mKeyRepository.getCachedPublicKeyRing(mMasterKeyId).getSecretKeyType(mMasterKeyId);
+                    keyRepository.getCachedPublicKeyRing(masterKeyId).getSecretKeyType(masterKeyId);
             switch (secretKeyType) {
                 // all of these make no sense to ask
                 case PASSPHRASE_EMPTY:
@@ -528,7 +503,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     private void startBackupActivity() {
         Intent intent = new Intent(this, BackupActivity.class);
-        intent.putExtra(BackupActivity.EXTRA_MASTER_KEY_IDS, new long[]{mMasterKeyId});
+        intent.putExtra(BackupActivity.EXTRA_MASTER_KEY_IDS, new long[]{ masterKeyId });
         intent.putExtra(BackupActivity.EXTRA_SECRET, true);
         startActivity(intent);
     }
@@ -537,9 +512,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         Intent deleteIntent = new Intent(this, DeleteKeyDialogActivity.class);
 
         deleteIntent.putExtra(DeleteKeyDialogActivity.EXTRA_DELETE_MASTER_KEY_IDS,
-                new long[]{mMasterKeyId});
-        deleteIntent.putExtra(DeleteKeyDialogActivity.EXTRA_HAS_SECRET, mIsSecret);
-        if (mIsSecret) {
+                new long[]{ masterKeyId });
+        deleteIntent.putExtra(DeleteKeyDialogActivity.EXTRA_HAS_SECRET, isSecret);
+        if (isSecret) {
             // for upload in case key is secret
             deleteIntent.putExtra(DeleteKeyDialogActivity.EXTRA_KEYSERVER,
                     Preferences.getPreferences(this).getPreferredKeyserver());
@@ -550,11 +525,11 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     @Override
     protected void onActivityResult(@RequestType int requestCode, int resultCode, Intent data) {
-        if (mImportOpHelper.handleActivityResult(requestCode, resultCode, data)) {
+        if (importOpHelper.handleActivityResult(requestCode, resultCode, data)) {
             return;
         }
-        if (mEditOpHelper != null) {
-            mEditOpHelper.handleActivityResult(requestCode, resultCode, data);
+        if (editOpHelper != null) {
+            editOpHelper.handleActivityResult(requestCode, resultCode, data);
         }
 
         if (resultCode != Activity.RESULT_OK) {
@@ -577,7 +552,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                     Notify.create(this, R.string.error_scan_fp, Notify.LENGTH_LONG, Style.ERROR).show();
                     return;
                 }
-                if (Arrays.equals(mFingerprint, fingerprint)) {
+                if (Arrays.equals(this.fingerprint, fingerprint)) {
                     certifyImmediate();
                 } else {
                     Notify.create(this, R.string.error_scan_match, Notify.LENGTH_LONG, Style.ERROR).show();
@@ -617,33 +592,30 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     }
 
     public void showMainFragment() {
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                FragmentManager manager = getSupportFragmentManager();
+        new Handler().post(() -> {
+            FragmentManager manager = getSupportFragmentManager();
 
-                // unless we must refresh
-                ViewKeyFragment frag = (ViewKeyFragment) manager.findFragmentByTag("view_key_fragment");
-                // if everything is valid, just drop it
-                if (frag != null && frag.isValidForData(mIsSecret)) {
-                    return;
-                }
-
-                // if the main fragment doesn't exist, or is not of the correct type, (re)create it
-                frag = ViewKeyFragment.newInstance(mMasterKeyId, mIsSecret);
-                // get rid of possible backstack, this fragment is always at the bottom
-                manager.popBackStack("security_token", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                manager.beginTransaction()
-                        .replace(R.id.view_key_fragment, frag, "view_key_fragment")
-                        // if this gets lost, it doesn't really matter since the loader will reinstate it onResume
-                        .commitAllowingStateLoss();
+            // unless we must refresh
+            ViewKeyFragment frag = (ViewKeyFragment) manager.findFragmentByTag("view_key_fragment");
+            // if everything is valid, just drop it
+            if (frag != null && frag.isValidForData(isSecret)) {
+                return;
             }
+
+            // if the main fragment doesn't exist, or is not of the correct type, (re)create it
+            frag = ViewKeyFragment.newInstance(masterKeyId, isSecret);
+            // get rid of possible backstack, this fragment is always at the bottom
+            manager.popBackStack("security_token", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            manager.beginTransaction()
+                    .replace(R.id.view_key_fragment, frag, "view_key_fragment")
+                    // if this gets lost, it doesn't really matter since the loader will reinstate it onResume
+                    .commitAllowingStateLoss();
         });
     }
 
     private void encrypt(Uri dataUri, boolean text) {
         // If there is no encryption key, don't bother.
-        if (!mHasEncrypt) {
+        if (!hasEncrypt) {
             Notify.create(this, R.string.error_no_encrypt_subkey, Notify.Style.ERROR).show();
             return;
         }
@@ -700,18 +672,18 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                     }
 
                     protected void onPostExecute(Bitmap qrCode) {
-                        mQrCodeLoaded = fingerprint;
+                        qrCodeLoaded = fingerprint;
                         // scale the image up to our actual size. we do this in code rather
                         // than let the ImageView do this because we don't require filtering.
                         Bitmap scaled = Bitmap.createScaledBitmap(qrCode,
-                                mQrCode.getHeight(), mQrCode.getHeight(),
+                                ViewKeyActivity.this.qrCodeView.getHeight(), ViewKeyActivity.this.qrCodeView.getHeight(),
                                 false);
-                        mQrCode.setImageBitmap(scaled);
+                        ViewKeyActivity.this.qrCodeView.setImageBitmap(scaled);
 
                         // simple fade-in animation
                         AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
                         anim.setDuration(200);
-                        mQrCode.startAnimation(anim);
+                        ViewKeyActivity.this.qrCodeView.startAnimation(anim);
                     }
                 };
 
@@ -753,7 +725,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_ID_UNIFIED: {
-                Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
+                Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri);
                 return new CursorLoader(this, baseUri, PROJECTION, null, null, null);
             }
 
@@ -803,23 +775,23 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
                     String name = data.getString(INDEX_NAME);
 
-                    mCollapsingToolbarLayout.setTitle(name != null ? name : getString(R.string.user_id_no_name));
+                    collapsingToolbarLayout.setTitle(name != null ? name : getString(R.string.user_id_no_name));
 
-                    mMasterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
-                    mFingerprint = data.getBlob(INDEX_FINGERPRINT);
-                    mIsSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
-                    mHasEncrypt = data.getInt(INDEX_HAS_ENCRYPT) != 0;
-                    mIsRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
-                    mIsExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
-                    mIsSecure = data.getInt(INDEX_IS_SECURE) == 1;
-                    mIsVerified = data.getInt(INDEX_VERIFIED) > 0;
+                    masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
+                    fingerprint = data.getBlob(INDEX_FINGERPRINT);
+                    isSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
+                    hasEncrypt = data.getInt(INDEX_HAS_ENCRYPT) != 0;
+                    isRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
+                    isExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
+                    isSecure = data.getInt(INDEX_IS_SECURE) == 1;
+                    isVerified = data.getInt(INDEX_VERIFIED) > 0;
 
                     // queue showing of the main fragment
                     showMainFragment();
 
                     // if the refresh animation isn't playing
-                    if (!mRotate.hasStarted() && !mRotateSpin.hasStarted()) {
-                        // re-create options menu based on mIsSecret, mIsVerified
+                    if (!rotate.hasStarted() && !rotateSpin.hasStarted()) {
+                        // re-create options menu based on isSecret, isVerified
                         supportInvalidateOptionsMenu();
                         // this is done at the end of the animation otherwise
                     }
@@ -836,72 +808,72 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                                         return;
                                     }
 
-                                    mPhoto.setImageBitmap(photo);
-                                    mPhoto.setColorFilter(getResources().getColor(R.color.toolbar_photo_tint), PorterDuff.Mode.SRC_ATOP);
-                                    mPhotoLayout.setVisibility(View.VISIBLE);
+                                    photoView.setImageBitmap(photo);
+                                    photoView.setColorFilter(getResources().getColor(R.color.toolbar_photo_tint), PorterDuff.Mode.SRC_ATOP);
+                                    photoLayout.setVisibility(View.VISIBLE);
                                 }
                             };
 
-                    boolean showStatusText = mIsSecure && !mIsExpired && !mIsRevoked;
+                    boolean showStatusText = isSecure && !isExpired && !isRevoked;
                     if (showStatusText) {
-                        mStatusText.setVisibility(View.VISIBLE);
+                        statusText.setVisibility(View.VISIBLE);
 
-                        if (mIsSecret) {
-                            mStatusText.setText(R.string.view_key_my_key);
-                        } else if (mIsVerified) {
-                            mStatusText.setText(R.string.view_key_verified);
+                        if (isSecret) {
+                            statusText.setText(R.string.view_key_my_key);
+                        } else if (isVerified) {
+                            statusText.setText(R.string.view_key_verified);
                         } else {
-                            mStatusText.setText(R.string.view_key_unverified);
+                            statusText.setText(R.string.view_key_unverified);
                         }
                     } else {
-                        mStatusText.setVisibility(View.GONE);
+                        statusText.setVisibility(View.GONE);
                     }
 
                     // Note: order is important
                     int color;
-                    if (mIsRevoked) {
-                        mStatusImage.setVisibility(View.VISIBLE);
-                        KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
+                    if (isRevoked) {
+                        statusImage.setVisibility(View.VISIBLE);
+                        KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
                                 State.REVOKED, R.color.icons, true);
                         // noinspection deprecation, fix requires api level 23
                         color = getResources().getColor(R.color.key_flag_red);
 
-                        mActionEncryptFile.setVisibility(View.INVISIBLE);
-                        mActionEncryptText.setVisibility(View.INVISIBLE);
+                        actionEncryptFile.setVisibility(View.INVISIBLE);
+                        actionEncryptText.setVisibility(View.INVISIBLE);
                         hideFab();
-                        mQrCodeLayout.setVisibility(View.GONE);
-                    } else if (!mIsSecure) {
-                        mStatusImage.setVisibility(View.VISIBLE);
-                        KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
+                        qrCodeLayout.setVisibility(View.GONE);
+                    } else if (!isSecure) {
+                        statusImage.setVisibility(View.VISIBLE);
+                        KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
                                 State.INSECURE, R.color.icons, true);
                         // noinspection deprecation, fix requires api level 23
                         color = getResources().getColor(R.color.key_flag_red);
 
-                        mActionEncryptFile.setVisibility(View.INVISIBLE);
-                        mActionEncryptText.setVisibility(View.INVISIBLE);
+                        actionEncryptFile.setVisibility(View.INVISIBLE);
+                        actionEncryptText.setVisibility(View.INVISIBLE);
                         hideFab();
-                        mQrCodeLayout.setVisibility(View.GONE);
-                    } else if (mIsExpired) {
-                        mStatusImage.setVisibility(View.VISIBLE);
-                        KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
+                        qrCodeLayout.setVisibility(View.GONE);
+                    } else if (isExpired) {
+                        statusImage.setVisibility(View.VISIBLE);
+                        KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
                                 State.EXPIRED, R.color.icons, true);
                         // noinspection deprecation, fix requires api level 23
                         color = getResources().getColor(R.color.key_flag_red);
 
-                        mActionEncryptFile.setVisibility(View.INVISIBLE);
-                        mActionEncryptText.setVisibility(View.INVISIBLE);
+                        actionEncryptFile.setVisibility(View.INVISIBLE);
+                        actionEncryptText.setVisibility(View.INVISIBLE);
                         hideFab();
-                        mQrCodeLayout.setVisibility(View.GONE);
-                    } else if (mIsSecret) {
-                        mStatusImage.setVisibility(View.GONE);
+                        qrCodeLayout.setVisibility(View.GONE);
+                    } else if (isSecret) {
+                        statusImage.setVisibility(View.GONE);
                         // noinspection deprecation, fix requires api level 23
                         color = getResources().getColor(R.color.key_flag_green);
                         // reload qr code only if the fingerprint changed
-                        if (!Arrays.equals(mFingerprint, mQrCodeLoaded)) {
-                            loadQrCode(mFingerprint);
+                        if (!Arrays.equals(fingerprint, qrCodeLoaded)) {
+                            loadQrCode(fingerprint);
                         }
-                        photoTask.execute(mMasterKeyId);
-                        mQrCodeLayout.setVisibility(View.VISIBLE);
+                        photoTask.execute(masterKeyId);
+                        qrCodeLayout.setVisibility(View.VISIBLE);
 
                         // and place leftOf qr code
 //                        RelativeLayout.LayoutParams nameParams = (RelativeLayout.LayoutParams)
@@ -915,39 +887,39 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 //                        mName.setLayoutParams(nameParams);
 
                         RelativeLayout.LayoutParams statusParams = (RelativeLayout.LayoutParams)
-                                mStatusText.getLayoutParams();
+                                statusText.getLayoutParams();
                         statusParams.setMargins(FormattingUtils.dpToPx(this, 48), 0, 0, 0);
                         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                             statusParams.setMarginEnd(0);
                         }
                         statusParams.addRule(RelativeLayout.LEFT_OF, R.id.view_key_qr_code_layout);
-                        mStatusText.setLayoutParams(statusParams);
+                        statusText.setLayoutParams(statusParams);
 
-                        mActionEncryptFile.setVisibility(View.VISIBLE);
-                        mActionEncryptText.setVisibility(View.VISIBLE);
+                        actionEncryptFile.setVisibility(View.VISIBLE);
+                        actionEncryptText.setVisibility(View.VISIBLE);
 
                         showFab();
                         // noinspection deprecation (no getDrawable with theme at current minApi level 15!)
-                        mFab.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat_white_24dp));
+                        floatingActionButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat_white_24dp));
                     } else {
-                        mActionEncryptFile.setVisibility(View.VISIBLE);
-                        mActionEncryptText.setVisibility(View.VISIBLE);
-                        mQrCodeLayout.setVisibility(View.GONE);
+                        actionEncryptFile.setVisibility(View.VISIBLE);
+                        actionEncryptText.setVisibility(View.VISIBLE);
+                        qrCodeLayout.setVisibility(View.GONE);
 
-                        if (mIsVerified) {
-                            mStatusText.setText(R.string.view_key_verified);
-                            mStatusImage.setVisibility(View.VISIBLE);
-                            KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
+                        if (isVerified) {
+                            statusText.setText(R.string.view_key_verified);
+                            statusImage.setVisibility(View.VISIBLE);
+                            KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
                                     State.VERIFIED, R.color.icons, true);
                             // noinspection deprecation, fix requires api level 23
                             color = getResources().getColor(R.color.key_flag_green);
-                            photoTask.execute(mMasterKeyId);
+                            photoTask.execute(masterKeyId);
 
                             hideFab();
                         } else {
-                            mStatusText.setText(R.string.view_key_unverified);
-                            mStatusImage.setVisibility(View.VISIBLE);
-                            KeyFormattingUtils.setStatusImage(this, mStatusImage, mStatusText,
+                            statusText.setText(R.string.view_key_unverified);
+                            statusImage.setVisibility(View.VISIBLE);
+                            KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
                                     State.UNVERIFIED, R.color.icons, true);
                             // noinspection deprecation, fix requires api level 23
                             color = getResources().getColor(R.color.key_flag_orange);
@@ -957,16 +929,16 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                     }
 
                     if (mPreviousColor == 0 || mPreviousColor == color) {
-                        mAppBarLayout.setBackgroundColor(color);
-                        mCollapsingToolbarLayout.setContentScrimColor(color);
-                        mCollapsingToolbarLayout.setStatusBarScrimColor(getStatusBarBackgroundColor(color));
+                        appBarLayout.setBackgroundColor(color);
+                        collapsingToolbarLayout.setContentScrimColor(color);
+                        collapsingToolbarLayout.setStatusBarScrimColor(getStatusBarBackgroundColor(color));
                         mPreviousColor = color;
                     } else {
                         ObjectAnimator colorFade =
-                                ObjectAnimator.ofObject(mAppBarLayout, "backgroundColor",
+                                ObjectAnimator.ofObject(appBarLayout, "backgroundColor",
                                         new ArgbEvaluator(), mPreviousColor, color);
-                        mCollapsingToolbarLayout.setContentScrimColor(color);
-                        mCollapsingToolbarLayout.setStatusBarScrimColor(getStatusBarBackgroundColor(color));
+                        collapsingToolbarLayout.setContentScrimColor(color);
+                        collapsingToolbarLayout.setStatusBarScrimColor(getStatusBarBackgroundColor(color));
 
                         colorFade.setDuration(1200);
                         colorFade.start();
@@ -974,7 +946,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                     }
 
                     //noinspection deprecation
-                    mStatusImage.setAlpha(80);
+                    statusImage.setAlpha(80);
 
                     break;
                 }
@@ -986,22 +958,22 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
      * Helper to show Fab, from http://stackoverflow.com/a/31047038
      */
     private void showFab() {
-        CoordinatorLayout.LayoutParams p = (CoordinatorLayout.LayoutParams) mFab.getLayoutParams();
+        CoordinatorLayout.LayoutParams p = (CoordinatorLayout.LayoutParams) floatingActionButton.getLayoutParams();
         p.setBehavior(new FloatingActionButton.Behavior());
         p.setAnchorId(R.id.app_bar_layout);
-        mFab.setLayoutParams(p);
-        mFab.setVisibility(View.VISIBLE);
+        floatingActionButton.setLayoutParams(p);
+        floatingActionButton.setVisibility(View.VISIBLE);
     }
 
     /**
      * Helper to hide Fab, from http://stackoverflow.com/a/31047038
      */
     private void hideFab() {
-        CoordinatorLayout.LayoutParams p = (CoordinatorLayout.LayoutParams) mFab.getLayoutParams();
+        CoordinatorLayout.LayoutParams p = (CoordinatorLayout.LayoutParams) floatingActionButton.getLayoutParams();
         p.setBehavior(null); //should disable default animations
         p.setAnchorId(View.NO_ID); //should let you set visibility
-        mFab.setLayoutParams(p);
-        mFab.setVisibility(View.GONE);
+        floatingActionButton.setLayoutParams(p);
+        floatingActionButton.setVisibility(View.GONE);
     }
 
     @Override
@@ -1012,45 +984,42 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     // CryptoOperationHelper.Callback functions
 
 
-    private void updateFromKeyserver(Uri dataUri, KeyRepository keyRepository)
-            throws PgpKeyNotFoundException {
+    private void updateFromKeyserver() {
+        if (fingerprint == null) {
+            return;
+        }
 
-        mIsRefreshing = true;
-        mRefreshItem.setEnabled(false);
-        mRefreshItem.setActionView(mRefresh);
-        mRefresh.startAnimation(mRotate);
+        isRefreshing = true;
+        refreshItem.setEnabled(false);
+        refreshItem.setActionView(refreshView);
+        refreshView.startAnimation(rotate);
 
-        byte[] blob = keyRepository.getCachedPublicKeyRing(dataUri).getFingerprint();
-
-        ParcelableKeyRing keyEntry = ParcelableKeyRing.createFromReference(blob, null, null, null);
-        ArrayList<ParcelableKeyRing> entries = new ArrayList<>();
-        entries.add(keyEntry);
-        mKeyList = entries;
-
-        mKeyserver = Preferences.getPreferences(this).getPreferredKeyserver();
-
-        mImportOpHelper.cryptoOperation();
+        importOpHelper.cryptoOperation();
     }
 
     @Override
     public ImportKeyringParcel createOperationInput() {
-        return ImportKeyringParcel.createImportKeyringParcel(mKeyList, mKeyserver);
+        HkpKeyserverAddress preferredKeyserver = Preferences.getPreferences(this).getPreferredKeyserver();
+
+        ParcelableKeyRing keyEntry = ParcelableKeyRing.createFromReference(fingerprint, null, null, null);
+
+        return ImportKeyringParcel.createImportKeyringParcel(Collections.singletonList(keyEntry), preferredKeyserver);
     }
 
     @Override
     public void onCryptoOperationSuccess(ImportKeyResult result) {
-        mIsRefreshing = false;
+        isRefreshing = false;
         result.createNotify(this).show();
     }
 
     @Override
     public void onCryptoOperationCancelled() {
-        mIsRefreshing = false;
+        isRefreshing = false;
     }
 
     @Override
     public void onCryptoOperationError(ImportKeyResult result) {
-        mIsRefreshing = false;
+        isRefreshing = false;
         result.createNotify(this).show();
     }
 

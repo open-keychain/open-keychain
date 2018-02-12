@@ -195,7 +195,7 @@ public class EditKeyFragment extends QueueingCryptoOperationFragment<SaveKeyring
     private void loadData(Uri dataUri) {
         mDataUri = dataUri;
 
-        Timber.i("mDataUri: " + mDataUri);
+        Timber.i("dataUri: " + mDataUri);
 
         // load the secret key ring. we do verify here that the passphrase is correct, so cached won't do
         try {

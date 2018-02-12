@@ -31,6 +31,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -41,7 +42,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextSwitcher;
@@ -86,19 +86,18 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
     private static final String ARG_MASTER_KEY_ID = "master_key_id";
     private static final int LOADER_ID_LINKED_ID = 1;
 
-    private UriAttribute mLinkedId;
-    private LinkedTokenResource mLinkedResource;
-    private boolean mIsSecret;
+    private long masterKeyId;
+    private boolean isSecret;
 
-    private Context mContext;
-    private long mMasterKeyId;
+    private UriAttribute linkedId;
+    private LinkedTokenResource linkedResource;
 
-    private AsyncTask mInProgress;
+    private AsyncTask taskInProgress;
 
-    private Uri mDataUri;
-    private ViewHolder mViewHolder;
-    private int mLidRank;
-    private long mCertifyKeyId;
+    private Uri dataUri;
+    private ViewHolder viewHolder;
+    private int lidRank;
+    private long certifyKeyId;
 
     public static LinkedIdViewFragment newInstance(Uri dataUri, int rank,
             boolean isSecret, long masterKeyId) throws IOException {
@@ -125,13 +124,11 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
-        mDataUri = args.getParcelable(ARG_DATA_URI);
-        mLidRank = args.getInt(ARG_LID_RANK);
+        dataUri = args.getParcelable(ARG_DATA_URI);
+        lidRank = args.getInt(ARG_LID_RANK);
 
-        mIsSecret = args.getBoolean(ARG_IS_SECRET);
-        mMasterKeyId = args.getLong(ARG_MASTER_KEY_ID);
-
-        mContext = getActivity();
+        isSecret = args.getBoolean(ARG_IS_SECRET);
+        masterKeyId = args.getLong(ARG_MASTER_KEY_ID);
 
         getLoaderManager().initLoader(LOADER_ID_LINKED_ID, null, this);
 
@@ -141,10 +138,10 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_ID_LINKED_ID:
-                return new CursorLoader(getActivity(), mDataUri,
+                return new CursorLoader(getContext(), dataUri,
                         UserIdsAdapter.USER_PACKETS_PROJECTION,
                         Tables.USER_PACKETS + "." + UserPackets.RANK
-                                + " = " + Integer.toString(mLidRank), null, null);
+                                + " = " + Integer.toString(lidRank), null, null);
             default:
                 return null;
         }
@@ -181,68 +178,62 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
     }
 
     public void finishFragment() {
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                FragmentManager manager = getFragmentManager();
-                manager.removeOnBackStackChangedListener(LinkedIdViewFragment.this);
-                manager.popBackStack("linked_id", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            }
+        new Handler().post(() -> {
+            FragmentManager manager = getFragmentManager();
+            manager.removeOnBackStackChangedListener(LinkedIdViewFragment.this);
+            manager.popBackStack("linked_id", FragmentManager.POP_BACK_STACK_INCLUSIVE);
         });
     }
 
     private void loadIdentity(UriAttribute linkedId, int certStatus) {
-        mLinkedId = linkedId;
+        this.linkedId = linkedId;
 
-        if (mLinkedId instanceof LinkedAttribute) {
-            LinkedResource res = ((LinkedAttribute) mLinkedId).mResource;
-            mLinkedResource = (LinkedTokenResource) res;
+        if (this.linkedId instanceof LinkedAttribute) {
+            LinkedResource res = ((LinkedAttribute) this.linkedId).mResource;
+            linkedResource = (LinkedTokenResource) res;
         }
 
-        if (!mIsSecret) {
+        if (!isSecret) {
             switch (certStatus) {
                 case Certs.VERIFIED_SECRET:
-                    KeyFormattingUtils.setStatusImage(mContext, mViewHolder.mLinkedIdHolder.vVerified,
+                    KeyFormattingUtils.setStatusImage(getContext(), viewHolder.mLinkedIdHolder.vVerified,
                             null, State.VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
                 case Certs.VERIFIED_SELF:
-                    KeyFormattingUtils.setStatusImage(mContext, mViewHolder.mLinkedIdHolder.vVerified,
+                    KeyFormattingUtils.setStatusImage(getContext(), viewHolder.mLinkedIdHolder.vVerified,
                             null, State.UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
                 default:
-                    KeyFormattingUtils.setStatusImage(mContext, mViewHolder.mLinkedIdHolder.vVerified,
+                    KeyFormattingUtils.setStatusImage(getContext(), viewHolder.mLinkedIdHolder.vVerified,
                             null, State.INVALID, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
             }
         } else {
-            mViewHolder.mLinkedIdHolder.vVerified.setImageResource(R.drawable.octo_link_24dp);
+            viewHolder.mLinkedIdHolder.vVerified.setImageResource(R.drawable.octo_link_24dp);
         }
 
-        mViewHolder.mLinkedIdHolder.bind(mContext, mLinkedId);
+        viewHolder.mLinkedIdHolder.bind(getContext(), this.linkedId);
 
         setShowVerifying(false);
 
         // no resource, nothing further we can do…
-        if (mLinkedResource == null) {
-            mViewHolder.vButtonView.setVisibility(View.GONE);
-            mViewHolder.vButtonVerify.setVisibility(View.GONE);
+        if (linkedResource == null) {
+            viewHolder.vButtonView.setVisibility(View.GONE);
+            viewHolder.vButtonVerify.setVisibility(View.GONE);
             return;
         }
 
-        if (mLinkedResource.isViewable()) {
-            mViewHolder.vButtonView.setVisibility(View.VISIBLE);
-            mViewHolder.vButtonView.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = mLinkedResource.getViewIntent();
-                    if (intent == null) {
-                        return;
-                    }
-                    getActivity().startActivity(intent);
+        if (linkedResource.isViewable()) {
+            viewHolder.vButtonView.setVisibility(View.VISIBLE);
+            viewHolder.vButtonView.setOnClickListener(v -> {
+                Intent intent = linkedResource.getViewIntent();
+                if (intent == null) {
+                    return;
                 }
+                startActivity(intent);
             });
         } else {
-            mViewHolder.vButtonView.setVisibility(View.GONE);
+            viewHolder.vButtonView.setVisibility(View.GONE);
         }
 
     }
@@ -362,27 +353,22 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
      */
     void setShowVerifying(boolean show) {
         if (!show) {
-            if (mInProgress != null) {
-                mInProgress.cancel(false);
-                mInProgress = null;
+            if (taskInProgress != null) {
+                taskInProgress.cancel(false);
+                taskInProgress = null;
             }
             getFragmentManager().removeOnBackStackChangedListener(this);
-            new Handler().post(new Runnable() {
-                @Override
-                public void run() {
-                    getFragmentManager().popBackStack("verification",
-                            FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                }
-            });
+            new Handler().post(() -> getFragmentManager().popBackStack("verification",
+                    FragmentManager.POP_BACK_STACK_INCLUSIVE));
 
             if (!mVerificationState) {
                 return;
             }
             mVerificationState = false;
 
-            mViewHolder.showButton(0);
-            mViewHolder.vKeySpinnerContainer.setVisibility(View.GONE);
-            mViewHolder.showVerifyingContainer(mContext, false, mIsSecret);
+            viewHolder.showButton(0);
+            viewHolder.vKeySpinnerContainer.setVisibility(View.GONE);
+            viewHolder.showVerifyingContainer(getContext(), false, isSecret);
             return;
         }
 
@@ -395,7 +381,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
         manager.beginTransaction().addToBackStack("verification").commit();
         manager.executePendingTransactions();
         manager.addOnBackStackChangedListener(this);
-        mViewHolder.showVerifyingContainer(mContext, true, mIsSecret);
+        viewHolder.showVerifyingContainer(getContext(), true, isSecret);
 
     }
 
@@ -405,44 +391,29 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.linked_id_view_fragment, null);
 
-        mViewHolder = new ViewHolder(root);
-        root.setTag(mViewHolder);
+        viewHolder = new ViewHolder(root);
+        root.setTag(viewHolder);
 
         ((ImageView) root.findViewById(R.id.status_icon_verified))
-                .setColorFilter(ContextCompat.getColor(mContext, R.color.android_green_light),
+                .setColorFilter(ContextCompat.getColor(getContext(), R.color.android_green_light),
                         PorterDuff.Mode.SRC_IN);
         ((ImageView) root.findViewById(R.id.status_icon_invalid))
-                .setColorFilter(ContextCompat.getColor(mContext, R.color.android_red_light),
+                .setColorFilter(ContextCompat.getColor(getContext(), R.color.android_red_light),
                         PorterDuff.Mode.SRC_IN);
 
-        mViewHolder.vButtonVerify.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                verifyResource();
-            }
-        });
-        mViewHolder.vButtonRetry.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                verifyResource();
-            }
-        });
-        mViewHolder.vButtonConfirm.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                initiateCertifying();
-            }
-        });
+        viewHolder.vButtonVerify.setOnClickListener(v -> verifyResource());
+        viewHolder.vButtonRetry.setOnClickListener(v -> verifyResource());
+        viewHolder.vButtonConfirm.setOnClickListener(v -> initiateCertifying());
 
         {
             Bundle args = new Bundle();
-            args.putParcelable(CertListWidget.ARG_URI, Certs.buildLinkedIdCertsUri(mDataUri, mLidRank));
-            args.putBoolean(CertListWidget.ARG_IS_SECRET, mIsSecret);
+            args.putParcelable(CertListWidget.ARG_URI, Certs.buildLinkedIdCertsUri(dataUri, lidRank));
+            args.putBoolean(CertListWidget.ARG_IS_SECRET, isSecret);
             getLoaderManager().initLoader(CertListWidget.LOADER_ID_LINKED_CERTS,
-                    args, mViewHolder.vLinkedCerts);
+                    args, viewHolder.vLinkedCerts);
         }
 
         return root;
@@ -450,17 +421,17 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
 
     void verifyResource() {
 
-        // only one at a time (no sync needed, mInProgress is only touched in ui thread)
-        if (mInProgress != null) {
+        // only one at a time (no sync needed, taskInProgress is only touched in ui thread)
+        if (taskInProgress != null) {
             return;
         }
 
         setShowVerifying(true);
 
-        mViewHolder.vKeySpinnerContainer.setVisibility(View.GONE);
-        mViewHolder.setVerifyingState(mContext, VerifyState.VERIFYING, mIsSecret);
+        viewHolder.vKeySpinnerContainer.setVisibility(View.GONE);
+        viewHolder.setVerifyingState(getContext(), VerifyState.VERIFYING, isSecret);
 
-        mInProgress = new AsyncTask<Void,Void,LinkedVerifyResult>() {
+        taskInProgress = new AsyncTask<Void,Void,LinkedVerifyResult>() {
             @Override
             protected LinkedVerifyResult doInBackground(Void... params) {
                 FragmentActivity activity = getActivity();
@@ -468,13 +439,13 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
                 byte[] fingerprint;
                 try {
                     fingerprint = KeyRepository.create(activity).getCachedPublicKeyRing(
-                            mMasterKeyId).getFingerprint();
+                            masterKeyId).getFingerprint();
                 } catch (PgpKeyNotFoundException e) {
                     throw new IllegalStateException("Key to verify linked id for must exist in db!");
                 }
 
                 long timer = System.currentTimeMillis();
-                LinkedVerifyResult result = mLinkedResource.verify(activity, fingerprint);
+                LinkedVerifyResult result = linkedResource.verify(activity, fingerprint);
 
                 // ux flow: this operation should take at last a second
                 timer = System.currentTimeMillis() -timer;
@@ -493,17 +464,17 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
                     return;
                 }
                 if (result.success()) {
-                    mViewHolder.vText.setText(getString(mLinkedResource.getVerifiedText(mIsSecret)));
+                    viewHolder.vText.setText(getString(linkedResource.getVerifiedText(isSecret)));
                     // hack to preserve bold text
-                    ((TextView) mViewHolder.vText.getCurrentView()).setText(
-                            mLinkedResource.getVerifiedText(mIsSecret));
-                    mViewHolder.setVerifyingState(mContext, VerifyState.VERIFY_OK, mIsSecret);
-                    mViewHolder.mLinkedIdHolder.seekAttention();
+                    ((TextView) viewHolder.vText.getCurrentView()).setText(
+                            linkedResource.getVerifiedText(isSecret));
+                    viewHolder.setVerifyingState(getContext(), VerifyState.VERIFY_OK, isSecret);
+                    viewHolder.mLinkedIdHolder.seekAttention();
                 } else {
-                    mViewHolder.setVerifyingState(mContext, VerifyState.VERIFY_ERROR, mIsSecret);
+                    viewHolder.setVerifyingState(getContext(), VerifyState.VERIFY_ERROR, isSecret);
                     result.createNotify(getActivity()).show();
                 }
-                mInProgress = null;
+                taskInProgress = null;
             }
         }.execute();
 
@@ -511,22 +482,22 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
 
     private void initiateCertifying() {
 
-        if (mIsSecret) {
+        if (isSecret) {
             return;
         }
 
         // get the user's passphrase for this key (if required)
-        mCertifyKeyId = mViewHolder.vKeySpinner.getSelectedKeyId();
-        if (mCertifyKeyId == key.none || mCertifyKeyId == key.symmetric) {
+        certifyKeyId = viewHolder.vKeySpinner.getSelectedKeyId();
+        if (certifyKeyId == key.none || certifyKeyId == key.symmetric) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                SubtleAttentionSeeker.tintBackground(mViewHolder.vKeySpinnerContainer, 600).start();
+                SubtleAttentionSeeker.tintBackground(viewHolder.vKeySpinnerContainer, 600).start();
             } else {
                 Notify.create(getActivity(), R.string.select_key_to_certify, Style.ERROR).show();
             }
             return;
         }
 
-        mViewHolder.setVerifyingState(mContext, VerifyState.CERTIFYING, false);
+        viewHolder.setVerifyingState(getContext(), VerifyState.CERTIFYING, false);
         cryptoOperation();
 
     }
@@ -543,11 +514,11 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
     @Nullable
     @Override
     public Parcelable createOperationInput() {
-        CertifyAction action = CertifyAction.createForUserAttributes(mMasterKeyId,
-                Collections.singletonList(mLinkedId.toUserAttribute()));
+        CertifyAction action = CertifyAction.createForUserAttributes(masterKeyId,
+                Collections.singletonList(linkedId.toUserAttribute()));
 
         // fill values for this action
-        CertifyActionsParcel.Builder builder = CertifyActionsParcel.builder(mCertifyKeyId);
+        CertifyActionsParcel.Builder builder = CertifyActionsParcel.builder(certifyKeyId);
         builder.addActions(Collections.singletonList(action));
 
         return builder.build();

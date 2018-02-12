@@ -240,7 +240,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
     private void loadData(Uri dataUri) {
         mDataUri = dataUri;
 
-        Timber.i("mDataUri: " + mDataUri);
+        Timber.i("dataUri: " + mDataUri);
 
         mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0);
         mUserIds.setAdapter(mUserIdsAdapter);

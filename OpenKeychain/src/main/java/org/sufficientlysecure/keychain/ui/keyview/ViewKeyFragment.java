@@ -58,17 +58,17 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView, O
     private static final int LOADER_ID_SUBKEY_STATUS = 3;
     private static final int LOADER_ID_KEYSERVER_STATUS = 4;
 
-    private IdentitiesCardView mIdentitiesCardView;
-    private IdentitiesPresenter mIdentitiesPresenter;
+    private IdentitiesCardView identitiesCardView;
+    private IdentitiesPresenter identitiesPresenter;
 
-    SystemContactCardView mSystemContactCard;
-    SystemContactPresenter mSystemContactPresenter;
+    SystemContactCardView systemContactCard;
+    SystemContactPresenter systemContactPresenter;
 
-    KeyHealthView mKeyStatusHealth;
-    KeyserverStatusView mKeyStatusKeyserver;
+    KeyHealthView keyStatusHealth;
+    KeyserverStatusView keyStatusKeyserver;
 
-    KeyHealthPresenter mKeyHealthPresenter;
-    KeyserverStatusPresenter mKeyserverStatusPresenter;
+    KeyHealthPresenter keyHealthPresenter;
+    KeyserverStatusPresenter keyserverStatusPresenter;
 
     private Integer displayedContextMenuPosition;
 
@@ -91,11 +91,11 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView, O
         View root = super.onCreateView(inflater, superContainer, savedInstanceState);
         View view = inflater.inflate(R.layout.view_key_fragment, getContainer());
 
-        mIdentitiesCardView = view.findViewById(R.id.card_identities);
+        identitiesCardView = view.findViewById(R.id.card_identities);
 
-        mSystemContactCard = view.findViewById(R.id.linked_system_contact_card);
-        mKeyStatusHealth = view.findViewById(R.id.key_status_health);
-        mKeyStatusKeyserver = view.findViewById(R.id.key_status_keyserver);
+        systemContactCard = view.findViewById(R.id.linked_system_contact_card);
+        keyStatusHealth = view.findViewById(R.id.key_status_health);
+        keyStatusKeyserver = view.findViewById(R.id.key_status_keyserver);
 
         return root;
     }
@@ -107,21 +107,21 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView, O
         long masterKeyId = getArguments().getLong(ARG_MASTER_KEY_ID);
         mIsSecret = getArguments().getBoolean(ARG_IS_SECRET);
 
-        mIdentitiesPresenter = new IdentitiesPresenter(
-                getContext(), mIdentitiesCardView, this, LOADER_IDENTITIES, masterKeyId, mIsSecret);
-        mIdentitiesPresenter.startLoader(getLoaderManager());
+        identitiesPresenter = new IdentitiesPresenter(
+                getContext(), identitiesCardView, this, LOADER_IDENTITIES, masterKeyId, mIsSecret);
+        identitiesPresenter.startLoader(getLoaderManager());
 
-        mSystemContactPresenter = new SystemContactPresenter(
-                getContext(), mSystemContactCard, LOADER_ID_LINKED_CONTACT, masterKeyId, mIsSecret);
-        mSystemContactPresenter.startLoader(getLoaderManager());
+        systemContactPresenter = new SystemContactPresenter(
+                getContext(), systemContactCard, LOADER_ID_LINKED_CONTACT, masterKeyId, mIsSecret);
+        systemContactPresenter.startLoader(getLoaderManager());
 
-        mKeyHealthPresenter = new KeyHealthPresenter(
-                getContext(), mKeyStatusHealth, LOADER_ID_SUBKEY_STATUS, masterKeyId, mIsSecret);
-        mKeyHealthPresenter.startLoader(getLoaderManager());
+        keyHealthPresenter = new KeyHealthPresenter(
+                getContext(), keyStatusHealth, LOADER_ID_SUBKEY_STATUS, masterKeyId, mIsSecret);
+        keyHealthPresenter.startLoader(getLoaderManager());
 
-        mKeyserverStatusPresenter = new KeyserverStatusPresenter(
-                getContext(), mKeyStatusKeyserver, LOADER_ID_KEYSERVER_STATUS, masterKeyId, mIsSecret);
-        mKeyserverStatusPresenter.startLoader(getLoaderManager());
+        keyserverStatusPresenter = new KeyserverStatusPresenter(
+                getContext(), keyStatusKeyserver, LOADER_ID_KEYSERVER_STATUS, masterKeyId, mIsSecret);
+        keyserverStatusPresenter.startLoader(getLoaderManager());
     }
 
     @Override
@@ -193,7 +193,7 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView, O
             case R.id.autocrypt_forget:
                 int position = displayedContextMenuPosition;
                 displayedContextMenuPosition = null;
-                mIdentitiesPresenter.onClickForgetIdentity(position);
+                identitiesPresenter.onClickForgetIdentity(position);
                 return true;
         }
 

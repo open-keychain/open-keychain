@@ -113,7 +113,7 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
     private void loadData(Uri dataUri) {
         mDataUri = dataUri;
 
-        Timber.i("mDataUri: " + mDataUri.toString());
+        Timber.i("dataUri: " + mDataUri.toString());
 
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.

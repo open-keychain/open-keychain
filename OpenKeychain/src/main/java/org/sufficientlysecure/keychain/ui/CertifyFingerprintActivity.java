@@ -48,7 +48,7 @@ public class CertifyFingerprintActivity extends BaseActivity {
             }
         });
 
-        Timber.i("mDataUri: " + mDataUri.toString());
+        Timber.i("dataUri: " + mDataUri.toString());
 
         startFragment(savedInstanceState, mDataUri);
     }
