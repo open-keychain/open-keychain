@@ -4,6 +4,7 @@ package org.sufficientlysecure.keychain;
 import java.io.InputStream;
 
 import org.bouncycastle.bcpg.ArmoredInputStream;
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyringTest;
