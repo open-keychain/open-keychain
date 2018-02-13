@@ -37,15 +37,20 @@ import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
+import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
+import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
+import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
+import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -56,6 +61,7 @@ import static junit.framework.Assert.assertTrue;
 @SuppressWarnings("WeakerAccess")
 @RunWith(KeychainTestRunner.class)
 public class EddsaTest {
+    public static final byte[] SIGNED_BYTES = "hi".getBytes();
     private KeyWritableRepository keyRepository;
     private Application context;
 
@@ -75,7 +81,7 @@ public class EddsaTest {
     @Test
     public void testGpgSampleSignature() throws Exception {
         // key from GnuPG's test suite, sample msg generated using GnuPG v2.1.18
-        UncachedKeyRing ring = loadKeyringFromResource("/test-keys/eddsa-sample-1-pub.asc");
+        UncachedKeyRing ring = loadPubkeyFromResource("/test-keys/eddsa-sample-1-pub.asc");
 
         byte[] signedText = readBytesFromResource("/test-keys/eddsa-sample-msg.asc");
         PgpDecryptVerifyInputParcel pgpDecryptVerifyInputParcel = PgpDecryptVerifyInputParcel.builder()
@@ -87,6 +93,32 @@ public class EddsaTest {
         assertTrue(result.success());
         assertEquals(OpenPgpSignatureResult.RESULT_VALID_KEY_UNCONFIRMED, result.getSignatureResult().getResult());
         assertEquals(ring.getMasterKeyId(), result.getSignatureResult().getKeyId());
+    }
+
+    @Test
+    public void testEddsaSign() throws Exception {
+        // key from GnuPG's test suite, sample msg generated using GnuPG v2.1.18
+        UncachedKeyRing ring = loadSeckeyFromResource("/test-keys/eddsa-key.sec");
+
+        PgpSignEncryptData data = PgpSignEncryptData.builder()
+                .setDetachedSignature(true)
+                .setSignatureMasterKeyId(ring.getMasterKeyId())
+                .build();
+        PgpSignEncryptInputParcel inputParcel = PgpSignEncryptInputParcel.createForBytes(
+                data, null, SIGNED_BYTES);
+
+        PgpSignEncryptOperation op = new PgpSignEncryptOperation(context, keyRepository, null);
+        PgpSignEncryptResult result = op.execute(inputParcel, CryptoInputParcel.createCryptoInputParcel());
+
+        assertTrue(result.success());
+
+        PgpDecryptVerifyInputParcel pgpDecryptVerifyInputParcel = PgpDecryptVerifyInputParcel.builder()
+                .setInputBytes(SIGNED_BYTES).setDetachedSignature(result.getDetachedSignature()).build();
+
+        PgpDecryptVerifyOperation decryptVerifyOperation = new PgpDecryptVerifyOperation(context, keyRepository, null);
+        DecryptVerifyResult result2 = decryptVerifyOperation.execute(pgpDecryptVerifyInputParcel, null);
+
+        assertTrue(result2.success());
     }
 
     @Test
@@ -106,9 +138,17 @@ public class EddsaTest {
         assertNotNull(canonicalizedKeyRing);
     }
 
-    private UncachedKeyRing loadKeyringFromResource(String name) throws Exception {
+    private UncachedKeyRing loadPubkeyFromResource(String name) throws Exception {
         UncachedKeyRing ring = readRingFromResource(name);
         SaveKeyringResult saveKeyringResult = keyRepository.savePublicKeyRing(ring);
+        assertTrue(saveKeyringResult.success());
+        assertFalse(saveKeyringResult.getLog().containsWarnings());
+        return ring;
+    }
+
+    private UncachedKeyRing loadSeckeyFromResource(String name) throws Exception {
+        UncachedKeyRing ring = readRingFromResource(name);
+        SaveKeyringResult saveKeyringResult = keyRepository.saveSecretKeyRing(ring);
         assertTrue(saveKeyringResult.success());
         assertFalse(saveKeyringResult.getLog().containsWarnings());
         return ring;
