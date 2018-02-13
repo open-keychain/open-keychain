@@ -108,6 +108,7 @@ public class SecurityTokenPsoSignTokenOp {
                 data = prepareDsi(hash, hashAlgo);
                 break;
             case ECKeyFormatType:
+            case EdDSAKeyFormatType:
                 data = hash;
                 break;
             default:
@@ -128,7 +129,7 @@ public class SecurityTokenPsoSignTokenOp {
                 }
                 break;
 
-            case ECKeyFormatType:
+            case ECKeyFormatType: {
                 // "plain" encoding, see https://github.com/open-keychain/open-keychain/issues/2108
                 if (signature.length % 2 != 0) {
                     throw new IOException("Bad signature length!");
@@ -142,8 +143,12 @@ public class SecurityTokenPsoSignTokenOp {
                 final ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 ASN1OutputStream out = new ASN1OutputStream(baos);
                 out.writeObject(new DERSequence(new ASN1Encodable[] { new ASN1Integer(br), new ASN1Integer(bs) }));
-            out.flush();
-            signature = baos.toByteArray();
+                out.flush();
+                signature = baos.toByteArray();
+                break;
+            }
+
+            case EdDSAKeyFormatType:
                 break;
         }
         return signature;

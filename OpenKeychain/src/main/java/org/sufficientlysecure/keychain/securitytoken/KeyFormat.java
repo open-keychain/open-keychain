@@ -27,7 +27,8 @@ public abstract class KeyFormat {
 
     public enum KeyFormatType {
         RSAKeyFormatType,
-        ECKeyFormatType
+        ECKeyFormatType,
+        EdDSAKeyFormatType
     }
 
     private final KeyFormatType mKeyFormatType;
@@ -53,7 +54,7 @@ public abstract class KeyFormat {
             case PublicKeyAlgorithmTags.ECDH:
             case PublicKeyAlgorithmTags.ECDSA:
                 if (bytes.length < 2) {
-                    throw new IllegalArgumentException("Bad length for RSA attributes");
+                    throw new IllegalArgumentException("Bad length for EC attributes");
                 }
                 int len = bytes.length - 1;
                 if (bytes[bytes.length - 1] == (byte)0xff) {
@@ -65,6 +66,8 @@ public abstract class KeyFormat {
                 System.arraycopy(bytes, 1, boid, 2, len);
                 final ASN1ObjectIdentifier oid = ASN1ObjectIdentifier.getInstance(boid);
                 return new ECKeyFormat(oid, ECKeyFormat.ECAlgorithmFormat.from(bytes[0], bytes[bytes.length - 1]));
+            case PublicKeyAlgorithmTags.EDDSA:
+                return new EdDSAKeyFormat();
 
             default:
                 throw new IllegalArgumentException("Unsupported Algorithm id " + bytes[0]);
