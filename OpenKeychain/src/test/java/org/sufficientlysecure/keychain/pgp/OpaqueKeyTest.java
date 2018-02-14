@@ -51,18 +51,6 @@ public class OpaqueKeyTest {
     }
 
     @Test
-    public void testOpaqueOidSubKey__canonicalize__shouldFail() throws Exception {
-        // key from GnuPG's test suite, sample msg generated using GnuPG v2.1.18
-        // TODO use for actual tests once eddsa is supported!
-        UncachedKeyRing ring = readRingFromResource("/test-keys/ed25519-cv25519-sample-1.asc");
-
-        OperationLog log = new OperationLog();
-        ring.canonicalize(log, 0);
-
-        assertTrue(log.containsType(LogType.MSG_KC_SUB_BAD));
-    }
-
-    @Test
     public void testOpaqueSubKey__canonicalize__shouldStrip() throws Exception {
         UncachedKeyRing ring = readRingFromResource("/test-keys/unknown-subkey.pub.asc");
 
