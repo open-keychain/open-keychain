@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 import android.app.Application;
+import android.support.annotation.NonNull;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -33,9 +34,13 @@ import org.robolectric.shadows.ShadowLog;
 import org.robolectric.util.Util;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
+import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
+import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
+import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
+import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 
@@ -48,7 +53,7 @@ import static org.junit.Assert.assertArrayEquals;
 @SuppressWarnings("WeakerAccess")
 @RunWith(KeychainTestRunner.class)
 public class Cv25519Test {
-    public static final String ENCRYPTED_PLAINTEXT = "hi\n";
+    public static final byte[] ENCRYPTED_PLAINTEXT = "hi\n".getBytes();
     private KeyWritableRepository keyRepository;
     private Application context;
 
@@ -70,15 +75,30 @@ public class Cv25519Test {
         loadSecretKeyringFromResource("/test-keys/cv25519-key.sec.asc");
 
         byte[] encryptedText = readBytesFromResource("/test-keys/cv25519-encrypted.asc");
-        PgpDecryptVerifyInputParcel pgpDecryptVerifyInputParcel =
-                PgpDecryptVerifyInputParcel.builder().setInputBytes(encryptedText).build();
+        DecryptVerifyResult result = simpleDecryptText(encryptedText);
 
-        PgpDecryptVerifyOperation decryptVerifyOperation = new PgpDecryptVerifyOperation(context, keyRepository, null);
-        DecryptVerifyResult result = decryptVerifyOperation.execute(pgpDecryptVerifyInputParcel, CryptoInputParcel.createCryptoInputParcel());
+        assertArrayEquals(ENCRYPTED_PLAINTEXT, result.getOutputBytes());
+    }
+
+    @Test
+    public void testEncryptX25519() throws Exception {
+        UncachedKeyRing uncachedKeyRing = loadSecretKeyringFromResource("/test-keys/cv25519-key.sec.asc");
+
+        PgpSignEncryptData data = PgpSignEncryptData.builder()
+                .setEncryptionMasterKeyIds(new long[] { uncachedKeyRing.getMasterKeyId() })
+                .build();
+        PgpSignEncryptInputParcel inputParcel = PgpSignEncryptInputParcel.createForBytes(
+                data, null, ENCRYPTED_PLAINTEXT);
+
+        PgpSignEncryptOperation op = new PgpSignEncryptOperation(context, keyRepository, null);
+        PgpSignEncryptResult result = op.execute(inputParcel, CryptoInputParcel.createCryptoInputParcel());
 
         assertTrue(result.success());
-        assertEquals(OpenPgpSignatureResult.RESULT_NO_SIGNATURE, result.getSignatureResult().getResult());
-        assertArrayEquals(ENCRYPTED_PLAINTEXT.getBytes(), result.getOutputBytes());
+
+        DecryptVerifyResult decryptResult = simpleDecryptText(result.getOutputBytes());
+
+        assertTrue(decryptResult.success());
+        assertArrayEquals(ENCRYPTED_PLAINTEXT, decryptResult.getOutputBytes());
     }
 
     private UncachedKeyRing loadSecretKeyringFromResource(String name) throws Exception {
@@ -87,6 +107,19 @@ public class Cv25519Test {
         assertTrue(saveKeyringResult.success());
         assertFalse(saveKeyringResult.getLog().containsWarnings());
         return ring;
+    }
+
+    @NonNull
+    private DecryptVerifyResult simpleDecryptText(byte[] encryptedText) {
+        PgpDecryptVerifyInputParcel pgpDecryptVerifyInputParcel =
+                PgpDecryptVerifyInputParcel.builder().setInputBytes(encryptedText).build();
+
+        PgpDecryptVerifyOperation decryptVerifyOperation = new PgpDecryptVerifyOperation(context, keyRepository, null);
+        DecryptVerifyResult result = decryptVerifyOperation.execute(pgpDecryptVerifyInputParcel, CryptoInputParcel.createCryptoInputParcel());
+
+        assertTrue(result.success());
+        assertEquals(OpenPgpSignatureResult.RESULT_NO_SIGNATURE, result.getSignatureResult().getResult());
+        return result;
     }
 
     private byte[] readBytesFromResource(String name) throws Exception {
