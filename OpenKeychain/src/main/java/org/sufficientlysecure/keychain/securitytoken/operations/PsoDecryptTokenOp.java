@@ -32,6 +32,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import org.bouncycastle.asn1.nist.NISTNamedCurves;
 import org.bouncycastle.asn1.x9.X9ECParameters;
+import org.bouncycastle.crypto.ec.CustomNamedCurves;
 import org.bouncycastle.jcajce.util.MessageDigestUtils;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.openpgp.PGPException;
@@ -114,13 +115,7 @@ public class PsoDecryptTokenOp {
         int mpiLength = getMpiLength(encryptedSessionKeyMpi);
         byte[] encryptedPoint = Arrays.copyOfRange(encryptedSessionKeyMpi, 2, mpiLength + 2);
 
-        X9ECParameters x9Params = NISTNamedCurves.getByOID(eckf.getCurveOID());
-        ECPoint p = x9Params.getCurve().decodePoint(encryptedPoint);
-        if (!p.isValid()) {
-            throw new CardException("Invalid EC point!");
-        }
-
-        byte[] psoDecipherPayload = p.getEncoded(false);
+        byte[] psoDecipherPayload = getEcDecipherPayload(eckf, encryptedPoint);
 
         byte[] dataLen;
         if (psoDecipherPayload.length < 128) {
@@ -195,6 +190,20 @@ public class PsoDecryptTokenOp {
             throw new CardException(e.getMessage());
         } catch (InvalidKeyException e) {
             throw new CardException("Invalid KEK!");
+        }
+    }
+
+    private byte[] getEcDecipherPayload(ECKeyFormat eckf, byte[] encryptedPoint) throws CardException {
+        if (CustomNamedCurves.CV25519.equals(eckf.getCurveOID())) {
+            return Arrays.copyOfRange(encryptedPoint, 1, 33);
+        } else {
+            X9ECParameters x9Params = NISTNamedCurves.getByOID(eckf.getCurveOID());
+            ECPoint p = x9Params.getCurve().decodePoint(encryptedPoint);
+            if (!p.isValid()) {
+                throw new CardException("Invalid EC point!");
+            }
+
+            return p.getEncoded(false);
         }
     }
 
