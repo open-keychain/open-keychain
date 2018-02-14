@@ -131,7 +131,8 @@ public class PgpSecurityConstants {
             CustomNamedCurves.getOID("secp256k1").getId(),
             TeleTrusTNamedCurves.getOID("brainpoolP256r1").getId(),
             TeleTrusTNamedCurves.getOID("brainpoolP384r1").getId(),
-            TeleTrusTNamedCurves.getOID("brainpoolP512r1").getId()
+            TeleTrusTNamedCurves.getOID("brainpoolP512r1").getId(),
+            CustomNamedCurves.getOID("curve25519").getId()
     ));
 
     static KeySecurityProblem checkForSecurityProblems(CanonicalizedPublicKey key) {
