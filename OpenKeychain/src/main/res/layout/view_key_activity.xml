@@ -16,7 +16,7 @@
         android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <android.support.design.widget.CollapsingToolbarLayout
+        <android.support.design.widget.FixedCollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -163,7 +163,7 @@
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 tools:ignore="UnusedAttribute" />
-        </android.support.design.widget.CollapsingToolbarLayout>
+        </android.support.design.widget.FixedCollapsingToolbarLayout>
 
     </android.support.design.widget.AppBarLayout>
 
