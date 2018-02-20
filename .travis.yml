@@ -13,6 +13,8 @@ before_install:
   - sudo update-alternatives --auto java
   - sudo update-alternatives --auto javac
   - export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+  # workaround for https://github.com/travis-ci/travis-ci/issues/8874
+  - yes | sdkmanager "platforms;android-27"
 
 android:
   components:
