@@ -113,6 +113,7 @@ public class KeychainApplication extends Application {
         TlsCertificatePinning.addPinnedCertificate("hkps.pool.sks-keyservers.net", getAssets(), "hkps.pool.sks-keyservers.net.CA.cer");
         TlsCertificatePinning.addPinnedCertificate("pgp.mit.edu", getAssets(), "pgp.mit.edu.cer");
         TlsCertificatePinning.addPinnedCertificate("api.keybase.io", getAssets(), "api.keybase.io.CA.cer");
+        TlsCertificatePinning.addPinnedCertificate("keyserver.ubuntu.com", getAssets(), "DigiCertGlobalRootCA.cer");
 
         TemporaryFileProvider.cleanUp(this);
     }

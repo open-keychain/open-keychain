@@ -37,6 +37,7 @@ import org.sufficientlysecure.keychain.Constants.Pref;
 import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
+
 import timber.log.Timber;
 
 
@@ -424,11 +425,12 @@ public class Preferences {
     }
 
     public void upgradePreferences(Context context) {
-        Timber.d("Upgrading preferences…");
         int oldVersion = mSharedPreferences.getInt(Constants.Pref.PREF_VERSION, 0);
         boolean requiresUpgrade = oldVersion < Constants.Defaults.PREF_CURRENT_VERSION;
 
         if (requiresUpgrade) {
+            Timber.d("Upgrading preferences from %s to %s…", oldVersion, Constants.Defaults.PREF_CURRENT_VERSION);
+
             switch (oldVersion) {
                 case 1:
                     // fall through
@@ -494,6 +496,9 @@ public class Preferences {
                     }
                     setKeyServers(servers);
                 }
+                case 8: {
+                    replaceDefaultKeyserverWithUbuntu();
+                }
             }
 
             // write new preference version
@@ -501,6 +506,20 @@ public class Preferences {
                     .putInt(Constants.Pref.PREF_VERSION, Constants.Defaults.PREF_CURRENT_VERSION)
                     .commit();
         }
+    }
+
+    private void replaceDefaultKeyserverWithUbuntu() {
+        ArrayList<HkpKeyserverAddress> servers = getKeyServers();
+        boolean oldDefaults = "hkps://hkps.pool.sks-keyservers.net".equalsIgnoreCase(servers.get(0).getUrl()) ||
+                "hkps://pgp.mit.edu".equalsIgnoreCase(servers.get(0).getUrl());
+
+        HkpKeyserverAddress ubuntuKeyserver = HkpKeyserverAddress.createFromUri("hkps://keyserver.ubuntu.com");
+        if (oldDefaults) {
+            servers.add(0, ubuntuKeyserver);
+        } else if (!servers.contains(ubuntuKeyserver)){
+            servers.add(ubuntuKeyserver);
+        }
+        setKeyServers(servers);
     }
 
     public void clear() {
