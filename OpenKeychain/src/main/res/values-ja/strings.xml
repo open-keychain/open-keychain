@@ -59,7 +59,6 @@
   <string name="section_share_key">鍵</string>
   <string name="section_key_server">鍵サーバ</string>
   <string name="section_fingerprint">指紋</string>
-  <string name="section_phrases">語句</string>
   <string name="section_encrypt">暗号化</string>
   <string name="section_decrypt">復号化/検証</string>
   <string name="section_current_expiry">現在の期限</string>
@@ -80,7 +79,6 @@
   <string name="btn_back">戻る</string>
   <string name="btn_no">なし</string>
   <string name="btn_match">指紋一致</string>
-  <string name="btn_match_phrases">語句の一致</string>
   <string name="btn_share_encrypted_signed">暗号化/署名とテキストをシェア</string>
   <string name="btn_copy_encrypted_signed">暗号化/署名とテキストをコピー</string>
   <string name="btn_paste_encrypted_signed">暗号化/署名してテキストを貼り付け</string>
@@ -207,8 +205,6 @@
   <string name="keyserver_sync_settings_title">鍵の自動アップデート</string>
   <string name="label_experimental_settings_desc_title">注意</string>
   <string name="label_experimental_settings_desc_summary">これらの機能はまだ完成していないか、ユーザーエクスペリエンス/セキュリティ研究の結果ではありません。そのため、このセキュリティに依存したり、遭遇した問題を報告しないでください!</string>
-  <string name="label_experimental_settings_word_confirm_title">語句による検証</string>
-  <string name="label_experimental_settings_word_confirm_summary">16進指紋の変りに語句で鍵を検証</string>
   <string name="label_experimental_settings_linked_identities_title">リンクしたユーザID</string>
   <string name="label_experimental_settings_linked_identities_summary">Twitter、GitHub、Webサイト、またはDNSに鍵をリンク (keybase.ioに似ていますが、分散型)</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io 検証</string>
@@ -300,6 +296,7 @@
   <string name="passphrase_for_symmetric_encryption">パスワードの入力</string>
   <string name="passphrase_for_backup">バックアップコードの入力</string>
   <string name="passphrase_for">\'%s\' にパスワードを入れてください</string>
+  <string name="passphrase_for_any">パスワードの入力</string>
   <string name="passphrase_keyboard_hint_alpha">英字キーボードに切り替え</string>
   <string name="passphrase_keyboard_hint_numeric">数字キーボードに切り替え</string>
   <string name="pin_for">\'%s\' にPINを入力してください</string>
@@ -480,6 +477,7 @@
   <string name="help_tab_wot">鍵確認</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Changelog</string>
+  <string name="help_tab_license">ライセンス</string>
   <string name="help_tab_about">これについて</string>
   <string name="help_about_version">バージョン:</string>
   <string name="help_tab_donations">寄付</string>
@@ -1341,7 +1339,6 @@
   <string name="section_uids_to_certify">ユーザID</string>
   <string name="certify_text">インポートした鍵には\"アイデンティティ\": 名前とメールアドレス を含みます。正確に期待したものと一致しているか認定されているものを選択します。</string>
   <string name="certify_fingerprint_text">鍵指紋を、文字対文字で、相手の端末に表示しているものと比較</string>
-  <string name="certify_fingerprint_text_phrases">これらの語句を、相手の端末に表示しているものと比較</string>
   <string name="label_revocation">破棄の理由</string>
   <string name="label_cert_type">種別</string>
   <string name="error_key_not_found">鍵が見当りません!</string>

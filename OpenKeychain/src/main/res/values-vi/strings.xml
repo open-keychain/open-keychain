@@ -58,7 +58,6 @@
   <string name="section_share_key">Khóa</string>
   <string name="section_key_server">Máy chủ lưu khóa</string>
   <string name="section_fingerprint">Mã nhận dạng</string>
-  <string name="section_phrases">Mật khẩu</string>
   <string name="section_encrypt">Mã hóa</string>
   <string name="section_current_expiry">Hạn dùng hiện tại</string>
   <string name="section_new_expiry">Hạn dùng mới</string>
@@ -78,7 +77,6 @@
   <string name="btn_back">Quay về</string>
   <string name="btn_no">Không</string>
   <string name="btn_match">Mã nhận dạng phù hợp</string>
-  <string name="btn_match_phrases">Mật khẩu phù hợp</string>
   <string name="btn_share_encrypted_signed">Mã hóa/ký số và chia sẻ văn bản</string>
   <string name="btn_copy_encrypted_signed">Mã hóa/ký số và sao chép văn bản</string>
   <string name="btn_paste_encrypted_signed">Mã hóa/ký số và dán văn bản</string>
@@ -194,8 +192,6 @@
   <string name="keyserver_sync_settings_title">Cập nhật khóa tự động</string>
   <string name="label_experimental_settings_desc_title">Cảnh báo</string>
   <string name="label_experimental_settings_desc_summary">Tính năng này hiện chưa được hoàn thành hoặc chỉ mới là kết quả nghiên cứu/thử nghiệm. Do vậy, bạn đừng tin cậy vào tính an toàn của chúng cũng như không cần thiết phải thông báo với chúng tôi!</string>
-  <string name="label_experimental_settings_word_confirm_title">Xác nhận bằng mật khẩu</string>
-  <string name="label_experimental_settings_word_confirm_summary">Xác nhận khóa bằng mật khẩu thay vì sử dụng mã nhận dạng thập lục phân</string>
   <string name="label_experimental_settings_linked_identities_title">Các định danh đã liên kết</string>
   <string name="label_experimental_settings_linked_identities_summary">Liên kết khóa với Twitter, GitHub, website hoặc DNS (tương tự như đưa lên keybase.io nhưng có phân cấp)</string>
   <string name="label_experimental_settings_keybase_summary">Liên hệ với keybase.io để minh chứng khóa và hiển thị chúng mỗi khi khóa được gọi</string>
@@ -220,6 +216,7 @@
   <string name="error">Lỗi</string>
   <!--sentences-->
   <string name="passphrase_for_symmetric_encryption">Điền mật khẩu</string>
+  <string name="passphrase_for_any">Điền mật khẩu</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -241,6 +238,7 @@
   <string name="help_tab_start">Bắt đầu</string>
   <string name="help_tab_faq">Câu Hỏi Thường Gặp</string>
   <string name="help_tab_changelog">Ký sự thay đổi</string>
+  <string name="help_tab_license">Giấy phép</string>
   <string name="help_tab_about">Giới thiệu</string>
   <string name="help_about_version">Phiên bản:</string>
   <string name="help_tab_donations">Quyên góp</string>

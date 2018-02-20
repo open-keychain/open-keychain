@@ -1,4 +1,4 @@
-[//]: # (NOTE : veuillez mettre chaque phrase dans sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
+[//]: # (NOTE : veuillez mettre chaque phrase dans sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
 [https://www.openkeychain.org](https://www.openkeychain.org)
 
@@ -17,9 +17,9 @@ Licence : GPLv3+
   * Andrea Torlaschi
   * Arnaud Fontaine
   * Ash Hughes
-  * « mar-v-in »
+  * « mar-v-in »
   * Nikita Mikhailov
-  * « Thialfihar » (développeur APG)
+  * « Thialfihar » (développeur APG)
   * Tim Bray
   * Tobias Erthal
 
@@ -28,23 +28,23 @@ Licence : GPLv3+
   * Andrea Torlaschi
   * Art O Cathain
   * Brian C. Barnes
-  * Bahtiar « kalkin » Gadimov
+  * Bahtiar « kalkin » Gadimov
   * Daniel Albert
   * Daniel Hammann
   * Daniel Haß
   * Daniel Nelz
   * Daniel Ramos
   * Greg Witczak
-  * « iseki »
+  * « iseki »
   * Ishan Khanna
-  * « jellysheep »
-  * « Jesperbk »
-  * « jkolo »
+  * « jellysheep »
+  * « Jesperbk »
+  * « jkolo »
   * Joey Castillo
   * Kai Jiang
   * Kartik Arora
-  * « Kent »
-  * « ligi »
+  * « Kent »
+  * « ligi »
   * Lukas Zorich
   * Manoj Khanna
   * Markus Doits
@@ -54,27 +54,7 @@ Licence : GPLv3+
   * Nikhil Peter Raj
   * Paul Sarbinowski
   * Petter Arvidsson
-  * « Senecaso »
+  * « Senecaso »
   * Signe Rüsch
   * Sreeram Boyapati
-  * « steelman »
-
-[//] : # (NOTE : tri alphabétique)
-
-## Bibliothèques
-  * [Bibliothèques de soutien Android](http://developer.android.com/tools/support-library/index.html) (Licence Apache v2)
-  * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Licence Apache v2)
-  * [HtmlTextView](https://github.com/sufficientlysecure/html-textview) (Licence Apache v2)
-  * [KeybaseLib](https://github.com/timbray/KeybaseLib) (Licence Apache v2)
-  * [Markdown4J](https://github.com/jdcasey/markdown4j) (Licence Apache v2)
-  * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Licence Apache v2)
-  * [MiniDNS](https://github.com/rtreffer/minidns) (Licence Apache v2)
-  * [OkHttp](https://square.github.io/okhttp/) (Licence Apache v2)
-  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Conception matérielle)</a> (Licence Apache v2)
-  * [Bibliothèque d’échange SafeSlinger](https://github.com/SafeSlingerProject/exchange-android) (Licence MIT)
-  * [Snackbar](https://github.com/nispok/snackbar) (Licence MIT)
-  * [BouncyCastle](https://github.com/open-keychain/bouncycastle) (Licence MIT X11)
-  * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Licence Apache v2)
-  * [TokenAutoComplete](https://github.com/splitwise/TokenAutoComplete) (Licence Apache v2)
-  * [ZXing](https://github.com/zxing/zxing) (Licence Apache v2)
-  * [ZXing Android Minimal](https://github.com/journeyapps/zxing-android-embedded) (Licence Apache v2)
+  * « steelman »

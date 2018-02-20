@@ -179,6 +179,7 @@
   <string name="passphrase_must_not_be_empty">لطفاً یک رمزعبور وارد کنید.</string>
   <string name="passphrase_for_symmetric_encryption">رمزعبور را وارد کنید</string>
   <string name="passphrase_for">وارد کردن رمز عبور برای \'%s\'</string>
+  <string name="passphrase_for_any">رمزعبور را وارد کنید</string>
   <string name="pin_for">وارد کردن رمزِ پین برای \'%s\'</string>
   <string name="keys_exported">%d کلید با موفقیت خارج شد.</string>
   <string name="list_empty">این لیست خالی است!</string>
@@ -251,6 +252,7 @@
   <string name="help_tab_start">شروع</string>
   <string name="help_tab_faq">سوال‌های متداول</string>
   <string name="help_tab_changelog">لیست تغییرات</string>
+  <string name="help_tab_license">گواهینامه ها</string>
   <string name="help_tab_about">درباره‌ی سایفون</string>
   <string name="help_about_version">نسخه:</string>
   <string name="help_tab_donations">حمایت مالی</string>

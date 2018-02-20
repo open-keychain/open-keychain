@@ -59,7 +59,6 @@
   <string name="section_share_key">Nøkkel</string>
   <string name="section_key_server">Nøkkeltjener</string>
   <string name="section_fingerprint">Fingeravtrykk</string>
-  <string name="section_phrases">Fraser</string>
   <string name="section_encrypt">Krypter</string>
   <string name="section_decrypt">Dekrypter/bekreft</string>
   <string name="section_current_expiry">Gjeldende forfall</string>
@@ -79,8 +78,7 @@
   <string name="btn_next">Neste</string>
   <string name="btn_back">Tilbake</string>
   <string name="btn_no">Nei</string>
-  <string name="btn_match">Fingeravtrykkene samsvarer ikke</string>
-  <string name="btn_match_phrases">Frasene samsvarer ikke</string>
+  <string name="btn_match">Fingeravtrykkene samsvarer</string>
   <string name="btn_share_encrypted_signed">Krypter/signer og del tekst</string>
   <string name="btn_copy_encrypted_signed">Krypter/signer og kopier tekst</string>
   <string name="btn_paste_encrypted_signed">Krypter/signer og lim inn tekst</string>
@@ -199,8 +197,6 @@
   <string name="keyserver_sync_settings_title">Automatiske nøkkeloppdateringer</string>
   <string name="label_experimental_settings_desc_title">Advarsel</string>
   <string name="label_experimental_settings_desc_summary">Disse funksjonene er ikke ferdige enda, eller resultat av brukererfaring/sikkerhetsforskning. Som sådan, bør du ikke stole på at de er sikre, og ikke rapportere feil du kommer over!</string>
-  <string name="label_experimental_settings_word_confirm_title">Bekreftelse med fraser</string>
-  <string name="label_experimental_settings_word_confirm_summary">Bekreft nøklene med fraser i steden for heksadesimale fingeravtrykk</string>
   <string name="label_experimental_settings_linked_identities_title">Lenkede identiteter</string>
   <string name="label_experimental_settings_linked_identities_summary">Lenk nøkler til Twitter, GitHub, nettsider eller DNS (likt keybase.io, men desentralisert)</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io-bevis</string>
@@ -285,6 +281,7 @@
   <string name="passphrase_for_symmetric_encryption">Skriv inn passord</string>
   <string name="passphrase_for_backup">Skriv inn sikkerhetskopierings-kode</string>
   <string name="passphrase_for">Skriv inn passord fo \'%s\'</string>
+  <string name="passphrase_for_any">Skriv inn passord</string>
   <string name="passphrase_keyboard_hint_alpha">Bytt til alfabetisk tastatur</string>
   <string name="passphrase_keyboard_hint_numeric">Bytt til numerisk tastatur</string>
   <string name="pin_for">Skriv inn PIN for \'%s\'</string>
@@ -411,6 +408,7 @@
   <string name="help_tab_wot">Nøkkelbekreftelse</string>
   <string name="help_tab_nfc_beam">NFS-stråling</string>
   <string name="help_tab_changelog">Endringslogg</string>
+  <string name="help_tab_license">Lisenser</string>
   <string name="help_tab_about">Om</string>
   <string name="help_about_version">Versjon:</string>
   <string name="help_tab_donations">Doner</string>
@@ -648,7 +646,7 @@
   <string name="passphrase">Passord</string>
   <string name="noPassphrase">Inget passord</string>
   <string name="no_passphrase_set">Inget passord satt</string>
-  <string name="passphrases_match">Passordene samsvarer ikke</string>
+  <string name="passphrases_match">Passordene samsvarer</string>
   <string name="passphrase_saved">Passord lagret</string>
   <string name="passphrase_invalid">Passord ugyldig</string>
   <string name="missing_passphrase">Manglende passord</string>

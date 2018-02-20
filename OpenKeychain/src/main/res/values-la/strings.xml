@@ -26,6 +26,7 @@
   <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_cancel">Claudere</string>
   <!--choice-->
+  <string name="error">Erratum</string>
   <!--sentences-->
   <!--errors
          no punctuation, all lowercase,
@@ -45,6 +46,7 @@
   <!--compression-->
   <!--Help-->
   <string name="help_tab_changelog">Historia mutationum</string>
+  <string name="help_tab_about">De Crommyautomato</string>
   <string name="help_tab_donations">Dona</string>
   <!--Import-->
   <!--Generic result toast-->
@@ -105,6 +107,7 @@
   <string name="linked_create_verify">Probare</string>
   <!--Other Linked Identity strings-->
   <string name="linked_button_verify">Probare</string>
+  <string name="linked_text_error">Erratum</string>
   <string name="share_log_dialog_cancel_button">Claudere</string>
   <string name="menu_uids_save">Memorare</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">Claudere</string>

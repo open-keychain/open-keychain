@@ -56,7 +56,6 @@
   <string name="section_share_key">Klíč</string>
   <string name="section_key_server">Keyserver</string>
   <string name="section_fingerprint">Otisk</string>
-  <string name="section_phrases">Fráze</string>
   <string name="section_encrypt">Zašifrovat</string>
   <string name="section_current_expiry">Současná expirace</string>
   <string name="section_new_expiry">Nová expirace</string>
@@ -76,7 +75,6 @@
   <string name="btn_back">Zpět</string>
   <string name="btn_no">Ne</string>
   <string name="btn_match">Otisky souhlasí</string>
-  <string name="btn_match_phrases">Fráze odpovídá</string>
   <string name="btn_share_encrypted_signed">Zašifrovat/podepsat a sdílet text</string>
   <string name="btn_copy_encrypted_signed">Zašifrovat/podepsat a kopírovat text</string>
   <string name="btn_paste_encrypted_signed">Zašifrovat/podepsat a vložit text</string>
@@ -191,8 +189,6 @@
   <string name="keyserver_sync_settings_title">Automaticky aktualizovat klíč</string>
   <string name="label_experimental_settings_desc_title">Varovnání</string>
   <string name="label_experimental_settings_desc_summary">Tyto funkce nejsou ještě dokončené nebo neprošli uživatelským testováním/bezpečnostním auditem. Prosím nepoužívejte je v situacích kdy na nich závisí vaše zabezpečení a nehlašte problémy s nimi spojené, pokud na ně narazíte.</string>
-  <string name="label_experimental_settings_word_confirm_title">Ověření pomocí frází</string>
-  <string name="label_experimental_settings_word_confirm_summary">Ověřit klíč pomocí frází namísto hexadecimálního fingerprintu</string>
   <string name="label_experimental_settings_linked_identities_title">Propojené identity</string>
   <string name="label_experimental_settings_linked_identities_summary">Propojit klíče s Twitterem, GitHubem, webem nebo DNS (podobně jako keybase.io ale decentralizované)</string>
   <string name="label_experimental_settings_keybase_summary">Kontaktovat keybase.io pro proofs klíče a ukázat je pokaždé když je klíč zobrazen</string>
@@ -267,6 +263,7 @@
   <string name="passphrase_for_symmetric_encryption">Zadejte heslo</string>
   <string name="passphrase_for_backup">Zadejte záložní kód</string>
   <string name="passphrase_for">Zadejte heslo pro \'%s\'</string>
+  <string name="passphrase_for_any">Zadejte heslo</string>
   <string name="pin_for">Zadejte PIN pro \'%s\'</string>
   <string name="security_token_pin_for">Zadejte PIN pro přístup k bezpečnostnímu tokenu pro \'%s\'</string>
   <string name="security_token_nfc_text">Podržte bezpečnostní token u NFC značky na zadní straně vašeho přístroje.</string>
@@ -418,6 +415,7 @@
   <string name="help_tab_faq">FAQ</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Historie změn</string>
+  <string name="help_tab_license">Licence</string>
   <string name="help_tab_about">O aplikaci</string>
   <string name="help_about_version">Verze:</string>
   <string name="help_tab_donations">Darujte</string>
@@ -947,8 +945,10 @@
   <string name="prompt_fidesmo_app_install_button_positive">Instalovat</string>
   <string name="prompt_fidesmo_app_install_button_negative">Zrušit</string>
   <string name="redirect_import_key_no">Zavřít</string>
+  <string name="button_allow">Povolit</string>
   <string name="button_cancel">Zrušit</string>
   <string name="key_health_revoked_title">Zamítnuto</string>
+  <string name="dialog_insecure_button_ok">Chápu</string>
   <string name="button_import">Importovat</string>
   <string name="transfer_confirm_cancel">Zrušit</string>
   <string name="transfer_confirm_ok">Odeslat</string>

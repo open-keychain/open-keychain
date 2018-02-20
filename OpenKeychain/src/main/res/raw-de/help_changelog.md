@@ -2,13 +2,13 @@
 
 ## 4.8
 
-  * Improved support for USB tokens: Gnuk, Nitrokey models, YubiKey 4 models
+  * Unterstützung für USB-Tokens verbessert: Gnuk, Nitrokey Modelle, YubiKey 4 Modelle
   * Feature to find the position of the device's NFC reader
 
 ## 4.7
 
   * Die Möglichkeit, aus der Zwischenablage zu Importieren wurde verbessert
-  * New key creation wizard for Security Tokens
+  * Neuer Schlüsselgenerierungsassistent für Security-Tokens
   * Removed password cache "time to live" setting
 
 

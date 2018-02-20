@@ -60,7 +60,6 @@
   <string name="section_share_key">Clave</string>
   <string name="section_key_server">Servidor de claves</string>
   <string name="section_fingerprint">Huella digital</string>
-  <string name="section_phrases">Frases</string>
   <string name="section_encrypt">Cifrar</string>
   <string name="section_decrypt">Descifrar/Verificar</string>
   <string name="section_current_expiry">Caducidad actual</string>
@@ -81,7 +80,6 @@
   <string name="btn_back">Volver</string>
   <string name="btn_no">No</string>
   <string name="btn_match">Las huellas digitales coinciden</string>
-  <string name="btn_match_phrases">Las frases coinciden</string>
   <string name="btn_share_encrypted_signed">Cifrar/firmar y compartir texto</string>
   <string name="btn_copy_encrypted_signed">Cifrar/firmar y copiar texto</string>
   <string name="btn_paste_encrypted_signed">Cifrar/firmar y pegar texto</string>
@@ -208,8 +206,6 @@
   <string name="keyserver_sync_settings_title">Actualizaciones automáticas de claves</string>
   <string name="label_experimental_settings_desc_title">Advertencia</string>
   <string name="label_experimental_settings_desc_summary">Estas características todavía no están finalizadas o no se han obtenido los resultados de experiencia del usuario y la investigación de seguridad. Por tanto, no confíe en su seguridad y, por favor, ¡no informe de los problemas que encuentre!</string>
-  <string name="label_experimental_settings_word_confirm_title">Confirmación con contraseñas</string>
-  <string name="label_experimental_settings_word_confirm_summary">Confirmar claves con frases en lugar de huella hexadecimal</string>
   <string name="label_experimental_settings_linked_identities_title">Identidades vinculadas</string>
   <string name="label_experimental_settings_linked_identities_summary">Vincula claves con Twitter, GitHub, sitios web o DNS (similar a keybase.io pero descentralizado)</string>
   <string name="label_experimental_settings_keybase_title">Comprobantes de Keybase.io</string>
@@ -304,6 +300,7 @@
   <string name="passphrase_for_symmetric_encryption">Ingrese contraseña</string>
   <string name="passphrase_for_backup">Ingrese código de respaldo</string>
   <string name="passphrase_for">Introduzca contraseña para \'%s\'</string>
+  <string name="passphrase_for_any">Introduzca la contraseña</string>
   <string name="passphrase_keyboard_hint_alpha">Cambiar a teclado alfabético</string>
   <string name="passphrase_keyboard_hint_numeric">Cambiar a teclado numérico</string>
   <string name="pin_for">Introduzca PIN para \'%s\'</string>
@@ -484,6 +481,7 @@
   <string name="help_tab_wot">Confirmación de clave</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Registro de cambios</string>
+  <string name="help_tab_license">Licencias</string>
   <string name="help_tab_about">A cerca de</string>
   <string name="help_about_version">Versión:</string>
   <string name="help_tab_donations">Donar</string>
@@ -1386,7 +1384,6 @@
   <string name="section_uids_to_certify">Identificaciones para</string>
   <string name="certify_text">Las claves que está importando contienen \"identidades\": nombres y direcciones de correo electrónico. Para confirmación seleccione exactamente aquellas que coincidan con lo que esperaba.</string>
   <string name="certify_fingerprint_text">Compare la huella, carácter por carácter, con la mostrada en su dispositivo asociado.</string>
-  <string name="certify_fingerprint_text_phrases">Compare estas frases con las mostradas en su dispositivo asociado.</string>
   <string name="label_revocation">Razón de la revocación</string>
   <string name="label_cert_type">Tipo</string>
   <string name="error_key_not_found">¡Clave no encontrada!</string>
@@ -1479,6 +1476,7 @@
   <string name="security_token_error_iso_dep_not_supported">El token de seguridad no soporta el estándar de comunicación (ISO-DEP, ISO 14443-4) requerido</string>
   <string name="security_token_error_generic">Error de comunicación. Lo más probable es que el token de seguridad haya sido retirado demasiado pronto.</string>
   <string name="security_token_error_try_again">Inténtelo de nuevo</string>
+  <string name="security_token_not_supported">El token de seguridad aún no está soportado por OpenKeychain</string>
   <string name="btn_delete_original">Borrar fichero original</string>
   <string name="snack_encrypt_filenames_on">Los nombres de fichero <b>están</b> cifrados.</string>
   <string name="snack_encrypt_filenames_off">Los nombres de fichero <b>no están</b> cifrados.</string>
@@ -1833,4 +1831,6 @@
     <item quantity="other">Actualizando %d claves</item>
   </plurals>
   <string name="button_locate_nfc">¿Dónde está mi lector NFC?</string>
+  <string name="label_usb_untested_summary">Si se habilita, se pueden usar lectores de smartcard USB que no han sido adecuadamente testados.</string>
+  <string name="label_usb_untested">Permitir dispositivos USB no testados</string>
 </resources>

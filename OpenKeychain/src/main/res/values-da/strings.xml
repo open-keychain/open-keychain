@@ -164,6 +164,7 @@
   <!--First Time-->
   <string name="backup_section">Sikkerhedskopiér</string>
   <!--unsorted-->
+  <string name="label_user_id">Identitet</string>
   <string name="label_cert_type">Type</string>
   <string name="key_unavailable">ikke tilgængelig</string>
   <string name="unknown">ukendt</string>

@@ -3,7 +3,7 @@
 ## Nyckelbekräftelse
 Utan bekräftelse kan du inte vara säker på om en nyckel verkligen motsvarar en viss person.
 Det enklaste sättet att bekräfta en nyckel är genom att skanna QR-koden eller att utbyta den via NFC.
-To confirm keys between more than two persons, we suggest using the key exchange method available for your keys.
+För att bekräfta nycklar mellan mer än två personer, föreslår vi att du använder den nyckelväxelmetod som är tillgänglig för dina nycklar.
 
 ## Nyckelstatus
 
@@ -19,10 +19,10 @@ Utgången: Den här nyckeln är inte längre giltig. Endast ägaren kan förlän
 ## Avancerad information
 En "nyckelbekräftelse" i OpenKeychain genomförs genom att skapa en certifiering enligt OpenPGP-standard.
 Denna certifiering är en ["generisk certifiering (0x10)"] (http://tools.ietf.org/html/rfc4880#section-5.2.1) beskrivs i standarden av:
-"The issuer of this certification does not make any particular assertion as to how well the certifier has checked that the owner of the key is in fact the person described by the User ID."
+"Utgivaren av denna certifiering gör inget särskilt påstående om hur väl certifieraren har kontrollerat att ägaren av nyckeln faktiskt är den person som beskrivs av användar-ID."
 
 Traditionellt, certifieringar (även med högre certifieringsnivåer, såsom "positiva certifieringar" (0x13)) är organiserade i OpenPGP:s Web of Trust.
 Vår modell av nyckelbekräftelse är ett mycket enklare koncept för att undvika vanliga användbarhetsproblem i samband med Web of Trust.
 Vi antar att nycklar verifieras endast till en viss grad som fortfarande är användbar nog att exekveras "on the go".
-We also do not implement (potentially transitive) trust signatures or an ownertrust database like in GnuPG.
+Vi implementerar inte (potentiellt transitiv) förtroende signaturer eller en .ownertrust-databas som i GnuPG.
 Dessutom kommer nycklar som innehåller åtminstone en användar-ID certifierad av en betrodd nyckel markeras som "bekräftade" i nyckel listor.

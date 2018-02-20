@@ -127,6 +127,7 @@
   <string name="orbot_install_dialog_cancel">Anulare</string>
   <string name="orbot_install_dialog_ignore_tor">Nu folosi Tor</string>
   <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_title">Pornesc Orbot?</string>
   <string name="orbot_start_btn">Pornire Orbot</string>
   <string name="orbot_start_dialog_start">Pornire Orbot</string>
   <string name="orbot_start_dialog_cancel">Anulare</string>
@@ -136,6 +137,7 @@
     <item quantity="few">%d chei</item>
     <item quantity="other">%d chei</item>
   </plurals>
+  <string name="secret_key">Cheie secretă:</string>
   <!--choice-->
   <string name="choice_none">Nici unul</string>
   <string name="choice_15secs">15 sec</string>
@@ -149,12 +151,15 @@
   <string name="choice_2hours">2 ore</string>
   <string name="choice_4hours">4 ore</string>
   <string name="choice_8hours">8 ore</string>
+  <string name="choice_select_cert">Selectează o cheie</string>
   <string name="filemanager_title_open">Deschide...</string>
   <string name="rsa_2048">RSA 2048</string>
   <string name="rsa_3072">RSA 3072</string>
   <string name="rsa_4096">RSA 4096</string>
   <string name="ecc_p256">ECC P-256</string>
+  <string name="ecc_p384">ECC P-384</string>
   <string name="ecc_p521">ECC P-521</string>
+  <string name="ecc_eddsa">ECC EdDSA</string>
   <string name="usage_sign">Semnează</string>
   <string name="usage_encrypt">Criptează</string>
   <string name="usage_sign_and_encrypt">Semnează și Criptează</string>
@@ -167,6 +172,7 @@
   <string name="passphrase_must_not_be_empty">Te rog introdu o parolă.</string>
   <string name="passphrase_for_symmetric_encryption">Introdu parola</string>
   <string name="passphrase_for">Introdu parola pentru \'%s\'</string>
+  <string name="passphrase_for_any">Introdu parola</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -209,6 +215,7 @@
   <string name="help_tab_start">Start</string>
   <string name="help_tab_faq">FAQ</string>
   <string name="help_tab_changelog">Schimbări</string>
+  <string name="help_tab_license">Licențe</string>
   <string name="help_tab_about">Despre</string>
   <string name="help_about_version">Versiune:</string>
   <string name="help_tab_donations">Donează</string>

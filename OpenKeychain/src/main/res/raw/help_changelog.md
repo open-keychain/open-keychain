@@ -2,7 +2,7 @@
 
 ## 4.9
 
-  * Curve25519 Support
+  * Curve25519 support
   * Improved support for security tokens
 
 ## 4.8

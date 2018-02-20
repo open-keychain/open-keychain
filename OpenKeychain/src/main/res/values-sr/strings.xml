@@ -57,7 +57,6 @@
   <string name="section_share_key">Кључ</string>
   <string name="section_key_server">Сервер кључева</string>
   <string name="section_fingerprint">Отисак</string>
-  <string name="section_phrases">Фразе</string>
   <string name="section_encrypt">Шифровање</string>
   <string name="section_current_expiry">Текући истек</string>
   <string name="section_new_expiry">Нови истек</string>
@@ -77,7 +76,6 @@
   <string name="btn_back">Назад</string>
   <string name="btn_no">Не</string>
   <string name="btn_match">Отисци се поклапају</string>
-  <string name="btn_match_phrases">Фразе се поклапају</string>
   <string name="btn_share_encrypted_signed">Шифруј/потпиши и подели текст</string>
   <string name="btn_copy_encrypted_signed">Шифруј/потпиши и копирај текст</string>
   <string name="btn_paste_encrypted_signed">Шифруј/потпиши и налепи текст</string>
@@ -193,8 +191,6 @@
   <string name="keyserver_sync_settings_title">Аутоматско ажурирање кључева</string>
   <string name="label_experimental_settings_desc_title">Упозорење</string>
   <string name="label_experimental_settings_desc_summary">Ове функције још нису завршене или су резултат истраживања корисничког искуства и безбедности. Стога се не ослањајте на њихову безбедност и молимо вас да не пријављујете грешке на које наиђете!</string>
-  <string name="label_experimental_settings_word_confirm_title">Потврда помоћу фраза</string>
-  <string name="label_experimental_settings_word_confirm_summary">Потврђивање кључева помоћу фраза уместо помоћу хексадецималних отисака</string>
   <string name="label_experimental_settings_linked_identities_title">Повезани идентитети</string>
   <string name="label_experimental_settings_linked_identities_summary">Повезивање кључева са Твитером, Гитхабом, вебсајтовима или ДНС-ом (слично као keybase.io али децентрализовано)</string>
   <string name="label_experimental_settings_keybase_summary">Тражење доказа кључева на keybase.io и њихов приказ приликом приказивања кључа</string>
@@ -279,6 +275,7 @@
   <string name="passphrase_for_symmetric_encryption">Унесите лозинку</string>
   <string name="passphrase_for_backup">Унесите кôд за резерву</string>
   <string name="passphrase_for">Унесите лозинку за „%s“</string>
+  <string name="passphrase_for_any">Унесите лозинку</string>
   <string name="pin_for">Унесите ПИН за „%s“</string>
   <string name="file_delete_confirmation_title">Обрисати оригиналне фајлове?</string>
   <string name="file_delete_confirmation">Следећи фајлови ће бити обрисани:%s</string>
@@ -1298,7 +1295,6 @@
   <string name="section_uids_to_certify">Идентитети за</string>
   <string name="certify_text">Кључеви које увозите садрже „идентитете“: имена и е-адресе. Одредите за потврду само оне који одговарају ономе што очекујете.</string>
   <string name="certify_fingerprint_text">Упоредите отисак, знак по знак, са отиском приказаним на другаревом уређају.</string>
-  <string name="certify_fingerprint_text_phrases">Упоредите ове фразе са онима приказаним на другаревом уређају.</string>
   <string name="label_revocation">Разлог опозива</string>
   <string name="label_cert_type">Тип</string>
   <string name="error_key_not_found">Кључ није нађен!</string>

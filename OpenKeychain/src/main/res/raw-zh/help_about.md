@@ -58,23 +58,3 @@
   * Signe Rüsch
   * Sreeram Boyapati
   * 'steelman'
-
-[//]: # (备注: 字母顺序)
-
-## 库
-   [Android Support Libraries](http://developer.android.com/tools/support-library/index.html) (Apache 许可证 v2)
-  * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Apache 许可证 v2)
-  * [HtmlTextView](https://github.com/sufficientlysecure/html-textview) (Apache 许可证 v2)
-  * [KeybaseLib](https://github.com/timbray/KeybaseLib) (Apache 许可证 v2)
-  * [Markdown4J](https://github.com/jdcasey/markdown4j) (Apache 许可证 v2)
-  * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Apache 许可证 v2)
-  * [MiniDNS](https://github.com/rtreffer/minidns) (Apache 许可证 v2)
-  * [OkHttp](https://square.github.io/okhttp/) (Apache 许可证 v2)
-  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design) (Apache 许可证 v2)
-  * [SafeSlinger Exchange library](https://github.com/SafeSlingerProject/exchange-android) (MIT 许可证)
-  * [Snackbar](https://github.com/nispok/snackbar) (MIT 许可证)
-  * [BouncyCastle](https://github.com/open-keychain/bouncycastle) (MIT X11 许可证)
-  * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Apache 许可证 v2)
-  * [TokenAutoComplete](https://github.com/splitwise/TokenAutoComplete) (Apache 许可证 v2)
-  * [ZXing](https://github.com/zxing/zxing) (Apache 许可证 v2)
-  * [ZXing Android Minimal](https://github.com/journeyapps/zxing-android-embedded) (Apache 许可证 v2)

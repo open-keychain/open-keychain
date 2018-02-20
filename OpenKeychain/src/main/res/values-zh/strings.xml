@@ -59,7 +59,6 @@
   <string name="section_share_key">分享密钥</string>
   <string name="section_key_server">密钥服务器</string>
   <string name="section_fingerprint">指纹</string>
-  <string name="section_phrases">短语</string>
   <string name="section_encrypt">加密</string>
   <string name="section_decrypt">解密/验证</string>
   <string name="section_current_expiry">当前有效期</string>
@@ -80,7 +79,6 @@
   <string name="btn_back">返回</string>
   <string name="btn_no">否</string>
   <string name="btn_match">密钥指纹符合</string>
-  <string name="btn_match_phrases">匹配短语</string>
   <string name="btn_share_encrypted_signed">加密/签名并分享文本</string>
   <string name="btn_copy_encrypted_signed">加密/签名并复制文本</string>
   <string name="btn_paste_encrypted_signed">加密/签名并粘贴文本</string>
@@ -201,8 +199,6 @@
   <string name="keyserver_sync_settings_title">自动更新密钥</string>
   <string name="label_experimental_settings_desc_title">警告</string>
   <string name="label_experimental_settings_desc_summary">这些功能目前尚未完成或者缺少用户经验性/安全性的研究结果。所以，不保证他们是安全的，请不要对我们发牢骚！</string>
-  <string name="label_experimental_settings_word_confirm_title">通过短语确认密钥</string>
-  <string name="label_experimental_settings_word_confirm_summary">使用短语代替 16 进制指纹，完成密钥确认</string>
   <string name="label_experimental_settings_linked_identities_title">关联用户标识</string>
   <string name="label_experimental_settings_linked_identities_summary">将密钥与 Twitter, GitHub, 网站或者 DNS 关联 (类似 Keybase.io 但是去中心化的)</string>
   <string name="label_experimental_settings_keybase_summary">每次展示密钥时自动从keybase.io获取证明并显示它们</string>
@@ -288,6 +284,7 @@
   <string name="passphrase_for_symmetric_encryption">输入密码</string>
   <string name="passphrase_for_backup">输入备份码</string>
   <string name="passphrase_for">输入 \'%s\' 的密码</string>
+  <string name="passphrase_for_any">输入密码</string>
   <string name="pin_for">输入 \'%s\' 的 PIN 码</string>
   <string name="security_token_pin_for">输入 PIN 码以访问 \'%s\' 的安全令牌</string>
   <string name="security_token_nfc_text">将安全令牌贴近设备背面的 NFC 标志.</string>
@@ -1272,7 +1269,6 @@
   <string name="section_uids_to_certify">用户标识</string>
   <string name="certify_text">您正在导入的密钥包含了“用户标识”：姓名和邮件地址。选择那些完全符合您预期的以确认这些信息。</string>
   <string name="certify_fingerprint_text">请逐字比对这里的短语和同伴设备上显示的的指纹。</string>
-  <string name="certify_fingerprint_text_phrases">请比对这里的短语和同伴设备上显示的的短语。</string>
   <string name="label_revocation">吊销原因</string>
   <string name="label_cert_type">输入</string>
   <string name="error_key_not_found">未找到密钥</string>

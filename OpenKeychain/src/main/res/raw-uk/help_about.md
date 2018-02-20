@@ -58,23 +58,3 @@
   * Signe Rüsch
   * Sreeram Boyapati
   * 'steelman'
-
-[//]: # (Зауваження: за алфавітним порядком)
-
-## Бібліотеки
-  * [Бібліотеки підтримки Android](http://developer.android.com/tools/support-library/index.html) (ліцензія Apache в.2)
-  * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (ліцензія Apache в.2)
-  * [HtmlTextView](https://github.com/sufficientlysecure/html-textview)  (ліцензія Apache в.2)
-  * [KeybaseLib](https://github.com/timbray/KeybaseLib)  (ліцензія Apache в.2)
-  * [Markdown4J](https://github.com/jdcasey/markdown4j)  (ліцензія Apache в.2)
-  * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer)  (ліцензія Apache в.2)
-  * [MiniDNS](https://github.com/rtreffer/minidns) (ліцензія Apache в.2)
-  * [OkHttp](https://square.github.io/okhttp/)  (ліцензія Apache в.2)
-  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design) (ліцензія Apache в.2)
-  * [SafeSlinger Exchange library](https://github.com/SafeSlingerProject/exchange-android) (ліцензія MIT)
-  * [Snackbar](https://github.com/nispok/snackbar) (ліцензія MIT)
-  * [BouncyCastle](https://github.com/open-keychain/bouncycastle) (ліцензія MIT X11)
-  * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders)  (ліцензія Apache в.2)
-  * [TokenAutoComplete](https://github.com/splitwise/TokenAutoComplete)  (ліцензія Apache в.2)
-  * [ZXing](https://github.com/zxing/zxing) (ліцензія Apache в.2)
-  * [ZXing Android Minimal](https://github.com/journeyapps/zxing-android-embedded)  (ліцензія Apache в.2)

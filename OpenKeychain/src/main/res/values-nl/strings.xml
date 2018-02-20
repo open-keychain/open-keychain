@@ -60,7 +60,6 @@
   <string name="section_share_key">Sleutel</string>
   <string name="section_key_server">Sleutelserver</string>
   <string name="section_fingerprint">Vingerafdruk</string>
-  <string name="section_phrases">Zinnen</string>
   <string name="section_encrypt">Versleutelen</string>
   <string name="section_decrypt">Ontsleutelen/verifiëren</string>
   <string name="section_current_expiry">Huidige verloopdatum</string>
@@ -81,7 +80,6 @@
   <string name="btn_back">Terug</string>
   <string name="btn_no">Nee</string>
   <string name="btn_match">Vingerafdrukken komen overeen</string>
-  <string name="btn_match_phrases">Zinnen komen overeen</string>
   <string name="btn_share_encrypted_signed">Versleutel/teken en deel tekst</string>
   <string name="btn_copy_encrypted_signed">Versleutel/teken en kopieër tekst</string>
   <string name="btn_paste_encrypted_signed">Versleutel/teken en plak tekst</string>
@@ -208,8 +206,6 @@
   <string name="keyserver_sync_settings_title">Automatische sleutelupdates</string>
   <string name="label_experimental_settings_desc_title">Waarschuwing</string>
   <string name="label_experimental_settings_desc_summary">Deze functies zijn nog niet afgewerkt of zijn resultaten van gebruikerservaringen/beveiligingsonderzoek. Vertrouw daarom niet op hun beveiliging en rapporteer geen problemen die je ervaart!</string>
-  <string name="label_experimental_settings_word_confirm_title">Bevestig met zin</string>
-  <string name="label_experimental_settings_word_confirm_summary">Bevestig sleutels met zinnen in plaats van hexadecimale vingerafdrukken</string>
   <string name="label_experimental_settings_linked_identities_title">Gekoppelde identiteiten</string>
   <string name="label_experimental_settings_linked_identities_summary">Koppel sleutels aan Twitter, GitHub, websites of DNS (vergelijkbaar met keybase.io maar dan gedecentraliseerd)</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io-bewijzen</string>
@@ -304,6 +300,7 @@
   <string name="passphrase_for_symmetric_encryption">Voer wachtwoord in</string>
   <string name="passphrase_for_backup">Voer exporteercode in</string>
   <string name="passphrase_for">Voer het wachtwoord in voor \'%s\'</string>
+  <string name="passphrase_for_any">Wachtwoord invoeren</string>
   <string name="passphrase_keyboard_hint_alpha">Wisselen naar alfabetisch toetsenbord</string>
   <string name="passphrase_keyboard_hint_numeric">Wisselen naar numeriek toetsenbord</string>
   <string name="pin_for">Voer pincode in voor \'%s\'</string>
@@ -484,6 +481,7 @@
   <string name="help_tab_wot">Sleutelbevestiging</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Lijst van wijzigingen</string>
+  <string name="help_tab_license">Licenties</string>
   <string name="help_tab_about">Over</string>
   <string name="help_about_version">Versie:</string>
   <string name="help_tab_donations">Doneren</string>
@@ -1386,7 +1384,6 @@
   <string name="section_uids_to_certify">Identiteiten voor</string>
   <string name="certify_text">De sleutels die je importeert bevatten \'identiteiten\': namen en e-mailadressen. Selecteer precies die voor bevestiging die overeenkomen met wat je had verwacht.</string>
   <string name="certify_fingerprint_text">Vergelijk de vingerafdruk, teken voor teken, met de vingerafdruk op het apparaat van je partner.</string>
-  <string name="certify_fingerprint_text_phrases">Vergelijk deze woorden met de woorden op het apparaat van je partner.</string>
   <string name="label_revocation">Reden voor intrekken</string>
   <string name="label_cert_type">Type</string>
   <string name="error_key_not_found">Sleutel niet gevonden!</string>
@@ -1479,6 +1476,7 @@
   <string name="security_token_error_iso_dep_not_supported">Security Token biedt geen ondersteuning voor de vereiste communicatiestandaard (ISO-DEP, ISO 14443-4)</string>
   <string name="security_token_error_generic">Communicatiefout. Het Security Token is waarschijnlijk te snel weggenomen.</string>
   <string name="security_token_error_try_again">Opnieuw proberen</string>
+  <string name="security_token_not_supported">Dit Security Token wordt nog niet ondersteund door OpenKeychain</string>
   <string name="btn_delete_original">Oorspronkelijk bestand verwijderen</string>
   <string name="snack_encrypt_filenames_on">Bestandsnamen <b>zijn</b> versleuteld.</string>
   <string name="snack_encrypt_filenames_off">Bestandsnamen <b>zijn niet</b> versleuteld.</string>
@@ -1833,4 +1831,6 @@
     <item quantity="other">%d sleutels bijwerken</item>
   </plurals>
   <string name="button_locate_nfc">Waar is mijn NFC-lezer?</string>
+  <string name="label_usb_untested_summary">Indien ingeschakeld kunnen USB-smartcardlezers die nog niet voldoende getest zijn gebruikt worden.</string>
+  <string name="label_usb_untested">Niet-geteste USB-apparaten toestaan</string>
 </resources>

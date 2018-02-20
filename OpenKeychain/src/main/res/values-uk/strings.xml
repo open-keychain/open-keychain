@@ -60,7 +60,6 @@
   <string name="section_share_key">Ключ</string>
   <string name="section_key_server">Сервер ключів</string>
   <string name="section_fingerprint">Відбиток</string>
-  <string name="section_phrases">Фрази</string>
   <string name="section_encrypt">Зашифрувати</string>
   <string name="section_decrypt">Розшифрувати/Перевірити</string>
   <string name="section_current_expiry">Поточне закінчення</string>
@@ -81,7 +80,6 @@
   <string name="btn_back">Назад</string>
   <string name="btn_no">Ні</string>
   <string name="btn_match">Відбитки збігаються</string>
-  <string name="btn_match_phrases">Фрази збігаються</string>
   <string name="btn_share_encrypted_signed">Зашифрувати/підписати та поділитись текстом</string>
   <string name="btn_copy_encrypted_signed">Зашифрувати/підписати та копіювати текст</string>
   <string name="btn_paste_encrypted_signed">Зашифрувати/підписати та вставити текст</string>
@@ -208,8 +206,6 @@
   <string name="keyserver_sync_settings_title">Автоматичне оновлення ключів</string>
   <string name="label_experimental_settings_desc_title">Попередження</string>
   <string name="label_experimental_settings_desc_summary">Ці можливості ще в розробці. Будь ласка, не сподівайтесь на їх безпеку та не повідомляйте про проблеми їхнього використання!</string>
-  <string name="label_experimental_settings_word_confirm_title">Підтвердження фразою</string>
-  <string name="label_experimental_settings_word_confirm_summary">Підтвердження ключів фразами замість шістнадцяти-розрядних відбитків</string>
   <string name="label_experimental_settings_linked_identities_title">Пов\'язані ідентифікатори</string>
   <string name="label_experimental_settings_linked_identities_summary">Прив\'язувати ключі до Twitter, GitHub, веб-сайтів чи DNS (подібно до keybase.io, але децентралізовано)</string>
   <string name="label_experimental_settings_keybase_title">Перевірки Keybase.io</string>
@@ -307,6 +303,7 @@
   <string name="passphrase_for_symmetric_encryption">Введіть пароль</string>
   <string name="passphrase_for_backup">Введіть резервний код</string>
   <string name="passphrase_for">Введіть пароль для \'%s\'</string>
+  <string name="passphrase_for_any">Введіть пароль</string>
   <string name="passphrase_keyboard_hint_alpha">Перемкнути на алфавітну клавіатуру</string>
   <string name="passphrase_keyboard_hint_numeric">Перемкнути на цифрову клавіатуру</string>
   <string name="pin_for">Введіть ПІН для \'%s\'</string>
@@ -461,6 +458,7 @@
   <string name="progress_verifying_integrity">перевірка цілісності…</string>
   <string name="progress_deleting_securely">вилучення безпечно \'%s\'…</string>
   <string name="progress_deleting">вилучаються ключі…</string>
+  <string name="progress_update_trust">оновлюються дані про надійність...</string>
   <string name="progress_verifying_keyserver_connection">перевірка з\'єднання...</string>
   <string name="progress_starting_orbot">Стартує Orbot…</string>
   <!--action strings-->
@@ -491,6 +489,7 @@
   <string name="help_tab_wot">Підтвердження ключа</string>
   <string name="help_tab_nfc_beam">NFC промінь</string>
   <string name="help_tab_changelog">Журнал змін</string>
+  <string name="help_tab_license">Ліцензії</string>
   <string name="help_tab_about">Про</string>
   <string name="help_about_version">Версія:</string>
   <string name="help_tab_donations">Пожертва</string>
@@ -1420,7 +1419,6 @@
   <string name="section_uids_to_certify">Сутності для</string>
   <string name="certify_text">Ключ, який Ви імпортуєте містить \"сутності\": імена та адреси електронної пошти. Оберіть саме ті підтвердження, які відповідають Вашим очікуванням.</string>
   <string name="certify_fingerprint_text">Порівняйте відбитки, символ за символом, з тим, що відображений на пристрої Вашого партнера.</string>
-  <string name="certify_fingerprint_text_phrases">Порівняйте ці фрази з фразами, що показано на пристрої Вашого колеги.</string>
   <string name="label_revocation">Причина відхилення</string>
   <string name="label_cert_type">Тип</string>
   <string name="error_key_not_found">Ключ не знайдено!</string>
@@ -1514,6 +1512,7 @@
   <string name="security_token_error_iso_dep_not_supported">Маркер безпеки не підтримує потрібний комунікаційний стандарт (ISO-DEP, ISO 14443-4)</string>
   <string name="security_token_error_generic">Помилка зв\'язку. Вірогідно, маркер безпеки вимкнений надто рано.</string>
   <string name="security_token_error_try_again">Спробуйте знову</string>
+  <string name="security_token_not_supported">Цей маркер безпеки ще не підтримується OpenKeychain.</string>
   <string name="btn_delete_original">Видалити оригінальний файл</string>
   <string name="snack_encrypt_filenames_on">Назви файлів <b>є</b> зашифрованими.</string>
   <string name="snack_encrypt_filenames_off">Назви файлів <b>не є</b> зашифрованими.</string>
@@ -1645,6 +1644,7 @@
   <string name="cache_ttl_lock_screen">доки не згасне екран</string>
   <string name="cache_ttl_one_hour">на одну годину</string>
   <string name="cache_ttl_one_day">на один день</string>
+  <string name="cache_ttl_forever">, доки не очиститься</string>
   <string name="remember">Нагадати</string>
   <string name="security_token_error_pgp_app_not_installed">Не знайдено програми PGP на маркері безпеки</string>
   <string name="prompt_fidesmo_pgp_install_title">Встановити PGP?</string>
@@ -1818,6 +1818,8 @@
     <item quantity="other">залишилося %d спроб</item>
   </plurals>
   <string name="token_error_locked_indefinitely">Забагато спроб очистити налаштування. Маркер неможливо розблокувати!</string>
+  <string name="token_error_cannot_reset_gnuk_old">Маркер Gnuk/Nitrokey Start не підтримує скидання до версії 1.2.5</string>
+  <string name="token_error_cannot_reset">Цей маркер безпеки не підтримує скидання</string>
   <string name="token_menu_change_pin">Змінити PIN</string>
   <string name="token_menu_view_log">Переглянути журнал</string>
   <string name="token_unlock_ok">Розблокувати</string>
@@ -1857,8 +1859,17 @@
   <string name="msg_ret_uri_start">Пошук ключа в URL маркера...</string>
   <string name="msg_ret_uri_null">Жодне URL не збережене на маркері безпеки</string>
   <string name="msg_ret_uri_test">Перевірка, чи знайдений ключ збігається: %s</string>
+  <string name="msg_trust">Оновлюється інформація про надійність...</string>
   <string name="msg_trust_ok">Операція оновлення вдала!</string>
+  <string name="msg_trust_initialize">Започатковується кеш підпису ключа</string>
   <string name="msg_trust_key">Оновлення ключів підписаних %s</string>
   <string name="msg_trust_count_none">Немає ключів для оновлення</string>
+  <plurals name="msg_trust_count">
+    <item quantity="one">Оновлюється 1 ключ</item>
+    <item quantity="few">Оновлюється %d ключі</item>
+    <item quantity="other">Оновлюється %d ключів</item>
+  </plurals>
   <string name="button_locate_nfc">Де мій зчитувач NFC?</string>
+  <string name="label_usb_untested_summary">При увімкненні можуть використовуватися зчитувачі карток USB, що не тестовані належним чином.</string>
+  <string name="label_usb_untested">Дозволити неперевірені пристрої USB</string>
 </resources>

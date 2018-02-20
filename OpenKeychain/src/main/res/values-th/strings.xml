@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <!--GENERAL: Please put all strings inside quotes as described in example 1 on
+    http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
+  <!--title-->
+  <string name="title_help">ช่วยเหลือ</string>
+  <!--section-->
+  <!--button-->
+  <!--Content Description-->
+  <!--menu-->
+  <string name="menu_help">ช่วยเหลือ</string>
+  <!--label-->
+  <!--label shown in Android settings under the OpenKeychain account-->
+  <!--Proxy Preferences-->
+  <!--proxy type choices and values-->
+  <!--OrbotHelper strings-->
+  <!--InstallDialogFragment strings-->
+  <!--StartOrbotDialogFragment strings-->
+  <!--choice-->
+  <!--sentences-->
+  <!--errors
+         no punctuation, all lowercase,
+         they will be put after "error_message", e.g. "Error: file not found"-->
+  <!--errors without preceding Error:-->
+  <!--results shown after decryption/verification-->
+  <!--Add keys-->
+  <!--progress dialogs, usually ending in '…'-->
+  <!--action strings-->
+  <!--key bit length selections-->
+  <!--elliptic curve names-->
+  <!--not in for now, see SaveKeyringParcel
+    <string name="key_curve_bp_p256">"Brainpool P-256"</string>
+    <string name="key_curve_bp_p384">"Brainpool P-384"</string>
+    <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
+  <!--compression-->
+  <!--Help-->
+  <!--Import-->
+  <!--Generic result toast-->
+  <!--Import result toast-->
+  <!--Delete result toast-->
+  <!--Revoke result toast (snackbar)-->
+  <!--Certify result toast-->
+  <!--Intent labels-->
+  <!--Remote API-->
+  <!--Share-->
+  <!--retry upload dialog-->
+  <!--Delete or revoke private key dialog-->
+  <!--Delete Or Revoke Dialog spinner-->
+  <!--Key list-->
+  <!--Key view-->
+  <!--Key trust-->
+  <!--keybase proof stuff-->
+  <!--Edit key-->
+  <!--Create key-->
+  <!--View key-->
+  <!--Add/Edit keyserver-->
+  <!--Add/Edit SmartPGP authority-->
+  <!--Navigation Drawer-->
+  <!--hints-->
+  <!--certs-->
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <!--Import Public log entries-->
+  <!--Import Secret log entries-->
+  <!--Keyring Canonicalization log entries-->
+  <!--Keyring merging log entries-->
+  <!--createSecretKeyRing-->
+  <!--modifySecretKeyRing-->
+  <!--Edit Key (higher level than modify)-->
+  <!--Promote key-->
+  <!--Other messages used in OperationLogs-->
+  <!--Messages for DecryptVerify operation-->
+  <!--Messages for VerifySignedLiteralData operation-->
+  <!--Messages for SignEncrypt operation-->
+  <!--Messages for PgpSignEncrypt operation-->
+  <!--Messages for Authentication operation-->
+  <!--Linked Identity verification-->
+  <!--Messages for Keybase Verification operation-->
+  <!--Messages for Mime parsing operation-->
+  <!--PassphraseCache-->
+  <!--Keyserver sync-->
+  <!--First Time-->
+  <!--unsorted-->
+  <!--Android Account-->
+  <!--Passphrase wizard-->
+  <!--TODO: rename all the things!-->
+  <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <!--Other Linked Identity strings-->
+</resources>

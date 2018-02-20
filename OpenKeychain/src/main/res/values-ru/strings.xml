@@ -60,7 +60,6 @@
   <string name="section_share_key">Ключ</string>
   <string name="section_key_server">Сервер ключей</string>
   <string name="section_fingerprint">Отпечаток ключа</string>
-  <string name="section_phrases">Фразы</string>
   <string name="section_encrypt">Зашифровать</string>
   <string name="section_decrypt">Расшифровать/проверить</string>
   <string name="section_current_expiry">Текущий срок годности</string>
@@ -81,7 +80,6 @@
   <string name="btn_back">Назад</string>
   <string name="btn_no">Нет</string>
   <string name="btn_match">Отпечатки совпадают</string>
-  <string name="btn_match_phrases">Совпадающие фразы</string>
   <string name="btn_share_encrypted_signed">Зашифровать/подписать и поделиться текстом</string>
   <string name="btn_copy_encrypted_signed">Зашифровать/подписать и скопировать текст</string>
   <string name="btn_paste_encrypted_signed">Зашифровать/подписать и вставить текст</string>
@@ -208,8 +206,6 @@
   <string name="keyserver_sync_settings_title">Автообновление ключей</string>
   <string name="label_experimental_settings_desc_title">Предупреждение</string>
   <string name="label_experimental_settings_desc_summary">Эти новые возможности ещё не закончены и/или пока только изучаются. Проще говоря, не стоит полагаться на их безопасность. Пожалуйста, не сообщайте о связанных с ними проблемах!</string>
-  <string name="label_experimental_settings_word_confirm_title">Подтверждение фразами</string>
-  <string name="label_experimental_settings_word_confirm_summary">Подтвердить ключи с помощью фраз, вместо шестнадцатеричных отпечатков </string>
   <string name="label_experimental_settings_linked_identities_title">Связанные идентификаторы</string>
   <string name="label_experimental_settings_linked_identities_summary">Привязать ключи к Twitter, GitHub, веб-сайту или DNS (по аналогии с keybase.io, но децентрализованно)</string>
   <string name="label_experimental_settings_keybase_title">Подтверждение Keybase.io </string>
@@ -310,6 +306,7 @@
   <string name="passphrase_for_symmetric_encryption">Введите пароль</string>
   <string name="passphrase_for_backup">Введите код восстановления</string>
   <string name="passphrase_for">Введите пароль для \'%s\'</string>
+  <string name="passphrase_for_any">Введите пароль</string>
   <string name="passphrase_keyboard_hint_alpha">Переключиться на буквенную клавиатуру</string>
   <string name="passphrase_keyboard_hint_numeric">Переключиться на цифровую клавиатуру</string>
   <string name="pin_for">Введите PIN для
@@ -495,6 +492,7 @@
   <string name="help_tab_wot">Подтверждение ключей</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Изменения</string>
+  <string name="help_tab_license">Лицензии</string>
   <string name="help_tab_about">О программе</string>
   <string name="help_about_version">Версия:</string>
   <string name="help_tab_donations">Пожертвование</string>
@@ -671,7 +669,7 @@
   <string name="key_list_fab_search">Поиск ключа</string>
   <string name="key_list_fab_import">Импорт из файла</string>
   <string name="key_list_dummy_title">У вас пока нет ключей!</string>
-  <string name="key_list_dummy_subtitle">Нажмите здесь, чтобы создать или импортировать ключ.</string>
+  <string name="key_list_dummy_subtitle">Нажмите для создания или импорта ключа.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Изменить</string>
   <string name="key_view_action_encrypt">Зашифровать текст</string>
@@ -1431,7 +1429,7 @@
   <string name="first_time_text1">Верните вашу приватность с помощью OpenKeychain!</string>
   <string name="first_time_create_key">Создать свой ключ</string>
   <string name="first_time_import_key">Импорт ключа из файла</string>
-  <string name="first_time_security_token">Использовать токен безопасности</string>
+  <string name="first_time_security_token">Из токена безопасности</string>
   <string name="first_time_security_token_subtitle">(Fidesmo, YubiKey NEO, SIGILANCE, …)</string>
   <string name="first_time_skip">Пропустить настройку</string>
   <string name="first_time_blank_security_token">Вы хотите использовать этот пустой токен безопасности с OpenKeychain?\n\nПожалуйста, теперь уберите токен безопасности, вам сообщат, когда он снова понадобится!</string>
@@ -1451,7 +1449,6 @@
   <string name="section_uids_to_certify">Идентификаторы для</string>
   <string name="certify_text">Импортируемые ключи содержат “идентификаторы”: имена и адреса электронной почты. Выберите для подтверждения только те, которые соответствуют вашим ожиданиям.</string>
   <string name="certify_fingerprint_text">Сравните отпечаток, символ за символом, с тем, что отображается на устройстве вашего партнёра.</string>
-  <string name="certify_fingerprint_text_phrases">Сравните эти фразы с теми, что отображается на устройстве вашего партнёра.</string>
   <string name="label_revocation">Причина отзыва</string>
   <string name="label_cert_type">Тип</string>
   <string name="error_key_not_found">Ключ не найден!</string>
@@ -1546,6 +1543,7 @@
   <string name="security_token_error_iso_dep_not_supported">Токен безопасности не поддерживает требуемый стандарт связи (ISO-DEP, ISO 14443-4)</string>
   <string name="security_token_error_generic">Ошибка передачи данных. Возможно, токен безопасности был извлечён слишком рано.</string>
   <string name="security_token_error_try_again">Попробовать ещё раз</string>
+  <string name="security_token_not_supported">Данный токен безопасности пока не поддерживается OpenKeychain</string>
   <string name="btn_delete_original">Удалить оригинальный файл</string>
   <string name="snack_encrypt_filenames_on">Имена файлов  <b>шифруются</b>.</string>
   <string name="snack_encrypt_filenames_off">Имена файлов  <b>не шифруются</b>.</string>
@@ -1906,4 +1904,6 @@
     <item quantity="other">Обновление %d ключей</item>
   </plurals>
   <string name="button_locate_nfc">Где мой NFC-ридер?</string>
+  <string name="label_usb_untested_summary">Если данная функция включена, вы можете использовать USB-ридеры смарт-карт, которые не были полностью протестированы.</string>
+  <string name="label_usb_untested">Разрешить использование непротестированных USB-устройств</string>
 </resources>

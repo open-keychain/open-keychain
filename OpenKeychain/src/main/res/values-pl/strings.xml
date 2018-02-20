@@ -205,6 +205,7 @@
   <string name="no_filemanager_installed">Nie zainstalowano żadnego kompatybilnego menadżera plików.</string>
   <string name="passphrase_for_symmetric_encryption">Wpisz hasło</string>
   <string name="passphrase_for">Wpisz hasło dla \'%s\'</string>
+  <string name="passphrase_for_any">Wpisz hasło</string>
   <string name="pin_for">Wpisz PIN dla \'%s\'</string>
   <string name="encrypt_sign_successful">Pomyślnie podpisano i/lub zaszyfrowano.</string>
   <string name="encrypt_sign_clipboard_successful">Pomyslnie podpisano i/lub zaszyfrowano do schowka.</string>
@@ -328,6 +329,7 @@
   <string name="help_tab_faq">FAQ</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Dziennik zmian</string>
+  <string name="help_tab_license">Licencje</string>
   <string name="help_tab_about">O programie</string>
   <string name="help_about_version">Wersja:</string>
   <string name="help_tab_donations">Wpłać darowiznę</string>
@@ -674,6 +676,7 @@
   <string name="passphrase_again">Ponów</string>
   <string name="set_passphrase">Ustaw hasło</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="unlocked">Odblokowane</string>
   <string name="nfc_settings">Settings</string>
   <string name="snack_security_token_view">Podgląd</string>
   <string name="snack_security_token_import">Importuj</string>
@@ -704,6 +707,7 @@
   <string name="keyserver_title_published">Opublikowane</string>
   <string name="dialog_insecure_title">Ostrzeżenie Bezpieczeństwa</string>
   <string name="dialog_insecure_button_ok">Mam to</string>
+  <string name="usage_authentication">Uwierzytelnianie</string>
   <string name="button_scan">Skan</string>
   <string name="button_import">Importuj</string>
   <string name="transfer_status_connected">Połączony</string>

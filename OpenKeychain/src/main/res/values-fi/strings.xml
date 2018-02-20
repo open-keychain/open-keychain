@@ -237,6 +237,7 @@
   <string name="help_tab_start">Käynnistä</string>
   <string name="help_tab_faq">UKK</string>
   <string name="help_tab_changelog">Muutosloki</string>
+  <string name="help_tab_license">Lisenssit</string>
   <string name="help_tab_about">Ohjelmasta</string>
   <string name="help_about_version">Versio:</string>
   <string name="help_tab_donations">Lahjoita</string>

@@ -39,6 +39,7 @@
   <string name="btn_no">Tidak</string>
   <string name="btn_share_decrypted_text">Share </string>
   <string name="btn_copy_decrypted_text">Salin ke clipboard</string>
+  <string name="btn_unlock">Tidak terkunci</string>
   <string name="btn_add_keyserver">Tambahkan</string>
   <!--Content Description-->
   <!--menu-->
@@ -56,6 +57,7 @@
   <string name="label_file">File </string>
   <string name="label_file_colon">File:</string>
   <string name="label_passphrase">Password </string>
+  <string name="label_unlock">Membuka kunci...</string>
   <string name="label_key_id">ID Kunci</string>
   <string name="label_key_type">Tipe</string>
   <string name="label_expiry">Waktu kadarluarsa</string>
@@ -92,6 +94,7 @@
   <string name="error">Kesalahan</string>
   <!--sentences-->
   <string name="passphrase_for_symmetric_encryption">Masukkan kata sandi</string>
+  <string name="passphrase_for_any">Masukkan kata sandi</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -118,6 +121,7 @@
   <string name="help_tab_start">Mulai</string>
   <string name="help_tab_faq">FAQ </string>
   <string name="help_tab_changelog">Changelog </string>
+  <string name="help_tab_license">Lisensi</string>
   <string name="help_tab_about">Tentang</string>
   <string name="help_about_version">Versi:</string>
   <string name="help_tab_donations">Donasi</string>
@@ -165,6 +169,7 @@
   <string name="nav_apps">Aplikasi</string>
   <!--hints-->
   <!--certs-->
+  <string name="cert_default">default </string>
   <string name="cert_none">Tidak ada</string>
   <string name="cert_revoke">dicabut</string>
   <string name="cert_verify_ok">OKE</string>
@@ -240,4 +245,5 @@
   <string name="transfer_confirm_ok">Kirim</string>
   <string name="token_reset_confirm_ok">Reset</string>
   <string name="token_action_import">impor</string>
+  <string name="token_unlock_ok">Tidak terkunci</string>
 </resources>

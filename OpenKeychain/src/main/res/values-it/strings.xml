@@ -7,9 +7,9 @@
   <string name="title_encrypt_text">Codifica</string>
   <string name="title_encrypt_files">Codifica</string>
   <string name="title_decrypt">Decodifica</string>
-  <string name="title_add_subkey">Aggiungi Sottochiave</string>
+  <string name="title_add_subkey">Aggiungi sottochiave</string>
   <string name="title_change_master_key">Cambia la chiave principale</string>
-  <string name="title_edit_key">Modifica Chiave</string>
+  <string name="title_edit_key">Modifica chiave</string>
   <string name="title_linked_create">Creare un\'identità collegata</string>
   <string name="title_preferences">Impostazioni</string>
   <string name="title_api_registered_apps">Apps</string>
@@ -56,8 +56,8 @@
   <string name="section_share_key">Chiave</string>
   <string name="section_key_server">Server delle Chiavi</string>
   <string name="section_fingerprint">Impronta</string>
-  <string name="section_phrases">Frasi</string>
   <string name="section_encrypt">Codifica</string>
+  <string name="section_decrypt">Decripta/Verifica</string>
   <string name="section_current_expiry">Scadenza attuale</string>
   <string name="section_new_expiry">Nuova scadenza</string>
   <!--button-->
@@ -76,7 +76,6 @@
   <string name="btn_back">Precedente</string>
   <string name="btn_no">No</string>
   <string name="btn_match">Impronte digitali ugali</string>
-  <string name="btn_match_phrases">Le frasi coincidono</string>
   <string name="btn_share_encrypted_signed">Codifica/Firma e condividi testo</string>
   <string name="btn_copy_encrypted_signed">Codifica/Firma e copia testo</string>
   <string name="btn_paste_encrypted_signed">Codifica/Firma ed incolla testo</string>
@@ -149,6 +148,7 @@
   <string name="label_passphrase_cache_subs">Ricorda le password di sottochiave</string>
   <string name="label_message_compression">Compressione testo</string>
   <string name="label_file_compression">Compressione file</string>
+  <string name="label_keyservers">Gestisci i keyserver OpenPGP</string>
   <string name="label_key_id">ID Chiave</string>
   <string name="label_key_id_colon">ID chiave:</string>
   <string name="label_key_created">Chiave creata %s</string>
@@ -171,9 +171,11 @@
   <string name="label_enable_compression">Abilitare compressione</string>
   <string name="label_encrypt_filenames">Codifica nome dei file</string>
   <string name="label_hidden_recipients">Nascondi destinatari</string>
+  <string name="label_smartpgp_verify">SmartPGP: Verifica i certificati</string>
   <string name="label_verify_keyserver_connection">Verifica la connessione</string>
   <string name="label_only_trusted_keyserver">Solamente server delle chiavi fidati</string>
   <string name="label_enter_keyserver_url">URL</string>
+  <string name="label_enter_keyserver_onion">URL Tor .onion opzionale</string>
   <string name="label_keyserver_dialog_delete">Cancella server chiavi</string>
   <string name="label_theme">Tema</string>
   <string name="label_enter_smartpgp_authority_name">Nome</string>
@@ -194,8 +196,6 @@
   <string name="keyserver_sync_settings_title">Aggiornamenti automatici delle chiavi</string>
   <string name="label_experimental_settings_desc_title">Attenzione</string>
   <string name="label_experimental_settings_desc_summary">Queste funzioni non sono ancora finite o testate da utenti/ricerche di sicurezza. Perciò non contare sulla loro sicurezza e per favore non segnalare i problemi che riscontri!</string>
-  <string name="label_experimental_settings_word_confirm_title">Conferma con frasi</string>
-  <string name="label_experimental_settings_word_confirm_summary">Conferma le chiavi con frasi al posto delle impronte esadecimali</string>
   <string name="label_experimental_settings_linked_identities_title">Identità collegate</string>
   <string name="label_experimental_settings_linked_identities_summary">Collega le chiavi a Twitter, GitHub, siti o DNS (simile a keybase.io ma decentralizzato)</string>
   <string name="label_experimental_settings_keybase_summary">Contatta keybase.io per avere prove e mostrale ogni volta che visualizzo una chiave</string>
@@ -282,6 +282,8 @@
   <string name="passphrase_for_symmetric_encryption">Inserire password</string>
   <string name="passphrase_for_backup">Inserisci codice di backup</string>
   <string name="passphrase_for">Inserisci la password per \'%s\'</string>
+  <string name="passphrase_for_any">Inserire password</string>
+  <string name="passphrase_keyboard_hint_numeric">Passa alla tastiera numerica</string>
   <string name="pin_for">Inserisci il PIN per \'%s\'</string>
   <string name="security_token_pin_for">Inserisci PIN di accesso del Token di Sicurezza per \'%s\'</string>
   <string name="security_token_nfc_text">Tieni il Token di Sicurezza contro il simbolo NFC sulla parte posteriore del tuo dispositivo.</string>
@@ -345,6 +347,7 @@
   <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">Devi avere Android 4.1 per usare Android NFC Beam!</string>
   <string name="error_nfc_needed">NFC deve essere abilitato!</string>
+  <string name="error_nothing">Ancora niente da mostrare.</string>
   <string name="error_nothing_import">Nessuna chiave trovata!</string>
   <string name="error_contacts_key_id_missing">Recupero dell\'ID della chiave dai contatti fallito!</string>
   <string name="error_generic_report_bug">Si è verificato un errore generico, si prega di creare una nuova segnalazione di errore per OpenKeychain.</string>
@@ -408,6 +411,7 @@
   <string name="progress_extracting_key">estrazione chiave...</string>
   <string name="progress_preparing_streams">preparazione flussi...</string>
   <string name="progress_encrypting">codifica dati...</string>
+  <string name="progress_decrypting">Decriptando i dati...</string>
   <string name="progress_preparing_signature">preparazione firma...</string>
   <string name="progress_processing_signature">elaborazione firma...</string>
   <string name="progress_generating_signature">generazione firma...</string>
@@ -450,6 +454,7 @@
   <string name="help_tab_wot">Conferma chiave</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Novita\'</string>
+  <string name="help_tab_license">Licenze</string>
   <string name="help_tab_about">Info</string>
   <string name="help_about_version">Versione:</string>
   <string name="help_tab_donations">Fai una donazione</string>
@@ -458,12 +463,16 @@
   <string name="import_tab_cloud">Ricerca chiave</string>
   <string name="import_tab_direct">File/Appunti</string>
   <string name="import_tab_qr_code">Codice QR/NFC</string>
+  <string name="import_found_keys">Trovate %1$dchiavi</string>
   <string name="import_qr_code_fp">L\'impronta è malformata o troppo corta!</string>
   <string name="import_qr_code_too_short_fingerprint">L\'impronta è troppo corta!</string>
   <string name="import_qr_code_button">Scansione codice QR</string>
   <string name="import_qr_code_text">Inquadra il codice QR con la fotocamera!</string>
   <string name="btn_import">Importa</string>
+  <string name="btn_import_keys">Importa tutte le chiavi</string>
+  <string name="btn_view_list">Mostra la lista</string>
   <string name="btn_refresh">Aggiorna</string>
+  <string name="btn_go_to_key">Vai alla chiave</string>
   <!--Generic result toast-->
   <string name="snackbar_details">Dettagli</string>
   <string name="with_warnings">, con avvisi</string>
@@ -493,6 +502,7 @@
     <item quantity="one">Importazione fallita!</item>
     <item quantity="other">Importazione di %d chiavi fallite!</item>
   </plurals>
+  <string name="import_warn_missing">Chiave non trovata nei keyserver</string>
   <string name="import_error_nothing">Niente da importare</string>
   <string name="import_error_nothing_cancelled">Importazione cancellata.</string>
   <!--Delete result toast-->
@@ -509,6 +519,7 @@
     <item quantity="other">Eliminazione %1$d chiavi riuscita%2$s.</item>
   </plurals>
   <string name="delete_nothing">Niente da cancellare.</string>
+  <string name="delete_cancelled">Cancellazione rimossa.</string>
   <!--Revoke result toast (snackbar)-->
   <string name="revoke_ok">Chiave revocata con successo.</string>
   <string name="revoke_fail">Errore nella revoca della chiave!</string>
@@ -547,6 +558,7 @@
   <string name="api_settings_advanced">Avanzato</string>
   <string name="api_settings_allowed_keys">Chiavi consentite</string>
   <string name="api_settings_settings">Impostazioni</string>
+  <string name="api_register_title">Permettere l\'accesso a OpenKeychain?</string>
   <string name="api_register_allow">Permetti accesso</string>
   <string name="api_register_disallow">Nega accesso</string>
   <string name="api_register_error_select_key">Per favore selezionare una chiave!</string>
@@ -584,6 +596,8 @@
   <string name="key_list_fab_qr_code">Scansione codice QR</string>
   <string name="key_list_fab_search">Ricerca chiave</string>
   <string name="key_list_fab_import">Importa da file</string>
+  <string name="key_list_dummy_title">Non hai ancora nessuna chiave!</string>
+  <string name="key_list_dummy_subtitle">Clicca quí per crearne o importarne una</string>
   <!--Key view-->
   <string name="key_view_action_edit">Modifica</string>
   <string name="key_view_action_encrypt">Codifica Testo</string>
@@ -591,6 +605,7 @@
   <string name="key_view_action_certify">Conferma chiave</string>
   <string name="key_view_action_update">Aggiorna dal server delle chiavi</string>
   <string name="key_view_action_share_with">Condividi con...</string>
+  <string name="key_view_action_share_ssh_with">Condividi come chiave pubblica SSH con...</string>
   <string name="key_view_action_share_nfc">Condividi tramite NFC</string>
   <string name="key_view_action_upload">Carica sul Server delle Chiavi</string>
   <string name="key_view_tab_main">Info Principale</string>
@@ -679,6 +694,7 @@
   <string name="create_key_add_email">Aggiungi indirizzo email</string>
   <string name="create_key_add_email_text">Anche altri inidirizzi email sono associati a questa chiave e possono essere usati per comunicazioni sicure.</string>
   <string name="create_key_email_already_exists_text">L\'indirizzo email è già stato aggiunto.</string>
+  <string name="create_key_email_empty_email">L\'indirizzo email non puó essere vuoto</string>
   <string name="create_key_yubi_key_pin_text">Scegli un PIN con 6 numeri.</string>
   <string name="create_key_yubi_key_admin_pin_text">Annota l\'Admin PIN e conservalo in un posto sicuro (richiesto quando inserisci 3 volte un PIN errato).</string>
   <string name="create_key_yubi_key_pin">PIN</string>
@@ -686,6 +702,10 @@
   <string name="create_key_yubi_key_pin_repeat">Ripeti il PIN</string>
   <string name="create_key_yubi_key_pin_not_correct">Il PIN è errato!</string>
   <string name="create_key_yubi_key_pin_too_short">Il PIN dovrebbe essere composto almeno da 6 numeri.</string>
+  <string name="create_key_yubi_key_pin_insecure">Scegliere un PIN sicuro, non 000000, 123456 o combinazioni simili (i 20 pin piú usati non sono permessi)</string>
+  <string name="create_key_yubi_key_algorithm_text">Scegliere un algoritmo per ogni chiave</string>
+  <string name="create_key_yubi_key_algorithm_dec_text">Chiave di decriptazione</string>
+  <string name="create_key_yubi_key_algorithm_auth_text">Chiave di autenticazione</string>
   <!--View key-->
   <string name="view_key_my_key">Mia chiave</string>
   <string name="view_key_verified">Chiave confermata</string>
@@ -960,8 +980,12 @@
     <item quantity="other">Importazione di %d chiavi</item>
   </plurals>
   <string name="msg_import_fetch_error_not_found">Chiave non trovata!</string>
+  <string name="msg_backup_all">Backup con tutte le chiavi</string>
+  <string name="msg_backup_public">Creando un backup della chiave pubblica %s</string>
+  <string name="msg_backup_secret">Crendo un backup della chiave segreta %s</string>
   <string name="msg_backup_error_db">Errore banca dati!</string>
   <string name="msg_backup_error_io">Errore di input/output!</string>
+  <string name="msg_backup_success">Backup eseguito con successo</string>
   <string name="msg_upload_server">Server: %s</string>
   <string name="msg_upload_key">ID chiave: %s</string>
   <string name="msg_upload_error_not_found">Chiave non trovata!</string>
@@ -978,12 +1002,14 @@
   <string name="msg_revoke_key_fail">Revoca chiave fallita</string>
   <string name="msg_revoke_ok">Chiave revocata con successo</string>
   <!--Linked Identity verification-->
+  <string name="msg_lv_error_twitter_response">Risposta inaspettata dalle api di Twitter!</string>
   <string name="msg_lv_fetch_error">Errore del server (HTTP %s)</string>
   <string name="msg_lv_fetch_error_io">Errore di input output!</string>
   <string name="msg_lv_fetch_error_format">Errore di formato!</string>
   <string name="msg_lv_fetch_error_nothing">Risorsa non trovata!</string>
   <string name="msg_bench_enc_time">Tempo di codifica: %ss</string>
   <string name="msg_bench_dec_time">Tempo di decodifica: %ss</string>
+  <string name="msg_bench_success">Benchmark completato!</string>
   <string name="msg_data_mime_filename">Nome file: \'%s\'</string>
   <string name="msg_data_mime_charset">Il set di caratteri è \'%s\'</string>
   <string name="msg_data_mime_charset_unknown">Il set di caratteri è sconosciuto, oppure i dati non sono testo.</string>

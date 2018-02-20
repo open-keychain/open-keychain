@@ -2,27 +2,27 @@
 
 ## 4.8
 
-  * Improved support for USB tokens: Gnuk, Nitrokey models, YubiKey 4 models
-  * Feature to find the position of the device's NFC reader
+  * USB 토큰 지원 개선: Gnuk, Nitrokey 모델, YubiKey 4 모델
+  * 기기의 NFC 판독기 위치를 찾는 기능
 
 ## 4.7
 
-  * Improved import from clipboard
-  * New key creation wizard for Security Tokens
-  * Removed password cache "time to live" setting
+  * 클립보드로 부터 가져오기 개선
+  * 보안 토큰용 새로운 키 생성 마법사
+  * 패스워드 캐시 "동작 시간" 설정 제거
 
 
 ## 4.6
 
-  * Import your keys using our new Secure Wi-Fi Transfer mechanism
+  * 새로운 보안 Wi-Fi 전송 메커니즘을 사용해 키 가져오기
 
 
 ## 4.5
 
-  * Detailed description of security problems
-  * Display keyserver status per key
-  * Support for EdDSA
-  * Fix pgp.mit.edu (new certificate)
+  * 보안 문제에 대한 자세한 설명
+  * 키 당 키서버 상태 표시
+  * EdDSA 지원
+  * pgp.mit.edu (새로운 인증서) 수정
 
 
 ## 4.4
@@ -32,7 +32,7 @@
 
 ## 4.3
 
-  * Better support for large keys
+  * 대형 키 지원 향상
   * Fix import of Gpg4win files with broken encodings
 
 
@@ -64,15 +64,15 @@
 
 ## 3.8
 
-  * Redesigned key editing
+  * 키 편집 재설계
   * Choose remember time individually when entering passwords
-  * Facebook key import
+  * Facebook 키 들여오기
 
 
 ## 3.7
 
-  * Improved Android 6 support (permissions, integration into text selection)
-  * API: Version 10
+  * Android 6 지원 개선 (사용 권한, 텍스트 선택 통합)
+  * API: 버전 10
 
 
 ## 3.6
@@ -163,7 +163,7 @@
   * 키 가져오기 관련 많은 부분 수정, 간략화된 키 관련 수정
   * 키 인증 플래그 강조
   * 커스텀 키 생성을 위한 유저 인터페이스
-  * Fixing user ID revocation certificates
+  * 사용자 ID 해지 인증서 수정
   * 새로운 클라우드 검색 (기존의 키서버와 keybase.io에서 검색)
   * OpenKeychain 안에서 키 간략화 지원
   * YubiKey 실험적 지원: 서명 생성과 복호화 지원
@@ -317,7 +317,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * 기본적인 키서버 지원
   * App2sd 지원
   * 암호구 캐시 시간 설정: 1, 2, 4, 8시간
-  * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
+  * 번역본: 노르웨이어 Bokmål (Sander Danielsen님께 감사), 중국어 (Zhang Fredrick님께 감사)
   * 버그 수정
   * 최적화
 

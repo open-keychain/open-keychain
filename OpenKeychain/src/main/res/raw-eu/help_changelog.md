@@ -2,19 +2,19 @@
 
 ## 4.8
 
-  * Improved support for USB tokens: Gnuk, Nitrokey models, YubiKey 4 models
-  * Feature to find the position of the device's NFC reader
+  * Hobetuta USB lekukoen sostengua: Gnuk, Nitrokey modeloak, YubiKey 4 modeloak
+  * Gailuaren NFC irakurgailuaren kokapena bilatzeko ezaugarria
 
 ## 4.7
 
-  * Improved import from clipboard
-  * New key creation wizard for Security Tokens
-  * Removed password cache "time to live" setting
+  * Hobetuta inportatu gakotik
+  * Giltza sortze laguntzaile berria Segurtasun Lekukoentzat
+  * Kenduta "bizi denbora" ezarpenaren sarhitz katxea
 
 
 ## 4.6
 
-  * Import your keys using our new Secure Wi-Fi Transfer mechanism
+  * Inportatu zure giltzak gure Wi-Fi Segurua Eskualdaketa mekanismoa erabiliz
 
 
 ## 4.5

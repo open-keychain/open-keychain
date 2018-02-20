@@ -58,7 +58,6 @@
   <string name="section_share_key">Chave</string>
   <string name="section_key_server">Servidor de chaves</string>
   <string name="section_fingerprint">Impressão Digital</string>
-  <string name="section_phrases">Senhas</string>
   <string name="section_encrypt">Encriptar</string>
   <string name="section_current_expiry">Validade atual</string>
   <string name="section_new_expiry">Nova data de expiração</string>
@@ -78,7 +77,6 @@
   <string name="btn_back">Voltar</string>
   <string name="btn_no">Não</string>
   <string name="btn_match">Impressões digitais conferem</string>
-  <string name="btn_match_phrases">Senhas conferem</string>
   <string name="btn_share_encrypted_signed">Encriptar/Assinar e compartilhar texto</string>
   <string name="btn_copy_encrypted_signed">Encriptar/Assinar e copiar texto</string>
   <string name="btn_paste_encrypted_signed">Encriptar/Assinar e colar texto</string>
@@ -195,8 +193,6 @@
   <string name="keyserver_sync_settings_title">Atualização automática de chaves</string>
   <string name="label_experimental_settings_desc_title">Cuidado!</string>
   <string name="label_experimental_settings_desc_summary">Esses recursos ainda não estão terminados ou resultam da experiência/segurança do usuário em pesquisa. Assim, não confia em sua segurança e por favor, não relatar os problemas que encontrar nesta situação!</string>
-  <string name="label_experimental_settings_word_confirm_title">Confirmação com senhas</string>
-  <string name="label_experimental_settings_word_confirm_summary">Confirmar as chaves com senhas em vez de impressões digitais hexadecimais</string>
   <string name="label_experimental_settings_linked_identities_title">Identidades Vinculadas</string>
   <string name="label_experimental_settings_linked_identities_summary">Vincule suas chaves para o Twitter, GitHub, websites ou DNS (semelhante ao keybase.io mas de forma descentralizada)</string>
   <string name="label_experimental_settings_keybase_summary">Entre em contato com keybase.io para as provas de chaves e mostrar cada vez que uma chave for exibida.</string>
@@ -284,6 +280,7 @@
   <string name="passphrase_for_symmetric_encryption">Digite a senha</string>
   <string name="passphrase_for_backup">Digite o codigo de backup</string>
   <string name="passphrase_for">Digite a senha para \'%s\'</string>
+  <string name="passphrase_for_any">Digite a senha</string>
   <string name="pin_for">Digite o PIN para \'%s\'</string>
   <string name="security_token_pin_for">Digite o PIN para acessar o Token de segurança para \'%s\'</string>
   <string name="security_token_nfc_text">Segure o Token de Segurança contra o marcador NFC nas costas de seu dispositivo.</string>
@@ -454,6 +451,7 @@
   <string name="help_tab_wot">Confirmação de chave</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Registro de Alterações</string>
+  <string name="help_tab_license">Licenças</string>
   <string name="help_tab_about">Sobre</string>
   <string name="help_about_version">Versão:</string>
   <string name="help_tab_donations">Doar</string>
@@ -1289,7 +1287,6 @@
   <string name="section_uids_to_certify">Identidades para</string>
   <string name="certify_text">As chaves que você está importando contém \"identidades\": nomes e endereços de email. Selecione exatamente aqueles que coincidem com o que você espera para confirmação.</string>
   <string name="certify_fingerprint_text">Compare a impressão digital, caractere por caractere, com aquele exibido no dispositivo de seu parceiro.</string>
-  <string name="certify_fingerprint_text_phrases">Compare estas frases com aquelas exibidas no dispositivo do seu parceiro.</string>
   <string name="label_revocation">Razão da revogação</string>
   <string name="label_cert_type">Tipo</string>
   <string name="error_key_not_found">Chave não encontrada!</string>

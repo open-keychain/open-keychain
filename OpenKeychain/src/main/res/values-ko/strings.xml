@@ -8,11 +8,13 @@
   <string name="title_encrypt_files">암호화</string>
   <string name="title_decrypt">복호화</string>
   <string name="title_add_subkey">서브키 추가</string>
+  <string name="title_change_master_key">마스터키 변경</string>
   <string name="title_edit_key">키 수정</string>
   <string name="title_linked_create">연결된 신원 만들기</string>
   <string name="title_preferences">설정</string>
   <string name="title_api_registered_apps">앱</string>
   <string name="title_key_server_preference">OpenPGP 키서버</string>
+  <string name="title_smartpgp_authorities_preference">SmartPGP: 인증된 권한</string>
   <string name="title_change_passphrase">암호 변경</string>
   <string name="title_share_fingerprint_with">지문을 공유</string>
   <string name="title_share_key">키를 공유</string>
@@ -34,8 +36,10 @@
   <string name="title_advanced_key_info">고급</string>
   <string name="title_delete_secret_key">당신의 키 \'%s\' 을(를) 삭제할까요?</string>
   <string name="title_manage_my_keys">내 키 관리</string>
+  <string name="title_alert_strip">이 보조키를 비활성화</string>
   <!--section-->
   <string name="section_user_ids">신원</string>
+  <string name="section_security_token">보안 토큰</string>
   <string name="section_linked_system_contact">연결된 시스템 연락처</string>
   <string name="section_keybase_proofs">Keybase.io 증명</string>
   <string name="section_should_you_trust">이 키를 믿어야 할까요?</string>
@@ -55,8 +59,8 @@
   <string name="section_share_key">키</string>
   <string name="section_key_server">키서버</string>
   <string name="section_fingerprint">지문</string>
-  <string name="section_phrases">문구</string>
   <string name="section_encrypt">암호화</string>
+  <string name="section_decrypt">복호화/검증</string>
   <string name="section_current_expiry">현재 만료일자</string>
   <string name="section_new_expiry">새 만료일자</string>
   <!--button-->
@@ -75,7 +79,6 @@
   <string name="btn_back">뒤로</string>
   <string name="btn_no">아니오</string>
   <string name="btn_match">지문 일치</string>
-  <string name="btn_match_phrases">문구 일치</string>
   <string name="btn_share_encrypted_signed">암호화/서명 후 텍스트 공유</string>
   <string name="btn_copy_encrypted_signed">암호화/서명 후 텍스트 복사</string>
   <string name="btn_paste_encrypted_signed">암호화/서명 후 텍스트 붙여넣기</string>
@@ -84,6 +87,7 @@
   <string name="btn_add_files">파일(들) 추가</string>
   <string name="btn_share_decrypted_text">공유</string>
   <string name="btn_open_with">다음으로 열기</string>
+  <string name="btn_copy_decrypted_text">클립보드로 복사</string>
   <string name="btn_decrypt_clipboard">클립보드에서 읽기</string>
   <string name="btn_decrypt_files">입력 파일 선택</string>
   <string name="btn_encrypt_files">파일들 암호화</string>
@@ -93,14 +97,18 @@
   <string name="btn_add_keyserver">추가</string>
   <string name="btn_save_default">기본값으로 저장</string>
   <string name="btn_saved">저장 성공!</string>
+  <string name="btn_not_matching">일치하지 않음</string>
   <!--Content Description-->
   <string name="cd_encrypt_files">파일들 암호화</string>
+  <string name="cd_exchange_keys">키 교환</string>
   <string name="cd_encrypt_text">텍스트 암호화</string>
+  <string name="cd_share_nfc">NFC를 통해 공유</string>
   <!--menu-->
   <string name="menu_preferences">설정</string>
   <string name="menu_help">도움말</string>
   <string name="menu_export_key">키 백업</string>
   <string name="menu_delete_key">키 삭제</string>
+  <string name="menu_status">키 상태 보기</string>
   <string name="menu_manage_keys">내 키 관리</string>
   <string name="menu_search">검색</string>
   <string name="menu_open">열기</string>
@@ -111,6 +119,9 @@
   <string name="menu_select_all">모두 선택</string>
   <string name="menu_export_all_keys">모든 키 내보내기</string>
   <string name="menu_update_all_keys">모든 키 업데이트</string>
+  <string name="menu_certify_fingerprint">지문으로 확인</string>
+  <string name="menu_certify_fingerprint_phrases">암호로 확인</string>
+  <string name="menu_share_log">로그 공유</string>
   <string name="menu_change_password">패스워드 변경</string>
   <string name="menu_advanced">고급</string>
   <string name="menu_keyserver_add">추가</string>
@@ -126,6 +137,7 @@
   <string name="label_passphrase_again">암호 반복</string>
   <string name="label_show_passphrase">암호 보기</string>
   <string name="label_algorithm">알고리즘</string>
+  <string name="label_algorithm_colon">알고리즘:</string>
   <string name="label_ascii_armor">파일 ASCII로 표시</string>
   <string name="label_file_ascii_armor">ASCII 표시 활성화</string>
   <string name="label_write_version_header">다른 사람에게 OpenKeychain을 사용하고 있다는 걸 알리세요</string>
@@ -139,10 +151,13 @@
   <string name="label_passphrase_cache_subs">서브키 당 암호 기억</string>
   <string name="label_message_compression">텍스트 압축</string>
   <string name="label_file_compression">파일 압축</string>
+  <string name="label_keyservers">OpenPGP 키서버 관리</string>
   <string name="label_key_id">키 ID</string>
+  <string name="label_key_id_colon">키 ID:</string>
   <string name="label_key_created">키가 %s 에 만들어짐</string>
   <string name="label_key_type">종류</string>
   <string name="label_creation">생성</string>
+  <string name="label_creation_colon">생성 시점:</string>
   <string name="label_expiry">만료</string>
   <string name="label_usage">사용</string>
   <string name="label_key_size">키 크기</string>
@@ -156,28 +171,39 @@
   <string name="label_keyservers_title">키서버</string>
   <string name="label_keyserver_settings_hint">끌어서 순서 변경, 눌러서 수정/삭제</string>
   <string name="label_selected_keyserver_title">선택된 키서버</string>
+  <string name="label_selected_smartpgp_authority_title">인증기관 선택</string>
   <string name="label_preferred">우선 사용</string>
   <string name="label_enable_compression">압축 활성화</string>
   <string name="label_encrypt_filenames">파일 이름 암호화</string>
   <string name="label_hidden_recipients">수신자 숨김</string>
+  <string name="label_smartpgp_verify">SmartPGP: 인증서 검증</string>
+  <string name="label_smartpgp_verify_summary">신뢰받는 인증기관의 설정과 대조해 SmartPGP 보안 토큰으로 인증서를 검증합니다</string>
+  <string name="label_smartpgp_roots">SmartPGP: 인증된 권한</string>
   <string name="label_verify_keyserver_connection">연결 테스트</string>
   <string name="label_only_trusted_keyserver">믿을 수 있는 키서버만</string>
   <string name="label_enter_keyserver_url">URL</string>
+  <string name="label_enter_keyserver_onion">Tor .onion URL 설정</string>
   <string name="label_keyserver_dialog_delete">키서버 삭제</string>
   <string name="label_theme">테마</string>
   <string name="label_enter_smartpgp_authority_name">Name</string>
+  <string name="label_smartpgp_authority_dialog_delete">인증기관 삭제</string>
   <string name="pref_keyserver">OpenPGP 키서버</string>
   <string name="pref_keyserver_summary">선택된 OpenPGP 키서버(HKP 프로토콜)에서 키 검색</string>
   <string name="pref_keybase">keybase.io</string>
   <string name="pref_keybase_summary">keybase.io에서 키 검색</string>
   <string name="pref_facebook">Facebook</string>
+  <string name="pref_facebook_summary">사용자명으로 Facebook 상의 키 검색</string>
+  <string name="label_sync_settings_keyserver_title">자동 키 갱신</string>
+  <string name="label_sync_settings_keyserver_summary_on">3일마다, 선호하는 키서버로 부터 키를 갱신합니다</string>
+  <string name="label_sync_settings_keyserver_summary_off">키가 자동으로 갱신되지 않습니다.</string>
+  <string name="label_sync_settings_wifi_title">Wi-Fi 접속으로만 동기화</string>
   <string name="label_sync_settings_contacts_title">키를 연락처에 연결</string>
   <string name="label_sync_settings_contacts_summary_on">이름과 이메일 주소에 기초해 키를 연락처에 연결합니다. 이 작업은 완전히 오프라인에서만 수행됩니다.</string>
   <string name="label_sync_settings_contacts_summary_off">새 키를 앞으로 연락처에 연결하지 않음</string>
   <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="keyserver_sync_settings_title">자동 키 갱신</string>
   <string name="label_experimental_settings_desc_title">경고</string>
   <string name="label_experimental_settings_desc_summary">이 기능들은 아직 완성되지 않았거나 유저 경험/보안 연구의 결과가 아닙니다. 그러니 이 기능의 보안성에 의존하거나 겪는 문제를 보고하지 말아주세요!</string>
-  <string name="label_experimental_settings_word_confirm_summary">키를 16진수 지문이 아닌 문구로 확인</string>
   <string name="label_experimental_settings_linked_identities_title">연결된 신원</string>
   <string name="label_experimental_settings_linked_identities_summary">키를 Twitter, GitHub, 웹사이트 혹은 DNS에 연결 (keybase.io와 비슷하지만 중앙집중되지 않음)</string>
   <string name="label_experimental_settings_keybase_summary">keybase.io에 연결해서 키가 표시될 때 마다 키 증명을 표시</string>
@@ -217,6 +243,9 @@
   <plurals name="n_keyservers">
     <item quantity="other">%d 개의 키서버</item>
   </plurals>
+  <plurals name="n_authorities">
+    <item quantity="other">%d개의 인증기관</item>
+  </plurals>
   <string name="secret_key">비밀 키:</string>
   <!--choice-->
   <string name="choice_none">없음</string>
@@ -234,12 +263,33 @@
   <string name="choice_forever">영원히</string>
   <string name="choice_select_cert">키를 선택하세요</string>
   <string name="filemanager_title_open">열기</string>
+  <string name="rsa_2048">RSA 2048</string>
+  <string name="rsa_2048_description_html">파일 크기 작음, 2030년 까지의 보안을 고려함</string>
+  <string name="rsa_3072">RSA 3072</string>
+  <string name="rsa_3072_description_html">추천함, 2040년 까지의 보안을 고려함</string>
+  <string name="rsa_4096">RSA 4096</string>
+  <string name="rsa_4096_description_html">파일 크기 큼, 2040년 이후 까지의 보안을 고려함</string>
+  <string name="ecc_p256">ECC P-256</string>
+  <string name="ecc_p256_description_html">파일 크기 매우 작음, 2040년 까지의 보안을 고려함&lt;br/&gt;
+&lt;u&gt;실험용으로 모든 작업에서 지원되진 않음 &lt;/u&gt;</string>
+  <string name="ecc_p384">ECC P-384</string>
+  <string name="ecc_p384_description_html">파일 크기 매우 작음, 2040년 까지의 보안을 고려함&lt;br/&gt;
+&lt;u&gt;실험용으로 모든 작업에서 지원되진 않음 &lt;/u&gt;</string>
+  <string name="ecc_p521">ECC P-521</string>
+  <string name="ecc_p521_description_html">파일 크기 매우 작음, 2040년 이후 까지의 보안을 고려함&lt;br/&gt;
+&lt;u&gt;실험용으로 모든 작업에서 지원되진 않음 &lt;/u&gt;</string>
+  <string name="ecc_eddsa">ECC EdDSA</string>
+  <string name="ecc_eddsa_description_html">파일 크기 매우 작음, 2040년 이후 까지의 보안을 고려함&lt;br/&gt;
+&lt;u&gt;실험용으로 모든 작업에서 지원되진 않음 &lt;/u&gt;</string>
+  <string name="usage_none">없음 (하위 키 바인딩 만 사용)</string>
   <string name="usage_sign">서명</string>
   <string name="usage_encrypt">암호화</string>
+  <string name="usage_sign_and_encrypt">서명 &amp; 암호화</string>
   <string name="error">에러</string>
   <string name="error_message">에러: %s</string>
   <string name="theme_dark">어두움</string>
   <string name="theme_light">밝음</string>
+  <string name="strip">제거</string>
   <!--sentences-->
   <string name="wrong_passphrase">암호가 틀렸습니다.</string>
   <string name="no_filemanager_installed">호환되는 파일 관리자가 설치되어 있지 않음.</string>
@@ -248,7 +298,15 @@
   <string name="passphrase_for_symmetric_encryption">암호 입력</string>
   <string name="passphrase_for_backup">백업 코드 입력</string>
   <string name="passphrase_for">\'%s\'을(를) 위해 암호를 입력 해 주세요</string>
+  <string name="passphrase_for_any">암호 입력</string>
+  <string name="passphrase_keyboard_hint_alpha">알파벳 키보드로 전환</string>
+  <string name="passphrase_keyboard_hint_numeric">숫자 키보드로 전롼</string>
   <string name="pin_for">\'%s\'을(를) 위해 PIN을 입력 해 주세요</string>
+  <string name="security_token_pin_for">\'%s\'용 보안 토큰에 접속하기 위한 PIN 입력</string>
+  <string name="security_token_nfc_text">보안 토큰을 기기 뒷면의 NFC 마커에 접촉한채 있으세요</string>
+  <string name="security_token_nfc_wait">보안 토큰을 뒷면에 두십시오!</string>
+  <string name="security_token_nfc_finished">보안 토큰을 지금 제거 하십시오.</string>
+  <string name="security_token_nfc_try_again_text">보안 토큰을 지금 제거 하고 다시 접촉해 주세요.</string>
   <string name="file_delete_confirmation_title">원본 파일을 삭제할까요?</string>
   <string name="file_delete_confirmation">다음 파일이 삭제 될 것입니다:%s</string>
   <string name="file_delete_successful">%2$d개 중 %1$d개의 파일이 삭제되었습니다.%3$s</string>
@@ -268,11 +326,13 @@
   <string name="public_key_deletetion_confirmation">\'%s\' 키를 삭제할까요?</string>
   <string name="also_export_secret_keys">비밀키도 내보내기</string>
   <string name="reinstall_openkeychain">이미 알려진 안드로이드 운영체제와 관련된 버그가 발생했습니다. 만약 연락처와 키를 연동하고 싶다면 OpenKeychain을 재설치 해 주세요.</string>
+  <string name="alert_strip">이 하위 키를 제거하면 이 장치에서 사용할 수 없게 됩니다!</string>
   <string name="key_exported">성공적으로 키 하나를 내보냈습니다.</string>
   <string name="keys_exported">성공적으로 키 %d개를 내보냈습니다.</string>
   <string name="no_keys_exported">아무 키도 내보내지 않았습니다.</string>
   <string name="key_creation_el_gamal_info">참고: 오직 서브키만 ElGamal을 지원합니다.</string>
   <string name="key_not_found">키 %08X를 찾을 수 없습니다.</string>
+  <string name="authentication_subkey_not_found">이 키에는 인증 하위키가 없습니다.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="other">%d개의 손상된 비밀키가 무시되었습니다. 만약 \n--export-secret-subkeys\n옵션으로 내보내셨다면, 반드시\n--export-secret-keys\n옵션으로 내보내세요.</item>
   </plurals>
@@ -300,6 +360,7 @@
   <string name="error_integrity_check_failed">무결성 체크 실패! 데이터가 수정되었습니다!</string>
   <string name="error_wrong_passphrase">암호 오류</string>
   <string name="error_could_not_extract_private_key">개인키를 추출할 수 없음</string>
+  <string name="error_wrong_security_token">이 보안 토큰에 필수 키가 없습니다.</string>
   <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">NFC 빔 기능을 쓰기 위해선 안드로이드 4.1 이상이 필요합니다!</string>
   <string name="error_nfc_needed">NFC가 활성화 되어 있어야 합니다!</string>
@@ -330,6 +391,7 @@
   <string name="progress_done">완료.</string>
   <string name="progress_cancel">취소</string>
   <string name="progress_cancelling">취소 중...</string>
+  <string name="progress_downloading">내려받는중...</string>
   <string name="progress_saving">저장 중...</string>
   <string name="progress_importing">가져오는 중...</string>
   <string name="progress_benchmarking">벤치마킹 중...</string>
@@ -343,6 +405,7 @@
   <string name="progress_generating_dsa">새로운 DSA 키를 만드는 중...</string>
   <string name="progress_generating_elgamal">새로운 ElGamal 키를 만드는 중...</string>
   <string name="progress_generating_ecdsa">새로운 ECDSA 키를 만드는 중...</string>
+  <string name="progress_generating_eddsa">새로운 EdDSA 키 생성중...</string>
   <string name="progress_generating_ecdh">새로운 ECDH 키를 만드는 중...</string>
   <string name="progress_modify">키링을 수정하는 중...</string>
   <string name="progress_modify_unlock">키링을 잠금 해제 중...</string>
@@ -365,6 +428,8 @@
   <string name="progress_extracting_key">키를 추출하는 중...</string>
   <string name="progress_preparing_streams">스트림을 준비하는 중...</string>
   <string name="progress_encrypting">데이터를 암호화 하는 중...</string>
+  <string name="progress_prepare_decryption">복호화 시작중...</string>
+  <string name="progress_decrypting">데이터 복호화중...</string>
   <string name="progress_preparing_signature">서명을 준비하는 중...</string>
   <string name="progress_processing_signature">서명을 처리하는 중...</string>
   <string name="progress_generating_signature">서명을 생성하는 중...</string>
@@ -377,6 +442,7 @@
   <string name="progress_verifying_integrity">무결성을 검사하는 중...</string>
   <string name="progress_deleting_securely">\'%s\' 을(를) 안전하게 지우는 중...</string>
   <string name="progress_deleting">키를 삭제하는 중...</string>
+  <string name="progress_update_trust">신뢰 정보 갱신중...</string>
   <string name="progress_verifying_keyserver_connection">연결을 검사하는 중...</string>
   <string name="progress_starting_orbot">Orbot을 시작하는 중...</string>
   <!--action strings-->
@@ -407,6 +473,7 @@
   <string name="help_tab_wot">키 확인</string>
   <string name="help_tab_nfc_beam">NFC 빔</string>
   <string name="help_tab_changelog">번경 이력</string>
+  <string name="help_tab_license">라이센스</string>
   <string name="help_tab_about">정보</string>
   <string name="help_about_version">버전:</string>
   <string name="help_tab_donations">기부</string>
@@ -415,11 +482,14 @@
   <string name="import_tab_cloud">키 </string>
   <string name="import_tab_direct">파일/클립보드</string>
   <string name="import_tab_qr_code">QR 코드/NFC</string>
+  <string name="import_qr_code_wrong">QR 코드 형식이 지원되지 않습니다 (형식 사양 : https://github.com/open-keychain/open-keychain/wiki/QR-Codes)!</string>
   <string name="import_qr_code_fp">지문이 잘못되었거나 너무 짧습니다!</string>
   <string name="import_qr_code_too_short_fingerprint">지문이 너무 짧습니다!</string>
   <string name="import_qr_code_button">QR 코드를 스캔</string>
   <string name="import_qr_code_text">QR 코드를 카메라로 비춰주세요!</string>
   <string name="btn_import">가져오기</string>
+  <string name="btn_import_keys">모든 키 들여오기</string>
+  <string name="btn_view_list">목록 보기</string>
   <string name="btn_refresh">새로고침</string>
   <!--Generic result toast-->
   <string name="snackbar_details">자세히</string>
@@ -444,6 +514,7 @@
   <plurals name="import_error">
     <item quantity="other">%d 개의 키 가져오기 실패!</item>
   </plurals>
+  <string name="import_warn_missing">키 서버에서 키를 찾을 수 없습니다.</string>
   <string name="import_error_nothing">가져올 대상이 없습니다.</string>
   <string name="import_error_nothing_cancelled">가져오기가 취소되었습니다.</string>
   <!--Delete result toast-->
@@ -456,7 +527,11 @@
   <plurals name="delete_ok">
     <item quantity="other">성공적으로 %1$d 개의 키 삭제 (%2$s)</item>
   </plurals>
+  <plurals name="delete_fail">
+    <item quantity="other">%1$d개의 키를 삭제하던 중 오류가 발생했습니다.</item>
+  </plurals>
   <string name="delete_nothing">삭제할 게 없습니다.</string>
+  <string name="delete_cancelled">삭제 작업이 취소되었습니다.</string>
   <!--Revoke result toast (snackbar)-->
   <string name="revoke_ok">성공적으로 키를 무효화 했습니다.</string>
   <string name="revoke_fail">키 무효화 실패!</string>
@@ -478,6 +553,8 @@
   <string name="intent_send_encrypt">OpenKeychain으로 암호화</string>
   <string name="intent_send_decrypt">OpenKeychain으로 복호화</string>
   <!--Remote API-->
+  <string name="api_settings_show_info">고급 정보 표시</string>
+  <string name="api_settings_hide_info">고급 정보 숨기기</string>
   <string name="api_settings_no_key">키가 선택되지 않음</string>
   <string name="api_settings_select_key">키 선택</string>
   <string name="api_settings_create_key">새로운 키 만들기</string>
@@ -490,6 +567,7 @@
   <string name="api_settings_advanced">고급</string>
   <string name="api_settings_allowed_keys">혀용된 키</string>
   <string name="api_settings_settings">설정</string>
+  <string name="api_register_title">OpenKeychain로 접속을 허용합니까?</string>
   <string name="api_register_allow">접근 허용</string>
   <string name="api_register_disallow">접근 허용하지 않음</string>
   <string name="api_register_error_select_key">키를 선택해 주세요!</string>
@@ -497,47 +575,237 @@
   <string name="api_select_pub_keys_dublicates_text">이 이메일 주소에 하나 초과의 키가 존재합니다:</string>
   <string name="api_select_pub_keys_text">받는 사람 리스트를 검토해주세요!</string>
   <string name="api_select_pub_keys_text_no_user_ids">받는 사람을 선택해 주세요!</string>
+  <string name="api_select_sign_key_text">기존의 키 하나를 선택하거나 새로운 것을 만들어 주세요.</string>
   <!--Share-->
+  <string name="share_qr_code_dialog_title">QR 코드로 공유</string>
+  <string name="share_nfc_dialog">NFC로 공유</string>
   <!--retry upload dialog-->
+  <string name="retry_up_dialog_btn_reupload">작업 재시도</string>
+  <string name="retry_up_dialog_btn_cancel">작업 취소</string>
   <!--Delete or revoke private key dialog-->
+  <string name="del_rev_dialog_title">취소 / 삭제 키 \'%s\'</string>
   <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <string name="key_list_empty_text1">키를 찾을 수 없습니다!</string>
+  <string name="key_list_filter_show_all">모든 키 표시</string>
+  <string name="key_list_filter_show_certified">확인된 키만 표시</string>
   <string name="key_list_fab_qr_code">QR 코드를 스캔</string>
   <string name="key_list_fab_search">키 </string>
+  <string name="key_list_fab_import">파일로 부터 들여오기</string>
+  <string name="key_list_dummy_title">아직 가지고 있는 키가 없습니다!</string>
+  <string name="key_list_dummy_subtitle">생성하거나 들여 오려면 여기를 클릭하십시오.</string>
   <!--Key view-->
   <string name="key_view_action_edit">편집</string>
   <string name="key_view_action_encrypt">텍스트 암호화</string>
+  <string name="key_view_action_certify">키 확인</string>
+  <string name="key_view_action_update">키서버로 부터 갱신</string>
+  <string name="key_view_action_share_with">다음으로 공유...</string>
+  <string name="key_view_action_share_ssh_with">다음을 SSH 공개키로 공유...</string>
+  <string name="key_view_action_upload">키서버로 올리기</string>
+  <string name="key_view_tab_main">주요 정보</string>
   <string name="key_view_tab_start">시작</string>
   <string name="key_view_tab_share">공유</string>
   <string name="key_view_tab_keys">서브키</string>
   <string name="key_view_tab_certs">인증서</string>
+  <string name="key_view_tab_keybase">Keybase.io</string>
+  <string name="user_id_info_revoked_text">이 ID는 키 소유자가 폐기했습니다. 더 이상 유효하지 않습니다.</string>
+  <string name="user_id_info_certified_title">확인됨</string>
+  <string name="user_id_info_certified_text">이 신원은 당신에 의해 확인되었습니다.</string>
+  <string name="user_id_info_uncertified_title">확인되지 않음</string>
+  <string name="user_id_info_uncertified_text">이 신원은 아직 확인되지 않았습니다. 신원이 실제로 특정인과 일치하는지 확신 할 수 없습니다.</string>
+  <string name="user_id_info_invalid_text">이 신원에 문제가 있습니다!</string>
   <!--Key trust-->
+  <string name="key_trust_no_cloud_evidence">이 키의 신뢰성에 대해 인터넷에서 어떤한 증거도 찾을 수없습니다.</string>
+  <string name="key_trust_start_cloud_search">검색 시작</string>
+  <string name="key_trust_results_prefix">Keybase.io는 이 키의 소유자임을 주장하는 \"증명\"을 제공합니다.</string>
   <!--keybase proof stuff-->
+  <string name="keybase_narrative_twitter">%s으/로 트위터에 올리기</string>
+  <string name="keybase_narrative_reddit">%s으/로 Reddit에 게시</string>
+  <string name="keybase_narrative_hackernews">%s으/로 Coinbase에 게시</string>
+  <string name="keybase_reddit_proof">JSON 파일</string>
   <string name="keybase_verify">검증</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">비밀번호 변경</string>
+  <string name="edit_key_action_add_identity">신원 추가</string>
+  <string name="edit_key_action_add_subkey">하위키 추가</string>
+  <string-array name="edit_key_edit_user_id">
+    <item>기본 신분으로 변경</item>
+    <item>신원 폐기</item>
+  </string-array>
+  <string-array name="edit_key_edit_user_id_revert_revocation">
+    <item>폐기 취소</item>
+  </string-array>
+  <string name="edit_key_edit_user_id_revoked">이 신분이 폐기되었습니다. 이것을 복원할 수 없습니다.</string>
+  <string-array name="edit_key_edit_subkey">
+    <item>만료기한 변경</item>
+    <item>하위키 폐기</item>
+    <item>하위키 제거</item>
+  </string-array>
+  <string name="edit_key_new_subkey">새로운 하위키</string>
+  <string name="edit_key_error_add_identity">하나 이상의 신원을 추가하세요!</string>
+  <string name="edit_key_error_add_subkey">한개 이상의 하위키를 추가하세요!</string>
+  <string name="edit_key_error_bad_security_token_algo">보안 토큰이 알고리즘을 지원하지 않습니다!</string>
+  <string name="edit_key_error_bad_security_token_size">2048 비트보다 낮은 RSA 키는 OpenPGP 카드 스펙 3.x 이후 보안 토큰에서 지원되지 않습니다!</string>
   <!--Create key-->
   <string name="create_key_upload">인터넷과 동기화</string>
   <string name="create_key_empty">해당 필드는 필수입니다</string>
   <string name="create_key_passphrases_not_equal">패스워드가 일치하지 않습니다</string>
+  <string name="create_key_rsa">(3 하위키, RSA, 4096 bit)</string>
+  <string name="create_key_passphrase_text">강력한 암호를 선택하십시오. 장치를 도난 당하면 키를 보호합니다.</string>
+  <string name="create_key_hint_full_name">전체 이름 또는 별명</string>
+  <string name="create_key_edit">키 환경설정 변경</string>
+  <string name="create_key_add_email">이메일 주소 추가</string>
+  <string name="create_key_add_email_text">추가적 이메일 주소는 이 키와 연관되어 있으며 보안 통신에 사용될 수 있습니다.</string>
+  <string name="create_key_email_already_exists_text">이메일 주소가 이미 추가되어 있습니다.</string>
+  <string name="create_key_email_empty_email">이메일 주소는 비워 둘 수 없습니다.</string>
+  <string name="create_key_yubi_key_pin_text">숫자 6 개의 PIN을 선택하세요.</string>
+  <string name="create_key_yubi_key_admin_pin_text">관리자 PIN을 적어 안전한 곳에 보관하십시오 (잘못된 PIN을 3 번 사용했을 때 필요).</string>
   <string name="create_key_yubi_key_pin">PIN</string>
+  <string name="create_key_yubi_key_admin_pin">관리자 PIN</string>
+  <string name="create_key_yubi_key_pin_repeat">PIN 반복</string>
+  <string name="create_key_yubi_key_pin_not_correct">PIN이 올바르지 않습니다!</string>
+  <string name="create_key_yubi_key_pin_too_short">PIN은 최소 6 자리 이상이어야 합니다!</string>
+  <string name="create_key_yubi_key_pin_insecure">000000, 123456 이나 이와 유사한 조합이 아닌 보안 PIN을 선택하십시오 (가장 많이 선택되는 상위 20 개의 PIN은 허용되지 않습니다).</string>
+  <string name="create_key_yubi_key_algorithm_text">각 키에 대한 알고리즘을 선택하십시오.</string>
+  <string name="create_key_yubi_key_algorithm_sign_text">키 서명</string>
+  <string name="create_key_yubi_key_algorithm_dec_text">키 복호화</string>
+  <string name="create_key_yubi_key_algorithm_auth_text">키 인증</string>
   <!--View key-->
+  <string name="view_key_my_key">내 키</string>
+  <string name="view_key_verified">키 확인됨</string>
+  <string name="view_key_unverified">확인되지 않음 : 키를 확인하기 위해 QR 코드를 스캔하십시오!</string>
+  <string name="view_key_fragment_no_system_contact">&lt;없음&gt;</string>
   <!--Add/Edit keyserver-->
+  <string name="add_keyserver_dialog_title">키서버 추가</string>
+  <string name="edit_keyserver_dialog_title">키서버 편집</string>
+  <string name="add_keyserver_connection_verified">연결이 확인되었습니다!</string>
+  <string name="add_keyserver_without_verification">키 서버가 확인없이 추가되었습니다.</string>
+  <string name="add_keyserver_invalid_url">잘못된 URL!</string>
+  <string name="add_keyserver_keyserver_not_trusted">Keyserver가 신뢰할 수있는 곳 중 하나가 아닙니다 (사용 가능한 고정된 인증서 없음)!</string>
+  <string name="add_keyserver_connection_failed">키서버 연결에 실패했습니다. URL과 인터넷 연결을 확인하십시오.</string>
+  <string name="keyserver_preference_deleted">%s 삭제됨</string>
+  <string name="keyserver_preference_cannot_delete_last">마지막 키서버는 삭제할 수 없습니다. 적어도 하나는 필요합니다!</string>
   <!--Add/Edit SmartPGP authority-->
+  <string name="add_smartpgp_authority_dialog_title">인증기관 추가</string>
+  <string name="show_smartpgp_authority_dialog_title">인증기관 편집</string>
   <!--Navigation Drawer-->
+  <string name="nav_keys">키</string>
+  <string name="nav_encrypt_decrypt">암호화/복호화</string>
   <string name="nav_apps">앱</string>
+  <string name="nav_backup">백업/복원</string>
+  <string name="nav_transfer">안전한 Wifi 전송</string>
   <!--hints-->
   <!--certs-->
   <string name="cert_none">없음</string>
   <string name="cert_verify_ok">확인</string>
+  <string name="cert_verify_failed">실패됨!</string>
+  <string name="cert_verify_error">오류!</string>
+  <string name="cert_verify_unavailable">열쇠를 사용할 수 없음</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <string name="msg_internal_error">내부 오류!</string>
+  <string name="msg_cancelled">작업 취소됨.</string>
   <!--Import Public log entries-->
+  <string name="msg_ip_apply_batch">삽입 배치 작업 적용중.</string>
+  <string name="msg_ip_bad_type_secret">공개적으로 비밀 키링을 가져 오려고 했습니다. 이것은 버그입니다. 파일을 보고 해주십시오!</string>
+  <string name="msg_ip_delete_old_fail">삭제된 오래된 키가 없습니다 (새 키를 만들까요?).</string>
+  <string name="msg_ip_delete_old_ok">데이터베이스로 부터 오래된 키 삭제됨</string>
+  <string name="msg_ip_encode_fail">인코딩 오류로 인해 작업에 실패</string>
+  <string name="msg_ip_error_io_exc">I/O 오류로 인해 작업에 실패</string>
+  <string name="msg_ip_error_op_exc">데이터베이스 오류로 인해 작업에 실패</string>
+  <string name="msg_ip_error_remote_ex">내부 오류로 인해 작업에 실패</string>
+  <string name="msg_ip_fingerprint_ok">지문 확인 OK</string>
+  <string name="msg_ip_merge_public">들여온 데이터를 기존의 공개 키링에 병합</string>
+  <string name="msg_ip_merge_secret">들여온 데이터를 기존의 비밀 키링에 병합</string>
+  <string name="msg_ip_subkey">하위키 %s 처리중</string>
+  <string name="msg_ip_subkey_expired">하위 키가 %s에 만료되었습니다.</string>
+  <string name="msg_ip_subkey_expires">하위 키는 %s에 만료됩니다.</string>
+  <string name="msg_ip_subkey_flags_unspecified">하위 키 플래그 : 지정되지 않음 (모두 가정함)</string>
+  <string name="msg_ip_subkey_flags_cesa">하위 키 플래그 : 인증, 암호화, 서명, 증명</string>
+  <string name="msg_ip_subkey_flags_cesx">하위 키 플래그 : 인증, 암호화, 서명</string>
+  <string name="msg_ip_subkey_flags_cexa">하위 키 플래그 : 인증, 암호화, 증명</string>
+  <string name="msg_ip_subkey_flags_cexx">하위 키 플래그 : 인증, 암호화</string>
+  <string name="msg_ip_subkey_flags_cxsa">하위 키 플래그 : 인증, 서명, 증명</string>
+  <string name="msg_ip_subkey_flags_cxsx">하위 키 플래그 : 인증, 서명</string>
+  <string name="msg_ip_subkey_flags_cxxa">하위 키 플래그 : 인증, 증명</string>
+  <string name="msg_ip_subkey_flags_cxxx">하위 키 플래그 : 인증</string>
+  <string name="msg_ip_subkey_flags_xesa">하위 키 플래그 : 암호화, 서명, 증명</string>
+  <string name="msg_ip_subkey_flags_xesx">하위 키 플래그 : 암호화, 서명</string>
+  <string name="msg_ip_subkey_flags_xexa">하위 키 플래그 : 암호화, 증명</string>
+  <string name="msg_ip_subkey_flags_xexx">하위 키 플래그 : 암호화</string>
+  <string name="msg_ip_subkey_flags_xxsa">하위 키 플래그 :서명, 증명</string>
+  <string name="msg_ip_subkey_flags_xxsx">하위 키 플래그 : 서명 </string>
+  <string name="msg_ip_subkey_flags_xxxa">하위 키 플래그 : 증명</string>
+  <string name="msg_ip_subkey_flags_xxxx">하위 키 플래그 : 없음</string>
+  <string name="msg_ip_success">성공적으로 공개 키링을 들여 왔습니다.</string>
+  <string name="msg_ip_reinsert_secret">비밀 키 재 삽입</string>
+  <string name="msg_ip_uid_cert_error">인증서 처리 중 오류가 발생했습니다!</string>
+  <string name="msg_ip_uid_cert_nonrevoke">이미 폐기 할 수없는 인증서를 가지고 있습니다. 건너 뜁니다.</string>
+  <string name="msg_ip_uid_cert_old">인증서가 이전보다 오래되어 건너 뜁니다.</string>
+  <string name="msg_ip_uid_cert_new">인증서가 더 최신이라, 이전 것을 대체합니다.</string>
+  <string name="msg_ip_uid_cert_good">%1$s에 의해 좋은 인증서를 찾았습니다.</string>
+  <string name="msg_ip_uid_cert_good_revoke">%1$s에 의해 좋은 인증서 폐기 발견</string>
+  <string name="msg_ip_uid_classifying_zero">사용자 ID 분류 (신뢰할 수있는 키 없음)</string>
+  <plurals name="msg_ip_uid_classifying">
+    <item quantity="other">사용자 ID 분류 (신뢰할 수있는 키 %s 사용중)</item>
+  </plurals>
+  <string name="msg_ip_uid_processing">사용자 ID %s 처리중</string>
+  <string name="msg_ip_uid_revoked">사용자 ID가 취소되었습니다</string>
+  <string name="msg_ip_uat_processing_image">이미지 형식의 사용자 속성 처리중</string>
+  <string name="msg_ip_uat_processing_unknown">알수 없는 형식의 사용자 속성 처리중</string>
+  <string name="msg_ip_uat_cert_error">인증서 처리 중 오류가 발생했습니다!</string>
+  <string name="msg_ip_uat_cert_nonrevoke">이미 폐기 할 수없는 인증서를 가지고 있습니다. 건너 뜁니다.</string>
+  <string name="msg_ip_uat_cert_old">인증서가 이전보다 오래되어 건너 뜁니다.</string>
+  <string name="msg_ip_uat_cert_new">인증서가 이전 버전을 대체하는 최신 버전입니다.</string>
+  <string name="msg_ip_uat_cert_good">%1$s에 의해 좋은 인증서를 찾았습니다.</string>
+  <string name="msg_ip_uat_cert_good_revoke">%1$s에 의해 좋은 인증서 폐기 발견</string>
+  <plurals name="msg_ip_uat_certs_unknown">
+    <item quantity="other">알 수없는 공개 키로 발행 된%s 개의 인증서 무시</item>
+  </plurals>
+  <string name="msg_ip_uat_classifying">사용자 속성 분류</string>
+  <string name="msg_ip_uat_revoked">사용자 속성 폐기됨</string>
+  <string name="msg_is_bad_type_public">비밀로 공개키를 들여오려고 했습니다. 이것은 버그로, 파일을 보고해 주세요!</string>
+  <string name="msg_is_bad_type_uncanon">정규화되지 않은 키링을 들여 오려고했습니다. 이것은 버그로, 파일을 신고 해주십시오!</string>
   <!--Import Secret log entries-->
+  <string name="msg_is_importing_subkeys">비밀 키를 처리 중</string>
+  <string name="msg_is_merge_public">들여온 데이터를 기존의 공개 키링에 병합</string>
+  <string name="msg_is_merge_secret">들여온 데이터를 기존의 비밀 키링에 병합</string>
+  <string name="msg_is_subkey_nonexistent">하위 키 %s을/를 비밀 키에서 사용할 수 없음</string>
+  <string name="msg_is_success">성공적으로 비밀 키링을 들여 왔습니다</string>
   <!--Keyring Canonicalization log entries-->
+  <string name="msg_kc_public">공개 키링 %s 정규화중</string>
+  <string name="msg_kc_secret">비밀 키링 %s 정규화중</string>
+  <string name="msg_kc_sub">하위키 %s 처리중</string>
+  <string name="msg_kc_success">키링 정규화 성공, 변경 없음</string>
+  <plurals name="msg_kc_success_bad">
+    <item quantity="other">키링 정규화 성공, %d개 잘못된 인증서 삭제됨</item>
+  </plurals>
+  <string name="msg_kc_success_bad_and_red">키링 정규화 성공, %1$s개의 잘못되고 %2$s개의 중복된 인증서 삭제됨</string>
+  <plurals name="msg_kc_success_redundant">
+    <item quantity="other">키링 정규화 성공, %d개 중복된 인증서 삭제됨</item>
+  </plurals>
+  <string name="msg_kc_uid_bad_err">사용자 ID \'%s\'에 잘못된 자체 인증서 제거중</string>
+  <string name="msg_kc_uid_bad_type">알수 없는 형식(%s)의 사용자 ID 인증서 삭제중</string>
+  <string name="msg_kc_uid_bad">사용자 ID \'%s\'에 잘못된 자체 인증서 제거중</string>
+  <string name="msg_kc_uid_cert_dup">사용자 ID \'%s\'에 오래된 자체 인증서 삭제중</string>
+  <string name="msg_kc_uid_foreign">\'%s\'에 의한 외부 사용자 ID 인증서 삭제중</string>
+  <string name="msg_kc_uid_revoke_dup">사용자 ID \'%s\'에 중복 해지 인증서 제거</string>
+  <string name="msg_kc_uid_revoke_old">사용자 ID \'%s\'에 오래된 해지 인증서 제거</string>
+  <string name="msg_kc_uid_no_cert">사용자 ID \'%s\'에 유효한 자체 인증서가 없습니다. 링에서 제거하십시오.</string>
+  <string name="msg_kc_uid_remove">유효하지 않은 사용자 ID \'%s\' 삭제중</string>
+  <string name="msg_kc_uid_dup">중복된 사용자 ID \'%s\' 삭제중. 키링에 그 중 두 개가 들어 있었습니다. 이로 인해 인증서가 누락 될 수 있습니다!</string>
+  <string name="msg_kc_uid_too_many">사용자 ID \'%s\' 삭제중. 100개 이상의 사용자 ID를 가져올 수 없습니다!</string>
+  <string name="msg_kc_uid_warn_encoding">사용자 ID를 UTF-8로 검증할 수 없습니다!</string>
+  <string name="msg_kc_uat_jpeg">JPEG형식의 사용자 속성 처리중</string>
+  <string name="msg_kc_uat_unknown">알수 없는 형식의 사용자 속성 처리중</string>
+  <string name="msg_kc_uat_bad_err">사용자 속성에 대한 잘못된 자체 인증서 제거</string>
+  <string name="msg_kc_uat_bad">사용자 속성에 대한 잘못된 자체 인증서 제거</string>
+  <string name="msg_kc_uat_warn_encoding">사용자 ID를 UTF-8로 검증할 수 없습니다!</string>
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
+  <string name="msg_mf_error_all_keys_stripped">모든 키가 제거되었습니다!</string>
+  <string name="msg_mf_error_sub_stripped">제거된 하위 키%s은/는 수정할 수 없습니다!</string>
+  <string name="msg_mf_subkey_strip">하위키 %s 제거중</string>
   <!--Edit Key (higher level than modify)-->
   <!--Promote key-->
   <!--Other messages used in OperationLogs-->
@@ -547,6 +815,7 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
+  <string name="msg_import_fetch_facebook">Facebook으로 부터 검색: %s</string>
   <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_error_specific">%s</string>
@@ -587,6 +856,9 @@
   <string name="linked_button_confirm">확인</string>
   <string name="linked_button_view">보기</string>
   <string name="linked_text_error">에러</string>
+  <string name="linked_progress_auth_github">GitHub로 인증 ...</string>
+  <string name="linked_error_auth_failed">인증에 실패했습니다!</string>
+  <string name="linked_webview_title_github">GitHub 인증</string>
   <string name="share_log_dialog_share_button">공유</string>
   <string name="share_log_dialog_cancel_button">취소</string>
   <string name="menu_uids_save">저장</string>
@@ -601,9 +873,16 @@
   <string name="button_import">가져오기</string>
   <string name="transfer_status_connected">접속됨</string>
   <string name="transfer_connecting">접속중...</string>
+  <string name="first_time_secure_wifi_transfer">안전한 와이파이 전송</string>
+  <string name="menu_secure_wifi_transfer">안전한 와이파이 전송</string>
   <string name="transfer_confirm_cancel">취소</string>
   <string name="transfer_confirm_ok">Send</string>
   <string name="token_reset_confirm_ok">다시 놓기</string>
   <string name="token_action_import">가져오기</string>
   <string name="token_unlock_ok">잠금 해제</string>
+  <string name="token_hint_admin_pin">관리자 PIN</string>
+  <string name="msg_trust">신뢰 정보 갱신중...</string>
+  <string name="msg_trust_ok">갱신 작업에 성공했습니다!</string>
+  <string name="msg_trust_initialize">키 서명 캐쉬 초기화중</string>
+  <string name="msg_trust_key">%s에 의해 서명 된 키 갱신중</string>
 </resources>

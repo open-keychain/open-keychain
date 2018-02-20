@@ -51,7 +51,6 @@
   <string name="section_share_key">Clave</string>
   <string name="section_key_server">Servidor de claves</string>
   <string name="section_fingerprint">Huella digital</string>
-  <string name="section_phrases">Frase</string>
   <string name="section_encrypt">Cifrar</string>
   <string name="section_current_expiry">Expiración actual</string>
   <string name="section_new_expiry">Nueva expiración</string>
@@ -71,7 +70,6 @@
   <string name="btn_back">Atrás</string>
   <string name="btn_no">No</string>
   <string name="btn_match">Coinciden huellas digitales</string>
-  <string name="btn_match_phrases">Coinciden frases</string>
   <string name="btn_share_encrypted_signed">Cifrar, firmar y compartir texto </string>
   <string name="btn_copy_encrypted_signed">Cifrar, firmar y copiar texto</string>
   <string name="btn_paste_encrypted_signed">Cifrar, firmar y pegar texto</string>
@@ -220,6 +218,7 @@
   <string name="passphrase_for_symmetric_encryption">Ingrese una contraseña</string>
   <string name="passphrase_for_backup">Ingrese un código de respaldo</string>
   <string name="passphrase_for">Ingrese una contraseña para \'%s\'</string>
+  <string name="passphrase_for_any">Ingrese una contraseña</string>
   <string name="pin_for">Ingrese un NIP para \'%s\'</string>
   <!--errors
          no punctuation, all lowercase,
@@ -246,6 +245,7 @@
   <!--Import-->
   <string name="import_tab_keyserver">Servidor de claves</string>
   <string name="import_tab_cloud">Búsqueda de clave</string>
+  <string name="btn_import">Importar</string>
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
@@ -319,6 +319,7 @@
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="nfc_settings">Ajustes</string>
   <string name="snack_security_token_view">Ve</string>
+  <string name="snack_security_token_import">Importar</string>
   <string name="security_token_error">Error: %s</string>
   <string name="linked_create_verify">Verificar</string>
   <!--Other Linked Identity strings-->
@@ -333,7 +334,9 @@
   <string name="prompt_fidesmo_app_install_button_negative">Cancelar</string>
   <string name="redirect_import_key_no">Cerrar</string>
   <string name="button_cancel">Cancelar</string>
+  <string name="button_import">Importar</string>
   <string name="transfer_confirm_cancel">Cancelar</string>
   <string name="transfer_confirm_ok">Enviar</string>
+  <string name="token_action_import">Importar</string>
   <string name="token_unlock_ok">Abrir</string>
 </resources>

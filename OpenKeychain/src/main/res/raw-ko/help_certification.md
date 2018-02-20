@@ -3,7 +3,7 @@
 ## 키 확인
 확인이 없이 정말 키가 특정 사람에게 속하는 지 확신할 수 없습니다.
 가장 쉽게 키를 확인하는 방법은 QR 코드를 스캔하거나 NFC를 통해 키를 교환하는 것 입니다.
-To confirm keys between more than two persons, we suggest using the key exchange method available for your keys.
+둘 이상의 사람 사이에서 키를 확인하려면, 키에 사용할 수있는 키 교환 방법을 사용하길 권합니다.
 
 ## 키 
 

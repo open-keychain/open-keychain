@@ -58,23 +58,3 @@ Licencia: GPLv3+
   * Signe Rüsch
   * Sreeram Boyapati
   * 'steelman'
-
-[//]: # (NOTA: Orden alfabético)
-
-## Librerías
-  * [Librerías de Soporte Android](http://developer.android.com/tools/support-library/index.html) (Licencia Apache v2)
-  * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Licencia Apache v2)
-  * [HtmlTextView](https://github.com/sufficientlysecure/html-textview) (Licencia Apache v2)
-  * [KeybaseLib](https://github.com/timbray/KeybaseLib) (Licencia Apache v2)
-  * [Markdown4J](https://github.com/jdcasey/markdown4j) (Licencia Apache v2)
-  * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Licencia Apache v2)
-  * [MiniDNS](https://github.com/rtreffer/minidns) (Licencia Apache v2)
-  * [OkHttp](https://square.github.io/okhttp/) (Licencia Apache v2)
-  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Material Design) (Licencia Apache v2)
-  * [Librería SafeSlinger Exchange](https://github.com/SafeSlingerProject/exchange-android) (Licencia MIT)
-  * [Snackbar](https://github.com/nispok/snackbar) (Licencia MIT)
-  * [BouncyCastle](https://github.com/open-keychain/bouncycastle) (Licencia MIT X11)
-  * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Licencia Apache v2)
-  * [TokenAutoComplete](https://github.com/splitwise/TokenAutoComplete) (Licencia Apache v2)
-  * [ZXing](https://github.com/zxing/zxing) (Licencia Apache v2)
-  * [ZXing Android Minimal](https://github.com/journeyapps/zxing-android-embedded) (Licencia Apache v2)

@@ -2,8 +2,8 @@
 
 ## 4.8
 
-  * Improved support for USB tokens: Gnuk, Nitrokey models, YubiKey 4 models
-  * Feature to find the position of the device's NFC reader
+  * Улучшена поддержка USB-токенов: модели Gnuk, Nitrokey, YubiKey 4
+  * Возможность поиска местоположения NFC-ридера устройства
 
 ## 4.7
 

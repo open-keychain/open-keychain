@@ -1,9 +1,9 @@
-[//]: # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
+[//]: # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
 ## 4.8
 
-  * Improved support for USB tokens: Gnuk, Nitrokey models, YubiKey 4 models
-  * Feature to find the position of the device's NFC reader
+  * Prise en charge améliorée des jetons USB : Gnuk, modèles Nitrokey, modèles YubiKey 4
+  * Fonction pour trouver l’emplacement du lecteur CCP de l’appareil
 
 ## 4.7
 
@@ -41,7 +41,7 @@
   * Prise en charge expérimentale du chiffrement à courbe elliptique avec des jetons de sécurité
   * Nouvelle conception de l’écran d’importation des clés
   * Amélioration de la conception des listes de clés
-  * Prise en charge des adresses « onion » de serveurs de clés
+  * Prise en charge des adresses « onion » de serveurs de clés
 
 
 ## 4.1
@@ -112,7 +112,7 @@
 
 ## 3.2
 
-  * Première version avec prise en charge complète de la YubiKey, proposée dans l’interface utilisateur : modifier les clés, relier la YubiKey aux clés...
+  * Première version avec prise en charge complète de la YubiKey, proposée dans l’interface utilisateur : modifier les clés, relier la YubiKey aux clés…
   * Conception matérielle
   * Intégration de la lecture de code QR (nouvelles permissions exigées)
   * Amélioration de l’assistant de création de clé
@@ -120,7 +120,7 @@
   * Android 4 exigé
   * Nouvelle conception de l’écran des clés
   * Simplification des préférences cryptographiques, meilleure sélection de codes de chiffrement sécurisés
-  * API : signatures détachées, sélection libre de la clé de signature...
+  * API : signatures détachées, sélection libre de la clé de signature…
   * Correctif - Certaines clés valides apparaissaient comme révoquées ou expirées
   * Ne pas accepter de signatures par des sous-clés expirées ou révoquées
   * Prise en charge de keybase.io dans la vue avancée
@@ -212,7 +212,7 @@ Cette version ne serait pas possible sans le travail de Vincent Breitmoser (GSoC
 
 ## 2.7
 
-  * Violet ! (Dominik, Vincent)
+  * Violet ! (Dominik, Vincent)
   * Nouvelle présentation de la visualisation des clés (Dominik, Vincent)
   * Nouveaux boutons Android plats (Dominik, Vincent)
   * Correctifs de l’API (Dominik)
@@ -242,7 +242,7 @@ Cette version ne serait pas possible sans le travail de Vincent Breitmoser (GSoC
 
 
 ## 2.4
-Merci à tous les participants de « Google Summer of Code 2014 » qui ont rendu cette version riche en fonctions et sans bogue !
+Merci à tous les participants de « Google Summer of Code 2014 » qui ont rendu cette version riche en fonctions et sans bogue !
 À part plusieurs petits correctifs, un nombre notable de correctifs ont été apportés par les personnes suivantes (par ordre alphabétique) :
 Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.
 
@@ -305,7 +305,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 ## 2.0
 
   * Conception complètement repensée
-  * Partage de clés publiques par codes QR, faisceau NFC
+  * Partage de clés publiques par codes QR, faisceau CCP
   * Signer les clés
   * Téléverser les clés vers le serveur
   * Corrige des problèmes d’importation

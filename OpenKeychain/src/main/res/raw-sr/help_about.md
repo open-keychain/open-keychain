@@ -58,23 +58,3 @@
   * Signe Rüsch
   * Sreeram Boyapati
   * „steelman“
-
-[//]:
-
-## Библиотеке
-  * [Андроидове библиотеке подршке](http://developer.android.com/tools/support-library/index.html) (Апачи лиценца в2)
-  * [FloatingActionButton](https://github.com/futuresimple/android-floating-action-button) (Апачи лиценца в2)
-  * [HtmlTextView](https://github.com/sufficientlysecure/html-textview) (Апачи лиценца в2)
-  * [KeybaseLib](https://github.com/timbray/KeybaseLib) (Апачи лиценца в2)
-  * [Markdown4J](https://github.com/jdcasey/markdown4j) (Апачи лиценца в2)
-  * [MaterialDrawer](https://github.com/mikepenz/MaterialDrawer) (Апачи лиценца в2)
-  * [MiniDNS](https://github.com/rtreffer/minidns) (Апачи лиценца в2)
-  * [OkHttp](https://square.github.io/okhttp/) (Апачи лиценца в2)
-  * [PagerSlidingTabStrip](https://github.com/jpardogo/PagerSlidingTabStrip) (Материјал дизајн) (Апачи лиценца в2)
-  * [SafeSlinger Exchange library](https://github.com/SafeSlingerProject/exchange-android) (МИТ лиценца)
-  * [Snackbar](https://github.com/nispok/snackbar) (МИТ лиценца)
-  * [BouncyCastle](https://github.com/open-keychain/bouncycastle) (МИТ Икс11 лиценца)
-  * [StickyListHeaders](https://github.com/emilsjolander/StickyListHeaders) (Апачи лиценца в2)
-  * [TokenAutoComplete](https://github.com/splitwise/TokenAutoComplete) (Апачи лиценца в2)
-  * [ZXing](https://github.com/zxing/zxing) (Апачи лиценца в2)
-  * [ZXing Android Minimal](https://github.com/journeyapps/zxing-android-embedded) (Апачи лиценца в2)
