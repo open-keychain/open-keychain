@@ -37,6 +37,7 @@ import org.sufficientlysecure.keychain.Constants.Pref;
 import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
+
 import timber.log.Timber;
 
 
@@ -424,75 +425,30 @@ public class Preferences {
     }
 
     public void upgradePreferences(Context context) {
-        Timber.d("Upgrading preferences…");
         int oldVersion = mSharedPreferences.getInt(Constants.Pref.PREF_VERSION, 0);
         boolean requiresUpgrade = oldVersion < Constants.Defaults.PREF_CURRENT_VERSION;
 
         if (requiresUpgrade) {
+            Timber.d("Upgrading preferences from %s to %s…", oldVersion, Constants.Defaults.PREF_CURRENT_VERSION);
+
             switch (oldVersion) {
                 case 1:
-                    // fall through
                 case 2:
-                    // fall through
                 case 3: {
-                    // migrate keyserver to hkps
-                    ArrayList<HkpKeyserverAddress> servers = getKeyServers();
-                    ListIterator<HkpKeyserverAddress> it = servers.listIterator();
-                    while (it.hasNext()) {
-                        HkpKeyserverAddress server = it.next();
-                        if (server == null) {
-                            continue;
-                        }
-                        switch (server.getUrl()) {
-                            case "pool.sks-keyservers.net": {
-                                // use HKPS!
-                                it.set(HkpKeyserverAddress.createFromUri("hkps://hkps.pool.sks-keyservers.net"));
-                                break;
-                            }
-                            case "pgp.mit.edu": {
-                                // use HKPS!
-                                it.set(HkpKeyserverAddress.createFromUri("hkps://pgp.mit.edu"));
-                                break;
-                            }
-                            case "subkeys.pgp.net": {
-                                // remove, because often down and no HKPS!
-                                it.remove();
-                                break;
-                            }
-                        }
-
-                    }
-                    setKeyServers(servers);
+                    migrateToHkps();
                 }
-                // fall through
                 case 4: {
                     setTheme(Constants.Pref.Theme.DEFAULT);
                 }
-                // fall through
                 case 5: {
                     KeyserverSyncAdapterService.enableKeyserverSync(context);
                 }
-                // fall through
-                case 6: {
-                }
-                // fall through
+                case 6:
                 case 7: {
-                    // add onion address to sks-keyservers.net
-                    ArrayList<HkpKeyserverAddress> servers = getKeyServers();
-                    ListIterator<HkpKeyserverAddress> it = servers.listIterator();
-                    while (it.hasNext()) {
-                        HkpKeyserverAddress server = it.next();
-                        if (server == null) {
-                            continue;
-                        }
-                        if ("hkps://hkps.pool.sks-keyservers.net".equals(server.getUrl())) {
-                            it.set(HkpKeyserverAddress.createWithOnionProxy(
-                                    "hkps://hkps.pool.sks-keyservers.net",
-                                    "hkp://jirk5u4osbsr34t5.onion"));
-                        }
-
-                    }
-                    setKeyServers(servers);
+                    addOnionToSks();
+                }
+                case 8: {
+                    replaceDefaultKeyserverWithUbuntu();
                 }
             }
 
@@ -501,6 +457,68 @@ public class Preferences {
                     .putInt(Constants.Pref.PREF_VERSION, Constants.Defaults.PREF_CURRENT_VERSION)
                     .commit();
         }
+    }
+
+    private void migrateToHkps() {
+        ArrayList<HkpKeyserverAddress> servers = getKeyServers();
+        ListIterator<HkpKeyserverAddress> it = servers.listIterator();
+        while (it.hasNext()) {
+            HkpKeyserverAddress server = it.next();
+            if (server == null) {
+                continue;
+            }
+            switch (server.getUrl()) {
+                case "pool.sks-keyservers.net": {
+                    // use HKPS!
+                    it.set(HkpKeyserverAddress.createFromUri("hkps://hkps.pool.sks-keyservers.net"));
+                    break;
+                }
+                case "pgp.mit.edu": {
+                    // use HKPS!
+                    it.set(HkpKeyserverAddress.createFromUri("hkps://pgp.mit.edu"));
+                    break;
+                }
+                case "subkeys.pgp.net": {
+                    // remove, because often down and no HKPS!
+                    it.remove();
+                    break;
+                }
+            }
+
+        }
+        setKeyServers(servers);
+    }
+
+    private void addOnionToSks() {
+        ArrayList<HkpKeyserverAddress> servers = getKeyServers();
+        ListIterator<HkpKeyserverAddress> it = servers.listIterator();
+        while (it.hasNext()) {
+            HkpKeyserverAddress server = it.next();
+            if (server == null) {
+                continue;
+            }
+            if ("hkps://hkps.pool.sks-keyservers.net".equals(server.getUrl())) {
+                it.set(HkpKeyserverAddress.createWithOnionProxy(
+                        "hkps://hkps.pool.sks-keyservers.net",
+                        "hkp://jirk5u4osbsr34t5.onion"));
+            }
+
+        }
+        setKeyServers(servers);
+    }
+
+    private void replaceDefaultKeyserverWithUbuntu() {
+        ArrayList<HkpKeyserverAddress> servers = getKeyServers();
+        boolean oldDefaults = "hkps://hkps.pool.sks-keyservers.net".equalsIgnoreCase(servers.get(0).getUrl()) ||
+                "hkps://pgp.mit.edu".equalsIgnoreCase(servers.get(0).getUrl());
+
+        HkpKeyserverAddress ubuntuKeyserver = HkpKeyserverAddress.createFromUri("hkps://keyserver.ubuntu.com");
+        if (oldDefaults) {
+            servers.add(0, ubuntuKeyserver);
+        } else if (!servers.contains(ubuntuKeyserver)) {
+            servers.add(ubuntuKeyserver);
+        }
+        setKeyServers(servers);
     }
 
     public void clear() {
