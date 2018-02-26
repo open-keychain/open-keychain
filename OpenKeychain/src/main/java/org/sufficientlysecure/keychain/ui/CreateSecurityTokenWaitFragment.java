@@ -33,7 +33,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 
-import org.sufficientlysecure.keychain.BuildConfig;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
@@ -57,7 +57,7 @@ public class CreateSecurityTokenWaitFragment extends Fragment {
             ((BaseSecurityTokenActivity) this.getActivity()).checkDeviceConnection();
         }
 
-        setHasOptionsMenu(BuildConfig.DEBUG);
+        setHasOptionsMenu(Constants.DEBUG);
     }
 
     @Override

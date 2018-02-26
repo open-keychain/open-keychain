@@ -178,7 +178,7 @@ public class KeychainApplication extends Application {
 
     private void updateLoggingStatus() {
         Timber.uprootAll();
-        boolean enableDebugLogging = BuildConfig.DEBUG;
+        boolean enableDebugLogging = Constants.DEBUG;
         if (enableDebugLogging) {
             Timber.plant(new DebugTree());
         }
