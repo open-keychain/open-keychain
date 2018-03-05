@@ -59,11 +59,13 @@ public class EncryptTextFragment
 
     public static final String ARG_TEXT = "text";
     public static final String ARG_USE_COMPRESSION = "use_compression";
+    public static final String ARG_SELF_ENCRYPT = "self_encrypt";
     public static final String ARG_RETURN_PROCESS_TEXT = "return_process_text";
 
     private boolean mShareAfterEncrypt;
     private boolean mReturnProcessTextAfterEncrypt;
     private boolean mUseCompression;
+    private boolean mSelfEncrypt;
     private boolean mHiddenRecipients = false;
 
     private String mMessage = "";
@@ -128,6 +130,7 @@ public class EncryptTextFragment
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(ARG_USE_COMPRESSION, mUseCompression);
+        outState.putBoolean(ARG_SELF_ENCRYPT, mSelfEncrypt);
     }
 
     @Override
@@ -142,11 +145,16 @@ public class EncryptTextFragment
 
         Bundle args = savedInstanceState == null ? getArguments() : savedInstanceState;
 
-        mUseCompression = args.getBoolean(ARG_USE_COMPRESSION, true);
         if (args.containsKey(ARG_USE_COMPRESSION)) {
             mUseCompression = args.getBoolean(ARG_USE_COMPRESSION, true);
         } else {
             mUseCompression = prefs.getTextUseCompression();
+        }
+
+        if (args.containsKey(ARG_SELF_ENCRYPT)) {
+            mSelfEncrypt = args.getBoolean(ARG_SELF_ENCRYPT, true);
+        } else {
+            mSelfEncrypt = prefs.getTextSelfEncrypt();
         }
 
         setHasOptionsMenu(true);
@@ -159,6 +167,7 @@ public class EncryptTextFragment
         inflater.inflate(R.menu.encrypt_text_fragment, menu);
 
         menu.findItem(R.id.check_enable_compression).setChecked(mUseCompression);
+        menu.findItem(R.id.check_enable_self_encrypt).setChecked(mSelfEncrypt);
 
         if (mReturnProcessTextAfterEncrypt) {
             menu.findItem(R.id.encrypt_paste).setVisible(true);
@@ -172,6 +181,10 @@ public class EncryptTextFragment
         switch (item.getItemId()) {
             case R.id.check_enable_compression: {
                 toggleEnableCompression(item, !item.isChecked());
+                break;
+            }
+            case R.id.check_enable_self_encrypt: {
+                toggleEnableSelfEncrypt(item, !item.isChecked());
                 break;
             }
 //            case R.id.check_hidden_recipients: {
@@ -201,6 +214,28 @@ public class EncryptTextFragment
             }
         }
         return true;
+    }
+
+    public void toggleEnableSelfEncrypt(MenuItem item, final boolean selfEncrypt) {
+
+        mSelfEncrypt = selfEncrypt;
+        item.setChecked(selfEncrypt);
+
+        Notify.create(getActivity(), selfEncrypt
+                        ? R.string.snack_self_encrypt_on
+                        : R.string.snack_self_encrypt_off,
+                Notify.LENGTH_LONG, Style.OK, new ActionListener() {
+                    @Override
+                    public void onAction() {
+                        Preferences.getPreferences(getActivity()).setTextSelfEncrypt(selfEncrypt);
+                        Notify.create(getActivity(), selfEncrypt
+                                        ? R.string.snack_self_encrypt_on
+                                        : R.string.snack_self_encrypt_off,
+                                Notify.LENGTH_SHORT, Style.OK, null, R.string.btn_saved)
+                                .show(EncryptTextFragment.this, false);
+                    }
+                }, R.string.btn_save_default).show(this);
+
     }
 
     public void toggleEnableCompression(MenuItem item, final boolean compress) {
@@ -264,7 +299,7 @@ public class EncryptTextFragment
 
             data.setEncryptionMasterKeyIds(encryptionKeyIds);
             data.setSignatureMasterKeyId(signingKeyId);
-            if (signingKeyId != Constants.key.none) {
+            if (signingKeyId != Constants.key.none && mSelfEncrypt) {
                 data.setAdditionalEncryptId(signingKeyId);
             }
         } else {
