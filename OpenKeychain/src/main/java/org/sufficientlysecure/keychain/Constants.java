@@ -129,6 +129,7 @@ public final class Constants {
         public static final String USE_NUMKEYPAD_FOR_SECURITY_TOKEN_PIN = "useNumKeypadForYubikeyPin";
         public static final String ENCRYPT_FILENAMES = "encryptFilenames";
         public static final String FILE_USE_COMPRESSION = "useFileCompression";
+        public static final String FILE_SELF_ENCRYPT = "fileSelfEncrypt";
         public static final String TEXT_USE_COMPRESSION = "useTextCompression";
         public static final String USE_ARMOR = "useArmor";
         // proxy settings
