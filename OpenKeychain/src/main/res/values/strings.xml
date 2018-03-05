@@ -187,6 +187,7 @@
     <string name="label_selected_smartpgp_authority_title">"Selected authority"</string>
     <string name="label_preferred">"preferred"</string>
     <string name="label_enable_compression">"Enable compression"</string>
+    <string name="label_enable_self_encrypt">"Encrypt to signer"</string>
     <string name="label_encrypt_filenames">"Encrypt filenames"</string>
     <string name="label_hidden_recipients">"Hide recipients"</string>
     <string name="label_smartpgp_verify">SmartPGP: Verify certificates</string>
@@ -1603,6 +1604,8 @@
     <string name="snack_armor_off">"Output encoded as Binary."</string>
     <string name="snack_compression_on">"Compression <b>enabled</b>."</string>
     <string name="snack_compression_off">"Compression <b>disabled</b>."</string>
+    <string name="snack_self_encrypt_on">"Encrypt to signer <b>enabled</b>."</string>
+    <string name="snack_self_encrypt_off">"Encrypt to signer <b>disabled</b>."</string>
     <string name="error_loading_keys">"Error loading keys!"</string>
     <string name="error_empty_log">"(error, empty log)"</string>
     <string name="error_reading_text">"Could not read input to decrypt!"</string>
