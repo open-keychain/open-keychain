@@ -217,6 +217,16 @@ public class Preferences {
         return mSharedPreferences.getBoolean(Pref.TEXT_USE_COMPRESSION, true);
     }
 
+    public void setTextSelfEncrypt(boolean selfEncrypt) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.TEXT_SELF_ENCRYPT, selfEncrypt);
+        editor.commit();
+    }
+
+    public boolean getTextSelfEncrypt() {
+        return mSharedPreferences.getBoolean(Pref.TEXT_SELF_ENCRYPT, true);
+    }
+
     public String getTheme() {
         return mSharedPreferences.getString(Pref.THEME, Pref.Theme.LIGHT);
     }
