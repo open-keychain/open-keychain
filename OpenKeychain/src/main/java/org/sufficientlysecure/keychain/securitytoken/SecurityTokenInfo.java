@@ -33,7 +33,7 @@ import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 import org.bouncycastle.util.encoders.Hex;
-import org.sufficientlysecure.keychain.BuildConfig;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 
@@ -76,7 +76,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
     }
 
     public static SecurityTokenInfo newInstanceDebugKeyserver() {
-        if (!BuildConfig.DEBUG) {
+        if (!Constants.DEBUG) {
             throw new UnsupportedOperationException("This operation is only available in debug builds!");
         }
         return SecurityTokenInfo.create(TransportType.NFC, TokenType.UNKNOWN,
@@ -85,7 +85,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
     }
 
     public static SecurityTokenInfo newInstanceDebugUri() {
-        if (!BuildConfig.DEBUG) {
+        if (!Constants.DEBUG) {
             throw new UnsupportedOperationException("This operation is only available in debug builds!");
         }
         return SecurityTokenInfo.create(TransportType.NFC, TokenType.UNKNOWN,
@@ -94,7 +94,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
     }
 
     public static SecurityTokenInfo newInstanceDebugLocked() {
-        if (!BuildConfig.DEBUG) {
+        if (!Constants.DEBUG) {
             throw new UnsupportedOperationException("This operation is only available in debug builds!");
         }
         return SecurityTokenInfo.create(TransportType.NFC, TokenType.UNKNOWN,
@@ -103,7 +103,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
     }
 
     public static SecurityTokenInfo newInstanceDebugLockedHard() {
-        if (!BuildConfig.DEBUG) {
+        if (!Constants.DEBUG) {
             throw new UnsupportedOperationException("This operation is only available in debug builds!");
         }
         return SecurityTokenInfo.create(TransportType.NFC, TokenType.UNKNOWN,
