@@ -197,6 +197,16 @@ public class Preferences {
         return mSharedPreferences.getBoolean(Pref.FILE_USE_COMPRESSION, true);
     }
 
+    public void setFilesEncryptToSelf(boolean selfEncrypt) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.FILE_SELF_ENCRYPT, selfEncrypt);
+        editor.commit();
+    }
+
+    public boolean getFilesEncryptToSelf() {
+        return mSharedPreferences.getBoolean(Pref.FILE_SELF_ENCRYPT, true);
+    }
+
     public void setTextUseCompression(boolean compress) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putBoolean(Pref.TEXT_USE_COMPRESSION, compress);
@@ -205,6 +215,16 @@ public class Preferences {
 
     public boolean getTextUseCompression() {
         return mSharedPreferences.getBoolean(Pref.TEXT_USE_COMPRESSION, true);
+    }
+
+    public void setTextSelfEncrypt(boolean selfEncrypt) {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putBoolean(Pref.TEXT_SELF_ENCRYPT, selfEncrypt);
+        editor.commit();
+    }
+
+    public boolean getTextSelfEncrypt() {
+        return mSharedPreferences.getBoolean(Pref.TEXT_SELF_ENCRYPT, true);
     }
 
     public String getTheme() {

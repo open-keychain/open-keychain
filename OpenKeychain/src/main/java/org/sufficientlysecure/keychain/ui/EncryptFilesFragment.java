@@ -87,6 +87,7 @@ public class EncryptFilesFragment
     public static final String ARG_DELETE_AFTER_ENCRYPT = "delete_after_encrypt";
     public static final String ARG_ENCRYPT_FILENAMES = "encrypt_filenames";
     public static final String ARG_USE_COMPRESSION = "use_compression";
+    public static final String ARG_SELF_ENCRYPT = "self_encrypt";
     public static final String ARG_USE_ASCII_ARMOR = "use_ascii_armor";
     public static final String ARG_URIS = "uris";
 
@@ -96,6 +97,7 @@ public class EncryptFilesFragment
 
     private boolean mUseArmor;
     private boolean mUseCompression;
+    private boolean mSelfEncrypt;
     private boolean mDeleteAfterEncrypt;
     private boolean mEncryptFilenames;
     private boolean mHiddenRecipients = false;
@@ -176,6 +178,7 @@ public class EncryptFilesFragment
         outState.putBoolean(ARG_DELETE_AFTER_ENCRYPT, mDeleteAfterEncrypt);
         outState.putBoolean(ARG_USE_ASCII_ARMOR, mUseArmor);
         outState.putBoolean(ARG_USE_COMPRESSION, mUseCompression);
+        outState.putBoolean(ARG_SELF_ENCRYPT, mSelfEncrypt);
         outState.putBoolean(ARG_ENCRYPT_FILENAMES, mEncryptFilenames);
 
         outState.putParcelableArrayList(ARG_URIS, mFilesAdapter.getAsArrayList());
@@ -200,6 +203,12 @@ public class EncryptFilesFragment
             mUseCompression = args.getBoolean(ARG_USE_COMPRESSION, true);
         } else {
             mUseCompression = prefs.getFilesUseCompression();
+        }
+
+        if (args.containsKey(ARG_SELF_ENCRYPT)) {
+            mSelfEncrypt = args.getBoolean(ARG_SELF_ENCRYPT, true);
+        } else {
+            mSelfEncrypt = prefs.getFilesEncryptToSelf();
         }
 
         if (args.containsKey(ARG_ENCRYPT_FILENAMES)) {
@@ -335,6 +344,7 @@ public class EncryptFilesFragment
         menu.findItem(R.id.check_delete_after_encrypt).setChecked(mDeleteAfterEncrypt);
         menu.findItem(R.id.check_use_armor).setChecked(mUseArmor);
         menu.findItem(R.id.check_enable_compression).setChecked(mUseCompression);
+        menu.findItem(R.id.check_enable_self_encrypt).setChecked(mSelfEncrypt);
         menu.findItem(R.id.check_encrypt_filenames).setChecked(mEncryptFilenames);
     }
 
@@ -370,6 +380,10 @@ public class EncryptFilesFragment
             }
             case R.id.check_enable_compression: {
                 toggleEnableCompression(item, !item.isChecked());
+                break;
+            }
+            case R.id.check_enable_self_encrypt: {
+                toggleEnableSelfEncrypt(item, !item.isChecked());
                 break;
             }
             case R.id.check_encrypt_filenames: {
@@ -414,6 +428,28 @@ public class EncryptFilesFragment
                         Notify.create(getActivity(), useArmor
                                         ? R.string.snack_armor_on
                                         : R.string.snack_armor_off,
+                                Notify.LENGTH_SHORT, Style.OK, null, R.string.btn_saved)
+                                .show(EncryptFilesFragment.this, false);
+                    }
+                }, R.string.btn_save_default).show(this);
+
+    }
+
+    public void toggleEnableSelfEncrypt(MenuItem item, final boolean selfEncrypt) {
+
+        mSelfEncrypt = selfEncrypt;
+        item.setChecked(selfEncrypt);
+
+        Notify.create(getActivity(), selfEncrypt
+                        ? R.string.snack_self_encrypt_on
+                        : R.string.snack_self_encrypt_off,
+                Notify.LENGTH_LONG, Style.OK, new ActionListener() {
+                    @Override
+                    public void onAction() {
+                        Preferences.getPreferences(getActivity()).setFilesEncryptToSelf(selfEncrypt);
+                        Notify.create(getActivity(), selfEncrypt
+                                        ? R.string.snack_self_encrypt_on
+                                        : R.string.snack_self_encrypt_off,
                                 Notify.LENGTH_SHORT, Style.OK, null, R.string.btn_saved)
                                 .show(EncryptFilesFragment.this, false);
                     }
@@ -648,7 +684,7 @@ public class EncryptFilesFragment
 
             data.setEncryptionMasterKeyIds(encryptionKeyIds);
             data.setSignatureMasterKeyId(signingKeyId);
-            if (signingKeyId != Constants.key.none) {
+            if (signingKeyId != Constants.key.none && mSelfEncrypt) {
                 data.setAdditionalEncryptId(signingKeyId);
             }
         } else {

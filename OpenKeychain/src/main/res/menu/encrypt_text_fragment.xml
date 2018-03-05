@@ -31,6 +31,12 @@
         android:checked="true"
         android:checkable="true" />
 
+    <item
+        android:id="@+id/check_enable_self_encrypt"
+        android:title="@string/label_enable_self_encrypt"
+        android:orderInCategory="1"
+        android:checked="true"
+        android:checkable="true" />
     <!--<item-->
         <!--android:id="@+id/check_hidden_recipients"-->
         <!--android:title="@string/label_hidden_recipients"-->
