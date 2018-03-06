@@ -132,7 +132,7 @@ dependencyVerification {
         'org.apache.james:apache-mime4j-dom:e18717fe6d36f32e5c5f7cbeea1a9bf04645fdabc84e7e8374d9da10fd52e78d',
         'org.apache.james:apache-mime4j-core:561987f604911e1870b2b4eabf0b0658d666c66cb1e65fba3e9e4bffe63acab9',
         'com.splitwise:tokenautocomplete:f921f83ee26b5265f719b312c30452ef8e219557826c5ce5bf02e29647967939',
-        'com.cocosw:bottomsheet:4af6112a7f4cad4e2b70e5fdf1edc39f51275523a0f53011a012837dc103e597',
+        'com.cocosw:bottomsheet:85bd91fd837b02ebd7a888501cb26035c7cd985a6aa87303fca249da8231a2c3',
         'com.mikepenz:materialdrawer:8bba1428dcef5ad7c2decf49c612ad980b38e2f1031cbd66c152a8a104793929',
         'com.mikepenz:iconics-core:478d7e245098f7c28b5b20a0e6b1e5cb108ef3eaf595af7190bc60f91063aa3d',
         'com.mikepenz:google-material-typeface:f27c629ba5d2a90ecfbd7f221ff98cd363e1ee6be06b099b82bae490766e14a5',
