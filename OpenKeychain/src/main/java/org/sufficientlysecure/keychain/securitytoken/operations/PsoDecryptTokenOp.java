@@ -30,7 +30,7 @@ import android.support.annotation.VisibleForTesting;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
-import org.bouncycastle.asn1.nist.NISTNamedCurves;
+import org.bouncycastle.asn1.x9.ECNamedCurveTable;
 import org.bouncycastle.asn1.x9.X9ECParameters;
 import org.bouncycastle.crypto.ec.CustomNamedCurves;
 import org.bouncycastle.jcajce.util.MessageDigestUtils;
@@ -197,7 +197,7 @@ public class PsoDecryptTokenOp {
         if (CustomNamedCurves.CV25519.equals(eckf.getCurveOID())) {
             return Arrays.copyOfRange(encryptedPoint, 1, 33);
         } else {
-            X9ECParameters x9Params = NISTNamedCurves.getByOID(eckf.getCurveOID());
+            X9ECParameters x9Params = ECNamedCurveTable.getByOID(eckf.getCurveOID());
             ECPoint p = x9Params.getCurve().decodePoint(encryptedPoint);
             if (!p.isValid()) {
                 throw new CardException("Invalid EC point!");
