@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.SignatureException;
+import java.util.List;
 
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPOnePassSignature;
@@ -33,13 +34,14 @@ import org.bouncycastle.openpgp.PGPSignatureList;
 import org.bouncycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.DecryptVerifySecurityProblem.DecryptVerifySecurityProblemBuilder;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureSigningAlgorithm;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
-import org.sufficientlysecure.keychain.daos.KeyRepository;
-import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import timber.log.Timber;
 
 
@@ -61,11 +63,12 @@ class PgpSignatureChecker {
     private KeyRepository mKeyRepository;
 
     PgpSignatureChecker(KeyRepository keyRepository, String senderAddress,
-            DecryptVerifySecurityProblemBuilder securityProblemBuilder) {
+            byte[] actualRecipientFingerprint, DecryptVerifySecurityProblemBuilder securityProblemBuilder) {
         mKeyRepository = keyRepository;
 
         signatureResultBuilder = new OpenPgpSignatureResultBuilder(keyRepository);
         signatureResultBuilder.setSenderAddress(senderAddress);
+        signatureResultBuilder.setActualRecipientFingerprint(actualRecipientFingerprint);
 
         this.securityProblemBuilder = securityProblemBuilder;
     }
@@ -90,6 +93,9 @@ class PgpSignatureChecker {
             signature.init(contentVerifierBuilderProvider, signingKey.getPublicKey());
             checkKeySecurity(log, indent);
 
+            List<byte[]> intendedRecipients = signature.getHashedSubPackets().getIntendedRecipientFingerprints();
+            logIntendedRecipients(log, indent, intendedRecipients);
+            signatureResultBuilder.setIntendedRecipients(intendedRecipients);
 
         } else if (!sigList.isEmpty()) {
 
@@ -175,6 +181,16 @@ class PgpSignatureChecker {
             } catch (KeyWritableRepository.NotFoundException e) {
                 Timber.d("key not found, trying next signature...");
             }
+        }
+    }
+
+    private void logIntendedRecipients(OperationLog log, int indent, List<byte[]> intendedRecipients) {
+        if (intendedRecipients == null) {
+            return;
+        }
+        for (byte[] intendedRecipient : intendedRecipients) {
+            log.add(LogType.MSG_DC_CLEAR_INTENDED_RECIPIENT, indent + 1,
+                    KeyFormattingUtils.convertFingerprintToKeyId(intendedRecipient));
         }
     }
 
@@ -273,6 +289,10 @@ class PgpSignatureChecker {
         // PGPOnePassSignature and PGPSignature packets are "bracketed",
         // so we need to take the last-minus-index'th element here
         PGPSignature messageSignature = signatureList.get(signatureList.size() - 1 - signatureIndex);
+
+        List<byte[]> intendedRecipients = messageSignature.getHashedSubPackets().getIntendedRecipientFingerprints();
+        logIntendedRecipients(log, indent, intendedRecipients);
+        signatureResultBuilder.setIntendedRecipients(intendedRecipients);
 
         // Verify signature
         boolean validSignature = onePassSignature.verify(messageSignature);

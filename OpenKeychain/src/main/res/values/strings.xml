@@ -1191,6 +1191,7 @@
     <string name="msg_dc_passphrase_begin">"Found Passphrase-Begin header: '%s'"</string>
     <string name="msg_dc_clear_data">"Processing literal data"</string>
     <string name="msg_dc_clear_decompress">"Unpacking compressed data"</string>
+    <string name="msg_dc_clear_intended_recipient">"Intended recipient: %s"</string>
     <string name="msg_dc_clear_meta_file">"Filename: %s"</string>
     <string name="msg_dc_clear_meta_mime">"MIME type: %s"</string>
     <string name="msg_dc_clear_meta_size">"File size: %s"</string>

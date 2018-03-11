@@ -19,15 +19,19 @@ package org.sufficientlysecure.keychain.pgp;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import android.support.annotation.Nullable;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.OpenPgpSignatureResult.SenderStatusResult;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import timber.log.Timber;
 
 
@@ -56,6 +60,9 @@ public class OpenPgpSignatureResultBuilder {
     private boolean mInsecure = false;
     private String mSenderAddress;
     private Date mSignatureTimestamp;
+
+    private byte[] actualRecipientFingerprint;
+    private List<byte[]> intendedRecipients;
 
     public OpenPgpSignatureResultBuilder(KeyRepository keyRepository) {
         this.mKeyRepository = keyRepository;
@@ -132,6 +139,22 @@ public class OpenPgpSignatureResultBuilder {
         setKeyRevoked(signingRing.isRevoked() || signingKey.isRevoked());
     }
 
+    private boolean checkIntendedRecipient() {
+        boolean noIntendedRecipients = (intendedRecipients == null);
+        boolean messageWasNotDecrypted = (actualRecipientFingerprint == null);
+        if (noIntendedRecipients || messageWasNotDecrypted) {
+            return true;
+        }
+
+        for (byte[] intendedRecipient : intendedRecipients) {
+            if (Arrays.equals(actualRecipientFingerprint, intendedRecipient)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private SenderStatusResult processSenderStatusResult(
             List<String> allUserIds, List<String> confirmedUserIds) {
         if (mSenderAddress == null) {
@@ -173,8 +196,13 @@ public class OpenPgpSignatureResultBuilder {
             return OpenPgpSignatureResult.createWithInvalidSignature();
         }
 
+        boolean isIntendedRecipient = checkIntendedRecipient();
+
         int signatureStatus;
-        if (mIsKeyRevoked) {
+        if (!isIntendedRecipient) {
+            Timber.d("RESULT_INVALID_NOT_INTENDED_RECIPIENT");
+            signatureStatus = OpenPgpSignatureResult.RESULT_INVALID_NOT_INTENDED_RECIPIENT;
+        } else if (mIsKeyRevoked) {
             Timber.d("RESULT_INVALID_KEY_REVOKED");
             signatureStatus = OpenPgpSignatureResult.RESULT_INVALID_KEY_REVOKED;
         } else if (mIsKeyExpired) {
@@ -191,12 +219,34 @@ public class OpenPgpSignatureResultBuilder {
             signatureStatus = OpenPgpSignatureResult.RESULT_VALID_KEY_UNCONFIRMED;
         }
 
-        return OpenPgpSignatureResult.createWithValidSignature(
-                signatureStatus, mPrimaryUserId, mKeyId, mUserIds, mConfirmedUserIds, mSenderStatusResult, mSignatureTimestamp);
+        ArrayList<String> intendedRecipientFingerprints = getIntendedRecipientFingerprints();
+
+        return OpenPgpSignatureResult.createWithValidSignature(signatureStatus, mPrimaryUserId, mKeyId, mUserIds,
+                mConfirmedUserIds, mSenderStatusResult, mSignatureTimestamp, intendedRecipientFingerprints);
     }
 
     public void setSenderAddress(String senderAddress) {
         mSenderAddress = senderAddress;
     }
 
+    public void setActualRecipientFingerprint(byte[] actualRecipientFingerprint) {
+        this.actualRecipientFingerprint = actualRecipientFingerprint;
+    }
+
+    public void setIntendedRecipients(List<byte[]> intendedRecipients) {
+        this.intendedRecipients = intendedRecipients;
+    }
+
+    @Nullable
+    private ArrayList<String> getIntendedRecipientFingerprints() {
+        if (intendedRecipients == null) {
+            return null;
+        }
+        ArrayList<String> intendedRecipientFingerprints = new ArrayList<>();
+        for (byte[] intendedRecipient : intendedRecipients) {
+            String intendedRecipientFingerprint = KeyFormattingUtils.convertFingerprintToHex(intendedRecipient);
+            intendedRecipientFingerprints.add(intendedRecipientFingerprint);
+        }
+        return intendedRecipientFingerprints;
+    }
 }
