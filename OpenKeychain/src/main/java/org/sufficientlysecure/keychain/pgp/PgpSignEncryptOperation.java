@@ -30,6 +30,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.SignatureException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -310,6 +311,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
 
         /* Initialize PGPEncryptedDataGenerator for later usage */
         PGPEncryptedDataGenerator cPk = null;
+        ArrayList<byte[]> intendedRecipients = null;
         if (enableEncryption) {
 
             // Use requested encryption algo
@@ -323,6 +325,8 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                             .setWithIntegrityPacket(true);
 
             cPk = new PGPEncryptedDataGenerator(encryptorBuilder);
+
+            intendedRecipients = new ArrayList<>();
 
             if (data.getSymmetricPassphrase() != null) {
                 // Symmetric encryption
@@ -340,14 +344,16 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                         continue;
                     }
 
-                    boolean success = processEncryptionMasterKeyId(indent, log, data, cPk, encryptMasterKeyId);
+                    boolean success = processEncryptionMasterKeyId(indent, log, cPk, intendedRecipients,
+                            data.isHiddenRecipients(), encryptMasterKeyId);
                     if (!success) {
                         return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                     }
                 }
 
                 if (additionalEncryptId != Constants.key.none) {
-                    boolean success = processEncryptionMasterKeyId(indent, log, data, cPk, additionalEncryptId);
+                    boolean success = processEncryptionMasterKeyId(indent, log, cPk, intendedRecipients,
+                            data.isHiddenRecipients(), additionalEncryptId);
                     if (!success) {
                         return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                     }
@@ -369,7 +375,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 boolean cleartext = data.isCleartextSignature() && data.isEnableAsciiArmorOutput() && !enableEncryption;
                 signatureGenerator = signingKey.getDataSignatureGenerator(
                         signatureHashAlgorithm, cleartext,
-                        cryptoInput.getCryptoData(), cryptoInput.getSignatureTime());
+                        cryptoInput.getCryptoData(), cryptoInput.getSignatureTime(), intendedRecipients);
             } catch (PgpGeneralException e) {
                 log.add(LogType.MSG_PSE_ERROR_NFC, indent);
                 return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
@@ -647,17 +653,19 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
         return result;
     }
 
-    private boolean processEncryptionMasterKeyId(int indent, OperationLog log, PgpSignEncryptData data,
-            PGPEncryptedDataGenerator cPk, long encryptMasterKeyId) {
+    private boolean processEncryptionMasterKeyId(int indent, OperationLog log, PGPEncryptedDataGenerator cPk,
+            List<byte[]> intendedRecipients,
+            boolean isHiddenRecipients, long encryptMasterKeyId) {
         try {
             CanonicalizedPublicKeyRing keyRing = mKeyRepository.getCanonicalizedPublicKeyRing(encryptMasterKeyId);
             List<Long> encryptSubKeyIds = mKeyRepository.getPublicEncryptionIds(encryptMasterKeyId);
             for (Long subKeyId : encryptSubKeyIds) {
                 CanonicalizedPublicKey key = keyRing.getPublicKey(subKeyId);
-                cPk.addMethod(key.getPubKeyEncryptionGenerator(data.isHiddenRecipients()));
+                cPk.addMethod(key.getPubKeyEncryptionGenerator(isHiddenRecipients));
                 log.add(LogType.MSG_PSE_KEY_OK, indent + 1,
                         KeyFormattingUtils.convertKeyIdToHex(subKeyId));
             }
+            intendedRecipients.add(keyRing.getFingerprint());
             if (encryptSubKeyIds.isEmpty()) {
                 log.add(LogType.MSG_PSE_KEY_WARN, indent + 1,
                         KeyFormattingUtils.convertKeyIdToHex(encryptMasterKeyId));

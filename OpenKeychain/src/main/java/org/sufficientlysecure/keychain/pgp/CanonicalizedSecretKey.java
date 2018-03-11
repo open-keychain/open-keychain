@@ -23,6 +23,7 @@ import java.security.PrivateKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.RSAPrivateCrtKey;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
@@ -289,7 +290,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
     }
 
     public PGPSignatureGenerator getDataSignatureGenerator(int hashAlgo, boolean cleartext,
-            Map<ByteBuffer, byte[]> signedHashes, Date creationTimestamp)
+            Map<ByteBuffer, byte[]> signedHashes, Date creationTimestamp, List<byte[]> intendedRecipientFingerprints)
             throws PgpGeneralException {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_LOCKED) {
             throw new PrivateKeyNotUnlockedException();
@@ -323,6 +324,11 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             PGPSignatureSubpacketGenerator spGen = new PGPSignatureSubpacketGenerator();
             spGen.setSignerUserID(false, mRing.getPrimaryUserIdWithFallback());
             spGen.setSignatureCreationTime(false, creationTimestamp);
+            if (intendedRecipientFingerprints != null) {
+                for (byte[] intendedRecipientFingerprint : intendedRecipientFingerprints) {
+                    spGen.addIntendedRecipient(false, intendedRecipientFingerprint);
+                }
+            }
             signatureGenerator.setHashedSubpackets(spGen.generate());
             return signatureGenerator;
         } catch (PGPException e) {
