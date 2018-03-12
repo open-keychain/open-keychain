@@ -15,36 +15,17 @@
         android:layout_height="wrap_content"
         android:text="@string/label_no_passphrase" />
 
-    <FrameLayout
+    <EditText
+        android:id="@+id/passphrase_passphrase"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp">
-
-        <org.sufficientlysecure.keychain.ui.widget.PassphraseEditText
-            android:id="@+id/passphrase_passphrase"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:imeOptions="actionNext"
-            android:hint="@string/label_passphrase"
-            android:inputType="textPassword"
-            android:ems="10"
-            android:layout_gravity="center_horizontal" />
-
-        <org.sufficientlysecure.keychain.ui.widget.PasswordStrengthBarView
-            android:id="@+id/passphrase_repeat_passphrase_strength"
-            android:layout_width="48dp"
-            android:layout_height="8dp"
-            android:layout_gravity="end|center_vertical"
-            custom:strength="medium"
-            custom:showGuides="false"
-            custom:color_fail="@color/password_strength_low"
-            custom:color_weak="@color/password_strength_medium"
-            custom:color_strong="@color/password_strength_high" />
-
-    </FrameLayout>
+        android:layout_marginBottom="8dp"
+        android:imeOptions="actionNext"
+        android:hint="@string/label_passphrase"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:layout_gravity="center_horizontal" />
 
     <EditText
         android:id="@+id/passphrase_passphrase_again"
