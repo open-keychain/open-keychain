@@ -26,7 +26,7 @@ public class LastUpdateInteractor {
     }
 
     @Nullable
-    private Boolean getSeenOnKeyservers(long masterKeyId) {
+    public Boolean getSeenOnKeyservers(long masterKeyId) {
         Cursor cursor = contentResolver.query(
                 UpdatedKeys.CONTENT_URI,
                 new String[] { UpdatedKeys.SEEN_ON_KEYSERVERS },
