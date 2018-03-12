@@ -24,12 +24,12 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 
 public class SaveKeyringResult extends OperationResult {
 
-    public final long mRingMasterKeyId;
+    public final Long savedMasterKeyId;
 
     public SaveKeyringResult(int result, OperationLog log,
                              CanonicalizedKeyRing ring) {
         super(result, log);
-        mRingMasterKeyId = ring != null ? ring.getMasterKeyId() : Constants.key.none;
+        savedMasterKeyId = ring != null ? ring.getMasterKeyId() : null;
     }
 
     // Some old key was updated
@@ -46,13 +46,13 @@ public class SaveKeyringResult extends OperationResult {
 
     public SaveKeyringResult(Parcel source) {
         super(source);
-        mRingMasterKeyId = source.readLong();
+        savedMasterKeyId = source.readLong();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeLong(mRingMasterKeyId);
+        dest.writeLong(savedMasterKeyId);
     }
 
     public static Creator<SaveKeyringResult> CREATOR = new Creator<SaveKeyringResult>() {

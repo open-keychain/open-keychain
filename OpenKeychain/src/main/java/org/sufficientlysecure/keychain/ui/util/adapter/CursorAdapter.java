@@ -392,8 +392,7 @@ public abstract class CursorAdapter<C extends SimpleCursor, VH extends RecyclerV
                     KeychainContract.KeyRings.CREATION,
                     KeychainContract.KeyRings.NAME,
                     KeychainContract.KeyRings.EMAIL,
-                    KeychainContract.KeyRings.COMMENT,
-                    KeychainContract.KeyRings.API_KNOWN_TO_PACKAGE_NAMES
+                    KeychainContract.KeyRings.COMMENT
             ));
 
             PROJECTION = arr.toArray(new String[arr.size()]);

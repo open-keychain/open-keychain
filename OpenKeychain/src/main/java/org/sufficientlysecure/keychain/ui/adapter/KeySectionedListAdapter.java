@@ -494,7 +494,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
             }
 
             { // set icons
-                List<String> packageNames = keyItem.getTrustIdPackages();
+                List<String> packageNames = keyItem.getAutocryptPeerIdPackages();
 
                 if (!keyItem.isSecret() && !packageNames.isEmpty()) {
                     String packageName = packageNames.get(0);
@@ -627,7 +627,7 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
             return getInt(index) > 0;
         }
 
-        public List<String> getTrustIdPackages() {
+        public List<String> getAutocryptPeerIdPackages() {
             int index = getColumnIndexOrThrow(KeyRings.API_KNOWN_TO_PACKAGE_NAMES);
             String packageNames = getString(index);
             if (packageNames == null) {

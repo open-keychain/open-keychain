@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.remote;
 
 import java.security.AccessControlException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -40,9 +39,11 @@ import android.text.TextUtils;
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
+import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
+import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject.AutocryptRecommendationResult;
+import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject.AutocryptState;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
@@ -52,6 +53,7 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
+import org.sufficientlysecure.keychain.provider.KeychainProvider;
 import org.sufficientlysecure.keychain.provider.SimpleContentResolverInterface;
 import org.sufficientlysecure.keychain.util.CloseDatabaseCursorFactory;
 import timber.log.Timber;
@@ -65,6 +67,8 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
     private static final int API_APPS = 301;
     private static final int API_APPS_BY_PACKAGE_NAME = 302;
+
+    private static final int AUTOCRYPT_PEERS_BY_PACKAGE_NAME = 602;
 
     public static final String TEMP_TABLE_QUERIED_ADDRESSES = "queried_addresses";
     public static final String TEMP_TABLE_COLUMN_ADDRES = "address";
@@ -97,6 +101,9 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
         // can only query status of calling app - for internal use only!
         matcher.addURI(KeychainContract.CONTENT_AUTHORITY, KeychainContract.BASE_API_APPS + "/*", API_APPS_BY_PACKAGE_NAME);
+
+        matcher.addURI(KeychainContract.CONTENT_AUTHORITY, KeychainContract.BASE_AUTOCRYPT_PEERS + "/" +
+                KeychainContract.PATH_BY_PACKAGE_NAME + "/*", AUTOCRYPT_PEERS_BY_PACKAGE_NAME);
 
         return matcher;
     }
@@ -137,6 +144,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs,
                         String sortOrder) {
         Timber.v("query(uri=" + uri + ", proj=" + Arrays.toString(projection) + ")");
+        long startTime = System.currentTimeMillis();
 
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
@@ -230,81 +238,51 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                     throw new AccessControlException("An application must register before use of KeychainExternalProvider!");
                 }
 
-                db.execSQL("CREATE TEMPORARY TABLE " + TEMP_TABLE_QUERIED_ADDRESSES + " (" + TEMP_TABLE_COLUMN_ADDRES + " TEXT);");
+                if (projection == null) {
+                    throw new IllegalArgumentException("Please provide a projection!");
+                }
+
+                db.execSQL("CREATE TEMPORARY TABLE " + TEMP_TABLE_QUERIED_ADDRESSES + " (" +
+                        TEMP_TABLE_COLUMN_ADDRES + " TEXT NOT NULL PRIMARY KEY, " +
+                        AutocryptStatus.UID_KEY_STATUS + " INT, " +
+                        AutocryptStatus.UID_ADDRESS + " TEXT, " +
+                        AutocryptStatus.UID_MASTER_KEY_ID + " INT, " +
+                        AutocryptStatus.UID_CANDIDATES + " INT, " +
+                        AutocryptStatus.AUTOCRYPT_PEER_STATE + " INT DEFAULT " + AutocryptStatus.AUTOCRYPT_PEER_DISABLED + ", " +
+                        AutocryptStatus.AUTOCRYPT_KEY_STATUS + " INT, " +
+                        AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID + " INT" +
+                        ");");
                 ContentValues cv = new ContentValues();
                 for (String address : selectionArgs) {
                     cv.put(TEMP_TABLE_COLUMN_ADDRES, address);
                     db.insert(TEMP_TABLE_QUERIED_ADDRESSES, null, cv);
                 }
 
-                HashMap<String, String> projectionMap = new HashMap<>();
-                projectionMap.put(AutocryptStatus._ID, "email AS _id");
-                projectionMap.put(AutocryptStatus.ADDRESS, // this is actually the queried address
-                        TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES + " AS " + AutocryptStatus.ADDRESS);
+                boolean isWildcardSelector = selectionArgs.length == 1 && selectionArgs[0].contains("%");
 
-                projectionMap.put(AutocryptStatus.UID_ADDRESS,
-                        Tables.USER_PACKETS + "." + UserPackets.USER_ID + " AS " + AutocryptStatus.UID_ADDRESS);
-                // we take the minimum (>0) here, where "1" is "verified by known secret key", "2" is "self-certified"
-                projectionMap.put(AutocryptStatus.UID_KEY_STATUS, "CASE ( MIN (certs_user_id." + Certs.VERIFIED + " ) ) "
-                        // remap to keep this provider contract independent from our internal representation
-                        + " WHEN " + Certs.VERIFIED_SELF + " THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
-                        + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + KeychainExternalContract.KEY_STATUS_VERIFIED
-                        + " WHEN NULL THEN NULL"
-                        + " END AS " + AutocryptStatus.UID_KEY_STATUS);
-                projectionMap.put(AutocryptStatus.UID_MASTER_KEY_ID,
-                        Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " AS " + AutocryptStatus.UID_MASTER_KEY_ID);
-                projectionMap.put(AutocryptStatus.UID_CANDIDATES,
-                        "COUNT(DISTINCT " + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID +
-                                ") AS " + AutocryptStatus.UID_CANDIDATES);
+                List<String> plist = Arrays.asList(projection);
 
-                projectionMap.put(AutocryptStatus.AUTOCRYPT_KEY_STATUS, "CASE ( MIN (certs_autocrypt_peer." + Certs.VERIFIED + " ) ) "
-                        // remap to keep this provider contract independent from our internal representation
-                        + " WHEN " + Certs.VERIFIED_SELF + " THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
-                        + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + KeychainExternalContract.KEY_STATUS_VERIFIED
-                        + " WHEN NULL THEN NULL"
-                        + " END AS " + AutocryptStatus.AUTOCRYPT_KEY_STATUS);
-                projectionMap.put(AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID,
-                        Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.MASTER_KEY_ID + " AS " + AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID);
-                projectionMap.put(AutocryptStatus.AUTOCRYPT_PEER_STATE, Tables.API_AUTOCRYPT_PEERS + "." +
-                        ApiAutocryptPeer.STATE + " AS " + AutocryptStatus.AUTOCRYPT_LAST_SEEN_KEY);
-                projectionMap.put(AutocryptStatus.AUTOCRYPT_LAST_SEEN, Tables.API_AUTOCRYPT_PEERS + "." +
-                        ApiAutocryptPeer.LAST_SEEN + " AS " + AutocryptStatus.AUTOCRYPT_LAST_SEEN);
-                projectionMap.put(AutocryptStatus.AUTOCRYPT_LAST_SEEN_KEY, Tables.API_AUTOCRYPT_PEERS + "." +
-                        ApiAutocryptPeer.LAST_SEEN_KEY + " AS " + AutocryptStatus.AUTOCRYPT_LAST_SEEN_KEY);
-                qb.setProjectionMap(projectionMap);
-
-                if (projection == null) {
-                    throw new IllegalArgumentException("Please provide a projection!");
+                boolean queriesUidResult = plist.contains(AutocryptStatus.UID_KEY_STATUS) ||
+                        plist.contains(AutocryptStatus.UID_ADDRESS) ||
+                        plist.contains(AutocryptStatus.UID_MASTER_KEY_ID) ||
+                        plist.contains(AutocryptStatus.UID_CANDIDATES);
+                if (queriesUidResult) {
+                    fillTempTableWithUidResult(db, isWildcardSelector);
                 }
 
-                qb.setTables(
-                        TEMP_TABLE_QUERIED_ADDRESSES
-                                + " LEFT JOIN " + Tables.USER_PACKETS + " ON ("
-                                + Tables.USER_PACKETS + "." + UserPackets.USER_ID + " IS NOT NULL"
-                                + " AND " + Tables.USER_PACKETS + "." + UserPackets.EMAIL + " LIKE " + TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES
-                                + ")"
-                                + " LEFT JOIN " + Tables.CERTS + " AS certs_user_id ON ("
-                                + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = certs_user_id." + Certs.MASTER_KEY_ID
-                                + " AND " + Tables.USER_PACKETS + "." + UserPackets.RANK + " = certs_user_id." + Certs.RANK
-                                + ")"
-                                + " LEFT JOIN " + Tables.API_AUTOCRYPT_PEERS + " ON ("
-                                + Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.IDENTIFIER + " LIKE queried_addresses.address"
-                                + " AND " + Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.PACKAGE_NAME + " = \"" + callingPackageName + "\""
-                                + ")"
-                                + " LEFT JOIN " + Tables.CERTS + " AS certs_autocrypt_peer ON ("
-                                + Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.MASTER_KEY_ID + " = certs_autocrypt_peer." + Certs.MASTER_KEY_ID
-                                + ")"
-                );
-                // in case there are multiple verifying certificates
-                groupBy = TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES;
+                boolean queriesAutocryptResult = plist.contains(AutocryptStatus.AUTOCRYPT_PEER_STATE) ||
+                        plist.contains(AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID) ||
+                        plist.contains(AutocryptStatus.AUTOCRYPT_KEY_STATUS);
+                if (isWildcardSelector && queriesAutocryptResult) {
+                    throw new UnsupportedOperationException("Cannot wildcard-query autocrypt results!");
+                }
+                if (!isWildcardSelector && queriesAutocryptResult) {
+                    AutocryptPeerDataAccessObject autocryptPeerDao =
+                            new AutocryptPeerDataAccessObject(this, callingPackageName);
+                    fillTempTableWithAutocryptRecommendations(db, autocryptPeerDao, selectionArgs);
+                }
 
-                // can't have an expired master key for the uid candidate
-                qb.appendWhere("(EXISTS (SELECT * FROM " + Tables.KEYS + " WHERE "
-                        + Tables.KEYS + "." + Keys.KEY_ID + " = " + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID
-                        + " AND " + Tables.KEYS + "." + Keys.IS_REVOKED + " = 0"
-                        + " AND NOT " + "(" + Tables.KEYS + "." + Keys.EXPIRY + " IS NOT NULL AND " + Tables.KEYS + "." + Keys.EXPIRY
-                        + " < " + new Date().getTime() / 1000 + ")"
-                        + ")) OR " + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " IS NULL");
+                qb.setTables(TEMP_TABLE_QUERIED_ADDRESSES);
 
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = AutocryptStatus.ADDRESS;
@@ -325,6 +303,11 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
                 break;
             }
+
+            case AUTOCRYPT_PEERS_BY_PACKAGE_NAME:
+                KeychainProvider keychainProvider = new KeychainProvider();
+                keychainProvider.attachInfo(getContext(), null);
+                return keychainProvider.query(uri, projection, selection, selectionArgs, sortOrder);
 
             default: {
                 throw new IllegalArgumentException("Unknown URI " + uri + " (" + match + ")");
@@ -351,8 +334,111 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
         }
 
         Timber.d("Query: " + qb.buildQuery(projection, selection, groupBy, null, orderBy, null));
+        Timber.d(Constants.TAG, "Query took %s ms", (System.currentTimeMillis() - startTime));
 
         return cursor;
+    }
+
+    private void fillTempTableWithAutocryptRecommendations(SQLiteDatabase db,
+            AutocryptPeerDataAccessObject autocryptPeerDao, String[] peerIds) {
+        List<AutocryptRecommendationResult> autocryptStates =
+                autocryptPeerDao.determineAutocryptRecommendations(peerIds);
+
+        fillTempTableWithAutocryptRecommendations(db, autocryptStates);
+    }
+
+    private void fillTempTableWithAutocryptRecommendations(SQLiteDatabase db,
+            List<AutocryptRecommendationResult> autocryptRecommendations) {
+        ContentValues cv = new ContentValues();
+        for (AutocryptRecommendationResult peerResult : autocryptRecommendations) {
+            cv.clear();
+
+            cv.put(AutocryptStatus.AUTOCRYPT_PEER_STATE, getPeerStateValue(peerResult.autocryptState));
+            if (peerResult.masterKeyId != null) {
+                cv.put(AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID, peerResult.masterKeyId);
+                cv.put(AutocryptStatus.AUTOCRYPT_KEY_STATUS, peerResult.isVerified ?
+                        KeychainExternalContract.KEY_STATUS_VERIFIED :
+                        KeychainExternalContract.KEY_STATUS_UNVERIFIED);
+            }
+
+            db.update(TEMP_TABLE_QUERIED_ADDRESSES, cv,TEMP_TABLE_COLUMN_ADDRES + "=?",
+                    new String[] { peerResult.peerId });
+        }
+    }
+
+    private void fillTempTableWithUidResult(SQLiteDatabase db, boolean isWildcardSelector) {
+        String cmpOperator = isWildcardSelector ? " LIKE " : " = ";
+        long unixSeconds = System.currentTimeMillis() / 1000;
+        db.execSQL("REPLACE INTO " + TEMP_TABLE_QUERIED_ADDRESSES +
+                "(" + TEMP_TABLE_COLUMN_ADDRES + ", " + AutocryptStatus.UID_KEY_STATUS + ", " +
+                AutocryptStatus.UID_ADDRESS + ", " + AutocryptStatus.UID_MASTER_KEY_ID
+                + ", " + AutocryptStatus.UID_CANDIDATES + ")" +
+                " SELECT " + TEMP_TABLE_COLUMN_ADDRES + ", " +
+                "CASE ( MIN (" + Tables.CERTS + "." + Certs.VERIFIED + " ) ) "
+                // remap to keep this provider contract independent from our internal representation
+                + " WHEN " + Certs.VERIFIED_SELF + " THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
+                + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + KeychainExternalContract.KEY_STATUS_VERIFIED
+                + " END AS " + AutocryptStatus.UID_KEY_STATUS
+                + ", " + Tables.USER_PACKETS + "." + UserPackets.USER_ID
+                + ", " + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID
+                + ", COUNT(DISTINCT " + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + ")"
+                + " FROM " + TEMP_TABLE_QUERIED_ADDRESSES
+                + " LEFT JOIN " + Tables.USER_PACKETS + " ON ("
+                + Tables.USER_PACKETS + "." + UserPackets.EMAIL + cmpOperator +
+                TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES
+                + ")"
+                + " LEFT JOIN " + Tables.CERTS + " ON ("
+                + Tables.CERTS + "." + Certs.MASTER_KEY_ID + " = " + Tables.USER_PACKETS + "." +
+                UserPackets.MASTER_KEY_ID
+                + " AND " + Tables.CERTS + "." + Certs.RANK + " = " + Tables.USER_PACKETS + "." +
+                UserPackets.RANK
+                + " AND " + Tables.CERTS + "." + Certs.VERIFIED + " > 0"
+                + ")"
+                + " WHERE (EXISTS (SELECT 1 FROM " + Tables.KEYS + " WHERE "
+                + Tables.KEYS + "." + Keys.KEY_ID + " = " + Tables.USER_PACKETS + "." +
+                UserPackets.MASTER_KEY_ID
+                + " AND " + Tables.KEYS + "." + Keys.RANK + " = 0"
+                + " AND " + Tables.KEYS + "." + Keys.IS_REVOKED + " = 0"
+                + " AND NOT " + "(" + Tables.KEYS + "." + Keys.EXPIRY + " IS NOT NULL AND " + Tables.KEYS +
+                "." + Keys.EXPIRY
+                + " < " + unixSeconds + ")"
+                + ")) OR " + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " IS NULL"
+                + " GROUP BY " + TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES);
+    }
+
+    private void explainQuery(SQLiteDatabase db, String sql) {
+        Cursor explainCursor = db.rawQuery("EXPLAIN QUERY PLAN " + sql, new String[0]);
+
+        // this is a debugging feature, we can be a little careless
+        explainCursor.moveToFirst();
+
+        StringBuilder line = new StringBuilder();
+        for (int i = 0; i < explainCursor.getColumnCount(); i++) {
+            line.append(explainCursor.getColumnName(i)).append(", ");
+        }
+        Timber.d(Constants.TAG, line.toString());
+
+        while (!explainCursor.isAfterLast()) {
+            line = new StringBuilder();
+            for (int i = 0; i < explainCursor.getColumnCount(); i++) {
+                line.append(explainCursor.getString(i)).append(", ");
+            }
+            Timber.d(Constants.TAG, line.toString());
+            explainCursor.moveToNext();
+        }
+
+        explainCursor.close();
+    }
+
+    private int getPeerStateValue(AutocryptState autocryptState) {
+        switch (autocryptState) {
+            case DISABLE: return AutocryptStatus.AUTOCRYPT_PEER_DISABLED;
+            case DISCOURAGED_OLD: return AutocryptStatus.AUTOCRYPT_PEER_DISCOURAGED_OLD;
+            case DISCOURAGED_GOSSIP: return AutocryptStatus.AUTOCRYPT_PEER_GOSSIP;
+            case AVAILABLE: return AutocryptStatus.AUTOCRYPT_PEER_AVAILABLE;
+            case MUTUAL: return AutocryptStatus.AUTOCRYPT_PEER_MUTUAL;
+        }
+        throw new IllegalStateException("Unhandled case!");
     }
 
     private void checkIfPackageBelongsToCaller(Context context, String requestedPackageName) {

@@ -31,14 +31,11 @@ import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.v4.content.AsyncTaskLoader;
-import android.util.Log;
 
 import com.google.auto.value.AutoValue;
 import org.openintents.openpgp.util.OpenPgpApi;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.linked.LinkedAttribute;
 import org.sufficientlysecure.keychain.linked.UriAttribute;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -76,6 +73,15 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
 
     private static final String USER_IDS_WHERE = UserPackets.IS_REVOKED + " = 0";
 
+    private static final String[] AUTOCRYPT_PEER_PROJECTION = new String[] {
+            ApiAutocryptPeer._ID,
+            ApiAutocryptPeer.PACKAGE_NAME,
+            ApiAutocryptPeer.IDENTIFIER,
+    };
+    private static final int INDEX_PACKAGE_NAME = 1;
+    private static final int INDEX_IDENTIFIER = 2;
+
+
     private final ContentResolver contentResolver;
     private final PackageIconGetter packageIconGetter;
     private final long masterKeyId;
@@ -84,6 +90,7 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
     private List<IdentityInfo> cachedResult;
 
     private ForceLoadContentObserver identityObserver;
+
 
     public IdentityLoader(Context context, ContentResolver contentResolver, long masterKeyId, boolean showLinkedIds) {
         super(context);
@@ -106,42 +113,36 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
             loadLinkedIds(identities);
         }
         loadUserIds(identities);
-        correlateOrAddTrustIds(identities);
+        correlateOrAddAutocryptPeers(identities);
 
         return Collections.unmodifiableList(identities);
     }
 
-    private static final String[] TRUST_IDS_PROJECTION = new String[] {
-            ApiAutocryptPeer._ID,
-            ApiAutocryptPeer.PACKAGE_NAME,
-            ApiAutocryptPeer.IDENTIFIER,
-    };
-    private static final int INDEX_PACKAGE_NAME = 1;
-    private static final int INDEX_TRUST_ID = 2;
-
-    private void correlateOrAddTrustIds(ArrayList<IdentityInfo> identities) {
+    private void correlateOrAddAutocryptPeers(ArrayList<IdentityInfo> identities) {
         Cursor cursor = contentResolver.query(ApiAutocryptPeer.buildByMasterKeyId(masterKeyId),
-                TRUST_IDS_PROJECTION, null, null, null);
+                AUTOCRYPT_PEER_PROJECTION, null, null, null);
         if (cursor == null) {
-            Timber.e("Error loading trust ids!");
+            Timber.e("Error loading Autocrypt peers");
             return;
         }
 
         try {
             while (cursor.moveToNext()) {
                 String packageName = cursor.getString(INDEX_PACKAGE_NAME);
-                String autocryptPeer = cursor.getString(INDEX_TRUST_ID);
+                String autocryptPeer = cursor.getString(INDEX_IDENTIFIER);
 
                 Drawable drawable = packageIconGetter.getDrawableForPackageName(packageName);
-                Intent autocryptPeerIntent = getTrustIdActivityIntentIfResolvable(packageName, autocryptPeer);
+                Intent autocryptPeerIntent = getAutocryptPeerActivityIntentIfResolvable(packageName, autocryptPeer);
 
-                UserIdInfo associatedUserIdInfo = findUserIdMatchingTrustId(identities, autocryptPeer);
+                UserIdInfo associatedUserIdInfo = findUserIdMatchingAutocryptPeer(identities, autocryptPeer);
                 if (associatedUserIdInfo != null) {
                     int position = identities.indexOf(associatedUserIdInfo);
-                    TrustIdInfo autocryptPeerInfo = TrustIdInfo.create(associatedUserIdInfo, autocryptPeer, packageName, drawable, autocryptPeerIntent);
+                    AutocryptPeerInfo autocryptPeerInfo = AutocryptPeerInfo
+                            .create(associatedUserIdInfo, autocryptPeer, packageName, drawable, autocryptPeerIntent);
                     identities.set(position, autocryptPeerInfo);
                 } else {
-                    TrustIdInfo autocryptPeerInfo = TrustIdInfo.create(autocryptPeer, packageName, drawable, autocryptPeerIntent);
+                    AutocryptPeerInfo autocryptPeerInfo = AutocryptPeerInfo
+                            .create(autocryptPeer, packageName, drawable, autocryptPeerIntent);
                     identities.add(autocryptPeerInfo);
                 }
             }
@@ -150,7 +151,7 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
         }
     }
 
-    private Intent getTrustIdActivityIntentIfResolvable(String packageName, String autocryptPeer) {
+    private Intent getAutocryptPeerActivityIntentIfResolvable(String packageName, String autocryptPeer) {
         Intent intent = new Intent();
         intent.setAction("org.autocrypt.PEER_ACTION");
         intent.setPackage(packageName);
@@ -165,7 +166,7 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
         }
     }
 
-    private static UserIdInfo findUserIdMatchingTrustId(List<IdentityInfo> identities, String autocryptPeer) {
+    private static UserIdInfo findUserIdMatchingAutocryptPeer(List<IdentityInfo> identities, String autocryptPeer) {
         for (IdentityInfo identityInfo : identities) {
             if (identityInfo instanceof UserIdInfo) {
                 UserIdInfo userIdInfo = (UserIdInfo) identityInfo;
@@ -304,28 +305,28 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
     }
 
     @AutoValue
-    public abstract static class TrustIdInfo implements IdentityInfo {
+    public abstract static class AutocryptPeerInfo implements IdentityInfo {
         public abstract int getRank();
         public abstract int getVerified();
         public abstract boolean isPrimary();
 
-        public abstract String getTrustId();
+        public abstract String getIdentity();
         public abstract String getPackageName();
         @Nullable
         public abstract Drawable getAppIcon();
         @Nullable
         public abstract UserIdInfo getUserIdInfo();
         @Nullable
-        public abstract Intent getTrustIdIntent();
+        public abstract Intent getAutocryptPeerIntent();
 
-        static TrustIdInfo create(UserIdInfo userIdInfo, String autocryptPeer, String packageName,
+        static AutocryptPeerInfo create(UserIdInfo userIdInfo, String autocryptPeer, String packageName,
                 Drawable appIcon, Intent autocryptPeerIntent) {
-            return new AutoValue_IdentityLoader_TrustIdInfo(userIdInfo.getRank(), userIdInfo.getVerified(),
+            return new AutoValue_IdentityLoader_AutocryptPeerInfo(userIdInfo.getRank(), userIdInfo.getVerified(),
                     userIdInfo.isPrimary(), autocryptPeer, packageName, appIcon, userIdInfo, autocryptPeerIntent);
         }
 
-        static TrustIdInfo create(String autocryptPeer, String packageName, Drawable appIcon, Intent autocryptPeerIntent) {
-            return new AutoValue_IdentityLoader_TrustIdInfo(
+        static AutocryptPeerInfo create(String autocryptPeer, String packageName, Drawable appIcon, Intent autocryptPeerIntent) {
+            return new AutoValue_IdentityLoader_AutocryptPeerInfo(
                     0, Certs.VERIFIED_SELF, false, autocryptPeer, packageName, appIcon, null, autocryptPeerIntent);
         }
     }

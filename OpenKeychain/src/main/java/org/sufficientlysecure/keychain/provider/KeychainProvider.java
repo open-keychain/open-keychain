@@ -366,7 +366,7 @@ public class KeychainProvider extends ContentProvider {
                         "(" + Tables.KEYS + "." + Keys.EXPIRY + " IS NOT NULL AND " + Tables.KEYS + "." + Keys.EXPIRY
                                 + " < " + new Date().getTime() / 1000 + ") AS " + KeyRings.IS_EXPIRED);
                 projectionMap.put(KeyRings.API_KNOWN_TO_PACKAGE_NAMES,
-                        "GROUP_CONCAT(aTI." + ApiAutocryptPeer.PACKAGE_NAME + ") AS "
+                        "GROUP_CONCAT(DISTINCT aTI." + ApiAutocryptPeer.PACKAGE_NAME + ") AS "
                         + KeyRings.API_KNOWN_TO_PACKAGE_NAMES);
                 qb.setProjectionMap(projectionMap);
 
@@ -717,30 +717,61 @@ public class KeychainProvider extends ContentProvider {
             case AUTOCRYPT_PEERS_BY_MASTER_KEY_ID:
             case AUTOCRYPT_PEERS_BY_PACKAGE_NAME:
             case AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID: {
-                if (selection != null || selectionArgs != null) {
-                    throw new UnsupportedOperationException();
-                }
+                long unixSeconds = new Date().getTime() / 1000;
 
                 HashMap<String, String> projectionMap = new HashMap<>();
-                projectionMap.put(ApiAutocryptPeer._ID, "oid AS " + ApiAutocryptPeer._ID);
-                projectionMap.put(ApiAutocryptPeer.PACKAGE_NAME, ApiAutocryptPeer.PACKAGE_NAME);
+                projectionMap.put(ApiAutocryptPeer._ID, Tables.API_AUTOCRYPT_PEERS + ".oid AS " + ApiAutocryptPeer._ID);
                 projectionMap.put(ApiAutocryptPeer.IDENTIFIER, ApiAutocryptPeer.IDENTIFIER);
-                projectionMap.put(ApiAutocryptPeer.MASTER_KEY_ID, ApiAutocryptPeer.MASTER_KEY_ID);
+                projectionMap.put(ApiAutocryptPeer.PACKAGE_NAME, ApiAutocryptPeer.PACKAGE_NAME);
                 projectionMap.put(ApiAutocryptPeer.LAST_SEEN, ApiAutocryptPeer.LAST_SEEN);
+                projectionMap.put(ApiAutocryptPeer.MASTER_KEY_ID, Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.MASTER_KEY_ID);
+                projectionMap.put(ApiAutocryptPeer.IS_MUTUAL, ApiAutocryptPeer.IS_MUTUAL);
+                projectionMap.put(ApiAutocryptPeer.LAST_SEEN_KEY, ApiAutocryptPeer.LAST_SEEN_KEY);
+                projectionMap.put(ApiAutocryptPeer.GOSSIP_MASTER_KEY_ID, ApiAutocryptPeer.GOSSIP_MASTER_KEY_ID);
+                projectionMap.put(ApiAutocryptPeer.GOSSIP_LAST_SEEN_KEY, ApiAutocryptPeer.GOSSIP_LAST_SEEN_KEY);
+                projectionMap.put(ApiAutocryptPeer.GOSSIP_ORIGIN, ApiAutocryptPeer.GOSSIP_ORIGIN);
+                projectionMap.put(ApiAutocryptPeer.KEY_IS_REVOKED, "ac_key." + Keys.IS_REVOKED + " AS " + ApiAutocryptPeer.KEY_IS_REVOKED);
+                projectionMap.put(ApiAutocryptPeer.KEY_IS_EXPIRED, "(CASE" +
+                                " WHEN ac_key." + Keys.EXPIRY + " IS NULL THEN 0" +
+                                " WHEN ac_key." + Keys.EXPIRY + " > " + unixSeconds + " THEN 0" +
+                                " ELSE 1 END) AS " + ApiAutocryptPeer.KEY_IS_EXPIRED);
+                projectionMap.put(ApiAutocryptPeer.KEY_IS_VERIFIED, "EXISTS (SELECT * FROM " + Tables.CERTS +
+                                " WHERE " + Tables.CERTS + "." + Certs.MASTER_KEY_ID + " = " +
+                                    Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.MASTER_KEY_ID +
+                                " AND " + Certs.VERIFIED + " = " + Certs.VERIFIED_SECRET +
+                                    ") AS " + ApiAutocryptPeer.KEY_IS_VERIFIED);
+                projectionMap.put(ApiAutocryptPeer.GOSSIP_KEY_IS_REVOKED,
+                        "gossip_key." + Keys.IS_REVOKED + " AS " + ApiAutocryptPeer.GOSSIP_KEY_IS_REVOKED);
+                projectionMap.put(ApiAutocryptPeer.GOSSIP_KEY_IS_EXPIRED, "(CASE" +
+                                " WHEN gossip_key." + Keys.EXPIRY + " IS NULL THEN 0" +
+                                " WHEN gossip_key." + Keys.EXPIRY + " > " + unixSeconds + " THEN 0" +
+                                " ELSE 1 END) AS " + ApiAutocryptPeer.GOSSIP_KEY_IS_EXPIRED);
+                projectionMap.put(ApiAutocryptPeer.GOSSIP_KEY_IS_VERIFIED, "EXISTS (SELECT * FROM " + Tables.CERTS +
+                                " WHERE " + Tables.CERTS + "." + Certs.MASTER_KEY_ID + " = " +
+                                Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.GOSSIP_MASTER_KEY_ID +
+                                " AND " + Certs.VERIFIED + " = " + Certs.VERIFIED_SECRET +
+                                ") AS " + ApiAutocryptPeer.GOSSIP_KEY_IS_VERIFIED);
                 qb.setProjectionMap(projectionMap);
 
-                qb.setTables(Tables.API_AUTOCRYPT_PEERS);
+                qb.setTables(Tables.API_AUTOCRYPT_PEERS +
+                        " LEFT JOIN " + Tables.KEYS + " AS ac_key" +
+                            " ON (ac_key." + Keys.MASTER_KEY_ID + " = " + Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.MASTER_KEY_ID +
+                                " AND ac_key." + Keys.RANK + " = 0)" +
+                        " LEFT JOIN " + Tables.KEYS + " AS gossip_key" +
+                            " ON (gossip_key." + Keys.MASTER_KEY_ID + " = " + ApiAutocryptPeer.GOSSIP_MASTER_KEY_ID +
+                                " AND gossip_key." + Keys.RANK + " = 0)"
+                );
 
                 if (match == AUTOCRYPT_PEERS_BY_MASTER_KEY_ID) {
                     long masterKeyId = Long.parseLong(uri.getLastPathSegment());
 
-                    selection = Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.MASTER_KEY_ID + " = ?";
-                    selectionArgs = new String[] { Long.toString(masterKeyId) };
+                    qb.appendWhere(Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.MASTER_KEY_ID + " = ");
+                    qb.appendWhere(Long.toString(masterKeyId));
                 } else if (match == AUTOCRYPT_PEERS_BY_PACKAGE_NAME) {
                     String packageName = uri.getPathSegments().get(2);
 
-                    selection = Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.PACKAGE_NAME + " = ?";
-                    selectionArgs = new String[] { packageName };
+                    qb.appendWhere(Tables.API_AUTOCRYPT_PEERS + "." + ApiAutocryptPeer.PACKAGE_NAME + " = ");
+                    qb.appendWhereEscapeString(packageName);
                 } else { // AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID
                     String packageName = uri.getPathSegments().get(2);
                     String autocryptPeer = uri.getPathSegments().get(3);
@@ -1084,34 +1115,27 @@ public class KeychainProvider extends ContentProvider {
                     break;
                 }
                 case AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID: {
-                    Long masterKeyId = values.getAsLong(ApiAutocryptPeer.MASTER_KEY_ID);
-                    if (masterKeyId == null) {
-                        throw new IllegalArgumentException("master_key_id must be a non-null value!");
-                    }
-
-                    ContentValues actualValues = new ContentValues();
                     String packageName = uri.getPathSegments().get(2);
-                    actualValues.put(ApiAutocryptPeer.PACKAGE_NAME, packageName);
-                    actualValues.put(ApiAutocryptPeer.IDENTIFIER, uri.getLastPathSegment());
-                    actualValues.put(ApiAutocryptPeer.MASTER_KEY_ID, masterKeyId);
+                    String identifier = uri.getLastPathSegment();
+                    values.put(ApiAutocryptPeer.PACKAGE_NAME, packageName);
+                    values.put(ApiAutocryptPeer.IDENTIFIER, identifier);
 
-                    Long newLastSeen = values.getAsLong(ApiAutocryptPeer.LAST_SEEN);
-                    if (newLastSeen != null) {
-                        actualValues.put(ApiAutocryptPeer.LAST_SEEN, newLastSeen);
+                    int updated = db.update(Tables.API_AUTOCRYPT_PEERS, values,
+                            ApiAutocryptPeer.PACKAGE_NAME + "=? AND " + ApiAutocryptPeer.IDENTIFIER + "=?",
+                            new String[] { packageName, identifier });
+                    if (updated == 0) {
+                        db.insertOrThrow(Tables.API_AUTOCRYPT_PEERS, null, values);
                     }
 
-                    if (values.containsKey(ApiAutocryptPeer.LAST_SEEN_KEY)) {
-                        actualValues.put(ApiAutocryptPeer.LAST_SEEN_KEY,
-                                values.getAsLong(ApiAutocryptPeer.LAST_SEEN_KEY));
+                    Long masterKeyId = values.getAsLong(ApiAutocryptPeer.MASTER_KEY_ID);
+                    if (masterKeyId != null) {
+                        contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(masterKeyId), null);
                     }
-                    if (values.containsKey(ApiAutocryptPeer.STATE)) {
-                        actualValues.put(ApiAutocryptPeer.STATE,
-                                values.getAsLong(ApiAutocryptPeer.STATE));
+                    Long gossipMasterKeyId = values.getAsLong(ApiAutocryptPeer.GOSSIP_MASTER_KEY_ID);
+                    if (gossipMasterKeyId != null && !gossipMasterKeyId.equals(masterKeyId)) {
+                        contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(gossipMasterKeyId), null);
                     }
 
-                    contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(masterKeyId), null);
-
-                    db.replace(Tables.API_AUTOCRYPT_PEERS, null, actualValues);
                     break;
                 }
                 default: {
