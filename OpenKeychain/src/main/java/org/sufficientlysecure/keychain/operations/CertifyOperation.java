@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
+import org.sufficientlysecure.keychain.provider.LastUpdateInteractor;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
@@ -61,10 +62,13 @@ import org.sufficientlysecure.keychain.util.Passphrase;
  * @see CertifyActionsParcel
  */
 public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParcel> {
+    private final LastUpdateInteractor lastUpdateInteractor;
 
     public CertifyOperation(Context context, KeyWritableRepository databaseInteractor, Progressable progressable, AtomicBoolean
             cancelled) {
         super(context, databaseInteractor, progressable, cancelled);
+
+        this.lastUpdateInteractor = LastUpdateInteractor.create(context);
     }
 
     @NonNull
@@ -230,6 +234,8 @@ public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParce
                 log.add(uploadResult, 2);
 
                 if (uploadResult.success()) {
+                    lastUpdateInteractor.renewKeyLastUpdatedTime(certifiedKey.getMasterKeyId(), true);
+
                     uploadOk += 1;
                 } else {
                     uploadError += 1;

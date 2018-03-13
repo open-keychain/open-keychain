@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import android.content.ContentProviderOperation;
@@ -85,23 +84,27 @@ public class KeyWritableRepository extends KeyRepository {
     private static final int MAX_CACHED_KEY_SIZE = 1024 * 50;
 
     private final Context mContext;
+    private final LastUpdateInteractor lastUpdateInteractor;
 
     public static KeyWritableRepository create(Context context) {
         LocalPublicKeyStorage localPublicKeyStorage = LocalPublicKeyStorage.getInstance(context);
+        LastUpdateInteractor lastUpdateInteractor = LastUpdateInteractor.create(context);
 
-        return new KeyWritableRepository(context, localPublicKeyStorage);
+        return new KeyWritableRepository(context, localPublicKeyStorage, lastUpdateInteractor);
     }
 
     @VisibleForTesting
-    KeyWritableRepository(Context context, LocalPublicKeyStorage localPublicKeyStorage) {
-        this(context, localPublicKeyStorage, new OperationLog(), 0);
+    KeyWritableRepository(Context context, LocalPublicKeyStorage localPublicKeyStorage,
+            LastUpdateInteractor lastUpdateInteractor) {
+        this(context, localPublicKeyStorage, lastUpdateInteractor, new OperationLog(), 0);
     }
 
-    private KeyWritableRepository(
-            Context context, LocalPublicKeyStorage localPublicKeyStorage, OperationLog log, int indent) {
+    private KeyWritableRepository(Context context, LocalPublicKeyStorage localPublicKeyStorage,
+            LastUpdateInteractor lastUpdateInteractor, OperationLog log, int indent) {
         super(context.getContentResolver(), localPublicKeyStorage, log, indent);
 
         mContext = context;
+        this.lastUpdateInteractor = lastUpdateInteractor;
     }
 
     private LongSparseArray<CanonicalizedPublicKey> getTrustedMasterKeys() {
@@ -560,9 +563,14 @@ public class KeyWritableRepository extends KeyRepository {
             return null;
         }
 
+        Boolean seenOnKeyservers = lastUpdateInteractor.getSeenOnKeyservers(masterKeyId);
+
         ContentValues lastUpdatedEntry = new ContentValues(2);
         lastUpdatedEntry.put(UpdatedKeys.MASTER_KEY_ID, masterKeyId);
         lastUpdatedEntry.put(UpdatedKeys.LAST_UPDATED, lastUpdateTime);
+        if (seenOnKeyservers != null){
+            lastUpdatedEntry.put(UpdatedKeys.SEEN_ON_KEYSERVERS, seenOnKeyservers);
+        }
         return ContentProviderOperation
                 .newInsert(UpdatedKeys.CONTENT_URI)
                 .withValues(lastUpdatedEntry)
@@ -1124,28 +1132,6 @@ public class KeyWritableRepository extends KeyRepository {
         Uri uri = UserPackets.buildUserIdsUri(masterKeyId);
 
         return ContentProviderOperation.newInsert(uri).withValues(values).build();
-    }
-
-    public Uri renewKeyLastUpdatedTime(long masterKeyId, boolean seenOnKeyservers) {
-        boolean isFirstKeyserverStatusCheck = getSeenOnKeyservers(masterKeyId) == null;
-
-        ContentValues values = new ContentValues();
-        values.put(UpdatedKeys.MASTER_KEY_ID, masterKeyId);
-        values.put(UpdatedKeys.LAST_UPDATED, GregorianCalendar.getInstance().getTimeInMillis() / 1000);
-        if (seenOnKeyservers || isFirstKeyserverStatusCheck) {
-            values.put(UpdatedKeys.SEEN_ON_KEYSERVERS, seenOnKeyservers);
-        }
-
-        // this will actually update/replace, doing the right thing™ for seenOnKeyservers value
-        // see `KeychainProvider.insert()`
-        return mContentResolver.insert(UpdatedKeys.CONTENT_URI, values);
-    }
-
-    public void resetAllLastUpdatedTimes() {
-        ContentValues values = new ContentValues();
-        values.putNull(UpdatedKeys.LAST_UPDATED);
-        values.putNull(UpdatedKeys.SEEN_ON_KEYSERVERS);
-        mContentResolver.update(UpdatedKeys.CONTENT_URI, values, null, null);
     }
 
 }
