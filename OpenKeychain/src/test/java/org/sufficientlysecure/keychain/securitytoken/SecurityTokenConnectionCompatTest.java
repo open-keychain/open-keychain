@@ -85,7 +85,7 @@ public class SecurityTokenConnectionCompatTest {
         PsoDecryptTokenOp psoDecryptTokenOp = PsoDecryptTokenOp.create(mock(SecurityTokenConnection.class));
         byte[] psoDecipherPayload = psoDecryptTokenOp.getRsaOperationPayload(encryptedSessionKey);
 
-        CommandApdu command = openPgpCommandApduFactory.createDecipherCommand(psoDecipherPayload);
+        CommandApdu command = openPgpCommandApduFactory.createDecipherCommand(psoDecipherPayload, encryptedSessionKey.length);
         List<CommandApdu> chainedApdus = openPgpCommandApduFactory.createChainedApdus(command);
 
         List<String> apduData = new ArrayList<>();

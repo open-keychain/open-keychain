@@ -135,8 +135,9 @@ public class OpenPgpCommandApduFactory {
     }
 
     @NonNull
-    public CommandApdu createDecipherCommand(byte[] data) {
-        return CommandApdu.create(CLA, INS_PERFORM_SECURITY_OPERATION, P1_PSO_DECIPHER, P2_PSO_DECIPHER, data);
+    public CommandApdu createDecipherCommand(byte[] data, int expectedLength) {
+        return CommandApdu.create(CLA, INS_PERFORM_SECURITY_OPERATION, P1_PSO_DECIPHER, P2_PSO_DECIPHER, data,
+                expectedLength);
     }
 
     @NonNull
