@@ -36,6 +36,8 @@ abstract class CcidDescription {
 
     // dwFeatures Masks
     private static final int FEATURE_AUTOMATIC_VOLTAGE = 0x00008;
+    private static final int FEATURE_AUTOMATIC_PPS = 0x00080;
+
     private static final int FEATURE_EXCHANGE_LEVEL_TPDU = 0x10000;
     private static final int FEATURE_EXCHAGE_LEVEL_SHORT_APDU = 0x20000;
     private static final int FEATURE_EXCHAGE_LEVEL_EXTENDED_APDU = 0x40000;
@@ -128,6 +130,10 @@ abstract class CcidDescription {
         } else {
             throw new UsbTransportException("Character level exchange is not supported");
         }
+    }
+
+    boolean hasAutomaticPps() {
+        return hasFeature(FEATURE_AUTOMATIC_PPS);
     }
 
     private boolean hasFeature(int feature) {

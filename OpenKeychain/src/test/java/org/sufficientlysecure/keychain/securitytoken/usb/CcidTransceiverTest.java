@@ -269,6 +269,14 @@ public class CcidTransceiverTest {
         assertArrayEquals(Hex.decode(responseData), ccidDataBlock.getData());
     }
 
+    @Test
+    public void testReturnsCorrectAutoPpsFlag() throws Exception {
+        CcidDescription description = CcidDescription.fromValues((byte) 0, (byte) 7, 3, 65722);
+        CcidTransceiver ccidTransceiver = new CcidTransceiver(usbConnection, usbBulkIn, usbBulkOut, description);
+
+        assertTrue(ccidTransceiver.hasAutomaticPps());
+    }
+
     private void verifyDialog() {
         assertTrue(expectReplies.isEmpty());
         assertFalse(expectRepliesVerify.isEmpty());

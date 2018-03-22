@@ -258,6 +258,10 @@ public class CcidTransceiver {
         }
     }
 
+    public boolean hasAutomaticPps() {
+        return usbCcidDescription.hasAutomaticPps();
+    }
+
     /** Corresponds to 6.2.1 RDR_to_PC_DataBlock. */
     @AutoValue
     public abstract static class CcidDataBlock {

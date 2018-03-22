@@ -54,7 +54,10 @@ public class T1TpduProtocol implements CcidTransportProtocol {
         // TODO: set checksum from atr
         blockFactory = new T1TpduBlockFactory(BlockChecksumAlgorithm.LRC);
 
-        performPpsExchange();
+        boolean skipPpsExchange = ccidTransceiver.hasAutomaticPps();
+        if (!skipPpsExchange) {
+            performPpsExchange();
+        }
     }
 
     private void performPpsExchange() throws UsbTransportException {
