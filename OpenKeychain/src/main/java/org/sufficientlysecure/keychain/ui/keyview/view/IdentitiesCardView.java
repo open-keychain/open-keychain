@@ -50,12 +50,9 @@ public class IdentitiesCardView extends CardView implements IdentitiesMvpView {
         vIdentities.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL_LIST, false));
 
         linkedIdsAddButton = view.findViewById(R.id.view_key_card_linked_ids_add);
-        linkedIdsAddButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (identitiesCardListener != null) {
-                    identitiesCardListener.onClickAddIdentity();
-                }
+        linkedIdsAddButton.setOnClickListener(v -> {
+            if (identitiesCardListener != null) {
+                identitiesCardListener.onClickAddIdentity();
             }
         });
     }

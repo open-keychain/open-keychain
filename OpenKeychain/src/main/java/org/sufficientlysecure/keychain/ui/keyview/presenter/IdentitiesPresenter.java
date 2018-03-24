@@ -85,14 +85,9 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
         });
         view.setIdentitiesAdapter(identitiesAdapter);
 
-        view.setAddLinkedIdButtonVisible(showLinkedIds);
+        view.setAddLinkedIdButtonVisible(showLinkedIds && isSecret);
 
-        view.setIdentitiesCardListener(new IdentitiesCardListener() {
-            @Override
-            public void onClickAddIdentity() {
-                addLinkedIdentity();
-            }
-        });
+        view.setIdentitiesCardListener(() -> addLinkedIdentity());
     }
 
     public void startLoader(LoaderManager loaderManager) {
