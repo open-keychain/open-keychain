@@ -42,14 +42,6 @@
             tools:visibility="visible"
             />
 
-        <Button
-            android:id="@+id/view_key_card_user_ids_edit"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/key_view_action_edit"
-            android:textColor="@color/card_view_button" />
-
     </LinearLayout>
 
 </LinearLayout>

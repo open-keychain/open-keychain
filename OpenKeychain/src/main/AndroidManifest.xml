@@ -155,10 +155,6 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_edit_key" />
         <activity
-            android:name=".ui.EditIdentitiesActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_edit_identities" />
-        <activity
             android:name=".ui.linked.LinkedIdWizard"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_linked_create"

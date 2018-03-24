@@ -31,18 +31,16 @@ import android.support.v4.content.Loader;
 import android.view.View;
 
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
-import org.sufficientlysecure.keychain.ui.EditIdentitiesActivity;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter.IdentityClickListener;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.ui.keyview.LinkedIdViewFragment;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.AutocryptPeerInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.IdentityInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.LinkedIdInfo;
-import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.AutocryptPeerInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.UserIdInfo;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -87,15 +85,9 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
         });
         view.setIdentitiesAdapter(identitiesAdapter);
 
-        view.setEditIdentitiesButtonVisible(isSecret);
         view.setAddLinkedIdButtonVisible(showLinkedIds);
 
         view.setIdentitiesCardListener(new IdentitiesCardListener() {
-            @Override
-            public void onClickEditIdentities() {
-                editIdentities();
-            }
-
             @Override
             public void onClickAddIdentity() {
                 addLinkedIdentity();
@@ -163,12 +155,6 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
         }
     }
 
-    private void editIdentities() {
-        Intent editIntent = new Intent(context, EditIdentitiesActivity.class);
-        editIntent.setData(KeychainContract.KeyRingData.buildSecretKeyRingUri(masterKeyId));
-        viewKeyMvpView.startActivityAndShowResultSnackbar(editIntent);
-    }
-
     private void addLinkedIdentity() {
         Intent intent = new Intent(context, LinkedIdWizard.class);
         intent.setData(KeyRings.buildUnifiedKeyRingUri(masterKeyId));
@@ -190,12 +176,10 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
     public interface IdentitiesMvpView {
         void setIdentitiesAdapter(IdentityAdapter userIdsAdapter);
         void setIdentitiesCardListener(IdentitiesCardListener identitiesCardListener);
-        void setEditIdentitiesButtonVisible(boolean show);
         void setAddLinkedIdButtonVisible(boolean showLinkedIds);
     }
 
     public interface IdentitiesCardListener {
-        void onClickEditIdentities();
         void onClickAddIdentity();
     }
 }

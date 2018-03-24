@@ -39,7 +39,6 @@ public class IdentitiesCardView extends CardView implements IdentitiesMvpView {
 
     private IdentitiesCardListener identitiesCardListener;
     private final Button linkedIdsAddButton;
-    private final Button userIdsEditButton;
 
     public IdentitiesCardView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -49,16 +48,6 @@ public class IdentitiesCardView extends CardView implements IdentitiesMvpView {
         vIdentities = view.findViewById(R.id.view_key_user_ids);
         vIdentities.setLayoutManager(new LinearLayoutManager(context));
         vIdentities.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL_LIST, false));
-
-        userIdsEditButton = view.findViewById(R.id.view_key_card_user_ids_edit);
-        userIdsEditButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (identitiesCardListener != null) {
-                    identitiesCardListener.onClickEditIdentities();
-                }
-            }
-        });
 
         linkedIdsAddButton = view.findViewById(R.id.view_key_card_linked_ids_add);
         linkedIdsAddButton.setOnClickListener(new View.OnClickListener() {
@@ -79,11 +68,6 @@ public class IdentitiesCardView extends CardView implements IdentitiesMvpView {
     @Override
     public void setIdentitiesCardListener(IdentitiesCardListener identitiesCardListener) {
         this.identitiesCardListener = identitiesCardListener;
-    }
-
-    @Override
-    public void setEditIdentitiesButtonVisible(boolean show) {
-        userIdsEditButton.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     @Override
