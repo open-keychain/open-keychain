@@ -17,17 +17,22 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.Date;
+import java.util.Iterator;
+import java.util.regex.Pattern;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -37,6 +42,7 @@ import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.UploadResult;
@@ -52,14 +58,9 @@ import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
-
-import java.util.Date;
-import java.util.Iterator;
-import java.util.regex.Pattern;
 
 public class CreateKeyFinalFragment extends Fragment {
 
@@ -101,7 +102,7 @@ public class CreateKeyFinalFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_key_final_fragment, container, false);
 
         mNameEdit = view.findViewById(R.id.name);
@@ -121,13 +122,13 @@ public class CreateKeyFinalFragment extends Fragment {
             mNameEdit.setText(getString(R.string.user_id_no_name));
         }
         if (createKeyActivity.mAdditionalEmails != null && createKeyActivity.mAdditionalEmails.size() > 0) {
-            String emailText = createKeyActivity.mEmail + ", ";
+            StringBuilder emailText = new StringBuilder(createKeyActivity.mEmail).append(", ");
             Iterator<?> it = createKeyActivity.mAdditionalEmails.iterator();
             while (it.hasNext()) {
                 Object next = it.next();
-                emailText += next;
+                emailText.append(next);
                 if (it.hasNext()) {
-                    emailText += ", ";
+                    emailText.append(", ");
                 }
             }
             mEmailEdit.setText(emailText);
@@ -137,27 +138,14 @@ public class CreateKeyFinalFragment extends Fragment {
 
         checkEmailValidity();
 
-        mCreateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createKey();
-            }
-        });
+        mCreateButton.setOnClickListener(v -> createKey());
 
-        mCustomKeyRevertButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                keyConfigRevertToDefault();
-            }
-        });
+        mCustomKeyRevertButton.setOnClickListener(v -> keyConfigRevertToDefault());
 
-        mBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CreateKeyActivity createKeyActivity = (CreateKeyActivity) getActivity();
-                if (createKeyActivity != null) {
-                    createKeyActivity.loadFragment(null, FragAction.TO_LEFT);
-                }
+        mBackButton.setOnClickListener(v -> {
+            CreateKeyActivity createKeyActivity1 = (CreateKeyActivity) getActivity();
+            if (createKeyActivity1 != null) {
+                createKeyActivity1.loadFragment(null, FragAction.TO_LEFT);
             }
         });
 
@@ -245,7 +233,7 @@ public class CreateKeyFinalFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         if (isCustomConfiguration) {
@@ -347,19 +335,16 @@ public class CreateKeyFinalFragment extends Fragment {
             emailsValid = false;
         }
         if (createKeyActivity.mAdditionalEmails != null && createKeyActivity.mAdditionalEmails.size() > 0) {
-            for (Iterator<?> it = createKeyActivity.mAdditionalEmails.iterator(); it.hasNext(); ) {
-                if (!EMAIL_PATTERN.matcher(it.next().toString()).matches()) {
+            for (String mAdditionalEmail : createKeyActivity.mAdditionalEmails) {
+                if (!EMAIL_PATTERN.matcher(mAdditionalEmail).matches()) {
                     emailsValid = false;
                 }
             }
         }
         if (!emailsValid) {
             mEmailEdit.setError(getString(R.string.create_key_final_email_valid_warning));
-            mEmailEdit.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mNameEdit.requestFocus(); // Workaround to remove focus from email
-                }
+            mEmailEdit.setOnClickListener(v -> {
+                mNameEdit.requestFocus(); // Workaround to remove focus from email
             });
         }
     }

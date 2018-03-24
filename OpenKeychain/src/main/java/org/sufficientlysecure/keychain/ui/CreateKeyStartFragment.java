@@ -18,17 +18,16 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -66,7 +65,7 @@ public class CreateKeyStartFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_key_start_fragment, container, false);
 
         mCreateKey = view.findViewById(R.id.create_key_create_key_button);
@@ -81,52 +80,36 @@ public class CreateKeyStartFragment extends Fragment {
             mSkipOrCancel.setText(R.string.btn_do_not_save);
         }
 
-        mCreateKey.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CreateKeyNameFragment frag = CreateKeyNameFragment.newInstance();
-                mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
-            }
+        mCreateKey.setOnClickListener(v -> {
+            CreateKeyNameFragment frag = CreateKeyNameFragment.newInstance();
+            mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
         });
 
-        mSecurityToken.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CreateSecurityTokenWaitFragment frag = new CreateSecurityTokenWaitFragment();
-                mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
-            }
+        mSecurityToken.setOnClickListener(v -> {
+            CreateSecurityTokenWaitFragment frag = new CreateSecurityTokenWaitFragment();
+            mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
         });
 
-        mImportKey.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(mCreateKeyActivity, ImportKeysActivity.class);
-                intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN);
-                startActivityForResult(intent, REQUEST_CODE_IMPORT_KEY);
-            }
+        mImportKey.setOnClickListener(v -> {
+            Intent intent = new Intent(mCreateKeyActivity, ImportKeysActivity.class);
+            intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN);
+            startActivityForResult(intent, REQUEST_CODE_IMPORT_KEY);
         });
 
         if (Build.VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-            mSecureDeviceSetup.setOnClickListener(new OnClickListener() {
-                @TargetApi(VERSION_CODES.LOLLIPOP)
-                @Override
-                public void onClick(View v) {
-                    TransferFragment frag = new TransferFragment();
-                    mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
-                }
+            mSecureDeviceSetup.setOnClickListener(v -> {
+                TransferFragment frag = new TransferFragment();
+                mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
             });
         } else {
             mSecureDeviceSetup.setVisibility(View.GONE);
         }
 
-        mSkipOrCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!mCreateKeyActivity.mFirstTime) {
-                    mCreateKeyActivity.setResult(Activity.RESULT_CANCELED);
-                }
-                mCreateKeyActivity.finish();
+        mSkipOrCancel.setOnClickListener(v -> {
+            if (!mCreateKeyActivity.mFirstTime) {
+                mCreateKeyActivity.setResult(Activity.RESULT_CANCELED);
             }
+            mCreateKeyActivity.finish();
         });
 
         return view;

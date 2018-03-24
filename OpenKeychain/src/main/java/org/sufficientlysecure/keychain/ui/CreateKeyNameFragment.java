@@ -17,9 +17,10 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.app.Activity;
+
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,7 +51,7 @@ public class CreateKeyNameFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_key_name_fragment, container, false);
 
         mNameEdit = view.findViewById(R.id.create_key_name);
@@ -64,18 +65,8 @@ public class CreateKeyNameFragment extends Fragment {
         if (mCreateKeyActivity.mName == null) {
             mNameEdit.requestFocus();
         }
-        mBackButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCreateKeyActivity.loadFragment(null, FragAction.TO_LEFT);
-            }
-        });
-        mNextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                nextClicked();
-            }
-        });
+        mBackButton.setOnClickListener(v -> mCreateKeyActivity.loadFragment(null, FragAction.TO_LEFT));
+        mNextButton.setOnClickListener(v -> nextClicked());
 
         return view;
     }

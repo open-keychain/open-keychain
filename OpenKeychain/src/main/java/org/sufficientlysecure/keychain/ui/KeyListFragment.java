@@ -40,7 +40,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ViewAnimator;
@@ -202,26 +201,17 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         FloatingActionButton fabCloud = view.findViewById(R.id.fab_add_cloud);
         FloatingActionButton fabFile = view.findViewById(R.id.fab_add_file);
 
-        fabQrCode.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mFab.collapse();
-                scanQrCode();
-            }
+        fabQrCode.setOnClickListener(v -> {
+            mFab.collapse();
+            scanQrCode();
         });
-        fabCloud.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mFab.collapse();
-                searchCloud();
-            }
+        fabCloud.setOnClickListener(v -> {
+            mFab.collapse();
+            searchCloud();
         });
-        fabFile.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mFab.collapse();
-                importFile();
-            }
+        fabFile.setOnClickListener(v -> {
+            mFab.collapse();
+            importFile();
         });
 
 
@@ -248,12 +238,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         // click on search button (in empty view) starts query for search string
         vSearchContainer = activity.findViewById(R.id.search_container);
         vSearchButton = activity.findViewById(R.id.search_button);
-        vSearchButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startSearchForQuery();
-            }
-        });
+        vSearchButton.setOnClickListener(v -> startSearchForQuery());
 
         KeySectionedListAdapter adapter = new KeySectionedListAdapter(getContext(), null);
         adapter.setKeyListener(mKeyListener);
@@ -484,7 +469,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         );
 
         if (cursor == null) {
-            Notify.create(activity, R.string.error_loading_keys, Notify.Style.ERROR);
+            Notify.create(activity, R.string.error_loading_keys, Notify.Style.ERROR).show();
             return;
         }
 

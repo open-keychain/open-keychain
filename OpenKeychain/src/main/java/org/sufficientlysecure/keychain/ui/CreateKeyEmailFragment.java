@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -67,7 +68,6 @@ public class CreateKeyEmailFragment extends Fragment {
      * Checks if text of given EditText is not empty. If it is empty an error is
      * set and the EditText gets the focus.
      *
-     * @param editText
      * @return true if EditText is not empty
      */
     private boolean isMainEmailValid(EditText editText) {
@@ -83,7 +83,7 @@ public class CreateKeyEmailFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_key_email_fragment, container, false);
 
         mEmailEdit = view.findViewById(R.id.create_key_email);
@@ -98,29 +98,14 @@ public class CreateKeyEmailFragment extends Fragment {
         if (mCreateKeyActivity.mEmail == null) {
             mEmailEdit.requestFocus();
         }
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCreateKeyActivity.loadFragment(null, FragAction.TO_LEFT);
-            }
-        });
-        nextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                nextClicked();
-            }
-        });
+        backButton.setOnClickListener(v -> mCreateKeyActivity.loadFragment(null, FragAction.TO_LEFT));
+        nextButton.setOnClickListener(v -> nextClicked());
         emailsRecyclerView.setHasFixedSize(true);
         emailsRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         emailsRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         if (mEmailAdapter == null) {
-            mEmailAdapter = new EmailAdapter(mAdditionalEmailModels, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    addEmail();
-                }
-            });
+            mEmailAdapter = new EmailAdapter(mAdditionalEmailModels, v -> addEmail());
 
             if (mCreateKeyActivity.mAdditionalEmails != null) {
                 mEmailAdapter.addAll(mCreateKeyActivity.mAdditionalEmails);
@@ -134,10 +119,6 @@ public class CreateKeyEmailFragment extends Fragment {
 
     /**
      * Checks if a given email is valid
-     *
-     * @param email
-     * @param additionalEmail
-     * @return
      */
     private boolean checkEmail(String email, boolean additionalEmail) {
         if (email.isEmpty()) {
@@ -161,9 +142,6 @@ public class CreateKeyEmailFragment extends Fragment {
 
     /**
      * Checks for duplicated emails inside the additional email adapter.
-     *
-     * @param email
-     * @return
      */
     private boolean isEmailDuplicatedInsideAdapter(String email) {
         //check for duplicated emails inside the adapter
@@ -252,7 +230,7 @@ public class CreateKeyEmailFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         // save state in activity
         mCreateKeyActivity.mAdditionalEmails = getAdditionalEmails();
@@ -281,8 +259,8 @@ public class CreateKeyEmailFragment extends Fragment {
         // Complex data items may need more than one view per item, and
         // you provide access to all the views for a data item in a view holder
         class ViewHolder extends RecyclerView.ViewHolder {
-            public TextView mTextView;
-            public ImageButton mDeleteButton;
+            TextView mTextView;
+            ImageButton mDeleteButton;
 
             public ViewHolder(View itemView) {
                 super(itemView);
@@ -292,16 +270,16 @@ public class CreateKeyEmailFragment extends Fragment {
         }
 
         class FooterHolder extends RecyclerView.ViewHolder {
-            public Button mAddButton;
+            Button mAddButton;
 
-            public FooterHolder(View itemView) {
+            FooterHolder(View itemView) {
                 super(itemView);
                 mAddButton = itemView.findViewById(R.id.create_key_add_email);
             }
         }
 
         // Provide a suitable constructor (depends on the kind of dataset)
-        public EmailAdapter(List<ViewModel> myDataset, View.OnClickListener onFooterClickListener) {
+        EmailAdapter(List<ViewModel> myDataset, View.OnClickListener onFooterClickListener) {
             mDataset = myDataset;
             mFooterOnClickListener = onFooterClickListener;
         }
@@ -334,12 +312,7 @@ public class CreateKeyEmailFragment extends Fragment {
                 final ViewModel model = mDataset.get(position);
 
                 thisHolder.mTextView.setText(model.email);
-                thisHolder.mDeleteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        remove(model);
-                    }
-                });
+                thisHolder.mDeleteButton.setOnClickListener(v -> remove(model));
             }
         }
 
