@@ -85,9 +85,10 @@ public class PsoDecryptTokenOp {
     }
 
     private byte[] decryptSessionKeyRsa(byte[] encryptedSessionKeyMpi) throws IOException {
+        int mpiLength = getMpiLength(encryptedSessionKeyMpi);
         byte[] psoDecipherPayload = getRsaOperationPayload(encryptedSessionKeyMpi);
 
-        CommandApdu command = connection.getCommandFactory().createDecipherCommand(psoDecipherPayload);
+        CommandApdu command = connection.getCommandFactory().createDecipherCommand(psoDecipherPayload, mpiLength);
         ResponseApdu response = connection.communicate(command);
 
         if (!response.isSuccess()) {
@@ -139,7 +140,8 @@ public class PsoDecryptTokenOp {
         }
         psoDecipherPayload = Arrays.concatenate(Hex.decode("A6"), dataLen, psoDecipherPayload);
 
-        CommandApdu command = connection.getCommandFactory().createDecipherCommand(psoDecipherPayload);
+        CommandApdu command = connection.getCommandFactory().createDecipherCommand(
+                psoDecipherPayload, encryptedPoint.length);
         ResponseApdu response = connection.communicate(command);
 
         if (!response.isSuccess()) {

@@ -135,8 +135,9 @@ public class OpenPgpCommandApduFactory {
     }
 
     @NonNull
-    public CommandApdu createDecipherCommand(byte[] data) {
-        return CommandApdu.create(CLA, INS_PERFORM_SECURITY_OPERATION, P1_PSO_DECIPHER, P2_PSO_DECIPHER, data);
+    public CommandApdu createDecipherCommand(byte[] data, int expectedLength) {
+        return CommandApdu.create(CLA, INS_PERFORM_SECURITY_OPERATION, P1_PSO_DECIPHER, P2_PSO_DECIPHER, data,
+                expectedLength);
     }
 
     @NonNull
@@ -220,14 +221,18 @@ public class OpenPgpCommandApduFactory {
 
         int offset = 0;
         byte[] data = apdu.getData();
-        int ne = Math.min(apdu.getNe(), MAX_APDU_NE);
         while (offset < data.length) {
             int curLen = Math.min(MAX_APDU_NC, data.length - offset);
             boolean last = offset + curLen >= data.length;
             int cla = apdu.getCLA() + (last ? 0 : MASK_CLA_CHAINING);
 
-            CommandApdu cmd =
-                    CommandApdu.create(cla, apdu.getINS(), apdu.getP1(), apdu.getP2(), data, offset, curLen, ne);
+            CommandApdu cmd;
+            if (last) {
+                int ne = Math.min(apdu.getNe(), MAX_APDU_NE);
+                cmd = CommandApdu.create(cla, apdu.getINS(), apdu.getP1(), apdu.getP2(), data, offset, curLen, ne);
+            } else {
+                cmd = CommandApdu.create(cla, apdu.getINS(), apdu.getP1(), apdu.getP2(), data, offset, curLen);
+            }
             result.add(cmd);
 
             offset += curLen;

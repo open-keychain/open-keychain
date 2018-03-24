@@ -32,6 +32,7 @@ import org.sufficientlysecure.keychain.securitytoken.operations.PsoDecryptTokenO
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,6 +46,8 @@ public class PsoDecryptTokenOpTest {
                     "fb9d8cbcb34f28d0b968b6e09eda0e1d3ab6b251eb09f9fb9d9abfeaf9010001733b9015e9e4b6c9df61bbc76041f439d1" +
                     "273e41f5d0e8414a2b8d6d4c7e86f30b94cfba308b38de53d694a8ca15382301ace806c8237641b03525b3e3e8cbb017e2" +
                     "51265229bcbb0da5d5aeb4eafbad9779");
+    private static final int RSA_ENC_MODULUS = 256;
+
     private SecurityTokenConnection securityTokenConnection;
     private OpenPgpCommandApduFactory commandFactory;
     private PsoDecryptTokenOp useCase;
@@ -75,7 +78,7 @@ public class PsoDecryptTokenOpTest {
 
         ResponseApdu dummyResponseApdu = ResponseApdu.fromBytes(Hex.decode("010203049000"));
 
-        when(commandFactory.createDecipherCommand(any(byte[].class))).thenReturn(dummyCommandApdu);
+        when(commandFactory.createDecipherCommand(any(byte[].class), eq(RSA_ENC_MODULUS))).thenReturn(dummyCommandApdu);
         when(securityTokenConnection.communicate(dummyCommandApdu)).thenReturn(dummyResponseApdu);
 
         byte[] response = useCase.verifyAndDecryptSessionKey(RSA_ENC_SESSIONKEY_MPI, null);
