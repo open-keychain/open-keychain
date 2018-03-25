@@ -23,17 +23,12 @@ import java.util.Date;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v4.content.AsyncTaskLoader;
-import android.util.Log;
 
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
-import org.sufficientlysecure.keychain.ui.keyview.loader.KeyserverStatusLoader.KeyserverStatus;
 import timber.log.Timber;
 
 
-public class KeyserverStatusLoader extends AsyncTaskLoader<KeyserverStatus> {
+public class KeyserverStatusDao {
     public static final String[] PROJECTION = new String[] {
             UpdatedKeys.LAST_UPDATED,
             UpdatedKeys.SEEN_ON_KEYSERVERS
@@ -43,23 +38,17 @@ public class KeyserverStatusLoader extends AsyncTaskLoader<KeyserverStatus> {
 
 
     private final ContentResolver contentResolver;
-    private final long masterKeyId;
 
-    private KeyserverStatus cachedResult;
-
-    private ForceLoadContentObserver keyserverStatusObserver;
-
-    public KeyserverStatusLoader(Context context, ContentResolver contentResolver, long masterKeyId) {
-        super(context);
-
-        this.contentResolver = contentResolver;
-        this.masterKeyId = masterKeyId;
-
-        this.keyserverStatusObserver = new ForceLoadContentObserver();
+    public static KeyserverStatusDao getInstance(Context context) {
+        ContentResolver contentResolver = context.getContentResolver();
+        return new KeyserverStatusDao(contentResolver);
     }
 
-    @Override
-    public KeyserverStatus loadInBackground() {
+    private KeyserverStatusDao(ContentResolver contentResolver) {
+        this.contentResolver = contentResolver;
+    }
+
+    public KeyserverStatus getKeyserverStatus(long masterKeyId) {
         Cursor cursor = contentResolver.query(UpdatedKeys.CONTENT_URI, PROJECTION,
                 UpdatedKeys.MASTER_KEY_ID + " = ?", new String[] { Long.toString(masterKeyId) }, null);
         if (cursor == null) {
@@ -83,36 +72,6 @@ public class KeyserverStatusLoader extends AsyncTaskLoader<KeyserverStatus> {
         } finally {
             cursor.close();
         }
-    }
-
-    @Override
-    public void deliverResult(KeyserverStatus keySubkeyStatus) {
-        cachedResult = keySubkeyStatus;
-
-        if (isStarted()) {
-            super.deliverResult(keySubkeyStatus);
-        }
-    }
-
-    @Override
-    protected void onStartLoading() {
-        if (cachedResult != null) {
-            deliverResult(cachedResult);
-        }
-
-        if (takeContentChanged() || cachedResult == null) {
-            forceLoad();
-        }
-
-        getContext().getContentResolver().registerContentObserver(
-                KeyRings.buildGenericKeyRingUri(masterKeyId), true, keyserverStatusObserver);
-    }
-
-    @Override
-    protected void onAbandon() {
-        super.onAbandon();
-
-        getContext().getContentResolver().unregisterContentObserver(keyserverStatusObserver);
     }
 
     public static class KeyserverStatus {

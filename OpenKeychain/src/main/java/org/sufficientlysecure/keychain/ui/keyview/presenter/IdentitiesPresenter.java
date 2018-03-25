@@ -21,13 +21,12 @@ package org.sufficientlysecure.keychain.ui.keyview.presenter;
 import java.io.IOException;
 import java.util.List;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.Loader;
+import android.support.annotation.Nullable;
 import android.view.View;
 
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
@@ -37,21 +36,20 @@ import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter.IdentityClickListener;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.ui.keyview.LinkedIdViewFragment;
-import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader;
-import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.AutocryptPeerInfo;
-import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.IdentityInfo;
-import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.LinkedIdInfo;
-import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.UserIdInfo;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.AutocryptPeerInfo;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.IdentityInfo;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.LinkedIdInfo;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.UserIdInfo;
+import org.sufficientlysecure.keychain.ui.keyview.loader.ViewKeyLiveData.IdentityLiveData;
 import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
 
 
-public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> {
+public class IdentitiesPresenter implements Observer<List<IdentityInfo>> {
     private final Context context;
     private final IdentitiesMvpView view;
     private final ViewKeyMvpView viewKeyMvpView;
-    private final int loaderId;
 
     private final IdentityAdapter identitiesAdapter;
 
@@ -60,11 +58,10 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
     private final boolean showLinkedIds;
 
     public IdentitiesPresenter(Context context, IdentitiesMvpView view, ViewKeyMvpView viewKeyMvpView,
-            int loaderId, long masterKeyId, boolean isSecret) {
+            long masterKeyId, boolean isSecret) {
         this.context = context;
         this.view = view;
         this.viewKeyMvpView = viewKeyMvpView;
-        this.loaderId = loaderId;
 
         this.masterKeyId = masterKeyId;
         this.isSecret = isSecret;
@@ -90,24 +87,10 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
         view.setIdentitiesCardListener(() -> addLinkedIdentity());
     }
 
-    public void startLoader(LoaderManager loaderManager) {
-        loaderManager.restartLoader(loaderId, null, this);
-    }
-
     @Override
-    public Loader<List<IdentityInfo>> onCreateLoader(int id, Bundle args) {
-        return new IdentityLoader(context, context.getContentResolver(), masterKeyId, showLinkedIds);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<List<IdentityInfo>> loader, List<IdentityInfo> data) {
+    public void onChanged(@Nullable List<IdentityInfo> identityInfos) {
         viewKeyMvpView.setContentShown(true, false);
-        identitiesAdapter.setData(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader loader) {
-        identitiesAdapter.setData(null);
+        identitiesAdapter.setData(identityInfos);
     }
 
     private void showIdentityInfo(final int position) {
@@ -166,6 +149,10 @@ public class IdentitiesPresenter implements LoaderCallbacks<List<IdentityInfo>> 
         AutocryptPeerDataAccessObject autocryptPeerDao =
                 new AutocryptPeerDataAccessObject(context, info.getPackageName());
         autocryptPeerDao.delete(info.getIdentity());
+    }
+
+    public LiveData<List<IdentityInfo>> getLiveDataInstance() {
+        return new IdentityLiveData(context, masterKeyId, showLinkedIds);
     }
 
     public interface IdentitiesMvpView {

@@ -18,28 +18,22 @@
 package org.sufficientlysecure.keychain.ui.keyview.presenter;
 
 
-import android.Manifest;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.Loader;
+import android.support.annotation.Nullable;
 
-import org.sufficientlysecure.keychain.ui.keyview.loader.SystemContactInfoLoader;
-import org.sufficientlysecure.keychain.ui.keyview.loader.SystemContactInfoLoader.SystemContactInfo;
-import timber.log.Timber;
+import org.sufficientlysecure.keychain.ui.keyview.loader.SystemContactDao.SystemContactInfo;
+import org.sufficientlysecure.keychain.ui.keyview.loader.ViewKeyLiveData.SystemContactInfoLiveData;
 
 
-public class SystemContactPresenter implements LoaderCallbacks<SystemContactInfo> {
+public class SystemContactPresenter implements Observer<SystemContactInfo> {
     private final Context context;
     private final SystemContactMvpView view;
-    private final int loaderId;
 
     private final long masterKeyId;
     private final boolean isSecret;
@@ -47,55 +41,29 @@ public class SystemContactPresenter implements LoaderCallbacks<SystemContactInfo
     private long contactId;
 
 
-    public SystemContactPresenter(Context context, SystemContactMvpView view, int loaderId, long masterKeyId, boolean isSecret) {
+    public SystemContactPresenter(Context context, SystemContactMvpView view, long masterKeyId, boolean isSecret) {
         this.context = context;
         this.view = view;
-        this.loaderId = loaderId;
 
         this.masterKeyId = masterKeyId;
         this.isSecret = isSecret;
 
-        view.setSystemContactClickListener(new SystemContactClickListener() {
-            @Override
-            public void onSystemContactClick() {
-                SystemContactPresenter.this.onSystemContactClick();
-            }
-        });
+        view.setSystemContactClickListener(SystemContactPresenter.this::onSystemContactClick);
     }
 
-    public void startLoader(LoaderManager loaderManager) {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)
-                == PackageManager.PERMISSION_DENIED) {
-            Timber.w("loading linked system contact not possible READ_CONTACTS permission denied!");
+    public LiveData<SystemContactInfo> getLiveDataInstance() {
+        return new SystemContactInfoLiveData(context, masterKeyId, isSecret);
+    }
+
+    @Override
+    public void onChanged(@Nullable SystemContactInfo systemContactInfo) {
+        if (systemContactInfo == null) {
             view.hideLinkedSystemContact();
             return;
         }
 
-        Bundle linkedContactData = new Bundle();
-
-        // initialises loader for contact query so we can listen to any updates
-        loaderManager.restartLoader(loaderId, linkedContactData, this);
-    }
-
-    @Override
-    public Loader<SystemContactInfo> onCreateLoader(int id, Bundle args) {
-        return new SystemContactInfoLoader(context, context.getContentResolver(), masterKeyId, isSecret);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<SystemContactInfo> loader, SystemContactInfo data) {
-        if (data == null) {
-            view.hideLinkedSystemContact();
-            return;
-        }
-
-        this.contactId = data.contactId;
-        view.showLinkedSystemContact(data.contactName, data.contactPicture);
-    }
-
-    @Override
-    public void onLoaderReset(Loader loader) {
-
+        this.contactId = systemContactInfo.contactId;
+        view.showLinkedSystemContact(systemContactInfo.contactName, systemContactInfo.contactPicture);
     }
 
     private void onSystemContactClick() {
