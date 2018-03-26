@@ -178,7 +178,7 @@
     <string name="label_main_user_id">"Primary identity"</string>
     <string name="label_name">"Name"</string>
     <string name="label_email">"Email"</string>
-    <string name="label_send_key">"Synchronize with the Internet"</string>
+    <string name="label_send_key">"Publish certification on keyservers"</string>
     <string name="label_fingerprint">"Fingerprint"</string>
     <string name="expiry_date_dialog_title">"Set expiry date"</string>
     <string name="label_keyservers_title">"Keyservers"</string>

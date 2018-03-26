@@ -118,11 +118,6 @@ public class CertifyKeyFragment
             }
         });
 
-        // If this is a debug build, don't upload by default
-        if (Constants.DEBUG) {
-            mUploadKeyCheckbox.setChecked(false);
-        }
-
         return view;
     }
 
