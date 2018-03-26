@@ -149,10 +149,7 @@ public class CreateKeyFinalFragment extends Fragment {
             }
         });
 
-        // If this is a debug build, don't upload by default
-        if (Constants.DEBUG) {
-            mUploadCheckbox.setChecked(false);
-        }
+        mUploadCheckbox.setChecked(false);
 
         return view;
     }

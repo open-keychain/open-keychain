@@ -707,7 +707,7 @@
     <string name="key_view_action_share_with">"Share with…"</string>
     <string name="key_view_action_share_ssh_with">"Share as SSH public key with…"</string>
     <string name="key_view_action_share_nfc">"Share over NFC"</string>
-    <string name="key_view_action_upload">"Upload to keyserver"</string>
+    <string name="key_view_action_upload">"Publish on keyserver"</string>
     <string name="key_view_tab_main">"Main Info"</string>
     <string name="key_view_tab_start">"Start"</string>
     <string name="key_view_tab_share">"Share"</string>
@@ -787,7 +787,7 @@
     <string name="edit_key_error_bad_security_token_stripped">"Cannot move key to Security Token (either stripped or already on Security Token)!"</string>
 
     <!-- Create key -->
-    <string name="create_key_upload">"Synchronize with the Internet"</string>
+    <string name="create_key_upload">"Publish on keyservers"</string>
     <string name="create_key_empty">"This field is required"</string>
     <string name="create_key_passphrases_not_equal">"Passwords do not match"</string>
     <string name="create_key_final_text">"You entered the following identity:"</string>
