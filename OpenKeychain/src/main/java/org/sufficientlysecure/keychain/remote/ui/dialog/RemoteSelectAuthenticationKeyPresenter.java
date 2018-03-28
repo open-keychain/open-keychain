@@ -18,6 +18,8 @@
 package org.sufficientlysecure.keychain.remote.ui.dialog;
 
 
+import java.util.List;
+
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -29,11 +31,9 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.remote.ui.dialog.KeyLoader.KeyInfo;
-import org.sufficientlysecure.keychain.remote.ui.dialog.KeyLoader.KeySelector;
+import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeyInfo;
+import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeySelector;
 import timber.log.Timber;
-
-import java.util.List;
 
 
 class RemoteSelectAuthenticationKeyPresenter implements LoaderCallbacks<List<KeyInfo>> {
@@ -84,7 +84,7 @@ class RemoteSelectAuthenticationKeyPresenter implements LoaderCallbacks<List<Key
         String selection = KeyRings.HAS_AUTHENTICATE_SECRET + " != 0";
         KeySelector keySelector = KeySelector.create(
                 KeyRings.buildUnifiedKeyRingsUri(), selection);
-        return new KeyLoader(context, context.getContentResolver(), keySelector);
+        return new KeyInfoLoader(context, context.getContentResolver(), keySelector);
     }
 
     @Override

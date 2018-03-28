@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.remote.ui.dialog;
+package org.sufficientlysecure.keychain.livedata;
 
 
 import java.util.ArrayList;
@@ -23,19 +23,17 @@ import java.util.Collections;
 import java.util.List;
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.Nullable;
-import android.support.v4.content.AsyncTaskLoader;
 
 import com.google.auto.value.AutoValue;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
-import org.sufficientlysecure.keychain.remote.ui.dialog.KeyLoader.KeyInfo;
+import org.sufficientlysecure.keychain.util.DatabaseUtil;
 
 
-public class KeyLoader extends AsyncTaskLoader<List<KeyInfo>> {
+public class KeyInfoInteractor {
     // These are the rows that we will retrieve.
     private String[] QUERY_PROJECTION = new String[]{
             KeyRings._ID,
@@ -61,29 +59,27 @@ public class KeyLoader extends AsyncTaskLoader<List<KeyInfo>> {
     private static final int INDEX_EMAIL = 8;
     private static final int INDEX_COMMENT = 9;
 
-    private static final String QUERY_WHERE = Tables.KEYS + "." + KeyRings.IS_REVOKED +
+    private static final String QUERY_WHERE_ALL = Tables.KEYS + "." + KeyRings.IS_REVOKED +
             " = 0 AND " + KeyRings.IS_EXPIRED + " = 0";
+    private static final String QUERY_WHERE_SECRET = Tables.KEYS + "." + KeyRings.IS_REVOKED +
+            " = 0 AND " + KeyRings.IS_EXPIRED + " = 0" + " AND " + KeyRings.HAS_ANY_SECRET + " != 0";
     private static final String QUERY_ORDER = Tables.KEYS + "." + KeyRings.CREATION + " DESC";
 
     private final ContentResolver contentResolver;
-    private final KeySelector keySelector;
 
-    private List<KeyInfo> cachedResult;
 
-    KeyLoader(Context context, ContentResolver contentResolver, KeySelector keySelector) {
-        super(context);
-
+    public KeyInfoInteractor(ContentResolver contentResolver) {
         this.contentResolver = contentResolver;
-        this.keySelector = keySelector;
     }
 
-    @Override
-    public List<KeyInfo> loadInBackground() {
+    public List<KeyInfo> loadKeyInfo(KeySelector keySelector) {
         ArrayList<KeyInfo> keyInfos = new ArrayList<>();
         Cursor cursor;
 
+        String selection = keySelector.isOnlySecret() ? QUERY_WHERE_SECRET : QUERY_WHERE_ALL;
         String additionalSelection = keySelector.getSelection();
-        String selection = QUERY_WHERE + (additionalSelection != null ? " AND " + additionalSelection : "");
+
+        selection = DatabaseUtil.concatenateWhere(selection, additionalSelection);
         cursor = contentResolver.query(keySelector.getKeyRingUri(), QUERY_PROJECTION, selection, null, QUERY_ORDER);
 
         if (cursor == null) {
@@ -96,33 +92,6 @@ public class KeyLoader extends AsyncTaskLoader<List<KeyInfo>> {
         }
 
         return Collections.unmodifiableList(keyInfos);
-    }
-
-    @Override
-    public void deliverResult(List<KeyInfo> keySubkeyStatus) {
-        cachedResult = keySubkeyStatus;
-
-        if (isStarted()) {
-            super.deliverResult(keySubkeyStatus);
-        }
-    }
-
-    @Override
-    protected void onStartLoading() {
-        if (cachedResult != null) {
-            deliverResult(cachedResult);
-        }
-
-        if (takeContentChanged() || cachedResult == null) {
-            forceLoad();
-        }
-    }
-
-    @Override
-    protected void onStopLoading() {
-        super.onStopLoading();
-
-        cachedResult = null;
     }
 
     @AutoValue
@@ -153,7 +122,7 @@ public class KeyLoader extends AsyncTaskLoader<List<KeyInfo>> {
             String email = cursor.getString(INDEX_EMAIL);
             String comment = cursor.getString(INDEX_COMMENT);
 
-            return new AutoValue_KeyLoader_KeyInfo(
+            return new AutoValue_KeyInfoInteractor_KeyInfo(
                     masterKeyId, creationDate, hasEncrypt, hasAuthenticate, hasAnySecret, isVerified, name, email, comment);
         }
     }
@@ -163,9 +132,14 @@ public class KeyLoader extends AsyncTaskLoader<List<KeyInfo>> {
         public abstract Uri getKeyRingUri();
         @Nullable
         public abstract String getSelection();
+        public abstract boolean isOnlySecret();
 
-        static KeySelector create(Uri keyRingUri, String selection) {
-            return new AutoValue_KeyLoader_KeySelector(keyRingUri, selection);
+        public static KeySelector create(Uri keyRingUri, String selection) {
+            return new AutoValue_KeyInfoInteractor_KeySelector(keyRingUri, selection, false);
+        }
+
+        public static KeySelector createOnlySecret(Uri keyRingUri, String selection) {
+            return new AutoValue_KeyInfoInteractor_KeySelector(keyRingUri, selection, true);
         }
     }
 }

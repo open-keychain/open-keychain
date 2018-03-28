@@ -33,8 +33,8 @@ import android.support.v4.content.Loader;
 
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.remote.ui.dialog.KeyLoader.KeyInfo;
-import org.sufficientlysecure.keychain.remote.ui.dialog.KeyLoader.KeySelector;
+import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeyInfo;
+import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeySelector;
 import timber.log.Timber;
 
 
@@ -95,7 +95,7 @@ class RemoteDeduplicatePresenter implements LoaderCallbacks<List<KeyInfo>> {
         KeySelector keySelector = KeySelector.create(
                 KeyRings.buildUnifiedKeyRingsFindByEmailUri(duplicateAddress), null);
 
-        return new KeyLoader(context, context.getContentResolver(), keySelector);
+        return new KeyInfoLoader(context, context.getContentResolver(), keySelector);
     }
 
     @Override
