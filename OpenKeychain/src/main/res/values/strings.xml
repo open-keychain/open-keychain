@@ -167,7 +167,8 @@
     <string name="label_keyservers">"Manage OpenPGP keyservers"</string>
     <string name="label_key_id">"Key ID"</string>
     <string name="label_key_id_colon">"Key ID:"</string>
-    <string name="label_key_created">"Key created %s"</string>
+    <string name="label_key_created">"Created %s"</string>
+    <string name="label_key_created_just_now">"Created just now"</string>
     <string name="label_key_type">"Type"</string>
     <string name="label_creation">"Creation"</string>
     <string name="label_creation_colon">"Creation:"</string>

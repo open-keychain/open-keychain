@@ -63,6 +63,8 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
     private static final short VIEW_SECTION_TYPE_PRIVATE = 0x0;
     private static final short VIEW_SECTION_TYPE_PUBLIC = 0x1;
 
+    private static final long JUST_NOW_TIMESPAN = DateUtils.MINUTE_IN_MILLIS * 5;
+
     private String mQuery;
     private List<Integer> mSelected;
     private KeyListListener mListener;
@@ -483,15 +485,8 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
                 mMainUserId.setTextColor(textColor);
                 mMainUserIdRest.setTextColor(textColor);
 
-                if (keyItem.hasDuplicate()) {
-                    String dateTime = DateUtils.formatDateTime(context,
-                            keyItem.getCreationTime(),
-                            DateUtils.FORMAT_SHOW_DATE
-                                    | DateUtils.FORMAT_SHOW_TIME
-                                    | DateUtils.FORMAT_SHOW_YEAR
-                                    | DateUtils.FORMAT_ABBREV_MONTH);
-                    mCreationDate.setText(context.getString(R.string.label_key_created,
-                            dateTime));
+                if (keyItem.hasDuplicate() || keyItem.isSecret()) {
+                    mCreationDate.setText(getSecretKeyReadableTime(context, keyItem));
                     mCreationDate.setTextColor(textColor);
                     mCreationDate.setVisibility(View.VISIBLE);
                 } else {
@@ -515,6 +510,27 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
                     mTrustIdIcon.setVisibility(View.GONE);
                 }
             }
+        }
+
+        @NonNull
+        private String getSecretKeyReadableTime(Context context, KeyListCursor keyItem) {
+            long creationMillis = keyItem.getCreationTime();
+
+            boolean allowRelativeTimestamp = keyItem.hasDuplicate();
+            if (allowRelativeTimestamp) {
+                long creationAgeMillis = System.currentTimeMillis() - creationMillis;
+                if (creationAgeMillis < JUST_NOW_TIMESPAN) {
+                    return context.getString(R.string.label_key_created_just_now);
+                }
+            }
+
+            String dateTime = DateUtils.formatDateTime(context,
+                    creationMillis,
+                    DateUtils.FORMAT_SHOW_DATE
+                            | DateUtils.FORMAT_SHOW_TIME
+                            | DateUtils.FORMAT_SHOW_YEAR
+                            | DateUtils.FORMAT_ABBREV_MONTH);
+            return context.getString(R.string.label_key_created, dateTime);
         }
 
         @Override
