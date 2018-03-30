@@ -25,6 +25,7 @@ import android.database.MatrixCursor;
 import android.database.MergeCursor;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -387,16 +388,21 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
             { // set name and stuff, common to both key types
                 String name = keyItem.getName();
                 String email = keyItem.getEmail();
-                if (name != null) {
+                if (name == null) {
+                    if (email != null) {
+                        mMainUserId.setText(highlighter.highlight(email));
+                        mMainUserIdRest.setVisibility(View.GONE);
+                    } else {
+                        mMainUserId.setText(R.string.user_id_no_name);
+                    }
+                } else {
                     mMainUserId.setText(highlighter.highlight(name));
-                } else {
-                    mMainUserId.setText(R.string.user_id_no_name);
-                }
-                if (email != null) {
-                    mMainUserIdRest.setText(highlighter.highlight(email));
-                    mMainUserIdRest.setVisibility(View.VISIBLE);
-                } else {
-                    mMainUserIdRest.setVisibility(View.GONE);
+                    if (email != null) {
+                        mMainUserIdRest.setText(highlighter.highlight(email));
+                        mMainUserIdRest.setVisibility(View.VISIBLE);
+                    } else {
+                        mMainUserIdRest.setVisibility(View.GONE);
+                    }
                 }
             }
 
