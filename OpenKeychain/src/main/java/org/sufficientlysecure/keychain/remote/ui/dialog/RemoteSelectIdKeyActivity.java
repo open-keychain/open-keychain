@@ -31,6 +31,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Drawable.ConstantState;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.transition.Fade;
 import android.support.transition.Transition;
@@ -50,18 +51,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
+import android.widget.PopupMenu.OnDismissListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mikepenz.materialdrawer.util.KeyboardUtil;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeyInfo;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectIdentityKeyPresenter.RemoteSelectIdentityKeyView;
+import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper.AbstractCallback;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.DividerItemDecoration;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerItemClickListener;
 import org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator;
+import timber.log.Timber;
 
 
 public class RemoteSelectIdKeyActivity extends FragmentActivity {
@@ -71,6 +80,7 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
 
 
     private RemoteSelectIdentityKeyPresenter presenter;
+    private Parcelable currentlyImportingParcel;
 
 
     @Override
@@ -115,6 +125,7 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
         private View buttonNoKeysCancel;
         private View buttonNoKeysExisting;
         private View buttonKeyListOther;
+        private View buttonOverflow;
 
         @NonNull
         @Override
@@ -128,6 +139,8 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
             @SuppressLint("InflateParams")
             ViewGroup view = (ViewGroup) layoutInflater.inflate(R.layout.api_select_identity_key, null, false);
             alert.setView(view);
+
+            buttonOverflow = view.findViewById(R.id.overflow_menu);
 
             buttonKeyListCancel = view.findViewById(R.id.button_key_list_cancel);
             buttonKeyListOther = view.findViewById(R.id.button_key_list_other);
@@ -182,7 +195,7 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
 
         @NonNull
         private RemoteSelectIdentityKeyView createMvpView(final ViewGroup rootView, LayoutInflater layoutInflater) {
-            final ImageView iconClientApp = rootView.findViewById(R.id.icon_client_app);
+            // final ImageView iconClientApp = rootView.findViewById(R.id.icon_client_app);
             final KeyChoiceAdapter keyChoiceAdapter = new KeyChoiceAdapter(layoutInflater, getResources());
             final TextView titleText = rootView.findViewById(R.id.text_title_select_key);
             final TextView addressText = rootView.findViewById(R.id.text_user_id);
@@ -217,7 +230,7 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
                 @Override
                 public void setTitleClientIconAndName(Drawable drawable, CharSequence name) {
                     titleText.setText(getString(R.string.title_select_key, name));
-                    iconClientApp.setImageDrawable(drawable);
+                    // iconClientApp.setImageDrawable(drawable);
                     setSelectionIcons(drawable);
                 }
 
@@ -271,6 +284,11 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
                 }
 
                 @Override
+                public void showLayoutGenerateSave() {
+                    layoutAnimator.setDisplayedChildId(R.id.select_key_layout_generate_save);
+                }
+
+                @Override
                 public void setKeyListData(List<KeyInfo> data) {
                     keyChoiceAdapter.setData(data);
                 }
@@ -292,10 +310,26 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
                     buttonKeyListCancel.setVisibility(View.INVISIBLE);
                     keyChoiceAdapter.setActiveItem(position);
                 }
+
+                @Override
+                public void showImportInternalError() {
+                    Toast.makeText(getContext(), R.string.error_save_key_internal, Toast.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void launchImportOperation(ImportKeyringParcel importKeyringParcel) {
+                    RemoteSelectIdKeyActivity activity = (RemoteSelectIdKeyActivity) getActivity();
+                    if (activity == null) {
+                        return;
+                    }
+                    activity.launchImportOperation(importKeyringParcel);
+                }
             };
         }
 
         private void setupListenersForPresenter() {
+            buttonOverflow.setOnClickListener(this::showContextMenu);
+
             buttonKeyListOther.setOnClickListener(view -> presenter.onClickKeyListOther());
             buttonKeyListCancel.setOnClickListener(view -> presenter.onClickKeyListCancel());
 
@@ -312,6 +346,23 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
             keyChoiceList.addOnItemTouchListener(new RecyclerItemClickListener(getContext(),
                     (view, position) -> presenter.onKeyItemClick(position)));
         }
+
+        private void showContextMenu(View view) {
+            PopupMenu menu = new PopupMenu(getActivity(), view);
+            menu.inflate(R.menu.identity_context_menu);
+            // menu.setOnMenuItemClickListener(DecryptListFragment.this);
+            menu.show();
+        }
+    }
+
+    private void launchImportOperation(ImportKeyringParcel importKeyringParcel) {
+        if (currentlyImportingParcel != null) {
+            Timber.e("Starting import while already running? Inconsistent state!");
+            return;
+        }
+
+        currentlyImportingParcel = importKeyringParcel;
+        importOpHelper.cryptoOperation();
     }
 
     private static class KeyChoiceAdapter extends Adapter<KeyChoiceViewHolder> {
@@ -333,21 +384,21 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
             return new KeyChoiceViewHolder(keyChoiceItemView);
         }
 
-        public void setActiveItem(Integer activeItem) {
-            if (this.activeItem != null) {
-                notifyItemChanged(activeItem);
-            }
+        void setActiveItem(Integer activeItem) {
             this.activeItem = activeItem;
-            if (this.activeItem != null) {
-                notifyItemChanged(activeItem);
-            }
+            notifyDataSetChanged();
         }
 
         @Override
         public void onBindViewHolder(KeyChoiceViewHolder holder, int position) {
             KeyInfo keyInfo = data.get(position);
-            Drawable icon = (activeItem != null && position == activeItem) ? iconSelected : iconUnselected;
+            boolean hasActiveItem = activeItem != null;
+            boolean isActiveItem = hasActiveItem && position == activeItem;
+
+            Drawable icon = isActiveItem ? iconSelected : iconUnselected;
             holder.bind(keyInfo, icon);
+
+            holder.itemView.setVisibility(!hasActiveItem || isActiveItem ? View.VISIBLE : View.INVISIBLE);
         }
 
         @Override
@@ -399,5 +450,35 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
             vIcon.setImageDrawable(selectionIcon);
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (importOpHelper.handleActivityResult(requestCode, resultCode, data)) {
+            return;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private CryptoOperationHelper<Parcelable, ImportKeyResult> importOpHelper =
+            new CryptoOperationHelper<>(0, this,
+                    new AbstractCallback<Parcelable, ImportKeyResult>() {
+                        @Override
+                        public Parcelable createOperationInput() {
+                            return currentlyImportingParcel;
+                        }
+
+                        @Override
+                        public void onCryptoOperationError(ImportKeyResult result) {
+                            currentlyImportingParcel = null;
+                            presenter.onImportOpError();
+                        }
+
+                        @Override
+                        public void onCryptoOperationSuccess(ImportKeyResult result) {
+                            currentlyImportingParcel = null;
+                            presenter.onImportOpSuccess(result);
+                        }
+                    }, null);
 
 }

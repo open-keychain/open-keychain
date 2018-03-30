@@ -12,7 +12,6 @@ public class RemoteSelectIdViewModel extends ViewModel {
 
     private KeyInfoLiveData keyInfo;
     private PgpKeyGenerationLiveData keyGenerationData;
-    public long selectedMasterKeyId;
 
     public KeyInfoLiveData getKeyInfo(Context context) {
         if (keyInfo == null) {

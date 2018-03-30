@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.remote.ui.dialog;
 
 
+import java.io.IOException;
 import java.util.List;
 
 import android.arch.lifecycle.LifecycleOwner;
@@ -32,9 +33,13 @@ import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeyInfo;
 import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeySelector;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import timber.log.Timber;
 
 
@@ -44,11 +49,12 @@ class RemoteSelectIdentityKeyPresenter {
     private final RemoteSelectIdViewModel viewModel;
 
 
-    private UserId userId;
-
     private RemoteSelectIdentityKeyView view;
     private List<KeyInfo> keyInfoData;
-    private long masterKeyId;
+
+    private UserId userId;
+    private long selectedMasterKeyId;
+    private byte[] generatedKeyData;
 
 
     RemoteSelectIdentityKeyPresenter(Context context, RemoteSelectIdViewModel viewModel, LifecycleOwner lifecycleOwner) {
@@ -106,11 +112,18 @@ class RemoteSelectIdentityKeyPresenter {
     }
 
     private void onChangeKeyGeneration(PgpEditKeyResult pgpEditKeyResult) {
-        viewModel.getKeyGenerationLiveData(context).setSaveKeyringParcel(null);
         if (pgpEditKeyResult == null) {
             return;
         }
 
+        try {
+            UncachedKeyRing generatedRing = pgpEditKeyResult.getRing();
+            this.generatedKeyData = generatedRing.getEncoded();
+        } catch (IOException e) {
+            throw new AssertionError("Newly generated key ring must be encodable!");
+        }
+
+        viewModel.getKeyGenerationLiveData(context).setSaveKeyringParcel(null);
         view.showLayoutGenerateOk();
     }
 
@@ -145,7 +158,7 @@ class RemoteSelectIdentityKeyPresenter {
     }
 
     void onKeyItemClick(int position) {
-        viewModel.selectedMasterKeyId = keyInfoData.get(position).getMasterKeyId();
+        selectedMasterKeyId = keyInfoData.get(position).getMasterKeyId();
         view.highlightKey(position);
     }
 
@@ -162,12 +175,28 @@ class RemoteSelectIdentityKeyPresenter {
     }
 
     void onClickGenerateOkFinish() {
-        // saveKey
-        // view.finishAndReturn
+        if (generatedKeyData == null) {
+            return;
+        }
+
+        ImportKeyringParcel importKeyringParcel = ImportKeyringParcel.createFromBytes(generatedKeyData);
+        generatedKeyData = null;
+
+        view.launchImportOperation(importKeyringParcel);
+        view.showLayoutGenerateSave();
     }
 
     void onHighlightFinished() {
-        view.finishAndReturn(viewModel.selectedMasterKeyId);
+        view.finishAndReturn(selectedMasterKeyId);
+    }
+
+    void onImportOpSuccess(ImportKeyResult result) {
+        long importedMasterKeyId = result.getImportedMasterKeyIds()[0];
+        view.finishAndReturn(importedMasterKeyId);
+    }
+
+    void onImportOpError() {
+        view.showImportInternalError();
     }
 
     interface RemoteSelectIdentityKeyView {
@@ -183,9 +212,14 @@ class RemoteSelectIdentityKeyPresenter {
         void showLayoutImportExplanation();
         void showLayoutGenerateProgress();
         void showLayoutGenerateOk();
+        void showLayoutGenerateSave();
 
         void setKeyListData(List<KeyInfo> data);
 
         void highlightKey(int position);
+
+        void launchImportOperation(ImportKeyringParcel importKeyringParcel);
+
+        void showImportInternalError();
     }
 }

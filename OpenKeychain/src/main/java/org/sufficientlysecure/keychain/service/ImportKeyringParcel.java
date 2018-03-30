@@ -50,6 +50,11 @@ public abstract class ImportKeyringParcel implements Parcelable {
         return new AutoValue_ImportKeyringParcel(Collections.singletonList(key), null, false);
     }
 
+    public static ImportKeyringParcel createFromBytes(byte[] keyData) {
+        ParcelableKeyRing keyRing = ParcelableKeyRing.createFromEncodedBytes(keyData);
+        return new AutoValue_ImportKeyringParcel(Collections.singletonList(keyRing), null, false);
+    }
+
     public static ImportKeyringParcel createFromFileCacheWithSkipSave() {
         return new AutoValue_ImportKeyringParcel(null, null, true);
     }

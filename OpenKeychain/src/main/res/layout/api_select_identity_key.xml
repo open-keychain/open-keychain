@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     tools:layout_marginTop="24dp"
     >
@@ -13,30 +13,37 @@
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
-        android:gravity="center_horizontal"
         android:padding="16dp"
+        android:gravity="center_vertical"
         tools:targetApi="lollipop">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
             android:src="@mipmap/ic_launcher"
             />
 
-        <ImageView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp"
-            android:src="@drawable/link_24dp"
+            android:layout_marginLeft="16dp"
+            android:text="OpenKeychain"
+            style="?android:textAppearanceLarge"
+            />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
             />
 
         <ImageView
-            android:id="@+id/icon_client_app"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:src="@drawable/apps_k9"
+            android:src="@drawable/ic_more_vert_black_24dp"
+            android:background="?selectableItemBackground"
+            android:id="@+id/overflow_menu"
             />
 
     </LinearLayout>
@@ -69,8 +76,8 @@
         android:layout_height="wrap_content"
         android:inAnimation="@anim/fade_in"
         android:outAnimation="@anim/fade_out"
-        android:measureAllChildren="true"
-        custom:initialView="05">
+        android:measureAllChildren="false"
+        custom:initialView="04">
 
         <Space
             android:layout_width="wrap_content"
@@ -138,7 +145,7 @@
                     android:layout_height="24dp"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
-                    android:src="@drawable/ic_save_black_24dp"
+                    android:src="@drawable/ic_help_black_24dp"
                     android:tint="@color/md_grey_600"
                     />
 
@@ -231,7 +238,7 @@
                     android:layout_height="24dp"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
-                    android:src="@drawable/ic_save_black_24dp"
+                    android:src="@drawable/ic_help_black_24dp"
                     android:tint="@color/md_grey_600"
                     />
 
@@ -285,7 +292,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:text="To use an existing end-to-end key, you can either:\n\n①  Open Autocrypt Setup Message from another e-mail app in K-9 Mail\n\n②  Manually manage keys in OpenKeychain"
+                android:text="To import your key, you can either:\n\n①  Open Autocrypt Setup Message from another e-mail app in K-9 Mail\n\n②  Manually manage keys in OpenKeychain"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 />
 
@@ -330,35 +337,71 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="?listPreferredItemHeight"
-            android:orientation="horizontal"
-            android:id="@+id/select_key_layout_generate_progress"
-            android:layout_marginTop="36dp"
+            android:orientation="vertical"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:paddingRight="16dp"
+            android:id="@+id/select_key_layout_generate_progress">
 
-            <ProgressBar
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_gravity="center_vertical"
-                android:indeterminate="true"
-                />
-
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="Generating end-to-end key…"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                />
+                android:minHeight="?listPreferredItemHeight">
+
+                <ProgressBar
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_gravity="center_vertical"
+                    android:indeterminate="true"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="Please wait…"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="?listPreferredItemHeight"
+                android:background="?selectableItemBackground"
+                android:orientation="horizontal"
+                style="?buttonBarStyle">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:text="Back"
+                    style="?buttonBarButtonStyle"
+                    />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:text="Finish"
+                    style="?buttonBarButtonStyle"
+                    />
+
+            </LinearLayout>
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="36dp"
             android:orientation="vertical"
             android:id="@+id/select_key_layout_generate_ok"
             android:paddingLeft="16dp"
@@ -395,8 +438,7 @@
                 android:id="@+id/button_gen_back"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginBottom="8dp"
+                android:minHeight="?listPreferredItemHeight"
                 android:background="?selectableItemBackground"
                 android:orientation="horizontal"
                 style="?buttonBarStyle">
@@ -418,6 +460,73 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/button_genok_finish"
+                    android:text="Finish"
+                    style="?buttonBarButtonStyle"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/select_key_layout_generate_save"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="?listPreferredItemHeight"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ProgressBar
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:indeterminate="true"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="Finishing setup…"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="?listPreferredItemHeight"
+                android:background="?selectableItemBackground"
+                android:orientation="horizontal"
+                style="?buttonBarStyle">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:text="Back"
+                    style="?buttonBarButtonStyle"
+                    />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
                     android:text="Finish"
                     style="?buttonBarButtonStyle"
                     />
