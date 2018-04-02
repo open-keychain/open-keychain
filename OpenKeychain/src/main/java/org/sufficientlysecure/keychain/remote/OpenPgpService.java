@@ -722,7 +722,9 @@ public class OpenPgpService extends Service {
             if (preferredUserId == null) {
                 pi = mApiPendingIntentFactory.createSelectSignKeyIdLegacyPendingIntent(data, currentPkg, null);
             } else {
-                pi = mApiPendingIntentFactory.createSelectSignKeyIdPendingIntent(data, currentPkg, preferredUserId);
+                byte[] packageSignature = mApiPermissionHelper.getPackageCertificateOrError(currentPkg);
+                pi = mApiPendingIntentFactory.createSelectSignKeyIdPendingIntent(
+                        data, currentPkg, packageSignature, preferredUserId);
             }
             result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
         }
@@ -897,6 +899,11 @@ public class OpenPgpService extends Service {
             result.putExtra(OpenPgpApi.RESULT_ERROR, error);
             result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
             return result;
+        }
+
+        // special exception: getting a sign key id will also register the app
+        if (OpenPgpApi.ACTION_GET_SIGN_KEY_ID.equals(data.getAction())) {
+            return null;
         }
 
         // check if caller is allowed to access OpenKeychain

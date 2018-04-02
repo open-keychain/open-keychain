@@ -37,7 +37,9 @@ import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeySelector;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
+import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import timber.log.Timber;
@@ -55,11 +57,14 @@ class RemoteSelectIdentityKeyPresenter {
     private UserId userId;
     private long selectedMasterKeyId;
     private byte[] generatedKeyData;
+    private ApiDataAccessObject apiDao;
+    private AppSettings appSettings;
 
 
     RemoteSelectIdentityKeyPresenter(Context context, RemoteSelectIdViewModel viewModel, LifecycleOwner lifecycleOwner) {
         this.context = context;
         this.viewModel = viewModel;
+        this.apiDao = new ApiDataAccessObject(context);
 
         packageManager = context.getPackageManager();
 
@@ -71,9 +76,9 @@ class RemoteSelectIdentityKeyPresenter {
         this.view = view;
     }
 
-    void setupFromIntentData(String packageName, String rawUserId) {
+    void setupFromIntentData(String packageName, byte[] packageSignature, String rawUserId) {
         try {
-            setPackageInfo(packageName);
+            setPackageInfo(packageName, packageSignature);
         } catch (NameNotFoundException e) {
             Timber.e(e, "Unable to find info of calling app!");
             view.finishAsCancelled();
@@ -92,10 +97,12 @@ class RemoteSelectIdentityKeyPresenter {
         viewModel.getKeyInfo(context).setKeySelector(KeySelector.createOnlySecret(listedKeyRingUri, null));
     }
 
-    private void setPackageInfo(String packageName) throws NameNotFoundException {
+    private void setPackageInfo(String packageName, byte[] packageSignature) throws NameNotFoundException {
         ApplicationInfo applicationInfo = packageManager.getApplicationInfo(packageName, 0);
         Drawable appIcon = packageManager.getApplicationIcon(applicationInfo);
         CharSequence appLabel = packageManager.getApplicationLabel(applicationInfo);
+
+        appSettings = new AppSettings(packageName, packageSignature);
 
         view.setTitleClientIconAndName(appIcon, appLabel);
     }
@@ -192,11 +199,15 @@ class RemoteSelectIdentityKeyPresenter {
     }
 
     void onHighlightFinished() {
+        apiDao.insertApiApp(appSettings);
+        apiDao.addAllowedKeyIdForApp(appSettings.getPackageName(), selectedMasterKeyId);
         view.finishAndReturn(selectedMasterKeyId);
     }
 
     void onImportOpSuccess(ImportKeyResult result) {
         long importedMasterKeyId = result.getImportedMasterKeyIds()[0];
+        apiDao.insertApiApp(appSettings);
+        apiDao.addAllowedKeyIdForApp(appSettings.getPackageName(), selectedMasterKeyId);
         view.finishAndReturn(importedMasterKeyId);
     }
 

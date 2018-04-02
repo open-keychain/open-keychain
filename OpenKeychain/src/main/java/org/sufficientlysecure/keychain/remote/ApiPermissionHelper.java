@@ -124,6 +124,14 @@ public class ApiPermissionHelper {
         }
     }
 
+    byte[] getPackageCertificateOrError(String packageName) {
+        try {
+            return getPackageCertificate(packageName);
+        } catch (NameNotFoundException e) {
+            throw new AssertionError("Package signature must be retrievable");
+        }
+    }
+
     private byte[] getPackageCertificate(String packageName) throws NameNotFoundException {
         @SuppressLint("PackageManagerGetSignatures") // we do check the byte array of *all* signatures
         PackageInfo pkgInfo = mContext.getPackageManager().getPackageInfo(packageName, PackageManager.GET_SIGNATURES);

@@ -74,6 +74,7 @@ import timber.log.Timber;
 
 public class RemoteSelectIdKeyActivity extends FragmentActivity {
     public static final String EXTRA_PACKAGE_NAME = "package_name";
+    public static final String EXTRA_PACKAGE_SIGNATURE = "package_signature";
     public static final String EXTRA_USER_ID = "user_id";
     public static final String EXTRA_CURRENT_MASTER_KEY_ID = "current_master_key_id";
 
@@ -106,8 +107,9 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
         Intent intent = getIntent();
         String userId = intent.getStringExtra(EXTRA_USER_ID);
         String packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
+        byte[] packageSignature = intent.getByteArrayExtra(EXTRA_PACKAGE_SIGNATURE);
 
-        presenter.setupFromIntentData(packageName, userId);
+        presenter.setupFromIntentData(packageName, packageSignature, userId);
     }
 
     public static class RemoteSelectIdentityKeyDialogFragment extends DialogFragment {

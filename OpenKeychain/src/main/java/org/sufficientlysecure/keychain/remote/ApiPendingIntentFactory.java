@@ -90,16 +90,6 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createSelectIdentityKeyPendingIntent(
-            String packageName, String apiIdentity, Long currentMasterKeyId) {
-        Intent intent = new Intent(mContext, RemoteSelectIdKeyActivity.class);
-        intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_PACKAGE_NAME, packageName);
-        intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_USER_ID, apiIdentity);
-        intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_CURRENT_MASTER_KEY_ID, currentMasterKeyId);
-
-        return createInternal(null, intent);
-    }
-
     PendingIntent createSelectPublicKeyPendingIntent(Intent data, long[] keyIdsArray, ArrayList<String> missingEmails,
                                                      ArrayList<String> duplicateEmails, boolean noUserIdsCheck) {
         Intent intent = new Intent(mContext, RemoteSelectPubKeyActivity.class);
@@ -147,16 +137,17 @@ public class ApiPendingIntentFactory {
     PendingIntent createSelectSignKeyIdLegacyPendingIntent(Intent data, String packageName, String preferredUserId) {
         Intent intent = new Intent(mContext, SelectSignKeyIdActivity.class);
         intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(packageName));
-        intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_PACKAGE_NAME, packageName);
-        intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_USER_ID, preferredUserId);
+        intent.putExtra(SelectSignKeyIdActivity.EXTRA_USER_ID, preferredUserId);
 
         return createInternal(data, intent);
     }
 
-    PendingIntent createSelectSignKeyIdPendingIntent(Intent data, String packageName, String preferredUserId) {
+    PendingIntent createSelectSignKeyIdPendingIntent(Intent data, String packageName,
+            byte[] packageSignature, String preferredUserId) {
         Intent intent = new Intent(mContext, RemoteSelectIdKeyActivity.class);
         intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(packageName));
         intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_PACKAGE_NAME, packageName);
+        intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_PACKAGE_SIGNATURE, packageSignature);
         intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_USER_ID, preferredUserId);
 
         return createInternal(data, intent);
