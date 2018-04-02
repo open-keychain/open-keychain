@@ -444,12 +444,14 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
         void bind(KeyInfo keyInfo, Drawable selectionIcon) {
             Context context = vCreation.getContext();
 
+            String email = keyInfo.getEmail();
             String name = keyInfo.getName();
-            if (name != null) {
+            if (email != null) {
+                vName.setText(context.getString(R.string.use_key, email));
+            } else if (name != null) {
                 vName.setText(context.getString(R.string.use_key, name));
             } else {
-                String email = keyInfo.getEmail();
-                vName.setText(context.getString(R.string.use_key, email));
+                vName.setText(context.getString(R.string.use_key_no_name));
             }
 
             String dateTime = DateUtils.formatDateTime(context, keyInfo.getCreationDate(),
