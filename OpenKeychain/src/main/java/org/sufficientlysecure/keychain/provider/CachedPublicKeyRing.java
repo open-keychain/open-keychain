@@ -92,6 +92,16 @@ public class CachedPublicKeyRing extends KeyRing {
         }
     }
 
+    public long getCreationTime() throws PgpKeyNotFoundException {
+        try {
+            Object data = mKeyRepository.getGenericData(mUri,
+                    KeychainContract.KeyRings.CREATION, KeyRepository.FIELD_TYPE_INTEGER);
+            return (long) data;
+        } catch (KeyWritableRepository.NotFoundException e) {
+            throw new PgpKeyNotFoundException(e);
+        }
+    }
+
     @Override
     public String getPrimaryUserId() throws PgpKeyNotFoundException {
         try {

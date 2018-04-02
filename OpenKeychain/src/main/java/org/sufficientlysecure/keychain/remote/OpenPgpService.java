@@ -67,6 +67,7 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -683,28 +684,42 @@ public class OpenPgpService extends Service {
     }
 
     private Intent getSignKeyIdImpl(Intent data) {
-        // if data already contains EXTRA_SIGN_KEY_ID, it has been executed again
-        // after user interaction. Then, we just need to return the long again!
-        if (data.hasExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID)) {
-            long signKeyId = data.getLongExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, Constants.key.none);
+        Intent result = new Intent();
+        data.setAction(OpenPgpApi.ACTION_GET_SIGN_KEY_ID);
 
-            Intent result = new Intent();
-            result.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, signKeyId);
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
-            return result;
-        } else {
+        { // return PendingIntent to be executed by client
             String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
             String preferredUserId = data.getStringExtra(OpenPgpApi.EXTRA_USER_ID);
-
-            PendingIntent pi = mApiPendingIntentFactory.createSelectSignKeyIdPendingIntent(data, currentPkg, preferredUserId);
-
-            // return PendingIntent to be executed by client
-            Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+            PendingIntent pi =
+                    mApiPendingIntentFactory.createSelectSignKeyIdPendingIntent(data, currentPkg, preferredUserId);
             result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
-
-            return result;
         }
+
+        long signKeyId;
+        if (data.hasExtra(OpenPgpApi.RESULT_SIGN_KEY_ID)) {
+            signKeyId = data.getLongExtra(OpenPgpApi.RESULT_SIGN_KEY_ID, Constants.key.none);
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+        } else {
+            signKeyId = data.getLongExtra(OpenPgpApi.EXTRA_PRESELECT_KEY_ID, Constants.key.none);
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+        }
+        result.putExtra(OpenPgpApi.RESULT_SIGN_KEY_ID, signKeyId);
+
+        if (signKeyId != Constants.key.none) {
+            try {
+                CachedPublicKeyRing cachedPublicKeyRing = mKeyRepository.getCachedPublicKeyRing(signKeyId);
+                String userId = cachedPublicKeyRing.getPrimaryUserId();
+                long creationTime = cachedPublicKeyRing.getCreationTime() * 1000;
+
+                result.putExtra(OpenPgpApi.RESULT_PRIMARY_USER_ID, userId);
+                result.putExtra(OpenPgpApi.RESULT_KEY_CREATION_TIME, creationTime);
+            } catch (PgpKeyNotFoundException e) {
+                Timber.e(e, "Error loading key info");
+                return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
+            }
+        }
+
+        return result;
     }
 
     private Intent getKeyIdsImpl(Intent data) {

@@ -210,7 +210,7 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
                     }
 
                     Intent resultData = new Intent();
-                    resultData.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, masterKeyId);
+                    resultData.putExtra(OpenPgpApi.RESULT_SIGN_KEY_ID, masterKeyId);
                     activity.setResult(RESULT_OK, resultData);
                     activity.finish();
                 }
