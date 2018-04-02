@@ -1995,4 +1995,5 @@
     <string name="select_identity_cancel">Cancel</string>
     <string name="select_identity_create">Create a key for me</string>
     <string name="error_save_key_internal">"Internal error saving key!"</string>
+    <string name="menu_list_unrelated_keys">List unrelated keys</string>
 </resources>

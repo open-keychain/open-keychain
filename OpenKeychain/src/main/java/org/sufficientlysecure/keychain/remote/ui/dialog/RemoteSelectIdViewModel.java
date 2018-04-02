@@ -12,6 +12,7 @@ public class RemoteSelectIdViewModel extends ViewModel {
 
     private KeyInfoLiveData keyInfo;
     private PgpKeyGenerationLiveData keyGenerationData;
+    private boolean listAllKeys;
 
     public KeyInfoLiveData getKeyInfo(Context context) {
         if (keyInfo == null) {
@@ -25,6 +26,14 @@ public class RemoteSelectIdViewModel extends ViewModel {
             keyGenerationData = new PgpKeyGenerationLiveData(context);
         }
         return keyGenerationData;
+    }
+
+    public boolean isListAllKeys() {
+        return listAllKeys;
+    }
+
+    public void setListAllKeys(boolean listAllKeys) {
+        this.listAllKeys = listAllKeys;
     }
 
 }

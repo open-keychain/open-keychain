@@ -52,7 +52,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.PopupMenu.OnDismissListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -261,31 +260,37 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
                 @Override
                 public void showLayoutSelectNoKeys() {
                     layoutAnimator.setDisplayedChildId(R.id.select_key_layout_no_keys);
+                    buttonOverflow.setVisibility(View.GONE);
                 }
 
                 @Override
                 public void showLayoutSelectKeyList() {
                     layoutAnimator.setDisplayedChildId(R.id.select_key_layout_key_list);
+                    buttonOverflow.setVisibility(View.GONE);
                 }
 
                 @Override
                 public void showLayoutImportExplanation() {
                     layoutAnimator.setDisplayedChildId(R.id.select_key_layout_import_expl);
+                    buttonOverflow.setVisibility(View.VISIBLE);
                 }
 
                 @Override
                 public void showLayoutGenerateProgress() {
                     layoutAnimator.setDisplayedChildId(R.id.select_key_layout_generate_progress);
+                    buttonOverflow.setVisibility(View.GONE);
                 }
 
                 @Override
                 public void showLayoutGenerateOk() {
                     layoutAnimator.setDisplayedChildId(R.id.select_key_layout_generate_ok);
+                    buttonOverflow.setVisibility(View.GONE);
                 }
 
                 @Override
                 public void showLayoutGenerateSave() {
                     layoutAnimator.setDisplayedChildId(R.id.select_key_layout_generate_save);
+                    buttonOverflow.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -324,11 +329,23 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
                     }
                     activity.launchImportOperation(importKeyringParcel);
                 }
+
+                @Override
+                public void displayOverflowMenu() {
+                    ContextThemeWrapper theme = ThemeChanger.getDialogThemeWrapper(getActivity());
+                    PopupMenu menu = new PopupMenu(theme, buttonOverflow);
+                    menu.inflate(R.menu.select_identity_menu);
+                    menu.setOnMenuItemClickListener(item -> {
+                        presenter.onClickMenuListAllKeys();
+                        return false;
+                    });
+                    menu.show();
+                }
             };
         }
 
         private void setupListenersForPresenter() {
-            buttonOverflow.setOnClickListener(this::showContextMenu);
+            buttonOverflow.setOnClickListener(view -> presenter.onClickOverflowMenu());
 
             buttonKeyListOther.setOnClickListener(view -> presenter.onClickKeyListOther());
             buttonKeyListCancel.setOnClickListener(view -> presenter.onClickKeyListCancel());
@@ -345,13 +362,6 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
 
             keyChoiceList.addOnItemTouchListener(new RecyclerItemClickListener(getContext(),
                     (view, position) -> presenter.onKeyItemClick(position)));
-        }
-
-        private void showContextMenu(View view) {
-            PopupMenu menu = new PopupMenu(getActivity(), view);
-            menu.inflate(R.menu.identity_context_menu);
-            // menu.setOnMenuItemClickListener(DecryptListFragment.this);
-            menu.show();
         }
     }
 

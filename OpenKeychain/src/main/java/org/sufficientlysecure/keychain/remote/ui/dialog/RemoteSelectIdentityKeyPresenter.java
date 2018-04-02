@@ -27,6 +27,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
@@ -39,7 +40,6 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
-import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import timber.log.Timber;
 
 
@@ -83,8 +83,13 @@ class RemoteSelectIdentityKeyPresenter {
         this.userId = OpenPgpUtils.splitUserId(rawUserId);
         view.setAddressText(userId.email);
 
-        viewModel.getKeyInfo(context).setKeySelector(KeySelector.createOnlySecret(
-                KeyRings.buildUnifiedKeyRingsFindByUserIdUri(userId.email), null));
+        loadKeyInfo();
+    }
+
+    private void loadKeyInfo() {
+        Uri listedKeyRingUri = viewModel.isListAllKeys() ?
+                KeyRings.buildUnifiedKeyRingsUri() : KeyRings.buildUnifiedKeyRingsFindByUserIdUri(userId.email);
+        viewModel.getKeyInfo(context).setKeySelector(KeySelector.createOnlySecret(listedKeyRingUri, null));
     }
 
     private void setPackageInfo(String packageName) throws NameNotFoundException {
@@ -199,6 +204,16 @@ class RemoteSelectIdentityKeyPresenter {
         view.showImportInternalError();
     }
 
+    public void onClickOverflowMenu() {
+        view.displayOverflowMenu();
+    }
+
+    public void onClickMenuListAllKeys() {
+        viewModel.setListAllKeys(true);
+        loadKeyInfo();
+        view.showLayoutSelectKeyList();
+    }
+
     interface RemoteSelectIdentityKeyView {
         void finishAndReturn(long masterKeyId);
         void finishAsCancelled();
@@ -221,5 +236,7 @@ class RemoteSelectIdentityKeyPresenter {
         void launchImportOperation(ImportKeyringParcel importKeyringParcel);
 
         void showImportInternalError();
+
+        void displayOverflowMenu();
     }
 }
