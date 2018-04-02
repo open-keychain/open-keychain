@@ -144,6 +144,15 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
+    PendingIntent createSelectSignKeyIdLegacyPendingIntent(Intent data, String packageName, String preferredUserId) {
+        Intent intent = new Intent(mContext, SelectSignKeyIdActivity.class);
+        intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(packageName));
+        intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_PACKAGE_NAME, packageName);
+        intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_USER_ID, preferredUserId);
+
+        return createInternal(data, intent);
+    }
+
     PendingIntent createSelectSignKeyIdPendingIntent(Intent data, String packageName, String preferredUserId) {
         Intent intent = new Intent(mContext, RemoteSelectIdKeyActivity.class);
         intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(packageName));

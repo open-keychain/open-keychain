@@ -683,6 +683,33 @@ public class OpenPgpService extends Service {
         return result;
     }
 
+    /* Signing key choose dialog for older API versions. We keep it around to make sure those don't break */
+    private Intent getSignKeyIdImplLegacy(Intent data) {
+        // if data already contains EXTRA_SIGN_KEY_ID, it has been executed again
+        // after user interaction. Then, we just need to return the long again!
+        if (data.hasExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID)) {
+            long signKeyId = data.getLongExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, Constants.key.none);
+
+            Intent result = new Intent();
+            result.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, signKeyId);
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+            return result;
+        } else {
+            String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
+            String preferredUserId = data.getStringExtra(OpenPgpApi.EXTRA_USER_ID);
+
+            PendingIntent pi = mApiPendingIntentFactory.createSelectSignKeyIdLegacyPendingIntent(
+                    data, currentPkg, preferredUserId);
+
+            // return PendingIntent to be executed by client
+            Intent result = new Intent();
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+            result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
+
+            return result;
+        }
+    }
+
     private Intent getSignKeyIdImpl(Intent data) {
         Intent result = new Intent();
         data.setAction(OpenPgpApi.ACTION_GET_SIGN_KEY_ID);
@@ -690,8 +717,13 @@ public class OpenPgpService extends Service {
         { // return PendingIntent to be executed by client
             String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
             String preferredUserId = data.getStringExtra(OpenPgpApi.EXTRA_USER_ID);
-            PendingIntent pi =
-                    mApiPendingIntentFactory.createSelectSignKeyIdPendingIntent(data, currentPkg, preferredUserId);
+            PendingIntent pi;
+            // the new dialog doesn't really work if we don't have a user id to work with. just show the old...
+            if (preferredUserId == null) {
+                pi = mApiPendingIntentFactory.createSelectSignKeyIdLegacyPendingIntent(data, currentPkg, null);
+            } else {
+                pi = mApiPendingIntentFactory.createSelectSignKeyIdPendingIntent(data, currentPkg, preferredUserId);
+            }
             result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
         }
 
@@ -976,6 +1008,9 @@ public class OpenPgpService extends Service {
             }
             case OpenPgpApi.ACTION_GET_SIGN_KEY_ID: {
                 return getSignKeyIdImpl(data);
+            }
+            case OpenPgpApi.ACTION_GET_SIGN_KEY_ID_LEGACY: {
+                return getSignKeyIdImplLegacy(data);
             }
             case OpenPgpApi.ACTION_GET_KEY_IDS: {
                 return getKeyIdsImpl(data);
