@@ -25,6 +25,7 @@ import android.database.MatrixCursor;
 import android.database.MergeCursor;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
@@ -61,6 +62,8 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
 
     private static final short VIEW_SECTION_TYPE_PRIVATE = 0x0;
     private static final short VIEW_SECTION_TYPE_PUBLIC = 0x1;
+
+    private static final long JUST_NOW_TIMESPAN = DateUtils.MINUTE_IN_MILLIS * 5;
 
     private String mQuery;
     private List<Integer> mSelected;
@@ -387,16 +390,21 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
             { // set name and stuff, common to both key types
                 String name = keyItem.getName();
                 String email = keyItem.getEmail();
-                if (name != null) {
+                if (name == null) {
+                    if (email != null) {
+                        mMainUserId.setText(highlighter.highlight(email));
+                        mMainUserIdRest.setVisibility(View.GONE);
+                    } else {
+                        mMainUserId.setText(R.string.user_id_no_name);
+                    }
+                } else {
                     mMainUserId.setText(highlighter.highlight(name));
-                } else {
-                    mMainUserId.setText(R.string.user_id_no_name);
-                }
-                if (email != null) {
-                    mMainUserIdRest.setText(highlighter.highlight(email));
-                    mMainUserIdRest.setVisibility(View.VISIBLE);
-                } else {
-                    mMainUserIdRest.setVisibility(View.GONE);
+                    if (email != null) {
+                        mMainUserIdRest.setText(highlighter.highlight(email));
+                        mMainUserIdRest.setVisibility(View.VISIBLE);
+                    } else {
+                        mMainUserIdRest.setVisibility(View.GONE);
+                    }
                 }
             }
 
@@ -477,15 +485,8 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
                 mMainUserId.setTextColor(textColor);
                 mMainUserIdRest.setTextColor(textColor);
 
-                if (keyItem.hasDuplicate()) {
-                    String dateTime = DateUtils.formatDateTime(context,
-                            keyItem.getCreationTime(),
-                            DateUtils.FORMAT_SHOW_DATE
-                                    | DateUtils.FORMAT_SHOW_TIME
-                                    | DateUtils.FORMAT_SHOW_YEAR
-                                    | DateUtils.FORMAT_ABBREV_MONTH);
-                    mCreationDate.setText(context.getString(R.string.label_key_created,
-                            dateTime));
+                if (keyItem.hasDuplicate() || keyItem.isSecret()) {
+                    mCreationDate.setText(getSecretKeyReadableTime(context, keyItem));
                     mCreationDate.setTextColor(textColor);
                     mCreationDate.setVisibility(View.VISIBLE);
                 } else {
@@ -509,6 +510,27 @@ public class KeySectionedListAdapter extends SectionCursorAdapter<KeySectionedLi
                     mTrustIdIcon.setVisibility(View.GONE);
                 }
             }
+        }
+
+        @NonNull
+        private String getSecretKeyReadableTime(Context context, KeyListCursor keyItem) {
+            long creationMillis = keyItem.getCreationTime();
+
+            boolean allowRelativeTimestamp = keyItem.hasDuplicate();
+            if (allowRelativeTimestamp) {
+                long creationAgeMillis = System.currentTimeMillis() - creationMillis;
+                if (creationAgeMillis < JUST_NOW_TIMESPAN) {
+                    return context.getString(R.string.label_key_created_just_now);
+                }
+            }
+
+            String dateTime = DateUtils.formatDateTime(context,
+                    creationMillis,
+                    DateUtils.FORMAT_SHOW_DATE
+                            | DateUtils.FORMAT_SHOW_TIME
+                            | DateUtils.FORMAT_SHOW_YEAR
+                            | DateUtils.FORMAT_ABBREV_MONTH);
+            return context.getString(R.string.label_key_created, dateTime);
         }
 
         @Override
