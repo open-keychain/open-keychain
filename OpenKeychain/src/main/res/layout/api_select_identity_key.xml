@@ -21,16 +21,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:src="@mipmap/ic_launcher"
-            />
+            android:layout_marginStart="8dp"
+            android:src="@mipmap/ic_launcher"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
-            android:text="OpenKeychain"
-            style="?android:textAppearanceLarge"
-            />
+            android:layout_marginStart="16dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="@string/app_name"
+            style="?android:textAppearanceLarge"/>
 
         <Space
             android:layout_width="0dp"
@@ -43,8 +45,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_more_vert_black_24dp"
             android:background="?selectableItemBackground"
-            android:id="@+id/overflow_menu"
-            />
+            android:id="@+id/overflow_menu" />
 
     </LinearLayout>
 
@@ -77,7 +78,7 @@
         android:inAnimation="@anim/fade_in"
         android:outAnimation="@anim/fade_out"
         android:measureAllChildren="false"
-        custom:initialView="04">
+        custom:initialView="03">
 
         <Space
             android:layout_width="wrap_content"
@@ -118,13 +119,13 @@
                         style="?android:textAppearanceMedium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="This is a new address"
+                        android:text="@string/no_keys_gen_title"
                         />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Create new end-to-end key in OpenKeychain"
+                        android:text="@string/no_keys_gen_subtitle"
                         />
 
                 </LinearLayout>
@@ -159,13 +160,13 @@
                         style="?android:textAppearanceMedium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="I already have a key"
+                        android:text="@string/no_keys_import_title"
                         />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Import end-to-end key from other device"
+                        android:text="@string/no_keys_import_subtitle"
                         />
 
                 </LinearLayout>
@@ -201,7 +202,7 @@
                         style="?android:textAppearanceMedium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Cancel"
+                        android:text="@android:string/cancel"
                         />
 
                 </LinearLayout>
@@ -246,7 +247,7 @@
                     style="?android:textAppearanceMedium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Use a different key"
+                    android:text="@string/key_list_import"
                     />
 
             </LinearLayout>
@@ -274,7 +275,7 @@
                     style="?android:textAppearanceMedium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Cancel"
+                    android:text="@android:string/cancel"
                     />
 
             </LinearLayout>
@@ -292,7 +293,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:text="To import your key, you can either:\n\n①  Open Autocrypt Setup Message from another e-mail app in K-9 Mail\n\n②  Manually manage keys in OpenKeychain"
+                android:text="@string/key_import_text"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 />
 
@@ -360,7 +361,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="Please wait…"
+                    android:text="@string/key_gen_progress"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     />
 
@@ -378,7 +379,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:enabled="false"
-                    android:text="Back"
+                    android:text="@string/key_gen_back"
                     style="?buttonBarButtonStyle"
                     />
 
@@ -391,7 +392,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:enabled="false"
-                    android:text="Finish"
+                    android:text="@string/key_gen_finish"
                     style="?buttonBarButtonStyle"
                     />
 
@@ -428,7 +429,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="Generated end-to-end key!"
+                    android:text="@string/key_gen_done"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     />
 
@@ -447,7 +448,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/button_genok_back"
-                    android:text="Back"
+                    android:text="@string/key_gen_back"
                     style="?buttonBarButtonStyle"
                     />
 
@@ -460,7 +461,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/button_genok_finish"
-                    android:text="Finish"
+                    android:text="@string/key_gen_finish"
                     style="?buttonBarButtonStyle"
                     />
 
@@ -496,7 +497,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="Finishing setup…"
+                    android:text="@string/key_gen_finishing"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     />
 
@@ -514,7 +515,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:enabled="false"
-                    android:text="Back"
+                    android:text="@string/key_gen_back"
                     style="?buttonBarButtonStyle"
                     />
 
@@ -527,7 +528,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:enabled="false"
-                    android:text="Finish"
+                    android:text="@string/key_gen_finish"
                     style="?buttonBarButtonStyle"
                     />
 

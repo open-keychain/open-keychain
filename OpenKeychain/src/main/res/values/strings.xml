@@ -1996,4 +1996,15 @@
     <string name="select_identity_create">Create a key for me</string>
     <string name="error_save_key_internal">"Internal error saving key!"</string>
     <string name="menu_list_unrelated_keys">List unrelated keys</string>
+    <string name="no_keys_gen_title">This is a new address</string>
+    <string name="no_keys_gen_subtitle">Create new end-to-end key in OpenKeychain</string>
+    <string name="no_keys_import_title">I already have a key</string>
+    <string name="no_keys_import_subtitle">Import end-to-end key from other device</string>
+    <string name="key_list_import">Use a different key</string>
+    <string name="key_gen_progress">Please wait…</string>
+    <string name="key_gen_back">Back</string>
+    <string name="key_gen_finish">Finish</string>
+    <string name="key_gen_done">Generated end-to-end key!</string>
+    <string name="key_gen_finishing">Finishing setup…</string>
+    <string name="key_import_text">To import your key, you can either:\n\n① Open Autocrypt Setup Message from another e-mail app in K-9 Mail\n\n② Manually import in OpenKeychain</string>
 </resources>
