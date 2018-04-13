@@ -201,6 +201,30 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 return dialog;
             }
 
+            if (mRequiredInput.mType == RequiredInputType.NUMERIC_9X4) {
+                LayoutInflater inflater = LayoutInflater.from(theme);
+                View view = inflater.inflate(R.layout.passphrase_dialog_numeric_9x4, null);
+                alert.setView(view);
+
+                mBackupCodeEditText = new EditText[9];
+                mBackupCodeEditText[0] = view.findViewById(R.id.transfer_code_block_1);
+                mBackupCodeEditText[1] = view.findViewById(R.id.transfer_code_block_2);
+                mBackupCodeEditText[2] = view.findViewById(R.id.transfer_code_block_3);
+                mBackupCodeEditText[3] = view.findViewById(R.id.transfer_code_block_4);
+                mBackupCodeEditText[4] = view.findViewById(R.id.transfer_code_block_5);
+                mBackupCodeEditText[5] = view.findViewById(R.id.transfer_code_block_6);
+                mBackupCodeEditText[6] = view.findViewById(R.id.transfer_code_block_7);
+                mBackupCodeEditText[7] = view.findViewById(R.id.transfer_code_block_8);
+                mBackupCodeEditText[8] = view.findViewById(R.id.transfer_code_block_9);
+
+                setupEditTextFocusNext(mBackupCodeEditText);
+
+                AlertDialog dialog = alert.create();
+                dialog.setButton(DialogInterface.BUTTON_POSITIVE,
+                        activity.getString(R.string.btn_unlock), (DialogInterface.OnClickListener) null);
+                return dialog;
+            }
+
             LayoutInflater inflater = LayoutInflater.from(theme);
             mLayout = (ViewAnimator) inflater.inflate(R.layout.passphrase_dialog, null);
             alert.setView(mLayout);
@@ -417,6 +441,23 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
                     if (mRequiredInput.mType == RequiredInputType.BACKUP_CODE) {
                         StringBuilder backupCodeInput = new StringBuilder(26);
+                        for (EditText editText : mBackupCodeEditText) {
+                            if (editText.getText().length() < 4) {
+                                return;
+                            }
+                            backupCodeInput.append(editText.getText());
+                            backupCodeInput.append('-');
+                        }
+                        backupCodeInput.deleteCharAt(backupCodeInput.length() - 1);
+
+                        Passphrase passphrase = new Passphrase(backupCodeInput.toString());
+                        finishCaching(passphrase, null);
+
+                        return;
+                    }
+
+                    if (mRequiredInput.mType == RequiredInputType.NUMERIC_9X4) {
+                        StringBuilder backupCodeInput = new StringBuilder(36);
                         for (EditText editText : mBackupCodeEditText) {
                             if (editText.getText().length() < 4) {
                                 return;

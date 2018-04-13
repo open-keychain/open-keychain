@@ -65,4 +65,22 @@
         <item name="android:textSize" tools:ignore="SpUsage">14dp</item>
     </style>
 
+    <style name="TransferCodeText">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:hint">1234</item>
+        <item name="android:textColorHint">@android:color/transparent</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:minHeight">42sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:typeface">monospace</item>
+        <item name="android:textColor">#000</item>
+        <item name="android:inputType">numberPassword|textVisiblePassword</item>
+    </style>
+
+    <style name="TransferCodeTextSep" parent="TransferCodeText">
+        <item name="android:hint"></item>
+        <item name="android:text">-</item>
+    </style>
+
 </resources>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:orientation="vertical"
+    tools:showIn="@layout/backup_code_fragment">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/transfer_code_block_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="1234"
+            style="@style/TransferCodeText"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeTextSep" />
+
+        <EditText
+            android:id="@+id/transfer_code_block_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeText" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeTextSep" />
+
+        <EditText
+            android:id="@+id/transfer_code_block_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeText"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeTextSep" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/transfer_code_block_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeText"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeTextSep" />
+
+        <EditText
+            android:id="@+id/transfer_code_block_5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeText"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeTextSep" />
+
+        <EditText
+            android:id="@+id/transfer_code_block_6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeText"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeTextSep" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/transfer_code_block_7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeText"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeTextSep" />
+
+        <EditText
+            android:id="@+id/transfer_code_block_8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeText"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeTextSep" />
+
+        <EditText
+            android:id="@+id/transfer_code_block_9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeText"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

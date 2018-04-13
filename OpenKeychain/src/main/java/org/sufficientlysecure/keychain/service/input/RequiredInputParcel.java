@@ -33,7 +33,7 @@ public class RequiredInputParcel implements Parcelable {
 
     public enum RequiredInputType {
         PASSPHRASE, PASSPHRASE_SYMMETRIC, PASSPHRASE_AUTH,
-        BACKUP_CODE,
+        BACKUP_CODE, NUMERIC_9X4,
         SECURITY_TOKEN_SIGN, SECURITY_TOKEN_AUTH, SECURITY_TOKEN_DECRYPT,
         SECURITY_TOKEN_MOVE_KEY_TO_CARD, SECURITY_TOKEN_RESET_CARD,
         ENABLE_ORBOT, UPLOAD_FAIL_RETRY
@@ -176,6 +176,11 @@ public class RequiredInputParcel implements Parcelable {
 
     public static RequiredInputParcel createRequiredBackupCode() {
         return new RequiredInputParcel(RequiredInputType.BACKUP_CODE,
+                null, null, null, (long[]) null, null);
+    }
+
+    public static RequiredInputParcel createRequiredNumeric9x4(String beginChars) {
+        return new RequiredInputParcel(RequiredInputType.NUMERIC_9X4,
                 null, null, null, (long[]) null, null);
     }
 

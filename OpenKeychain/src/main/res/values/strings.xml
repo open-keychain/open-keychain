@@ -333,6 +333,7 @@
     <string name="passphrase_for_any">"Enter password"</string>
     <string name="passphrase_keyboard_hint_alpha">"Switch to alphabetic keyboard"</string>
     <string name="passphrase_keyboard_hint_numeric">"Switch to numeric keyboard"</string>
+    <string name="passphrase_transfer">"Enter transfer code"</string>
     <string name="pin_for">"Enter PIN for '%s'"</string>
     <string name="security_token_pin_for">"Enter PIN to access Security Token for '%s'"</string>
     <string name="security_token_nfc_text">"Hold Security Token against the NFC marker at the back of your device."</string>
@@ -1176,6 +1177,8 @@
     <string name="msg_dc_asym">"Found block of asymmetrically encrypted data for key %s"</string>
     <string name="msg_dc_charset">"Found charset header: '%s'"</string>
     <string name="msg_dc_backup_version">"Found backupVersion header: '%s'"</string>
+    <string name="msg_dc_passphrase_format">"Found Passphrase-Format header: '%s'"</string>
+    <string name="msg_dc_passphrase_begin">"Found Passphrase-Begin header: '%s'"</string>
     <string name="msg_dc_clear_data">"Processing literal data"</string>
     <string name="msg_dc_clear_decompress">"Unpacking compressed data"</string>
     <string name="msg_dc_clear_meta_file">"Filename: %s"</string>

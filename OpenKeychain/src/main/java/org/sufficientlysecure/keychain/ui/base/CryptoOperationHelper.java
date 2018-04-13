@@ -162,7 +162,8 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
             case PASSPHRASE:
             case PASSPHRASE_SYMMETRIC:
-            case BACKUP_CODE: {
+            case BACKUP_CODE:
+            case NUMERIC_9X4: {
                 Intent intent = new Intent(activity, PassphraseDialogActivity.class);
                 intent.putExtra(PassphraseDialogActivity.EXTRA_REQUIRED_INPUT, requiredInput);
                 intent.putExtra(PassphraseDialogActivity.EXTRA_CRYPTO_INPUT, cryptoInputParcel);
