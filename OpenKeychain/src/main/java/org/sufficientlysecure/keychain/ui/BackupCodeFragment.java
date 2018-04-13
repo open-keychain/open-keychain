@@ -20,11 +20,9 @@ package org.sufficientlysecure.keychain.ui;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Random;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
@@ -52,7 +50,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -66,6 +63,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator;
+import org.sufficientlysecure.keychain.util.Numeric9x4PassphraseUtil;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
@@ -83,20 +81,13 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
     public static final int REQUEST_SAVE = 1;
     public static final String ARG_BACK_STACK = "back_stack";
 
-    // https://github.com/open-keychain/open-keychain/wiki/Backups
-    // excludes 0 and O
-    private static final char[] mBackupCodeAlphabet =
-            new char[]{'1', '2', '3', '4', '5', '6', '7', '8', '9',
-                    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-                    'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-
     // argument variables
     private boolean mExportSecret;
     private long[] mMasterKeyIds;
-    String mBackupCode;
+    Passphrase mBackupCode;
     private boolean mExecuteBackupOperation;
 
-    private EditText[] mCodeEditText;
+    private TextView[] mCodeEditText;
 
     private ToolableViewAnimator mStatusAnimator, mTitleAnimator, mCodeFieldsAnimator;
     private Integer mBackStackLevel;
@@ -110,7 +101,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         BackupCodeFragment frag = new BackupCodeFragment();
 
         Bundle args = new Bundle();
-        args.putString(ARG_BACKUP_CODE, generateRandomBackupCode());
+        args.putParcelable(ARG_BACKUP_CODE, Numeric9x4PassphraseUtil.generateNumeric9x4Passphrase());
         args.putLongArray(ARG_MASTER_KEY_IDS, masterKeyIds);
         args.putBoolean(ARG_EXPORT_SECRET, exportSecret);
         args.putBoolean(ARG_EXECUTE_BACKUP_OPERATION, executeBackupOperation);
@@ -149,13 +140,16 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
             item.setChecked(newCheckedState);
             mDebugModeAcceptAnyCode = newCheckedState;
             if (newCheckedState && TextUtils.isEmpty(mCodeEditText[0].getText())) {
-                mCodeEditText[0].setText("ABCD");
-                mCodeEditText[1].setText("EFGH");
-                mCodeEditText[2].setText("IJKL");
-                mCodeEditText[3].setText("MNOP");
-                mCodeEditText[4].setText("QRST");
-                mCodeEditText[5].setText("UVWX");
-                Notify.create(getActivity(), "Actual backup code is all 'A's", Style.WARN).show();
+                mCodeEditText[0].setText("1234");
+                mCodeEditText[1].setText("5678");
+                mCodeEditText[2].setText("9012");
+                mCodeEditText[3].setText("3456");
+                mCodeEditText[4].setText("7890");
+                mCodeEditText[5].setText("1234");
+                mCodeEditText[6].setText("5678");
+                mCodeEditText[7].setText("9012");
+                mCodeEditText[8].setText("3456");
+                Notify.create(getActivity(), "Actual backup code is all '1's", Style.WARN).show();
             }
             return true;
         }
@@ -178,7 +172,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
                 mTitleAnimator.setDisplayedChild(1, animate);
                 mStatusAnimator.setDisplayedChild(1, animate);
                 mCodeFieldsAnimator.setDisplayedChild(1, animate);
-                for (EditText editText : mCodeEditText) {
+                for (TextView editText : mCodeEditText) {
                     editText.setText("");
                 }
 
@@ -213,7 +207,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
 
                 hideKeyboard();
 
-                for (EditText editText : mCodeEditText) {
+                for (TextView editText : mCodeEditText) {
                     editText.setEnabled(false);
                 }
 
@@ -255,30 +249,18 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         View view = inflater.inflate(R.layout.backup_code_fragment, container, false);
 
         Bundle args = getArguments();
-        mBackupCode = args.getString(ARG_BACKUP_CODE);
+        mBackupCode = args.getParcelable(ARG_BACKUP_CODE);
         mMasterKeyIds = args.getLongArray(ARG_MASTER_KEY_IDS);
         mExportSecret = args.getBoolean(ARG_EXPORT_SECRET);
         mExecuteBackupOperation = args.getBoolean(ARG_EXECUTE_BACKUP_OPERATION, true);
 
-        mCodeEditText = new EditText[6];
-        mCodeEditText[0] = view.findViewById(R.id.backup_code_1);
-        mCodeEditText[1] = view.findViewById(R.id.backup_code_2);
-        mCodeEditText[2] = view.findViewById(R.id.backup_code_3);
-        mCodeEditText[3] = view.findViewById(R.id.backup_code_4);
-        mCodeEditText[4] = view.findViewById(R.id.backup_code_5);
-        mCodeEditText[5] = view.findViewById(R.id.backup_code_6);
+        mCodeEditText = getTransferCodeTextViews(view, R.id.transfer_code_input);
 
         {
-            TextView[] codeDisplayText = new TextView[6];
-            codeDisplayText[0] = view.findViewById(R.id.backup_code_display_1);
-            codeDisplayText[1] = view.findViewById(R.id.backup_code_display_2);
-            codeDisplayText[2] = view.findViewById(R.id.backup_code_display_3);
-            codeDisplayText[3] = view.findViewById(R.id.backup_code_display_4);
-            codeDisplayText[4] = view.findViewById(R.id.backup_code_display_5);
-            codeDisplayText[5] = view.findViewById(R.id.backup_code_display_6);
+            TextView[] codeDisplayText = getTransferCodeTextViews(view, R.id.transfer_code_display);
 
             // set backup code in code TextViews
-            char[] backupCode = mBackupCode.toCharArray();
+            char[] backupCode = mBackupCode.getCharArray();
             for (int i = 0; i < codeDisplayText.length; i++) {
                 codeDisplayText[i].setText(backupCode, i * 5, 4);
             }
@@ -340,6 +322,22 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         return view;
     }
 
+    @NonNull
+    private TextView[] getTransferCodeTextViews(View view, int transferCodeViewGroupId) {
+        ViewGroup transferCodeGroup = view.findViewById(transferCodeViewGroupId);
+        TextView[] codeDisplayText = new TextView[9];
+        codeDisplayText[0] = transferCodeGroup.findViewById(R.id.transfer_code_block_1);
+        codeDisplayText[1] = transferCodeGroup.findViewById(R.id.transfer_code_block_2);
+        codeDisplayText[2] = transferCodeGroup.findViewById(R.id.transfer_code_block_3);
+        codeDisplayText[3] = transferCodeGroup.findViewById(R.id.transfer_code_block_4);
+        codeDisplayText[4] = transferCodeGroup.findViewById(R.id.transfer_code_block_5);
+        codeDisplayText[5] = transferCodeGroup.findViewById(R.id.transfer_code_block_6);
+        codeDisplayText[6] = transferCodeGroup.findViewById(R.id.transfer_code_block_7);
+        codeDisplayText[7] = transferCodeGroup.findViewById(R.id.transfer_code_block_8);
+        codeDisplayText[8] = transferCodeGroup.findViewById(R.id.transfer_code_block_9);
+        return codeDisplayText;
+    }
+
     private void showFaq() {
         HelpActivity.startHelpActivity(getActivity(), HelpActivity.TAB_FAQ);
     }
@@ -369,8 +367,8 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         outState.putInt(ARG_BACK_STACK, mBackStackLevel == null ? -1 : mBackStackLevel);
     }
 
-    private void setupEditTextSuccessListener(final EditText[] backupCodes) {
-        for (EditText backupCode : backupCodes) {
+    private void setupEditTextSuccessListener(final TextView[] backupCodes) {
+        for (TextView backupCode : backupCodes) {
 
             backupCode.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -410,7 +408,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         }
 
         StringBuilder backupCodeInput = new StringBuilder(26);
-        for (EditText editText : mCodeEditText) {
+        for (TextView editText : mCodeEditText) {
             if (editText.getText().length() < 4) {
                 return;
             }
@@ -449,7 +447,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
 
     }
 
-    private static void setupEditTextFocusNext(final EditText[] backupCodes) {
+    private static void setupEditTextFocusNext(final TextView[] backupCodes) {
         for (int i = 0; i < backupCodes.length - 1; i++) {
 
             final int next = i + 1;
@@ -516,9 +514,9 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
                 + (mExportSecret ? Constants.FILE_EXTENSION_ENCRYPTED_BACKUP_SECRET
                 : Constants.FILE_EXTENSION_ENCRYPTED_BACKUP_PUBLIC);
 
-        Passphrase passphrase = new Passphrase(mBackupCode);
+        Passphrase passphrase = new Passphrase(mBackupCode.getCharArray());
         if (Constants.DEBUG && mDebugModeAcceptAnyCode) {
-            passphrase = new Passphrase("AAAA-AAAA-AAAA-AAAA-AAAA-AAAA");
+            passphrase = new Passphrase("1111-1111-1111-1111-1111-1111-1111-1111-1111");
         }
 
         // if we don't want to execute the actual operation outside of this activity, drop out here
@@ -630,28 +628,5 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
     public void onCryptoOperationCancelled() {
         mCachedBackupUri = null;
     }
-
-    /**
-     * Generate backup code using format defined in
-     * https://github.com/open-keychain/open-keychain/wiki/Backups
-     */
-    @NonNull
-    private static String generateRandomBackupCode() {
-
-        Random r = new SecureRandom();
-
-        // simple generation of a 24 character backup code
-        StringBuilder code = new StringBuilder(28);
-        for (int i = 0; i < 24; i++) {
-            if (i == 4 || i == 8 || i == 12 || i == 16 || i == 20) {
-                code.append('-');
-            }
-
-            code.append(mBackupCodeAlphabet[r.nextInt(mBackupCodeAlphabet.length)]);
-        }
-
-        return code.toString();
-    }
-
 
 }
