@@ -61,6 +61,11 @@ public abstract class PgpSignEncryptData implements Parcelable {
     public abstract boolean isAddBackupHeader();
     public abstract boolean isHiddenRecipients();
 
+    @Nullable
+    public abstract String getPassphraseFormat();
+    @Nullable
+    public abstract String getPassphraseBegin();
+
     public static Builder builder() {
         return new AutoValue_PgpSignEncryptData.Builder()
                 .setSignatureMasterKeyId(Constants.key.none)
@@ -102,6 +107,9 @@ public abstract class PgpSignEncryptData implements Parcelable {
             setAllowedSigningKeyIds(Collections.unmodifiableList(new ArrayList<>(allowedSigningKeyIds)));
             return this;
         }
+
+        public abstract Builder setPassphraseFormat(String passphraseFormat);
+        public abstract Builder setPassphraseBegin(String passphraseBegin);
     }
 }
 
