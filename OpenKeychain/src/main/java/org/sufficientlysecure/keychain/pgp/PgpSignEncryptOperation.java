@@ -202,10 +202,6 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
             if (data.getCharset() != null) {
                 armorOut.setHeader("Charset", data.getCharset());
             }
-            // add proprietary header to indicate that this is a key backup
-            if (data.isAddBackupHeader()) {
-                armorOut.setHeader("BackupVersion", "2");
-            }
             String passphraseFormat = data.getPassphraseFormat();
             if (passphraseFormat != null) {
                 armorOut.setHeader("Passphrase-Format", passphraseFormat);
