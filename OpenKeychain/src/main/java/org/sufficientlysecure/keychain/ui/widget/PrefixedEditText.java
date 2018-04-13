@@ -21,17 +21,19 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.*;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.AppCompatEditText;
+import android.text.Layout;
+import android.text.TextPaint;
 import android.util.AttributeSet;
-import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
 
-public class PrefixedEditText extends EditText {
+public class PrefixedEditText extends AppCompatEditText {
 
     private String mPrefix;
-    private Rect mPrefixRect = new Rect();
+    private int desiredWidth;
 
-	public PrefixedEditText(Context context, AttributeSet attrs) {
+    public PrefixedEditText(Context context, AttributeSet attrs) {
 		super(context, attrs);
         TypedArray style = context.getTheme().obtainStyledAttributes(
                 attrs, R.styleable.PrefixedEditText, 0, 0);
@@ -43,20 +45,29 @@ public class PrefixedEditText extends EditText {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        getPaint().getTextBounds(mPrefix, 0, mPrefix.length(), mPrefixRect);
-
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        desiredWidth = (int) Math.ceil(Layout.getDesiredWidth(mPrefix, getPaint()));
     }
 
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawText(mPrefix, super.getCompoundPaddingLeft(), getBaseline(), getPaint());
+        TextPaint paint = getPaint();
+        // reset to the actual text color - it might be the hint color currently
+        paint.setColor(getCurrentTextColor());
+        canvas.drawText(mPrefix, super.getCompoundPaddingLeft(), getBaseline(), paint);
     }
 
     @Override
     public int getCompoundPaddingLeft() {
-        return super.getCompoundPaddingLeft() + mPrefixRect.width();
+        return super.getCompoundPaddingLeft() + desiredWidth;
+    }
+
+    public void setPrefix(String prefix) {
+	    mPrefix = prefix;
+
+	    invalidate();
+	    requestLayout();
     }
 
 }
