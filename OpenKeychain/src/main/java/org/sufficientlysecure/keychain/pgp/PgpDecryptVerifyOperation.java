@@ -315,7 +315,12 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         if (armorHeaders.backupVersion != null && armorHeaders.backupVersion == 2) {
             customRequiredInputParcel = RequiredInputParcel.createRequiredBackupCode();
         } else if (PASSPHRASE_FORMAT_NUMERIC9X4.equalsIgnoreCase(armorHeaders.passphraseFormat)) {
-            customRequiredInputParcel = RequiredInputParcel.createRequiredNumeric9x4(armorHeaders.passphraseBegin);
+            if (input.isAutocryptSetup()) {
+                customRequiredInputParcel =
+                        RequiredInputParcel.createRequiredNumeric9x4Autocrypt(armorHeaders.passphraseBegin);
+            } else {
+                customRequiredInputParcel = RequiredInputParcel.createRequiredNumeric9x4(armorHeaders.passphraseBegin);
+            }
         }
 
         OpenPgpDecryptionResultBuilder decryptionResultBuilder = new OpenPgpDecryptionResultBuilder();

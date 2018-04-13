@@ -203,7 +203,8 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 return dialog;
             }
 
-            if (mRequiredInput.mType == RequiredInputType.NUMERIC_9X4) {
+            if (mRequiredInput.mType == RequiredInputType.NUMERIC_9X4 ||
+                    mRequiredInput.mType == RequiredInputType.NUMERIC_9X4_AUTOCRYPT) {
                 LayoutInflater inflater = LayoutInflater.from(theme);
                 View view = inflater.inflate(R.layout.passphrase_dialog_numeric_9x4, null);
                 alert.setView(view);
@@ -234,9 +235,14 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     setupEditTextFocusNext(mBackupCodeEditText, false);
                 }
 
+                if (mRequiredInput.mType == RequiredInputType.NUMERIC_9X4_AUTOCRYPT) {
+                    TextView promptText = view.findViewById(R.id.passphrase_text);
+                    promptText.setText(R.string.passphrase_transfer_autocrypt);
+                }
+
                 AlertDialog dialog = alert.create();
                 dialog.setButton(DialogInterface.BUTTON_POSITIVE,
-                        activity.getString(R.string.btn_unlock), (DialogInterface.OnClickListener) null);
+                        activity.getString(R.string.btn_proceed), (DialogInterface.OnClickListener) null);
                 return dialog;
             }
 
@@ -470,7 +476,8 @@ public class PassphraseDialogActivity extends FragmentActivity {
                         return;
                     }
 
-                    if (mRequiredInput.mType == RequiredInputType.NUMERIC_9X4) {
+                    if (mRequiredInput.mType == RequiredInputType.NUMERIC_9X4 ||
+                            mRequiredInput.mType == RequiredInputType.NUMERIC_9X4_AUTOCRYPT) {
                         StringBuilder backupCodeInput = new StringBuilder(36);
                         if (mRequiredInput.hasPassphraseBegin()) {
                             backupCodeInput.append(mRequiredInput.getPassphraseBegin());
