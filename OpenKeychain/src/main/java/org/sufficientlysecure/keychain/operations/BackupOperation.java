@@ -58,8 +58,10 @@ import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.Numeric9x4PassphraseUtil;
 import org.sufficientlysecure.keychain.util.CountingOutputStream;
 import org.sufficientlysecure.keychain.util.InputData;
+import org.sufficientlysecure.keychain.util.Passphrase;
 import timber.log.Timber;
 
 
@@ -169,9 +171,15 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
         PgpSignEncryptOperation signEncryptOperation = new PgpSignEncryptOperation(mContext, mKeyRepository, mProgressable, mCancelled);
 
         PgpSignEncryptData.Builder builder = PgpSignEncryptData.builder();
-        builder.setSymmetricPassphrase(cryptoInput.getPassphrase());
+        Passphrase passphrase = cryptoInput.getPassphrase();
+        builder.setSymmetricPassphrase(passphrase);
         builder.setEnableAsciiArmorOutput(backupInput.getEnableAsciiArmorOutput());
-        builder.setAddBackupHeader(true);
+        boolean isNumeric9x4Passphrase = passphrase != null && Numeric9x4PassphraseUtil.isNumeric9x4Passphrase(passphrase);
+        if (isNumeric9x4Passphrase) {
+            builder.setPassphraseFormat("numeric9x4");
+            char[] passphraseChars = passphrase.getCharArray();
+            builder.setPassphraseBegin("" + passphraseChars[0] + passphraseChars[1]);
+        }
         PgpSignEncryptData pgpSignEncryptData = builder.build();
 
         InputStream inStream = mContext.getContentResolver().openInputStream(plainUri);
