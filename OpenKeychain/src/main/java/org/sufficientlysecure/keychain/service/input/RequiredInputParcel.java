@@ -31,6 +31,14 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 
 public class RequiredInputParcel implements Parcelable {
 
+    public boolean hasPassphraseBegin() {
+        return mInputData != null && mInputData.length == 1 && mInputData[0].length == 2;
+    }
+
+    public String getPassphraseBegin() {
+        return new String(mInputData[0]);
+    }
+
     public enum RequiredInputType {
         PASSPHRASE, PASSPHRASE_SYMMETRIC, PASSPHRASE_AUTH,
         BACKUP_CODE, NUMERIC_9X4,
@@ -180,8 +188,9 @@ public class RequiredInputParcel implements Parcelable {
     }
 
     public static RequiredInputParcel createRequiredNumeric9x4(String beginChars) {
+        byte[][] inputData = beginChars != null ? new byte[][] { beginChars.getBytes() } : null;
         return new RequiredInputParcel(RequiredInputType.NUMERIC_9X4,
-                null, null, null, (long[]) null, null);
+                inputData, null, null, (long[]) null, null);
     }
 
     public static RequiredInputParcel createRequiredPassphrase(

@@ -31,6 +31,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
@@ -68,6 +69,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.Require
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.ui.widget.CacheTTLSpinner;
+import org.sufficientlysecure.keychain.ui.widget.PrefixedEditText;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
@@ -193,7 +195,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 mBackupCodeEditText[4] = view.findViewById(R.id.backup_code_5);
                 mBackupCodeEditText[5] = view.findViewById(R.id.backup_code_6);
 
-                setupEditTextFocusNext(mBackupCodeEditText);
+                setupEditTextFocusNext(mBackupCodeEditText, false);
 
                 AlertDialog dialog = alert.create();
                 dialog.setButton(DialogInterface.BUTTON_POSITIVE,
@@ -217,7 +219,20 @@ public class PassphraseDialogActivity extends FragmentActivity {
                 mBackupCodeEditText[7] = view.findViewById(R.id.transfer_code_block_8);
                 mBackupCodeEditText[8] = view.findViewById(R.id.transfer_code_block_9);
 
-                setupEditTextFocusNext(mBackupCodeEditText);
+                if (mRequiredInput.hasPassphraseBegin()) {
+                    String beginChars = mRequiredInput.getPassphraseBegin();
+                    int inputLength = 4 - beginChars.length();
+                    setupEditTextFocusNext(mBackupCodeEditText, true);
+
+                    PrefixedEditText prefixEditText = (PrefixedEditText) mBackupCodeEditText[0];
+                    if (beginChars.matches("\\d\\d")) {
+                        prefixEditText.setPrefix(beginChars);
+                        prefixEditText.setHint("1234".substring(inputLength));
+                        prefixEditText.setFilters(new InputFilter[] { new InputFilter.LengthFilter(inputLength) });
+                    }
+                } else {
+                    setupEditTextFocusNext(mBackupCodeEditText, false);
+                }
 
                 AlertDialog dialog = alert.create();
                 dialog.setButton(DialogInterface.BUTTON_POSITIVE,
@@ -401,10 +416,9 @@ public class PassphraseDialogActivity extends FragmentActivity {
             textView.requestFocus();
         }
 
-        private static void setupEditTextFocusNext(final EditText[] backupCodes) {
+        private static void setupEditTextFocusNext(EditText[] backupCodes, boolean hasPrefix) {
             for (int i = 0; i < backupCodes.length - 1; i++) {
-
-                final int next = i + 1;
+                int idx = i;
 
                 backupCodes[i].addTextChangedListener(new TextWatcher() {
                     @Override
@@ -414,10 +428,11 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
                         boolean inserting = before < count;
-                        boolean cursorAtEnd = (start + count) == 4;
+                        int maxLen = hasPrefix && idx == 0 ? 2 : 4;
+                        boolean cursorAtEnd = (start + count) == maxLen;
 
                         if (inserting && cursorAtEnd) {
-                            backupCodes[next].requestFocus();
+                            backupCodes[idx + 1].requestFocus();
                         }
                     }
 
@@ -425,7 +440,6 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     public void afterTextChanged(Editable s) {
                     }
                 });
-
             }
         }
 
@@ -458,8 +472,11 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
                     if (mRequiredInput.mType == RequiredInputType.NUMERIC_9X4) {
                         StringBuilder backupCodeInput = new StringBuilder(36);
+                        if (mRequiredInput.hasPassphraseBegin()) {
+                            backupCodeInput.append(mRequiredInput.getPassphraseBegin());
+                        }
                         for (EditText editText : mBackupCodeEditText) {
-                            if (editText.getText().length() < 4) {
+                            if (editText.getText().length() != 2 && editText.getText().length() != 4) {
                                 return;
                             }
                             backupCodeInput.append(editText.getText());

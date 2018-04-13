@@ -13,11 +13,12 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <EditText
+        <org.sufficientlysecure.keychain.ui.widget.PrefixedEditText
             android:id="@+id/transfer_code_block_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="1234"
+            tools:prefix="12"
+            tools:hint="34"
             style="@style/TransferCodeText"
             />
 
