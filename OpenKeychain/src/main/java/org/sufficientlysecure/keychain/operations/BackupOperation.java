@@ -129,8 +129,8 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             }
 
             CountingOutputStream outStream = new CountingOutputStream(new BufferedOutputStream(plainOut));
-            boolean backupSuccess = exportKeysToStream(
-                    log, backupInput.getMasterKeyIds(), backupInput.getExportSecret(), outStream);
+            boolean backupSuccess = exportKeysToStream(log, backupInput.getMasterKeyIds(),
+                    backupInput.getExportSecret(), backupInput.getExportPublic(), outStream);
 
             if (!backupSuccess) {
                 // if there was an error, it will be in the log so we just have to return
@@ -214,7 +214,8 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
                 pgpSignEncryptData, CryptoInputParcel.createCryptoInputParcel(), inputData, outStream);
     }
 
-    boolean exportKeysToStream(OperationLog log, long[] masterKeyIds, boolean exportSecret, OutputStream outStream) {
+    boolean exportKeysToStream(OperationLog log, long[] masterKeyIds, boolean exportSecret, boolean exportPublic,
+            OutputStream outStream) {
         // noinspection unused TODO use these in a log entry
         int okSecret = 0, okPublic = 0;
 
@@ -240,9 +241,15 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
                 long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
                 log.add(LogType.MSG_BACKUP_PUBLIC, 1, KeyFormattingUtils.beautifyKeyId(masterKeyId));
 
-                if (writePublicKeyToStream(masterKeyId, log, outStream)) {
-                    okPublic += 1;
+                boolean publicKeyWriteOk = false;
+                if (exportPublic) {
+                    publicKeyWriteOk = writePublicKeyToStream(masterKeyId, log, outStream);
+                    if (publicKeyWriteOk) {
+                        okPublic += 1;
+                    }
+                }
 
+                if (publicKeyWriteOk || !exportPublic) {
                     boolean hasSecret = cursor.getInt(INDEX_HAS_ANY_SECRET) > 0;
                     if (exportSecret && hasSecret) {
                         log.add(LogType.MSG_BACKUP_SECRET, 2, KeyFormattingUtils.beautifyKeyId(masterKeyId));

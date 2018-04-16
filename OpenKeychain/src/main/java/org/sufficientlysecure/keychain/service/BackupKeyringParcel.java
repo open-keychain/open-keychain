@@ -31,14 +31,20 @@ public abstract class BackupKeyringParcel implements Parcelable {
     @SuppressWarnings("mutable")
     public abstract long[] getMasterKeyIds();
     public abstract boolean getExportSecret();
+    public abstract boolean getExportPublic();
     public abstract boolean getIsEncrypted();
     public abstract boolean getEnableAsciiArmorOutput();
     @Nullable
     public abstract Uri getOutputUri();
 
-    public static BackupKeyringParcel createBackupKeyringParcel(long[] masterKeyIds, boolean exportSecret,
+    public static BackupKeyringParcel create(long[] masterKeyIds, boolean exportSecret,
             boolean isEncrypted, boolean enableAsciiArmorOutput, Uri outputUri) {
         return new AutoValue_BackupKeyringParcel(
-                masterKeyIds, exportSecret, isEncrypted, enableAsciiArmorOutput, outputUri);
+                masterKeyIds, exportSecret, true, isEncrypted, enableAsciiArmorOutput, outputUri);
+    }
+
+    public static BackupKeyringParcel createExportAutocryptSetupMessage(long[] masterKeyIds) {
+        return new AutoValue_BackupKeyringParcel(
+                masterKeyIds, true, false, true, true, null);
     }
 }
