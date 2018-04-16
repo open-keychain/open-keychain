@@ -69,6 +69,7 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:singleLine">true</item>
         <item name="android:hint">1234</item>
+        <item name="android:maxLength">4</item>
         <item name="android:textColorHint">@android:color/transparent</item>
         <item name="android:textSize">18sp</item>
         <item name="android:minHeight">42sp</item>

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_gravity="center_horizontal"
     android:orientation="vertical">
 
@@ -16,12 +17,18 @@
             The most reliable way to correctly size these I found was to put a transparent hint on them.
              Theoretically, this should be what the android:ems attribute is for - didn't work for me.
             -->
-        <TextView
+        <org.sufficientlysecure.keychain.ui.widget.PrefixedEditText
             android:id="@+id/transfer_code_block_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:enabled="false"
+            custom:prefixColor="@color/md_grey_600"
+            tools:hint="34"
+            tools:prefix="12"
+            tools:text="34"
             style="@style/TransferCodeText"
-            tools:text="1234" />
+            />
 
         <TextView
             android:layout_width="wrap_content"

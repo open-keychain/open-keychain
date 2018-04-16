@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:layout_gravity="center_horizontal"
     android:orientation="vertical"
     tools:showIn="@layout/backup_code_fragment">
@@ -17,6 +18,7 @@
             android:id="@+id/transfer_code_block_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            custom:prefixColor="@color/md_grey_600"
             tools:prefix="12"
             tools:hint="34"
             style="@style/TransferCodeText"
