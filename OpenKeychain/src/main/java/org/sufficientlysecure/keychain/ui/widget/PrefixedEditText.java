@@ -30,7 +30,8 @@ import org.sufficientlysecure.keychain.R;
 
 public class PrefixedEditText extends AppCompatEditText {
 
-    private String mPrefix;
+    private CharSequence mPrefix;
+    private int mPrefixColor;
     private int desiredWidth;
 
     public PrefixedEditText(Context context, AttributeSet attrs) {
@@ -38,6 +39,7 @@ public class PrefixedEditText extends AppCompatEditText {
         TypedArray style = context.getTheme().obtainStyledAttributes(
                 attrs, R.styleable.PrefixedEditText, 0, 0);
         mPrefix = style.getString(R.styleable.PrefixedEditText_prefix);
+        mPrefixColor = style.getColor(R.styleable.PrefixedEditText_prefixColor, getCurrentTextColor());
         if (mPrefix == null) {
             mPrefix = "";
         }
@@ -54,8 +56,8 @@ public class PrefixedEditText extends AppCompatEditText {
         super.onDraw(canvas);
         TextPaint paint = getPaint();
         // reset to the actual text color - it might be the hint color currently
-        paint.setColor(getCurrentTextColor());
-        canvas.drawText(mPrefix, super.getCompoundPaddingLeft(), getBaseline(), paint);
+        paint.setColor(mPrefixColor);
+        canvas.drawText(mPrefix, 0, mPrefix.length(), super.getCompoundPaddingLeft(), getBaseline(), paint);
     }
 
     @Override
@@ -63,7 +65,7 @@ public class PrefixedEditText extends AppCompatEditText {
         return super.getCompoundPaddingLeft() + desiredWidth;
     }
 
-    public void setPrefix(String prefix) {
+    public void setPrefix(CharSequence prefix) {
 	    mPrefix = prefix;
 
 	    invalidate();

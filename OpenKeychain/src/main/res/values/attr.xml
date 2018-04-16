@@ -13,6 +13,7 @@
 
     <declare-styleable name="PrefixedEditText">
         <attr name="prefix" format="string" />
+        <attr name="prefixColor" format="color" />
     </declare-styleable>
 
 </resources>
