@@ -723,8 +723,9 @@ public class OpenPgpService extends Service {
                 pi = mApiPendingIntentFactory.createSelectSignKeyIdLegacyPendingIntent(data, currentPkg, null);
             } else {
                 byte[] packageSignature = mApiPermissionHelper.getPackageCertificateOrError(currentPkg);
+                boolean showAutocryptHint = data.getBooleanExtra(OpenPgpApi.EXTRA_SHOW_AUTOCRYPT_HINT, false);
                 pi = mApiPendingIntentFactory.createSelectSignKeyIdPendingIntent(
-                        data, currentPkg, packageSignature, preferredUserId);
+                        data, currentPkg, packageSignature, preferredUserId, showAutocryptHint);
             }
             result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
         }

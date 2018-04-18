@@ -2006,5 +2006,7 @@
     <string name="key_gen_finish">Finish</string>
     <string name="key_gen_done">Generated end-to-end key!</string>
     <string name="key_gen_finishing">Finishing setup…</string>
-    <string name="key_import_text">To import your key, you can either:\n\n① Open Autocrypt Setup Message from another e-mail app in K-9 Mail\n\n② Manually import in OpenKeychain</string>
+    <string name="key_import_text">To use an end-to-end key, it has to be imported into OpenKeychain.</string>
+    <string name="key_import_text_autocrypt_setup_msg">To import your existing setup from another device, you can also open an Autocrypt Setup Message in %s.</string>
+    <string name="button_goto_openkeychain">Go to OpenKeychain</string>
 </resources>

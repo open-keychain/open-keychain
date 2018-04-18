@@ -298,6 +298,47 @@
                 />
 
             <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/button_goto_openkeychain"
+                android:background="?selectableItemBackground"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                >
+
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginRight="12dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@mipmap/ic_launcher"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="0dp"
+                    android:paddingRight="0dp"
+                    android:text="@string/button_goto_openkeychain"
+                    android:clickable="false"
+                    android:background="@android:color/transparent"
+                    style="?buttonBarButtonStyle"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:id="@+id/key_import_autocrypt_hint"
+                android:text="@string/key_import_text_autocrypt_setup_msg"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                />
+
+            <LinearLayout
                 style="?buttonBarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

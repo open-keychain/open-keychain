@@ -62,6 +62,7 @@ import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeyInfo;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectIdentityKeyPresenter.RemoteSelectIdentityKeyView;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
+import org.sufficientlysecure.keychain.ui.MainActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper.AbstractCallback;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
@@ -76,6 +77,7 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
     public static final String EXTRA_PACKAGE_NAME = "package_name";
     public static final String EXTRA_PACKAGE_SIGNATURE = "package_signature";
     public static final String EXTRA_USER_ID = "user_id";
+    public static final String EXTRA_SHOW_AUTOCRYPT_HINT = "show_autocrypt_hint";
     public static final String EXTRA_CURRENT_MASTER_KEY_ID = "current_master_key_id";
 
 
@@ -108,8 +110,9 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
         String userId = intent.getStringExtra(EXTRA_USER_ID);
         String packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
         byte[] packageSignature = intent.getByteArrayExtra(EXTRA_PACKAGE_SIGNATURE);
+        boolean showAutocryptHint = intent.getBooleanExtra(EXTRA_SHOW_AUTOCRYPT_HINT, false);
 
-        presenter.setupFromIntentData(packageName, packageSignature, userId);
+        presenter.setupFromIntentData(packageName, packageSignature, userId, showAutocryptHint);
     }
 
     public static class RemoteSelectIdentityKeyDialogFragment extends DialogFragment {
@@ -127,6 +130,7 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
         private View buttonNoKeysExisting;
         private View buttonKeyListOther;
         private View buttonOverflow;
+        private View buttonGotoOpenKeychain;
 
         @NonNull
         @Override
@@ -155,6 +159,8 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
 
             buttonGenOkBack = view.findViewById(R.id.button_genok_back);
             buttonGenOkFinish = view.findViewById(R.id.button_genok_finish);
+
+            buttonGotoOpenKeychain = view.findViewById(R.id.button_goto_openkeychain);
 
             keyChoiceList = view.findViewById(R.id.identity_key_list);
             keyChoiceList.setLayoutManager(new LinearLayoutManager(activity));
@@ -200,6 +206,7 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
             final KeyChoiceAdapter keyChoiceAdapter = new KeyChoiceAdapter(layoutInflater, getResources());
             final TextView titleText = rootView.findViewById(R.id.text_title_select_key);
             final TextView addressText = rootView.findViewById(R.id.text_user_id);
+            final TextView autocryptHint = rootView.findViewById(R.id.key_import_autocrypt_hint);
             final ToolableViewAnimator layoutAnimator = rootView.findViewById(R.id.layout_animator);
             keyChoiceList.setAdapter(keyChoiceAdapter);
 
@@ -231,8 +238,14 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
                 @Override
                 public void setTitleClientIconAndName(Drawable drawable, CharSequence name) {
                     titleText.setText(getString(R.string.title_select_key, name));
+                    autocryptHint.setText(getString(R.string.key_import_text_autocrypt_setup_msg, name));
                     // iconClientApp.setImageDrawable(drawable);
                     setSelectionIcons(drawable);
+                }
+
+                @Override
+                public void setShowAutocryptHint(boolean showAutocryptHint) {
+                    autocryptHint.setVisibility(showAutocryptHint ? View.VISIBLE : View.GONE);
                 }
 
                 private void setSelectionIcons(Drawable drawable) {
@@ -268,7 +281,7 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
                 @Override
                 public void showLayoutSelectKeyList() {
                     layoutAnimator.setDisplayedChildId(R.id.select_key_layout_key_list);
-                    buttonOverflow.setVisibility(View.GONE);
+                    buttonOverflow.setVisibility(View.VISIBLE);
                 }
 
                 @Override
@@ -343,6 +356,17 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
                     });
                     menu.show();
                 }
+
+                @Override
+                public void showOpenKeychainIntent() {
+                    Activity activity = getActivity();
+                    if (activity == null) {
+                        return;
+                    }
+
+                    Intent intent = new Intent(activity.getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                }
             };
         }
 
@@ -361,6 +385,8 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
 
             buttonGenOkBack.setOnClickListener(view -> presenter.onClickGenerateOkBack());
             buttonGenOkFinish.setOnClickListener(view -> presenter.onClickGenerateOkFinish());
+
+            buttonGotoOpenKeychain.setOnClickListener(view -> presenter.onClickGoToOpenKeychain());
 
             keyChoiceList.addOnItemTouchListener(new RecyclerItemClickListener(getContext(),
                     (view, position) -> presenter.onKeyItemClick(position)));

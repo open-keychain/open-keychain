@@ -76,7 +76,7 @@ class RemoteSelectIdentityKeyPresenter {
         this.view = view;
     }
 
-    void setupFromIntentData(String packageName, byte[] packageSignature, String rawUserId) {
+    void setupFromIntentData(String packageName, byte[] packageSignature, String rawUserId, boolean clientHasAutocryptSetupMsg) {
         try {
             setPackageInfo(packageName, packageSignature);
         } catch (NameNotFoundException e) {
@@ -87,6 +87,7 @@ class RemoteSelectIdentityKeyPresenter {
 
         this.userId = OpenPgpUtils.splitUserId(rawUserId);
         view.setAddressText(userId.email);
+        view.setShowAutocryptHint(clientHasAutocryptSetupMsg);
 
         loadKeyInfo();
     }
@@ -220,9 +221,13 @@ class RemoteSelectIdentityKeyPresenter {
     }
 
     public void onClickMenuListAllKeys() {
-        viewModel.setListAllKeys(true);
+        viewModel.setListAllKeys(!viewModel.isListAllKeys());
         loadKeyInfo();
         view.showLayoutSelectKeyList();
+    }
+
+    public void onClickGoToOpenKeychain() {
+        view.showOpenKeychainIntent();
     }
 
     interface RemoteSelectIdentityKeyView {
@@ -231,6 +236,7 @@ class RemoteSelectIdentityKeyPresenter {
 
         void setAddressText(String text);
         void setTitleClientIconAndName(Drawable drawable, CharSequence name);
+        void setShowAutocryptHint(boolean showAutocryptHint);
 
         void showLayoutEmpty();
         void showLayoutSelectNoKeys();
@@ -249,5 +255,7 @@ class RemoteSelectIdentityKeyPresenter {
         void showImportInternalError();
 
         void displayOverflowMenu();
+
+        void showOpenKeychainIntent();
     }
 }

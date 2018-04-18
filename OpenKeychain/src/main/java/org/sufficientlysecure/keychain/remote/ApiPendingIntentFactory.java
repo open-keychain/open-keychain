@@ -143,12 +143,13 @@ public class ApiPendingIntentFactory {
     }
 
     PendingIntent createSelectSignKeyIdPendingIntent(Intent data, String packageName,
-            byte[] packageSignature, String preferredUserId) {
+            byte[] packageSignature, String preferredUserId, boolean showAutocryptHint) {
         Intent intent = new Intent(mContext, RemoteSelectIdKeyActivity.class);
         intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(packageName));
         intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_PACKAGE_NAME, packageName);
         intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_PACKAGE_SIGNATURE, packageSignature);
         intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_USER_ID, preferredUserId);
+        intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_SHOW_AUTOCRYPT_HINT, showAutocryptHint);
 
         return createInternal(data, intent);
     }
