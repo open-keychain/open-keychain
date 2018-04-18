@@ -29,6 +29,7 @@ import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
@@ -115,7 +116,7 @@ public class KeychainApplication extends Application {
         TlsCertificatePinning.addPinnedCertificate("api.keybase.io", getAssets(), "api.keybase.io.CA.cer");
         TlsCertificatePinning.addPinnedCertificate("keyserver.ubuntu.com", getAssets(), "DigiCertGlobalRootCA.cer");
 
-        TemporaryFileProvider.cleanUp(this);
+        new Handler().post(() -> TemporaryFileProvider.cleanUp(getApplicationContext()));
     }
 
     /**

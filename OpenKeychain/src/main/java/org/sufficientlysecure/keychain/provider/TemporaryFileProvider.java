@@ -111,6 +111,7 @@ public class TemporaryFileProvider extends ContentProvider {
     }
 
     public static int cleanUp(Context context) {
+        Timber.d("Cleaning up temporary files…");
         return context.getContentResolver().delete(
                 CONTENT_URI,
                 TemporaryFileColumns.COLUMN_TIME + "< ?",
