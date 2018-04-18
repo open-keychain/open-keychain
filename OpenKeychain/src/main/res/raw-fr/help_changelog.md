@@ -1,5 +1,8 @@
 [//]: # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
+## 5.0
+  * Improved Autocrypt support
+
 ## 4.9
 
   * Prise en charge de Curve25519

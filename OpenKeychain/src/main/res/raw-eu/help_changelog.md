@@ -1,5 +1,8 @@
 [//]: # (OHARRA: Meseez jarri esaldi bakoitza bere lerroan, Transifex-ek lerroak bere itzulpen eremuan jartzen ditu!)
 
+## 5.0
+  * Improved Autocrypt support
+
 ## 4.9
 
   * Curve25519 support

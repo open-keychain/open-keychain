@@ -1,5 +1,8 @@
 [//]: # (注意：请把每个句子放在单独一行中， Transifex 将把每一行放置在独立的翻译表单内！)
 
+## 5.0
+  * Improved Autocrypt support
+
 ## 4.9
 
   * Curve25519 support

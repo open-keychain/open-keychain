@@ -1,5 +1,8 @@
 [//]: # (Ter info: Zet iedere zin op een eigen regel, Transifex zet iedere regel in zijn eigen vertalingsveld!)
 
+## 5.0
+  * Improved Autocrypt support
+
 ## 4.9
 
   * Curve25519-ondersteuning

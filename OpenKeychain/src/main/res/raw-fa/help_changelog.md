@@ -1,5 +1,8 @@
 [//]: # (تذکر: هر جمله در همان خط!)
 
+## 5.0
+  * Improved Autocrypt support
+
 ## 4.9
 
   * Curve25519 support

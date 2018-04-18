@@ -1,5 +1,8 @@
 [//]: # (Beachte: Bitte schreibe jeden Satz in eine eigene Zeile, Transifex wird jede Zeile in ein eigenes Übesetzungsfeld setzen!)
 
+## 5.0
+  * Improved Autocrypt support
+
 ## 4.9
 
   Curve25519 Support

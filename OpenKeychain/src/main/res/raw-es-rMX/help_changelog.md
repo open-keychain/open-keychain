@@ -1,5 +1,8 @@
 [//]: # (Observe: ¡Por favor ingrese cada enunciado en su propia línea, Transifex coloca cada línea en su propio campo de traducción!)
 
+## 5.0
+  * Improved Autocrypt support
+
 ## 4.9
 
   * Curve25519 support
