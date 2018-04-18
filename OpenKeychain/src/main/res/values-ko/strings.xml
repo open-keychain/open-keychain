@@ -154,7 +154,6 @@
   <string name="label_keyservers">OpenPGP 키서버 관리</string>
   <string name="label_key_id">키 ID</string>
   <string name="label_key_id_colon">키 ID:</string>
-  <string name="label_key_created">키가 %s 에 만들어짐</string>
   <string name="label_key_type">종류</string>
   <string name="label_creation">생성</string>
   <string name="label_creation_colon">생성 시점:</string>
@@ -165,7 +164,6 @@
   <string name="label_main_user_id">기본 신원</string>
   <string name="label_name">이름</string>
   <string name="label_email">이메일</string>
-  <string name="label_send_key">인터넷과 동기화</string>
   <string name="label_fingerprint">지문</string>
   <string name="expiry_date_dialog_title">만료일자 설정</string>
   <string name="label_keyservers_title">키서버</string>
@@ -601,7 +599,6 @@
   <string name="key_view_action_update">키서버로 부터 갱신</string>
   <string name="key_view_action_share_with">다음으로 공유...</string>
   <string name="key_view_action_share_ssh_with">다음을 SSH 공개키로 공유...</string>
-  <string name="key_view_action_upload">키서버로 올리기</string>
   <string name="key_view_tab_main">주요 정보</string>
   <string name="key_view_tab_start">시작</string>
   <string name="key_view_tab_share">공유</string>
@@ -647,7 +644,6 @@
   <string name="edit_key_error_bad_security_token_algo">보안 토큰이 알고리즘을 지원하지 않습니다!</string>
   <string name="edit_key_error_bad_security_token_size">2048 비트보다 낮은 RSA 키는 OpenPGP 카드 스펙 3.x 이후 보안 토큰에서 지원되지 않습니다!</string>
   <!--Create key-->
-  <string name="create_key_upload">인터넷과 동기화</string>
   <string name="create_key_empty">해당 필드는 필수입니다</string>
   <string name="create_key_passphrases_not_equal">패스워드가 일치하지 않습니다</string>
   <string name="create_key_rsa">(3 하위키, RSA, 4096 bit)</string>

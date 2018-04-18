@@ -127,7 +127,6 @@
   <string name="label_message_compression">Compresión de texto</string>
   <string name="label_file_compression">Compresión de archivo</string>
   <string name="label_key_id">Identificador de clave</string>
-  <string name="label_key_created">Clave creada el %s</string>
   <string name="label_creation">Creación</string>
   <string name="label_expiry">Expiración</string>
   <string name="label_usage">Uso</string>
@@ -136,7 +135,6 @@
   <string name="label_main_user_id">Identidad principal</string>
   <string name="label_name">Nombre</string>
   <string name="label_email">Correo electrónico</string>
-  <string name="label_send_key">Sincronizar con Internet</string>
   <string name="label_fingerprint">Huella digital</string>
   <string name="expiry_date_dialog_title">Asignar fecha de expiración</string>
   <string name="label_keyservers_title">Servidor de claves</string>
@@ -273,7 +271,6 @@
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Cambiar contraseña</string>
   <!--Create key-->
-  <string name="create_key_upload">Sincronizar con Internet</string>
   <string name="create_key_yubi_key_pin">NIP</string>
   <!--View key-->
   <!--Add/Edit keyserver-->

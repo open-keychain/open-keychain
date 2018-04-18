@@ -151,7 +151,6 @@
   <string name="label_keyservers">Gestisci i keyserver OpenPGP</string>
   <string name="label_key_id">ID Chiave</string>
   <string name="label_key_id_colon">ID chiave:</string>
-  <string name="label_key_created">Chiave creata %s</string>
   <string name="label_key_type">Tipo</string>
   <string name="label_creation">Creazione</string>
   <string name="label_expiry">Scadenza</string>
@@ -161,7 +160,6 @@
   <string name="label_main_user_id">Identità Primaria</string>
   <string name="label_name">Nome</string>
   <string name="label_email">Email</string>
-  <string name="label_send_key">Sincronizza con Internet</string>
   <string name="label_fingerprint">Impronta</string>
   <string name="expiry_date_dialog_title">Impostare la data di scadenza</string>
   <string name="label_keyservers_title">Server chiavi</string>
@@ -607,7 +605,6 @@
   <string name="key_view_action_share_with">Condividi con...</string>
   <string name="key_view_action_share_ssh_with">Condividi come chiave pubblica SSH con...</string>
   <string name="key_view_action_share_nfc">Condividi tramite NFC</string>
-  <string name="key_view_action_upload">Carica sul Server delle Chiavi</string>
   <string name="key_view_tab_main">Info Principale</string>
   <string name="key_view_tab_start">Inizia</string>
   <string name="key_view_tab_share">Condividi</string>
@@ -679,7 +676,6 @@
   <string name="edit_key_error_add_subkey">Aggiungi almeno una sottochiave!</string>
   <string name="edit_key_error_bad_security_token_algo">Algoritmo non supportato dal Token di Sicurezza!</string>
   <!--Create key-->
-  <string name="create_key_upload">Sincronizza con internet</string>
   <string name="create_key_empty">Questo campo è necessario</string>
   <string name="create_key_passphrases_not_equal">Le password non sono identiche</string>
   <string name="create_key_final_text">Hai inserito la seguente identità:</string>

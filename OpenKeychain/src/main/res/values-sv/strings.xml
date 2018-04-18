@@ -52,7 +52,7 @@
   <string name="section_proxy_settings_summary">Tor, proxyinställningar</string>
   <string name="section_gui">Gränssnitt</string>
   <string name="section_sync_settings">Synkronisering</string>
-  <string name="section_sync_settings_summary">Automatiska nyckel uppdateringar, kontakt länkning</string>
+  <string name="section_sync_settings_summary">Automatiska nyckeluppdateringar, kontakt länkning</string>
   <string name="section_experimental_features">Experimentella funktioner</string>
   <string name="section_certify">Bekräfta</string>
   <string name="section_actions">Åtgärder</string>
@@ -155,7 +155,6 @@
   <string name="label_keyservers">Hantera OpenPGP-nyckelservrar</string>
   <string name="label_key_id">Nyckel-ID</string>
   <string name="label_key_id_colon">Nyckel-ID</string>
-  <string name="label_key_created">Nyckel skapad %s</string>
   <string name="label_key_type">Typ</string>
   <string name="label_creation">Skapande</string>
   <string name="label_creation_colon">Skapelse:</string>
@@ -166,7 +165,6 @@
   <string name="label_main_user_id">Primär identitet</string>
   <string name="label_name">Namn</string>
   <string name="label_email">E-post</string>
-  <string name="label_send_key">Synkronisera med Internet</string>
   <string name="label_fingerprint">Fingeravtryck</string>
   <string name="expiry_date_dialog_title">Ställ in utgångsdatum</string>
   <string name="label_keyservers_title">Nyckelservrar</string>
@@ -192,7 +190,7 @@
   <string name="pref_keybase_summary">Sök nycklar på keybase.io</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">Söknycklar på Facebook efter användarnamn</string>
-  <string name="label_sync_settings_keyserver_title">Automatiska nyckel uppdateringar</string>
+  <string name="label_sync_settings_keyserver_title">Automatiska nyckeluppdateringar</string>
   <string name="label_sync_settings_keyserver_summary_on">Var tredje dag, uppdateras nycklar från den föredragna nyckelserver </string>
   <string name="label_sync_settings_keyserver_summary_off">Nycklar uppdateras inte automatiskt</string>
   <string name="label_sync_settings_wifi_title">Synkronisera endast över Wi-Fi</string>
@@ -200,7 +198,7 @@
   <string name="label_sync_settings_contacts_summary_on">Länka nycklar till kontakter baserade på namn och e-postadresser. Detta sker helt offline på enheten.</string>
   <string name="label_sync_settings_contacts_summary_off">Nya nycklar kommer inte att kopplas till kontakter</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Automatiska nyckel uppdateringar</string>
+  <string name="keyserver_sync_settings_title">Automatiska nyckeluppdateringar</string>
   <string name="label_experimental_settings_desc_title">Varning</string>
   <string name="label_experimental_settings_desc_summary">Dessa funktioner är ännu inte klar eller resultat användarupplevelse/säkerhetsforskning. Således, lita inte på deras säkerhet och vänligen rapporterar inte problem som du påträffar!</string>
   <string name="label_experimental_settings_linked_identities_title">Länkade identiteter</string>
@@ -584,7 +582,6 @@
   <string name="key_view_action_update">Uppdatera från nyckelserver</string>
   <string name="key_view_action_share_with">Dela med…</string>
   <string name="key_view_action_share_nfc">Dela via NFC</string>
-  <string name="key_view_action_upload">Ladda upp till nyckelserver</string>
   <string name="key_view_tab_main">Info</string>
   <string name="key_view_tab_start">Starta</string>
   <string name="key_view_tab_share">Dela</string>
@@ -636,7 +633,6 @@
   <string name="edit_key_error_add_identity">Lägg till åtminstone en identitet!</string>
   <string name="edit_key_error_add_subkey">Lägg till åtminstone en undernyckel!</string>
   <!--Create key-->
-  <string name="create_key_upload">Synkronisera med Internet</string>
   <string name="create_key_empty">Detta fält krävs</string>
   <string name="create_key_passphrases_not_equal">Lösenorden stämmer inte överens</string>
   <string name="create_key_final_text">Du angav följande identitet:</string>

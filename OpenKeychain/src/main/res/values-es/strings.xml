@@ -156,7 +156,6 @@
   <string name="label_keyservers">Administrar servidores de claves OpenPGP</string>
   <string name="label_key_id">ID de clave</string>
   <string name="label_key_id_colon">Identificación de clave:</string>
-  <string name="label_key_created">Clave creada el %s</string>
   <string name="label_key_type">Tipo</string>
   <string name="label_creation">Creación</string>
   <string name="label_creation_colon">Creación</string>
@@ -167,7 +166,6 @@
   <string name="label_main_user_id">Identidad principal</string>
   <string name="label_name">Nombre</string>
   <string name="label_email">Email</string>
-  <string name="label_send_key">Sincronizar con Internet</string>
   <string name="label_fingerprint">Huella digital</string>
   <string name="expiry_date_dialog_title">Establer la fecha de vencimiento</string>
   <string name="label_keyservers_title">Servidores de claves</string>
@@ -176,6 +174,7 @@
   <string name="label_selected_smartpgp_authority_title">Autoridad seleccionada</string>
   <string name="label_preferred">preferido</string>
   <string name="label_enable_compression">Habilitar compresión</string>
+  <string name="label_enable_self_encrypt">Ciifrar para el firmante</string>
   <string name="label_encrypt_filenames">Cifrar nombres de ficheros</string>
   <string name="label_hidden_recipients">Ocultar destinatarios</string>
   <string name="label_smartpgp_verify">SmartPGP: Verificar certificados</string>
@@ -640,7 +639,6 @@
   <string name="key_view_action_share_with">Compartir con...</string>
   <string name="key_view_action_share_ssh_with">Compartir como clave pública SSH con...</string>
   <string name="key_view_action_share_nfc">Compartir por NFC</string>
-  <string name="key_view_action_upload">Subir al servidor de claves</string>
   <string name="key_view_tab_main">Información principal</string>
   <string name="key_view_tab_start">Inicio</string>
   <string name="key_view_tab_share">Compartir</string>
@@ -716,7 +714,6 @@
   <string name="edit_key_error_bad_security_token_curve">¡El algoritmo de curva elíptica no está soportado por el token de seguridad!</string>
   <string name="edit_key_error_bad_security_token_stripped">¡No se puede mover la clave al token de seguridad (tanto si es una clave desnuda como si ya está en el token de seguridad)!</string>
   <!--Create key-->
-  <string name="create_key_upload">Sincronizar con Internet</string>
   <string name="create_key_empty">Este campo es obligatorio</string>
   <string name="create_key_passphrases_not_equal">Las contraseñas no coinciden</string>
   <string name="create_key_final_text">Ha introducido la siguiente identidad :</string>
@@ -1484,6 +1481,8 @@
   <string name="snack_armor_off">Salida codificada como Binario.</string>
   <string name="snack_compression_on">Compresión <b>habilitada</b>.</string>
   <string name="snack_compression_off">Compresión <b>deshabilitada</b>.</string>
+  <string name="snack_self_encrypt_on">Cifrar para el firmante <b>habilitado</b>.</string>
+  <string name="snack_self_encrypt_off">Cifrar para el firmane <b>deshabilitado</b>.</string>
   <string name="error_loading_keys">¡Error al cargar claves!</string>
   <string name="error_empty_log">(error, registro (log) vacío)</string>
   <string name="error_reading_text">¡No se pudo leer entrada a descifrar!</string>

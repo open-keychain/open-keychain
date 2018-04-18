@@ -1,5 +1,10 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 4.9
+
+  * Поддержка Curve25519
+  * Улучшена поддержка токенов безопасности
+
 ## 4.8
 
   * Улучшена поддержка USB-токенов: модели Gnuk, Nitrokey, YubiKey 4

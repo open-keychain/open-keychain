@@ -1,5 +1,10 @@
 [//]: # (Ter info: Zet iedere zin op een eigen regel, Transifex zet iedere regel in zijn eigen vertalingsveld!)
 
+## 4.9
+
+  * Curve25519-ondersteuning
+  * Verbeterde ondersteuning voor Security Tokens
+
 ## 4.8
 
   * Verbeterde ondersteuning voor USB-tokens: Gnuk, Nitrokey-modellen, YubiKey 4-modellen

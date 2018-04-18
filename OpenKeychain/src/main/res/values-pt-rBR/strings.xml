@@ -150,7 +150,6 @@
   <string name="label_file_compression">Compressão de arquivo</string>
   <string name="label_key_id">ID da chave</string>
   <string name="label_key_id_colon"> Identificação da Chave:</string>
-  <string name="label_key_created">Chave criada %s</string>
   <string name="label_key_type">Tipo</string>
   <string name="label_creation">Criação</string>
   <string name="label_expiry">Data de expiração</string>
@@ -160,7 +159,6 @@
   <string name="label_main_user_id">Identidade primária</string>
   <string name="label_name">Nome</string>
   <string name="label_email">Email</string>
-  <string name="label_send_key">Sincronizar com a Internet</string>
   <string name="label_fingerprint">Impressão Digital</string>
   <string name="expiry_date_dialog_title">Definir data de validade</string>
   <string name="label_keyservers_title">Servidor de chaves</string>
@@ -594,7 +592,6 @@
   <string name="key_view_action_update">Atualizar do servidor de chaves</string>
   <string name="key_view_action_share_with">Compartilhar com...</string>
   <string name="key_view_action_share_nfc">Compartilhar via NFC</string>
-  <string name="key_view_action_upload">Enviar pro servidor de chaves</string>
   <string name="key_view_tab_main">Informações Principais</string>
   <string name="key_view_tab_start">Iniciar</string>
   <string name="key_view_tab_share">Compartilhar</string>
@@ -662,7 +659,6 @@
   <string name="edit_key_error_add_subkey">Adicione ao menos uma sub-chave!</string>
   <string name="edit_key_error_bad_security_token_algo">O algoritmo não é suportado pelo Token de Segurança!</string>
   <!--Create key-->
-  <string name="create_key_upload">Sincronizar com a Internet</string>
   <string name="create_key_empty">Este campo é requerido</string>
   <string name="create_key_passphrases_not_equal">As senhas não conferem</string>
   <string name="create_key_final_text">Você inseriu a seguinte identidade:</string>

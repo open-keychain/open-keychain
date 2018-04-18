@@ -122,7 +122,6 @@
   <string name="label_file_compression">فشرده‌کردن فایل</string>
   <string name="label_key_id">هویت کلید</string>
   <string name="label_key_id_colon">ID اصلی : </string>
-  <string name="label_key_created">کلید ساخته شد %s</string>
   <string name="label_key_type"> نوع</string>
   <string name="label_creation">ساخت</string>
   <string name="label_expiry">انقضأ</string>

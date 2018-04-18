@@ -147,7 +147,6 @@
   <string name="label_message_compression">Komprimovat text</string>
   <string name="label_file_compression">Komprimovat soubor</string>
   <string name="label_key_id">ID klíče</string>
-  <string name="label_key_created">Klíč vytvořen %s</string>
   <string name="label_key_type">Typ</string>
   <string name="label_creation">Vytvořeno</string>
   <string name="label_expiry">Expirace</string>
@@ -157,7 +156,6 @@
   <string name="label_main_user_id">Hlavní identita</string>
   <string name="label_name">Jméno</string>
   <string name="label_email">Email</string>
-  <string name="label_send_key">Synchronizovat s Internetem</string>
   <string name="label_fingerprint">Otisk</string>
   <string name="expiry_date_dialog_title">Nastavit datum expirace</string>
   <string name="label_keyservers_title">Keyservery</string>
@@ -542,7 +540,6 @@
   <string name="key_view_action_update">Aktualizuji z keyserveru</string>
   <string name="key_view_action_share_with">Sdílet pomocí...</string>
   <string name="key_view_action_share_nfc">Sdílet přes NFC</string>
-  <string name="key_view_action_upload">Nahrát na keyserver</string>
   <string name="key_view_tab_main">Hlavní info</string>
   <string name="key_view_tab_start">Začít</string>
   <string name="key_view_tab_share">Sdílet</string>
@@ -614,7 +611,6 @@
   <string name="edit_key_error_add_subkey">Přidejte alespoň jeden podklíč!</string>
   <string name="edit_key_error_bad_security_token_algo">Algoritmus nepodporován bezpečnostním tokenem!</string>
   <!--Create key-->
-  <string name="create_key_upload">Synchronizovat s Internetem</string>
   <string name="create_key_empty">Toto pole je vyžadováno</string>
   <string name="create_key_passphrases_not_equal">Hesla se neschodují.</string>
   <string name="create_key_final_text">Zadali jste následující identitu:</string>

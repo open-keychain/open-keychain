@@ -122,7 +122,6 @@
   <string name="label_hash_algorithm">Tiivistealgoritmi</string>
   <string name="label_file_compression">Tiedoston pakkaus</string>
   <string name="label_key_id">Avaimen ID</string>
-  <string name="label_key_created">Avain luotu %s</string>
   <string name="label_key_type">Tyyppi</string>
   <string name="label_creation">Luontiaika</string>
   <string name="label_expiry">Umpeutumisaika</string>

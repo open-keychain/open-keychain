@@ -338,7 +338,6 @@
   <string name="key_view_action_update">Anahtar sunucusundan güncelle</string>
   <string name="key_view_action_share_with">Şu şekilde paylaş...</string>
   <string name="key_view_action_share_nfc">NFC üzerinden Paylaş</string>
-  <string name="key_view_action_upload">Anahtar sunucusuna yükle</string>
   <string name="key_view_tab_main">Ana Bilgi</string>
   <string name="key_view_tab_start">Başlat</string>
   <string name="key_view_tab_share">Paylaş</string>

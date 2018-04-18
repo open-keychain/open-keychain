@@ -143,7 +143,6 @@
   <string name="label_message_compression">文字壓縮</string>
   <string name="label_file_compression">檔案壓縮</string>
   <string name="label_key_id">金鑰ID</string>
-  <string name="label_key_created">金鑰 %s 已建立</string>
   <string name="label_key_type">類型</string>
   <string name="label_creation">建立</string>
   <string name="label_expiry">有效期限</string>
@@ -513,7 +512,6 @@
   <string name="key_view_action_update">從金鑰伺服器更新</string>
   <string name="key_view_action_share_with">分享...</string>
   <string name="key_view_action_share_nfc">以NFC分享</string>
-  <string name="key_view_action_upload">上傳到金鑰伺服器</string>
   <string name="key_view_tab_main">摘要</string>
   <string name="key_view_tab_start">快速上手</string>
   <string name="key_view_tab_share">分享</string>

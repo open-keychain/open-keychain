@@ -1,47 +1,52 @@
 [//]: # (Beachte: Bitte schreibe jeden Satz in eine eigene Zeile, Transifex wird jede Zeile in ein eigenes Übesetzungsfeld setzen!)
 
+## 4.9
+
+  Curve25519 Support
+  Verbesserter Support für Security-Tokens
+
 ## 4.8
 
   * Unterstützung für USB-Tokens verbessert: Gnuk, Nitrokey Modelle, YubiKey 4 Modelle
-  * Feature to find the position of the device's NFC reader
+  Feature zum Finden des NFC Lesers des Geräts
 
 ## 4.7
 
   * Die Möglichkeit, aus der Zwischenablage zu Importieren wurde verbessert
   * Neuer Schlüsselgenerierungsassistent für Security-Tokens
-  * Removed password cache "time to live" setting
+  Passwortcache-Einstellung "time to live" entfernt
 
 
 ## 4.6
 
-  * Import your keys using our new Secure Wi-Fi Transfer mechanism
+  Importieren Sie Ihre Schlüssel mit unserem neuen Secure Wi-Fi Transfer Mechanismus
 
 
 ## 4.5
 
-  * Detailed description of security problems
-  * Display keyserver status per key
+  Detaillierte Beschreibung von Sicherheitsproblemen
+  Status des Keyservers je Schlüssel anzeigen
   * Unterstützung von EdDSA
-  * Fix pgp.mit.edu (new certificate)
+  Fix pgp.mit.edu (neues Zertifikat)
 
 
 ## 4.4
 
-  * New key status displays detailed information why a key is considered insecure or defective
+  Neuer Schlüsselstatus zeigt detaillierte Informationen dazu an, warum ein Schlüssel als unsicher oder beschädigt angesehen wird
 
 
 ## 4.3
 
   * Bessere Unterstützung von längeren Schlüsseln
-  * Fix import of Gpg4win files with broken encodings
+  Fix zum Importieren von Gpg4win-Dateien mit beschädigter Kodierung
 
 
 ## 4.2
 
-  * Experimental support for Elliptic Curve Encryption with Security Tokens
-  * Redesigned key import screen
-  * Design improvements to key lists
-  * Support for keyserver onion addresses
+  Experimenteller Support für Elliptic Curve Verschlüsselung mit Security-Tokens
+  Anzeige zum Import von Schlüsseln neu gestaltet
+  Verbesserungen im Design der Schlüssellisten
+  Support für Keyserver-Onion-Adressen
 
 
 ## 4.1
@@ -163,7 +168,7 @@
   * Viele Fehler beim Schlüsselimport behoben, auch bei gekürzten Schlüsseln
   * Schlüsselauthentifikations-Attribute berücksichtigen und anzeigen
   * Benutzeroberfläche zum Erzeugen benutzerdefinierter Schlüssel
-  * Fixing user ID revocation certificates
+  Fix für User ID Revocation Certificates
   * Neue Cloud-Suche (sucht über traditionelle Schlüsselserver und über keybase.io)
   * Unterstützung für das Kürzen von Schlüsseln innerhalb von OpenKeychain
   * Experimentelle YubiKey-Unterstützung: Unterstützung für Signaturerzeugung und Entschlüsselung

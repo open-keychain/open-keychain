@@ -452,7 +452,6 @@
   <string name="key_view_action_update">Aktualizuj z serwera kluczy</string>
   <string name="key_view_action_share_with">Podziel się z...</string>
   <string name="key_view_action_share_nfc">Udostępnij używając NFC</string>
-  <string name="key_view_action_upload">Wyślij do serwera kluczy</string>
   <string name="key_view_tab_main">Główne Informacje</string>
   <string name="key_view_tab_start">Start</string>
   <string name="key_view_tab_share">Udostępnij</string>
@@ -702,8 +701,15 @@
   <string name="prompt_fidesmo_app_install_button_negative">Zamknij</string>
   <string name="redirect_import_key_no">Close</string>
   <string name="button_cancel">Zamknij</string>
+  <string name="title_key_status">Stan klucza</string>
+  <string name="key_health_ok_title">Prawidłowy</string>
+  <string name="key_health_divert_title">Prawidłowy (token bezpieczeństwa)</string>
+  <string name="key_health_divert_partial_title">Prawidłowy (częściowy token)</string>
   <string name="key_health_expired_title">Wygasło</string>
   <string name="key_health_revoked_title">Unieważnione</string>
+  <string name="key_health_sign_only_title">Prawidłowy (klucz podpisujący)</string>
+  <string name="key_health_stripped_title">Prawidłowy (zredukowany)</string>
+  <string name="key_health_partial_stripped_title">Prawidłowy (częściowo zredukowany)</string>
   <string name="keyserver_title_published">Opublikowane</string>
   <string name="dialog_insecure_title">Ostrzeżenie Bezpieczeństwa</string>
   <string name="dialog_insecure_button_ok">Mam to</string>

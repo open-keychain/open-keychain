@@ -1,5 +1,10 @@
 [//]: # (注意：请把每个句子放在单独一行中， Transifex 将把每一行放置在独立的翻译表单内！)
 
+## 4.9
+
+  * Curve25519 support
+  * Improved support for security tokens
+
 ## 4.8
 
   * Improved support for USB tokens: Gnuk, Nitrokey models, YubiKey 4 models

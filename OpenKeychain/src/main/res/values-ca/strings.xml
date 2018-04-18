@@ -4,7 +4,9 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
   <!--section-->
+  <string name="section_certify">Confirma</string>
   <!--button-->
+  <string name="btn_do_not_save">Cancel·la</string>
   <!--Content Description-->
   <!--menu-->
   <!--label-->
@@ -13,8 +15,11 @@
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
   <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_cancel">Cancel·la</string>
   <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_cancel">Cancel·la</string>
   <!--choice-->
+  <string name="error">Error</string>
   <!--sentences-->
   <!--errors
          no punctuation, all lowercase,
@@ -23,6 +28,7 @@
   <!--results shown after decryption/verification-->
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
+  <string name="progress_cancel">Cancel·la</string>
   <!--action strings-->
   <!--key bit length selections-->
   <!--elliptic curve names-->
@@ -40,6 +46,7 @@
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
+  <string name="api_settings_cancel">Cancel·la</string>
   <!--Share-->
   <!--retry upload dialog-->
   <!--Delete or revoke private key dialog-->
@@ -84,4 +91,11 @@
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <!--Other Linked Identity strings-->
+  <string name="linked_button_confirm">Confirma</string>
+  <string name="linked_text_error">Error</string>
+  <string name="share_log_dialog_cancel_button">Cancel·la</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">Cancel·la</string>
+  <string name="prompt_fidesmo_app_install_button_negative">Cancel·la</string>
+  <string name="button_cancel">Cancel·la</string>
+  <string name="transfer_confirm_cancel">Cancel·la</string>
 </resources>

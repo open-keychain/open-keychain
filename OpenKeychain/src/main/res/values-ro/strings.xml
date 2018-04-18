@@ -92,7 +92,6 @@
   <string name="label_asymmetric_from">Semnează cu:</string>
   <string name="label_symmetric">Criptează cu parolă</string>
   <string name="label_key_id">ID cheie</string>
-  <string name="label_key_created">Cheie creată %s</string>
   <string name="label_key_type">Tip</string>
   <string name="label_expiry">Expirare</string>
   <string name="label_usage">Utilizare</string>
@@ -100,7 +99,6 @@
   <string name="label_ecc_curve">Curbă eliptică</string>
   <string name="label_name">Nume</string>
   <string name="label_email">Email</string>
-  <string name="label_send_key">Sincronizează pe Internet</string>
   <string name="label_fingerprint">Amprentă</string>
   <string name="label_hidden_recipients">Ascunde recipientele</string>
   <string name="label_enter_keyserver_url">URL</string>
@@ -267,7 +265,6 @@
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Schimbă parola</string>
   <!--Create key-->
-  <string name="create_key_upload">Sincronizează pe Internet</string>
   <string name="create_key_empty">Acest câmp este necesar</string>
   <string name="create_key_passphrases_not_equal">Parolele nu se potrivesc</string>
   <string name="create_key_final_text">Ai introdus următoarea identitate:</string>
@@ -409,6 +406,7 @@
     <item>100 EURO</item>
   </string-array>
   <string name="redirect_import_key_no">Închide</string>
+  <string name="button_allow">Permite</string>
   <string name="button_cancel">Anulare</string>
   <string name="key_health_expired_title">Expirată</string>
   <string name="key_health_revoked_title">Revocat</string>

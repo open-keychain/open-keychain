@@ -1,5 +1,10 @@
 [//]: # (NOTERING: Var vänlig och sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
 
+## 4.9
+
+  * Curve25519 stöd
+  * Improved support for security tokens
+
 ## 4.8
 
   * Förbättrat stöd för USB-tokens: Gnuk, Nitrokey-modeller, YubiKey 4-modeller
@@ -7,7 +12,7 @@
 
 ## 4.7
 
-  * Improved import from clipboard
+  * Förbättrad import från urklipp
   * New key creation wizard for Security Tokens
   * Removed password cache "time to live" setting
 
@@ -19,10 +24,10 @@
 
 ## 4.5
 
-  * Detailed description of security problems
-  * Display keyserver status per key
+  * Detaljerad beskrivning av säkerhetsproblem
+  * Visa keyserverstatus per nyckel
   * Stöd för EdDSA
-  * Fix pgp.mit.edu (new certificate)
+  * Åtgärda pgp.mit.edu (nytt certifikat)
 
 
 ## 4.4
@@ -116,7 +121,7 @@
   * Materialkonstruktion
   * Integrering av skanning av QR-kod (Nya behörigheter krävs)
   * Förbättrade guiden för skapande av nyckel
-  * Fixa kontakter som saknas efter synkronisering
+  * Åtgärda kontakter som saknas efter synkronisering
   * Kräver Android 4
   * Redesigned key screen
   * Simplify crypto preferences, better selection of secure ciphers
@@ -135,12 +140,12 @@
 ## 3.1.1
 
   * Fix key export to files (they were written partially)
-  * Fixa krasch i Android 2.3
+  * Åtgärda krasch i Android 2.3
 
 
 ## 3.1
 
-  * Fixa krasch i Android 5
+  * Åtgärda krasch i Android 5
   Ny certifieringsskärm
   * Secure Exchange directly from key list (SafeSlinger library)
   * New QR Code program flow
@@ -171,7 +176,7 @@
 
 ## 2.9.2
 
-  Fixa trasiga nycklar i 2.9.1
+  Åtgärda trasiga nycklar i 2.9.1
   * Experimental YubiKey support: Decryption now working via API
 
 

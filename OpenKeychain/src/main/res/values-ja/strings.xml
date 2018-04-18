@@ -155,7 +155,6 @@
   <string name="label_keyservers">OpenPGP鍵サーバの管理</string>
   <string name="label_key_id">鍵ID</string>
   <string name="label_key_id_colon">鍵 ID:</string>
-  <string name="label_key_created">%s で鍵を生成</string>
   <string name="label_key_type">種別</string>
   <string name="label_creation">生成</string>
   <string name="label_creation_colon">生成:</string>
@@ -166,7 +165,6 @@
   <string name="label_main_user_id">主ユーザID</string>
   <string name="label_name">名前</string>
   <string name="label_email">Eメールアドレス</string>
-  <string name="label_send_key">インターネットでの同期</string>
   <string name="label_fingerprint">指紋</string>
   <string name="expiry_date_dialog_title">期限日時を設定</string>
   <string name="label_keyservers_title">鍵サーバ</string>
@@ -619,7 +617,6 @@
   <string name="key_view_action_update">鍵サーバからの更新</string>
   <string name="key_view_action_share_with">...で共有</string>
   <string name="key_view_action_share_nfc">NFC越しに共有</string>
-  <string name="key_view_action_upload">鍵サーバへアップロード</string>
   <string name="key_view_tab_main">情報</string>
   <string name="key_view_tab_start">開始</string>
   <string name="key_view_tab_share">共有</string>
@@ -695,7 +692,6 @@
   <string name="edit_key_error_bad_security_token_curve">セキュリティトークンで曲線はサポートされていません!</string>
   <string name="edit_key_error_bad_security_token_stripped">セキュリティトークンに鍵を移動できません (ストリップしているか、すでにセキュリティトークン上です)!</string>
   <!--Create key-->
-  <string name="create_key_upload">インターネットでの同期</string>
   <string name="create_key_empty">このフィールドは必須です</string>
   <string name="create_key_passphrases_not_equal">パスワードが一致しない</string>
   <string name="create_key_final_text">あたなが入力したIDは以下です:</string>

@@ -156,7 +156,8 @@
   <string name="label_keyservers">Beheer OpenPGP-sleutelservers</string>
   <string name="label_key_id">Sleutel-id</string>
   <string name="label_key_id_colon">Sleutel-ID:</string>
-  <string name="label_key_created">Sleutel aangemaakt %s</string>
+  <string name="label_key_created">Aangemaakt op %s</string>
+  <string name="label_key_created_just_now">Zonet aangemaakt</string>
   <string name="label_key_type">Soort</string>
   <string name="label_creation">Aanmaak</string>
   <string name="label_creation_colon">Aangemaakt:</string>
@@ -167,7 +168,7 @@
   <string name="label_main_user_id">Primaire identiteit</string>
   <string name="label_name">Naam</string>
   <string name="label_email">E-mailadres</string>
-  <string name="label_send_key">Synchroniseren met het internet</string>
+  <string name="label_send_key">Certificaat publiceren op sleutelservers</string>
   <string name="label_fingerprint">Vingerafdruk</string>
   <string name="expiry_date_dialog_title">Bepaal verloopdatum</string>
   <string name="label_keyservers_title">Sleutelservers</string>
@@ -176,6 +177,7 @@
   <string name="label_selected_smartpgp_authority_title">Geselecteerde autoriteit</string>
   <string name="label_preferred">voorkeur</string>
   <string name="label_enable_compression">Compressie aanzetten</string>
+  <string name="label_enable_self_encrypt">Versleutelen naar ondertekenaar</string>
   <string name="label_encrypt_filenames">Versleutel bestandsnamen</string>
   <string name="label_hidden_recipients">Verberg ontvangers</string>
   <string name="label_smartpgp_verify">SmartPGP: verifieer certificaten</string>
@@ -640,7 +642,7 @@
   <string name="key_view_action_share_with">Delen met…</string>
   <string name="key_view_action_share_ssh_with">Delen als SSH-publieke sleutel met…</string>
   <string name="key_view_action_share_nfc">Delen over NFC</string>
-  <string name="key_view_action_upload">Uploaden naar sleutelserver</string>
+  <string name="key_view_action_upload">Publiceren op sleutelserver</string>
   <string name="key_view_tab_main">Hoofdinfo</string>
   <string name="key_view_tab_start">Start</string>
   <string name="key_view_tab_share">Delen</string>
@@ -716,7 +718,7 @@
   <string name="edit_key_error_bad_security_token_curve">Curve niet ondersteund door Security Token!</string>
   <string name="edit_key_error_bad_security_token_stripped">Kan sleutel niet verplaatsen naar Security Token (ofwel gestript ofwel reeds aanwezig op Security Token)!</string>
   <!--Create key-->
-  <string name="create_key_upload">Synchroniseren met internet</string>
+  <string name="create_key_upload">Publiceren op sleutelservers</string>
   <string name="create_key_empty">Dit veld moet ingevuld worden</string>
   <string name="create_key_passphrases_not_equal">Wachtwoorden komen niet overeen</string>
   <string name="create_key_final_text">Je hebt volgende identiteit ingevoerd:</string>
@@ -1484,6 +1486,8 @@
   <string name="snack_armor_off">Uitvoer geëncodeerd als binair.</string>
   <string name="snack_compression_on">Compressie <b>ingeschakeld</b>.</string>
   <string name="snack_compression_off">Compressie <b>uitgeschakeld</b>.</string>
+  <string name="snack_self_encrypt_on">Versleutelen naar ondertekenaar <b>ingeschakeld</b>.</string>
+  <string name="snack_self_encrypt_off">Versleutelen naar ondertekenaar <b>uitgeschakeld</b>.</string>
   <string name="error_loading_keys">Fout bij laden van sleutels!</string>
   <string name="error_empty_log">(fout, leeg log)</string>
   <string name="error_reading_text">Kon invoer niet lezen om te ontsleutelen!</string>

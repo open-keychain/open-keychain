@@ -3,13 +3,18 @@
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
+  <string name="title_preferences">การตั้งค่า</string>
+  <string name="title_api_registered_apps">แอป</string>
   <string name="title_help">ช่วยเหลือ</string>
+  <string name="title_log_display">บันทึก</string>
   <!--section-->
   <!--button-->
   <!--Content Description-->
   <!--menu-->
+  <string name="menu_preferences">การตั้งค่า</string>
   <string name="menu_help">ช่วยเหลือ</string>
   <!--label-->
+  <string name="label_email">อีเมล</string>
   <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <!--proxy type choices and values-->
@@ -42,6 +47,7 @@
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
+  <string name="api_settings_settings">การตั้งค่า</string>
   <!--Share-->
   <!--retry upload dialog-->
   <!--Delete or revoke private key dialog-->
@@ -56,6 +62,7 @@
   <!--Add/Edit keyserver-->
   <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
+  <string name="nav_apps">แอป</string>
   <!--hints-->
   <!--certs-->
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
@@ -85,5 +92,6 @@
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="nfc_settings">การตั้งค่า</string>
   <!--Other Linked Identity strings-->
 </resources>

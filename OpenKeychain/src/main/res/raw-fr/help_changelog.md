@@ -1,5 +1,10 @@
 [//]: # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
+## 4.9
+
+  * Prise en charge de Curve25519
+  * Prise en charge améliorée des jetons de sécurité
+
 ## 4.8
 
   * Prise en charge améliorée des jetons USB : Gnuk, modèles Nitrokey, modèles YubiKey 4

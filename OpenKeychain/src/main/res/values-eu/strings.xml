@@ -154,7 +154,6 @@
   <string name="label_keyservers">Kudeatu OpenPGP giltza-zerbitzariak</string>
   <string name="label_key_id">Giltza ID-a</string>
   <string name="label_key_id_colon">Giltza ID-a:</string>
-  <string name="label_key_created">Giltza sortuta %s</string>
   <string name="label_key_type">Mota</string>
   <string name="label_creation">Sortzea</string>
   <string name="label_creation_colon">Sortzea:</string>
@@ -165,7 +164,6 @@
   <string name="label_main_user_id">Lehen nortasuna</string>
   <string name="label_name">Izena</string>
   <string name="label_email">Post@</string>
-  <string name="label_send_key">Aldiberetu Internet-ekin</string>
   <string name="label_fingerprint">Hatz-aztarna</string>
   <string name="expiry_date_dialog_title">Ezarri epemuga eguna</string>
   <string name="label_keyservers_title">Giltza-zerbitzariak</string>
@@ -616,7 +614,6 @@
   <string name="key_view_action_share_with">Elkarbanatu honekin...</string>
   <string name="key_view_action_share_ssh_with">Elkarbanatu SSH giltza publiko bezala honekin...</string>
   <string name="key_view_action_share_nfc">Elkarbanatu NFC gain</string>
-  <string name="key_view_action_upload">Igo giltza-zerbitzarira</string>
   <string name="key_view_tab_main">Argibide Nagusiak</string>
   <string name="key_view_tab_start">Hasi</string>
   <string name="key_view_tab_share">Elkarbanatu</string>
@@ -682,7 +679,6 @@
   <string name="edit_key_error_add_subkey">Gehitu azpigiltza bat gutxienez!</string>
   <string name="edit_key_error_bad_security_token_algo">Algoritmoa ez dago Segurtasun Lekukoak sostengatua!</string>
   <!--Create key-->
-  <string name="create_key_upload">Aldiberetu Internetekin</string>
   <string name="create_key_empty">Eremu hau beharrezkoa da</string>
   <string name="create_key_passphrases_not_equal">Sarhitzak ez datoz bat</string>
   <string name="create_key_final_text">Hurrengo nortasuna sartu duzu:</string>

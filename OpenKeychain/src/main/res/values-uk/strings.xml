@@ -156,7 +156,7 @@
   <string name="label_keyservers">Керувати серверами ключів OpenPGP</string>
   <string name="label_key_id">ІД ключа</string>
   <string name="label_key_id_colon">Ідентифікатор ключа:</string>
-  <string name="label_key_created">Ключ створено %s</string>
+  <string name="label_key_created">Створено %s</string>
   <string name="label_key_type">Тип</string>
   <string name="label_creation">Створення</string>
   <string name="label_creation_colon">Створення:</string>
@@ -167,7 +167,6 @@
   <string name="label_main_user_id">Первинна сутність</string>
   <string name="label_name">Назва</string>
   <string name="label_email">Ел. пошта</string>
-  <string name="label_send_key">Синхронізувати з інтернетом</string>
   <string name="label_fingerprint">Відбиток</string>
   <string name="expiry_date_dialog_title">Задати термін дії</string>
   <string name="label_keyservers_title">Сервери ключів</string>
@@ -662,7 +661,6 @@
   <string name="key_view_action_share_with">Поділитися із…</string>
   <string name="key_view_action_share_ssh_with">Поділитися відкритим ключем SSH із…</string>
   <string name="key_view_action_share_nfc">Поділитися через NFC</string>
-  <string name="key_view_action_upload">Вивантажити на сервер ключів</string>
   <string name="key_view_tab_main">Основна інформація</string>
   <string name="key_view_tab_start">Початок</string>
   <string name="key_view_tab_share">Поділитися</string>
@@ -738,7 +736,6 @@
   <string name="edit_key_error_bad_security_token_curve">Крива не підтримує маркер безпеки!</string>
   <string name="edit_key_error_bad_security_token_stripped">Не можу перемістити ключ до маркера безпеки (ключ вже відділено чи переміщено на маркер безпеки)</string>
   <!--Create key-->
-  <string name="create_key_upload">Синхронізувати з Internet</string>
   <string name="create_key_empty">Це поле - обов\'язкове</string>
   <string name="create_key_passphrases_not_equal">Паролі не збігаються</string>
   <string name="create_key_final_text">Ви ввели наступну сутність:</string>

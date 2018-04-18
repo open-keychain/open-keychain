@@ -156,7 +156,8 @@
   <string name="label_keyservers">Управление серверами ключей OpenPGP</string>
   <string name="label_key_id">ID ключа</string>
   <string name="label_key_id_colon">ID ключа:</string>
-  <string name="label_key_created">Создан ключ %s</string>
+  <string name="label_key_created">Создан %s</string>
+  <string name="label_key_created_just_now">Создан прямо сейчас</string>
   <string name="label_key_type">Тип</string>
   <string name="label_creation">Создан</string>
   <string name="label_creation_colon">Создан:</string>
@@ -167,7 +168,7 @@
   <string name="label_main_user_id">Основной идентификатор</string>
   <string name="label_name">Имя</string>
   <string name="label_email">Email</string>
-  <string name="label_send_key">Синхронизация с интернетом</string>
+  <string name="label_send_key">Публикация сертификации на серверах ключей</string>
   <string name="label_fingerprint">Отпечаток</string>
   <string name="expiry_date_dialog_title">Срок годности</string>
   <string name="label_keyservers_title">Серверы ключей</string>
@@ -176,6 +177,7 @@
   <string name="label_selected_smartpgp_authority_title">Выбранный центр</string>
   <string name="label_preferred">предпочитаемый</string>
   <string name="label_enable_compression">Использовать сжатие</string>
+  <string name="label_enable_self_encrypt">Шифровать для подписывающего лица</string>
   <string name="label_encrypt_filenames">Шифровать имена файлов</string>
   <string name="label_hidden_recipients">Скрыть получателей</string>
   <string name="label_smartpgp_verify">Сертификат проверки SmartPGP</string>
@@ -679,7 +681,7 @@
   <string name="key_view_action_share_with">Отправить...</string>
   <string name="key_view_action_share_ssh_with">Отправить публичный ключ SSH в…</string>
   <string name="key_view_action_share_nfc">Отправить через NFC</string>
-  <string name="key_view_action_upload">Загрузить на сервер ключей</string>
+  <string name="key_view_action_upload">Опубликовать на сервере ключей</string>
   <string name="key_view_tab_main">Основные данные</string>
   <string name="key_view_tab_start">Начать</string>
   <string name="key_view_tab_share">Отправить...</string>
@@ -755,7 +757,7 @@
   <string name="edit_key_error_bad_security_token_curve">Кривая не поддерживается токеном безопасности!</string>
   <string name="edit_key_error_bad_security_token_stripped">Невозможно переместить ключ в токен безопасности (он или отделён, или уже в токене)!</string>
   <!--Create key-->
-  <string name="create_key_upload">Синхронизация с интернетом</string>
+  <string name="create_key_upload">Опубликовать на серверах ключей</string>
   <string name="create_key_empty">Это обязательне поле</string>
   <string name="create_key_passphrases_not_equal">Пароли не совпадают</string>
   <string name="create_key_final_text">Вы указали следующие данные:</string>
@@ -1551,6 +1553,8 @@
   <string name="snack_armor_off">Результат кодируется как двоичный.</string>
   <string name="snack_compression_on">Сжатие <b>включено</b>.</string>
   <string name="snack_compression_off">Сжатие <b>отключено</b>.</string>
+  <string name="snack_self_encrypt_on">Шифрование для подписывающего лица <b>включено</b>.</string>
+  <string name="snack_self_encrypt_off">Шифрование для подписывающего лица <b>отключено</b>.</string>
   <string name="error_loading_keys">Ошибка загрузки ключей!</string>
   <string name="error_empty_log">(ошибка, пустой журнал)</string>
   <string name="error_reading_text">Не удалось прочитать ввод для расшифровки!</string>

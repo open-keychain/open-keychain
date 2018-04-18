@@ -154,7 +154,6 @@
   <string name="label_keyservers">Xestionar servidores de chaves OpenPGP</string>
   <string name="label_key_id">ID da chave</string>
   <string name="label_key_id_colon">ID da chave:</string>
-  <string name="label_key_created">Chave creada %s</string>
   <string name="label_key_type">Tipo</string>
   <string name="label_creation">Creada</string>
   <string name="label_creation_colon">Creada:</string>
@@ -165,7 +164,6 @@
   <string name="label_main_user_id">Identidade primaria</string>
   <string name="label_name">Nome</string>
   <string name="label_email">Email</string>
-  <string name="label_send_key">Sincronizar coa internet</string>
   <string name="label_fingerprint">Pegada</string>
   <string name="expiry_date_dialog_title">Establecer data de caducidade</string>
   <string name="label_keyservers_title">Servidores de chaves</string>
@@ -637,7 +635,6 @@
   <string name="key_view_action_share_with">Compartir con...</string>
   <string name="key_view_action_share_ssh_with">Compartir como chave pública SSH con...</string>
   <string name="key_view_action_share_nfc">Compartir a través de NFC</string>
-  <string name="key_view_action_upload">Subir ao servidor de chaves</string>
   <string name="key_view_tab_main">Info principal</string>
   <string name="key_view_tab_start">Iniciar</string>
   <string name="key_view_tab_share">Compartir</string>
@@ -711,7 +708,6 @@
   <string name="edit_key_error_bad_security_token_curve">Curva non soportada por Testemuño de Seguridade!</string>
   <string name="edit_key_error_bad_security_token_stripped">Non pode mover a chave a Testemuño de Seguridade (ou ben eliminada ou xa no Testemuño de Seguridade)!</string>
   <!--Create key-->
-  <string name="create_key_upload">Sincronizar coa internet</string>
   <string name="create_key_empty">Este campo é requerido</string>
   <string name="create_key_passphrases_not_equal">Non coinciden os contrasinais</string>
   <string name="create_key_final_text">Escribeu a seguinte identidade:</string>
@@ -762,6 +758,8 @@
   <string name="nav_keys">Chaves</string>
   <string name="nav_encrypt_decrypt">Cifrar/Descifrar</string>
   <string name="nav_apps">Apps</string>
+  <string name="drawer_open">Abrir cadro de navegación</string>
+  <string name="drawer_close">Pechar cadro de navegación</string>
   <string name="my_keys">As miñas chaves</string>
   <string name="nav_backup">Respaldar/Restaurar</string>
   <string name="nav_transfer">Transferencia segura sobre WiFi</string>
@@ -940,6 +938,7 @@
   <!--Other Linked Identity strings-->
   <string name="section_linked_identities">Identidades ligadas</string>
   <string name="linked_button_verify">Verificar</string>
+  <string name="linked_button_retry">Intentar de novo</string>
   <string name="linked_button_confirm">Confirmar</string>
   <string name="linked_text_error">Fallo</string>
   <string name="share_log_dialog_share_button">Compartir</string>

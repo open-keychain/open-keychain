@@ -156,7 +156,8 @@
   <string name="label_keyservers">Gérer les serveurs de clés OpenPGP</string>
   <string name="label_key_id">ID de clé</string>
   <string name="label_key_id_colon">ID de la clé :</string>
-  <string name="label_key_created">clé créée %s</string>
+  <string name="label_key_created">Créée le %s</string>
+  <string name="label_key_created_just_now">Vient d’être créée</string>
   <string name="label_key_type">Type</string>
   <string name="label_creation">Création</string>
   <string name="label_creation_colon">Création :</string>
@@ -167,7 +168,7 @@
   <string name="label_main_user_id">Identité principale</string>
   <string name="label_name">Nom</string>
   <string name="label_email">Courriel</string>
-  <string name="label_send_key">Synchroniser avec Internet</string>
+  <string name="label_send_key">Publier la certification sur les serveurs de clés</string>
   <string name="label_fingerprint">Empreinte</string>
   <string name="expiry_date_dialog_title">Définir une date d’expiration</string>
   <string name="label_keyservers_title">Serveurs de clés </string>
@@ -176,6 +177,7 @@
   <string name="label_selected_smartpgp_authority_title">Autorité sélectionnée</string>
   <string name="label_preferred">préféré </string>
   <string name="label_enable_compression">Activer la compression</string>
+  <string name="label_enable_self_encrypt">Chiffrer avec la clé du signataire</string>
   <string name="label_encrypt_filenames">Chiffrer les nom de fichier</string>
   <string name="label_hidden_recipients">Cacher les destinataires</string>
   <string name="label_smartpgp_verify">SmartPGP : vérifier les certificats</string>
@@ -640,7 +642,7 @@
   <string name="key_view_action_share_with">Partager avec…</string>
   <string name="key_view_action_share_ssh_with">Partager comme clé publique SSH avec…</string>
   <string name="key_view_action_share_nfc">Partager par CCP</string>
-  <string name="key_view_action_upload">Téléverser vers le serveur de clés</string>
+  <string name="key_view_action_upload">Publier sur le serveur de clés</string>
   <string name="key_view_tab_main">Infos principales</string>
   <string name="key_view_tab_start">Début</string>
   <string name="key_view_tab_share">Partager</string>
@@ -716,7 +718,7 @@
   <string name="edit_key_error_bad_security_token_curve">La courbe n’est pas prise en charge par le jeton de sécurité !</string>
   <string name="edit_key_error_bad_security_token_stripped">Impossible de déplacer la clé vers le jeton de sécurité (elle est soit dépouillée, soit déjà un jeton de sécurité) !</string>
   <!--Create key-->
-  <string name="create_key_upload">Synchroniser avec Internet</string>
+  <string name="create_key_upload">Publier sur les serveur de clés</string>
   <string name="create_key_empty">Ce champ est exigé</string>
   <string name="create_key_passphrases_not_equal">Les mots de passe ne correspondent pas</string>
   <string name="create_key_final_text">Vous avez saisie l’identité suivante :</string>
@@ -1484,6 +1486,8 @@
   <string name="snack_armor_off">Sortie encodée comme exécutable.</string>
   <string name="snack_compression_on">Compression <b>activée</b>.</string>
   <string name="snack_compression_off">Compression <b>désactivée</b>.</string>
+  <string name="snack_self_encrypt_on">Chiffrer avec la clé du signataire est <b>activé</b>.</string>
+  <string name="snack_self_encrypt_off">Chiffrer avec la clé du signataire est<b>désactivé</b>.</string>
   <string name="error_loading_keys">Erreur de chargement des clés !</string>
   <string name="error_empty_log">(erreur, journal vide)</string>
   <string name="error_reading_text">Impossible de lire l’entrée à déchiffrer !</string>
