@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ssh.signature;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.bcpg.HashAlgorithmTags;
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.bouncycastle.util.BigIntegers;
 import org.sufficientlysecure.keychain.ssh.key.SshEncodedData;
@@ -31,12 +32,25 @@ import java.security.NoSuchAlgorithmException;
 
 public class SshSignatureConverter {
 
-    private static String getSignatureType(int algorithm) throws NoSuchAlgorithmException {
-        switch (algorithm) {
-            case PublicKeyAlgorithmTags.RSA_SIGN:
-            case PublicKeyAlgorithmTags.RSA_GENERAL:
+    private static String getRsaSignatureFormatId(int hashAlgorithm) throws NoSuchAlgorithmException {
+        // https://tools.ietf.org/html/rfc8332
+        switch (hashAlgorithm) {
+            case HashAlgorithmTags.SHA512:
+                return "rsa-sha2-512";
+
+            case HashAlgorithmTags.SHA256:
+                return "rsa-sha2-256";
+
+            case HashAlgorithmTags.SHA1:
                 return "ssh-rsa";
 
+            default:
+                throw new NoSuchAlgorithmException("Unknown hash algorithm");
+        }
+    }
+
+    private static String getSignatureFormatId(int algorithm) throws NoSuchAlgorithmException {
+        switch (algorithm) {
             case PublicKeyAlgorithmTags.EDDSA:
                 return "ssh-ed25519";
 
@@ -50,10 +64,6 @@ public class SshSignatureConverter {
 
     private static byte[] getSignatureBlob(byte[] rawSignature, int algorithm) throws NoSuchAlgorithmException {
         switch (algorithm) {
-            case PublicKeyAlgorithmTags.RSA_SIGN:
-            case PublicKeyAlgorithmTags.RSA_GENERAL:
-                return rawSignature;
-
             case PublicKeyAlgorithmTags.EDDSA:
                 return rawSignature;
 
@@ -122,8 +132,16 @@ public class SshSignatureConverter {
 
     public static byte[] getSshSignature(byte[] rawSignature, int algorithm) throws NoSuchAlgorithmException {
         SshEncodedData signature = new SshEncodedData();
-        signature.putString(getSignatureType(algorithm));
+        signature.putString(getSignatureFormatId(algorithm));
         signature.putString(getSignatureBlob(rawSignature, algorithm));
+
+        return signature.getBytes();
+    }
+
+    public static byte[] getSshSignatureRsa(byte[] rawSignature, int hashAlgorithm) throws NoSuchAlgorithmException {
+        SshEncodedData signature = new SshEncodedData();
+        signature.putString(getRsaSignatureFormatId(hashAlgorithm));
+        signature.putString(rawSignature);
 
         return signature.getBytes();
     }
