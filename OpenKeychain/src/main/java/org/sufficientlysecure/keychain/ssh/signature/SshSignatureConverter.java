@@ -32,15 +32,17 @@ import java.security.NoSuchAlgorithmException;
 public class SshSignatureConverter {
 
     private static String getRsaSignatureFormatId(int hashAlgorithm) throws NoSuchAlgorithmException {
-        // https://tools.ietf.org/html/rfc8332
         switch (hashAlgorithm) {
             case HashAlgorithmTags.SHA512:
+                // https://tools.ietf.org/html/rfc8332
                 return "rsa-sha2-512";
 
             case HashAlgorithmTags.SHA256:
+                // https://tools.ietf.org/html/rfc8332
                 return "rsa-sha2-256";
 
             case HashAlgorithmTags.SHA1:
+                // https://tools.ietf.org/html/rfc4253
                 return "ssh-rsa";
 
             default:
@@ -105,6 +107,7 @@ public class SshSignatureConverter {
 
     public static byte[] getSshSignatureEdDsa(byte[] rawSignature) {
         SshEncodedData signature = new SshEncodedData();
+        // https://tools.ietf.org/html/draft-ietf-curdle-ssh-ed25519-ed448-00
         signature.putString("ssh-ed25519");
         signature.putString(rawSignature);
 
@@ -113,6 +116,7 @@ public class SshSignatureConverter {
 
     public static byte[] getSshSignatureDsa(byte[] rawSignature) {
         SshEncodedData signature = new SshEncodedData();
+        // https://tools.ietf.org/html/rfc4253
         signature.putString("ssh-dss");
         signature.putString(getDsaSignatureBlob(rawSignature));
 
@@ -129,6 +133,7 @@ public class SshSignatureConverter {
 
     public static byte[] getSshSignatureEcDsa(byte[] rawSignature, String curveOid) throws NoSuchAlgorithmException {
         SshEncodedData signature = new SshEncodedData();
+        // https://tools.ietf.org/html/rfc5656
         signature.putString("ecdsa-sha2-" + SshUtils.getCurveName(curveOid));
         signature.putString(getEcDsaSignatureBlob(rawSignature));
 
