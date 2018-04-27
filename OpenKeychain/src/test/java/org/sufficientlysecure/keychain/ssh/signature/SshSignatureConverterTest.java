@@ -242,14 +242,14 @@ public class SshSignatureConverterTest {
 
     @Test
     public void testEdDsa() throws Exception {
-        byte[] out = SshSignatureConverter.getSshSignature(RAW_EDDSA_SIGNATURE, PublicKeyAlgorithmTags.EDDSA);
+        byte[] out = SshSignatureConverter.getSshSignatureEdDsa(RAW_EDDSA_SIGNATURE);
 
         Assert.assertArrayEquals(SSH_EDDSA_SIGNATURE, out);
     }
 
     @Test
     public void testDsa() throws Exception {
-        byte[] out = SshSignatureConverter.getSshSignature(RAW_DSA_SIGNATURE, PublicKeyAlgorithmTags.DSA);
+        byte[] out = SshSignatureConverter.getSshSignatureDsa(RAW_DSA_SIGNATURE);
 
         Assert.assertArrayEquals(SSH_DSA_SIGNATURE, out);
     }

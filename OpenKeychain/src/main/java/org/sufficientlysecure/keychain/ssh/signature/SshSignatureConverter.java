@@ -21,7 +21,6 @@ import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.bcpg.HashAlgorithmTags;
-import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.bouncycastle.util.BigIntegers;
 import org.sufficientlysecure.keychain.ssh.key.SshEncodedData;
 import org.sufficientlysecure.keychain.ssh.utils.SshUtils;
@@ -46,32 +45,6 @@ public class SshSignatureConverter {
 
             default:
                 throw new NoSuchAlgorithmException("Unknown hash algorithm");
-        }
-    }
-
-    private static String getSignatureFormatId(int algorithm) throws NoSuchAlgorithmException {
-        switch (algorithm) {
-            case PublicKeyAlgorithmTags.EDDSA:
-                return "ssh-ed25519";
-
-            case PublicKeyAlgorithmTags.DSA:
-                return "ssh-dss";
-
-            default:
-                throw new NoSuchAlgorithmException("Unknown algorithm");
-        }
-    }
-
-    private static byte[] getSignatureBlob(byte[] rawSignature, int algorithm) throws NoSuchAlgorithmException {
-        switch (algorithm) {
-            case PublicKeyAlgorithmTags.EDDSA:
-                return rawSignature;
-
-            case PublicKeyAlgorithmTags.DSA:
-                return getDsaSignatureBlob(rawSignature);
-
-            default:
-                throw new NoSuchAlgorithmException("Unknown algorithm");
         }
     }
 
@@ -130,10 +103,18 @@ public class SshSignatureConverter {
         }
     }
 
-    public static byte[] getSshSignature(byte[] rawSignature, int algorithm) throws NoSuchAlgorithmException {
+    public static byte[] getSshSignatureEdDsa(byte[] rawSignature) {
         SshEncodedData signature = new SshEncodedData();
-        signature.putString(getSignatureFormatId(algorithm));
-        signature.putString(getSignatureBlob(rawSignature, algorithm));
+        signature.putString("ssh-ed25519");
+        signature.putString(rawSignature);
+
+        return signature.getBytes();
+    }
+
+    public static byte[] getSshSignatureDsa(byte[] rawSignature) {
+        SshEncodedData signature = new SshEncodedData();
+        signature.putString("ssh-dss");
+        signature.putString(getDsaSignatureBlob(rawSignature));
 
         return signature.getBytes();
     }
