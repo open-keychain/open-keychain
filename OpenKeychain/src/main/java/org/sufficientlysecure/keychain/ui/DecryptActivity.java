@@ -42,6 +42,7 @@ import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 
 
 public class DecryptActivity extends BaseActivity {
+    public static final String APPLICATION_AUTOCRYPT_SETUP = "application/autocrypt-setup";
 
     /* Intents */
     public static final String ACTION_DECRYPT_FROM_CLIPBOARD = "DECRYPT_DATA_CLIPBOARD";
@@ -84,6 +85,7 @@ public class DecryptActivity extends BaseActivity {
 
         // depending on the data source, we may or may not be able to delete the original file
         boolean canDelete = false;
+        boolean isAutocryptSetup = false;
 
         try {
 
@@ -160,6 +162,9 @@ public class DecryptActivity extends BaseActivity {
                 case Constants.DECRYPT_DATA:
                 default:
                     Uri uri = intent.getData();
+
+                    isAutocryptSetup = APPLICATION_AUTOCRYPT_SETUP.equalsIgnoreCase(intent.getType());
+
                     if (uri != null) {
 
                         if ("com.android.email.attachmentprovider".equals(uri.getHost())) {
@@ -187,7 +192,7 @@ public class DecryptActivity extends BaseActivity {
             return;
         }
 
-        displayListFragment(uris, canDelete);
+        displayListFragment(uris, canDelete, isAutocryptSetup);
 
     }
 
@@ -211,9 +216,9 @@ public class DecryptActivity extends BaseActivity {
         return tempFile;
     }
 
-    public void displayListFragment(ArrayList<Uri> inputUris, boolean canDelete) {
+    public void displayListFragment(ArrayList<Uri> inputUris, boolean canDelete, boolean isAutocryptSetup) {
 
-        DecryptListFragment frag = DecryptListFragment.newInstance(inputUris, canDelete);
+        DecryptListFragment frag = DecryptListFragment.newInstance(inputUris, canDelete, isAutocryptSetup);
 
         FragmentManager fragMan = getSupportFragmentManager();
 

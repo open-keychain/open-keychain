@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!--
+            The most reliable way to correctly size these I found was to put a transparent hint on them.
+             Theoretically, this should be what the android:ems attribute is for - didn't work for me.
+            -->
+        <org.sufficientlysecure.keychain.ui.widget.PrefixedEditText
+            android:id="@+id/transfer_code_block_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:enabled="false"
+            custom:prefixColor="@color/md_grey_600"
+            tools:hint="34"
+            tools:prefix="12"
+            tools:text="34"
+            style="@style/TransferCodeText"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeTextSep" />
+
+        <TextView
+            android:id="@+id/transfer_code_block_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeText"
+            tools:text="1234" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeTextSep" />
+
+        <TextView
+            android:id="@+id/transfer_code_block_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeText"
+            tools:text="1234" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeTextSep" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/transfer_code_block_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeText"
+            tools:text="1234" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeTextSep" />
+
+        <TextView
+            android:id="@+id/transfer_code_block_5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeText"
+            tools:text="1234" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeTextSep" />
+
+        <TextView
+            android:id="@+id/transfer_code_block_6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeText"
+            tools:text="1234" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeTextSep" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/transfer_code_block_7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeText"
+            tools:text="1234" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeTextSep" />
+
+        <TextView
+            android:id="@+id/transfer_code_block_8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeText"
+            tools:text="1234" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeTextSep" />
+
+        <TextView
+            android:id="@+id/transfer_code_block_9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TransferCodeText"
+            tools:text="1234" />
+
+    </LinearLayout>
+
+</LinearLayout>

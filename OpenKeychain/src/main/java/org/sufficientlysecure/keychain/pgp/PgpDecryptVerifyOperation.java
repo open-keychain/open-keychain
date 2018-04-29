@@ -93,6 +93,7 @@ import static java.lang.String.format;
 public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInputParcel> {
 
     public static final int PROGRESS_STRIDE_MILLISECONDS = 200;
+    public static final String PASSPHRASE_FORMAT_NUMERIC9X4 = "numeric9x4";
 
     public PgpDecryptVerifyOperation(Context context, KeyRepository keyRepository, Progressable progressable) {
         super(context, keyRepository, progressable);
@@ -230,6 +231,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
     private static class ArmorHeaders {
         String charset = null;
         Integer backupVersion = null;
+        String passphraseFormat;
+        String passphraseBegin;
     }
 
     private ArmorHeaders parseArmorHeaders(InputStream in, OperationLog log, int indent) {
@@ -261,6 +264,14 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                             }
                             break;
                         }
+                        case "passphrase-format": {
+                            armorHeaders.passphraseFormat = pieces[1].trim();
+                            break;
+                        }
+                        case "passphrase-begin": {
+                            armorHeaders.passphraseBegin = pieces[1].trim();
+                            break;
+                        }
                         default: {
                             // continue;
                         }
@@ -271,6 +282,12 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 }
                 if (armorHeaders.backupVersion != null) {
                     log.add(LogType.MSG_DC_BACKUP_VERSION, indent, Integer.toString(armorHeaders.backupVersion));
+                }
+                if (armorHeaders.passphraseFormat != null) {
+                    log.add(LogType.MSG_DC_PASSPHRASE_FORMAT, indent, armorHeaders.passphraseFormat);
+                }
+                if (armorHeaders.passphraseBegin != null) {
+                    log.add(LogType.MSG_DC_PASSPHRASE_BEGIN, indent, armorHeaders.passphraseBegin);
                 }
             }
         }
@@ -294,9 +311,16 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
         // parse ASCII Armor headers
         ArmorHeaders armorHeaders = parseArmorHeaders(in, log, indent);
         String charset = armorHeaders.charset;
-        boolean useBackupCode = false;
+        RequiredInputParcel customRequiredInputParcel = null;
         if (armorHeaders.backupVersion != null && armorHeaders.backupVersion == 2) {
-            useBackupCode = true;
+            customRequiredInputParcel = RequiredInputParcel.createRequiredBackupCode();
+        } else if (PASSPHRASE_FORMAT_NUMERIC9X4.equalsIgnoreCase(armorHeaders.passphraseFormat)) {
+            if (input.isAutocryptSetup()) {
+                customRequiredInputParcel =
+                        RequiredInputParcel.createRequiredNumeric9x4Autocrypt(armorHeaders.passphraseBegin);
+            } else {
+                customRequiredInputParcel = RequiredInputParcel.createRequiredNumeric9x4(armorHeaders.passphraseBegin);
+            }
         }
 
         OpenPgpDecryptionResultBuilder decryptionResultBuilder = new OpenPgpDecryptionResultBuilder();
@@ -311,7 +335,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
             if (obj instanceof PGPEncryptedDataList) {
                 esResult = handleEncryptedPacket(
-                        input, cryptoInput, (PGPEncryptedDataList) obj, log, indent, useBackupCode);
+                        input, cryptoInput, (PGPEncryptedDataList) obj, log, indent, customRequiredInputParcel);
 
                 // if there is an error, nothing left to do here
                 if (esResult.errorResult != null) {
@@ -565,7 +589,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
     }
 
     private EncryptStreamResult handleEncryptedPacket(PgpDecryptVerifyInputParcel input, CryptoInputParcel cryptoInput,
-            PGPEncryptedDataList enc, OperationLog log, int indent, boolean useBackupCode) throws PGPException {
+            PGPEncryptedDataList enc, OperationLog log, int indent, RequiredInputParcel customRequiredInputParcel)
+            throws PGPException {
 
         EncryptStreamResult result = new EncryptStreamResult();
 
@@ -723,9 +748,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
 
                     if (passphrase == null) {
                         log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
-                        RequiredInputParcel requiredInputParcel = useBackupCode ?
-                                RequiredInputParcel.createRequiredBackupCode() :
-                                RequiredInputParcel.createRequiredSymmetricPassphrase();
+                        RequiredInputParcel requiredInputParcel = customRequiredInputParcel != null ?
+                                customRequiredInputParcel : RequiredInputParcel.createRequiredSymmetricPassphrase();
                         return result.with(new DecryptVerifyResult(log,
                                 requiredInputParcel,
                                 cryptoInput));
@@ -771,9 +795,8 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 result.cleartextStream = encryptedDataSymmetric.getDataStream(decryptorFactory);
             } catch (PGPDataValidationException e) {
                 log.add(LogType.MSG_DC_ERROR_SYM_PASSPHRASE, indent + 1);
-                RequiredInputParcel requiredInputParcel = useBackupCode ?
-                        RequiredInputParcel.createRequiredBackupCode() :
-                        RequiredInputParcel.createRequiredSymmetricPassphrase();
+                RequiredInputParcel requiredInputParcel = customRequiredInputParcel != null ?
+                        customRequiredInputParcel : RequiredInputParcel.createRequiredSymmetricPassphrase();
                 return result.with(new DecryptVerifyResult(log, requiredInputParcel, cryptoInput));
             }
 

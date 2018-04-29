@@ -731,7 +731,7 @@ public class OpenPgpService extends Service {
             // the backup code is cached in CryptoInputParcelCacheService, now we can proceed
 
             BackupKeyringParcel input = BackupKeyringParcel
-                    .createBackupKeyringParcel(masterKeyIds, backupSecret, true, enableAsciiArmorOutput, null);
+                    .create(masterKeyIds, backupSecret, true, enableAsciiArmorOutput, null);
             BackupOperation op = new BackupOperation(this, mKeyRepository, null);
             ExportResult pgpResult = op.execute(input, inputParcel, outputStream);
 

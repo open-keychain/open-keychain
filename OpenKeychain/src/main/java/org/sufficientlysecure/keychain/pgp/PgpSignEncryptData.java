@@ -58,8 +58,12 @@ public abstract class PgpSignEncryptData implements Parcelable {
     public abstract boolean isEnableAsciiArmorOutput();
     public abstract boolean isCleartextSignature();
     public abstract boolean isDetachedSignature();
-    public abstract boolean isAddBackupHeader();
     public abstract boolean isHiddenRecipients();
+
+    @Nullable
+    public abstract String getPassphraseFormat();
+    @Nullable
+    public abstract String getPassphraseBegin();
 
     public static Builder builder() {
         return new AutoValue_PgpSignEncryptData.Builder()
@@ -68,7 +72,6 @@ public abstract class PgpSignEncryptData implements Parcelable {
                 .setEnableAsciiArmorOutput(false)
                 .setCleartextSignature(false)
                 .setDetachedSignature(false)
-                .setAddBackupHeader(false)
                 .setHiddenRecipients(false)
                 .setCompressionAlgorithm(OpenKeychainCompressionAlgorithmTags.USE_DEFAULT)
                 .setSignatureHashAlgorithm(OpenKeychainHashAlgorithmTags.USE_DEFAULT)
@@ -91,7 +94,6 @@ public abstract class PgpSignEncryptData implements Parcelable {
         public abstract Builder setSignatureHashAlgorithm(int signatureHashAlgorithm);
         public abstract Builder setSymmetricEncryptionAlgorithm(int symmetricEncryptionAlgorithm);
 
-        public abstract Builder setAddBackupHeader(boolean isAddBackupHeader);
         public abstract Builder setEnableAsciiArmorOutput(boolean enableAsciiArmorOutput);
         public abstract Builder setCleartextSignature(boolean isCleartextSignature);
         public abstract Builder setDetachedSignature(boolean isDetachedSignature);
@@ -102,6 +104,9 @@ public abstract class PgpSignEncryptData implements Parcelable {
             setAllowedSigningKeyIds(Collections.unmodifiableList(new ArrayList<>(allowedSigningKeyIds)));
             return this;
         }
+
+        public abstract Builder setPassphraseFormat(String passphraseFormat);
+        public abstract Builder setPassphraseBegin(String passphraseBegin);
     }
 }
 

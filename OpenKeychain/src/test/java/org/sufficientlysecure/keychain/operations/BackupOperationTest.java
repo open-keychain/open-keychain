@@ -157,7 +157,7 @@ public class BackupOperationTest {
         assertTrue("second keyring has local certification", checkForLocal(mStaticRing2));
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        boolean result = op.exportKeysToStream(new OperationLog(), null, false, out);
+        boolean result = op.exportKeysToStream(new OperationLog(), null, false, true, out);
 
         assertTrue("export must be a success", result);
 
@@ -194,7 +194,7 @@ public class BackupOperationTest {
         }
 
         out = new ByteArrayOutputStream();
-        result = op.exportKeysToStream(new OperationLog(), null, true, out);
+        result = op.exportKeysToStream(new OperationLog(), null, true, true, out);
 
         assertTrue("export must be a success", result);
 
@@ -252,7 +252,7 @@ public class BackupOperationTest {
         BackupOperation op = new BackupOperation(spyApplication,
                 KeyWritableRepository.create(RuntimeEnvironment.application), null);
 
-        BackupKeyringParcel parcel = BackupKeyringParcel.createBackupKeyringParcel(
+        BackupKeyringParcel parcel = BackupKeyringParcel.create(
                 new long[] { mStaticRing1.getMasterKeyId() }, false, false, true, fakeOutputUri);
 
         ExportResult result = op.execute(parcel, null);
@@ -309,7 +309,7 @@ public class BackupOperationTest {
             BackupOperation op = new BackupOperation(spyApplication,
                     KeyWritableRepository.create(RuntimeEnvironment.application), null);
 
-            BackupKeyringParcel parcel = BackupKeyringParcel.createBackupKeyringParcel(
+            BackupKeyringParcel parcel = BackupKeyringParcel.create(
                     new long[] { mStaticRing1.getMasterKeyId() }, false, true, true, fakeOutputUri);
             CryptoInputParcel inputParcel = CryptoInputParcel.createCryptoInputParcel(passphrase);
             ExportResult result = op.execute(parcel, inputParcel);

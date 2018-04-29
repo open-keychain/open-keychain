@@ -125,6 +125,7 @@ public class DecryptListFragment
     public static final String ARG_CANCELLED_URIS = "cancelled_uris";
     public static final String ARG_RESULTS = "results";
     public static final String ARG_CAN_DELETE = "can_delete";
+    public static final String ARG_IS_AUTOCRYPT_SETUP = "is_autocrypt_setup";
 
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
     private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 12;
@@ -136,6 +137,7 @@ public class DecryptListFragment
 
     private Uri mCurrentInputUri;
     private boolean mCanDelete;
+    private boolean mIsAutocryptSetup;
 
     private DecryptFilesAdapter mAdapter;
     private Uri mCurrentSaveFileUri;
@@ -143,12 +145,13 @@ public class DecryptListFragment
     /**
      * Creates new instance of this fragment
      */
-    public static DecryptListFragment newInstance(@NonNull ArrayList<Uri> uris, boolean canDelete) {
+    public static DecryptListFragment newInstance(@NonNull ArrayList<Uri> uris, boolean canDelete, boolean isAutocryptSetup) {
         DecryptListFragment frag = new DecryptListFragment();
 
         Bundle args = new Bundle();
         args.putParcelableArrayList(ARG_INPUT_URIS, uris);
         args.putBoolean(ARG_CAN_DELETE, canDelete);
+        args.putBoolean(ARG_IS_AUTOCRYPT_SETUP, isAutocryptSetup);
         frag.setArguments(args);
 
         return frag;
@@ -205,6 +208,7 @@ public class DecryptListFragment
         outState.putParcelable(ARG_OUTPUT_URIS, new ParcelableHashMap<>(mInputDataResults));
         outState.putParcelableArrayList(ARG_CANCELLED_URIS, mCancelledInputUris);
         outState.putBoolean(ARG_CAN_DELETE, mCanDelete);
+        outState.putBoolean(ARG_IS_AUTOCRYPT_SETUP, mIsAutocryptSetup);
 
         // this does not save mCurrentInputUri - if anything is being
         // processed at fragment recreation time, the operation in
@@ -222,6 +226,7 @@ public class DecryptListFragment
         ParcelableHashMap<Uri, InputDataResult> results = args.getParcelable(ARG_RESULTS);
 
         mCanDelete = args.getBoolean(ARG_CAN_DELETE, false);
+        mIsAutocryptSetup = args.getBoolean(ARG_IS_AUTOCRYPT_SETUP, false);
 
         displayInputUris(inputUris, cancelledUris,
                 results != null ? results.getMap() : null
@@ -638,10 +643,13 @@ public class DecryptListFragment
         }
 
         PgpDecryptVerifyInputParcel.Builder decryptInput = PgpDecryptVerifyInputParcel.builder()
-                .setAllowSymmetricDecryption(true);
+                .setAllowSymmetricDecryption(true)
+                .setAutocryptSetup(mIsAutocryptSetup);
         return InputDataParcel.createInputDataParcel(mCurrentInputUri, decryptInput.build());
 
     }
+
+
 
     /**
      * Request READ_EXTERNAL_STORAGE permission on Android >= 6.0 to read content from "file" Uris.

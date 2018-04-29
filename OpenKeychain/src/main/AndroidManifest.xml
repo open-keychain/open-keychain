@@ -454,6 +454,14 @@
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
                 <data android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.bin" />
             </intent-filter>
+            <intent-filter android:label="@string/intent_autocrypt_setup">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:mimeType="application/autocrypt-setup" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".ui.UploadKeyActivity"

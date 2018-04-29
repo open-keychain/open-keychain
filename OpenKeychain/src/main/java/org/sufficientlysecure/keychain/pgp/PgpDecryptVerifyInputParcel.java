@@ -41,6 +41,7 @@ public abstract class PgpDecryptVerifyInputParcel implements Parcelable {
 
     abstract boolean isAllowSymmetricDecryption();
     abstract boolean isDecryptMetadataOnly();
+    abstract boolean isAutocryptSetup();
 
     @Nullable
     abstract List<Long> getAllowedKeyIds();
@@ -55,7 +56,8 @@ public abstract class PgpDecryptVerifyInputParcel implements Parcelable {
     public static Builder builder() {
         return new AutoValue_PgpDecryptVerifyInputParcel.Builder()
                 .setAllowSymmetricDecryption(false)
-                .setDecryptMetadataOnly(false);
+                .setDecryptMetadataOnly(false)
+                .setAutocryptSetup(false);
     }
 
     @AutoValue.Builder
@@ -68,6 +70,7 @@ public abstract class PgpDecryptVerifyInputParcel implements Parcelable {
         public abstract Builder setDecryptMetadataOnly(boolean decryptMetadataOnly);
         public abstract Builder setDetachedSignature(byte[] detachedSignature);
         public abstract Builder setSenderAddress(String senderAddress);
+        public abstract Builder setAutocryptSetup(boolean isAutocryptSetup);
 
         public abstract Builder setAllowedKeyIds(List<Long> allowedKeyIds);
         abstract List<Long> getAllowedKeyIds();
