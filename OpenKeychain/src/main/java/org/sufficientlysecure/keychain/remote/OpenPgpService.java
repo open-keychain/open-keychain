@@ -816,6 +816,19 @@ public class OpenPgpService extends Service {
         try {
             long[] masterKeyIds = data.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS);
 
+            HashSet<Long> allowedKeyIds = getAllowedKeyIds();
+            for (long masterKeyId : masterKeyIds) {
+                if (!allowedKeyIds.contains(masterKeyId)) {
+                    Intent result = new Intent();
+                    String packageName = mApiPermissionHelper.getCurrentCallingPackage();
+                    result.putExtra(OpenPgpApi.RESULT_INTENT,
+                            mApiPendingIntentFactory.createRequestKeyPermissionPendingIntent(
+                                    data, packageName, masterKeyId));
+                    result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+                    return result;
+                }
+            }
+
             Passphrase autocryptTransferCode = Numeric9x4PassphraseUtil.generateNumeric9x4Passphrase();
             CryptoInputParcel inputParcel = CryptoInputParcel.createCryptoInputParcel(autocryptTransferCode);
 

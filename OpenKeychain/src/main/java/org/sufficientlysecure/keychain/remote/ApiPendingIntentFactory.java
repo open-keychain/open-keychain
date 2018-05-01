@@ -121,7 +121,7 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createRequestKeyPermissionPendingIntent(Intent data, String packageName, long[] masterKeyIds) {
+    PendingIntent createRequestKeyPermissionPendingIntent(Intent data, String packageName, long... masterKeyIds) {
         Intent intent = new Intent(mContext, RequestKeyPermissionActivity.class);
         intent.putExtra(RequestKeyPermissionActivity.EXTRA_PACKAGE_NAME, packageName);
         intent.putExtra(RequestKeyPermissionActivity.EXTRA_REQUESTED_KEY_IDS, masterKeyIds);
