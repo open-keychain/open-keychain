@@ -194,10 +194,20 @@ public class SshAuthenticationService extends Service {
             byte[] rawSignature = authResult.getSignature();
             byte[] sshSignature;
             try {
-                if (authSubKeyAlgorithm == PublicKeyAlgorithmTags.ECDSA) {
-                    sshSignature = SshSignatureConverter.getSshSignatureEcDsa(rawSignature, authSubKeyCurveOid);
-                } else {
-                    sshSignature = SshSignatureConverter.getSshSignature(rawSignature, authSubKeyAlgorithm);
+                switch (authSubKeyAlgorithm) {
+                    case PublicKeyAlgorithmTags.ECDSA:
+                        sshSignature = SshSignatureConverter.getSshSignatureEcDsa(rawSignature, authSubKeyCurveOid);
+                        break;
+                    case PublicKeyAlgorithmTags.RSA_SIGN:
+                    case PublicKeyAlgorithmTags.RSA_GENERAL:
+                        sshSignature = SshSignatureConverter.getSshSignatureRsa(rawSignature, hashAlgorithmTag);
+                        break;
+                    case PublicKeyAlgorithmTags.DSA:
+                    case PublicKeyAlgorithmTags.EDDSA:
+                        sshSignature = SshSignatureConverter.getSshSignature(rawSignature, authSubKeyAlgorithm);
+                        break;
+                    default:
+                        throw new NoSuchAlgorithmException("Unknown algorithm");
                 }
             } catch (NoSuchAlgorithmException e) {
                 return createExceptionErrorResult(SshAuthenticationApiError.INTERNAL_ERROR,
