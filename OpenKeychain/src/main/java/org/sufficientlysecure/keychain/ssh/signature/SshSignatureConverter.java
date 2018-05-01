@@ -21,7 +21,6 @@ import org.bouncycastle.asn1.ASN1Integer;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.bcpg.HashAlgorithmTags;
-import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.bouncycastle.util.BigIntegers;
 import org.sufficientlysecure.keychain.ssh.key.SshEncodedData;
 import org.sufficientlysecure.keychain.ssh.utils.SshUtils;
@@ -33,45 +32,21 @@ import java.security.NoSuchAlgorithmException;
 public class SshSignatureConverter {
 
     private static String getRsaSignatureFormatId(int hashAlgorithm) throws NoSuchAlgorithmException {
-        // https://tools.ietf.org/html/rfc8332
         switch (hashAlgorithm) {
             case HashAlgorithmTags.SHA512:
+                // https://tools.ietf.org/html/rfc8332
                 return "rsa-sha2-512";
 
             case HashAlgorithmTags.SHA256:
+                // https://tools.ietf.org/html/rfc8332
                 return "rsa-sha2-256";
 
             case HashAlgorithmTags.SHA1:
+                // https://tools.ietf.org/html/rfc4253
                 return "ssh-rsa";
 
             default:
                 throw new NoSuchAlgorithmException("Unknown hash algorithm");
-        }
-    }
-
-    private static String getSignatureFormatId(int algorithm) throws NoSuchAlgorithmException {
-        switch (algorithm) {
-            case PublicKeyAlgorithmTags.EDDSA:
-                return "ssh-ed25519";
-
-            case PublicKeyAlgorithmTags.DSA:
-                return "ssh-dss";
-
-            default:
-                throw new NoSuchAlgorithmException("Unknown algorithm");
-        }
-    }
-
-    private static byte[] getSignatureBlob(byte[] rawSignature, int algorithm) throws NoSuchAlgorithmException {
-        switch (algorithm) {
-            case PublicKeyAlgorithmTags.EDDSA:
-                return rawSignature;
-
-            case PublicKeyAlgorithmTags.DSA:
-                return getDsaSignatureBlob(rawSignature);
-
-            default:
-                throw new NoSuchAlgorithmException("Unknown algorithm");
         }
     }
 
@@ -130,10 +105,20 @@ public class SshSignatureConverter {
         }
     }
 
-    public static byte[] getSshSignature(byte[] rawSignature, int algorithm) throws NoSuchAlgorithmException {
+    public static byte[] getSshSignatureEdDsa(byte[] rawSignature) {
         SshEncodedData signature = new SshEncodedData();
-        signature.putString(getSignatureFormatId(algorithm));
-        signature.putString(getSignatureBlob(rawSignature, algorithm));
+        // https://tools.ietf.org/html/draft-ietf-curdle-ssh-ed25519-ed448-00
+        signature.putString("ssh-ed25519");
+        signature.putString(rawSignature);
+
+        return signature.getBytes();
+    }
+
+    public static byte[] getSshSignatureDsa(byte[] rawSignature) {
+        SshEncodedData signature = new SshEncodedData();
+        // https://tools.ietf.org/html/rfc4253
+        signature.putString("ssh-dss");
+        signature.putString(getDsaSignatureBlob(rawSignature));
 
         return signature.getBytes();
     }
@@ -148,6 +133,7 @@ public class SshSignatureConverter {
 
     public static byte[] getSshSignatureEcDsa(byte[] rawSignature, String curveOid) throws NoSuchAlgorithmException {
         SshEncodedData signature = new SshEncodedData();
+        // https://tools.ietf.org/html/rfc5656
         signature.putString("ecdsa-sha2-" + SshUtils.getCurveName(curveOid));
         signature.putString(getEcDsaSignatureBlob(rawSignature));
 
