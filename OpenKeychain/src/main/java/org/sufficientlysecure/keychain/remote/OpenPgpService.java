@@ -39,6 +39,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.openintents.openpgp.AutocryptPeerUpdate;
@@ -719,7 +720,7 @@ public class OpenPgpService extends Service {
             String preferredUserId = data.getStringExtra(OpenPgpApi.EXTRA_USER_ID);
             PendingIntent pi;
             // the new dialog doesn't really work if we don't have a user id to work with. just show the old...
-            if (preferredUserId == null) {
+            if (TextUtils.isEmpty(preferredUserId)) {
                 pi = mApiPendingIntentFactory.createSelectSignKeyIdLegacyPendingIntent(data, currentPkg, null);
             } else {
                 byte[] packageSignature = mApiPermissionHelper.getPackageCertificateOrError(currentPkg);

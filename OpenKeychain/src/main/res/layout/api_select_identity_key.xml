@@ -78,7 +78,7 @@
         android:inAnimation="@anim/fade_in"
         android:outAnimation="@anim/fade_out"
         android:measureAllChildren="false"
-        custom:initialView="03">
+        custom:initialView="01">
 
         <Space
             android:layout_width="wrap_content"
@@ -202,7 +202,7 @@
                         style="?android:textAppearanceMedium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@android:string/cancel"
+                        android:text="@string/select_identity_cancel"
                         />
 
                 </LinearLayout>

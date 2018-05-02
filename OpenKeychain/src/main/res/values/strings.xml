@@ -1992,7 +1992,7 @@
     <string name="use_key">Use key: %s</string>
     <string name="use_key_no_name">Use key: <![CDATA[<no name>]]></string>
     <string name="title_select_key">%s wants to set up end-to-end encryption for this address:</string>
-    <string name="select_identity_cancel">Cancel</string>
+    <string name="select_identity_cancel">Disable</string>
     <string name="select_identity_create">Create a key for me</string>
     <string name="error_save_key_internal">"Internal error saving key!"</string>
     <string name="menu_list_unrelated_keys">List unrelated keys</string>
