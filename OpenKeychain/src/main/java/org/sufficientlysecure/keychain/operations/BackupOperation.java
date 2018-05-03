@@ -26,8 +26,10 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -84,6 +86,9 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
     private static final int INDEX_MASTER_KEY_ID = 0;
     private static final int INDEX_HAS_ANY_SECRET = 1;
 
+    // this is a very simple matcher, we only need basic sanitization
+    private static final Pattern HEADER_PATTERN = Pattern.compile("[a-zA-Z0-9_-]+: [^\\n]+");
+
     public BackupOperation(Context context, KeyRepository keyRepository, Progressable
             progressable) {
         super(context, keyRepository, progressable);
@@ -130,7 +135,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
 
             CountingOutputStream outStream = new CountingOutputStream(new BufferedOutputStream(plainOut));
             boolean backupSuccess = exportKeysToStream(log, backupInput.getMasterKeyIds(),
-                    backupInput.getExportSecret(), backupInput.getExportPublic(), outStream);
+                    backupInput.getExportSecret(), backupInput.getExportPublic(), outStream, backupInput.getExtraHeaders());
 
             if (!backupSuccess) {
                 // if there was an error, it will be in the log so we just have to return
@@ -215,7 +220,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
     }
 
     boolean exportKeysToStream(OperationLog log, long[] masterKeyIds, boolean exportSecret, boolean exportPublic,
-            OutputStream outStream) {
+            OutputStream outStream, List<String> extraSecretKeyHeaders) {
         // noinspection unused TODO use these in a log entry
         int okSecret = 0, okPublic = 0;
 
@@ -253,9 +258,10 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
                     boolean hasSecret = cursor.getInt(INDEX_HAS_ANY_SECRET) > 0;
                     if (exportSecret && hasSecret) {
                         log.add(LogType.MSG_BACKUP_SECRET, 2, KeyFormattingUtils.beautifyKeyId(masterKeyId));
-                        if (writeSecretKeyToStream(masterKeyId, log, outStream)) {
+                        if (writeSecretKeyToStream(masterKeyId, log, outStream, extraSecretKeyHeaders)) {
                             okSecret += 1;
                         }
+                        extraSecretKeyHeaders = null;
                     }
                 }
 
@@ -300,12 +306,17 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
         return true;
     }
 
-    private boolean writeSecretKeyToStream(long masterKeyId, OperationLog log, OutputStream outStream)
+    private boolean writeSecretKeyToStream(long masterKeyId, OperationLog log, OutputStream outStream,
+            List<String> extraSecretKeyHeaders)
             throws IOException {
         ArmoredOutputStream arOutStream = null;
 
         try {
             arOutStream = new ArmoredOutputStream(outStream);
+            if (extraSecretKeyHeaders != null) {
+                addExtraHeadersToStream(arOutStream, extraSecretKeyHeaders);
+            }
+
             byte[] data = mKeyRepository.loadSecretKeyRingData(masterKeyId);
             UncachedKeyRing uncachedKeyRing = UncachedKeyRing.decodeFromData(data);
             CanonicalizedSecretKeyRing ring = (CanonicalizedSecretKeyRing) uncachedKeyRing.canonicalize(log, 2, true);
@@ -318,6 +329,16 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             }
         }
         return true;
+    }
+
+    private void addExtraHeadersToStream(ArmoredOutputStream arOutStream, List<String> headers) {
+        for (String header : headers) {
+            if (!HEADER_PATTERN.matcher(header).matches()) {
+                throw new IllegalArgumentException("bad header format");
+            }
+            int sep = header.indexOf(':');
+            arOutStream.setHeader(header.substring(0, sep), header.substring(sep + 2));
+        }
     }
 
     private Cursor queryForKeys(long[] masterKeyIds) {

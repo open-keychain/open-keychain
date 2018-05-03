@@ -18,6 +18,8 @@
 package org.sufficientlysecure.keychain.service;
 
 
+import java.util.List;
+
 import android.net.Uri;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
@@ -36,15 +38,24 @@ public abstract class BackupKeyringParcel implements Parcelable {
     public abstract boolean getEnableAsciiArmorOutput();
     @Nullable
     public abstract Uri getOutputUri();
+    @Nullable
+    public abstract List<String> getExtraHeaders();
 
     public static BackupKeyringParcel create(long[] masterKeyIds, boolean exportSecret,
             boolean isEncrypted, boolean enableAsciiArmorOutput, Uri outputUri) {
         return new AutoValue_BackupKeyringParcel(
-                masterKeyIds, exportSecret, true, isEncrypted, enableAsciiArmorOutput, outputUri);
+                masterKeyIds, exportSecret, true, isEncrypted, enableAsciiArmorOutput, outputUri, null);
     }
 
-    public static BackupKeyringParcel createExportAutocryptSetupMessage(long[] masterKeyIds) {
+    public static BackupKeyringParcel create(long[] masterKeyIds, boolean exportSecret,
+            boolean isEncrypted, boolean enableAsciiArmorOutput, Uri outputUri, List<String> extraHeaders) {
         return new AutoValue_BackupKeyringParcel(
-                masterKeyIds, true, false, true, true, null);
+                masterKeyIds, exportSecret, true, isEncrypted, enableAsciiArmorOutput, outputUri, extraHeaders);
+    }
+
+    public static BackupKeyringParcel createExportAutocryptSetupMessage(long[] masterKeyIds,
+            List<String> extraHeaders) {
+        return new AutoValue_BackupKeyringParcel(
+                masterKeyIds, true, false, true, true, null, extraHeaders);
     }
 }

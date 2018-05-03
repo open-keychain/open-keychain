@@ -829,10 +829,12 @@ public class OpenPgpService extends Service {
                 }
             }
 
+            List<String> headerLines = data.getStringArrayListExtra(OpenPgpApi.EXTRA_CUSTOM_HEADERS);
+
             Passphrase autocryptTransferCode = Numeric9x4PassphraseUtil.generateNumeric9x4Passphrase();
             CryptoInputParcel inputParcel = CryptoInputParcel.createCryptoInputParcel(autocryptTransferCode);
 
-            BackupKeyringParcel input = BackupKeyringParcel.createExportAutocryptSetupMessage(masterKeyIds);
+            BackupKeyringParcel input = BackupKeyringParcel.createExportAutocryptSetupMessage(masterKeyIds, headerLines);
             BackupOperation op = new BackupOperation(this, mKeyRepository, null);
             ExportResult pgpResult = op.execute(input, inputParcel, outputStream);
 
