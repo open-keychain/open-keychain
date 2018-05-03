@@ -51,7 +51,7 @@ import android.widget.TextView;
 import com.mikepenz.materialdrawer.util.KeyboardUtil;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationActivity;
-import org.sufficientlysecure.keychain.remote.ui.dialog.KeyLoader.KeyInfo;
+import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeyInfo;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteDeduplicatePresenter.RemoteDeduplicateView;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;

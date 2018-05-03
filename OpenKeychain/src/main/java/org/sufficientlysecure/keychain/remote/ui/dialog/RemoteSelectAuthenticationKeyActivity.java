@@ -54,7 +54,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationActivity;
-import org.sufficientlysecure.keychain.remote.ui.dialog.KeyLoader.KeyInfo;
+import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeyInfo;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectAuthenticationKeyPresenter.RemoteSelectAuthenticationKeyView;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;

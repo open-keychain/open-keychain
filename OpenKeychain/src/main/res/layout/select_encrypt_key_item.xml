@@ -2,13 +2,15 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:paddingLeft="4dp"
+    android:paddingStart="4dp"
     android:paddingRight="?android:attr/scrollbarSize"
-    android:maxLines="1">
+    android:paddingEnd="?android:attr/scrollbarSize"
+    android:maxLines="1"
+    tools:layout_marginTop="24dp">
 
     <CheckBox
         android:id="@+id/selected"

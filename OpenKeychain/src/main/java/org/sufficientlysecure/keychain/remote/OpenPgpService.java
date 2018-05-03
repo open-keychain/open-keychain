@@ -39,6 +39,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.openintents.openpgp.AutocryptPeerUpdate;
@@ -67,6 +68,7 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -196,8 +198,21 @@ public class OpenPgpService extends Service {
         }
     }
 
+    private Intent autocryptQueryImpl(Intent data) {
+        try {
+            KeyIdResult keyIdResult = mKeyIdExtractor.returnKeyIdsFromIntent(data, false,
+                    mApiPermissionHelper.getCurrentCallingPackage());
+            Intent resultIntent = getAutocryptStatusResult(keyIdResult);
+
+            return resultIntent;
+        } catch (Exception e) {
+            Timber.d(e, "encryptAndSignImpl");
+            return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
+        }
+    }
+
     private Intent encryptAndSignImpl(Intent data, InputStream inputStream,
-            OutputStream outputStream, boolean sign, boolean isQueryAutocryptStatus) {
+            OutputStream outputStream, boolean sign) {
         try {
             PgpSignEncryptData.Builder pgpData = PgpSignEncryptData.builder()
                     .setVersionHeader(null);
@@ -225,9 +240,6 @@ public class OpenPgpService extends Service {
                     mApiPermissionHelper.getCurrentCallingPackage());
 
             KeyIdResultStatus keyIdResultStatus = keyIdResult.getStatus();
-            if (isQueryAutocryptStatus) {
-                return getAutocryptStatusResult(keyIdResult);
-            }
 
             boolean asciiArmor = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
             pgpData.setEnableAsciiArmorOutput(asciiArmor);
@@ -672,7 +684,8 @@ public class OpenPgpService extends Service {
         return result;
     }
 
-    private Intent getSignKeyIdImpl(Intent data) {
+    /* Signing key choose dialog for older API versions. We keep it around to make sure those don't break */
+    private Intent getSignKeyIdImplLegacy(Intent data) {
         // if data already contains EXTRA_SIGN_KEY_ID, it has been executed again
         // after user interaction. Then, we just need to return the long again!
         if (data.hasExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID)) {
@@ -686,7 +699,8 @@ public class OpenPgpService extends Service {
             String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
             String preferredUserId = data.getStringExtra(OpenPgpApi.EXTRA_USER_ID);
 
-            PendingIntent pi = mApiPendingIntentFactory.createSelectSignKeyIdPendingIntent(data, currentPkg, preferredUserId);
+            PendingIntent pi = mApiPendingIntentFactory.createSelectSignKeyIdLegacyPendingIntent(
+                    data, currentPkg, preferredUserId);
 
             // return PendingIntent to be executed by client
             Intent result = new Intent();
@@ -695,6 +709,53 @@ public class OpenPgpService extends Service {
 
             return result;
         }
+    }
+
+    private Intent getSignKeyIdImpl(Intent data) {
+        Intent result = new Intent();
+        data.setAction(OpenPgpApi.ACTION_GET_SIGN_KEY_ID);
+
+        { // return PendingIntent to be executed by client
+            String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
+            String preferredUserId = data.getStringExtra(OpenPgpApi.EXTRA_USER_ID);
+            PendingIntent pi;
+            // the new dialog doesn't really work if we don't have a user id to work with. just show the old...
+            if (TextUtils.isEmpty(preferredUserId)) {
+                pi = mApiPendingIntentFactory.createSelectSignKeyIdLegacyPendingIntent(data, currentPkg, null);
+            } else {
+                byte[] packageSignature = mApiPermissionHelper.getPackageCertificateOrError(currentPkg);
+                boolean showAutocryptHint = data.getBooleanExtra(OpenPgpApi.EXTRA_SHOW_AUTOCRYPT_HINT, false);
+                pi = mApiPendingIntentFactory.createSelectSignKeyIdPendingIntent(
+                        data, currentPkg, packageSignature, preferredUserId, showAutocryptHint);
+            }
+            result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
+        }
+
+        long signKeyId;
+        if (data.hasExtra(OpenPgpApi.RESULT_SIGN_KEY_ID)) {
+            signKeyId = data.getLongExtra(OpenPgpApi.RESULT_SIGN_KEY_ID, Constants.key.none);
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+        } else {
+            signKeyId = data.getLongExtra(OpenPgpApi.EXTRA_PRESELECT_KEY_ID, Constants.key.none);
+            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+        }
+        result.putExtra(OpenPgpApi.RESULT_SIGN_KEY_ID, signKeyId);
+
+        if (signKeyId != Constants.key.none) {
+            try {
+                CachedPublicKeyRing cachedPublicKeyRing = mKeyRepository.getCachedPublicKeyRing(signKeyId);
+                String userId = cachedPublicKeyRing.getPrimaryUserId();
+                long creationTime = cachedPublicKeyRing.getCreationTime() * 1000;
+
+                result.putExtra(OpenPgpApi.RESULT_PRIMARY_USER_ID, userId);
+                result.putExtra(OpenPgpApi.RESULT_KEY_CREATION_TIME, creationTime);
+            } catch (PgpKeyNotFoundException e) {
+                Timber.e(e, "Error loading key info");
+                return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
+            }
+        }
+
+        return result;
     }
 
     private Intent getKeyIdsImpl(Intent data) {
@@ -842,6 +903,11 @@ public class OpenPgpService extends Service {
             return result;
         }
 
+        // special exception: getting a sign key id will also register the app
+        if (OpenPgpApi.ACTION_GET_SIGN_KEY_ID.equals(data.getAction())) {
+            return null;
+        }
+
         // check if caller is allowed to access OpenKeychain
         Intent result = mApiPermissionHelper.isAllowedOrReturnIntent(data);
         if (result != null) {
@@ -936,12 +1002,12 @@ public class OpenPgpService extends Service {
                 return signImpl(data, inputStream, outputStream, false);
             }
             case OpenPgpApi.ACTION_QUERY_AUTOCRYPT_STATUS: {
-                return encryptAndSignImpl(data, inputStream, outputStream, false, true);
+                return autocryptQueryImpl(data);
             }
             case OpenPgpApi.ACTION_ENCRYPT:
             case OpenPgpApi.ACTION_SIGN_AND_ENCRYPT: {
                 boolean enableSign = action.equals(OpenPgpApi.ACTION_SIGN_AND_ENCRYPT);
-                return encryptAndSignImpl(data, inputStream, outputStream, enableSign, false);
+                return encryptAndSignImpl(data, inputStream, outputStream, enableSign);
             }
             case OpenPgpApi.ACTION_DECRYPT_VERIFY: {
                 return decryptAndVerifyImpl(data, inputStream, outputStream, false, progressable);
@@ -951,6 +1017,9 @@ public class OpenPgpService extends Service {
             }
             case OpenPgpApi.ACTION_GET_SIGN_KEY_ID: {
                 return getSignKeyIdImpl(data);
+            }
+            case OpenPgpApi.ACTION_GET_SIGN_KEY_ID_LEGACY: {
+                return getSignKeyIdImplLegacy(data);
             }
             case OpenPgpApi.ACTION_GET_KEY_IDS: {
                 return getKeyIdsImpl(data);

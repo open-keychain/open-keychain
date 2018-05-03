@@ -38,6 +38,7 @@ import org.sufficientlysecure.keychain.remote.ui.RequestKeyPermissionActivity;
 import org.sufficientlysecure.keychain.remote.ui.SelectSignKeyIdActivity;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteDeduplicateActivity;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectAuthenticationKeyActivity;
+import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectIdKeyActivity;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
@@ -133,10 +134,22 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createSelectSignKeyIdPendingIntent(Intent data, String packageName, String preferredUserId) {
+    PendingIntent createSelectSignKeyIdLegacyPendingIntent(Intent data, String packageName, String preferredUserId) {
         Intent intent = new Intent(mContext, SelectSignKeyIdActivity.class);
         intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(packageName));
         intent.putExtra(SelectSignKeyIdActivity.EXTRA_USER_ID, preferredUserId);
+
+        return createInternal(data, intent);
+    }
+
+    PendingIntent createSelectSignKeyIdPendingIntent(Intent data, String packageName,
+            byte[] packageSignature, String preferredUserId, boolean showAutocryptHint) {
+        Intent intent = new Intent(mContext, RemoteSelectIdKeyActivity.class);
+        intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(packageName));
+        intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_PACKAGE_NAME, packageName);
+        intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_PACKAGE_SIGNATURE, packageSignature);
+        intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_USER_ID, preferredUserId);
+        intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_SHOW_AUTOCRYPT_HINT, showAutocryptHint);
 
         return createInternal(data, intent);
     }
@@ -182,7 +195,9 @@ public class ApiPendingIntentFactory {
 
     private PendingIntent createInternal(Intent data, Intent intent) {
         // re-attach "data" for pass through. It will be used later to repeat pgp operation
-        intent.putExtra(RemoteSecurityTokenOperationActivity.EXTRA_DATA, data);
+        if (data != null) {
+            intent.putExtra(RemoteSecurityTokenOperationActivity.EXTRA_DATA, data);
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             //noinspection ResourceType, looks like lint is missing FLAG_IMMUTABLE

@@ -99,8 +99,7 @@ public class ApiDataAccessObject {
     }
 
     public void insertApiApp(AppSettings appSettings) {
-        mQueryInterface.insert(ApiApps.CONTENT_URI,
-                contentValueForApiApps(appSettings));
+        mQueryInterface.insert(ApiApps.CONTENT_URI, contentValueForApiApps(appSettings));
     }
 
     public void deleteApiApp(String packageName) {

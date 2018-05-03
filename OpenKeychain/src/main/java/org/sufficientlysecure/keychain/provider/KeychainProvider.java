@@ -944,7 +944,7 @@ public class KeychainProvider extends ContentProvider {
                     break;
                 }
                 case API_APPS: {
-                    db.insertOrThrow(Tables.API_APPS, null, values);
+                    db.insert(Tables.API_APPS, null, values);
                     break;
                 }
                 case API_ALLOWED_KEYS: {
@@ -953,7 +953,7 @@ public class KeychainProvider extends ContentProvider {
                     String packageName = uri.getPathSegments().get(1);
                     values.put(ApiAllowedKeys.PACKAGE_NAME, packageName);
 
-                    db.insertOrThrow(Tables.API_ALLOWED_KEYS, null, values);
+                    db.insert(Tables.API_ALLOWED_KEYS, null, values);
                     break;
                 }
                 default: {

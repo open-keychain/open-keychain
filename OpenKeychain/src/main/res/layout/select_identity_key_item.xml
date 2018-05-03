@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="?listPreferredItemHeight"
+    android:orientation="horizontal"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentStart="true"
+    android:background="?android:selectableItemBackground"
+    tools:layout_marginTop="24dp">
+
+    <ImageView
+        android:id="@+id/select_key_item_status_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="16dp"
+        tools:src="@drawable/ic_vpn_key_grey_24dp"
+        />
+
+    <LinearLayout
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/select_key_item_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Use Key: Alice"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/select_key_item_creation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Key created Dec 16, 2005, 12:18 PM"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+    </LinearLayout>
+
+</LinearLayout>
