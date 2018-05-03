@@ -929,6 +929,10 @@
             android:configChanges="keyboardHidden|keyboard"
             android:label="@string/title_backup" />
 
+        <activity
+            android:name=".remote.ui.RemoteDisplayTransferCodeActivity"
+            android:theme="@style/Theme.Keychain.Transparent"/>
+
         <!-- Usb interceptor activity -->
         <activity
             android:name=".ui.UsbEventReceiverActivity"

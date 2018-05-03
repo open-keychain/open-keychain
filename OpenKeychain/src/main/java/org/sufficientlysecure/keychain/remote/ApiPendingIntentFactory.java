@@ -27,6 +27,7 @@ import android.os.Build;
 import org.sufficientlysecure.keychain.pgp.DecryptVerifySecurityProblem;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.remote.ui.RemoteBackupActivity;
+import org.sufficientlysecure.keychain.remote.ui.RemoteDisplayTransferCodeActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteErrorActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteImportKeysActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemotePassphraseDialogActivity;
@@ -42,6 +43,7 @@ import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectIdKeyActivit
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
+import org.sufficientlysecure.keychain.util.Passphrase;
 
 public class ApiPendingIntentFactory {
 
@@ -119,7 +121,7 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createRequestKeyPermissionPendingIntent(Intent data, String packageName, long[] masterKeyIds) {
+    PendingIntent createRequestKeyPermissionPendingIntent(Intent data, String packageName, long... masterKeyIds) {
         Intent intent = new Intent(mContext, RequestKeyPermissionActivity.class);
         intent.putExtra(RequestKeyPermissionActivity.EXTRA_PACKAGE_NAME, packageName);
         intent.putExtra(RequestKeyPermissionActivity.EXTRA_REQUESTED_KEY_IDS, masterKeyIds);
@@ -191,6 +193,13 @@ public class ApiPendingIntentFactory {
         } else {
             return PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         }
+    }
+
+    public PendingIntent createDisplayTransferCodePendingIntent(Passphrase autocryptTransferCode) {
+        Intent intent = new Intent(mContext, RemoteDisplayTransferCodeActivity.class);
+        intent.putExtra(RemoteDisplayTransferCodeActivity.EXTRA_TRANSFER_CODE, autocryptTransferCode);
+
+        return createInternal(null, intent);
     }
 
     private PendingIntent createInternal(Intent data, Intent intent) {

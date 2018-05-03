@@ -80,6 +80,7 @@ import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.util.InputData;
+import org.sufficientlysecure.keychain.util.Numeric9x4PassphraseUtil;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import timber.log.Timber;
 
@@ -811,6 +812,51 @@ public class OpenPgpService extends Service {
         }
     }
 
+    private Intent autocryptKeyTransferImpl(Intent data, OutputStream outputStream) {
+        try {
+            long[] masterKeyIds = data.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS);
+
+            HashSet<Long> allowedKeyIds = getAllowedKeyIds();
+            for (long masterKeyId : masterKeyIds) {
+                if (!allowedKeyIds.contains(masterKeyId)) {
+                    Intent result = new Intent();
+                    String packageName = mApiPermissionHelper.getCurrentCallingPackage();
+                    result.putExtra(OpenPgpApi.RESULT_INTENT,
+                            mApiPendingIntentFactory.createRequestKeyPermissionPendingIntent(
+                                    data, packageName, masterKeyId));
+                    result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
+                    return result;
+                }
+            }
+
+            List<String> headerLines = data.getStringArrayListExtra(OpenPgpApi.EXTRA_CUSTOM_HEADERS);
+
+            Passphrase autocryptTransferCode = Numeric9x4PassphraseUtil.generateNumeric9x4Passphrase();
+            CryptoInputParcel inputParcel = CryptoInputParcel.createCryptoInputParcel(autocryptTransferCode);
+
+            BackupKeyringParcel input = BackupKeyringParcel.createExportAutocryptSetupMessage(masterKeyIds, headerLines);
+            BackupOperation op = new BackupOperation(this, mKeyRepository, null);
+            ExportResult pgpResult = op.execute(input, inputParcel, outputStream);
+
+            PendingIntent displayTransferCodePendingIntent =
+                    mApiPendingIntentFactory.createDisplayTransferCodePendingIntent(autocryptTransferCode);
+
+            if (pgpResult.success()) {
+                Intent result = new Intent();
+                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
+                result.putExtra(OpenPgpApi.RESULT_INTENT, displayTransferCodePendingIntent);
+                return result;
+            } else {
+                // should not happen normally...
+                String errorMsg = getString(pgpResult.getLog().getLast().mType.getMsgId());
+                return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, errorMsg);
+            }
+        } catch (Exception e) {
+            Timber.d(e);
+            return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
+        }
+    }
+
     private Intent updateAutocryptPeerImpl(Intent data) {
         try {
             AutocryptPeerDataAccessObject autocryptPeerDao = new AutocryptPeerDataAccessObject(getBaseContext(),
@@ -1029,6 +1075,9 @@ public class OpenPgpService extends Service {
             }
             case OpenPgpApi.ACTION_BACKUP: {
                 return backupImpl(data, outputStream);
+            }
+            case OpenPgpApi.ACTION_AUTOCRYPT_KEY_TRANSFER: {
+                return autocryptKeyTransferImpl(data, outputStream);
             }
             case OpenPgpApi.ACTION_UPDATE_AUTOCRYPT_PEER: {
                 return updateAutocryptPeerImpl(data);

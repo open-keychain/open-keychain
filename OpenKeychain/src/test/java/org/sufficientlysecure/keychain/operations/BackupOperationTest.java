@@ -24,6 +24,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
 import java.security.Security;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import android.app.Application;
@@ -157,7 +158,7 @@ public class BackupOperationTest {
         assertTrue("second keyring has local certification", checkForLocal(mStaticRing2));
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        boolean result = op.exportKeysToStream(new OperationLog(), null, false, true, out);
+        boolean result = op.exportKeysToStream(new OperationLog(), null, false, true, out, null);
 
         assertTrue("export must be a success", result);
 
@@ -194,7 +195,7 @@ public class BackupOperationTest {
         }
 
         out = new ByteArrayOutputStream();
-        result = op.exportKeysToStream(new OperationLog(), null, true, true, out);
+        result = op.exportKeysToStream(new OperationLog(), null, true, true, out, null);
 
         assertTrue("export must be a success", result);
 
@@ -236,6 +237,22 @@ public class BackupOperationTest {
                     checkForLocal(ring));
         }
 
+    }
+
+    @Test
+    public void testExportWithExtraHeaders() throws Exception {
+        BackupOperation op = new BackupOperation(RuntimeEnvironment.application,
+                KeyWritableRepository.create(RuntimeEnvironment.application), null);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        boolean result = op.exportKeysToStream(
+                new OperationLog(), new long[] { mStaticRing1.getMasterKeyId() }, true, false,
+                        out, Arrays.asList("header: value"));
+
+        assertTrue(result);
+
+        String resultData = new String(out.toByteArray());
+        assertTrue(resultData.startsWith("-----BEGIN PGP PRIVATE KEY BLOCK-----\nheader: value\n\n"));
     }
 
     @Test
