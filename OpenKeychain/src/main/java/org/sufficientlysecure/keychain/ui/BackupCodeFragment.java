@@ -24,32 +24,19 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import android.animation.ArgbEvaluator;
-import android.animation.ValueAnimator;
-import android.animation.ValueAnimator.AnimatorUpdateListener;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -60,48 +47,39 @@ import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
-import org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator;
-import org.sufficientlysecure.keychain.util.Numeric9x4PassphraseUtil;
 import org.sufficientlysecure.keychain.util.FileHelper;
+import org.sufficientlysecure.keychain.util.Numeric9x4PassphraseUtil;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
-public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringParcel, ExportResult>
-        implements OnBackStackChangedListener {
+public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringParcel, ExportResult> {
 
     public static final String ARG_BACKUP_CODE = "backup_code";
-    public static final String BACK_STACK_INPUT = "state_display";
     public static final String ARG_EXPORT_SECRET = "export_secret";
     public static final String ARG_EXECUTE_BACKUP_OPERATION = "execute_backup_operation";
     public static final String ARG_MASTER_KEY_IDS = "master_key_ids";
-    public static final String ARG_CURRENT_STATE = "current_state";
-
 
     public static final int REQUEST_SAVE = 1;
-    public static final String ARG_BACK_STACK = "back_stack";
 
-    // argument variables
     private boolean mExportSecret;
     private long[] mMasterKeyIds;
     Passphrase mBackupCode;
     private boolean mExecuteBackupOperation;
 
-    private TextView[] mCodeEditText;
-
-    private ToolableViewAnimator mStatusAnimator, mTitleAnimator, mCodeFieldsAnimator;
-    private Integer mBackStackLevel;
-
     private Uri mCachedBackupUri;
     private boolean mShareNotSave;
-    private boolean mDebugModeAcceptAnyCode;
+    private View buttonSave;
+    private View buttonShare;
+    private View buttonExport;
 
     public static BackupCodeFragment newInstance(long[] masterKeyIds, boolean exportSecret,
                                                  boolean executeBackupOperation) {
         BackupCodeFragment frag = new BackupCodeFragment();
 
+        Passphrase backupCode = Numeric9x4PassphraseUtil.generateNumeric9x4Passphrase();
+
         Bundle args = new Bundle();
-        args.putParcelable(ARG_BACKUP_CODE, Numeric9x4PassphraseUtil.generateNumeric9x4Passphrase());
+        args.putParcelable(ARG_BACKUP_CODE, backupCode);
         args.putLongArray(ARG_MASTER_KEY_IDS, masterKeyIds);
         args.putBoolean(ARG_EXPORT_SECRET, exportSecret);
         args.putBoolean(ARG_EXECUTE_BACKUP_OPERATION, executeBackupOperation);
@@ -110,142 +88,8 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         return frag;
     }
 
-    enum BackupCodeState {
-        STATE_UNINITIALIZED, STATE_DISPLAY, STATE_INPUT, STATE_INPUT_ERROR, STATE_OK
-    }
-
-    BackupCodeState mCurrentState = BackupCodeState.STATE_UNINITIALIZED;
-
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (Constants.DEBUG) {
-            setHasOptionsMenu(true);
-        }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        if (Constants.DEBUG) {
-            inflater.inflate(R.menu.backup_fragment_debug_menu, menu);
-        }
-    }
-
-    @SuppressLint("SetTextI18n")
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (Constants.DEBUG && item.getItemId() == R.id.debug_accept_any_log) {
-            boolean newCheckedState = !item.isChecked();
-            item.setChecked(newCheckedState);
-            mDebugModeAcceptAnyCode = newCheckedState;
-            if (newCheckedState && TextUtils.isEmpty(mCodeEditText[0].getText())) {
-                mCodeEditText[0].setText("1234");
-                mCodeEditText[1].setText("5678");
-                mCodeEditText[2].setText("9012");
-                mCodeEditText[3].setText("3456");
-                mCodeEditText[4].setText("7890");
-                mCodeEditText[5].setText("1234");
-                mCodeEditText[6].setText("5678");
-                mCodeEditText[7].setText("9012");
-                mCodeEditText[8].setText("3456");
-                Notify.create(getActivity(), "Actual backup code is all '1's", Style.WARN).show();
-            }
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    void switchState(BackupCodeState state, boolean animate) {
-
-        switch (state) {
-            case STATE_UNINITIALIZED:
-                throw new AssertionError("can't switch to uninitialized state, this is a bug!");
-
-            case STATE_DISPLAY:
-                mTitleAnimator.setDisplayedChild(0, animate);
-                mStatusAnimator.setDisplayedChild(0, animate);
-                mCodeFieldsAnimator.setDisplayedChild(0, animate);
-                break;
-
-            case STATE_INPUT:
-                mTitleAnimator.setDisplayedChild(1, animate);
-                mStatusAnimator.setDisplayedChild(1, animate);
-                mCodeFieldsAnimator.setDisplayedChild(1, animate);
-                for (TextView editText : mCodeEditText) {
-                    editText.setText("");
-                }
-
-                pushBackStackEntry();
-
-                break;
-
-            case STATE_INPUT_ERROR: {
-                mTitleAnimator.setDisplayedChild(1, false);
-                mStatusAnimator.setDisplayedChild(2, animate);
-                mCodeFieldsAnimator.setDisplayedChild(1, false);
-
-                hideKeyboard();
-
-                if (animate) {
-                    @ColorInt int black = mCodeEditText[0].getCurrentTextColor();
-                    @ColorInt int red = getResources().getColor(R.color.android_red_dark);
-                    animateFlashText(mCodeEditText, black, red, false);
-                }
-
-                break;
-            }
-
-            case STATE_OK: {
-                mTitleAnimator.setDisplayedChild(2, animate);
-                mCodeFieldsAnimator.setDisplayedChild(1, false);
-                if (mExecuteBackupOperation) {
-                    mStatusAnimator.setDisplayedChild(3, animate);
-                } else {
-                    mStatusAnimator.setDisplayedChild(1, animate);
-                }
-
-                hideKeyboard();
-
-                for (TextView editText : mCodeEditText) {
-                    editText.setEnabled(false);
-                }
-
-                @ColorInt int green = getResources().getColor(R.color.android_green_dark);
-                if (animate) {
-                    @ColorInt int black = mCodeEditText[0].getCurrentTextColor();
-                    animateFlashText(mCodeEditText, black, green, true);
-                } else {
-                    for (TextView textView : mCodeEditText) {
-                        textView.setTextColor(green);
-                    }
-                }
-
-                popBackStackNoAction();
-
-                // special case for remote API, see RemoteBackupActivity
-                if (!mExecuteBackupOperation) {
-                    // wait for animation to finish...
-                    final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            startBackup();
-                        }
-                    }, 2000);
-                }
-
-                break;
-            }
-
-        }
-
-        mCurrentState = state;
-
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.backup_code_fragment, container, false);
 
         Bundle args = getArguments();
@@ -253,8 +97,6 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         mMasterKeyIds = args.getLongArray(ARG_MASTER_KEY_IDS);
         mExportSecret = args.getBoolean(ARG_EXPORT_SECRET);
         mExecuteBackupOperation = args.getBoolean(ARG_EXECUTE_BACKUP_OPERATION, true);
-
-        mCodeEditText = getTransferCodeTextViews(view, R.id.transfer_code_input);
 
         {
             TextView[] codeDisplayText = getTransferCodeTextViews(view, R.id.transfer_code_display);
@@ -272,53 +114,34 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
             }
         }
 
-        setupEditTextFocusNext(mCodeEditText);
-        setupEditTextSuccessListener(mCodeEditText);
+        buttonSave = view.findViewById(R.id.button_backup_save);
+        buttonShare = view.findViewById(R.id.button_backup_share);
+        buttonExport = view.findViewById(R.id.button_backup_export);
 
-        mStatusAnimator = view.findViewById(R.id.button_bar_animator);
-        mTitleAnimator = view.findViewById(R.id.title_animator);
-        mCodeFieldsAnimator = view.findViewById(R.id.code_animator);
-
-        View backupInput = view.findViewById(R.id.button_backup_input);
-        backupInput.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switchState(BackupCodeState.STATE_INPUT, true);
-            }
-        });
-
-        view.findViewById(R.id.button_backup_save).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        if (mExecuteBackupOperation) {
+            buttonSave.setOnClickListener(v -> {
                 mShareNotSave = false;
                 startBackup();
-            }
-        });
+            });
 
-        view.findViewById(R.id.button_backup_share).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            buttonShare.setOnClickListener(v -> {
                 mShareNotSave = true;
                 startBackup();
-            }
-        });
+            });
+        } else {
+            view.findViewById(R.id.button_bar_backup).setVisibility(View.GONE);
+            buttonExport.setVisibility(View.VISIBLE);
+            buttonExport.setOnClickListener(v -> startBackup());
+        }
 
-        view.findViewById(R.id.button_backup_back).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentManager fragMan = getFragmentManager();
-                if (fragMan != null) {
-                    fragMan.popBackStack();
-                }
-            }
-        });
+        ((CheckBox) view.findViewById(R.id.check_backup_code_written)).setOnCheckedChangeListener(
+                (buttonView, isChecked) -> {
+                    buttonSave.setEnabled(isChecked);
+                    buttonShare.setEnabled(isChecked);
+                    buttonExport.setEnabled(isChecked);
+                });
 
-        view.findViewById(R.id.button_faq).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showFaq();
-            }
-        });
+        view.findViewById(R.id.button_faq).setOnClickListener(v -> showFaq());
         return view;
     }
 
@@ -342,168 +165,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         HelpActivity.startHelpActivity(getActivity(), HelpActivity.TAB_FAQ);
     }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        if (savedInstanceState != null) {
-            int savedBackStack = savedInstanceState.getInt(ARG_BACK_STACK);
-            if (savedBackStack >= 0) {
-                mBackStackLevel = savedBackStack;
-                // unchecked use, we know that this one is available in onViewCreated
-                getFragmentManager().addOnBackStackChangedListener(this);
-            }
-            BackupCodeState savedState = BackupCodeState.values()[savedInstanceState.getInt(ARG_CURRENT_STATE)];
-            switchState(savedState, false);
-        } else if (mCurrentState == BackupCodeState.STATE_UNINITIALIZED) {
-            switchState(BackupCodeState.STATE_DISPLAY, true);
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(ARG_CURRENT_STATE, mCurrentState.ordinal());
-        outState.putInt(ARG_BACK_STACK, mBackStackLevel == null ? -1 : mBackStackLevel);
-    }
-
-    private void setupEditTextSuccessListener(final TextView[] backupCodes) {
-        for (TextView backupCode : backupCodes) {
-
-            backupCode.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    if (s.length() > 4) {
-                        throw new AssertionError("max length of each field is 4!");
-                    }
-
-                    boolean inInputState = mCurrentState == BackupCodeState.STATE_INPUT
-                            || mCurrentState == BackupCodeState.STATE_INPUT_ERROR;
-                    boolean partIsComplete = s.length() == 4;
-                    if (!inInputState || !partIsComplete) {
-                        return;
-                    }
-
-                    checkIfCodeIsCorrect();
-                }
-            });
-
-        }
-    }
-
-    private void checkIfCodeIsCorrect() {
-
-        if (Constants.DEBUG && mDebugModeAcceptAnyCode) {
-            switchState(BackupCodeState.STATE_OK, true);
-            return;
-        }
-
-        StringBuilder backupCodeInput = new StringBuilder(26);
-        for (TextView editText : mCodeEditText) {
-            if (editText.getText().length() < 4) {
-                return;
-            }
-            backupCodeInput.append(editText.getText());
-            backupCodeInput.append('-');
-        }
-        backupCodeInput.deleteCharAt(backupCodeInput.length() - 1);
-
-        // if they don't match, do nothing
-        if (backupCodeInput.toString().equals(mBackupCode)) {
-            switchState(BackupCodeState.STATE_OK, true);
-            return;
-        }
-
-        switchState(BackupCodeState.STATE_INPUT_ERROR, true);
-
-    }
-
-    private static void animateFlashText(
-            final TextView[] textViews, int color1, int color2, boolean staySecondColor) {
-
-        ValueAnimator anim = ValueAnimator.ofObject(new ArgbEvaluator(), color1, color2);
-        anim.addUpdateListener(new AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animator) {
-                for (TextView textView : textViews) {
-                    textView.setTextColor((Integer) animator.getAnimatedValue());
-                }
-            }
-        });
-        anim.setRepeatMode(ValueAnimator.REVERSE);
-        anim.setRepeatCount(staySecondColor ? 4 : 5);
-        anim.setDuration(180);
-        anim.setInterpolator(new AccelerateInterpolator());
-        anim.start();
-
-    }
-
-    private static void setupEditTextFocusNext(final TextView[] backupCodes) {
-        for (int i = 0; i < backupCodes.length - 1; i++) {
-
-            final int next = i + 1;
-
-            backupCodes[i].addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    boolean inserting = before < count;
-                    boolean cursorAtEnd = (start + count) == 4;
-
-                    if (inserting && cursorAtEnd) {
-                        backupCodes[next].requestFocus();
-                    }
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                }
-            });
-
-        }
-    }
-
-    private void pushBackStackEntry() {
-        if (mBackStackLevel != null) {
-            return;
-        }
-        FragmentManager fragMan = getFragmentManager();
-        mBackStackLevel = fragMan.getBackStackEntryCount();
-        fragMan.beginTransaction().addToBackStack(BACK_STACK_INPUT).commit();
-        fragMan.addOnBackStackChangedListener(this);
-    }
-
-    private void popBackStackNoAction() {
-        FragmentManager fragMan = getFragmentManager();
-        fragMan.removeOnBackStackChangedListener(this);
-        fragMan.popBackStackImmediate(BACK_STACK_INPUT, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        mBackStackLevel = null;
-    }
-
-    @Override
-    public void onBackStackChanged() {
-        FragmentManager fragMan = getFragmentManager();
-        if (mBackStackLevel != null && fragMan.getBackStackEntryCount() == mBackStackLevel) {
-            fragMan.removeOnBackStackChangedListener(this);
-            switchState(BackupCodeState.STATE_DISPLAY, true);
-            mBackStackLevel = null;
-        }
-    }
-
     private void startBackup() {
-
         FragmentActivity activity = getActivity();
         if (activity == null) {
             return;
@@ -514,15 +176,10 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
                 + (mExportSecret ? Constants.FILE_EXTENSION_ENCRYPTED_BACKUP_SECRET
                 : Constants.FILE_EXTENSION_ENCRYPTED_BACKUP_PUBLIC);
 
-        Passphrase passphrase = new Passphrase(mBackupCode.getCharArray());
-        if (Constants.DEBUG && mDebugModeAcceptAnyCode) {
-            passphrase = new Passphrase("1111-1111-1111-1111-1111-1111-1111-1111-1111");
-        }
-
         // if we don't want to execute the actual operation outside of this activity, drop out here
         if (!mExecuteBackupOperation) {
             ((BackupActivity) getActivity()).handleBackupOperation(
-                    CryptoInputParcel.createCryptoInputParcel(passphrase));
+                    CryptoInputParcel.createCryptoInputParcel(mBackupCode));
             return;
         }
 
@@ -530,7 +187,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
             mCachedBackupUri = TemporaryFileProvider.createFile(activity, filename,
                     Constants.MIME_TYPE_ENCRYPTED_ALTERNATE);
 
-            cryptoOperation(CryptoInputParcel.createCryptoInputParcel(passphrase));
+            cryptoOperation(CryptoInputParcel.createCryptoInputParcel(mBackupCode));
             return;
         }
 
@@ -565,12 +222,7 @@ public class BackupCodeFragment extends CryptoOperationFragment<BackupKeyringPar
         File file = new File(Constants.Path.APP_DIR, filename);
 
         if (!overwrite && file.exists()) {
-            Notify.create(activity, R.string.snack_backup_exists, Style.WARN, new ActionListener() {
-                @Override
-                public void onAction() {
-                    saveFile(filename, true);
-                }
-            }, R.string.snack_btn_overwrite).show();
+            Notify.create(activity, R.string.snack_backup_exists, Style.WARN, () -> saveFile(filename, true), R.string.snack_btn_overwrite).show();
             return;
         }
 

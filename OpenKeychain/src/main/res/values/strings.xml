@@ -1722,6 +1722,7 @@
     <string name="backup_code_wrong">"The backup code you entered is wrong!\nDid you write it down correctly?"</string>
     <string name="btn_backup_share">"Share backup"</string>
     <string name="btn_backup_save">"Save backup"</string>
+    <string name="btn_backup_export">"Export backup"</string>
     <string name="snack_backup_error_saving">"Error saving backup!"</string>
     <string name="snack_backup_saved">"Backup saved"</string>
     <string name="snack_backup_exists">"Backup already exists!"</string>
@@ -2015,4 +2016,5 @@
     <string name="key_import_text">To use an end-to-end key, it has to be imported into OpenKeychain.</string>
     <string name="key_import_text_autocrypt_setup_msg">To import your existing setup from another device, you can also open an Autocrypt Setup Message in %s.</string>
     <string name="button_goto_openkeychain">Go to OpenKeychain</string>
+    <string name="backup_code_checkbox">I have written down this backup code. Without it, I will be unable to restore the backup.</string>
 </resources>
