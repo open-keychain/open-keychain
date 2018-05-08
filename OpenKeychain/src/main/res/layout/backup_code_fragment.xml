@@ -1,168 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:custom="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingTop="20dp">
 
-    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
-        android:id="@+id/title_animator"
-        android:layout_width="match_parent"
+    <TextView
+        style="?android:textAppearanceMedium"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:inAnimation="@anim/fade_in"
-        android:outAnimation="@anim/fade_out"
-        custom:initialView="0">
+        android:gravity="center_horizontal"
+        android:padding="10dp"
+        android:text="@string/backup_code_explanation" />
 
-        <TextView
-            style="?android:textAppearanceMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:padding="10dp"
-            android:text="@string/backup_code_explanation" />
+    <include layout="@layout/transfer_code_display" android:id="@+id/transfer_code_display" />
 
-        <TextView
-            style="?android:textAppearanceMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:padding="10dp"
-            android:text="@string/backup_code_enter" />
+    <CheckBox
+        android:id="@+id/check_backup_code_written"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="8dp"
+        android:text="@string/backup_code_checkbox"
+        android:padding="8dp"
+        />
 
-        <TextView
-            style="?android:textAppearanceMedium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:padding="10dp"
-            android:text="@string/backup_code_ok" />
-
-    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
-
-    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
-        android:id="@+id/code_animator"
-        android:layout_width="match_parent"
+    <LinearLayout
+        style="?android:buttonBarStyle"
+        android:id="@+id/button_bar_backup"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="15dp"
-        android:layout_marginTop="15dp"
-        android:inAnimation="@anim/fade_in"
-        android:outAnimation="@anim/fade_out"
-        custom:initialView="1">
-
-        <include layout="@layout/transfer_code_display" android:id="@+id/transfer_code_display" />
-
-        <include layout="@layout/transfer_code_input" android:id="@+id/transfer_code_input" />
-
-    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
-
-    <org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator
-        android:id="@+id/button_bar_animator"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:inAnimation="@anim/fade_in_delayed"
-        android:outAnimation="@anim/fade_out"
-        custom:initialView="2">
-
-        <Button
-            android:id="@+id/button_backup_input"
-            style="?android:buttonBarButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="10dp"
-            android:drawableLeft="@drawable/ic_mode_edit_grey_24dp"
-            android:drawablePadding="8dp"
-            android:padding="12dp"
-            android:text="@string/btn_code_wrotedown" />
-
-        <Space
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:orientation="vertical">
-
-            <TextView
-                style="?android:textAppearanceMedium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="@string/backup_code_wrong" />
-
-            <Button
-                android:id="@+id/button_backup_back"
-                style="?android:buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="10dp"
-                android:drawableLeft="@drawable/ic_repeat_grey_24dp"
-                android:drawablePadding="8dp"
-                android:padding="12dp"
-                android:text="@string/btn_backup_back" />
-
-        </LinearLayout>
+        android:orientation="vertical">
 
         <LinearLayout
             style="?android:buttonBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:orientation="vertical">
-
-            <LinearLayout
-                style="?android:buttonBarStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal">
-
-                <Button
-                    android:id="@+id/button_backup_share"
-                    style="?android:buttonBarButtonStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:layout_weight="1"
-                    android:drawableLeft="@drawable/ic_share_grey_24dp"
-                    android:drawablePadding="8dp"
-                    android:padding="12dp"
-                    android:text="@string/btn_backup_share" />
-
-                <Button
-                    android:id="@+id/button_backup_save"
-                    style="?android:buttonBarButtonStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:layout_weight="1"
-                    android:drawableLeft="@drawable/ic_save_grey_24dp"
-                    android:drawablePadding="8dp"
-                    android:padding="12dp"
-                    android:text="@string/btn_backup_save" />
-
-
-            </LinearLayout>
+            android:layout_gravity="center_horizontal">
 
             <Button
-                android:id="@+id/button_faq"
+                android:id="@+id/button_backup_share"
                 style="?android:buttonBarButtonStyle"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/how_to_import" />
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:drawableLeft="@drawable/ic_share_grey_24dp"
+                android:drawablePadding="8dp"
+                android:padding="12dp"
+                android:text="@string/btn_backup_share"
+                android:enabled="false"
+                />
+
+            <Button
+                android:id="@+id/button_backup_save"
+                style="?android:buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:drawableLeft="@drawable/ic_save_grey_24dp"
+                android:drawablePadding="8dp"
+                android:padding="12dp"
+                android:text="@string/btn_backup_save"
+                android:enabled="false"
+                />
+
         </LinearLayout>
 
-    </org.sufficientlysecure.keychain.ui.widget.ToolableViewAnimator>
+        <Button
+            android:id="@+id/button_faq"
+            style="?android:buttonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/how_to_import" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/button_backup_export"
+        style="?android:buttonBarButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_gravity="center_horizontal"
+        android:drawableLeft="@drawable/ic_share_grey_24dp"
+        android:drawablePadding="8dp"
+        android:padding="12dp"
+        android:text="@string/btn_backup_export"
+        android:enabled="false"
+        android:visibility="gone"
+        />
 
 </LinearLayout>
