@@ -203,7 +203,7 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
                 String fbUsername = FacebookKeyserverClient.getUsernameFromUri(dataUri);
 
                 Preferences.CloudSearchPrefs cloudSearchPrefs =
-                        new Preferences.CloudSearchPrefs(false, true, true, null);
+                        new Preferences.CloudSearchPrefs(false, true, true, false, null);
                 // search immediately
                 startListFragment(null, null, fbUsername, cloudSearchPrefs);
                 break;
@@ -213,7 +213,7 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
                 HkpKeyserverAddress keyserver = HkpKeyserverAddress.createFromUri(
                         dataUri.getScheme() + "://" + dataUri.getAuthority());
                 Preferences.CloudSearchPrefs cloudSearchPrefs = new Preferences.CloudSearchPrefs(
-                        true, false, false, keyserver);
+                        true, false, false, false, keyserver);
                 Timber.d("Using keyserver: " + keyserver);
 
                 // process URL to get operation and query
