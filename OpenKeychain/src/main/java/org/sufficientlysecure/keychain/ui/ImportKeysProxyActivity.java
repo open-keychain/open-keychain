@@ -49,6 +49,8 @@ import timber.log.Timber;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Proxy activity (just a transparent content view) to scan QR Codes using the Barcode Scanner app
@@ -134,7 +136,16 @@ public class ImportKeysProxyActivity extends FragmentActivity
         }
     }
 
+    private static final Pattern VCARD_KEY_PATTERN = Pattern.compile("\nKEY:(.*)\n");
+
     private void processScannedContent(String content) {
+        // if a VCard was scanned try to extract the KEY field
+        if (content.startsWith("BEGIN:VCARD")) {
+            Matcher matcher = VCARD_KEY_PATTERN.matcher(content);
+            if (matcher.find()) {
+                content = matcher.group(1);
+            }
+        }
         Uri uri = Uri.parse(content);
         processScannedContent(uri);
     }
