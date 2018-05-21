@@ -51,6 +51,9 @@ public class CloudSearch {
         if (cloudPrefs.searchFacebook) {
             servers.add(FacebookKeyserverClient.getInstance());
         }
+        if (cloudPrefs.searchWebKeyDirectory) {
+            servers.add(WebKeyDirectoryClient.getInstance());
+        }
 
         int numberOfServers = servers.size();
         final ImportKeysList results = new ImportKeysList(numberOfServers);

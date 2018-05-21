@@ -348,6 +348,7 @@ public class Preferences {
         return new CloudSearchPrefs(mSharedPreferences.getBoolean(Pref.SEARCH_KEYSERVER, true),
                 mSharedPreferences.getBoolean(Pref.SEARCH_KEYBASE, true),
                 false,
+                true,
                 getPreferredKeyserver());
     }
 
@@ -365,6 +366,7 @@ public class Preferences {
         public final boolean searchKeyserver;
         public final boolean searchKeybase;
         public final boolean searchFacebook;
+        public final boolean searchWebKeyDirectory;
         public final HkpKeyserverAddress keyserver;
 
         /**
@@ -373,10 +375,12 @@ public class Preferences {
          * @param keyserver       the keyserver url authority to search on
          */
         public CloudSearchPrefs(boolean searchKeyserver, boolean searchKeybase,
-                                boolean searchFacebook, HkpKeyserverAddress keyserver) {
+                                boolean searchFacebook, boolean searchWebKeyDirectory,
+                                HkpKeyserverAddress keyserver) {
             this.searchKeyserver = searchKeyserver;
             this.searchKeybase = searchKeybase;
             this.searchFacebook = searchFacebook;
+            this.searchWebKeyDirectory = searchWebKeyDirectory;
             this.keyserver = keyserver;
         }
 
@@ -384,6 +388,7 @@ public class Preferences {
             searchKeyserver = in.readByte() != 0x00;
             searchKeybase = in.readByte() != 0x00;
             searchFacebook = in.readByte() != 0x00;
+            searchWebKeyDirectory = in.readByte() != 0x00;
             keyserver = in.readParcelable(HkpKeyserverAddress.class.getClassLoader());
         }
 
@@ -397,6 +402,7 @@ public class Preferences {
             dest.writeByte((byte) (searchKeyserver ? 0x01 : 0x00));
             dest.writeByte((byte) (searchKeybase ? 0x01 : 0x00));
             dest.writeByte((byte) (searchFacebook ? 0x01 : 0x00));
+            dest.writeByte((byte) (searchWebKeyDirectory ? 0x01 : 0x00));
             dest.writeParcelable(keyserver, flags);
         }
 
