@@ -94,7 +94,7 @@ public class WebKeyDirectoryClient implements KeyserverClient {
 
             Request request = new Request.Builder().url(url).build();
 
-            OkHttpClient client = OkHttpClientFactory.getClientPinnedIfAvailable(url, proxy);
+            OkHttpClient client = OkHttpClientFactory.getClientPinnedIfAvailableWithRedirects(url, proxy);
             Response response = client.newCall(request).execute();
 
             if (response.isSuccessful()) {

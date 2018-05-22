@@ -47,10 +47,18 @@ public class OkHttpClientFactory {
     }
 
     public static OkHttpClient getClientPinnedIfAvailable(URL url, Proxy proxy) {
+        // don't follow any redirects for keyservers, as discussed in the security audit
+        return getClientPinnedIfAvailable(url, proxy, false);
+    }
+
+    public static OkHttpClient getClientPinnedIfAvailableWithRedirects(URL url, Proxy proxy) {
+        return getClientPinnedIfAvailable(url, proxy, true);
+    }
+
+    private static OkHttpClient getClientPinnedIfAvailable(URL url, Proxy proxy, boolean followRedirects) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
 
-        // don't follow any redirects for keyservers, as discussed in the security audit
-        builder.followRedirects(false)
+        builder.followRedirects(followRedirects)
                 .followSslRedirects(false);
 
         if (proxy != null) {
