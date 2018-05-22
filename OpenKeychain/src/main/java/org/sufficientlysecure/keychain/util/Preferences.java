@@ -347,7 +347,7 @@ public class Preferences {
         return CloudSearchPrefs.create(mSharedPreferences.getBoolean(Pref.SEARCH_KEYSERVER, true),
                 mSharedPreferences.getBoolean(Pref.SEARCH_KEYBASE, true),
                 false,
-                true,
+                mSharedPreferences.getBoolean(Pref.SEARCH_WEB_KEY_DIRECTORY, true),
                 getPreferredKeyserver());
     }
 

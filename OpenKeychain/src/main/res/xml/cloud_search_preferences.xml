@@ -14,4 +14,9 @@
         android:key="search_keybase_pref"
         android:summary="@string/pref_keybase_summary"
         android:title="@string/pref_keybase" />
+    <SwitchPreference
+            android:defaultValue="true"
+            android:key="search_wkd_pref"
+            android:summary="@string/pref_wkd_summary"
+            android:title="@string/pref_wkd" />
 </PreferenceScreen>
