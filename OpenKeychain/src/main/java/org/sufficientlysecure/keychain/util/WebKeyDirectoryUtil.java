@@ -24,6 +24,18 @@ public class WebKeyDirectoryUtil {
      */
     @Nullable
     public static URL toWebKeyDirectoryURL(String name) {
+        if (name == null) {
+            return null;
+        }
+
+        if (name.startsWith("https://") && name.contains("/.well-known/openpgpkey/hu/")) {
+            try {
+                return new URL(name);
+            } catch (MalformedURLException e) {
+                return null;
+            }
+        }
+
         Matcher matcher = EMAIL_PATTERN.matcher(name);
 
         if (!matcher.matches()) {

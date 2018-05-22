@@ -27,4 +27,13 @@ public class WebKeyDirectoryUtilTest {
         assertEquals("/.well-known/openpgpkey/hu/4hg7tescnttreaouu4z1izeuuyibwww1", url.getPath());
     }
 
+    @Test
+    public void testWkdDirectUrl() {
+        URL url = WebKeyDirectoryUtil.toWebKeyDirectoryURL("https://openkeychain.org/.well-known/openpgpkey/hu/4hg7tescnttreaouu4z1izeuuyibwww1");
+        assertNotNull(url);
+        assertEquals("openkeychain.org", url.getHost());
+        assertEquals("https", url.getProtocol());
+        assertEquals("/.well-known/openpgpkey/hu/4hg7tescnttreaouu4z1izeuuyibwww1", url.getPath());
+    }
+
 }
