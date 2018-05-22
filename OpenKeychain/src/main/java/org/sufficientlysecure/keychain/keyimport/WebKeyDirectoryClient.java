@@ -19,30 +19,23 @@ package org.sufficientlysecure.keychain.keyimport;
 
 
 import android.support.annotation.Nullable;
-
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
-import org.sufficientlysecure.keychain.util.ZBase32;
+import org.sufficientlysecure.keychain.util.WebKeyDirectoryUtil;
+import timber.log.Timber;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import timber.log.Timber;
 
 
 /**
@@ -59,12 +52,10 @@ public class WebKeyDirectoryClient implements KeyserverClient {
     private WebKeyDirectoryClient() {
     }
 
-    private static final Pattern EMAIL_PATTERN = Pattern.compile("^\\s*(.+)@(.+)\\s*$");
-
     @Override
     public List<ImportKeysListEntry> search(String name, ParcelableProxy proxy)
             throws QueryFailedException {
-        URL webKeyDirectoryURL = toWebKeyDirectoryURL(name);
+        URL webKeyDirectoryURL = WebKeyDirectoryUtil.toWebKeyDirectoryURL(name);
 
         if (webKeyDirectoryURL == null) {
             Timber.d("Name not supported by Web Key Directory Client: " + name);
@@ -129,32 +120,5 @@ public class WebKeyDirectoryClient implements KeyserverClient {
     @Override
     public void add(String armoredKey, ParcelableProxy proxy) {
         throw new UnsupportedOperationException("Uploading keys to Web Key Directory is not supported");
-    }
-
-    @Nullable
-    private static URL toWebKeyDirectoryURL(String name) {
-        Matcher matcher = EMAIL_PATTERN.matcher(name);
-
-        if (!matcher.matches()) {
-            return null;
-        }
-
-        String localPart = matcher.group(1);
-        String encodedPart = ZBase32.encode(toSHA1(localPart.toLowerCase().getBytes()));
-        String domain = matcher.group(2);
-
-        try {
-            return new URL("https://" + domain + "/.well-known/openpgpkey/hu/" + encodedPart);
-        } catch (MalformedURLException e) {
-            return null;
-        }
-    }
-
-    private static byte[] toSHA1(byte[] input) {
-        try {
-            return MessageDigest.getInstance("SHA-1").digest(input);
-        } catch (NoSuchAlgorithmException e) {
-            throw new AssertionError("SHA-1 should always be available");
-        }
     }
 }
