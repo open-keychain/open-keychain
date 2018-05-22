@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:hint="@string/token_hint_admin_pin"
         android:id="@+id/admin_pin_current"
+        android:imeOptions="flagNoPersonalizedLearning"
         android:inputType="numberPassword|textVisiblePassword" />
 
     <EditText
@@ -19,6 +20,7 @@
         android:layout_height="wrap_content"
         android:hint="@string/token_hint_new_pin"
         android:id="@+id/pin_new"
+        android:imeOptions="flagNoPersonalizedLearning"
         android:inputType="numberPassword|textVisiblePassword" />
 
     <EditText
@@ -26,6 +28,7 @@
         android:layout_height="wrap_content"
         android:hint="@string/token_hint_new_pin_repeat"
         android:id="@+id/pin_new_repeat"
+        android:imeOptions="flagNoPersonalizedLearning"
         android:inputType="numberPassword|textVisiblePassword" />
 
 </LinearLayout>

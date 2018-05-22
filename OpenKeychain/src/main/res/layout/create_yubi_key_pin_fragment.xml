@@ -41,6 +41,7 @@
                 android:layout_marginBottom="8dp"
                 android:ems="10"
                 android:hint="@string/create_key_yubi_key_pin"
+                android:imeOptions="flagNoPersonalizedLearning"
                 android:inputType="numberPassword" />
 
             <EditText
@@ -50,6 +51,7 @@
                 android:layout_marginBottom="8dp"
                 android:ems="10"
                 android:hint="@string/create_key_yubi_key_pin_repeat"
+                android:imeOptions="flagNoPersonalizedLearning"
                 android:inputType="numberPassword" />
 
             <TextView
