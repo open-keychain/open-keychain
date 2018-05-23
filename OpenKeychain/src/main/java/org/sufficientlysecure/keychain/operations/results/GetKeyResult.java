@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.operations.results;
 
 import android.os.Parcel;
-
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
@@ -51,6 +50,7 @@ public class GetKeyResult extends InputPendingResult {
     public static final int RESULT_ERROR_QUERY_FAILED = RESULT_ERROR + (6 << 4);
     public static final int RESULT_ERROR_FILE_NOT_FOUND = RESULT_ERROR + (7 << 4);
     public static final int RESULT_ERROR_NO_ENABLED_SOURCE = RESULT_ERROR + (8 << 4);
+    public static final int RESULT_ERROR_QUERY_NOT_IMPLEMENTED = RESULT_ERROR + (9 << 4);
 
     public GetKeyResult(Parcel source) {
         super(source);

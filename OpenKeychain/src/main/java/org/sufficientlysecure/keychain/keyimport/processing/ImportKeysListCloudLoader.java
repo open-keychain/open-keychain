@@ -20,11 +20,11 @@ package org.sufficientlysecure.keychain.keyimport.processing;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v4.content.AsyncTaskLoader;
-
 import org.sufficientlysecure.keychain.keyimport.CloudSearch;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.KeyserverClient;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -32,7 +32,6 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 import timber.log.Timber;
 
 import java.util.ArrayList;
@@ -172,7 +171,10 @@ public class ImportKeysListCloudLoader
             // convert exception to result parcel
             int error = GetKeyResult.RESULT_ERROR;
             OperationResult.LogType logType = null;
-            if (e instanceof KeyserverClient.QueryFailedException) {
+            if (e instanceof  KeyserverClient.QueryNotImplementedException){
+                error = GetKeyResult.RESULT_ERROR_QUERY_NOT_IMPLEMENTED;
+                logType = OperationResult.LogType.MSG_GET_QUERY_NOT_IMPLEMENTED;
+            } else if (e instanceof KeyserverClient.QueryFailedException) {
                 error = GetKeyResult.RESULT_ERROR_QUERY_FAILED;
                 logType = OperationResult.LogType.MSG_GET_QUERY_FAILED;
             } else if (e instanceof KeyserverClient.TooManyResponsesException) {

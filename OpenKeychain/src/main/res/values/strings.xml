@@ -2019,4 +2019,5 @@
     <string name="key_import_text_autocrypt_setup_msg">To import your existing setup from another device, you can also open an Autocrypt Setup Message in %s.</string>
     <string name="button_goto_openkeychain">Go to OpenKeychain</string>
     <string name="backup_code_checkbox">I have written down this backup code. Without it, I will be unable to restore the backup.</string>
+    <string name="msg_get_query_not_implemented">The server does not support the current query! Some servers only accept mailaddresses. Please redefine or try a different server.</string>
 </resources>
