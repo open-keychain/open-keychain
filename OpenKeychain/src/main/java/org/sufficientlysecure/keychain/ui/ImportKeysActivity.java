@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -123,7 +124,7 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
                 action = ACTION_IMPORT_KEY_FROM_FACEBOOK;
             } else if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme)) {
                 action = ACTION_SEARCH_KEYSERVER_FROM_URL;
-            } else if ("openpgp4fpr".equalsIgnoreCase(scheme)) {
+            } else if (Constants.FINGERPRINT_SCHEME.equalsIgnoreCase(scheme)) {
                 action = ACTION_IMPORT_KEY_FROM_KEYSERVER;
                 extras.putString(EXTRA_FINGERPRINT, dataUri.getSchemeSpecificPart());
             } else {
@@ -131,7 +132,11 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
                 // delegate action to ACTION_IMPORT_KEY
                 action = ACTION_IMPORT_KEY;
             }
+        } else if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action) && Constants.FINGERPRINT_SCHEME.equalsIgnoreCase(scheme)) {
+            action = ACTION_IMPORT_KEY_FROM_KEYSERVER;
+            extras.putString(EXTRA_FINGERPRINT, dataUri.getSchemeSpecificPart());
         }
+
         if (action == null) {
             // -> switch to default below
             action = "";
