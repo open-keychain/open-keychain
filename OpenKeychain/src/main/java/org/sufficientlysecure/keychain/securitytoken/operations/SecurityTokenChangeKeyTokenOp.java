@@ -102,11 +102,10 @@ public class SecurityTokenChangeKeyTokenOp {
         try {
             secretKey.unlock(passphrase);
 
+            byte[] attributesForSecretKey = createAttributesForSecretKey(slot, secretKey);
+            setKeyAttributes(adminPin, slot, attributesForSecretKey);
+
             OpenPgpCapabilities openPgpCapabilities = connection.getOpenPgpCapabilities();
-
-            setKeyAttributes(adminPin, slot, SecurityTokenUtils.attributesFromSecretKey(slot, secretKey,
-                    openPgpCapabilities.getFormatForKeyType(slot)));
-
             KeyFormat formatForKeyType = openPgpCapabilities.getFormatForKeyType(slot);
             switch (formatForKeyType.keyFormatType()) {
                 case RSAKeyFormatType:
@@ -150,6 +149,13 @@ public class SecurityTokenChangeKeyTokenOp {
         if (!response.isSuccess()) {
             throw new CardException("Key export to Security Token failed", response.getSw());
         }
+    }
+
+    private byte[] createAttributesForSecretKey(KeyType slot, CanonicalizedSecretKey secretKey) throws IOException {
+        OpenPgpCapabilities openPgpCapabilities = connection.getOpenPgpCapabilities();
+        KeyFormat formatForKeyType = openPgpCapabilities.getFormatForKeyType(slot);
+
+        return SecurityTokenUtils.attributesFromSecretKey(slot, secretKey, formatForKeyType);
     }
 
     private void setKeyAttributes(Passphrase adminPin, KeyType keyType, byte[] data) throws IOException {
