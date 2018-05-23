@@ -42,16 +42,16 @@ public class CloudSearch {
         // it's a Vector for sync, multiple threads might report problems
         final Vector<KeyserverClient.CloudSearchFailureException> problems = new Vector<>();
 
-        if (cloudPrefs.searchKeyserver) {
-            servers.add(HkpKeyserverClient.fromHkpKeyserverAddress(cloudPrefs.keyserver));
+        if (cloudPrefs.isKeyserverEnabled()) {
+            servers.add(HkpKeyserverClient.fromHkpKeyserverAddress(cloudPrefs.getKeyserver()));
         }
-        if (cloudPrefs.searchKeybase) {
+        if (cloudPrefs.isKeybaseEnabled()) {
             servers.add(KeybaseKeyserverClient.getInstance());
         }
-        if (cloudPrefs.searchFacebook) {
+        if (cloudPrefs.isFacebookEnabled()) {
             servers.add(FacebookKeyserverClient.getInstance());
         }
-        if (cloudPrefs.searchWebKeyDirectory) {
+        if (cloudPrefs.isWebKeyDirectoryEnabled()) {
             servers.add(WebKeyDirectoryClient.getInstance());
         }
 

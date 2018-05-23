@@ -719,6 +719,42 @@
                 <data android:pathPattern="/..*/publickey/download" />
             </intent-filter>
 
+            <!-- VIEW from Web Key Directory urls opened in a browser/Chrome -->
+            <intent-filter android:label="@string/intent_import_key">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="https" />
+
+                <!-- if we don't specify a host, pathPattern will be ignored-->
+                <data android:host="*" />
+
+                <data android:pathPattern="/.well-known/openpgpkey/hu/.*" />
+
+                <!-- Chrome/Built-in browser will not be triggered if there is mimeType -->
+            </intent-filter>
+
+            <!-- VIEW from Web Key Directory urls opened in Firefox for Android -->
+            <intent-filter android:label="@string/intent_import_key">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="https" />
+
+                <!-- if we don't specify a host, pathPattern will be ignored-->
+                <data android:host="*" />
+
+                <data android:pathPattern="/.well-known/openpgpkey/hu/.*" />
+
+                <!-- Firefox for Android requires mimeType -->
+                <data android:mimeType="application/octet-stream" />
+                <data android:mimeType="application/pgp-keys" />
+            </intent-filter>
+
             <!-- IMPORT_KEY with files TODO: does this work? -->
             <intent-filter android:label="@string/intent_import_key">
                 <action android:name="org.sufficientlysecure.keychain.action.IMPORT_KEY" />

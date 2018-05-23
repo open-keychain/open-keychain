@@ -57,6 +57,8 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER = Constants.IMPORT_KEY_FROM_KEYSERVER;
     public static final String ACTION_IMPORT_KEY_FROM_FACEBOOK
             = Constants.INTENT_PREFIX + "IMPORT_KEY_FROM_FACEBOOK";
+    public static final String ACTION_IMPORT_KEY_FROM_WEB_KEY_DIRECTORY
+            = Constants.INTENT_PREFIX + "ACTION_IMPORT_KEY_FROM_WEB_KEY_DIRECTORY";
     public static final String ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT =
             Constants.INTENT_PREFIX + "IMPORT_KEY_FROM_KEY_SERVER_AND_RETURN_RESULT";
     public static final String ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN = Constants.INTENT_PREFIX
@@ -122,6 +124,8 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
         if (Intent.ACTION_VIEW.equals(action)) {
             if (FacebookKeyserverClient.isFacebookHost(dataUri)) {
                 action = ACTION_IMPORT_KEY_FROM_FACEBOOK;
+            } else if ("https".equalsIgnoreCase(scheme) || dataUri.getPath().startsWith("/.well-known/openpgpkey/hu/")) {
+                action = ACTION_IMPORT_KEY_FROM_WEB_KEY_DIRECTORY;
             } else if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme)) {
                 action = ACTION_SEARCH_KEYSERVER_FROM_URL;
             } else if (Constants.FINGERPRINT_SCHEME.equalsIgnoreCase(scheme)) {
@@ -208,17 +212,23 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
                 String fbUsername = FacebookKeyserverClient.getUsernameFromUri(dataUri);
 
                 Preferences.CloudSearchPrefs cloudSearchPrefs =
-                        new Preferences.CloudSearchPrefs(false, true, true, false, null);
+                        Preferences.CloudSearchPrefs.createSocialOnly();
                 // search immediately
                 startListFragment(null, null, fbUsername, cloudSearchPrefs);
+                break;
+            }
+            case ACTION_IMPORT_KEY_FROM_WEB_KEY_DIRECTORY: {
+                Preferences.CloudSearchPrefs cloudSearchPrefs =
+                        Preferences.CloudSearchPrefs.createWebKeyDirectoryOnly();
+                // search immediately
+                startListFragment(null, null, dataUri.toString(), cloudSearchPrefs);
                 break;
             }
             case ACTION_SEARCH_KEYSERVER_FROM_URL: {
                 // get keyserver from URL
                 HkpKeyserverAddress keyserver = HkpKeyserverAddress.createFromUri(
                         dataUri.getScheme() + "://" + dataUri.getAuthority());
-                Preferences.CloudSearchPrefs cloudSearchPrefs = new Preferences.CloudSearchPrefs(
-                        true, false, false, false, keyserver);
+                Preferences.CloudSearchPrefs cloudSearchPrefs = Preferences.CloudSearchPrefs.createKeyserverOnly(keyserver);
                 Timber.d("Using keyserver: " + keyserver);
 
                 // process URL to get operation and query

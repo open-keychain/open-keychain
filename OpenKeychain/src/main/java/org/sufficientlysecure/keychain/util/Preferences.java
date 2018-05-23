@@ -18,27 +18,26 @@
 package org.sufficientlysecure.keychain.util;
 
 
-import java.net.Proxy;
-import java.util.ArrayList;
-import java.util.ListIterator;
-
 import android.accounts.Account;
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
-
+import android.support.annotation.Nullable;
+import com.google.auto.value.AutoValue;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
 import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
-
 import timber.log.Timber;
+
+import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.ListIterator;
 
 
 /**
@@ -345,10 +344,10 @@ public class Preferences {
     // cloud prefs
 
     public CloudSearchPrefs getCloudSearchPrefs() {
-        return new CloudSearchPrefs(mSharedPreferences.getBoolean(Pref.SEARCH_KEYSERVER, true),
+        return CloudSearchPrefs.create(mSharedPreferences.getBoolean(Pref.SEARCH_KEYSERVER, true),
                 mSharedPreferences.getBoolean(Pref.SEARCH_KEYBASE, true),
                 false,
-                true,
+                mSharedPreferences.getBoolean(Pref.SEARCH_WEB_KEY_DIRECTORY, true),
                 getPreferredKeyserver());
     }
 
@@ -362,62 +361,44 @@ public class Preferences {
         editor.commit();
     }
 
-    public static class CloudSearchPrefs implements Parcelable {
-        public final boolean searchKeyserver;
-        public final boolean searchKeybase;
-        public final boolean searchFacebook;
-        public final boolean searchWebKeyDirectory;
-        public final HkpKeyserverAddress keyserver;
+    @AutoValue
+    public static abstract class CloudSearchPrefs implements Parcelable {
+        public abstract boolean isKeyserverEnabled();
+        public abstract boolean isKeybaseEnabled();
+        public abstract boolean isFacebookEnabled();
+        public abstract boolean isWebKeyDirectoryEnabled();
+
+        @Nullable
+        public abstract HkpKeyserverAddress getKeyserver();
 
         /**
-         * @param searchKeyserver should passed keyserver be searched
-         * @param searchKeybase   should keybase.io be searched
-         * @param keyserver       the keyserver url authority to search on
+         * @param searchKeyserver       should passed keyserver be searched
+         * @param searchKeybase         should keybase.io be searched
+         * @param searchFacebook        should Facebook be searched
+         * @param searchWebKeyDirectory should WKD be searched
+         * @param keyserver             the keyserver url authority to search on
          */
-        public CloudSearchPrefs(boolean searchKeyserver, boolean searchKeybase,
-                                boolean searchFacebook, boolean searchWebKeyDirectory,
-                                HkpKeyserverAddress keyserver) {
-            this.searchKeyserver = searchKeyserver;
-            this.searchKeybase = searchKeybase;
-            this.searchFacebook = searchFacebook;
-            this.searchWebKeyDirectory = searchWebKeyDirectory;
-            this.keyserver = keyserver;
+        public static CloudSearchPrefs create(boolean searchKeyserver, boolean searchKeybase,
+                                                       boolean searchFacebook, boolean searchWebKeyDirectory,
+                                                       @Nullable HkpKeyserverAddress keyserver) {
+            return new AutoValue_Preferences_CloudSearchPrefs(searchKeyserver,
+                    searchKeybase,
+                    searchFacebook,
+                    searchWebKeyDirectory,
+                    keyserver);
         }
 
-        protected CloudSearchPrefs(Parcel in) {
-            searchKeyserver = in.readByte() != 0x00;
-            searchKeybase = in.readByte() != 0x00;
-            searchFacebook = in.readByte() != 0x00;
-            searchWebKeyDirectory = in.readByte() != 0x00;
-            keyserver = in.readParcelable(HkpKeyserverAddress.class.getClassLoader());
+        public static CloudSearchPrefs createWebKeyDirectoryOnly() {
+            return create(false, false, false, true, null);
         }
 
-        @Override
-        public int describeContents() {
-            return 0;
+        public static CloudSearchPrefs createKeyserverOnly(HkpKeyserverAddress keyserver) {
+            return create(true, false, false, false, keyserver);
         }
 
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeByte((byte) (searchKeyserver ? 0x01 : 0x00));
-            dest.writeByte((byte) (searchKeybase ? 0x01 : 0x00));
-            dest.writeByte((byte) (searchFacebook ? 0x01 : 0x00));
-            dest.writeByte((byte) (searchWebKeyDirectory ? 0x01 : 0x00));
-            dest.writeParcelable(keyserver, flags);
+        public static CloudSearchPrefs createSocialOnly() {
+            return create(false, true, true, false, null);
         }
-
-        public static final Parcelable.Creator<CloudSearchPrefs> CREATOR
-                = new Parcelable.Creator<CloudSearchPrefs>() {
-            @Override
-            public CloudSearchPrefs createFromParcel(Parcel in) {
-                return new CloudSearchPrefs(in);
-            }
-
-            @Override
-            public CloudSearchPrefs[] newArray(int size) {
-                return new CloudSearchPrefs[size];
-            }
-        };
     }
 
     // sync preferences
