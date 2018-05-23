@@ -18,10 +18,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -31,16 +27,9 @@ import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.provider.LastUpdateInteractor;
@@ -52,6 +41,10 @@ import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperDragC
 import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperViewHolder;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerItemClickListener;
 import org.sufficientlysecure.keychain.util.Preferences;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 public class SettingsKeyserverFragment extends Fragment implements RecyclerItemClickListener.OnItemClickListener {
@@ -305,6 +298,7 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
 
             public final ViewGroup outerLayout;
             public final TextView selectedServerLabel;
+            public final TextView fallbackServerLabel;
             public final TextView keyserverUrl;
             public final ImageView dragHandleView;
 
@@ -315,6 +309,8 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
                 outerLayout = itemView.findViewById(R.id.outer_layout);
                 selectedServerLabel = itemView.findViewById(
                         R.id.selected_keyserver_title);
+                fallbackServerLabel = itemView.findViewById(
+                        R.id.fallback_keyserver_title);
                 keyserverUrl = itemView.findViewById(R.id.keyserver_tv);
                 dragHandleView = itemView.findViewById(R.id.drag_handle);
 
@@ -324,12 +320,14 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
             public void showAsSelectedKeyserver() {
                 isSelectedKeyserver = true;
                 selectedServerLabel.setVisibility(View.VISIBLE);
+                fallbackServerLabel.setVisibility(View.GONE);
                 outerLayout.setBackgroundColor(FormattingUtils.getColorFromAttr(getContext(), R.attr.colorPrimaryDark));
             }
 
             public void showAsUnselectedKeyserver() {
                 isSelectedKeyserver = false;
                 selectedServerLabel.setVisibility(View.GONE);
+                fallbackServerLabel.setVisibility(View.VISIBLE);
                 outerLayout.setBackgroundColor(0);
             }
 

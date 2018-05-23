@@ -24,6 +24,15 @@
             android:visibility="gone"/>
 
         <TextView
+            android:id="@+id/fallback_keyserver_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_fallback_keyserver_title"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold"
+            android:visibility="gone"/>
+
+        <TextView
             android:id="@+id/keyserver_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
