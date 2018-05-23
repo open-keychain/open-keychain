@@ -18,11 +18,6 @@
 package org.sufficientlysecure.keychain.ui.adapter;
 
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.v4.app.FragmentActivity;
@@ -31,7 +26,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.databinding.ImportKeysListItemBinding;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
@@ -48,12 +42,17 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
-import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
+import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import timber.log.Timber;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.ViewHolder>
@@ -291,6 +290,15 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         entry.setRevoked(keyRing.isRevoked());
         entry.setExpired(keyRing.isExpired());
         entry.setSecure(keyRing.isSecure());
+
+        int algorithmId = keyRing.getPublicKey().getAlgorithm();
+        int bitSize = keyRing.getPublicKey().getBitStrength();
+        String algoInfo = KeyFormattingUtils.getAlgorithmInfo(algorithmId, bitSize, null);
+        if(entry.getAlgorithm() == null){
+            entry.setAlgorithm(algoInfo);
+        } else if ( !entry.getAlgorithm().equalsIgnoreCase(algoInfo)){
+            // TODO: handle(?)
+        }
 
         Date expectedDate = entry.getDate();
         Date creationDate = keyRing.getCreationDate();

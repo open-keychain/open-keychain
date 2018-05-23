@@ -18,6 +18,18 @@
 package org.sufficientlysecure.keychain.keyimport;
 
 
+import android.support.annotation.NonNull;
+import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
+import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.ParcelableProxy;
+import timber.log.Timber;
+import okhttp3.FormBody;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Proxy;
@@ -33,24 +45,47 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.support.annotation.NonNull;
-
-import okhttp3.FormBody;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
-import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.ParcelableProxy;
-import timber.log.Timber;
-
 import static java.util.Locale.ENGLISH;
 
 
 public class HkpKeyserverClient implements KeyserverClient {
+
+    private static final Pattern INFO_LINE = Pattern
+            .compile("^info:1:([0-9]*)\n", Pattern.CASE_INSENSITIVE);
+
+    /**
+     * uid:%escaped uid string%:%creationdate%:%expirationdate%:%flags%
+     * <ul>
+     * <li>%<b>escaped uid string</b>% = the user ID string, with HTTP %-escaping for anything that
+     * isn't 7-bit safe as well as for the ":" character.  Any other characters may be escaped, as
+     * desired.</li>
+     * <li>%<b>creationdate</b>% = creation date of the key in standard
+     * <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of
+     * seconds since 1/1/1970 UTC time)</li>
+     * <li>%<b>expirationdate</b>% = expiration date of the key in standard
+     * <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of
+     * seconds since 1/1/1970 UTC time)</li>
+     * <li>%<b>flags</b>% = letter codes to indicate details of the key, if any. Flags may be in any
+     * order. The meaning of "disabled" is implementation-specific. Note that individual flags may
+     * be unimplemented, so the absence of a given flag does not necessarily mean the absence of
+     * the detail.
+     * <ul>
+     * <li>r == revoked</li>
+     * <li>d == disabled</li>
+     * <li>e == expired</li>
+     * </ul>
+     * </li>
+     * </ul>
+     */
+    private static final Pattern UID_LINE = Pattern
+            .compile("(?<uid>uid:" +              // group 1
+                            "(?<uidID>[^:\n]*)" +       // group 2
+                            "(?::(?<uidCreate>[0-9]*)" +  // group 3
+                            "(?::(?<uidExpire>[0-9]*)" +  // group 4
+                            "(?::(?<uidFlags>((?=(r(?!(.?r))|d(?!(.?d))|e(?!(.?e))))[rde]){0,3})" + // group 5
+                            ")?)?)?\n)",
+                    Pattern.CASE_INSENSITIVE);
+
     /**
      * pub:%keyid%:%algo%:%keylen%:%creationdate%:%expirationdate%:%flags%
      * <ul>
@@ -83,38 +118,18 @@ public class HkpKeyserverClient implements KeyserverClient {
      * in Internet-Draft OpenPGP HTTP Keyserver Protocol Document
      */
     private static final Pattern PUB_KEY_LINE = Pattern
-            .compile("pub:([0-9a-fA-F]+):([0-9]+):([0-9]+):([0-9]+):([0-9]*):([rde]*)[ \n\r]*" // pub line
-                            + "((uid:([^:]*):([0-9]+):([0-9]*):([rde]*)[ \n\r]*)+)", // one or more uid lines
+            .compile( "(?<pub>pub:" +                 // group 1
+                            "(?<pubKeyID>[0-9a-fA-F]+)" +   // group 2
+                            "(?::(?<pubAlgo>[0-9]*)" +        // group 3
+                            "(?::(?<pubKeyLen>[0-9]*)" +      // group 4
+                            "(?::(?<pubCreate>[0-9]*)" +      // group 5
+                            "(?::(?<pubExpire>[0-9]*)" +      // group 6
+                            "(?::(?<pubFlags>(?:(?=(?:r(?!(.?r))|d(?!(.?d))|e(?!(.?e))))[rde]){0,3})" + // group 7
+                            ")?)?)?)?)?\n)"// pub line
+                            + "(?<pubUids>" + UID_LINE.pattern() + // group 11
+                            "+)", // one or more uid lines
                     Pattern.CASE_INSENSITIVE
             );
-
-    /**
-     * uid:%escaped uid string%:%creationdate%:%expirationdate%:%flags%
-     * <ul>
-     * <li>%<b>escaped uid string</b>% = the user ID string, with HTTP %-escaping for anything that
-     * isn't 7-bit safe as well as for the ":" character.  Any other characters may be escaped, as
-     * desired.</li>
-     * <li>%<b>creationdate</b>% = creation date of the key in standard
-     * <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of
-     * seconds since 1/1/1970 UTC time)</li>
-     * <li>%<b>expirationdate</b>% = expiration date of the key in standard
-     * <a href="http://tools.ietf.org/html/rfc2440#section-9.1">RFC-2440</a> form (i.e. number of
-     * seconds since 1/1/1970 UTC time)</li>
-     * <li>%<b>flags</b>% = letter codes to indicate details of the key, if any. Flags may be in any
-     * order. The meaning of "disabled" is implementation-specific. Note that individual flags may
-     * be unimplemented, so the absence of a given flag does not necessarily mean the absence of
-     * the detail.
-     * <ul>
-     * <li>r == revoked</li>
-     * <li>d == disabled</li>
-     * <li>e == expired</li>
-     * </ul>
-     * </li>
-     * </ul>
-     */
-    private static final Pattern UID_LINE = Pattern
-            .compile("uid:([^:]*):([0-9]+):([0-9]*):([rde]*)",
-                    Pattern.CASE_INSENSITIVE);
 
     private static final Charset UTF_8 = Charset.forName("utf-8");
 
@@ -155,26 +170,33 @@ public class HkpKeyserverClient implements KeyserverClient {
         } catch (URISyntaxException e) {
             throw new IllegalStateException("Unsupported keyserver URI");
         } catch (HttpError e) {
-            if (e.getData() != null) {
+            String errData = "";
+            if (e.getData() != null) { // Some servers return an error message
                 Timber.d("returned error data: " + e.getData().toLowerCase(ENGLISH));
-
-                if (e.getData().toLowerCase(Locale.ENGLISH).contains("no keys found")) {
-                    // NOTE: This is also a 404 error for some keyservers!
-                    return results;
-                } else if (e.getData().toLowerCase(Locale.ENGLISH).contains("too many")) {
-                    throw new KeyserverClient.TooManyResponsesException();
-                } else if (e.getData().toLowerCase(Locale.ENGLISH).contains("insufficient")) {
-                    throw new KeyserverClient.QueryTooShortException();
-                } else if (e.getCode() == 404) {
-                    // NOTE: handle this 404 at last, maybe it was a "no keys found" error
-                    throw new KeyserverClient.QueryFailedException("Keyserver '" + hkpKeyserver.getUrl() + "' not found. Error 404");
-                } else {
-                    // NOTE: some keyserver do not provide a more detailed error response
-                    throw new KeyserverClient.QueryTooShortOrTooManyResponsesException();
-                }
+                errData = e.getData().toLowerCase(ENGLISH);
             }
+            if (e.code == 501) {
+                // https://tools.ietf.org/html/draft-shaw-openpgp-hkp-00#section-3.1.1:
+                // "If any [...] searching is not supported, [...] error code such as 501
+                throw new KeyserverClient.QueryNotImplementedException();
+            } else if (e.code == 404 || errData.contains("no keys found")) {
+                return results;
+            } else if (errData.contains("too many")) {
+                throw new KeyserverClient.TooManyResponsesException();
+            } else if (errData.contains("insufficient")) {
+                throw new KeyserverClient.QueryTooShortException();
+            } else {
+                // NOTE: some keyserver do not provide a more detailed error response
+                throw new KeyserverClient.QueryTooShortOrTooManyResponsesException();
+            }
+        }
 
-            throw new KeyserverClient.QueryFailedException("Querying server(s) for '" + hkpKeyserver.getUrl() + "' failed.");
+        final Matcher infoMatcher = INFO_LINE.matcher(data);
+        if (infoMatcher.find()) {
+            int numFound = Integer.parseInt(infoMatcher.group(1));
+            Timber.d("Server returned " + numFound + " public key(s)");
+        } else {
+            Timber.w("Server using non-standard hkp");
         }
 
         final Matcher matcher = PUB_KEY_LINE.matcher(data);
@@ -182,9 +204,9 @@ public class HkpKeyserverClient implements KeyserverClient {
             final ImportKeysListEntry entry = new ImportKeysListEntry();
             entry.setQuery(query);
 
-            // group 1 contains the full fingerprint (v4) or the long key id if available
+            // group 2 contains the full fingerprint (v4) or the long key id if available
             // see https://bitbucket.org/skskeyserver/sks-keyserver/pull-request/12/fixes-for-machine-readable-indexes/diff
-            String fingerprintOrKeyId = matcher.group(1).toLowerCase(Locale.ENGLISH);
+            String fingerprintOrKeyId = matcher.group(2).toLowerCase(Locale.ENGLISH);
             if (fingerprintOrKeyId.length() == 40) {
                 byte[] fingerprint = KeyFormattingUtils.convertFingerprintHexFingerprint(fingerprintOrKeyId);
                 entry.setFingerprint(fingerprint);
@@ -200,15 +222,24 @@ public class HkpKeyserverClient implements KeyserverClient {
             }
 
             try {
-                int bitSize = Integer.parseInt(matcher.group(3));
-                entry.setBitStrength(bitSize);
-                int algorithmId = Integer.decode(matcher.group(2));
-                entry.setAlgorithm(KeyFormattingUtils.getAlgorithmInfo(algorithmId, bitSize, null));
+                int bitSize = -1;
+                if (!matcher.group(4).isEmpty()){   // empty fields are allowed
+                    bitSize = Integer.parseInt(matcher.group(4));
+                    entry.setBitStrength(bitSize);
+                }
 
-                long creationDate = Long.parseLong(matcher.group(4));
-                GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-                calendar.setTimeInMillis(creationDate * 1000);
-                entry.setDate(calendar.getTime());
+                if (!matcher.group(3).isEmpty()){   // empty fields are allowed
+                    int algorithmId = Integer.decode(matcher.group(3));
+                    entry.setAlgorithm(KeyFormattingUtils
+                            .getAlgorithmInfo(algorithmId, bitSize, null));
+                }
+
+                if (!matcher.group(5).isEmpty()) {  // empty fields are allowed
+                    long creationDate = Long.parseLong(matcher.group(5));
+                    GregorianCalendar calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+                    calendar.setTimeInMillis(creationDate * 1000);
+                    entry.setDate(calendar.getTime());
+                }
             } catch (NumberFormatException e) {
                 Timber.e(e, "Conversation for bit size, algorithm, or creation date failed.");
                 // skip this key
@@ -216,12 +247,12 @@ public class HkpKeyserverClient implements KeyserverClient {
             }
 
             try {
-                entry.setRevoked(matcher.group(6).contains("r"));
-                boolean expired = matcher.group(6).contains("e");
+                entry.setRevoked(matcher.group(7).contains("r"));
+                boolean expired = matcher.group(7).contains("e");
 
                 // It may be expired even without flag, thus check expiration date
                 String expiration;
-                if (!expired && !(expiration = matcher.group(5)).isEmpty()) {
+                if (!expired && !(expiration = matcher.group(6)).isEmpty()) {
                     long expirationDate = Long.parseLong(expiration);
                     TimeZone timeZoneUTC = TimeZone.getTimeZone("UTC");
                     GregorianCalendar calendar = new GregorianCalendar(timeZoneUTC);
@@ -236,10 +267,10 @@ public class HkpKeyserverClient implements KeyserverClient {
             }
 
             ArrayList<String> userIds = new ArrayList<>();
-            final String uidLines = matcher.group(7);
+            final String uidLines = matcher.group(11);
             final Matcher uidMatcher = UID_LINE.matcher(uidLines);
             while (uidMatcher.find()) {
-                String tmp = uidMatcher.group(1).trim();
+                String tmp = uidMatcher.group(2).trim();
                 if (tmp.contains("%")) {
                     if (tmp.contains("%%")) {
                         // The server encodes a percent sign as %%, so it is swapped out with its
