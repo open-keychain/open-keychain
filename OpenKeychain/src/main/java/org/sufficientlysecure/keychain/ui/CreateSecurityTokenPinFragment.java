@@ -131,14 +131,14 @@ public class CreateSecurityTokenPinFragment extends Fragment {
 
                     SecureRandom secureRandom = new SecureRandom();
                     // min = 8, we choose 8
-                    String adminPin = "" + secureRandom.nextInt(9)
-                            + secureRandom.nextInt(9)
-                            + secureRandom.nextInt(9)
-                            + secureRandom.nextInt(9)
-                            + secureRandom.nextInt(9)
-                            + secureRandom.nextInt(9)
-                            + secureRandom.nextInt(9)
-                            + secureRandom.nextInt(9);
+                    String adminPin = "" + secureRandom.nextInt(10)
+                            + secureRandom.nextInt(10)
+                            + secureRandom.nextInt(10)
+                            + secureRandom.nextInt(10)
+                            + secureRandom.nextInt(10)
+                            + secureRandom.nextInt(10)
+                            + secureRandom.nextInt(10)
+                            + secureRandom.nextInt(10);
 
                     return new Passphrase(adminPin);
                 }
