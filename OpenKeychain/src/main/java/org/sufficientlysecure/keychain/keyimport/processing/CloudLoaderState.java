@@ -29,9 +29,16 @@ public class CloudLoaderState implements LoaderState {
         mCloudPrefs = cloudPrefs;
     }
 
+    public Preferences.CloudSearchPrefs getCloudPrefs() {
+        return mCloudPrefs;
+    }
+
+    public String getServerQuery() {
+        return mServerQuery;
+    }
+
     @Override
     public boolean isBasicModeSupported() {
         return false;
     }
-
 }

@@ -40,6 +40,14 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:textStyle="italic"
+                        android:visibility="@{entry.isPreferredKeyserverAddress ? V.GONE : V.VISIBLE}"
+                        app:keyKeyserver="@{entry.keyserver.url}" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         app:keyRevokedOrExpiredOrInsecure="@{entry.revokedOrExpiredOrInsecure}"
                         app:keySecret="@{entry.secretKey}"

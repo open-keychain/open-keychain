@@ -34,17 +34,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-
+import android.view.inputmethod.InputMethodManager;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.databinding.ImportKeysListFragmentBinding;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
-import org.sufficientlysecure.keychain.keyimport.processing.AsyncTaskResultWrapper;
-import org.sufficientlysecure.keychain.keyimport.processing.BytesLoaderState;
-import org.sufficientlysecure.keychain.keyimport.processing.CloudLoaderState;
-import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListCloudLoader;
-import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListLoader;
-import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
-import org.sufficientlysecure.keychain.keyimport.processing.LoaderState;
+import org.sufficientlysecure.keychain.keyimport.processing.*;
+import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 import org.sufficientlysecure.keychain.operations.results.GetKeyResult;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.ImportKeysAdapter;
@@ -52,7 +48,6 @@ import org.sufficientlysecure.keychain.ui.util.PermissionsUtil;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.Preferences.CloudSearchPrefs;
-import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 
 import java.util.ArrayList;
 
@@ -277,8 +272,50 @@ public class ImportKeysListFragment extends Fragment implements
         mAdapter.setData(data.getResult());
         int size = mAdapter.getItemCount();
 
+        toggleKeyboard(false);
+
         mBinding.setNumber(size);
-        mBinding.setStatus(size > 0 ? STATUS_LOADED : STATUS_EMPTY);
+        if(size > 0){
+            mBinding.setStatus(STATUS_LOADED);
+            mBinding.getRoot()
+                    .findViewById(R.id.button_search_other_servers)
+                    .setVisibility(View.INVISIBLE);
+        } else {
+            mBinding.setStatus(STATUS_EMPTY);
+            // Check and prepare search with fallback servers:
+            ArrayList<HkpKeyserverAddress> hkpServers =
+                    Preferences.getPreferences(mActivity).getKeyServers();
+            CloudSearchPrefs cloudPrefs =
+                    ((CloudLoaderState) mLoaderState).getCloudPrefs();
+
+            int hkpServerEntry = hkpServers.indexOf(cloudPrefs.getKeyserver());
+            boolean isAddButton =
+                    hkpServerEntry > -1 && hkpServerEntry < hkpServers.size() - 1;
+            if (isAddButton) {
+                CloudLoaderState cls = new CloudLoaderState(
+                        ((CloudLoaderState) mLoaderState).getServerQuery(),
+                        CloudSearchPrefs.create(
+                                cloudPrefs.isKeyserverEnabled(),
+                                cloudPrefs.isKeybaseEnabled(),
+                                cloudPrefs.isFacebookEnabled(),
+                                cloudPrefs.isWebKeyDirectoryEnabled(),
+                                hkpServers.get(hkpServerEntry + 1)));
+                mBinding.getRoot()
+                        .findViewById(R.id.button_search_other_servers)
+                        .setOnClickListener(
+                                new OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        // renew loadstate for fallback server:
+                                        loadState(cls);
+                                    }
+                                }
+                        );
+            }
+            mBinding.getRoot()
+                    .findViewById(R.id.button_search_other_servers)
+                    .setVisibility(isAddButton ? View.VISIBLE : View.INVISIBLE);
+        }
 
         GetKeyResult getKeyResult = (GetKeyResult) data.getOperationResult();
         switch (loader.getId()) {
@@ -346,5 +383,23 @@ public class ImportKeysListFragment extends Fragment implements
 
         mAdapter.clearData();
     }
+    private void toggleKeyboard(boolean show) {
+        if (getActivity() == null) {
+            return;
+        }
+        InputMethodManager inputManager = (InputMethodManager) getActivity()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
 
+        // check if no view has focus
+        View v = getActivity().getCurrentFocus();
+        if (v == null) {
+            return;
+        }
+
+        if (show) {
+            inputManager.showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
+        } else {
+            inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+        }
+    }
 }

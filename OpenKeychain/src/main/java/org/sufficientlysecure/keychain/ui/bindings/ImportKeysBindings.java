@@ -23,7 +23,6 @@ import android.databinding.BindingAdapter;
 import android.graphics.Color;
 import android.text.format.DateFormat;
 import android.widget.TextView;
-
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 
@@ -84,4 +83,12 @@ public class ImportKeysBindings {
         textView.setTextColor(ImportKeysBindingsUtils.getColor(context, revokedOrExpiredOrInsecure));
     }
 
+    @BindingAdapter("keyKeyserver")
+    public static void setKeyserver(TextView textView, CharSequence keyserver) {
+        String text = "";
+        if (keyserver == null) keyserver = "";
+        else keyserver = keyserver.toString().replaceFirst("^hkps?://", "");
+
+        textView.setText(keyserver);
+    }
 }

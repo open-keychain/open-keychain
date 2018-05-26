@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.keyimport;
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
@@ -29,15 +28,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ImportKeysListEntry implements Serializable, Parcelable {
     private static final long serialVersionUID = -7797972103284992662L;
@@ -64,6 +55,7 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     private UserId mPrimaryUserId;
     private HkpKeyserverAddress mKeyserver;
+    private boolean mIsPreferredKeyserverAddress;
     private String mKeybaseName;
     private String mFbUsername;
 
@@ -415,4 +407,11 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         return 0;
     }
 
+    public boolean getIsPreferredKeyserverAddress() {
+        return mIsPreferredKeyserverAddress;
+    }
+
+    public void setIsPreferredKeyserverAddress(boolean mIsPreferredKeyserverAddress) {
+        this.mIsPreferredKeyserverAddress = mIsPreferredKeyserverAddress;
+    }
 }

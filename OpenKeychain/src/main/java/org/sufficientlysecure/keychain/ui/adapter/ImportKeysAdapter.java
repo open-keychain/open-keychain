@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
+import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
 
 import java.io.IOException;
@@ -83,7 +84,10 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         mKeyStates = new KeyState[data.size()];
         for (int i = 0; i < mKeyStates.length; i++) {
             ImportKeysListEntry entry = mData.get(i);
-
+            entry.setIsPreferredKeyserverAddress(
+                    Preferences.getPreferences(mActivity).getPreferredKeyserver().getUrl()
+                            .equalsIgnoreCase(entry.getKeyserver().getUrl())
+            );
             KeyState keyState = new KeyState();
             long keyId = KeyFormattingUtils.convertKeyIdHexToKeyId(entry.getKeyIdHex());
             try {

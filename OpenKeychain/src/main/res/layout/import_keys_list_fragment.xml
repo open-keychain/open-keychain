@@ -16,6 +16,16 @@
         android:layout_height="match_parent"
         android:background="@color/md_grey_100">
 
+        <Button
+            android:id="@+id/button_search_other_servers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="217dp"
+            android:text="@string/btn_continue_search"
+            android:visibility="@{V.GONE}" />
+
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
