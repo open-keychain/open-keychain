@@ -16,6 +16,7 @@
 
         <org.sufficientlysecure.keychain.ui.widget.PrefixedEditText
             android:id="@+id/transfer_code_block_1"
+            android:imeOptions="flagNoPersonalizedLearning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             custom:prefixColor="@color/md_grey_600"
@@ -31,6 +32,7 @@
 
         <EditText
             android:id="@+id/transfer_code_block_2"
+            android:imeOptions="flagNoPersonalizedLearning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/TransferCodeText" />
@@ -42,6 +44,7 @@
 
         <EditText
             android:id="@+id/transfer_code_block_3"
+            android:imeOptions="flagNoPersonalizedLearning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/TransferCodeText"
@@ -61,6 +64,7 @@
 
         <EditText
             android:id="@+id/transfer_code_block_4"
+            android:imeOptions="flagNoPersonalizedLearning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/TransferCodeText"
@@ -73,6 +77,7 @@
 
         <EditText
             android:id="@+id/transfer_code_block_5"
+            android:imeOptions="flagNoPersonalizedLearning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/TransferCodeText"
@@ -85,6 +90,7 @@
 
         <EditText
             android:id="@+id/transfer_code_block_6"
+            android:imeOptions="flagNoPersonalizedLearning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/TransferCodeText"
@@ -104,6 +110,7 @@
 
         <EditText
             android:id="@+id/transfer_code_block_7"
+            android:imeOptions="flagNoPersonalizedLearning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/TransferCodeText"
@@ -116,6 +123,7 @@
 
         <EditText
             android:id="@+id/transfer_code_block_8"
+            android:imeOptions="flagNoPersonalizedLearning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/TransferCodeText"
@@ -128,6 +136,7 @@
 
         <EditText
             android:id="@+id/transfer_code_block_9"
+            android:imeOptions="flagNoPersonalizedLearning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/TransferCodeText"
