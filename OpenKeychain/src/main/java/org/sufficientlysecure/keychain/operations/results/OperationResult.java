@@ -23,7 +23,6 @@ import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
@@ -805,6 +804,7 @@ public abstract class OperationResult implements Parcelable {
         MSG_GET_TOO_MANY_RESPONSES (LogLevel.ERROR, R.string.msg_get_too_many_responses),
         MSG_GET_QUERY_TOO_SHORT_OR_TOO_MANY_RESPONSES (LogLevel.ERROR, R.string.msg_get_query_too_short_or_too_many_responses),
         MSG_GET_QUERY_FAILED (LogLevel.ERROR, R.string.msg_download_query_failed),
+        MSG_GET_QUERY_NOT_IMPLEMENTED (LogLevel.ERROR, R.string.msg_get_query_not_implemented),
         MSG_GET_FILE_NOT_FOUND (LogLevel.ERROR, R.string.msg_get_file_not_found),
         MSG_GET_NO_ENABLED_SOURCE (LogLevel.ERROR, R.string.msg_get_no_enabled_source),
 

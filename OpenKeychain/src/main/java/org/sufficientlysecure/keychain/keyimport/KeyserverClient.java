@@ -18,9 +18,6 @@ package org.sufficientlysecure.keychain.keyimport;
 
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 public interface KeyserverClient {
@@ -55,6 +52,10 @@ public interface KeyserverClient {
 
     class QueryNeedsRepairException extends CloudSearchFailureException {
         private static final long serialVersionUID = 2693768928624654512L;
+    }
+
+    class QueryNotImplementedException extends QueryNeedsRepairException {
+        private static final long serialVersionUID = 8126381739806854079L;
     }
 
     class TooManyResponsesException extends QueryNeedsRepairException {
