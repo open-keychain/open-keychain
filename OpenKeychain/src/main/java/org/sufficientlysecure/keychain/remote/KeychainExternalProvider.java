@@ -323,7 +323,8 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
             orderBy = sortOrder;
         }
 
-        Cursor cursor = qb.query(db, projection, selection, null, groupBy, null, orderBy);
+        qb.setStrict(true);
+        Cursor cursor = qb.query(db, projection, null, null, groupBy, null, orderBy);
         qb.setCursorFactory(new CloseDatabaseCursorFactory());
         if (cursor != null) {
             // Tell the cursor what uri to watch, so it knows when its source data changes
