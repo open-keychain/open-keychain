@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -253,7 +254,10 @@ public class SecurityTokenConnection {
         }
 
         try {
+            long elapsedRealtimeStart = SystemClock.elapsedRealtime();
             secureMessaging = SCP11bSecureMessaging.establish(this, context, commandFactory);
+            long elapsedTime = SystemClock.elapsedRealtime() - elapsedRealtimeStart;
+            Timber.d("Established Secure Messaging in %d ms", elapsedTime);
         } catch (SecureMessagingException e) {
             secureMessaging = null;
             Timber.e(e, "failed to establish secure messaging");
