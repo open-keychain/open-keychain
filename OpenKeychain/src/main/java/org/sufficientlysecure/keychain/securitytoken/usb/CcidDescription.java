@@ -25,6 +25,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
 import com.google.auto.value.AutoValue;
+import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.T0ShortApduProtocol;
 import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.T1ShortApduProtocol;
 import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.T1TpduProtocol;
 
@@ -39,7 +40,7 @@ abstract class CcidDescription {
     private static final int FEATURE_AUTOMATIC_PPS = 0x00080;
 
     private static final int FEATURE_EXCHANGE_LEVEL_TPDU = 0x10000;
-    private static final int FEATURE_EXCHAGE_LEVEL_SHORT_APDU = 0x20000;
+    private static final int FEATURE_EXCHANGE_LEVEL_SHORT_APDU = 0x20000;
     private static final int FEATURE_EXCHAGE_LEVEL_EXTENDED_APDU = 0x40000;
 
     // bVoltageSupport Masks
@@ -49,6 +50,7 @@ abstract class CcidDescription {
 
     private static final int SLOT_OFFSET = 4;
     private static final int FEATURES_OFFSET = 40;
+    private static final short MASK_T0_PROTO = 1;
     private static final short MASK_T1_PROTO = 2;
 
     public abstract byte getMaxSlotIndex();
@@ -118,18 +120,29 @@ abstract class CcidDescription {
 
     CcidTransportProtocol getSuitableTransportProtocol() throws UsbTransportException {
         boolean hasT1Protocol = (getProtocols() & MASK_T1_PROTO) != 0;
-        if (!hasT1Protocol) {
-            throw new UsbTransportException("T=0 protocol is not supported!");
+        if (hasT1Protocol) {
+            if (hasFeature(CcidDescription.FEATURE_EXCHANGE_LEVEL_TPDU)) {
+                return new T1TpduProtocol();
+            } else if (hasFeature(CcidDescription.FEATURE_EXCHANGE_LEVEL_SHORT_APDU) ||
+                    hasFeature(CcidDescription.FEATURE_EXCHAGE_LEVEL_EXTENDED_APDU)) {
+                return new T1ShortApduProtocol();
+            } else {
+                throw new UsbTransportException("Character level exchange is not supported for T=1");
+            }
         }
 
-        if (hasFeature(CcidDescription.FEATURE_EXCHANGE_LEVEL_TPDU)) {
-            return new T1TpduProtocol();
-        } else if (hasFeature(CcidDescription.FEATURE_EXCHAGE_LEVEL_SHORT_APDU) ||
-                hasFeature(CcidDescription.FEATURE_EXCHAGE_LEVEL_EXTENDED_APDU)) {
-            return new T1ShortApduProtocol();
-        } else {
-            throw new UsbTransportException("Character level exchange is not supported");
+        boolean hasT0Protocol = (getProtocols() & MASK_T0_PROTO) != 0;
+        if (hasT0Protocol) {
+            if (hasFeature(CcidDescription.FEATURE_EXCHANGE_LEVEL_SHORT_APDU)) {
+                return new T0ShortApduProtocol();
+            } else if (hasFeature(CcidDescription.FEATURE_EXCHANGE_LEVEL_TPDU)) {
+                throw new UsbTransportException("TPDU level exchange is not supported for T=0");
+            } else {
+                throw new UsbTransportException("Character level exchange is not supported for T=0");
+            }
         }
+
+        throw new UsbTransportException("No suitable usb protocol supported");
     }
 
     boolean hasAutomaticPps() {
