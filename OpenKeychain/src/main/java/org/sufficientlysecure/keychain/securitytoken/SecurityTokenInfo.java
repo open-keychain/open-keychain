@@ -128,7 +128,8 @@ public abstract class SecurityTokenInfo implements Parcelable {
             TokenType.NITROKEY_START_OLD,
             TokenType.NITROKEY_START_1_25_AND_NEWER,
             TokenType.GNUK_OLD,
-            TokenType.GNUK_1_25_AND_NEWER
+            TokenType.GNUK_1_25_AND_NEWER,
+            TokenType.LEDGER_NANO_S
     )));
 
     private static final Set<TokenType> SUPPORTED_USB_SETUP = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(

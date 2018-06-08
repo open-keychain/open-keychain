@@ -90,6 +90,7 @@ public class SecurityTokenConnection {
 
     public void connectIfNecessary(Context context) throws IOException {
         if (isConnected()) {
+            refreshConnectionCapabilities();
             return;
         }
 
