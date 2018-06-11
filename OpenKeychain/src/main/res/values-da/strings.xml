@@ -29,6 +29,7 @@
   <string name="btn_no">Nej</string>
   <string name="btn_share_decrypted_text">Del</string>
   <string name="btn_unlock">Lås op</string>
+  <string name="btn_proceed">Fortsæt</string>
   <string name="btn_add_keyserver">Tilføje</string>
   <!--Content Description-->
   <!--menu-->
@@ -124,6 +125,7 @@
   <string name="key_view_action_edit">Ændre</string>
   <string name="key_view_tab_start">Start</string>
   <string name="key_view_tab_share">Del</string>
+  <string name="user_id_info_revoked_title">Tilbagekaldt</string>
   <!--Key trust-->
   <!--keybase proof stuff-->
   <string name="keybase_verify">Verificer</string>
@@ -197,6 +199,8 @@
   <string name="prompt_fidesmo_app_install_button_negative">Annuller</string>
   <string name="redirect_import_key_no">Luk</string>
   <string name="button_cancel">Annuller</string>
+  <string name="button_back">Tilbage</string>
+  <string name="key_health_revoked_title">Tilbagekaldt</string>
   <string name="keyserver_title_published">Publiceret</string>
   <string name="button_import">Importér</string>
   <string name="transfer_status_connected">Forbundet</string>
@@ -206,4 +210,7 @@
   <string name="token_reset_confirm_ok">Nulstille</string>
   <string name="token_action_import">Importér</string>
   <string name="token_unlock_ok">Lås op</string>
+  <string name="select_identity_cancel">Deaktivere</string>
+  <string name="key_gen_back">Tilbage</string>
+  <string name="key_gen_finish">Afslut</string>
 </resources>

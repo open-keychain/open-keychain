@@ -55,6 +55,7 @@
   <string name="btn_encrypt_files">Dosyaları şifrele</string>
   <string name="btn_encrypt_text">Metni şifrele</string>
   <string name="btn_unlock">Kilidi Aç</string>
+  <string name="btn_proceed">Devam Et</string>
   <string name="btn_add_keyserver">Ekle</string>
   <!--Content Description-->
   <string name="cd_encrypt_files">Dosyaları şifrele</string>
@@ -152,6 +153,8 @@
   <string name="error_message">Hata: %s</string>
   <!--sentences-->
   <string name="no_filemanager_installed">Uyumlu dosya yöneticisi yüklenmedi.</string>
+  <string name="passphrase_for_symmetric_encryption">Parolayı girin</string>
+  <string name="passphrase_for_any">Parolayı girin</string>
   <string name="encrypt_sign_successful">Başarıyla imzalandı ve/veya şifrelendi.</string>
   <string name="encrypt_sign_clipboard_successful">Kopyalama önbelleğine başarıyla imzalandı ve/veya şifrelendi.</string>
   <string name="select_encryption_key">En az bir şifreleme anahtarı seçiniz.</string>
@@ -473,6 +476,7 @@
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <string name="enter_passphrase">Parolayı girin</string>
   <string name="passphrase">Parola</string>
   <string name="passphrase_again">Tekrar</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
@@ -502,6 +506,8 @@
   <string name="redirect_import_key_no">Kapat</string>
   <string name="button_allow">İzin ver</string>
   <string name="button_cancel">Kapat</string>
+  <string name="button_back">Geri</string>
+  <string name="button_got_it">Anladım</string>
   <string name="key_health_expired_title">Zaman aşımına uğradı</string>
   <string name="key_health_revoked_title">İptal edildi</string>
   <string name="keyserver_title_published">Yayımlandı</string>
@@ -516,4 +522,8 @@
   <string name="token_action_import">İçe Aktar</string>
   <string name="token_menu_view_log">Günlüğü Görüntüle</string>
   <string name="token_unlock_ok">Kilidi Aç</string>
+  <string name="select_identity_cancel">Devre Dışı Bırak</string>
+  <string name="key_gen_progress">Lütfen bekleyin...</string>
+  <string name="key_gen_back">Geri</string>
+  <string name="key_gen_finish">Bitti</string>
 </resources>

@@ -87,6 +87,7 @@
   <string name="btn_encrypt_text">加密文字</string>
   <string name="btn_add_email">增加額外的電子郵件信箱</string>
   <string name="btn_unlock">解鎖</string>
+  <string name="btn_proceed">進行</string>
   <string name="btn_add_keyserver">加入新伺服器</string>
   <string name="btn_save_default">設為預設值</string>
   <string name="btn_saved">已儲存</string>
@@ -797,6 +798,7 @@
   <string name="redirect_import_key_no">關閉</string>
   <string name="button_allow">同意</string>
   <string name="button_cancel">取消</string>
+  <string name="button_back">返回</string>
   <string name="key_health_revoked_title">撒銷</string>
   <string name="keyserver_title_published">釋出</string>
   <string name="button_import">匯入</string>
@@ -811,4 +813,8 @@
   <string name="token_menu_view_log">查看紀錄</string>
   <string name="token_unlock_ok">解鎖</string>
   <string name="token_hint_admin_pin">管理者PIN碼</string>
+  <string name="select_identity_cancel">關閉</string>
+  <string name="key_gen_progress">請稍候...</string>
+  <string name="key_gen_back">返回</string>
+  <string name="key_gen_finish">結束</string>
 </resources>

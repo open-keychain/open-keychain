@@ -1,7 +1,12 @@
 [//]: # (Beachte: Bitte schreibe jeden Satz in eine eigene Zeile, Transifex wird jede Zeile in ein eigenes Übesetzungsfeld setzen!)
 
+## 5.1
+  * Support for Ledger Nano S
+  * Support Web Key Directory (WKD) search
+  * Fixed potential API security issue
+
 ## 5.0
-  * Improved Autocrypt support
+  * Unterstützung für Autocrypt verbessert
 
 ## 4.9
 

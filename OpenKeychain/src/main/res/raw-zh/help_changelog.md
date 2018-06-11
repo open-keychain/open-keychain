@@ -1,16 +1,21 @@
 [//]: # (注意：请把每个句子放在单独一行中， Transifex 将把每一行放置在独立的翻译表单内！)
 
+## 5.1
+  * Support for Ledger Nano S
+  * Support Web Key Directory (WKD) search
+  * Fixed potential API security issue
+
 ## 5.0
-  * Improved Autocrypt support
+  * 改善 Autocrypt 支持
 
 ## 4.9
 
-  * Curve25519 support
-  * Improved support for security tokens
+  * 支持 Curve25519
+  * 改善对安全令牌的支持
 
 ## 4.8
 
-  * Improved support for USB tokens: Gnuk, Nitrokey models, YubiKey 4 models
+  * 改善对 USB 安全令牌的支持：Gnuk、Nitrokey 型号、YubiKey 4 型号
   * Feature to find the position of the device's NFC reader
 
 ## 4.7

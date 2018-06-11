@@ -1,12 +1,17 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 5.1
+  * Support for Ledger Nano S
+  * Support Web Key Directory (WKD) search
+  * Fixed potential API security issue
+
 ## 5.0
-  * Improved Autocrypt support
+  * Forbedret Autocrypt-støtte
 
 ## 4.9
 
-  * Curve25519 support
-  * Improved support for security tokens
+  * Curve25519-støtte
+  * Forbedret støtte for sikkerhetssymbol
 
 ## 4.8
 
@@ -15,8 +20,8 @@
 
 ## 4.7
 
-  * Improved import from clipboard
-  * New key creation wizard for Security Tokens
+  * Forbedret import fra utklippstavle
+  * Ny nøkkelopprettelsesveiviser for sikkerhetssymbol
   * Removed password cache "time to live" setting
 
 
@@ -339,11 +344,11 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 ## 1.0.6
 
   * Account adding crash on Froyo fixed
-  * Secure file deletion
-  * Option to delete key file after import
+  * Sikker filsletting
+  * Valg for sletting av nøkkelfil etter import
   * Stream encryption/decryption (gallery, etc.)
   * New options (language, force v3 signatures)
-  * Interface changes
+  * Grensesnittsendringer
   * Feilretting
 
 
@@ -351,7 +356,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
   * Tysk og Italiensk oversettelse ved
   * Much smaller package, due to reduced BC sources
-  * New preferences GUI
+  * Nytt grafisk grensesnitt for innstillinger
   * Layout adjustment for localization
   * Signature bugfix
 

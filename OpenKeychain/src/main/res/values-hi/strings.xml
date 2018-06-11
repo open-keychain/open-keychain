@@ -187,6 +187,8 @@
   <string name="redirect_import_key_no">बंद करे</string>
   <string name="button_allow">अनुमति दें</string>
   <string name="button_cancel">रद्द करना</string>
+  <string name="button_back">पिछला</string>
+  <string name="button_got_it">समझ गया</string>
   <string name="dialog_insecure_button_ok">समझ गया</string>
   <string name="button_import">आयात</string>
   <string name="transfer_status_connected">जुड़े हुए</string>
@@ -196,4 +198,7 @@
   <string name="token_reset_confirm_ok">रीसेट करें</string>
   <string name="token_action_import">आयात</string>
   <string name="token_unlock_ok">अनलॉक</string>
+  <string name="select_identity_cancel">अक्षम</string>
+  <string name="key_gen_back">पिछला</string>
+  <string name="key_gen_finish">समाप्त</string>
 </resources>

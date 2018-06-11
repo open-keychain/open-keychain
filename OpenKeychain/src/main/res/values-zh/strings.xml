@@ -94,6 +94,7 @@
   <string name="btn_encrypt_text">加密文本</string>
   <string name="btn_add_email">添加额外的邮件地址</string>
   <string name="btn_unlock">解锁</string>
+  <string name="btn_proceed">继续</string>
   <string name="btn_add_keyserver">添加</string>
   <string name="btn_save_default">保存为默认值</string>
   <string name="btn_saved">已保存！</string>
@@ -456,6 +457,7 @@
   <string name="help_tab_wot">密钥认证</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">更新日志</string>
+  <string name="help_tab_license">许可证</string>
   <string name="help_tab_about">关于</string>
   <string name="help_about_version">版本:</string>
   <string name="help_tab_donations">捐赠</string>
@@ -495,6 +497,7 @@
   <plurals name="import_error">
     <item quantity="other">%d 个密钥导入失败！</item>
   </plurals>
+  <string name="import_warn_missing">未能在服务器上找到此密钥。</string>
   <string name="import_error_nothing">没有待导入的密钥。</string>
   <string name="import_error_nothing_cancelled">导入已取消。</string>
   <!--Delete result toast-->
@@ -588,6 +591,7 @@
   <string name="key_view_action_share_with">分享到…</string>
   <string name="key_view_action_share_ssh_with">将 SSH 公钥分享到...</string>
   <string name="key_view_action_share_nfc">通过NFC分享</string>
+  <string name="key_view_action_upload">上传至密钥服务器</string>
   <string name="key_view_tab_main">主要信息</string>
   <string name="key_view_tab_start">开始</string>
   <string name="key_view_tab_share">分享</string>
@@ -660,6 +664,7 @@
   <string name="edit_key_error_add_subkey">至少要有一个子密钥！</string>
   <string name="edit_key_error_bad_security_token_algo">安全令牌不支持该算法！</string>
   <!--Create key-->
+  <string name="create_key_upload">上传至密钥服务器</string>
   <string name="create_key_empty">该字段必填</string>
   <string name="create_key_passphrases_not_equal">密码不匹配</string>
   <string name="create_key_final_text">您输入了以下用户标识:</string>
@@ -1508,6 +1513,7 @@
   <string name="redirect_import_key_yes">重新扫描</string>
   <string name="redirect_import_key_no">关闭</string>
   <string name="button_cancel">取消</string>
+  <string name="button_back">返回</string>
   <string name="title_key_status">密钥状态</string>
   <string name="cap_title_confirm">确认其他密钥</string>
   <string name="cap_cert_ok">此密钥可用于确认其他密钥。</string>
@@ -1555,7 +1561,8 @@
   <string name="dialog_insecure_override_ok_title">警告已忽略</string>
   <string name="usage_authentication">认证</string>
   <string name="button_scan">扫描</string>
-  <string name="transfer_scan_explanation">使用二者中任一设备扫描二维码，以建立安全连接来分享或导入密钥。</string>
+  <string name="transfer_scan_explanation">使用另一设备扫描二维码，以建立安全连接来分享或导入密钥。</string>
+  <string name="transfer_scan_warning">务必仅在您自己的设备上使用！</string>
   <string name="button_import">导入</string>
   <string name="transfer_status_connected">已连接</string>
   <string name="transfer_status_disconnected">已断开连接！</string>
@@ -1578,4 +1585,7 @@
   <string name="token_hint_admin_pin">Admin PIN</string>
   <string name="label_usb_untested_summary">若启用，则可以使用未被测试过的 USB 读卡器。</string>
   <string name="label_usb_untested">允许未经测试的 USB 设备</string>
+  <string name="key_gen_progress">请稍候...</string>
+  <string name="key_gen_back">返回</string>
+  <string name="key_gen_finish">完成</string>
 </resources>

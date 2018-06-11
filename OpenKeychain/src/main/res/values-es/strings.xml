@@ -95,6 +95,7 @@
   <string name="btn_encrypt_text">Cifrar texto</string>
   <string name="btn_add_email">Añadir dirección de correo adicional</string>
   <string name="btn_unlock">Desbloquear</string>
+  <string name="btn_proceed">Proceder</string>
   <string name="btn_add_keyserver">Añadir</string>
   <string name="btn_save_default">Guardar como predeterminado</string>
   <string name="btn_saved">¡Guardado!</string>
@@ -1636,6 +1637,8 @@
   <string name="requested_key_unavailable_warning">Esta clave no está disponible. ¡Para usarla, tiene que importarla como una suya propia!</string>
   <string name="button_allow">Permitir</string>
   <string name="button_cancel">Cancelar</string>
+  <string name="button_back">Atrás</string>
+  <string name="button_got_it">Comprendido</string>
   <string name="requested_key_label">Clave solicitada:</string>
   <string name="error_preselect_sign_key">¡Error al seleccionar la clave %s para firmado!</string>
   <string name="error_preselect_encrypt_key">¡Error al seleccionar clave %s para cifrado!</string>
@@ -1832,4 +1835,8 @@
   <string name="button_locate_nfc">¿Dónde está mi lector NFC?</string>
   <string name="label_usb_untested_summary">Si se habilita, se pueden usar lectores de smartcard USB que no han sido adecuadamente testados.</string>
   <string name="label_usb_untested">Permitir dispositivos USB no testados</string>
+  <string name="select_identity_cancel">Deshabilitar</string>
+  <string name="key_gen_progress">Por favor, espere...</string>
+  <string name="key_gen_back">Atrás</string>
+  <string name="key_gen_finish">Finalizar</string>
 </resources>

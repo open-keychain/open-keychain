@@ -84,4 +84,7 @@
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <!--Other Linked Identity strings-->
+  <string name="button_back">Reen</string>
+  <string name="key_gen_back">Reen</string>
+  <string name="key_gen_finish">Fini</string>
 </resources>

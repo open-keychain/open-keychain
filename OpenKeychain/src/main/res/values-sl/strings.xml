@@ -804,6 +804,7 @@
   <string name="prompt_fidesmo_app_install_button_negative">Prekliči</string>
   <string name="redirect_import_key_no">Zapri</string>
   <string name="button_cancel">Prekliči</string>
+  <string name="button_back">Nazaj</string>
   <string name="key_health_revoked_title">Preklican</string>
   <string name="button_import">Uvozi</string>
   <string name="transfer_status_connected">Povezan</string>
@@ -813,4 +814,6 @@
   <string name="token_result_not_found">Ključ ni bil najden!</string>
   <string name="token_action_import">Uvozi</string>
   <string name="token_menu_view_log">Poglej dnevnik</string>
+  <string name="key_gen_back">Nazaj</string>
+  <string name="key_gen_finish">Končaj</string>
 </resources>

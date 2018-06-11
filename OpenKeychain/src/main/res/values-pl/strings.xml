@@ -700,7 +700,10 @@
   <string name="prompt_fidesmo_app_install_button_positive">Instaluj</string>
   <string name="prompt_fidesmo_app_install_button_negative">Zamknij</string>
   <string name="redirect_import_key_no">Close</string>
+  <string name="button_allow">Pozwól</string>
   <string name="button_cancel">Zamknij</string>
+  <string name="button_back">Wstecz</string>
+  <string name="button_got_it">Mam to</string>
   <string name="title_key_status">Stan klucza</string>
   <string name="key_health_ok_title">Prawidłowy</string>
   <string name="key_health_divert_title">Prawidłowy (token bezpieczeństwa)</string>
@@ -725,4 +728,8 @@
   <string name="token_action_import">Importuj</string>
   <string name="token_menu_view_log">Pokaż logi</string>
   <string name="token_unlock_ok">Odblokuj</string>
+  <string name="select_identity_cancel">Wyłącz</string>
+  <string name="key_gen_progress">Proszę czekać...</string>
+  <string name="key_gen_back">Wstecz</string>
+  <string name="key_gen_finish">Zakończ</string>
 </resources>

@@ -1,28 +1,28 @@
 [//]: # (NOTA: Por avor escriba cada frase na súa propia liña, Transifex pon cada liña no seu propio campo da tradución!)
 
-## Key Confirmation
-Without confirmation, you cannot be sure if a key really corresponds to a specific person.
-The simplest way to confirm a key is by scanning the QR Code or exchanging it via NFC.
-To confirm keys between more than two persons, we suggest using the key exchange method available for your keys.
+## Confirmación de chave
+Sen confirmación non podes estar seguro de se a chave corresponde realmente a unha persoa concreta.
+A forma máis simple para confirmar unha chave é escaneando o código QR ou intercambiándoa vía NFC.
+Para confirmar chaves entre máis de dúas persoas, suxerimos usar o método de intercambio de chaves disponíbel para as túas chaves.
 
-## Key Status
+## Estado da chave
 
 <img src="status_signature_verified_cutout_24dp"/>  
-Confirmed: You have already confirmed this key, e.g., by scanning the QR Code.  
+Confirmada: Xa confirmaches esta chave, por exemplo, escaneando o código QR.  
 <img src="status_signature_unverified_cutout_24dp"/>  
-Unconfirmed: This key has not been confirmed yet. You cannot be sure if the key really corresponds to a specific person.  
+Sen confirmar: Esta chave aínda non foi confirmada. Non pode estar segura de que esta chave corresponde realmente a unha persoa concreta.  
 <img src="status_signature_expired_cutout_24dp"/>  
-Expired: This key is no longer valid. Only the owner can extend its validity.  
+Expirada: Esta chave xa non é válida. Só o dono pode extender a súa validez.  
 <img src="status_signature_revoked_cutout_24dp"/>  
-Revoked: This key is no longer valid. It has been revoked by its owner.
+Revogada: Esta chave xa non é válida. Foi revogada polo seu dono.
 
-## Advanced Information
-A "key confirmation" in OpenKeychain is implemented by creating a certification according to the OpenPGP standard.
-This certification is a ["generic certification (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) described in the standard by:
-"The issuer of this certification does not make any particular assertion as to how well the certifier has checked that the owner of the key is in fact the person described by the User ID."
+## Información avanzada
+As "confirmacións de chave" en OpenKeychain impleméntanse mediante a creación dunha certificación de acordo co estándar OpenPGP.
+Esta certificación é unha  ["certificación xenérica (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) descrita no estándar por:
+"O emisor desta certificación non fai ningunha afirmación particular sobre a corrección coa que o certificador fixo a comprobación de que o propietario da clave é de feito a persoa descrita polo ID de usuario."
 
-Traditionally, certifications (also with higher certification levels, such as "positive certifications" (0x13)) are organized in OpenPGP's Web of Trust.
-Our model of key confirmation is a much simpler concept to avoid common usability problems related to this Web of Trust.
-We assume that keys are verified only to a certain degree that is still usable enough to be executed "on the go".
-We also do not implement (potentially transitive) trust signatures or an ownertrust database like in GnuPG.
-Furthermore, keys which contain at least one user ID certified by a trusted key will be marked as "confirmed" in the key listings.
+Tradicionalmente, as certificacións (tamén con niveis de certificación máis altos, como as "certificacións positivas" (0x13)) están organizadas na Web de Confianza de OpenPGP.
+O noso modelo de confirmación de chave é moito máis simple en concepto para evitar os problemas de usabilidade relacionada con esta Web de Confianza.
+Asumimos que as chaves son verificadas só até certo grao que mantén a usabilidade suficiente para ser executada "sobre a marcha".
+Tampouco implementamos sinaturas de confianza (potencialmente transitivas) ou unha base de datos de confianza de donos como en GnuPG.
+Ademais, as chaves que conteñan polo menos un ID de usuario certificado por unha chave de confianza serán marcadas como "confirmadas" nas listaxes de chaves.

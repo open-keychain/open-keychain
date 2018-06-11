@@ -1,5 +1,10 @@
 [//]: # (Observe: ¡Por favor ingrese cada enunciado en su propia línea, Transifex coloca cada línea en su propio campo de traducción!)
 
+## 5.1
+  * Support for Ledger Nano S
+  * Support Web Key Directory (WKD) search
+  * Fixed potential API security issue
+
 ## 5.0
   * Improved Autocrypt support
 

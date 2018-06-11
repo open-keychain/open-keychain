@@ -91,6 +91,7 @@
   <string name="btn_encrypt_text">Шифруј текст</string>
   <string name="btn_add_email">Додај додатну е-адресу</string>
   <string name="btn_unlock">Откључај</string>
+  <string name="btn_proceed">Настави</string>
   <string name="btn_add_keyserver">Додај</string>
   <string name="btn_save_default">Сачувај за подразумевано</string>
   <string name="btn_saved">Сачувано!</string>
@@ -1504,6 +1505,8 @@
   <string name="redirect_import_key_no">Zatvori</string>
   <string name="button_allow">Dozvoli</string>
   <string name="button_cancel">Odustani</string>
+  <string name="button_back">Назад</string>
+  <string name="button_got_it">Jasno</string>
   <string name="title_key_status">Стање кључа</string>
   <string name="key_health_revoked_title">Опозван</string>
   <string name="keyserver_title_not_published">Није објављено</string>
@@ -1518,4 +1521,7 @@
   <string name="token_menu_view_log">Прикажи дневник</string>
   <string name="token_unlock_ok">Откључај</string>
   <string name="token_hint_admin_pin">Администраторски ПИН</string>
+  <string name="select_identity_cancel">Онемогући</string>
+  <string name="key_gen_back">Назад</string>
+  <string name="key_gen_finish">Заврши</string>
 </resources>

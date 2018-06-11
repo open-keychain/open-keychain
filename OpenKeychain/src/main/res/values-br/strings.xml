@@ -14,12 +14,17 @@
   <string name="btn_delete">Dilemel</string>
   <string name="btn_next">De-heul</string>
   <string name="btn_no">Ket</string>
+  <string name="btn_share_decrypted_text">Rannañ</string>
+  <string name="btn_add_keyserver">Ouzhpennañ</string>
   <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Arventennoù</string>
   <string name="menu_help">Skoazell</string>
+  <string name="menu_search">Klask</string>
   <string name="menu_open">Digeriñ</string>
+  <string name="menu_change_password">Cheñch ar ger-tremen</string>
   <string name="menu_advanced">Araokaet</string>
+  <string name="menu_keyserver_add">Ouzhpennañ</string>
   <!--label-->
   <string name="label_passphrase">Ger-tremen</string>
   <string name="label_key_type">Doare</string>
@@ -35,7 +40,11 @@
   <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_cancel">Nullañ</string>
   <!--choice-->
+  <string name="choice_none">Hini ebet</string>
+  <string name="choice_1hour">1 eurvezh</string>
   <!--sentences-->
+  <string name="passphrase_for_symmetric_encryption">Ebarzhiñ ar ger-tremen</string>
+  <string name="passphrase_for_any">Ebarzhiñ ar ger-tremen</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -76,6 +85,7 @@
   <!--Key view-->
   <string name="key_view_action_edit">Aozañ</string>
   <string name="key_view_tab_start">Stagañ ganti</string>
+  <string name="key_view_tab_share">Rannañ</string>
   <!--Key trust-->
   <!--keybase proof stuff-->
   <!--Edit key-->
@@ -117,11 +127,13 @@
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <string name="enter_passphrase">Ebarzhiñ ar ger-tremen</string>
   <string name="passphrase">Ger-tremen</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="nfc_settings">Arventennoù</string>
   <!--Other Linked Identity strings-->
   <string name="linked_button_retry">Adklask</string>
+  <string name="share_log_dialog_share_button">Rannañ</string>
   <string name="share_log_dialog_cancel_button">Nullañ</string>
   <string name="menu_uids_save">Enrollañ</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">Nullañ</string>
@@ -129,7 +141,9 @@
   <string name="redirect_import_key_no">Serriñ</string>
   <string name="button_allow">Aotren</string>
   <string name="button_cancel">Nullañ</string>
+  <string name="button_got_it">Deuet eo ganin</string>
   <string name="dialog_insecure_button_ok">Deuet eo ganin</string>
+  <string name="transfer_status_connected">Kevreet</string>
   <string name="transfer_confirm_cancel">Nullañ</string>
   <string name="transfer_confirm_ok">Kas</string>
 </resources>

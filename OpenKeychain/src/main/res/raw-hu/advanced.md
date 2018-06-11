@@ -1,9 +1,9 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
-Advanced screen allows you to
-* share key in non-recommended ways
-* edit identities
-* edit subkeys
-* examine certificates in detail
+A haladó képernyő lehetővé teszi, hogy:
+* a nem ajánlott kulcsmegosztást
+* személyazonosság szerkesztést
+* alkulcs szerkesztést
+* tanúsítványok részletes megtekintését
 
-Only proceed if you know what you are doing!
+Csak akkor folytasd, ha tudod mit csinálsz!

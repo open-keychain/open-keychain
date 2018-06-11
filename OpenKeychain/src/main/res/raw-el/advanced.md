@@ -1,9 +1,9 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
-Advanced screen allows you to
-* share key in non-recommended ways
-* edit identities
-* edit subkeys
-* examine certificates in detail
+Η οθόνη Προχωρημένα σας επιτρέπει να
+* μοιραστείτε το κλειδί σας με μη συνιστώμενους τρόπους
+* επεξεργαστείτε ταυτότητες
+* να επεξεργαστείτε υποκλειδιά
+* εξετάσετε πιστοποιητικά σε λεπτομέρεια
 
-Only proceed if you know what you are doing!
+Προχωρήστε μόνο εάν γνωρίζετε τι κάνετε!

@@ -26,14 +26,14 @@
   <string name="title_export_key">Säkerhetskopiera nyckel</string>
   <string name="title_export_keys">Säkerhetskopiera nycklar</string>
   <string name="title_key_not_found">Nyckel hittades inte</string>
-  <string name="title_send_key">Ladda upp till nyckelserver</string>
+  <string name="title_send_key">Skicka till nyckelserver</string>
   <string name="title_backup">Säkerhetskopiera nyckel</string>
   <string name="title_certify_key">Bekräfta nyckel</string>
   <string name="title_key_details">Nyckelinformation</string>
   <string name="title_help">Hjälp</string>
   <string name="title_log_display">Logg</string>
   <string name="title_exchange_keys">Utbyt nycklar</string>
-  <string name="title_advanced_key_info">Avancerad</string>
+  <string name="title_advanced_key_info">Avancerat</string>
   <string name="title_delete_secret_key">Radera DIN nyckel \'%s\'?</string>
   <string name="title_manage_my_keys">Hantera mina nycklar</string>
   <!--section-->
@@ -94,6 +94,7 @@
   <string name="btn_encrypt_text">Kryptera text</string>
   <string name="btn_add_email">Lägg till extra e-postadress</string>
   <string name="btn_unlock">Lås upp</string>
+  <string name="btn_proceed">Gå vidare</string>
   <string name="btn_add_keyserver">Lägg till</string>
   <string name="btn_save_default">Spara som standard</string>
   <string name="btn_saved">Sparad!</string>
@@ -123,7 +124,7 @@
   <string name="menu_certify_fingerprint_phrases">Bekräfta med fraser</string>
   <string name="menu_share_log">Dela logg</string>
   <string name="menu_change_password">Ändra lösenord</string>
-  <string name="menu_advanced">Avancerad</string>
+  <string name="menu_advanced">Avancerat</string>
   <string name="menu_keyserver_add">Lägg till</string>
   <!--label-->
   <string name="label_message">Text</string>
@@ -155,16 +156,19 @@
   <string name="label_keyservers">Hantera OpenPGP-nyckelservrar</string>
   <string name="label_key_id">Nyckel-ID</string>
   <string name="label_key_id_colon">Nyckel-ID</string>
+  <string name="label_key_created">Skapad %s</string>
+  <string name="label_key_created_just_now">Skapad just nu</string>
   <string name="label_key_type">Typ</string>
   <string name="label_creation">Skapande</string>
   <string name="label_creation_colon">Skapelse:</string>
-  <string name="label_expiry">Går ut</string>
+  <string name="label_expiry">Löper ut</string>
   <string name="label_usage">Användning</string>
   <string name="label_key_size">Nyckelstorlek</string>
   <string name="label_ecc_curve">Elliptic Curve</string>
   <string name="label_main_user_id">Primär identitet</string>
   <string name="label_name">Namn</string>
   <string name="label_email">E-post</string>
+  <string name="label_send_key">Publicera certifiering på nyckelservrar</string>
   <string name="label_fingerprint">Fingeravtryck</string>
   <string name="expiry_date_dialog_title">Ställ in utgångsdatum</string>
   <string name="label_keyservers_title">Nyckelservrar</string>
@@ -175,6 +179,7 @@
   <string name="label_encrypt_filenames">Kryptera filnamn</string>
   <string name="label_hidden_recipients">Dölj mottagare</string>
   <string name="label_smartpgp_verify">SmartPGP: Verifiera certifikat</string>
+  <string name="label_smartpgp_verify_summary">Verifiera certifikat på SmartPGP-säkerhetstoken mot en uppsättning betrodda auktoriteter</string>
   <string name="label_smartpgp_roots">SmartPGP: Betrodda auktoriteter</string>
   <string name="label_verify_keyserver_connection">Pröva anslutning</string>
   <string name="label_only_trusted_keyserver">Endast betrodd nyckelserver</string>
@@ -200,7 +205,7 @@
   <!--label shown in Android settings under the OpenKeychain account-->
   <string name="keyserver_sync_settings_title">Automatiska nyckeluppdateringar</string>
   <string name="label_experimental_settings_desc_title">Varning</string>
-  <string name="label_experimental_settings_desc_summary">Dessa funktioner är ännu inte klar eller resultat användarupplevelse/säkerhetsforskning. Således, lita inte på deras säkerhet och vänligen rapporterar inte problem som du påträffar!</string>
+  <string name="label_experimental_settings_desc_summary">Dessa funktioner är ännu inte klar eller resultat användarupplevelse/säkerhetsforskning. Således, lita inte på deras säkerhet och rapporterar inte problem du påträffar!</string>
   <string name="label_experimental_settings_linked_identities_title">Länkade identiteter</string>
   <string name="label_experimental_settings_linked_identities_summary">Länka nycklarna till Twitter, GitHub, webbplatser eller DNS (liknande keybase.io men decentraliserade)</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io proofs</string>
@@ -272,6 +277,7 @@
   <string name="ecc_p384">ECC P-384</string>
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_eddsa">ECC EdDSA</string>
+  <string name="usage_none">Ingen (endast undernyckelbindning)</string>
   <string name="usage_sign">Signera</string>
   <string name="usage_encrypt">Kryptera</string>
   <string name="usage_sign_and_encrypt">Signera &amp; kryptera</string>
@@ -306,6 +312,7 @@
   <string name="specify_file_to_encrypt_to">Ange vilken fil du vill kryptera till.\nVARNING: Om filen redan finns kommer den att skrivas över!</string>
   <string name="specify_file_to_decrypt_to">Ange vilken fil du vill kryptera till.\nVARNING: Om filen redan finns kommer den att skrivas över!</string>
   <string name="specify_backup_dest">En säkerhetskopia med undantag för dina nycklar kommer att göras, ange en destinationsfil. \nVarning: Fil kommer att skrivas över om den finns!</string>
+  <string name="specify_backup_dest_single">Denna nyckel kommer att delas, ange en destinationsfil.\nVARNING: Filen kommer att skrivas över om den finns!</string>
   <string name="specify_backup_dest_secret_single">En fullständig säkerhetskopia av din nyckel kommer att göras, ange en destinationsfil \nVarning: Fil kommer att skrivas över om den finns!</string>
   <string name="specify_backup_dest_secret">En fullständig säkerhetskopia av alla nycklar inklusive er, kommer att göras, ange en destinationsfil.\nVarning: Fil kommer att skrivas över om den finns!</string>
   <string name="key_deletion_confirmation_multi">Vill du verkligen radera alla markerade nycklar?</string>
@@ -347,6 +354,7 @@
   <string name="error_integrity_check_failed">integritetskontroll misslyckades! Data har modifierats!</string>
   <string name="error_wrong_passphrase">fel lösenord</string>
   <string name="error_could_not_extract_private_key">kunde inte extrahera hemlig nyckel</string>
+  <string name="error_wrong_security_token">Denna säkerhetstoken innehåller inte nödvändig nyckel</string>
   <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">Du behöver Android 4.1 för att använda Androids NFC Beam-funktion!</string>
   <string name="error_nfc_needed">NFC måste vara aktiverat!</string>
@@ -362,6 +370,7 @@
   <string name="decrypt_result_signature_uncertified">Undertecknad av <b>obekräftad</b> nyckel</string>
   <string name="decrypt_result_signature_secret">Signerat av din nyckel</string>
   <string name="decrypt_result_signature_certified">Signerat av bekräftad nyckel</string>
+  <string name="decrypt_result_signature_expired_key">Signerad av <b>utgången</b> nyckel!</string>
   <string name="decrypt_result_signature_revoked_key">Signerad av <b>återkallad</b> nyckel!</string>
   <string name="decrypt_result_encrypted">Krypterat</string>
   <string name="decrypt_result_not_encrypted">Inte krypterat</string>
@@ -379,10 +388,10 @@
   <string name="progress_downloading">hämtar…</string>
   <string name="progress_saving">sparar…</string>
   <string name="progress_importing">importerar…</string>
-  <string name="progress_revoking_uploading">Återkallar och laddar upp nyckel…</string>
+  <string name="progress_revoking_uploading">Återkallar och skicka nyckel…</string>
   <string name="progress_updating">Uppdaterar nycklar...</string>
   <string name="progress_exporting">exporterar…</string>
-  <string name="progress_uploading">laddar upp…</string>
+  <string name="progress_uploading">skickar…</string>
   <string name="progress_building_key">bygger nyckel…</string>
   <string name="progress_building_master_key">bygger huvudnyckelring…</string>
   <string name="progress_generating_rsa">genererar ny RSA-nyckel…</string>
@@ -540,7 +549,7 @@
   <string name="api_settings_revoke">Återkalla åtkomst</string>
   <string name="api_settings_start">Starta app</string>
   <string name="api_settings_package_name">Paketnamn</string>
-  <string name="api_settings_advanced">Avancerad</string>
+  <string name="api_settings_advanced">Avancerat</string>
   <string name="api_settings_allowed_keys">Tillåtna nycklar</string>
   <string name="api_settings_settings">Inställningar</string>
   <string name="api_register_allow">Tillåt åtkomst</string>
@@ -558,6 +567,7 @@
   <string name="share_nfc_dialog">Dela med NFC</string>
   <!--retry upload dialog-->
   <!--Delete or revoke private key dialog-->
+  <string name="del_rev_dialog_message">Om du inte längre vill använda denna nyckel bör den återkallas och skickas. Välj \"TA BORT ENDAST\" om du vill ta bort nyckeln från OpenKeychain men fortsätta använda den från någon annanstans.</string>
   <string name="del_rev_dialog_title">Återkalla/Ta bort nyckel \"%s\"</string>
   <string name="del_rev_dialog_btn_revoke">Återkalla och skicka</string>
   <string name="del_rev_dialog_btn_delete">Ta endast bort</string>
@@ -574,6 +584,8 @@
   <string name="key_list_fab_qr_code">Skanna QR-kod</string>
   <string name="key_list_fab_search">Nyckelsökning</string>
   <string name="key_list_fab_import">Importera från fil</string>
+  <string name="key_list_dummy_title">Du har inga nycklar ännu!</string>
+  <string name="key_list_dummy_subtitle">Klicka här för att skapa eller importera en.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Redigera</string>
   <string name="key_view_action_encrypt">Kryptera text</string>
@@ -581,6 +593,7 @@
   <string name="key_view_action_certify">Bekräfta nyckel</string>
   <string name="key_view_action_update">Uppdatera från nyckelserver</string>
   <string name="key_view_action_share_with">Dela med…</string>
+  <string name="key_view_action_share_ssh_with">Dela som SSH-nyckel med...</string>
   <string name="key_view_action_share_nfc">Dela via NFC</string>
   <string name="key_view_tab_main">Info</string>
   <string name="key_view_tab_start">Starta</string>
@@ -597,6 +610,7 @@
   <string name="user_id_info_invalid_title">Ogiltig</string>
   <string name="user_id_info_invalid_text">Något är fel med den här identiteten!</string>
   <!--Key trust-->
+  <string name="key_trust_no_cloud_evidence">Inget bevis från Internet på denna nyckels trovärdighet.</string>
   <string name="key_trust_start_cloud_search">Påbörja sökning</string>
   <string name="key_trust_results_prefix">Keybase.io erbjuder \"bevis\" som hävdar att ägaren av den här nyckeln:</string>
   <!--keybase proof stuff-->
@@ -629,10 +643,16 @@
   </string-array>
   <string name="edit_key_edit_user_id_revoked">Den här identiteten har återkallats. Detta kan inte göras ogjort.</string>
   <string name="edit_key_edit_subkey_title">Välj en åtgärd!</string>
+  <string-array name="edit_key_edit_subkey">
+    <item>Ändra utlöpande</item>
+    <item>Återkalla undernyckel</item>
+    <item>Avskala undernyckel</item>
+  </string-array>
   <string name="edit_key_new_subkey">ny undernyckel</string>
   <string name="edit_key_error_add_identity">Lägg till åtminstone en identitet!</string>
   <string name="edit_key_error_add_subkey">Lägg till åtminstone en undernyckel!</string>
   <!--Create key-->
+  <string name="create_key_upload">Publicera på nyckelservrar</string>
   <string name="create_key_empty">Detta fält krävs</string>
   <string name="create_key_passphrases_not_equal">Lösenorden stämmer inte överens</string>
   <string name="create_key_final_text">Du angav följande identitet:</string>
@@ -645,6 +665,7 @@
   <string name="create_key_hint_full_name">Fullständigt namn eller smeknamn</string>
   <string name="create_key_edit">Ändra nyckelkonfiguration</string>
   <string name="create_key_add_email">Lägg till e-postadress</string>
+  <string name="create_key_add_email_text">Ytterligare e-postadresser är också kopplade till denna nyckel och kan användas för säker kommunikation.</string>
   <string name="create_key_email_already_exists_text">E-postadress har redan lagts till</string>
   <string name="create_key_yubi_key_pin_text">Välj en PIN-kod med 6 siffror.</string>
   <string name="create_key_yubi_key_pin">PIN</string>
@@ -672,6 +693,7 @@
   <string name="nav_apps">Appar</string>
   <string name="my_keys">Mina nycklar</string>
   <string name="nav_backup">Säkerhetskopiera/återställa</string>
+  <string name="nav_transfer">Säker wifi-överföring</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Skriv text</string>
   <!--certs-->
@@ -701,7 +723,7 @@
   <string name="msg_ip_prepare">Förebereder databasoperationer</string>
   <string name="msg_ip_master">Bearbetar huvudnyckel %s</string>
   <string name="msg_ip_master_expired">Nyckelring gick ut %s</string>
-  <string name="msg_ip_master_expires">Nyckelring går ut %s</string>
+  <string name="msg_ip_master_expires">Nyckelring löper ut %s</string>
   <string name="msg_ip_master_flags_unspecified">Huvudflaggor: ospecifierat (antar alla)</string>
   <string name="msg_ip_master_flags_cesa">Huvudflaggor: certifiera, kryptera, signera, autentisera</string>
   <string name="msg_ip_master_flags_cesx">Huvudflaggor: certifiera, kryptera, signera</string>
@@ -722,7 +744,7 @@
   <string name="msg_ip_merge_public">Slår ihop importerade data med befintlig publik nyckelring</string>
   <string name="msg_ip_subkey">Bearbetar undernyckel %s</string>
   <string name="msg_ip_subkey_expired">Undernyckel gick ut %s</string>
-  <string name="msg_ip_subkey_expires">Undernyckel går ut %s</string>
+  <string name="msg_ip_subkey_expires">Undernyckel löper ut %s</string>
   <string name="msg_ip_subkey_flags_unspecified">Flaggor för undernyckel: ospecificerat (antar alla)</string>
   <string name="msg_ip_subkey_flags_cesa">Flaggor för undernyckel: certifiera, kryptera, signera, autentisera</string>
   <string name="msg_ip_subkey_flags_cesx">Flaggor för undernyckel: certifiera,, kryptera, signera</string>
@@ -778,6 +800,7 @@
   <string name="msg_ip_uat_classifying">Klassificerar användarattribut</string>
   <string name="msg_ip_uat_revoked">Användarattribut är återkallat</string>
   <string name="msg_is_bad_type_public">Försökte att importera publik nyckelring som hemlig. Detta är en bugg, skicka en felrapport!</string>
+  <string name="msg_is_bad_type_uncanon">Försökte importera en nyckelring utan canonicalization. Detta är en bugg, skicka en rapport!</string>
   <!--Import Secret log entries-->
   <string name="msg_is">Importerar hemlig nyckel %s</string>
   <string name="msg_is_db_exception">Databasfel!</string>
@@ -910,6 +933,7 @@
   <string name="msg_pse_error_nfc">NFC datafel!</string>
   <string name="msg_pse_error_pgp">Internt OpenPGP-fel!</string>
   <string name="msg_pse_error_unlock">Okänt fel vid upplåsning av nyckel</string>
+  <string name="msg_pse_error_revoked_or_expired">Återkallad/utgången nyckel kan inte användas för signaturgenerering eller kryptering</string>
   <string name="msg_pse_key_ok">Kryptering för nyckel: %s</string>
   <string name="msg_pse_key_unknown">Saknad nyckel för kryptering: %s</string>
   <string name="msg_pse_key_warn">Dålig nyckel för kryptering: %s</string>
@@ -920,6 +944,7 @@
   <string name="msg_pse">Startar signerings- och/eller krypteringsprocedur</string>
   <string name="msg_pse_symmetric">Förbereder symmetrisk kryptering</string>
   <!--Messages for Authentication operation-->
+  <string name="msg_auth_error_revoked_or_expired">Återkallad/utgången nyckel kan inte användas för autentisering</string>
   <string name="msg_crt_error_master_not_found">Huvudnyckel hittades inte!</string>
   <string name="msg_crt_error_nothing">Inga nycklar certifierade!</string>
   <string name="msg_crt_error_unlock">Fel vid upplåsning av huvudnyckel!</string>
@@ -929,6 +954,7 @@
   <string name="msg_crt_unlock">Låser upp huvudnyckel</string>
   <string name="msg_crt_success">Certifierade identiteter</string>
   <string name="msg_crt_warn_not_found">Nyckel hittades inte!</string>
+  <string name="msg_crt_upload_success">Skickade nyckel till server</string>
   <plurals name="msg_import">
     <item quantity="one">Importerar nyckel</item>
     <item quantity="other">Importerar %d nycklar</item>
@@ -953,7 +979,10 @@
   <string name="msg_upload_proxy_direct">Använder proxy: Ingen</string>
   <string name="msg_upload_proxy_tor">Använder proxy: TOR</string>
   <string name="msg_upload_proxy">Använder proxy: %s</string>
+  <string name="msg_upload_key">Nyckel-ID: %s</string>
   <string name="msg_upload_error_not_found">Nyckel hittades inte!</string>
+  <string name="msg_upload_error_upload">Fel vid sändning av nyckel till server! Kontrollera din internetanslutning</string>
+  <string name="msg_upload_success">Sändning till nyckelserver lyckades</string>
   <string name="msg_del_error_empty">Inget att radera!</string>
   <string name="msg_del_error_multi_secret">Hemliga nycklar kan bara raderas var för sig!</string>
   <plurals name="msg_del">
@@ -1031,6 +1060,8 @@
   <string name="error_empty_text">Skriv text att kryptera!</string>
   <string name="error_log_share_internal">Internt fel under förberedning av logg!</string>
   <string name="key_colon">Nyckel:</string>
+  <string name="exchange_description">För att starta en nyckelbyte, välj antal deltagare på höger sida och tryck sedan på knappen \"Börja utbyte\".\n\nDu kommer att bli frågad ytterligare två frågor för att se till att endast de rätta deltagarna står i utbyte och deras fingeravtryck är korrekta.</string>
+  <string name="btn_start_exchange">Börja utbyte</string>
   <string name="user_id_none"><![CDATA[<none>]]></string>
   <!--Android Account-->
   <string name="account_privacy_title">Integritet</string>
@@ -1061,6 +1092,7 @@
   <string name="snack_security_token_import">Importera</string>
   <string name="security_token_create">Håll säkerhetstoken mot baksidan av din enhet.</string>
   <string name="btn_reset">Återställ</string>
+  <string name="security_token_reset_warning">Återställning av säkerhetstecken förstör fullständigt nycklarna på den. Efteråt kommer du inte att kunna dekryptera meddelanden/filer krypterade med denna nyckel!</string>
   <string name="security_token_error">Fel: %s</string>
   <string name="security_token_error_unknown">Okänt fel</string>
   <string name="security_token_error_try_again">Försök igen</string>
@@ -1078,6 +1110,8 @@
   <string name="error_clipboard_empty">Urklipp är tomt!</string>
   <string name="linked_create_https_1_1">Genom att skapa en länkad identitet av denna typ, kan du länka din nyckel till en webbplats som du styr.</string>
   <string name="linked_create_https_1_2">För att göra detta, publicerar du en textfil på denna webbplats, sedan skapa en länkad identitet som länkar till den.</string>
+  <string name="linked_create_https_created">Bevisfilen har skapats. För nästa steg bör du spara och skicka den till URI:n du angav:</string>
+  <string name="linked_create_https_2_1">En bevisfil för denna URI har skapats:</string>
   <string name="linked_create_verify">Verifiera</string>
   <string name="linked_verified_https">Kopplingen mellan denna webbplats och nyckeln har säkert verifierats. <b>Om du anser att webbplatsen är äkta</b>, bekräfta denna verifiering med din nyckel.</string>
   <string name="linked_verified_github">Kopplingen mellan detta GitHub konto och nyckeln har säkert verifierats. <b>Om du tror att kontot är äkta</b>, bekräfta denna verifikation med din nyckel.</string>
@@ -1145,26 +1179,68 @@
     <item>100 EUR</item>
   </string-array>
   <string name="redirect_import_key_no">Stäng</string>
+  <string name="request_permission_msg">%1$s begär tillgång till en av dina nycklar, vilket gör det möjligt att dekryptera meddelanden som skickas till denna nyckel. Du kan återkalla åtkomst senare i OpenKeychain.</string>
   <string name="button_allow">Godkänn</string>
   <string name="button_cancel">Avbryt</string>
+  <string name="button_back">Tillbaka</string>
+  <string name="button_got_it">Förstått</string>
+  <string name="title_key_status">Nyckelstatus</string>
+  <string name="cap_title_sign">Signera meddelanden</string>
+  <string name="cap_sign_ok">Denna nyckel kan signera/skicka meddelanden.</string>
+  <string name="cap_sign_divert">Denna nyckel kan signera/skicka meddelanden, med en säkerhetstoken.</string>
+  <string name="cap_sign_expired">Denna nyckel kan inte signera/skicka meddelanden, för att den har utgått.</string>
+  <string name="cap_sign_revoked">Denna nyckel kan inte signera/skicka meddelanden, för att den har återkallats.</string>
+  <string name="cap_sign_stripped">Denna nyckel kan inte signera/skicka meddelanden på denna enhet!</string>
+  <string name="cap_sign_unavailable">Denna nyckel är inte konfigurerad för att signera/skicka meddelanden!</string>
+  <string name="cap_sign_insecure">Denna nyckel kan signera/skicka meddelanden, men inte säkert.</string>
+  <string name="cap_title_decrypt">Dekryptera meddelanden</string>
+  <string name="cap_decrypt_ok">Denna nyckel kan dekryptera/ta emot meddelanden.</string>
+  <string name="cap_decrypt_divert">Denna nyckel kan dekryptera/ta emot meddelanden, med en säkerhetstoken.</string>
+  <string name="cap_decrypt_expired">Denna nyckel kan dekryptera/ta emot meddelanden, men har utgått.</string>
+  <string name="cap_decrypt_revoked">Denna nyckel kan dekryptera/ta emot meddelanden, men har återkallats.</string>
+  <string name="cap_decrypt_stripped">Denna nyckel kan inte dekryptera/ta emot meddelanden på denna enhet.</string>
+  <string name="cap_decrypt_unavailable">Denna nyckel är inte konfigurerad att dekryptera/ta emot meddelanden!</string>
+  <string name="cap_decrypt_insecure">Denna nyckel kan dekryptera/ta emot meddelanden, men inte säkert!</string>
+  <string name="key_health_ok_title">Hälsosam</string>
+  <string name="key_health_ok_subtitle">Inga nyckelproblem hittades.</string>
+  <string name="key_health_divert_title">Hälsosam (säkerhetstoken)</string>
+  <string name="key_health_divert_subtitle">Inga nyckelproblem hittades.</string>
+  <string name="key_health_divert_partial_title">Hälsosam (partiell token)</string>
   <string name="key_health_expired_title">Utgången</string>
   <string name="key_health_revoked_title">Upphävd</string>
+  <string name="key_health_sign_only_title">Hälsosam (signeringsnyckel)</string>
+  <string name="key_health_stripped_title">Hälsosam (avskalad)</string>
+  <string name="key_health_partial_stripped_title">Hälsosam (partiellt avskalad)</string>
+  <string name="keyserver_title_not_published">Ej publicerad</string>
+  <string name="keyserver_title_unknown">Nyckelserver status: Okänd</string>
+  <string name="keyserver_last_updated">Senast kontrollerad: %s</string>
+  <string name="keyserver_last_updated_never">Senast kontrollerad: Aldrig</string>
+  <string name="key_insecure_unknown_curve_problem">Denna nyckel använder <b>%1$s</b> algoritmen, som inte är vitlistad.</string>
+  <string name="key_insecure_unidentified_problem">Det finns ett oidentifierat problem med denna nyckel.</string>
+  <string name="key_expiry_text">Denna nyckel löpte ut <b>%1$s</b>.</string>
+  <string name="insecure_mdc_suggestion">En saknad MDC är ett problem i sändningsprogrammet, eller en attack. För säker end-to-end kommunikation, ska meddelanden också signeras av avsändaren!</string>
   <string name="dialog_insecure_button_view_key">Visa nyckel</string>
   <string name="dialog_insecure_button_ok">Förstått</string>
   <string name="identity_context_forget">Glöm</string>
   <string name="button_scan">Skanna</string>
   <string name="button_more_info">Mer info</string>
+  <string name="transfer_scan_explanation">För att dela eller importera din nyckelinställning, skapa en säker anslutning genom att skanna med endera enhet.</string>
+  <string name="transfer_scan_warning">Använd endast med dina egna enheter!</string>
   <string name="connection_status">Anslutningsstatus:</string>
   <string name="button_import">Importera</string>
   <string name="transfer_status_connected">Ansluten</string>
   <string name="transfer_connecting">Ansluter...</string>
+  <string name="first_time_secure_wifi_transfer">Säker wifi-överföring</string>
+  <string name="menu_secure_wifi_transfer">Säker wifi-överföring</string>
   <string name="transfer_confirm_cancel">Avbryt</string>
   <string name="transfer_confirm_ok">Skicka</string>
+  <string name="status_check_key">Kontrollerar nyckelstatus...</string>
   <string name="token_reset_confirm_ok">Återställ</string>
   <string name="token_result_not_found">Nyckel hittades inte!</string>
   <string name="token_result_key_found">Nyckel hittad!</string>
   <string name="token_action_import">Importera</string>
   <string name="token_action_view_key">Visa nyckel</string>
+  <string name="token_error_cannot_reset_gnuk_old">Gnuk Token/Nitrokey Start stöder inte återställning före version 1.2.5</string>
   <string name="token_menu_view_log">Visa logg</string>
   <string name="token_unlock_ok">Lås upp</string>
   <string name="token_hint_admin_pin">Administratör PIN</string>
@@ -1181,5 +1257,9 @@
     <item quantity="one">Uppdaterar 1 nyckel</item>
     <item quantity="other">Uppdaterar %d nycklar</item>
   </plurals>
+  <string name="label_usb_untested_summary">Om det är aktiverat kan USB-kortläsare användas som inte har testats ordentligt.</string>
   <string name="label_usb_untested">Tillåt otestade USB-enheter</string>
+  <string name="select_identity_cancel">Inaktivera</string>
+  <string name="key_gen_back">Tillbaka</string>
+  <string name="key_gen_finish">Avsluta</string>
 </resources>

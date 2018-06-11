@@ -92,6 +92,7 @@
   <string name="btn_encrypt_text">Encriptar texto</string>
   <string name="btn_add_email">Digite um endereço de email adicional</string>
   <string name="btn_unlock">Desbloquear</string>
+  <string name="btn_proceed">Prosseguir</string>
   <string name="btn_add_keyserver">Adicionar</string>
   <string name="btn_save_default">Salvar como padrão</string>
   <string name="btn_saved">Salvo!</string>
@@ -1516,6 +1517,8 @@
   <string name="redirect_import_key_no">Fechar</string>
   <string name="button_allow">Permitir</string>
   <string name="button_cancel">Cancelar</string>
+  <string name="button_back">Anterior</string>
+  <string name="button_got_it">Entendi</string>
   <string name="key_health_expired_title">Expirado</string>
   <string name="key_health_revoked_title">Revogada</string>
   <string name="keyserver_title_published">Publicado</string>
@@ -1535,4 +1538,8 @@
   <string name="token_unlock_ok">Abrir</string>
   <string name="token_hint_admin_pin">PIN Administrativo</string>
   <string name="token_hint_new_pin">Novo PIN</string>
+  <string name="select_identity_cancel">Desabilitar</string>
+  <string name="key_gen_progress">Por favor aguarde...</string>
+  <string name="key_gen_back">Anterior</string>
+  <string name="key_gen_finish">Terminar</string>
 </resources>

@@ -92,6 +92,7 @@
   <string name="btn_encrypt_text">Mã hóa văn bản</string>
   <string name="btn_add_email">Thêm địa chỉ thư bổ sung</string>
   <string name="btn_unlock">Mở khóa</string>
+  <string name="btn_proceed">Tiếp tục</string>
   <string name="btn_add_keyserver">Thêm</string>
   <string name="btn_save_default">Lưu làm mặc định</string>
   <string name="btn_saved">Đã lưu lại</string>
@@ -353,6 +354,8 @@
   <string name="prompt_fidesmo_app_install_button_negative">Hủy</string>
   <string name="redirect_import_key_no">Đóng</string>
   <string name="button_cancel">Hủy</string>
+  <string name="button_back">Lùi</string>
+  <string name="button_got_it">Hiểu rõ</string>
   <string name="keyserver_title_not_published">Chưa Xuất Bản</string>
   <string name="dialog_insecure_title">Cảnh Báo An Ninh</string>
   <string name="dialog_insecure_button_ok">Hiểu rõ</string>
@@ -366,4 +369,8 @@
   <string name="token_reset_confirm_ok">Đặt lại</string>
   <string name="token_action_import">Nhập</string>
   <string name="token_unlock_ok">Mở khóa</string>
+  <string name="select_identity_cancel">Tắt</string>
+  <string name="key_gen_progress">Xin chờ...</string>
+  <string name="key_gen_back">Lùi</string>
+  <string name="key_gen_finish">Kết thúc</string>
 </resources>

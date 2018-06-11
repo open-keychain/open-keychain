@@ -40,6 +40,7 @@
   <string name="btn_share_decrypted_text">Share </string>
   <string name="btn_copy_decrypted_text">Salin ke clipboard</string>
   <string name="btn_unlock">Tidak terkunci</string>
+  <string name="btn_proceed">Lanjutkan</string>
   <string name="btn_add_keyserver">Tambahkan</string>
   <!--Content Description-->
   <!--menu-->
@@ -235,6 +236,7 @@
   <string name="prompt_fidesmo_app_install_button_negative">Batalkan</string>
   <string name="redirect_import_key_no">Tutup</string>
   <string name="button_cancel">Batalkan</string>
+  <string name="button_back">Kembali</string>
   <string name="key_health_expired_title">Kedaluwarsa</string>
   <string name="key_health_revoked_title">Dicabut</string>
   <string name="keyserver_title_published">Telah dipublikasikan</string>
@@ -246,4 +248,8 @@
   <string name="token_reset_confirm_ok">Reset</string>
   <string name="token_action_import">impor</string>
   <string name="token_unlock_ok">Tidak terkunci</string>
+  <string name="select_identity_cancel">Non Aktifkan</string>
+  <string name="key_gen_progress">Silakan tunggu...</string>
+  <string name="key_gen_back">Kembali</string>
+  <string name="key_gen_finish">Selesai</string>
 </resources>

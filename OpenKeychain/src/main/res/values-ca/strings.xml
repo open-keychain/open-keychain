@@ -7,6 +7,7 @@
   <string name="section_certify">Confirma</string>
   <!--button-->
   <string name="btn_do_not_save">Cancel·la</string>
+  <string name="btn_proceed">Procedir</string>
   <!--Content Description-->
   <!--menu-->
   <!--label-->
@@ -26,6 +27,7 @@
          they will be put after "error_message", e.g. "Error: file not found"-->
   <!--errors without preceding Error:-->
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_action_show">Mostra</string>
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_cancel">Cancel·la</string>
@@ -39,6 +41,7 @@
   <!--compression-->
   <!--Help-->
   <!--Import-->
+  <string name="btn_import">Subscriu-me</string>
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
@@ -90,6 +93,7 @@
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="snack_security_token_import">Subscriu-me</string>
   <!--Other Linked Identity strings-->
   <string name="linked_button_confirm">Confirma</string>
   <string name="linked_text_error">Error</string>
@@ -97,5 +101,12 @@
   <string name="prompt_fidesmo_pgp_install_button_negative">Cancel·la</string>
   <string name="prompt_fidesmo_app_install_button_negative">Cancel·la</string>
   <string name="button_cancel">Cancel·la</string>
+  <string name="button_back">Enrera</string>
+  <string name="button_got_it">D\'acord</string>
+  <string name="button_import">Subscriu-me</string>
   <string name="transfer_confirm_cancel">Cancel·la</string>
+  <string name="token_action_import">Subscriu-me</string>
+  <string name="select_identity_cancel">Deshabilitar </string>
+  <string name="key_gen_back">Enrera</string>
+  <string name="key_gen_finish">Fi</string>
 </resources>

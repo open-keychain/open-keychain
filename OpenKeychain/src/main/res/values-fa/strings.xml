@@ -73,6 +73,7 @@
   <string name="btn_encrypt_text">رمزگذاری فایل</string>
   <string name="btn_add_email">اضافه کردن ایمیلی دیگر</string>
   <string name="btn_unlock">بازکردن قفل</string>
+  <string name="btn_proceed">پیشرفت کار </string>
   <string name="btn_add_keyserver">اضافه‌کردن</string>
   <string name="btn_save_default">ذخیره به عنوان پیش‌فرض</string>
   <string name="btn_saved">ذخیره شد!</string>
@@ -94,6 +95,7 @@
   <string name="menu_select_all">انتخاب همه</string>
   <string name="menu_export_all_keys">خروج همهٔ کلیدها</string>
   <string name="menu_update_all_keys">آپدیت همهٔ کلیدها</string>
+  <string name="menu_change_password">تغییر رمز عبور</string>
   <string name="menu_advanced">پیشرفته </string>
   <string name="menu_keyserver_add">اضافه‌کردن</string>
   <!--label-->
@@ -397,7 +399,10 @@
   <string name="prompt_fidesmo_app_install_button_positive">نصب</string>
   <string name="prompt_fidesmo_app_install_button_negative">لغو</string>
   <string name="redirect_import_key_no">بستن</string>
+  <string name="button_allow">اجازه دادن</string>
   <string name="button_cancel">لغو</string>
+  <string name="button_back"> به عقب</string>
+  <string name="button_got_it">فهمیدم.</string>
   <string name="key_health_revoked_title">لغو</string>
   <string name="keyserver_title_published">منتشرشده</string>
   <string name="keyserver_title_not_published">منتشر نشده</string>
@@ -414,4 +419,8 @@
   <string name="token_result_not_found">کلید یافت نشد!</string>
   <string name="token_action_import">وارد کردن</string>
   <string name="token_unlock_ok">باز کردن قفل</string>
+  <string name="select_identity_cancel">غیرفعال کن</string>
+  <string name="key_gen_progress">لطفا صبر کنید ...</string>
+  <string name="key_gen_back"> به عقب</string>
+  <string name="key_gen_finish">پایان</string>
 </resources>

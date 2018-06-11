@@ -83,6 +83,7 @@
   <string name="btn_encrypt_text">تعمية نص</string>
   <string name="btn_add_email">إضافة عنوان بريد إلكتروني آخر</string>
   <string name="btn_unlock">إلغاء القفل</string>
+  <string name="btn_proceed">مواصلة</string>
   <string name="btn_add_keyserver">إضافة</string>
   <string name="btn_save_default">حفظ كافتراضي</string>
   <string name="btn_saved">تم الإحتفاظ به</string>
@@ -596,6 +597,8 @@
   <string name="redirect_import_key_yes">إمسح ثانية</string>
   <string name="redirect_import_key_no">إغلاق</string>
   <string name="button_cancel">إلغاء</string>
+  <string name="button_back">السابق</string>
+  <string name="button_got_it">فهمت ذلك</string>
   <string name="title_key_status">حالة المفتاح</string>
   <string name="cap_title_confirm">تأكيد مفاتيح أخرى</string>
   <string name="cap_cert_ok">يمكن لهذا المفتاح تأكيد مفاتيح أخرى.</string>
@@ -648,4 +651,8 @@
   <string name="token_unlock_ok">إلغاء القفل</string>
   <string name="token_hint_admin_pin">رمز PIN الخاص بالمدير</string>
   <string name="msg_trust_count_none">لا توجد هناك مفاتيح للتحديث</string>
+  <string name="select_identity_cancel">إلغاء</string>
+  <string name="key_gen_progress">الرجاء الإنتظار </string>
+  <string name="key_gen_back">السابق</string>
+  <string name="key_gen_finish">نهاية</string>
 </resources>

@@ -1464,6 +1464,8 @@
   <string name="request_permission_title">Ahalbidetu sarbidea zure giltzara?</string>
   <string name="button_allow">Baimendu</string>
   <string name="button_cancel">Utzi</string>
+  <string name="button_back">Atzera</string>
+  <string name="button_got_it">Ulertu dut</string>
   <string name="title_key_status">Giltzaren Egoera</string>
   <string name="cap_title_confirm">Baieztatu beste giltzak</string>
   <string name="cap_cert_ok">Giltza honek beste giltzak baieztatu ditzake.</string>
@@ -1550,4 +1552,7 @@
   <string name="button_locate_nfc">Non dago nire NFC irakurtzailea?</string>
   <string name="label_usb_untested_summary">Gaituta badago, USB txartel-adimentsu irakutzaileak erabili daitezke baina ez daude egoki aztertuta.</string>
   <string name="label_usb_untested">Ahalbidetu aztertugabeko USB Gailuak</string>
+  <string name="select_identity_cancel">Desgaitu</string>
+  <string name="key_gen_back">Atzera</string>
+  <string name="key_gen_finish">Amaitu</string>
 </resources>

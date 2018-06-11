@@ -9,6 +9,7 @@
   <string name="title_log_display">บันทึก</string>
   <!--section-->
   <!--button-->
+  <string name="btn_proceed">ดำเนิน</string>
   <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">การตั้งค่า</string>
@@ -94,4 +95,8 @@
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="nfc_settings">การตั้งค่า</string>
   <!--Other Linked Identity strings-->
+  <string name="button_back">ย้อนกลับ</string>
+  <string name="select_identity_cancel">ปิดการใช้งาน</string>
+  <string name="key_gen_back">ย้อนกลับ</string>
+  <string name="key_gen_finish">เสร็จ</string>
 </resources>

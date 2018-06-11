@@ -2,17 +2,17 @@
 
 [https://www.openkeychain.org](https://www.openkeychain.org)
 
-[OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
+[OpenKeychain](https://www.openkeychain.org) egy OpenPGP implementáció Android-ra.
 
-License: GPLv3+
+Licenc: GPLv3+
 
 [//]: # (NOTE: Alphabetic ordering)
 
-## Main Developers
+## Fő fejlesztők
   * Dominik Schürmann (Maintainer)
   * Vincent Breitmoser
 
-## Top Contributors
+## Legnagyobb hozzájárulók
   * Adithya Abraham Philip
   * Andrea Torlaschi
   * Arnaud Fontaine
@@ -23,7 +23,7 @@ License: GPLv3+
   * Tim Bray
   * Tobias Erthal
 
-## Occasional Contributors
+## Alkalmi hozzájárulók
   * Alex Fong Jie Wen
   * Andrea Torlaschi
   * Art O Cathain

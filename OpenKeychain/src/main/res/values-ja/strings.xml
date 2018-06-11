@@ -94,6 +94,7 @@
   <string name="btn_encrypt_text">テキストの暗号化</string>
   <string name="btn_add_email">追加のEメールアドレスを追加</string>
   <string name="btn_unlock">アンロック</string>
+  <string name="btn_proceed">続行</string>
   <string name="btn_add_keyserver">追加</string>
   <string name="btn_save_default">デフォルトとして保存</string>
   <string name="btn_saved">保存しました!</string>
@@ -1579,6 +1580,8 @@
   <string name="requested_key_unavailable_warning">この鍵は使用できません。 使用するには、あなた自身のものとしてインポートする必要があります!</string>
   <string name="button_allow">許可する</string>
   <string name="button_cancel">キャンセル</string>
+  <string name="button_back">戻る</string>
+  <string name="button_got_it">了解</string>
   <string name="requested_key_label">要求した鍵:</string>
   <string name="error_preselect_sign_key">署名するための鍵 %s の選択時にエラーが発生しました!</string>
   <string name="error_preselect_encrypt_key">暗号化するための鍵 %s の選択時にエラーが発生しました!</string>
@@ -1698,4 +1701,7 @@
   <string name="token_menu_view_log">ログを見る</string>
   <string name="token_unlock_ok">ロック解除</string>
   <string name="token_hint_admin_pin">管理者PIN</string>
+  <string name="select_identity_cancel">無効</string>
+  <string name="key_gen_back">戻る</string>
+  <string name="key_gen_finish">終了</string>
 </resources>

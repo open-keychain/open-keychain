@@ -78,6 +78,7 @@
   <string name="btn_encrypt_files">Salaa Tiedostoja</string>
   <string name="btn_encrypt_text">Salaa Tekstiä</string>
   <string name="btn_unlock">Avaa lukitus</string>
+  <string name="btn_proceed">Etene</string>
   <string name="btn_add_keyserver">Lisää</string>
   <string name="btn_save_default">Tallenna oletukseksi</string>
   <string name="btn_saved">Tallennettu!</string>
@@ -293,6 +294,7 @@
   <string name="drawer_close">Sulje navigointilaatikko</string>
   <!--hints-->
   <!--certs-->
+  <string name="cert_default">oletus</string>
   <string name="cert_none">ei mitään</string>
   <string name="cert_revoke">peruutettu</string>
   <string name="cert_verify_ok">OK</string>
@@ -385,6 +387,8 @@
   <string name="redirect_import_key_no">Sulje</string>
   <string name="button_allow">Salli</string>
   <string name="button_cancel">Peruuta</string>
+  <string name="button_back">Takaisin</string>
+  <string name="button_got_it">Selvä</string>
   <string name="key_health_expired_title">Vanhentunut</string>
   <string name="key_health_revoked_title">Kumottu</string>
   <string name="keyserver_title_published">Julkaistu</string>
@@ -397,4 +401,7 @@
   <string name="token_reset_confirm_ok">Nollaa</string>
   <string name="token_action_import">Tuo</string>
   <string name="token_unlock_ok">Poista lukitus</string>
+  <string name="select_identity_cancel">Poista käytöstä</string>
+  <string name="key_gen_back">Takaisin</string>
+  <string name="key_gen_finish">Loppu</string>
 </resources>

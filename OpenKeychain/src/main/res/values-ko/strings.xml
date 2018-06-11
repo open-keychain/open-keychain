@@ -94,6 +94,7 @@
   <string name="btn_encrypt_text">텍스트 암호화</string>
   <string name="btn_add_email">추가적 이메일 주소 더하기</string>
   <string name="btn_unlock">잠금 해제</string>
+  <string name="btn_proceed">발하다</string>
   <string name="btn_add_keyserver">추가</string>
   <string name="btn_save_default">기본값으로 저장</string>
   <string name="btn_saved">저장 성공!</string>
@@ -864,6 +865,7 @@
   <string name="prompt_fidesmo_app_install_button_negative">취소</string>
   <string name="redirect_import_key_no">Close</string>
   <string name="button_cancel">취소</string>
+  <string name="button_back">뒤로</string>
   <string name="keyserver_title_published">게시됨</string>
   <string name="keyserver_title_not_published">출판되지 않았습니다.</string>
   <string name="button_import">가져오기</string>
@@ -881,4 +883,8 @@
   <string name="msg_trust_ok">갱신 작업에 성공했습니다!</string>
   <string name="msg_trust_initialize">키 서명 캐쉬 초기화중</string>
   <string name="msg_trust_key">%s에 의해 서명 된 키 갱신중</string>
+  <string name="select_identity_cancel">비활성화</string>
+  <string name="key_gen_progress">잠시만 기다려주세요...</string>
+  <string name="key_gen_back">뒤로</string>
+  <string name="key_gen_finish">종료</string>
 </resources>

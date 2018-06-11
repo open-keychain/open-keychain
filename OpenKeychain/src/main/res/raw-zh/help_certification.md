@@ -1,9 +1,9 @@
 [//]: # (注意：请把每个句子放在单独一行中， Transifex 将把每一行放置在独立的翻译表单内！)
 
 ## 密钥确认
-在进行确认之前，您无法可靠地将一个密钥与特定人物关联起来。
-确认密钥的最简单方式是扫描二维码或者通过NFC进行交换。
-To confirm keys between more than two persons, we suggest using the key exchange method available for your keys.
+在进行确认之前，您无法可靠地将一个密钥与特定的人关联起来。
+确认密钥的最简单方式是扫描二维码或者通过 NFC 进行交换。
+若要在两人以上的团体内确认密钥，我们推荐您使用交换密钥功能。
 
 ## 密钥状态
 
@@ -12,7 +12,7 @@ To confirm keys between more than two persons, we suggest using the key exchange
 <img src="status_signature_unverified_cutout_24dp"/>  
 未确认：这个密钥尚未被确认。您无法确保这个密钥与特定人物的关联是可靠的。  
 <img src="status_signature_expired_cutout_24dp"/>  
-已过期：这个密钥不再有效。只有它的拥有者能扩展它的有效期。  
+已过期：这个密钥不再有效。只有它的所有者能延长它的有效期。  
 <img src="status_signature_revoked_cutout_24dp"/>  
 已吊销：这个密钥不再有效。它已经被所有者声明为已吊销状态。
 

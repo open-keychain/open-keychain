@@ -95,6 +95,7 @@
   <string name="btn_encrypt_text">Зашифровать текст</string>
   <string name="btn_add_email">Добавить дополнительные адреса почты</string>
   <string name="btn_unlock">Разблокировать</string>
+  <string name="btn_proceed">Продолжить</string>
   <string name="btn_add_keyserver">Добавить</string>
   <string name="btn_save_default">Сохранить по умолчанию</string>
   <string name="btn_saved">Сохранено!</string>
@@ -197,6 +198,8 @@
   <string name="pref_keybase_summary">Искать ключи на Keybase.io</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">Искать ключи на Facebook по имени пользователя</string>
+  <string name="pref_wkd">Web Key Directory</string>
+  <string name="pref_wkd_summary">Найти ключи, используя Web Key Directory</string>
   <string name="label_sync_settings_keyserver_title">Автообновление ключей</string>
   <string name="label_sync_settings_keyserver_summary_on">Каждые три дня ключи будут обновляться с предпочитаемого сервера ключей</string>
   <string name="label_sync_settings_keyserver_summary_off">Ключи не обновляются автоматически</string>
@@ -311,6 +314,8 @@
   <string name="passphrase_for_any">Введите пароль</string>
   <string name="passphrase_keyboard_hint_alpha">Переключиться на буквенную клавиатуру</string>
   <string name="passphrase_keyboard_hint_numeric">Переключиться на цифровую клавиатуру</string>
+  <string name="passphrase_transfer">Введите код передачи</string>
+  <string name="passphrase_transfer_autocrypt">Для импортирования этого сообщения настройки Autocrypt введите код передачи:</string>
   <string name="pin_for">Введите PIN для
 \'%s\'</string>
   <string name="security_token_pin_for">Введите PIN-код для доступа к токену безопасности \'%s\'</string>
@@ -614,6 +619,7 @@
   <string name="intent_import_key">OpenKeychain: Импортировать ключ</string>
   <string name="intent_send_encrypt">OpenKeychain: Зашифровать</string>
   <string name="intent_send_decrypt">OpenKeychain: Расшифровать</string>
+  <string name="intent_autocrypt_setup">Импортировать сообщение настройки Autocrypt</string>
   <!--Remote API-->
   <string name="api_settings_show_info">Показать подробную информацию</string>
   <string name="api_settings_hide_info">Скрыть подробную информацию</string>
@@ -683,7 +689,7 @@
   <string name="key_view_action_share_nfc">Отправить через NFC</string>
   <string name="key_view_action_upload">Опубликовать на сервере ключей</string>
   <string name="key_view_tab_main">Основные данные</string>
-  <string name="key_view_tab_start">Начать</string>
+  <string name="key_view_tab_start">Начало</string>
   <string name="key_view_tab_share">Отправить...</string>
   <string name="key_view_tab_keys">Доп. ключи</string>
   <string name="key_view_tab_certs">Сертификация</string>
@@ -1134,6 +1140,8 @@
   <string name="msg_dc_asym">Найден блок асимметрично зашифрованных данных для ключа %s</string>
   <string name="msg_dc_charset">Найден заголовок кодировки: \'%s\'</string>
   <string name="msg_dc_backup_version">Найден заголовок backupVersion: \'%s\'</string>
+  <string name="msg_dc_passphrase_format">Найден заголовок Passphrase-Format: \'%s\'</string>
+  <string name="msg_dc_passphrase_begin">Найден заголовок Passphrase-Begin: \'%s\'</string>
   <string name="msg_dc_clear_data">Обработка текстовых данных</string>
   <string name="msg_dc_clear_decompress">Распаковка сжатых данных</string>
   <string name="msg_dc_clear_meta_file">Имя файла: %s</string>
@@ -1660,6 +1668,7 @@
   <string name="backup_code_wrong">Резервный код введён неверно!\nВы записали его правильно?</string>
   <string name="btn_backup_share">Отправить резервную копию</string>
   <string name="btn_backup_save">Сохранить резервную копию</string>
+  <string name="btn_backup_export">Экспортировать резервную копию</string>
   <string name="snack_backup_error_saving">Ошибка при сохранении резервной копии!</string>
   <string name="snack_backup_saved">Резервная копия сохранена</string>
   <string name="snack_backup_exists">Резервная копия уже существует!</string>
@@ -1710,6 +1719,8 @@
   <string name="requested_key_unavailable_warning">Этот ключ недоступен. Чтобы его использовать, вам нужно импортировать его как свой ключ!</string>
   <string name="button_allow">Разрешить</string>
   <string name="button_cancel">Отмена</string>
+  <string name="button_back">Назад</string>
+  <string name="button_got_it">Понятно</string>
   <string name="requested_key_label">Запрашиваемый ключ:</string>
   <string name="error_preselect_sign_key">Ошибка подписи выбранного ключа %s!</string>
   <string name="error_preselect_encrypt_key">Ошибка выбора ключа %s для шифрования!</string>
@@ -1910,4 +1921,26 @@
   <string name="button_locate_nfc">Где мой NFC-ридер?</string>
   <string name="label_usb_untested_summary">Если данная функция включена, вы можете использовать USB-ридеры смарт-карт, которые не были полностью протестированы.</string>
   <string name="label_usb_untested">Разрешить использование непротестированных USB-устройств</string>
+  <string name="use_key">Использовать ключ: %s</string>
+  <string name="use_key_no_name">Использовать ключ: <![CDATA[<no name>]]></string>
+  <string name="title_select_key">%s хочет настроить сквозное шифрование для этого адреса:</string>
+  <string name="select_identity_cancel">Запретить</string>
+  <string name="select_identity_create">Создать ключ для меня</string>
+  <string name="error_save_key_internal">Внутренняя ошибка при сохранении ключа!</string>
+  <string name="menu_list_unrelated_keys">Список несвязанных ключей</string>
+  <string name="no_keys_gen_title">Это новый адрес</string>
+  <string name="no_keys_gen_subtitle">Создать новый ключ сквозного шифрования в OpenKeychain</string>
+  <string name="no_keys_import_title">У меня уже есть ключ</string>
+  <string name="no_keys_import_subtitle">Импортировать ключ сквозного шифрования с другого устройства</string>
+  <string name="key_list_import">Использовать другой ключ</string>
+  <string name="key_gen_progress">Пожалуйста, подождите...</string>
+  <string name="key_gen_back">Назад</string>
+  <string name="key_gen_finish">Завершить</string>
+  <string name="key_gen_done">Ключ сквозного шифрования создан!</string>
+  <string name="key_gen_finishing">Завершение настройки…</string>
+  <string name="key_import_text">Чтобы использовать ключ сквозного шифрования, он должен быть импортирован в OpenKeychain.</string>
+  <string name="key_import_text_autocrypt_setup_msg">Чтобы импортировать существующие настройки с другого устройства, вы также можете открыть сообщение настройки Autocrypt в %s.</string>
+  <string name="button_goto_openkeychain">Перейти к OpenKeychain</string>
+  <string name="backup_code_checkbox">На экране показан код резервной копии. Без него восстановить данную копию будет невозможно.</string>
+  <string name="msg_get_query_not_implemented">Сервер не поддерживает такой запрос! Некоторые серверы принимают только адреса электронной почты. Пожалуйста, перенастройте или попробуйте другой сервер.</string>
 </resources>

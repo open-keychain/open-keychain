@@ -331,9 +331,12 @@
   <string name="prompt_fidesmo_app_install_button_negative">Cancelar</string>
   <string name="redirect_import_key_no">Cerrar</string>
   <string name="button_cancel">Cancelar</string>
+  <string name="button_back">Atrás</string>
   <string name="button_import">Importar</string>
   <string name="transfer_confirm_cancel">Cancelar</string>
   <string name="transfer_confirm_ok">Enviar</string>
   <string name="token_action_import">Importar</string>
   <string name="token_unlock_ok">Abrir</string>
+  <string name="select_identity_cancel">Desactivar</string>
+  <string name="key_gen_back">Atrás</string>
 </resources>

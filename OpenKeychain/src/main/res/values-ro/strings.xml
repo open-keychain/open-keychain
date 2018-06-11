@@ -57,6 +57,7 @@
   <string name="btn_encrypt_text">Criptează text</string>
   <string name="btn_add_email">Adaugă o adresă de email adițională</string>
   <string name="btn_unlock">Deblochează</string>
+  <string name="btn_proceed">Continua</string>
   <string name="btn_add_keyserver">Adaugă</string>
   <string name="btn_saved">Salvat!</string>
   <!--Content Description-->
@@ -408,6 +409,8 @@
   <string name="redirect_import_key_no">Închide</string>
   <string name="button_allow">Permite</string>
   <string name="button_cancel">Anulare</string>
+  <string name="button_back">Înapoi</string>
+  <string name="button_got_it">Am înțeles</string>
   <string name="key_health_expired_title">Expirată</string>
   <string name="key_health_revoked_title">Revocat</string>
   <string name="keyserver_title_published">Publicat</string>
@@ -422,4 +425,7 @@
   <string name="token_result_not_found">Cheia nu a fost găsită!</string>
   <string name="token_action_import">Importă</string>
   <string name="token_unlock_ok">Deblochează</string>
+  <string name="select_identity_cancel">Dezactivează</string>
+  <string name="key_gen_back">Înapoi</string>
+  <string name="key_gen_finish">Termină</string>
 </resources>

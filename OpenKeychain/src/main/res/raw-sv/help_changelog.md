@@ -1,22 +1,27 @@
 [//]: # (NOTERING: Var vänlig och sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
 
+## 5.1
+  * Support for Ledger Nano S
+  * Support Web Key Directory (WKD) search
+  * Fixed potential API security issue
+
 ## 5.0
-  * Improved Autocrypt support
+  * Förbättrat stöd för Autocrypt
 
 ## 4.9
 
   * Curve25519 stöd
-  * Improved support for security tokens
+  * Förbättrat stöd för säkerhetstoken
 
 ## 4.8
 
   * Förbättrat stöd för USB-tokens: Gnuk, Nitrokey-modeller, YubiKey 4-modeller
-  * Feature to find the position of the device's NFC reader
+  * Funktion för att hitta platsen för enhetens NFC-läsare
 
 ## 4.7
 
   * Förbättrad import från urklipp
-  * New key creation wizard for Security Tokens
+  * Ny nyckelskaparguide för säkerhetstoken
   * Removed password cache "time to live" setting
 
 
@@ -35,13 +40,13 @@
 
 ## 4.4
 
-  * New key status displays detailed information why a key is considered insecure or defective
+  * Ny nyckelstatus visar detaljerad information varför en nyckel anses vara osäker eller defekt
 
 
 ## 4.3
 
-  * Better support for large keys
-  * Fix import of Gpg4win files with broken encodings
+  * Bättre stöd för stora nycklar
+  * Åtgärdar import av Gpg4win-filer med brutna kodningar
 
 
 ## 4.2
@@ -193,7 +198,7 @@
   * Fix usage of stripped keys
   * SHA256 as default for compatibility
   * Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API
-  * OpenPGP API now handles revoked/expired keys and returns all user ids
+  * OpenPGP API hanterar nu återkallade/utgångna nycklar och returnerar alla användar-ids
 
 
 ## 2.9
@@ -211,7 +216,7 @@
   * New first time screen
   * New key creation screen: autocompletion of name and email based on your personal Android accounts
   * Filkryptering: maffig ny design, stöd för kryptering av flera filer
-  * New icons to show status of key (by Brennan Novak)
+  * Nya ikoner för att visa status för nyckeln (av Brennan Novak)
   * Important bug fix: Importing of large key collections from a file is now possible
   * Notification showing cached passphrases
   * Keys are connected to Android's contacts
@@ -243,7 +248,7 @@ This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2
 
 ## 2.5
 
-  * Fix decryption of symmetric OpenPGP messages/files
+  * Åtgärda dekryptering av symmetriska OpenPGP-meddelanden/filer
   * Refactored key edit screen (thanks to Ash Hughes)
   * Ny modern design för kryptera/dekryptera skärmar
   * OpenPGP API version 3 (multiple api accounts, internal fixes, key lookup)
@@ -315,7 +320,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Complete redesign
   * Share public keys via QR codes, NFC beam
   * Sign keys
-  * Upload keys to server
+  * Skicka nycklar till server
   * Fixes import issues
   * New AIDL API
 

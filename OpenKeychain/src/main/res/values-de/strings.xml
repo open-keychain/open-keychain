@@ -95,6 +95,7 @@
   <string name="btn_encrypt_text">Text verschlüsseln</string>
   <string name="btn_add_email">Weitere E-Mail-Adresse hinzufügen</string>
   <string name="btn_unlock">Entsperren</string>
+  <string name="btn_proceed">Fortfahren</string>
   <string name="btn_add_keyserver">Hinzufügen</string>
   <string name="btn_save_default">Als Standard speichern</string>
   <string name="btn_saved">Gespeichert!</string>
@@ -156,6 +157,8 @@
   <string name="label_keyservers">OpenPGP-Schlüsselserver verwalten</string>
   <string name="label_key_id">Schlüssel-ID</string>
   <string name="label_key_id_colon">Schlüssel-ID:</string>
+  <string name="label_key_created">Erstellt %s</string>
+  <string name="label_key_created_just_now">Gerade erstellt</string>
   <string name="label_key_type">Typ</string>
   <string name="label_creation">Erzeugungsdatum</string>
   <string name="label_creation_colon">Erstellung:</string>
@@ -166,6 +169,7 @@
   <string name="label_main_user_id">Hauptidentität</string>
   <string name="label_name">Name</string>
   <string name="label_email">E-Mail</string>
+  <string name="label_send_key">Beglaubigung auf Schlüsselservern veröffentlichen</string>
   <string name="label_fingerprint">Fingerabdruck</string>
   <string name="expiry_date_dialog_title">Ablaufdatum festlegen</string>
   <string name="label_keyservers_title">Schlüsselserver</string>
@@ -194,6 +198,8 @@
   <string name="pref_keybase_summary">Schlüssel auf Keybase.io suchen</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">Schlüssel auf Facebook suchen</string>
+  <string name="pref_wkd">Web Key Verzeichnis</string>
+  <string name="pref_wkd_summary">Schlüssel in einem Web Key Directory suchen</string>
   <string name="label_sync_settings_keyserver_title">Automatische Schlüsselaktualisierung</string>
   <string name="label_sync_settings_keyserver_summary_on">Alle drei Tage werden die Schlüssel vom bevorzugten Schlüsselserver aktualisiert</string>
   <string name="label_sync_settings_keyserver_summary_off">Schlüssel werden nicht automatisch aktualisiert</string>
@@ -302,6 +308,8 @@
   <string name="passphrase_for_any">Passwort eingeben</string>
   <string name="passphrase_keyboard_hint_alpha">Zu alphabetischer Tastatur wechseln</string>
   <string name="passphrase_keyboard_hint_numeric">Zu numerischer Tastatur wechseln</string>
+  <string name="passphrase_transfer">Übertragungscode eingeben</string>
+  <string name="passphrase_transfer_autocrypt">Um diese Autocrypt Setup Nachricht zu importieren, geben Sie den Übertragungscode ein:</string>
   <string name="pin_for">PIN für \'%s\' eingeben</string>
   <string name="security_token_pin_for">PIN für Zugriff auf Security-Token für \'%s\' eingeben</string>
   <string name="security_token_nfc_text">Halte den Security-Token an den NFC-Marker auf der Rückseite deines Geräts.</string>
@@ -574,6 +582,7 @@
   <string name="intent_import_key">Schlüssel mit OpenKeychain importieren</string>
   <string name="intent_send_encrypt">Mit OpenKeychain verschlüsseln</string>
   <string name="intent_send_decrypt">Mit OpenKeychain entschlüsseln</string>
+  <string name="intent_autocrypt_setup">Autocrypt Setup Nachricht importieren</string>
   <!--Remote API-->
   <string name="api_settings_show_info">Erweiterte Informationen anzeigen</string>
   <string name="api_settings_hide_info">Erweiterte Informationen ausblenden</string>
@@ -639,6 +648,7 @@
   <string name="key_view_action_share_with">Teilen über...</string>
   <string name="key_view_action_share_ssh_with">Teile als öffentlicher SSH-Schlüssel mit...</string>
   <string name="key_view_action_share_nfc">Über NFC teilen</string>
+  <string name="key_view_action_upload">Auf Schlüsselserver veröffentlichen</string>
   <string name="key_view_tab_main">Informationen</string>
   <string name="key_view_tab_start">Start</string>
   <string name="key_view_tab_share">Teilen</string>
@@ -714,6 +724,7 @@
   <string name="edit_key_error_bad_security_token_curve">Kurve vom Security-Token nicht unterstützt!</string>
   <string name="edit_key_error_bad_security_token_stripped">Der Schlüssel kann nicht auf den Security-Token verschoben werden (Entweder abgeschnitten oder schon im Security-Token)!</string>
   <!--Create key-->
+  <string name="create_key_upload">Auf Schlüsselservern veröffentlichen</string>
   <string name="create_key_empty">Dieses Feld darf nicht leer sein</string>
   <string name="create_key_passphrases_not_equal">Passwörter stimmen nicht überein</string>
   <string name="create_key_final_text">Du hast folgende Identität eingegeben:</string>
@@ -1080,6 +1091,8 @@
   <string name="msg_dc_asym">Block asymmetrisch verschlüsselter Daten für Schlüssel %s gefunden</string>
   <string name="msg_dc_charset">Ein Zeichensatz-Header wurde gefunden: \'%s\'</string>
   <string name="msg_dc_backup_version">Backupversionsheader gefunden: \'%s\'</string>
+  <string name="msg_dc_passphrase_format">Passphrase-Format Header gefunden: \'%s\'</string>
+  <string name="msg_dc_passphrase_begin">Passphrase-Begin Header gefunden: \'%s\'</string>
   <string name="msg_dc_clear_data">Klartextdaten werden verarbeitet</string>
   <string name="msg_dc_clear_decompress">Komprimierte Daten werden entpackt</string>
   <string name="msg_dc_clear_meta_file">Dateiname: %s</string>
@@ -1586,6 +1599,7 @@
   <string name="backup_code_wrong">Der eingegebene Backupcode ist falsch!\nHast du ihn korrekt eingegeben?</string>
   <string name="btn_backup_share">Backup teilen</string>
   <string name="btn_backup_save">Backup speichern</string>
+  <string name="btn_backup_export">Backup exportieren</string>
   <string name="snack_backup_error_saving">Fehler beim Speichern des Backups!</string>
   <string name="snack_backup_saved">Backup gespeichert</string>
   <string name="snack_backup_exists">Backup existiert bereits!</string>
@@ -1636,6 +1650,8 @@
   <string name="requested_key_unavailable_warning">Dieser Schlüssel ist nicht verfügbar. Um ihn zu verwenden, importieren Sie ihn als eigenen Schlüssel!</string>
   <string name="button_allow">Erlauben</string>
   <string name="button_cancel">Abbrechen</string>
+  <string name="button_back">Zurück</string>
+  <string name="button_got_it">Okay, verstanden.</string>
   <string name="requested_key_label">Angeforderter Schlüssel:</string>
   <string name="error_preselect_sign_key">Fehler beim Auswählen von Schlüssel %s zum Signieren!</string>
   <string name="error_preselect_encrypt_key">Fehler beim Auswählen von Schlüssel %s zum Verschlüsseln!</string>
@@ -1775,6 +1791,10 @@ Ein sicherer Schlüssel sollte eine Stärke von 2048 Bits besitzen.</string>
   <string name="token_action_setup">Mit neuem Schlüssel konfigurieren</string>
   <string name="token_action_unlock">Mit Admin PIN entsperren</string>
   <string name="token_unlock_attempts_none">Keine Entsperrversuche übrig</string>
+  <plurals name="token_unlock_attempts">
+    <item quantity="one">1 verbleibender Versuch</item>
+    <item quantity="other">%d verbleibende Versuche</item>
+  </plurals>
   <string name="token_error_locked_indefinitely">Zu viele Rücksetzversuche. Token kann nicht entsperrt werden!</string>
   <string name="token_error_cannot_reset_gnuk_old">Der Gnuk Token/Nitrokey Start unterstützt einen Reset erst ab Version 1.2.5</string>
   <string name="token_error_cannot_reset">Dieses Security Token unterstützt keinen Reset</string>
@@ -1829,4 +1849,26 @@ Ein sicherer Schlüssel sollte eine Stärke von 2048 Bits besitzen.</string>
   <string name="button_locate_nfc">Wo ist mein NFC-Leser?</string>
   <string name="label_usb_untested_summary">Falls aktiviert können USB Smartcard Reader verwendet werden, die nicht umfassend getestet wurden.</string>
   <string name="label_usb_untested">Ungetestetes USB-Gerät erlauben</string>
+  <string name="use_key">Verwende Schlüssel: %s</string>
+  <string name="use_key_no_name">Verwende Schlüssel: <![CDATA[<no name>]]></string>
+  <string name="title_select_key">%s möchte eine Ende-zu-Ende-Verschlüsselung für diese Adresse einrichten:</string>
+  <string name="select_identity_cancel">Deaktivieren</string>
+  <string name="select_identity_create">Erstelle einen neuen Schlüssel für mich</string>
+  <string name="error_save_key_internal">Interner Fehler beim Speichern des Schlüssels!</string>
+  <string name="menu_list_unrelated_keys">Nicht zugeordnete Schlüssel auflisten</string>
+  <string name="no_keys_gen_title">Dies ist eine neue Adresse</string>
+  <string name="no_keys_gen_subtitle">Erstelle einen neuen Ende-zu-Ende-Schlüssel in OpenKeychain</string>
+  <string name="no_keys_import_title">I besitze bereits einen Schlüssel</string>
+  <string name="no_keys_import_subtitle">Ende-zu-Ende-Schlüssel von anderem Gerät importieren</string>
+  <string name="key_list_import">Einen anderen Schlüssel verwenden</string>
+  <string name="key_gen_progress">Bitte warten…</string>
+  <string name="key_gen_back">Zurück</string>
+  <string name="key_gen_finish">Abschließen</string>
+  <string name="key_gen_done">Ende-zu-Ende-Schlüssel erzeugt!</string>
+  <string name="key_gen_finishing">Beende Setup...</string>
+  <string name="key_import_text">Um einen Ende-zu-Ende-Schlüssel zu verwenden, muss er in OpenKeychain importiert werden.</string>
+  <string name="key_import_text_autocrypt_setup_msg">Um ein existierendes Setup von einem anderen Gerät zu importieren, kann eine Autocrypt Setup Nachricht in %s geöffnet werden.</string>
+  <string name="button_goto_openkeychain">Zu OpenKeychain gehen</string>
+  <string name="backup_code_checkbox">Ich habe den Backup-Code aufgeschrieben. Ohne diesen werde ich das Backup nicht wiederherstellen können.</string>
+  <string name="msg_get_query_not_implemented">Der Server unterstützt die aktuelle Anfrage nicht! Manche Server akzeptieren nur E-Mail-Adressen. Bitte verändern Sie die Anfragen oder verwenden Sie einen anderen Server.</string>
 </resources>
