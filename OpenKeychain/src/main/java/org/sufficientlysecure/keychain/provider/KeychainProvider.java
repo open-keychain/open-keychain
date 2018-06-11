@@ -55,7 +55,7 @@ import timber.log.Timber;
 import static android.database.DatabaseUtils.dumpCursorToString;
 
 
-public class KeychainProvider extends ContentProvider {
+public class KeychainProvider extends ContentProvider implements SimpleContentResolverInterface {
 
     private static final int KEY_RINGS_UNIFIED = 101;
     private static final int KEY_RINGS_PUBLIC = 102;

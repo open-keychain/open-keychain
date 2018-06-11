@@ -25,14 +25,12 @@ import java.util.List;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.os.Binder;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
@@ -42,7 +40,6 @@ import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject.AutocryptRecommendationResult;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject.AutocryptState;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -68,14 +65,13 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
     private static final int API_APPS = 301;
     private static final int API_APPS_BY_PACKAGE_NAME = 302;
 
-    private static final int AUTOCRYPT_PEERS_BY_PACKAGE_NAME = 602;
-
     public static final String TEMP_TABLE_QUERIED_ADDRESSES = "queried_addresses";
     public static final String TEMP_TABLE_COLUMN_ADDRES = "address";
 
 
-    private UriMatcher mUriMatcher;
-    private ApiPermissionHelper mApiPermissionHelper;
+    private UriMatcher uriMatcher;
+    private ApiPermissionHelper apiPermissionHelper;
+    private KeychainProvider internalKeychainProvider;
 
 
     /**
@@ -99,20 +95,17 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
         matcher.addURI(authority, KeychainExternalContract.BASE_AUTOCRYPT_STATUS, AUTOCRYPT_STATUS);
         matcher.addURI(authority, KeychainExternalContract.BASE_AUTOCRYPT_STATUS + "/*", AUTOCRYPT_STATUS_INTERNAL);
 
-        // can only query status of calling app - for internal use only!
-        matcher.addURI(KeychainContract.CONTENT_AUTHORITY, KeychainContract.BASE_API_APPS + "/*", API_APPS_BY_PACKAGE_NAME);
-
-        matcher.addURI(KeychainContract.CONTENT_AUTHORITY, KeychainContract.BASE_AUTOCRYPT_PEERS + "/" +
-                KeychainContract.PATH_BY_PACKAGE_NAME + "/*", AUTOCRYPT_PEERS_BY_PACKAGE_NAME);
-
         return matcher;
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean onCreate() {
-        mUriMatcher = buildUriMatcher();
-        mApiPermissionHelper = new ApiPermissionHelper(getContext(), new ApiDataAccessObject(this));
+        uriMatcher = buildUriMatcher();
+
+        internalKeychainProvider = new KeychainProvider();
+        internalKeychainProvider.attachInfo(getContext(), null);
+        apiPermissionHelper = new ApiPermissionHelper(getContext(), new ApiDataAccessObject(internalKeychainProvider));
         return true;
     }
 
@@ -121,7 +114,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
      */
     @Override
     public String getType(@NonNull Uri uri) {
-        final int match = mUriMatcher.match(uri);
+        final int match = uriMatcher.match(uri);
         switch (match) {
             case EMAIL_STATUS:
                 return EmailStatus.CONTENT_TYPE;
@@ -148,17 +141,17 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 
-        int match = mUriMatcher.match(uri);
+        int match = uriMatcher.match(uri);
 
         String groupBy = null;
 
         SQLiteDatabase db = new KeychainDatabase(getContext()).getReadableDatabase();
 
-        String callingPackageName = mApiPermissionHelper.getCurrentCallingPackage();
+        String callingPackageName = apiPermissionHelper.getCurrentCallingPackage();
 
         switch (match) {
             case EMAIL_STATUS: {
-                boolean callerIsAllowed = mApiPermissionHelper.isAllowedIgnoreErrors();
+                boolean callerIsAllowed = apiPermissionHelper.isAllowedIgnoreErrors();
                 if (!callerIsAllowed) {
                     throw new AccessControlException("An application must register before use of KeychainExternalProvider!");
                 }
@@ -183,7 +176,6 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                         + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + KeychainExternalContract.KEY_STATUS_VERIFIED
                         + " WHEN NULL THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
                         + " END AS " + EmailStatus.USER_ID_STATUS);
-                projectionMap.put(EmailStatus.USER_ID, Tables.USER_PACKETS + "." + UserPackets.USER_ID + " AS " + EmailStatus.USER_ID);
                 projectionMap.put(EmailStatus.MASTER_KEY_ID,
                         Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " AS " + EmailStatus.MASTER_KEY_ID);
                 qb.setProjectionMap(projectionMap);
@@ -233,7 +225,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                  callingPackageName = uri.getLastPathSegment();
 
             case AUTOCRYPT_STATUS: {
-                boolean callerIsAllowed = (match == AUTOCRYPT_STATUS_INTERNAL) || mApiPermissionHelper.isAllowedIgnoreErrors();
+                boolean callerIsAllowed = (match == AUTOCRYPT_STATUS_INTERNAL) || apiPermissionHelper.isAllowedIgnoreErrors();
                 if (!callerIsAllowed) {
                     throw new AccessControlException("An application must register before use of KeychainExternalProvider!");
                 }
@@ -278,10 +270,21 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                 }
                 if (!isWildcardSelector && queriesAutocryptResult) {
                     AutocryptPeerDataAccessObject autocryptPeerDao =
-                            new AutocryptPeerDataAccessObject(this, callingPackageName);
+                            new AutocryptPeerDataAccessObject(internalKeychainProvider, callingPackageName);
                     fillTempTableWithAutocryptRecommendations(db, autocryptPeerDao, selectionArgs);
                 }
 
+                HashMap<String, String> projectionMap = new HashMap<>();
+                projectionMap.put(AutocryptStatus._ID, AutocryptStatus._ID);
+                projectionMap.put(AutocryptStatus.ADDRESS, AutocryptStatus.ADDRESS);
+                projectionMap.put(AutocryptStatus.UID_KEY_STATUS, AutocryptStatus.UID_KEY_STATUS);
+                projectionMap.put(AutocryptStatus.UID_ADDRESS, AutocryptStatus.UID_ADDRESS);
+                projectionMap.put(AutocryptStatus.UID_MASTER_KEY_ID, AutocryptStatus.UID_MASTER_KEY_ID);
+                projectionMap.put(AutocryptStatus.UID_CANDIDATES, AutocryptStatus.UID_CANDIDATES);
+                projectionMap.put(AutocryptStatus.AUTOCRYPT_PEER_STATE, AutocryptStatus.AUTOCRYPT_PEER_STATE);
+                projectionMap.put(AutocryptStatus.AUTOCRYPT_KEY_STATUS, AutocryptStatus.AUTOCRYPT_KEY_STATUS);
+                projectionMap.put(AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID, AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID);
+                qb.setProjectionMap(projectionMap);
                 qb.setTables(TEMP_TABLE_QUERIED_ADDRESSES);
 
                 if (TextUtils.isEmpty(sortOrder)) {
@@ -292,22 +295,6 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                 uri = KeyRings.CONTENT_URI;
                 break;
             }
-
-            case API_APPS_BY_PACKAGE_NAME: {
-                String requestedPackageName = uri.getLastPathSegment();
-                checkIfPackageBelongsToCaller(getContext(), requestedPackageName);
-
-                qb.setTables(Tables.API_APPS);
-                qb.appendWhere(ApiApps.PACKAGE_NAME + " = ");
-                qb.appendWhereEscapeString(requestedPackageName);
-
-                break;
-            }
-
-            case AUTOCRYPT_PEERS_BY_PACKAGE_NAME:
-                KeychainProvider keychainProvider = new KeychainProvider();
-                keychainProvider.attachInfo(getContext(), null);
-                return keychainProvider.query(uri, projection, selection, selectionArgs, sortOrder);
 
             default: {
                 throw new IllegalArgumentException("Unknown URI " + uri + " (" + match + ")");
@@ -323,7 +310,8 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
             orderBy = sortOrder;
         }
 
-        Cursor cursor = qb.query(db, projection, selection, null, groupBy, null, orderBy);
+        qb.setStrict(true);
+        Cursor cursor = qb.query(db, projection, null, null, groupBy, null, orderBy);
         qb.setCursorFactory(new CloseDatabaseCursorFactory());
         if (cursor != null) {
             // Tell the cursor what uri to watch, so it knows when its source data changes
@@ -406,30 +394,6 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                 + " GROUP BY " + TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES);
     }
 
-    private void explainQuery(SQLiteDatabase db, String sql) {
-        Cursor explainCursor = db.rawQuery("EXPLAIN QUERY PLAN " + sql, new String[0]);
-
-        // this is a debugging feature, we can be a little careless
-        explainCursor.moveToFirst();
-
-        StringBuilder line = new StringBuilder();
-        for (int i = 0; i < explainCursor.getColumnCount(); i++) {
-            line.append(explainCursor.getColumnName(i)).append(", ");
-        }
-        Timber.d(Constants.TAG, line.toString());
-
-        while (!explainCursor.isAfterLast()) {
-            line = new StringBuilder();
-            for (int i = 0; i < explainCursor.getColumnCount(); i++) {
-                line.append(explainCursor.getString(i)).append(", ");
-            }
-            Timber.d(Constants.TAG, line.toString());
-            explainCursor.moveToNext();
-        }
-
-        explainCursor.close();
-    }
-
     private int getPeerStateValue(AutocryptState autocryptState) {
         switch (autocryptState) {
             case DISABLE: return AutocryptStatus.AUTOCRYPT_PEER_DISABLED;
@@ -439,25 +403,6 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
             case MUTUAL: return AutocryptStatus.AUTOCRYPT_PEER_MUTUAL;
         }
         throw new IllegalStateException("Unhandled case!");
-    }
-
-    private void checkIfPackageBelongsToCaller(Context context, String requestedPackageName) {
-        int callerUid = Binder.getCallingUid();
-        String[] callerPackageNames = context.getPackageManager().getPackagesForUid(callerUid);
-        if (callerPackageNames == null) {
-            throw new IllegalStateException("Failed to retrieve caller package name, this is an error!");
-        }
-
-        boolean packageBelongsToCaller = false;
-        for (String p : callerPackageNames) {
-            if (p.equals(requestedPackageName)) {
-                packageBelongsToCaller = true;
-                break;
-            }
-        }
-        if (!packageBelongsToCaller) {
-            throw new SecurityException("ExternalProvider may only check status of caller package!");
-        }
     }
 
     @Override
