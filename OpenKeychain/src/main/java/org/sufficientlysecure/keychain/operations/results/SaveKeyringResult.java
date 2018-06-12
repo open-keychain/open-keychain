@@ -46,13 +46,18 @@ public class SaveKeyringResult extends OperationResult {
 
     public SaveKeyringResult(Parcel source) {
         super(source);
-        savedMasterKeyId = source.readLong();
+        savedMasterKeyId = source.readInt() != 0 ? source.readLong() : null;
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeLong(savedMasterKeyId);
+        if (savedMasterKeyId != null) {
+            dest.writeInt(1);
+            dest.writeLong(savedMasterKeyId);
+        } else {
+            dest.writeInt(0);
+        }
     }
 
     public static Creator<SaveKeyringResult> CREATOR = new Creator<SaveKeyringResult>() {
