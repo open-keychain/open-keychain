@@ -311,8 +311,8 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
         }
 
         qb.setStrict(true);
-        Cursor cursor = qb.query(db, projection, null, null, groupBy, null, orderBy);
         qb.setCursorFactory(new CloseDatabaseCursorFactory());
+        Cursor cursor = qb.query(db, projection, null, null, groupBy, null, orderBy);
         if (cursor != null) {
             // Tell the cursor what uri to watch, so it knows when its source data changes
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
