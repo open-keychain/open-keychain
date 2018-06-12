@@ -37,6 +37,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -990,7 +991,12 @@ public class OpenPgpService extends Service {
                 (input != null) ? new ParcelFileDescriptor.AutoCloseInputStream(input) : null;
 
         try {
-            return executeInternalWithStreams(data, inputStream, outputStream);
+            long startTime = SystemClock.elapsedRealtime();
+            Timber.i("API call: %s", data.getAction());
+            Intent result = executeInternalWithStreams(data, inputStream, outputStream);
+            long elapsedTime = SystemClock.elapsedRealtime() - startTime;
+            Timber.i("Elapsed time: %d", elapsedTime);
+            return result;
         } finally {
             // always close input and output file descriptors even in createErrorPendingIntent cases
             if (inputStream != null) {
