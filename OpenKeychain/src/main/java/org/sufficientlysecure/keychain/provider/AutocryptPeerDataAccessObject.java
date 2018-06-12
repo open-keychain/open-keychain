@@ -36,6 +36,11 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPee
 public class AutocryptPeerDataAccessObject {
     private static final long AUTOCRYPT_DISCOURAGE_THRESHOLD_MILLIS = 35 * DateUtils.DAY_IN_MILLIS;
 
+    private static final String[] PROJECTION_LAST_SEEN = { ApiAutocryptPeer.LAST_SEEN };
+    private static final String[] PROJECTION_LAST_SEEN_KEY = { ApiAutocryptPeer.LAST_SEEN_KEY };
+    private static final String[] PROJECTION_GOSSIP_LAST_SEEN_KEY = { ApiAutocryptPeer.GOSSIP_LAST_SEEN_KEY };
+    private static final String[] PROJECTION_MASTER_KEY_ID = { ApiAutocryptPeer.MASTER_KEY_ID };
+
     private static final String[] PROJECTION_AUTOCRYPT_QUERY = {
             ApiAutocryptPeer.IDENTIFIER,
             ApiAutocryptPeer.LAST_SEEN,
@@ -104,12 +109,12 @@ public class AutocryptPeerDataAccessObject {
 
     public Long getMasterKeyIdForAutocryptPeer(String autocryptId) {
         Cursor cursor = queryInterface.query(
-                ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), null, null, null, null);
+                ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId),
+                PROJECTION_MASTER_KEY_ID, null, null, null);
 
         try {
             if (cursor != null && cursor.moveToFirst()) {
-                int masterKeyIdColumn = cursor.getColumnIndex(ApiAutocryptPeer.MASTER_KEY_ID);
-                return cursor.getLong(masterKeyIdColumn);
+                return cursor.getLong(0);
             }
         } finally {
             if (cursor != null) {
@@ -122,11 +127,11 @@ public class AutocryptPeerDataAccessObject {
 
     public Date getLastSeen(String autocryptId) {
         Cursor cursor = queryInterface.query(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId),
-                null, null, null, null);
+                PROJECTION_LAST_SEEN, null, null, null);
 
         try {
             if (cursor != null && cursor.moveToFirst()) {
-                long lastUpdated = cursor.getColumnIndex(ApiAutocryptPeer.LAST_SEEN);
+                long lastUpdated = cursor.getLong(0);
                 return new Date(lastUpdated);
             }
         } finally {
@@ -139,11 +144,11 @@ public class AutocryptPeerDataAccessObject {
 
     public Date getLastSeenKey(String autocryptId) {
         Cursor cursor = queryInterface.query(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId),
-                null, null, null, null);
+                PROJECTION_LAST_SEEN_KEY, null, null, null);
 
         try {
             if (cursor != null && cursor.moveToFirst()) {
-                long lastUpdated = cursor.getColumnIndex(ApiAutocryptPeer.LAST_SEEN_KEY);
+                long lastUpdated = cursor.getLong(0);
                 return new Date(lastUpdated);
             }
         } finally {
@@ -156,11 +161,11 @@ public class AutocryptPeerDataAccessObject {
 
     public Date getLastSeenGossip(String autocryptId) {
         Cursor cursor = queryInterface.query(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId),
-                null, null, null, null);
+                PROJECTION_GOSSIP_LAST_SEEN_KEY, null, null, null);
 
         try {
             if (cursor != null && cursor.moveToFirst()) {
-                long lastUpdated = cursor.getColumnIndex(ApiAutocryptPeer.GOSSIP_LAST_SEEN_KEY);
+                long lastUpdated = cursor.getLong(0);
                 return new Date(lastUpdated);
             }
         } finally {

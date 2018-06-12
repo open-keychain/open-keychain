@@ -40,13 +40,13 @@ class AutocryptInteractor {
 
         // 1. If the message’s effective date is older than the peers[from-addr].autocrypt_timestamp value, then no changes are required, and the update process terminates.
         Date lastSeenAutocrypt = autocryptPeerDao.getLastSeenKey(autocryptPeerId);
-        if (lastSeenAutocrypt != null && lastSeenAutocrypt.after(effectiveDate)) {
+        if (lastSeenAutocrypt != null && effectiveDate.compareTo(lastSeenAutocrypt) <= 0) {
             return;
         }
 
         // 2. If the message’s effective date is more recent than peers[from-addr].last_seen then set peers[from-addr].last_seen to the message’s effective date.
         Date lastSeen = autocryptPeerDao.getLastSeen(autocryptPeerId);
-        if (lastSeen == null || lastSeen.after(effectiveDate)) {
+        if (lastSeen == null || effectiveDate.after(lastSeen)) {
             autocryptPeerDao.updateLastSeen(autocryptPeerId, effectiveDate);
         }
 
