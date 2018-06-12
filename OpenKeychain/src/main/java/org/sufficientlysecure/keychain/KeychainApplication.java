@@ -24,6 +24,7 @@ import java.util.HashMap;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Application;
+import android.app.job.JobScheduler;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
@@ -113,7 +114,7 @@ public class KeychainApplication extends Application {
         TlsCertificatePinning.addPinnedCertificate("api.keybase.io", getAssets(), "api.keybase.io.CA.cer");
         TlsCertificatePinning.addPinnedCertificate("keyserver.ubuntu.com", getAssets(), "DigiCertGlobalRootCA.cer");
 
-        new Handler().post(() -> TemporaryFileProvider.cleanUp(getApplicationContext()));
+        new Handler().postDelayed(() -> TemporaryFileProvider.cleanUp(getApplicationContext()), 1000);
     }
 
     /**
