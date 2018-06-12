@@ -797,7 +797,7 @@ public class KeyWritableRepository extends KeyRepository {
                 if (!forceRefresh && Arrays.hashCode(publicRing.getEncoded())
                         == Arrays.hashCode(oldPublicRing.getEncoded())) {
                     log(LogType.MSG_IP_SUCCESS_IDENTICAL);
-                    return new SaveKeyringResult(SaveKeyringResult.UPDATED, mLog, null);
+                    return new SaveKeyringResult(SaveKeyringResult.UPDATED, mLog, canPublicRing);
                 }
             } catch (NotFoundException e) {
                 // Not an issue, just means we are dealing with a new keyring.
@@ -868,7 +868,7 @@ public class KeyWritableRepository extends KeyRepository {
                 }
             }
 
-            return new SaveKeyringResult(result, mLog, canSecretRing);
+            return new SaveKeyringResult(result, mLog, canPublicRing);
         } catch (IOException e) {
             log(LogType.MSG_IP_ERROR_IO_EXC);
             return new SaveKeyringResult(SaveKeyringResult.RESULT_ERROR, mLog, null);
