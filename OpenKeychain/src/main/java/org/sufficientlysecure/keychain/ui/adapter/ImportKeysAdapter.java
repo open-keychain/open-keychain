@@ -291,13 +291,13 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
         entry.setExpired(keyRing.isExpired());
         entry.setSecure(keyRing.isSecure());
 
-        int algorithmId = keyRing.getPublicKey().getAlgorithm();
-        int bitSize = keyRing.getPublicKey().getBitStrength();
-        String algoInfo = KeyFormattingUtils.getAlgorithmInfo(algorithmId, bitSize, null);
-        if(entry.getAlgorithm() == null){
+        if (entry.getAlgorithm() == null) {
+            int algorithmId = keyRing.getPublicKey().getAlgorithm();
+            Integer bitSize = keyRing.getPublicKey().getBitStrength();
+            String oid = keyRing.getPublicKey().getCurveOid();
+            String algoInfo = KeyFormattingUtils.getAlgorithmInfo(algorithmId, bitSize, oid);
+
             entry.setAlgorithm(algoInfo);
-        } else if ( !entry.getAlgorithm().equalsIgnoreCase(algoInfo)){
-            // TODO: handle(?)
         }
 
         Date expectedDate = entry.getDate();
