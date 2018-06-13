@@ -37,12 +37,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -68,6 +64,7 @@ import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.ResourceUtils;
 import timber.log.Timber;
 
 
@@ -509,7 +506,7 @@ public class KeyserverSyncAdapterService extends Service {
     private Notification getOrbotNoification(Context context) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setSmallIcon(R.drawable.ic_stat_notify_24dp)
-                .setLargeIcon(getBitmap(R.mipmap.ic_launcher, context))
+                .setLargeIcon(ResourceUtils.getDrawableAsNotificationBitmap(context, R.mipmap.ic_launcher))
                 .setContentTitle(context.getString(R.string.keyserver_sync_orbot_notif_title))
                 .setContentText(context.getString(R.string.keyserver_sync_orbot_notif_msg))
                 .setAutoCancel(true);
@@ -605,28 +602,5 @@ public class KeyserverSyncAdapterService extends Service {
         Intent serviceIntent = new Intent(this, KeyserverSyncAdapterService.class);
         serviceIntent.setAction(ACTION_UPDATE_ALL);
         this.startService(serviceIntent);
-    }
-
-    // from de.azapps.mirakel.helper.Helpers from https://github.com/MirakelX/mirakel-android
-    private Bitmap getBitmap(int resId, Context context) {
-        int mLargeIconWidth = (int) context.getResources().getDimension(
-                android.R.dimen.notification_large_icon_width);
-        int mLargeIconHeight = (int) context.getResources().getDimension(
-                android.R.dimen.notification_large_icon_height);
-        Drawable d;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            // noinspection deprecation (can't help it at this api level)
-            d = context.getResources().getDrawable(resId);
-        } else {
-            d = context.getDrawable(resId);
-        }
-        if (d == null) {
-            return null;
-        }
-        Bitmap b = Bitmap.createBitmap(mLargeIconWidth, mLargeIconHeight, Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(b);
-        d.setBounds(0, 0, mLargeIconWidth, mLargeIconHeight);
-        d.draw(c);
-        return b;
     }
 }
