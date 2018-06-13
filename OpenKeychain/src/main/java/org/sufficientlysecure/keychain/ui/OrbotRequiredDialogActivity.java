@@ -32,7 +32,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NotificationCompat;
 import android.view.ContextThemeWrapper;
 
-import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Constants.NotificationIds;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -180,7 +180,7 @@ public class OrbotRequiredDialogActivity extends FragmentActivity
     public static void showOrbotRequiredNotification(Context context) {
         NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         if (manager != null) {
-            manager.notify(Constants.Notification.KEYSERVER_SYNC_FAIL_ORBOT, createOrbotNotification(context));
+            manager.notify(NotificationIds.KEYSERVER_SYNC_FAIL_ORBOT, createOrbotNotification(context));
         }
     }
 

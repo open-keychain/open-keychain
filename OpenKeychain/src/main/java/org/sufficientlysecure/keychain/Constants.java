@@ -108,9 +108,14 @@ public final class Constants {
         public static final File APP_DIR = new File(Environment.getExternalStorageDirectory(), "OpenKeychain");
     }
 
-    public static final class Notification {
+    public static final class NotificationIds {
         public static final int PASSPHRASE_CACHE = 1;
         public static final int KEYSERVER_SYNC_FAIL_ORBOT = 2;
+        public static final int KEYSERVER_SYNC = 3;
+    }
+
+    public static final class NotificationChannels {
+        public static final String KEYSERVER_SYNC = "keyserverSync";
     }
 
     public static final class Pref {
