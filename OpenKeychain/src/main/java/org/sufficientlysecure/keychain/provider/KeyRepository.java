@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import timber.log.Timber;
 
 
@@ -284,7 +285,7 @@ public class KeyRepository {
         Cursor lastUpdatedCursor = contentResolver.query(
                 UpdatedKeys.CONTENT_URI,
                 new String[] { UpdatedKeys.LAST_UPDATED },
-                UpdatedKeys.MASTER_KEY_ID + " = ?",
+                Tables.UPDATED_KEYS + "." + UpdatedKeys.MASTER_KEY_ID + " = ?",
                 new String[] { "" + masterKeyId },
                 null
         );

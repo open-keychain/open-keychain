@@ -1,7 +1,10 @@
 package org.sufficientlysecure.keychain.provider;
 
 
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -11,6 +14,7 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 
 
 public class LastUpdateInteractor {
@@ -32,7 +36,7 @@ public class LastUpdateInteractor {
         Cursor cursor = contentResolver.query(
                 UpdatedKeys.CONTENT_URI,
                 new String[] { UpdatedKeys.SEEN_ON_KEYSERVERS },
-                UpdatedKeys.MASTER_KEY_ID + " = ?",
+                Tables.UPDATED_KEYS + "." + UpdatedKeys.MASTER_KEY_ID + " = ?",
                 new String[] { "" + masterKeyId },
                 null
         );
@@ -74,5 +78,28 @@ public class LastUpdateInteractor {
         Uri insert = contentResolver.insert(UpdatedKeys.CONTENT_URI, values);
         databaseNotifyManager.notifyKeyserverStatusChange(masterKeyId);
         return insert;
+    }
+
+    public List<byte[]> getFingerprintsForKeysOlderThan(long olderThan, TimeUnit timeUnit) {
+        Cursor outdatedKeysCursor = contentResolver.query(
+                KeychainContract.UpdatedKeys.CONTENT_URI,
+                new String[] { KeychainContract.UpdatedKeys.FINGERPRINT, },
+                KeychainContract.UpdatedKeys.LAST_UPDATED + " < ?",
+                new String[] { Long.toString(timeUnit.toSeconds(olderThan)) },
+                null
+        );
+
+        List<byte[]> fingerprintList = new ArrayList<>();
+        if (outdatedKeysCursor == null) {
+            return fingerprintList;
+        }
+
+        while (outdatedKeysCursor.moveToNext()) {
+            byte[] fingerprint = outdatedKeysCursor.getBlob(0);
+            fingerprintList.add(fingerprint);
+        }
+        outdatedKeysCursor.close();
+
+        return fingerprintList;
     }
 }
