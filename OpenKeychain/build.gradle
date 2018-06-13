@@ -60,6 +60,8 @@ dependencies {
     implementation project(':KeybaseLib')
     implementation project(':safeslinger-exchange')
 
+    implementation "android.arch.work:work-runtime:1.0.0-alpha02"
+
     // Unit tests in the local JVM with Robolectric
     // https://developer.android.com/training/testing/unit-testing/local-unit-tests.html
     // http://robolectric.org/getting-started/
