@@ -363,6 +363,11 @@ public class KeyFormattingUtils {
         return idHex;
     }
 
+    public static String beautifyKeyId(byte[] fingerprint) {
+        long keyId = KeyFormattingUtils.convertFingerprintToKeyId(fingerprint);
+        return beautifyKeyId(keyId);
+    }
+
     /**
      * Makes a human-readable version of a key ID, which is usually 64 bits: lower-case, no
      * leading 0x, space-separated quartets (for keys whose length in hex is divisible by 4)

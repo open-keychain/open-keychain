@@ -788,14 +788,23 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
             case UPDATED_KEYS:
             case UPDATED_KEYS_SPECIFIC: {
                 HashMap<String, String> projectionMap = new HashMap<>();
-                qb.setTables(Tables.UPDATED_KEYS);
-                projectionMap.put(UpdatedKeys.MASTER_KEY_ID, Tables.UPDATED_KEYS + "." + UpdatedKeys.MASTER_KEY_ID);
-                projectionMap.put(UpdatedKeys.LAST_UPDATED, Tables.UPDATED_KEYS + "." + UpdatedKeys.LAST_UPDATED);
+                projectionMap.put(UpdatedKeys.MASTER_KEY_ID,
+                        Tables.UPDATED_KEYS + "." + UpdatedKeys.MASTER_KEY_ID + " AS " + UpdatedKeys.MASTER_KEY_ID);
+                projectionMap.put(UpdatedKeys.LAST_UPDATED,
+                        Tables.UPDATED_KEYS + "." + UpdatedKeys.LAST_UPDATED + " AS " + UpdatedKeys.LAST_UPDATED);
                 projectionMap.put(UpdatedKeys.SEEN_ON_KEYSERVERS,
-                        Tables.UPDATED_KEYS + "." + UpdatedKeys.SEEN_ON_KEYSERVERS);
+                        Tables.UPDATED_KEYS + "." + UpdatedKeys.SEEN_ON_KEYSERVERS + " AS " + UpdatedKeys.SEEN_ON_KEYSERVERS);
+                projectionMap.put(UpdatedKeys.FINGERPRINT,
+                        Tables.KEYS + "." + Keys.FINGERPRINT + " AS " + UpdatedKeys.FINGERPRINT);
                 qb.setProjectionMap(projectionMap);
+
+                qb.setTables(Tables.UPDATED_KEYS +
+                        " LEFT JOIN " + Tables.KEYS +
+                            " ON (" + Tables.KEYS + "." + Keys.KEY_ID + " = " + Tables.UPDATED_KEYS + "." + UpdatedKeys.MASTER_KEY_ID + ")"
+                );
+
                 if (match == UPDATED_KEYS_SPECIFIC) {
-                    qb.appendWhere(UpdatedKeys.MASTER_KEY_ID + " = ");
+                    qb.appendWhere(Tables.UPDATED_KEYS + "." + UpdatedKeys.MASTER_KEY_ID + " = ");
                     qb.appendWhereEscapeString(uri.getPathSegments().get(1));
                 }
                 break;

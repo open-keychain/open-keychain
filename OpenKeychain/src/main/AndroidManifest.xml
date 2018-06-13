@@ -95,15 +95,6 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.Keychain.Light">
-        <!-- broadcast receiver for Wi-Fi Connection -->
-        <receiver
-            android:name=".network.NetworkReceiver"
-            android:enabled="false"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
-            </intent-filter>
-        </receiver>
         <!-- broadcast receiver for Orbots status -->
         <receiver android:name=".network.orbot.OrbotStatusReceiver">
             <intent-filter>
@@ -1068,21 +1059,6 @@
             <meta-data
                 android:name="android.provider.CONTACTS_STRUCTURE"
                 android:resource="@xml/sync_adapter_contacts_structure" />
-        </service>
-
-        <!-- keyserver sync service -->
-        <service
-            android:name=".service.KeyserverSyncAdapterService"
-            android:exported="true"
-            android:process=":sync"
-            tools:ignore="ExportedService">
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_adapter_keys" />
         </service>
 
         <!-- Storage Provider for temporary decrypted files.

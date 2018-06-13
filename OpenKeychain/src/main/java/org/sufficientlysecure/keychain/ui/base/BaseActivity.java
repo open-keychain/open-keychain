@@ -33,7 +33,6 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
-import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 
 /**
@@ -77,7 +76,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public static void onResumeChecks(Context context) {
-        KeyserverSyncAdapterService.cancelUpdates(context);
         // in case user has disabled sync from Android account settings
         ContactSyncAdapterService.deleteIfSyncDisabled(context);
     }
