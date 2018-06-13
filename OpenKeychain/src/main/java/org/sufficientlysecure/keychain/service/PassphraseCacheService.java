@@ -38,6 +38,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Constants.NotificationIds;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
@@ -488,7 +489,7 @@ public class PassphraseCacheService extends Service {
 
     private void updateService() {
         if (mPassphraseCache.size() > 0) {
-            startForeground(Constants.Notification.PASSPHRASE_CACHE, getNotification());
+            startForeground(NotificationIds.PASSPHRASE_CACHE, getNotification());
         } else {
             // stop whole service if no cached passphrases remaining
             Timber.d("PassphraseCacheService: No passphrases remaining in memory, stopping service!");

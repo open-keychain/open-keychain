@@ -7,16 +7,25 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat.Builder;
 
 import androidx.work.Worker;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Constants.NotificationChannels;
+import org.sufficientlysecure.keychain.Constants.NotificationIds;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.LastUpdateInteractor;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
@@ -24,6 +33,7 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.ResourceUtils;
 import timber.log.Timber;
 
 
@@ -65,10 +75,19 @@ public class KeyserverSyncWorker extends Worker {
 
         // no explicit proxy, retrieve from preferences. Check if we should do a staggered sync
         CryptoInputParcel cryptoInputParcel = CryptoInputParcel.createCryptoInputParcel();
-        if (preferences.getParcelableProxy().isTorEnabled()) {
-            return staggeredUpdate(context, staleKeyParcelableKeyRings, cryptoInputParcel);
-        } else {
-            return directUpdate(context, staleKeyParcelableKeyRings, cryptoInputParcel);
+        try {
+            Progressable notificationProgressable = notificationShowForProgress();
+
+            ImportKeyResult importKeyResult;
+            if (preferences.getParcelableProxy().isTorEnabled()) {
+                importKeyResult = staggeredUpdate(context, staleKeyParcelableKeyRings, cryptoInputParcel);
+            } else {
+                importKeyResult =
+                        directUpdate(context, staleKeyParcelableKeyRings, cryptoInputParcel, notificationProgressable);
+            }
+            return importKeyResult;
+        } finally {
+            notificationRemove();
         }
     }
 
@@ -82,9 +101,9 @@ public class KeyserverSyncWorker extends Worker {
     }
 
     private ImportKeyResult directUpdate(Context context, List<ParcelableKeyRing> keyList,
-            CryptoInputParcel cryptoInputParcel) {
+            CryptoInputParcel cryptoInputParcel, Progressable notificationProgressable) {
         Timber.d("Starting normal update");
-        ImportOperation importOp = new ImportOperation(context, keyWritableRepository, null);
+        ImportOperation importOp = new ImportOperation(context, keyWritableRepository, notificationProgressable);
         return importOp.execute(
                 ImportKeyringParcel.createImportKeyringParcel(keyList, preferences.getPreferredKeyserver()),
                 cryptoInputParcel
@@ -188,6 +207,64 @@ public class KeyserverSyncWorker extends Worker {
             accumulator.accumulateKeyImport(result);
         }
         return accumulator.getConsolidatedResult();
+    }
+
+    private Progressable notificationShowForProgress() {
+        final Context context = getApplicationContext();
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager == null) {
+            return null;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = context.getString(R.string.notify_channel_keysync);
+            NotificationChannel channel = new NotificationChannel(
+                    NotificationChannels.KEYSERVER_SYNC, name, NotificationManager.IMPORTANCE_LOW);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        NotificationCompat.Builder builder = new Builder(context, NotificationChannels.KEYSERVER_SYNC)
+                .setSmallIcon(R.drawable.ic_stat_notify_24dp)
+                .setLargeIcon(ResourceUtils.getDrawableAsNotificationBitmap(context, R.mipmap.ic_launcher))
+                .setContentTitle(context.getString(R.string.notify_title_keysync))
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setProgress(0, 0, true);
+
+        return new Progressable() {
+            @Override
+            public void setProgress(String message, int current, int total) {
+                builder.setProgress(total, current, false);
+                builder.setContentText(context.getString(R.string.notify_content_keysync, current, total));
+                notificationManager.notify(NotificationIds.KEYSERVER_SYNC, builder.build());
+            }
+
+            @Override
+            public void setProgress(int resourceId, int current, int total) {
+                builder.setProgress(total, current, false);
+                builder.setContentText(context.getString(R.string.notify_content_keysync, current, total));
+                notificationManager.notify(NotificationIds.KEYSERVER_SYNC, builder.build());
+            }
+
+            @Override
+            public void setProgress(int current, int total) {
+                builder.setProgress(total, current, false);
+                builder.setContentText(context.getString(R.string.notify_content_keysync, current, total));
+                notificationManager.notify(NotificationIds.KEYSERVER_SYNC, builder.build());
+            }
+
+            @Override
+            public void setPreventCancel() {
+            }
+        };
+    }
+
+    private void notificationRemove() {
+        NotificationManager notificationManager =
+                (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager != null) {
+            notificationManager.cancel(NotificationIds.KEYSERVER_SYNC);
+        }
     }
 
     @Override
