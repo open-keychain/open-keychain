@@ -18,8 +18,17 @@
 package org.sufficientlysecure.keychain.provider;
 
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import android.content.ClipDescription;
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -29,17 +38,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.Worker;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.DatabaseUtil;
 import timber.log.Timber;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * TemporaryStorageProvider stores decrypted files inside the app's cache directory previously to
@@ -81,16 +87,20 @@ public class TemporaryFileProvider extends ContentProvider {
     private static Pattern UUID_PATTERN = Pattern.compile("[a-fA-F0-9-]+");
 
     public static Uri createFile(Context context, String targetName, String mimeType) {
+        ContentResolver contentResolver = context.getContentResolver();
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(TemporaryFileColumns.COLUMN_NAME, targetName);
         contentValues.put(TemporaryFileColumns.COLUMN_TYPE, mimeType);
-        return context.getContentResolver().insert(CONTENT_URI, contentValues);
+        contentValues.put(TemporaryFileColumns.COLUMN_TIME, System.currentTimeMillis());
+        Uri resultUri = contentResolver.insert(CONTENT_URI, contentValues);
+
+        scheduleCleanupAfterTtl();
+        return resultUri;
     }
 
     public static Uri createFile(Context context, String targetName) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(TemporaryFileColumns.COLUMN_NAME, targetName);
-        return context.getContentResolver().insert(CONTENT_URI, contentValues);
+        return createFile(context, targetName, null);
     }
 
     public static Uri createFile(Context context) {
@@ -108,15 +118,6 @@ public class TemporaryFileProvider extends ContentProvider {
         ContentValues values = new ContentValues();
         values.put(TemporaryFileColumns.COLUMN_TYPE, mimetype);
         return context.getContentResolver().update(uri, values, null, null);
-    }
-
-    public static int cleanUp(Context context) {
-        Timber.d("Cleaning up temporary files…");
-        return context.getContentResolver().delete(
-                CONTENT_URI,
-                TemporaryFileColumns.COLUMN_TIME + "< ?",
-                new String[]{Long.toString(System.currentTimeMillis() - Constants.TEMPFILE_TTL)}
-        );
     }
 
     private class TemporaryStorageDatabase extends SQLiteOpenHelper {
@@ -247,9 +248,6 @@ public class TemporaryFileProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        if (!values.containsKey(TemporaryFileColumns.COLUMN_TIME)) {
-            values.put(TemporaryFileColumns.COLUMN_TIME, System.currentTimeMillis());
-        }
         String uuid = UUID.randomUUID().toString();
         values.put(TemporaryFileColumns.COLUMN_UUID, uuid);
         int insert = (int) db.getWritableDatabase().insert(TABLE_FILES, null, values);
@@ -310,4 +308,34 @@ public class TemporaryFileProvider extends ContentProvider {
         return openFileHelper(uri, mode);
     }
 
+    public static void scheduleCleanupAfterTtl() {
+        OneTimeWorkRequest cleanupWork = new OneTimeWorkRequest.Builder(CleanupWorker.class)
+                .setInitialDelay(Constants.TEMPFILE_TTL, TimeUnit.MILLISECONDS).build();
+        WorkManager.getInstance().enqueue(cleanupWork);
+    }
+
+    public static void scheduleCleanupImmediately() {
+        OneTimeWorkRequest cleanupWork = new OneTimeWorkRequest.Builder(CleanupWorker.class).build();
+        WorkManager workManager = WorkManager.getInstance();
+        if (workManager != null) { // it's possible this is null, if this is called in onCreate of secondary processes
+            workManager.enqueue(cleanupWork);
+        }
+    }
+
+    public static class CleanupWorker extends Worker {
+        @NonNull
+        @Override
+        public WorkerResult doWork() {
+            Timber.d("Cleaning up temporary files…");
+
+            ContentResolver contentResolver = getApplicationContext().getContentResolver();
+            contentResolver.delete(
+                    CONTENT_URI,
+                    TemporaryFileColumns.COLUMN_TIME + " <= ?",
+                    new String[]{Long.toString(System.currentTimeMillis() - Constants.TEMPFILE_TTL)}
+            );
+
+            return WorkerResult.SUCCESS;
+        }
+    }
 }
