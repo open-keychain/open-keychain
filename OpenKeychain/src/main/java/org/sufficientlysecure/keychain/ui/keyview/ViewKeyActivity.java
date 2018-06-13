@@ -81,6 +81,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
+import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.BackupActivity;
 import org.sufficientlysecure.keychain.ui.CertifyFingerprintActivity;
@@ -381,6 +382,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             @Override
             public void onCryptoOperationSuccess(EditKeyResult result) {
                 displayResult(result);
+                PassphraseCacheService.clearCachedPassphrase(getApplicationContext(), masterKeyId, masterKeyId);
             }
 
             @Override
