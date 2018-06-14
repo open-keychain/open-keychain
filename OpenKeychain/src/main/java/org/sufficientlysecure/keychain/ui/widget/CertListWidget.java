@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain.ui.widget;
 
-import java.util.Date;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -26,13 +25,13 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
-import org.ocpsoft.prettytime.PrettyTime;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
@@ -122,29 +121,28 @@ public class CertListWidget extends ViewAnimator
         }
 
         // TODO support external certificates
-        Date userCert = null;
+        Long certTime = null;
         while (!data.isAfterLast()) {
 
             int verified = data.getInt(INDEX_VERIFIED);
-            Date creation = new Date(data.getLong(INDEX_CREATION) * 1000);
+            long creation = data.getLong(INDEX_CREATION) * 1000;
 
             if (verified == Certs.VERIFIED_SECRET) {
-                if (userCert == null || userCert.after(creation)) {
-                    userCert = creation;
+                if (certTime == null || certTime > creation) {
+                    certTime = creation;
                 }
             }
 
             data.moveToNext();
         }
 
-        if (userCert != null) {
-            PrettyTime format = new PrettyTime();
+        if (certTime != null) {
+            CharSequence relativeTimeStr = DateUtils
+                    .getRelativeTimeSpanString(certTime, System.currentTimeMillis(), 0, DateUtils.FORMAT_ABBREV_ALL);
             if (mIsSecret) {
-                vCollapsed.setText("You created this identity "
-                        + format.format(userCert) + ".");
+                vCollapsed.setText("You created this identity " + relativeTimeStr + ".");
             } else {
-                vCollapsed.setText("You verified and confirmed this identity "
-                        + format.format(userCert) + ".");
+                vCollapsed.setText("You verified and confirmed this identity " + relativeTimeStr + ".");
             }
         } else {
             vCollapsed.setText("This identity is not yet verified or confirmed.");

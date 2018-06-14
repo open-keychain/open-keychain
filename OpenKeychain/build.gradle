@@ -19,7 +19,6 @@ dependencies {
     compile 'com.journeyapps:zxing-android-embedded:3.4.0'
     compile 'com.google.zxing:core:3.3.0'
     compile 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.1'
-    compile 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
     compile 'org.sufficientlysecure:donations:2.5'
     compile 'com.squareup.okhttp3:okhttp:3.9.1'
     compile 'com.squareup.okhttp3:okhttp-urlconnection:3.9.1'
@@ -129,7 +128,6 @@ dependencyVerification {
         'com.android.support:support-annotations:af05330d997eb92a066534dbe0a3ea24347d26d7001221092113ae02a8f233da',
         'com.google.zxing:core:bba7724e02a997cec38213af77133ee8e24b0d5cf5fa7ecbc16a4fa93f11ee0d',
         'org.commonjava.googlecode.markdown4j:markdown4j:28eb991f702c6d85d6cafd68c24d1ce841d1f5c995c943f25aedb433c0c13f60',
-        'org.ocpsoft.prettytime:prettytime:ef7098d973ae78b57d1a22dc37d3b8a771bf030301300e24055d676b6cdc5e75',
         'com.squareup.okhttp3:okhttp-urlconnection:16a410e5c4457ab381759486df6f840fdc7cc426d67433d4da1b7d65ed2b3b33',
         'com.squareup.okhttp3:okhttp:a0d01017a42bba26e507fc6d448bb36e536f4b6e612f7c42de30bbdac2b7785e',
         'org.apache.james:apache-mime4j-dom:e18717fe6d36f32e5c5f7cbeea1a9bf04645fdabc84e7e8374d9da10fd52e78d',
