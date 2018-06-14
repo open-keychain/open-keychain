@@ -6,34 +6,31 @@ import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 
 import org.piwik.sdk.Piwik;
 import org.piwik.sdk.Tracker;
 import org.piwik.sdk.TrackerConfig;
 import org.piwik.sdk.extra.DownloadTracker.Extra.ApkChecksum;
 import org.piwik.sdk.extra.TrackHelper;
+import org.sufficientlysecure.keychain.util.Preferences;
 
 
 public class TrackingManager {
     private Tracker piwikTracker;
 
     public static TrackingManager getInstance(Context context) {
-        TrackerConfig trackerConfig = new TrackerConfig("https://mugenguild.com/piwik/", 1, "OpenKeychain");
-        Tracker tracker = Piwik.getInstance(context).newTracker(trackerConfig);
-        tracker.setDispatchInterval(30000);
-
-        return new TrackingManager(tracker);
+        return new TrackingManager(context);
     }
 
-    private TrackingManager(Tracker piwikTracker) {
-        this.piwikTracker = piwikTracker;
+    private TrackingManager(Context context) {
+        refreshSettings(context);
     }
 
     public void initialize(Application application) {
-        if (piwikTracker == null) {
-            return;
+        if (piwikTracker != null) {
+            TrackHelper.track().download().identifier(new ApkChecksum(application)).with(piwikTracker);
         }
-        TrackHelper.track().download().identifier(new ApkChecksum(application)).with(piwikTracker);
 
         application.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override
@@ -47,6 +44,9 @@ public class TrackingManager {
 
             @Override
             public void onActivityResumed(Activity activity) {
+                if (piwikTracker == null) {
+                    return;
+                }
                 TrackHelper.track().screen(activity.getClass().getSimpleName()).with(piwikTracker);
             }
 
@@ -98,5 +98,21 @@ public class TrackingManager {
                 .interaction("externalApiCall", opClassName)
                 .piece(currentCallingPackage.replace(".", "/"))
                 .with(piwikTracker);
+    }
+
+    public synchronized void refreshSettings(Context context) {
+        boolean analyticsHasConsent = Preferences.getPreferences(context).isAnalyticsHasConsent();
+        boolean analyticsEnabled = piwikTracker != null;
+        if (analyticsHasConsent != analyticsEnabled) {
+            if (analyticsHasConsent) {
+                TrackerConfig trackerConfig = new TrackerConfig("https://piwik.openkeychain.org/", 1, "OpenKeychain");
+                piwikTracker = Piwik.getInstance(context).newTracker(trackerConfig);
+                piwikTracker.setDispatchInterval(60000);
+                piwikTracker.setOptOut(false);
+            } else {
+                piwikTracker.setOptOut(true);
+                piwikTracker = null;
+            }
+        }
     }
 }

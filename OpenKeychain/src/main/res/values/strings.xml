@@ -236,6 +236,9 @@
     <string name="label_experimental_settings_keybase_summary">"Contact keybase.io for key proofs and show them every time a key is displayed"</string>
     <string name="label_experimental_settings_theme_summary">"(The icons and many screens are not yet adjusted accordingly for the dark theme)"</string>
 
+    <string name="label_settings_analytics_title">Allow anonymous usage statistics</string>
+    <string name="label_settings_analytics_summary">If enabled, sends anonymous usage statistics to help improve the app</string>
+
     <!-- Proxy Preferences -->
     <string name="pref_proxy_tor_title">"Enable Tor"</string>
     <string name="pref_proxy_tor_summary">"Requires Orbot to be installed"</string>
@@ -2045,4 +2048,7 @@
     <string name="keylist_header_anonymous">Anonymous</string>
     <string name="keylist_header_special">#</string>
 
+    <string name="dialog_analytics_text">Allow OpenKeychain to collect anonymous usage statistics to help improve the app?</string>
+    <string name="button_analytics_yes">Yes, I want to help!</string>
+    <string name="button_analytics_no">No, thanks</string>
 </resources>

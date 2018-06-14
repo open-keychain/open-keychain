@@ -7,6 +7,13 @@
 
     <SwitchPreference
         android:defaultValue="false"
+        android:key="analytics_consent"
+        android:persistent="true"
+        android:summary="@string/label_settings_analytics_summary"
+        android:title="@string/label_settings_analytics_title" />
+
+    <SwitchPreference
+        android:defaultValue="false"
         android:key="experimentalEnableLinkedIdentities"
         android:persistent="true"
         android:summary="@string/label_experimental_settings_linked_identities_summary"

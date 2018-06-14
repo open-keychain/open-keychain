@@ -20,12 +20,17 @@ package org.sufficientlysecure.keychain.ui;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.WorkerThread;
@@ -51,9 +56,12 @@ import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.FlexibleAdapter.OnItemClickListener;
 import eu.davidea.flexibleadapter.FlexibleAdapter.OnItemLongClickListener;
 import eu.davidea.flexibleadapter.SelectableAdapter.Mode;
+import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.KeychainDatabase;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.TrackingManager;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.daos.DatabaseNotifyManager;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
@@ -259,12 +267,53 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
         GenericViewModel viewModel = ViewModelProviders.of(this).get(GenericViewModel.class);
         LiveData<List<FlexibleKeyItem>> liveData = viewModel.getGenericLiveData(requireContext(), this::loadFlexibleKeyItems);
         liveData.observe(this, this::onLoadKeyItems);
+
+        maybeAskForAnalytics();
     }
 
     @WorkerThread
     private List<FlexibleKeyItem> loadFlexibleKeyItems() {
         List<UnifiedKeyInfo> unifiedKeyInfo = keyRepository.getAllUnifiedKeyInfo();
         return flexibleKeyItemFactory.mapUnifiedKeyInfoToFlexibleKeyItems(unifiedKeyInfo);
+    }
+
+    private void maybeAskForAnalytics() {
+        Context context = getContext();
+        if (context == null) {
+            return;
+        }
+
+        Preferences preferences = Preferences.getPreferences(context);
+        if (!Constants.DEBUG && !preferences.isAnalyticsHasConsent() && preferences.isAnalyticsAskedPolitely()) {
+            return;
+        }
+
+        try {
+            long firstInstallTime = context.getPackageManager().getPackageInfo(BuildConfig.APPLICATION_ID, 0).firstInstallTime;
+            long threeDaysAgo = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(3);
+            boolean installedLessThanThreeDaysAgo = firstInstallTime > threeDaysAgo;
+            if (installedLessThanThreeDaysAgo) {
+                return;
+            }
+        } catch (NameNotFoundException e) {
+            return;
+        }
+
+        TrackingManager trackingManager = ((KeychainApplication) requireActivity().getApplication()).getTrackingManager();
+        AlertDialog show = new Builder(context)
+                .setMessage(R.string.dialog_analytics_text)
+                .setPositiveButton(R.string.button_analytics_yes, (dialog, which) -> {
+                    preferences.setAnalyticsAskedPolitely();
+                    preferences.setAnalyticsGotUserConsent(true);
+                    trackingManager.refreshSettings(context);
+                })
+                .setNegativeButton(R.string.button_analytics_no, (dialog, which) -> {
+                    preferences.setAnalyticsAskedPolitely();
+                    preferences.setAnalyticsGotUserConsent(false);
+                    trackingManager.refreshSettings(context);
+                })
+                .show();
+        show.setCanceledOnTouchOutside(false);
     }
 
     private void onLoadKeyItems(List<FlexibleKeyItem> flexibleKeyItems) {

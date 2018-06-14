@@ -353,6 +353,22 @@ public class Preferences {
         mSharedPreferences.edit().putBoolean(Pref.SYNC_IS_SCHEDULED, isScheduled).apply();
     }
 
+    public boolean isAnalyticsAskedPolitely() {
+        return mSharedPreferences.getBoolean(Pref.KEY_ANALYTICS_ASKED_POLITELY, false);
+    }
+
+    public void setAnalyticsAskedPolitely() {
+        mSharedPreferences.edit().putBoolean(Pref.KEY_ANALYTICS_ASKED_POLITELY, true).apply();
+    }
+
+    public boolean isAnalyticsHasConsent() {
+        return mSharedPreferences.getBoolean(Pref.KEY_ANALYTICS_CONSENT, false);
+    }
+
+    public void setAnalyticsGotUserConsent(boolean hasUserConsent) {
+        mSharedPreferences.edit().putBoolean(Pref.KEY_ANALYTICS_CONSENT, hasUserConsent).apply();
+    }
+
     @AutoValue
     public static abstract class CloudSearchPrefs implements Parcelable {
         public abstract boolean isKeyserverEnabled();

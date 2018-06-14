@@ -158,6 +158,9 @@ public final class Constants {
 
         public static final String KEY_SIGNATURES_TABLE_INITIALIZED = "key_signatures_table_initialized";
 
+        public static final String KEY_ANALYTICS_ASKED_POLITELY = "analytics_asked";
+        public static final String KEY_ANALYTICS_CONSENT = "analytics_consent";
+
         public static final class Theme {
             public static final String LIGHT = "light";
             public static final String DARK = "dark";
