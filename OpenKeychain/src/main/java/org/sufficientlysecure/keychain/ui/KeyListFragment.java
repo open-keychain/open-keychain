@@ -26,6 +26,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
@@ -50,11 +51,13 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.tonicartos.superslim.LayoutManager;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.BenchmarkResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -66,6 +69,8 @@ import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
@@ -252,6 +257,54 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
         getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        checkClipboardForPublicKeyMaterial();
+    }
+
+    private void checkClipboardForPublicKeyMaterial() {
+        CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
+
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                if (clipboardText == null) {
+                    return false;
+                }
+
+                // see if it looks like a pgp thing
+                String publicKeyContent = PgpHelper.getPgpPublicKeyContent(clipboardText);
+
+                return publicKeyContent != null;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean clipboardDataFound) {
+                super.onPostExecute(clipboardDataFound);
+
+                if (clipboardDataFound) {
+                    showClipboardDataSnackbar();
+                }
+            }
+        }.execute();
+    }
+
+    private void showClipboardDataSnackbar() {
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        Notify.create(activity, R.string.snack_keylist_clipboard_title, Notify.LENGTH_INDEFINITE, Style.OK,
+                () -> {
+                    Intent intentImportExisting = new Intent(getActivity(), ImportKeysActivity.class);
+                    intentImportExisting.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_CLIPBOARD);
+                    startActivity(intentImportExisting);
+                }, R.string.snack_keylist_clipboard_action).show(this);
     }
 
     private void startSearchForQuery() {

@@ -117,25 +117,23 @@ public class EncryptDecryptFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        // get text from clipboard
-        final CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
+        checkClipboardForEncryptedText();
+    }
 
-        // if it's null, nothing to do here /o/
-        if (clipboardText == null) {
-            return;
-        }
+    private void checkClipboardForEncryptedText() {
+        CharSequence clipboardText = ClipboardReflection.getClipboardText(getActivity());
 
-        new AsyncTask<String, Void, Boolean>() {
+        new AsyncTask<Void, Void, Boolean>() {
             @Override
-            protected Boolean doInBackground(String... clipboardText) {
+            protected Boolean doInBackground(Void... voids) {
 
                 // see if it looks like a pgp thing
-                Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(clipboardText[0]);
+                Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(clipboardText);
                 boolean animate = matcher.matches();
 
                 // see if it looks like another pgp thing
                 if (!animate) {
-                    matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(clipboardText[0]);
+                    matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(clipboardText);
                     animate = matcher.matches();
                 }
                 return animate;
@@ -150,7 +148,7 @@ public class EncryptDecryptFragment extends Fragment {
                     SubtleAttentionSeeker.tada(mClipboardIcon, 1.5f).start();
                 }
             }
-        }.execute(clipboardText.toString());
+        }.execute();
     }
 
     @Override

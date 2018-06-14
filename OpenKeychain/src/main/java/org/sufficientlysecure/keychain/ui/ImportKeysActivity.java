@@ -17,6 +17,11 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -25,10 +30,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.view.ViewGroup;
+import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.keyimport.FacebookKeyserverClient;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
@@ -38,18 +44,16 @@ import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysOperationC
 import org.sufficientlysecure.keychain.keyimport.processing.LoaderState;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.ParcelableFileCache;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ImportKeysActivity extends BaseActivity implements ImportKeysListener {
 
@@ -69,6 +73,8 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
             + "IMPORT_KEY_FROM_FILE";
     public static final String ACTION_SEARCH_KEYSERVER_FROM_URL = Constants.INTENT_PREFIX
             + "SEARCH_KEYSERVER_FROM_URL";
+    public static final String ACTION_IMPORT_KEY_FROM_CLIPBOARD = Constants.INTENT_PREFIX
+            + "IMPORT_KEY_FROM_CLIPBOARD";
     public static final String EXTRA_RESULT = "result";
 
     // only used by ACTION_IMPORT_KEY
@@ -257,12 +263,32 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
                 startListFragment(null, null, null, null);
                 break;
             }
+            case ACTION_IMPORT_KEY_FROM_CLIPBOARD: {
+                startListFragmentFromClipboard();
+                break;
+            }
             default: {
                 startTopCloudFragment(null, null);
                 startListFragment(null, null, null, null);
                 break;
             }
         }
+    }
+
+    private void startListFragmentFromClipboard() {
+        CharSequence clipboardText = ClipboardReflection.getClipboardText(this);
+        if (TextUtils.isEmpty(clipboardText)) {
+            Notify.create(this, R.string.error_clipboard_empty, Style.ERROR).show();
+            return;
+        }
+
+        String keyText = PgpHelper.getPgpPublicKeyContent(clipboardText);
+        if (keyText == null) {
+            Notify.create(this, R.string.error_clipboard_bad, Style.ERROR).show();
+            return;
+        }
+
+        startListFragment(keyText.getBytes(), null, null, null);
     }
 
     /**
@@ -387,6 +413,10 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
             setResult(Activity.RESULT_OK, intent);
             finish();
         } else if (result.isOkNew() || result.isOkUpdated()) {
+            if (ACTION_IMPORT_KEY_FROM_CLIPBOARD.equals(intentAction)) {
+                ClipboardReflection.clearClipboard(getApplicationContext());
+            }
+
             // User has successfully imported a key, hide first time dialog
             Preferences.getPreferences(this).setFirstTime(false);
 

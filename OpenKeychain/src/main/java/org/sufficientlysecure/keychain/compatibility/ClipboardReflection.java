@@ -34,6 +34,9 @@ public class ClipboardReflection {
             return null;
         }
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboard == null) {
+            return null;
+        }
 
         ClipData clip = clipboard.getPrimaryClip();
         if (clip == null || clip.getItemCount() == 0) {
@@ -47,5 +50,17 @@ public class ClipboardReflection {
             return seq.toString();
         }
         return null;
+    }
+
+    public static void clearClipboard(@Nullable Context context) {
+        if (context == null) {
+            return;
+        }
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboard == null) {
+            return;
+        }
+
+        clipboard.setPrimaryClip(ClipData.newPlainText("", ""));
     }
 }
