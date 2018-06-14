@@ -25,6 +25,7 @@ import java.util.List;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -40,6 +41,7 @@ import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject.AutocryptRecommendationResult;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject.AutocryptState;
+import org.sufficientlysecure.keychain.provider.DatabaseNotifyManager;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -72,6 +74,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
     private UriMatcher uriMatcher;
     private ApiPermissionHelper apiPermissionHelper;
     private KeychainProvider internalKeychainProvider;
+    private DatabaseNotifyManager databaseNotifyManager;
 
 
     /**
@@ -103,9 +106,15 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
     public boolean onCreate() {
         uriMatcher = buildUriMatcher();
 
+        Context context = getContext();
+        if (context == null) {
+            throw new NullPointerException("Context can't be null during onCreate!");
+        }
+
         internalKeychainProvider = new KeychainProvider();
-        internalKeychainProvider.attachInfo(getContext(), null);
-        apiPermissionHelper = new ApiPermissionHelper(getContext(), new ApiDataAccessObject(internalKeychainProvider));
+        internalKeychainProvider.attachInfo(context, null);
+        apiPermissionHelper = new ApiPermissionHelper(context, new ApiDataAccessObject(internalKeychainProvider));
+        databaseNotifyManager = DatabaseNotifyManager.create(context);
         return true;
     }
 
@@ -270,7 +279,8 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                 }
                 if (!isWildcardSelector && queriesAutocryptResult) {
                     AutocryptPeerDataAccessObject autocryptPeerDao =
-                            new AutocryptPeerDataAccessObject(internalKeychainProvider, callingPackageName);
+                            new AutocryptPeerDataAccessObject(internalKeychainProvider, callingPackageName,
+                                    databaseNotifyManager);
                     fillTempTableWithAutocryptRecommendations(db, autocryptPeerDao, selectionArgs);
                 }
 

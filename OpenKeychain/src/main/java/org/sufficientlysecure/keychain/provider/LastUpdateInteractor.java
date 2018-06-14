@@ -15,14 +15,16 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 
 public class LastUpdateInteractor {
     private final ContentResolver contentResolver;
+    private final DatabaseNotifyManager databaseNotifyManager;
 
 
     public static LastUpdateInteractor create(Context context) {
-        return new LastUpdateInteractor(context.getContentResolver());
+        return new LastUpdateInteractor(context.getContentResolver(), DatabaseNotifyManager.create(context));
     }
 
-    private LastUpdateInteractor(ContentResolver contentResolver) {
+    private LastUpdateInteractor(ContentResolver contentResolver, DatabaseNotifyManager databaseNotifyManager) {
         this.contentResolver = contentResolver;
+        this.databaseNotifyManager = databaseNotifyManager;
     }
 
     @Nullable
@@ -69,6 +71,8 @@ public class LastUpdateInteractor {
 
         // this will actually update/replace, doing the right thing™ for seenOnKeyservers value
         // see `KeychainProvider.insert()`
-        return contentResolver.insert(UpdatedKeys.CONTENT_URI, values);
+        Uri insert = contentResolver.insert(UpdatedKeys.CONTENT_URI, values);
+        databaseNotifyManager.notifyKeyserverStatusChange(masterKeyId);
+        return insert;
     }
 }
