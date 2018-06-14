@@ -26,6 +26,7 @@ import android.accounts.AccountManager;
 import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
@@ -41,6 +42,7 @@ import timber.log.Timber.DebugTree;
 
 
 public class KeychainApplication extends Application {
+    TrackingManager trackingManager;
 
     /**
      * Called when the application is starting, before any activity, service, or receiver objects
@@ -105,6 +107,9 @@ public class KeychainApplication extends Application {
         KeyserverSyncManager.updateKeyserverSyncScheduleAsync(this, Constants.DEBUG_KEYSERVER_SYNC);
 
         TemporaryFileProvider.scheduleCleanupImmediately();
+
+        trackingManager = TrackingManager.getInstance(getApplicationContext());
+        trackingManager.initialize(this);
     }
 
     /**
@@ -151,5 +156,9 @@ public class KeychainApplication extends Application {
         if (enableDebugLogging) {
             Timber.plant(new DebugTree());
         }
+    }
+
+    public TrackingManager getTrackingManager() {
+        return trackingManager;
     }
 }

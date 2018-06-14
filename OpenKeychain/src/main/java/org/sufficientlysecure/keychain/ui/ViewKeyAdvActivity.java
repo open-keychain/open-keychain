@@ -42,11 +42,13 @@ import android.view.ViewPropertyAnimator;
 import android.view.animation.OvershootInterpolator;
 
 import com.astuetz.PagerSlidingTabStrip;
+import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.livedata.GenericLiveData;
 import org.sufficientlysecure.keychain.model.SubKey;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.model.UserPacket.UserId;
+import org.sufficientlysecure.keychain.TrackingManager;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
@@ -62,12 +64,13 @@ public class ViewKeyAdvActivity extends BaseActivity implements OnPageChangeList
     KeyRepository keyRepository;
 
     // view
-    private ViewPager mViewPager;
-    private PagerSlidingTabStrip mSlidingTabLayout;
+    private ViewPager viewPager;
+    private PagerSlidingTabStrip slidingTabLayout;
 
-    private ActionMode mActionMode;
+    private ActionMode actionMode;
     private boolean hasSecret;
-    private boolean mActionIconShown;
+    private boolean actionIconShown;
+    private PagerTabStripAdapter tabAdapter;
 
     enum ViewKeyAdvTab {
         START(ViewKeyAdvStartFragment.class, R.string.key_view_tab_start, false),
@@ -86,6 +89,8 @@ public class ViewKeyAdvActivity extends BaseActivity implements OnPageChangeList
         }
     }
 
+    private TrackingManager trackingManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,9 +98,10 @@ public class ViewKeyAdvActivity extends BaseActivity implements OnPageChangeList
         setFullScreenDialogClose(v -> finish());
 
         keyRepository = KeyRepository.create(this);
+        trackingManager = ((KeychainApplication) getApplication()).getTrackingManager();
 
-        mViewPager = findViewById(R.id.pager);
-        mSlidingTabLayout = findViewById(R.id.sliding_tab_layout);
+        viewPager = findViewById(R.id.pager);
+        slidingTabLayout = findViewById(R.id.sliding_tab_layout);
 
         if (!getIntent().hasExtra(EXTRA_MASTER_KEY_ID)) {
             throw new IllegalArgumentException("Missing required extra master_key_id");
@@ -185,7 +191,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements OnPageChangeList
         }
         mToolbar.setBackgroundColor(color);
         mStatusBar.setBackgroundColor(ViewKeyActivity.getStatusBarBackgroundColor(color));
-        mSlidingTabLayout.setBackgroundColor(color);
+        slidingTabLayout.setBackgroundColor(color);
 
         invalidateOptionsMenu();
     }
@@ -196,21 +202,21 @@ public class ViewKeyAdvActivity extends BaseActivity implements OnPageChangeList
     }
 
     private void initTabs() {
-        PagerTabStripAdapter tabAdapter = new PagerTabStripAdapter(this);
-        mViewPager.setAdapter(tabAdapter);
+        tabAdapter = new PagerTabStripAdapter(this);
+        viewPager.setAdapter(tabAdapter);
 
         for (ViewKeyAdvTab tab : ViewKeyAdvTab.values()) {
             tabAdapter.addTab(tab.fragmentClass, null, getString(tab.titleRes));
         }
 
         // update layout after operations
-        mSlidingTabLayout.setViewPager(mViewPager);
-        mSlidingTabLayout.setOnPageChangeListener(this);
+        slidingTabLayout.setViewPager(viewPager);
+        slidingTabLayout.setOnPageChangeListener(this);
 
         // switch to tab selected by extra
         Intent intent = getIntent();
         int switchToTab = intent.getIntExtra(EXTRA_SELECTED_TAB, 0);
-        mViewPager.setCurrentItem(switchToTab);
+        viewPager.setCurrentItem(switchToTab);
     }
 
     @Override
@@ -234,15 +240,15 @@ public class ViewKeyAdvActivity extends BaseActivity implements OnPageChangeList
         getMenuInflater().inflate(R.menu.action_mode_edit, menu);
         final MenuItem vActionModeItem = menu.findItem(R.id.menu_action_mode_edit);
 
-        boolean isCurrentActionFragment = ViewKeyAdvTab.values()[mViewPager.getCurrentItem()].hasActionMode;
+        boolean isCurrentActionFragment = ViewKeyAdvTab.values()[viewPager.getCurrentItem()].hasActionMode;
 
         // if the state is as it should be, never mind
-        if (isCurrentActionFragment == mActionIconShown) {
+        if (isCurrentActionFragment == actionIconShown) {
             return isCurrentActionFragment;
         }
 
         // show or hide accordingly
-        mActionIconShown = isCurrentActionFragment;
+        actionIconShown = isCurrentActionFragment;
         vActionModeItem.setEnabled(isCurrentActionFragment);
         animateMenuItem(vActionModeItem, isCurrentActionFragment);
 
@@ -273,13 +279,13 @@ public class ViewKeyAdvActivity extends BaseActivity implements OnPageChangeList
     @Override
     public void onActionModeStarted(final ActionMode mode) {
         super.onActionModeStarted(mode);
-        mActionMode = mode;
+        actionMode = mode;
     }
 
     @Override
     public void onActionModeFinished(ActionMode mode) {
         super.onActionModeFinished(mode);
-        mActionMode = null;
+        actionMode = null;
     }
 
     @Override
@@ -289,11 +295,14 @@ public class ViewKeyAdvActivity extends BaseActivity implements OnPageChangeList
 
     @Override
     public void onPageSelected(int position) {
-        if (mActionMode != null) {
-            mActionMode.finish();
-            mActionMode = null;
+        if (actionMode != null) {
+            actionMode.finish();
+            actionMode = null;
         }
         invalidateOptionsMenu();
+
+        String fragmentName = tabAdapter.getItem(position).getClass().getSimpleName();
+        trackingManager.trackFragmentImpression(getClass().getSimpleName(), fragmentName);
     }
 
     @Override

@@ -37,7 +37,9 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.TrackingManager;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.remote.ui.AppsListFragment;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
@@ -62,6 +64,7 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
 
     public Drawer mDrawer;
     private Toolbar mToolbar;
+    private TrackingManager trackingManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,6 +74,8 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
         mToolbar = findViewById(R.id.toolbar);
         mToolbar.setTitle(R.string.app_name);
         setSupportActionBar(mToolbar);
+
+        trackingManager = ((KeychainApplication) getApplication()).getTrackingManager();
 
         mDrawer = new DrawerBuilder()
                 .withActivity(this)
@@ -199,6 +204,8 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
 
     private void setFragment(Fragment frag) {
         FragmentManager fragmentManager = getSupportFragmentManager();
+
+        trackingManager.trackFragmentImpression(getClass().getSimpleName(), frag.getClass().getSimpleName());
 
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.replace(R.id.main_fragment_container, frag);

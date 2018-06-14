@@ -21,11 +21,14 @@ package org.sufficientlysecure.keychain.service;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Parcelable;
 import android.support.v4.os.CancellationSignal;
 
+import org.sufficientlysecure.keychain.KeychainApplication;
+import org.sufficientlysecure.keychain.TrackingManager;
 import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.operations.BackupOperation;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
@@ -52,13 +55,19 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 
 
 public class KeychainServiceTask {
-    public static KeychainServiceTask create(Context context) {
-        return new KeychainServiceTask(context.getApplicationContext());
+    private final TrackingManager trackingManager;
+
+    public static KeychainServiceTask create(Activity activity) {
+        Context context = activity.getApplicationContext();
+        TrackingManager trackingManager = ((KeychainApplication) activity.getApplication()).getTrackingManager();
+
+        return new KeychainServiceTask(context, KeyWritableRepository.create(context), trackingManager);
     }
 
-    private KeychainServiceTask(Context context) {
+    private KeychainServiceTask(Context context, KeyWritableRepository keyRepository, TrackingManager trackingManager) {
         this.context = context;
-        this.keyRepository = KeyWritableRepository.create(context);
+        this.keyRepository = keyRepository;
+        this.trackingManager = trackingManager;
     }
 
     private final Context context;
@@ -120,6 +129,8 @@ public class KeychainServiceTask {
                         if (isCancelled()) {
                             return null;
                         }
+
+                        trackingManager.trackInternalServiceCall(op.getClass().getSimpleName());
 
                         // noinspection unchecked, we make sure it's the correct op above
                         return op.execute(inputParcel, cryptoInput);
