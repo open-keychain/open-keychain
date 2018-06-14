@@ -19,6 +19,9 @@ package org.sufficientlysecure.keychain.keyimport;
 
 
 import android.support.annotation.NonNull;
+
+import okhttp3.MediaType;
+import okhttp3.ResponseBody;
 import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -417,11 +420,19 @@ public class HkpKeyserverClient implements KeyserverClient {
 
     private String getResponseBodyAsUtf8(Response response) throws IOException {
         String responseBody;
-        byte[] responseBytes = response.body().bytes();
+        ResponseBody body = response.body();
+        if (body == null) {
+            throw new IOException("Response from keyserver was empty");
+        }
         try {
-            responseBody = new String(responseBytes, response.body().contentType().charset(UTF_8));
+            MediaType mediaType = body.contentType();
+            Charset charset = mediaType != null ? mediaType.charset(UTF_8) : UTF_8;
+            if (charset == null) {
+                charset = UTF_8;
+            }
+            responseBody = new String(body.bytes(), charset);
         } catch (UnsupportedCharsetException e) {
-            responseBody = new String(responseBytes, UTF_8);
+            responseBody = new String(body.bytes(), UTF_8);
         }
 
         return responseBody;
