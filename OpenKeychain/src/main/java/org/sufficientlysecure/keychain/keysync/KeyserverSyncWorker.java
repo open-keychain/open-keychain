@@ -38,6 +38,9 @@ import timber.log.Timber;
 
 
 public class KeyserverSyncWorker extends Worker {
+    public static final String DATA_IS_FOREGROUND = "foreground";
+    public static final String DATA_IS_FORCE = "force";
+
     // time since last update after which a key should be updated again, in s
     private static final long KEY_STALE_THRESHOLD_MILLIS =
             Constants.DEBUG_KEYSERVER_SYNC ? 1 : TimeUnit.DAYS.toMillis(7);
@@ -57,38 +60,37 @@ public class KeyserverSyncWorker extends Worker {
         keyWritableRepository = KeyWritableRepository.create(getApplicationContext());
         preferences = Preferences.getPreferences(getApplicationContext());
 
+        boolean isForeground = getInputData().getBoolean(DATA_IS_FOREGROUND, false);
+        boolean isForceUpdate = getInputData().getBoolean(DATA_IS_FORCE, false);
+
         Timber.d("Starting key sync…");
-        ImportKeyResult result = updateKeysFromKeyserver(getApplicationContext());
+        Progressable notificationProgressable = notificationShowForProgress(isForeground);
+        ImportKeyResult result = updateKeysFromKeyserver(getApplicationContext(), isForceUpdate, notificationProgressable);
         return handleUpdateResult(result);
     }
 
-    private ImportKeyResult updateKeysFromKeyserver(Context context) {
-        long staleKeyThreshold = System.currentTimeMillis() - KEY_STALE_THRESHOLD_MILLIS;
+    private ImportKeyResult updateKeysFromKeyserver(Context context, boolean isForceUpdate,
+            Progressable notificationProgressable) {
+        long staleKeyThreshold = System.currentTimeMillis() - (isForceUpdate ? 0 : KEY_STALE_THRESHOLD_MILLIS);
         List<byte[]> staleKeyFingerprints =
                 lastUpdateInteractor.getFingerprintsForKeysOlderThan(staleKeyThreshold, TimeUnit.MILLISECONDS);
         List<ParcelableKeyRing> staleKeyParcelableKeyRings = fingerprintListToParcelableKeyRings(staleKeyFingerprints);
 
         if (isStopped()) { // if we've already been cancelled
-            return new ImportKeyResult(OperationResult.RESULT_CANCELLED,
-                    new OperationResult.OperationLog());
+            return new ImportKeyResult(OperationResult.RESULT_CANCELLED, new OperationResult.OperationLog());
         }
 
         // no explicit proxy, retrieve from preferences. Check if we should do a staggered sync
         CryptoInputParcel cryptoInputParcel = CryptoInputParcel.createCryptoInputParcel();
-        try {
-            Progressable notificationProgressable = notificationShowForProgress();
 
-            ImportKeyResult importKeyResult;
-            if (preferences.getParcelableProxy().isTorEnabled()) {
-                importKeyResult = staggeredUpdate(context, staleKeyParcelableKeyRings, cryptoInputParcel);
-            } else {
-                importKeyResult =
-                        directUpdate(context, staleKeyParcelableKeyRings, cryptoInputParcel, notificationProgressable);
-            }
-            return importKeyResult;
-        } finally {
-            notificationRemove();
+        ImportKeyResult importKeyResult;
+        if (preferences.getParcelableProxy().isTorEnabled()) {
+            importKeyResult = staggeredUpdate(context, staleKeyParcelableKeyRings, cryptoInputParcel);
+        } else {
+            importKeyResult =
+                    directUpdate(context, staleKeyParcelableKeyRings, cryptoInputParcel, notificationProgressable);
         }
+        return importKeyResult;
     }
 
     private List<ParcelableKeyRing> fingerprintListToParcelableKeyRings(List<byte[]> staleKeyFingerprints) {
@@ -209,7 +211,7 @@ public class KeyserverSyncWorker extends Worker {
         return accumulator.getConsolidatedResult();
     }
 
-    private Progressable notificationShowForProgress() {
+    private Progressable notificationShowForProgress(boolean isForeground) {
         final Context context = getApplicationContext();
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -217,39 +219,44 @@ public class KeyserverSyncWorker extends Worker {
             return null;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = context.getString(R.string.notify_channel_keysync);
-            NotificationChannel channel = new NotificationChannel(
-                    NotificationChannels.KEYSERVER_SYNC, name, NotificationManager.IMPORTANCE_LOW);
-            notificationManager.createNotificationChannel(channel);
-        }
+        createNotificationChannelsIfNecessary(context, notificationManager);
 
-        NotificationCompat.Builder builder = new Builder(context, NotificationChannels.KEYSERVER_SYNC)
+        NotificationCompat.Builder builder = new Builder(context, isForeground ?
+                NotificationChannels.KEYSERVER_SYNC_FOREGROUND : NotificationChannels.KEYSERVER_SYNC)
                 .setSmallIcon(R.drawable.ic_stat_notify_24dp)
                 .setLargeIcon(ResourceUtils.getDrawableAsNotificationBitmap(context, R.mipmap.ic_launcher))
                 .setContentTitle(context.getString(R.string.notify_title_keysync))
-                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setPriority(isForeground ? NotificationCompat.PRIORITY_LOW : NotificationCompat.PRIORITY_MIN)
+                .setTimeoutAfter(5000)
+                .setVibrate(null)
+                .setSound(null)
                 .setProgress(0, 0, true);
 
         return new Progressable() {
             @Override
             public void setProgress(String message, int current, int total) {
-                builder.setProgress(total, current, false);
-                builder.setContentText(context.getString(R.string.notify_content_keysync, current, total));
-                notificationManager.notify(NotificationIds.KEYSERVER_SYNC, builder.build());
+                setProgress(current, total);
             }
 
             @Override
             public void setProgress(int resourceId, int current, int total) {
-                builder.setProgress(total, current, false);
-                builder.setContentText(context.getString(R.string.notify_content_keysync, current, total));
-                notificationManager.notify(NotificationIds.KEYSERVER_SYNC, builder.build());
+                setProgress(current, total);
             }
 
             @Override
             public void setProgress(int current, int total) {
+                if (total == 0) {
+                    notificationManager.cancel(NotificationIds.KEYSERVER_SYNC);
+                    return;
+                }
+
                 builder.setProgress(total, current, false);
-                builder.setContentText(context.getString(R.string.notify_content_keysync, current, total));
+                if (current == total) {
+                    builder.setContentTitle(context.getString(R.string.notify_title_keysync_finished, total));
+                    builder.setContentText(null);
+                } else {
+                    builder.setContentText(context.getString(R.string.notify_content_keysync, current, total));
+                }
                 notificationManager.notify(NotificationIds.KEYSERVER_SYNC, builder.build());
             }
 
@@ -259,11 +266,20 @@ public class KeyserverSyncWorker extends Worker {
         };
     }
 
-    private void notificationRemove() {
-        NotificationManager notificationManager =
-                (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        if (notificationManager != null) {
-            notificationManager.cancel(NotificationIds.KEYSERVER_SYNC);
+    private void createNotificationChannelsIfNecessary(Context context,
+            NotificationManager notificationManager) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = context.getString(R.string.notify_channel_keysync);
+            NotificationChannel channel = new NotificationChannel(
+                    NotificationChannels.KEYSERVER_SYNC, name, NotificationManager.IMPORTANCE_MIN);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = context.getString(R.string.notify_channel_keysync_foreground);
+            NotificationChannel channel = new NotificationChannel(
+                    NotificationChannels.KEYSERVER_SYNC_FOREGROUND, name, NotificationManager.IMPORTANCE_LOW);
+            notificationManager.createNotificationChannel(channel);
         }
     }
 
