@@ -38,6 +38,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/menu_key_list_debug_bgsync"
+        android:title="Debug / Background Key Sync"
+        android:visible="false"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/menu_key_list_debug_first_time"
         android:title="Debug / Show first time screen"
         android:visible="false"

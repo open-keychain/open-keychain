@@ -18,18 +18,24 @@
 package org.sufficientlysecure.keychain.keysync;
 
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.support.annotation.NonNull;
 
 import androidx.work.Constraints.Builder;
+import androidx.work.Data;
+import androidx.work.ExistingWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
-import org.sufficientlysecure.keychain.Constants;
+import androidx.work.WorkStatus;
+import androidx.work.Worker;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
 
@@ -38,7 +44,8 @@ public class KeyserverSyncManager {
     private static final long SYNC_INTERVAL = 3;
     private static final TimeUnit SYNC_INTERVAL_UNIT = TimeUnit.DAYS;
 
-    private static final String WORK_TAG = "keyserverSync";
+    private static final String PERIODIC_WORK_TAG = "keyserverSync";
+    private static final String UNIQUE_WORK_NAME = "keySync";
 
     public static void updateKeyserverSyncSchedule(Context context, boolean forceReschedule) {
         Preferences prefs = Preferences.getPreferences(context);
@@ -50,11 +57,13 @@ public class KeyserverSyncManager {
             Timber.e("WorkManager unavailable!");
             return;
         }
-        workManager.cancelAllWorkByTag(WORK_TAG);
+        workManager.cancelAllWorkByTag(PERIODIC_WORK_TAG);
 
         if (!prefs.isKeyserverSyncEnabled()) {
             return;
         }
+
+        /* Periodic syncs can't be unique, so we just use this to launch a uniquely queued worker */
 
         Builder constraints = new Builder()
                 .setRequiredNetworkType(prefs.getWifiOnlySync() ? NetworkType.UNMETERED : NetworkType.CONNECTED)
@@ -64,23 +73,45 @@ public class KeyserverSyncManager {
         }
 
         PeriodicWorkRequest workRequest =
-                new PeriodicWorkRequest.Builder(KeyserverSyncWorker.class, SYNC_INTERVAL, SYNC_INTERVAL_UNIT)
+                new PeriodicWorkRequest.Builder(KeyserverSyncLauncherWorker.class, SYNC_INTERVAL, SYNC_INTERVAL_UNIT)
                         .setConstraints(constraints.build())
-                        .addTag(WORK_TAG)
+                        .addTag(PERIODIC_WORK_TAG)
                         .build();
         workManager.enqueue(workRequest);
 
         prefs.setKeyserverSyncScheduled(true);
     }
 
-    public static void runSyncNow() {
+    public static class KeyserverSyncLauncherWorker extends Worker {
+        @NonNull
+        @Override
+        public WorkerResult doWork() {
+            runSyncNow(false, false);
+            return WorkerResult.SUCCESS;
+        }
+    }
+
+    public static void runSyncNow(boolean isForeground, boolean isForceUpdate) {
         WorkManager workManager = WorkManager.getInstance();
         if (workManager == null) {
             Timber.e("WorkManager unavailable!");
             return;
         }
 
-        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(KeyserverSyncWorker.class).build();
-        workManager.enqueue(workRequest);
+        Data workData = new Data.Builder()
+                .putBoolean(KeyserverSyncWorker.DATA_IS_FOREGROUND, isForeground)
+                .putBoolean(KeyserverSyncWorker.DATA_IS_FORCE, isForceUpdate)
+                .build();
+
+        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(KeyserverSyncWorker.class)
+                .setInputData(workData)
+                .build();
+        workManager.beginUniqueWork(UNIQUE_WORK_NAME,
+                isForeground ? ExistingWorkPolicy.REPLACE : ExistingWorkPolicy.KEEP, workRequest).enqueue();
+     }
+
+     public static LiveData<List<WorkStatus>> getSyncWorkerLiveData() {
+         WorkManager workManager = WorkManager.getInstance();
+         return workManager.getStatusesForUniqueWork(UNIQUE_WORK_NAME);
      }
 }
