@@ -115,8 +115,13 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 InputStream inputStream = mContext.getContentResolver().openInputStream(input.getInputUri());
                 long inputSize = FileHelper.getFileSize(mContext, input.getInputUri(), 0);
                 inputData = new InputData(inputStream, inputSize);
+            } catch (SecurityException e) {
+                Timber.e(e, "Access denied for input URI: %s", input.getInputUri());
+                OperationLog log = new OperationLog();
+                log.add(LogType.MSG_DC_ERROR_INPUT_DENIED, 1);
+                return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);
             } catch (FileNotFoundException e) {
-                Timber.e(e, "Input URI could not be opened: " + input.getInputUri());
+                Timber.e(e, "Input URI could not be opened: %s", input.getInputUri());
                 OperationLog log = new OperationLog();
                 log.add(LogType.MSG_DC_ERROR_INPUT, 1);
                 return new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log);

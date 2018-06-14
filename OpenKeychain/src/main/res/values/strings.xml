@@ -1204,6 +1204,7 @@
     <string name="msg_dc_error_invalid_data">"No valid OpenPGP encrypted or signed data found!"</string>
     <string name="msg_dc_error_io">"Encountered an error reading input data!"</string>
     <string name="msg_dc_error_input">"Error opening input data stream!"</string>
+    <string name="msg_dc_error_input_denied">"Error opening input data stream: access denied!"</string>
     <string name="msg_dc_error_no_data">"No encrypted data found in stream!"</string>
     <string name="msg_dc_error_no_key">"No encrypted data with known secret key found in stream!"</string>
     <string name="msg_dc_error_no_signature">"Missing signature data!"</string>
