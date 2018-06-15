@@ -27,18 +27,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build.VERSION_CODES;
-import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.intent.Intents;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.v7.widget.RecyclerView;
-import android.widget.AdapterView;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.TestHelpers;
-import org.sufficientlysecure.keychain.matcher.CustomMatchers;
+import org.sufficientlysecure.keychain.AndroidTestHelpers;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -46,7 +43,6 @@ import org.sufficientlysecure.keychain.util.Preferences;
 import java.io.File;
 
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
-import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
 import static android.support.test.espresso.Espresso.pressBack;
@@ -67,16 +63,15 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.hasItem;
-import static org.sufficientlysecure.keychain.TestHelpers.checkSnackbar;
-import static org.sufficientlysecure.keychain.TestHelpers.dismissSnackbar;
-import static org.sufficientlysecure.keychain.TestHelpers.getImageNames;
-import static org.sufficientlysecure.keychain.TestHelpers.importKeysFromResource;
-import static org.sufficientlysecure.keychain.TestHelpers.pickRandom;
-import static org.sufficientlysecure.keychain.TestHelpers.randomString;
+import static org.sufficientlysecure.keychain.AndroidTestHelpers.checkSnackbar;
+import static org.sufficientlysecure.keychain.AndroidTestHelpers.dismissSnackbar;
+import static org.sufficientlysecure.keychain.AndroidTestHelpers.getImageNames;
+import static org.sufficientlysecure.keychain.AndroidTestHelpers.importKeysFromResource;
+import static org.sufficientlysecure.keychain.AndroidTestHelpers.pickRandom;
+import static org.sufficientlysecure.keychain.AndroidTestHelpers.randomString;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.isRecyclerItemView;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withDisplayedChild;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withKeyHolderId;
-import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withKeyItemId;
 import static org.sufficientlysecure.keychain.matcher.DrawableMatcher.withDrawable;
 
 //TODO This test is disabled because it needs to be fixed to work with updated code
@@ -104,7 +99,7 @@ public class MiscCryptOperationTests {
 
         mActivity = mActivityRule.getActivity();
 
-        TestHelpers.copyFiles();
+        AndroidTestHelpers.copyFiles();
 
         // import these two, make sure they're there
         importKeysFromResource(mActivity, "x.sec.asc");

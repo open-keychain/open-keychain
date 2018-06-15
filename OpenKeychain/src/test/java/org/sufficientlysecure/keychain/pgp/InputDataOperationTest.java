@@ -34,6 +34,7 @@ import org.openintents.openpgp.OpenPgpMetadata;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLog;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
+import org.sufficientlysecure.keychain.TestHelpers;
 import org.sufficientlysecure.keychain.operations.InputDataOperation;
 import org.sufficientlysecure.keychain.operations.results.InputDataResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -49,12 +50,16 @@ import java.io.PrintStream;
 import java.security.Security;
 import java.util.ArrayList;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.sufficientlysecure.keychain.TestHelpers.cvContains;
+
 
 @RunWith(KeychainTestRunner.class)
 public class InputDataOperationTest {
@@ -137,33 +142,33 @@ public class InputDataOperationTest {
         Assert.assertNull(result.mDecryptVerifyResult);
 
         ArrayList<Uri> outUris = result.getOutputUris();
-        Assert.assertEquals("must have two output URIs", 2, outUris.size());
-        Assert.assertEquals("first uri must be the one we provided", fakeOutputUri1, outUris.get(0));
+        assertEquals("must have two output URIs", 2, outUris.size());
+        assertEquals("first uri must be the one we provided", fakeOutputUri1, outUris.get(0));
         verify(mockResolver).openOutputStream(result.getOutputUris().get(0), "w");
-        Assert.assertEquals("second uri must be the one we provided", fakeOutputUri2, outUris.get(1));
+        assertEquals("second uri must be the one we provided", fakeOutputUri2, outUris.get(1));
         verify(mockResolver).openOutputStream(result.getOutputUris().get(1), "w");
 
         ContentValues contentValues = new ContentValues();
         contentValues.put("name", "data.txt");
         contentValues.put("mimetype", "text/plain");
-        verify(mockResolver).insert(TemporaryFileProvider.CONTENT_URI, contentValues);
+        verify(mockResolver).insert(eq(TemporaryFileProvider.CONTENT_URI), cvContains(contentValues));
         contentValues.put("name", (String) null);
         contentValues.put("mimetype", "text/testvalue");
-        verify(mockResolver).insert(TemporaryFileProvider.CONTENT_URI, contentValues);
+        verify(mockResolver).insert(eq(TemporaryFileProvider.CONTENT_URI), cvContains(contentValues));
 
         // quoted-printable returns windows style line endings for some reason?
-        Assert.assertEquals("first part must have expected content",
+        assertEquals("first part must have expected content",
                 "message part 1\r\n", new String(outStream1.toByteArray()));
-        Assert.assertEquals("second part must have expected content",
+        assertEquals("second part must have expected content",
                 "message part 2.1\nmessage part 2.2\n", new String(outStream2.toByteArray()));
 
         OpenPgpMetadata metadata = result.mMetadata.get(0);
-        Assert.assertEquals("text/plain", metadata.getMimeType());
-        Assert.assertEquals("utf-8", metadata.getCharset());
+        assertEquals("text/plain", metadata.getMimeType());
+        assertEquals("utf-8", metadata.getCharset());
 
         metadata = result.mMetadata.get(1);
-        Assert.assertEquals("text/testvalue", metadata.getMimeType());
-        Assert.assertEquals("iso-8859-1", metadata.getCharset());
+        assertEquals("text/testvalue", metadata.getMimeType());
+        assertEquals("iso-8859-1", metadata.getCharset());
     }
 
     @Test
@@ -184,9 +189,9 @@ public class InputDataOperationTest {
         Assert.assertNull(result.mDecryptVerifyResult);
 
         OpenPgpMetadata metadata = result.mMetadata.get(0);
-        Assert.assertEquals("text/plain", metadata.getMimeType());
+        assertEquals("text/plain", metadata.getMimeType());
 
-        Assert.assertEquals("charset should be set since it was explicitly specified",
+        assertEquals("charset should be set since it was explicitly specified",
                 "utf-8", metadata.getCharset());
         Assert.assertTrue("faulty charset should have been detected",
                 result.getLog().containsType(LogType.MSG_DATA_MIME_CHARSET_FAULTY));
@@ -210,7 +215,7 @@ public class InputDataOperationTest {
         Assert.assertNull(result.mDecryptVerifyResult);
 
         OpenPgpMetadata metadata = result.mMetadata.get(0);
-        Assert.assertEquals("text/plain", metadata.getMimeType());
+        assertEquals("text/plain", metadata.getMimeType());
 
         Assert.assertNull("charset was bad so it should not be set", metadata.getCharset());
         Assert.assertTrue("faulty charset should have been detected",
@@ -231,9 +236,9 @@ public class InputDataOperationTest {
         Assert.assertNull(result.mDecryptVerifyResult);
 
         OpenPgpMetadata metadata = result.mMetadata.get(0);
-        Assert.assertEquals("text/plain", metadata.getMimeType());
+        assertEquals("text/plain", metadata.getMimeType());
 
-        Assert.assertEquals("charset should be set since it was guessed and not faulty",
+        assertEquals("charset should be set since it was guessed and not faulty",
                 "utf-8", metadata.getCharset());
         Assert.assertTrue("charset should have been guessed",
                 result.getLog().containsType(LogType.MSG_DATA_MIME_CHARSET_GUESS));
@@ -253,9 +258,9 @@ public class InputDataOperationTest {
         Assert.assertNull(result.mDecryptVerifyResult);
 
         OpenPgpMetadata metadata = result.mMetadata.get(0);
-        Assert.assertEquals("text/plain", metadata.getMimeType());
+        assertEquals("text/plain", metadata.getMimeType());
 
-        Assert.assertEquals("charset should be set since it was guessed and not faulty",
+        assertEquals("charset should be set since it was guessed and not faulty",
                 "utf-8", metadata.getCharset());
         Assert.assertTrue("charset should have been guessed",
                 result.getLog().containsType(LogType.MSG_DATA_MIME_CHARSET_GUESS));
@@ -280,7 +285,7 @@ public class InputDataOperationTest {
         Assert.assertTrue("should not be mime parsed",
                 result.getLog().containsType(LogType.MSG_DATA_MIME_NONE));
 
-        Assert.assertEquals("output uri should simply be passed-through input uri",
+        assertEquals("output uri should simply be passed-through input uri",
                 result.getOutputUris().get(0), FAKE_CONTENT_INPUT_URI_1);
     }
 

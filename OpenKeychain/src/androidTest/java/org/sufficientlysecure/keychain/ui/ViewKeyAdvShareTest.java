@@ -47,8 +47,8 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.sufficientlysecure.keychain.TestHelpers.checkAndDismissSnackbar;
-import static org.sufficientlysecure.keychain.TestHelpers.cleanupForTests;
+import static org.sufficientlysecure.keychain.AndroidTestHelpers.checkAndDismissSnackbar;
+import static org.sufficientlysecure.keychain.AndroidTestHelpers.cleanupForTests;
 
 //TODO This test is disabled because it needs to be fixed to work with updated code
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
