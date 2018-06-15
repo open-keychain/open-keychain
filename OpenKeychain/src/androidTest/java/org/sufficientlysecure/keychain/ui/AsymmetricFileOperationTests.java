@@ -32,7 +32,7 @@ import android.widget.AdapterView;
 import org.junit.Before;
 import org.junit.Rule;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.TestHelpers;
+import org.sufficientlysecure.keychain.AndroidTestHelpers;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
@@ -61,11 +61,11 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
-import static org.sufficientlysecure.keychain.TestHelpers.checkSnackbar;
-import static org.sufficientlysecure.keychain.TestHelpers.getImageNames;
-import static org.sufficientlysecure.keychain.TestHelpers.importKeysFromResource;
-import static org.sufficientlysecure.keychain.TestHelpers.pickRandom;
-import static org.sufficientlysecure.keychain.TestHelpers.randomString;
+import static org.sufficientlysecure.keychain.AndroidTestHelpers.checkSnackbar;
+import static org.sufficientlysecure.keychain.AndroidTestHelpers.getImageNames;
+import static org.sufficientlysecure.keychain.AndroidTestHelpers.importKeysFromResource;
+import static org.sufficientlysecure.keychain.AndroidTestHelpers.pickRandom;
+import static org.sufficientlysecure.keychain.AndroidTestHelpers.randomString;
 import static org.sufficientlysecure.keychain.actions.CustomActions.tokenEncryptViewAddToken;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.isRecyclerItemView;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withDisplayedChild;
@@ -95,7 +95,7 @@ public class AsymmetricFileOperationTests {
     public void setUp() throws Exception {
         Activity activity = mActivity.getActivity();
 
-        TestHelpers.copyFiles();
+        AndroidTestHelpers.copyFiles();
 
         // import these two, make sure they're there
         importKeysFromResource(activity, "x.sec.asc");
