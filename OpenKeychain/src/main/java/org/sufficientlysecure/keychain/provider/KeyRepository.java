@@ -56,24 +56,28 @@ public class KeyRepository {
 
     final ContentResolver contentResolver;
     final LocalPublicKeyStorage mLocalPublicKeyStorage;
+    final LocalSecretKeyStorage localSecretKeyStorage;
     OperationLog mLog;
     int mIndent;
 
     public static KeyRepository create(Context context) {
         ContentResolver contentResolver = context.getContentResolver();
         LocalPublicKeyStorage localPublicKeyStorage = LocalPublicKeyStorage.getInstance(context);
+        LocalSecretKeyStorage localSecretKeyStorage = LocalSecretKeyStorage.getInstance(context);
 
-        return new KeyRepository(contentResolver, localPublicKeyStorage);
+        return new KeyRepository(contentResolver, localPublicKeyStorage, localSecretKeyStorage);
     }
 
-    private KeyRepository(ContentResolver contentResolver, LocalPublicKeyStorage localPublicKeyStorage) {
-        this(contentResolver, localPublicKeyStorage, new OperationLog(), 0);
+    private KeyRepository(ContentResolver contentResolver, LocalPublicKeyStorage localPublicKeyStorage,
+            LocalSecretKeyStorage localSecretKeyStorage) {
+        this(contentResolver, localPublicKeyStorage, localSecretKeyStorage, new OperationLog(), 0);
     }
 
     KeyRepository(ContentResolver contentResolver, LocalPublicKeyStorage localPublicKeyStorage,
-            OperationLog log, int indent) {
+            LocalSecretKeyStorage localSecretKeyStorage, OperationLog log, int indent) {
         this.contentResolver = contentResolver;
         mLocalPublicKeyStorage = localPublicKeyStorage;
+        this.localSecretKeyStorage = localSecretKeyStorage;
         mIndent = indent;
         mLog = log;
     }
@@ -326,14 +330,12 @@ public class KeyRepository {
     }
 
     public final byte[] loadSecretKeyRingData(long masterKeyId) throws NotFoundException {
-        byte[] data = (byte[]) getGenericDataOrNull(KeychainContract.KeyRingData.buildSecretKeyRingUri(masterKeyId),
-                KeyRingData.KEY_RING_DATA, FIELD_TYPE_BLOB);
-
-        if (data == null) {
+        try {
+            return localSecretKeyStorage.readSecretKey(masterKeyId);
+        } catch (IOException e) {
+            Timber.e(e, "Error reading public key from storage!");
             throw new NotFoundException();
         }
-
-        return data;
     }
 
     public static class NotFoundException extends Exception {

@@ -244,8 +244,9 @@ public class InteropTest {
 
         KeyWritableRepository helper = new KeyWritableRepository(RuntimeEnvironment.application,
                 LocalPublicKeyStorage.getInstance(RuntimeEnvironment.application),
-                LastUpdateInteractor.create(RuntimeEnvironment.application),
-                DatabaseNotifyManager.create(RuntimeEnvironment.application)) {
+                LocalSecretKeyStorage.getInstance(RuntimeEnvironment.application),
+                DatabaseNotifyManager.create(RuntimeEnvironment.application),
+                LastUpdateInteractor.create(RuntimeEnvironment.application)) {
 
             @Override
             public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) throws PgpKeyNotFoundException {

@@ -24,7 +24,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import android.content.Context;
-import android.database.SQLException;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -55,12 +55,11 @@ import timber.log.Timber;
  */
 public class KeychainDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 25;
+    private static final int DATABASE_VERSION = 26;
     private Context mContext;
 
     public interface Tables {
         String KEY_RINGS_PUBLIC = "keyrings_public";
-        String KEY_RINGS_SECRET = "keyrings_secret";
         String KEYS = "keys";
         String UPDATED_KEYS = "updated_keys";
         String KEY_SIGNATURES = "key_signatures";
@@ -76,14 +75,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
             "CREATE TABLE IF NOT EXISTS keyrings_public ("
                 + KeyRingsColumns.MASTER_KEY_ID + " INTEGER PRIMARY KEY,"
                 + KeyRingsColumns.KEY_RING_DATA + " BLOB"
-            + ")";
-
-    private static final String CREATE_KEYRINGS_SECRET =
-            "CREATE TABLE IF NOT EXISTS keyrings_secret ("
-                    + KeyRingsColumns.MASTER_KEY_ID + " INTEGER PRIMARY KEY,"
-                    + KeyRingsColumns.KEY_RING_DATA + " BLOB, "
-                    + "FOREIGN KEY(" + KeyRingsColumns.MASTER_KEY_ID + ") "
-                        + "REFERENCES keyrings_public(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
             + ")";
 
     private static final String CREATE_KEYS =
@@ -222,7 +213,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         Timber.w("Creating database...");
 
         db.execSQL(CREATE_KEYRINGS_PUBLIC);
-        db.execSQL(CREATE_KEYRINGS_SECRET);
         db.execSQL(CREATE_KEYS);
         db.execSQL(CREATE_USER_PACKETS);
         db.execSQL(CREATE_CERTS);
@@ -302,37 +292,37 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 db.execSQL("DROP TABLE IF EXISTS certs");
                 db.execSQL("DROP TABLE IF EXISTS user_ids");
                 db.execSQL("CREATE TABLE IF NOT EXISTS user_packets("
-                    + "master_key_id INTEGER, "
-                    + "type INT, "
-                    + "user_id TEXT, "
-                    + "attribute_data BLOB, "
+                        + "master_key_id INTEGER, "
+                        + "type INT, "
+                        + "user_id TEXT, "
+                        + "attribute_data BLOB, "
 
-                    + "is_primary INTEGER, "
-                    + "is_revoked INTEGER, "
-                    + "rank INTEGER, "
+                        + "is_primary INTEGER, "
+                        + "is_revoked INTEGER, "
+                        + "rank INTEGER, "
 
-                    + "PRIMARY KEY(master_key_id, rank), "
-                    + "FOREIGN KEY(master_key_id) REFERENCES "
+                        + "PRIMARY KEY(master_key_id, rank), "
+                        + "FOREIGN KEY(master_key_id) REFERENCES "
                         + "keyrings_public(master_key_id) ON DELETE CASCADE"
-                + ")");
+                        + ")");
                 db.execSQL("CREATE TABLE IF NOT EXISTS certs("
-                    + "master_key_id INTEGER,"
-                    + "rank INTEGER, " // rank of certified uid
+                        + "master_key_id INTEGER,"
+                        + "rank INTEGER, " // rank of certified uid
 
-                    + "key_id_certifier INTEGER, " // certifying key
-                    + "type INTEGER, "
-                    + "verified INTEGER, "
-                    + "creation INTEGER, "
+                        + "key_id_certifier INTEGER, " // certifying key
+                        + "type INTEGER, "
+                        + "verified INTEGER, "
+                        + "creation INTEGER, "
 
-                    + "data BLOB, "
+                        + "data BLOB, "
 
-                    + "PRIMARY KEY(master_key_id, rank, "
+                        + "PRIMARY KEY(master_key_id, rank, "
                         + "key_id_certifier), "
-                    + "FOREIGN KEY(master_key_id) REFERENCES "
+                        + "FOREIGN KEY(master_key_id) REFERENCES "
                         + "keyrings_public(master_key_id) ON DELETE CASCADE,"
-                    + "FOREIGN KEY(master_key_id, rank) REFERENCES "
+                        + "FOREIGN KEY(master_key_id, rank) REFERENCES "
                         + "user_packets(master_key_id, rank) ON DELETE CASCADE"
-                + ")");
+                        + ")");
             case 9:
                 // do nothing here, just consolidate
             case 10:
@@ -380,11 +370,11 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 }
             */
             case 20:
-                    db.execSQL(
-                            "CREATE TABLE IF NOT EXISTS overridden_warnings ("
-                                    + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                                    + "identifier TEXT NOT NULL UNIQUE "
-                                    + ")");
+                db.execSQL(
+                        "CREATE TABLE IF NOT EXISTS overridden_warnings ("
+                                + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+                                + "identifier TEXT NOT NULL UNIQUE "
+                                + ")");
 
             case 21:
                 try {
@@ -403,7 +393,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                         + "master_key_id INTEGER NULL, "
                         + "PRIMARY KEY(package_name, identifier), "
                         + "FOREIGN KEY(package_name) REFERENCES api_apps(package_name) ON DELETE CASCADE"
-                    + ")");
+                        + ")");
 
             case 23:
                 db.execSQL("CREATE TABLE IF NOT EXISTS key_signatures ("
@@ -413,7 +403,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                         + "FOREIGN KEY(master_key_id) REFERENCES keyrings_public(master_key_id) ON DELETE CASCADE"
                         + ")");
 
-            case 24:
+            case 24: {
                 try {
                     db.beginTransaction();
                     db.execSQL("ALTER TABLE api_autocrypt_peers RENAME TO tmp");
@@ -456,7 +446,31 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 db.execSQL("CREATE INDEX IF NOT EXISTS uids_by_email ON user_packets (email);");
                 db.execSQL("DROP INDEX keys_by_rank");
                 db.execSQL("CREATE INDEX keys_by_rank ON keys(rank, master_key_id);");
+            }
+
+            case 25: {
+                try {
+                    migrateSecretKeysFromDbToLocalStorage(db);
+                } catch (IOException e) {
+                    throw new IllegalStateException("Error migrating secret keys! This is bad!!");
+                }
+            }
+
         }
+    }
+
+    private void migrateSecretKeysFromDbToLocalStorage(SQLiteDatabase db) throws IOException {
+        LocalSecretKeyStorage localSecretKeyStorage = LocalSecretKeyStorage.getInstance(mContext);
+        Cursor cursor = db.rawQuery("SELECT master_key_id, key_ring_data FROM keyrings_secret", null);
+        while (cursor.moveToNext()) {
+            long masterKeyId = cursor.getLong(0);
+            byte[] secretKeyBlob = cursor.getBlob(1);
+            localSecretKeyStorage.writeSecretKey(masterKeyId, secretKeyBlob);
+        }
+        cursor.close();
+
+        // we'll keep this around for now, but make sure to delete when migration looks ok!!
+        // db.execSQL("DROP TABLE keyrings_secret");
     }
 
     @Override

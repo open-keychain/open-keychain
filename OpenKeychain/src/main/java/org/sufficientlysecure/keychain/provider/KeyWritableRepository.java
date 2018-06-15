@@ -85,28 +85,31 @@ public class KeyWritableRepository extends KeyRepository {
 
     private final Context context;
     private final LastUpdateInteractor lastUpdateInteractor;
-    private DatabaseNotifyManager databaseNotifyManager;
+    private final DatabaseNotifyManager databaseNotifyManager;
 
     public static KeyWritableRepository create(Context context) {
         LocalPublicKeyStorage localPublicKeyStorage = LocalPublicKeyStorage.getInstance(context);
-        LastUpdateInteractor lastUpdateInteractor = LastUpdateInteractor.create(context);
+        LocalSecretKeyStorage localSecretKeyStorage = LocalSecretKeyStorage.getInstance(context);
         DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
-
-        return new KeyWritableRepository(context, localPublicKeyStorage, lastUpdateInteractor,
-                databaseNotifyManager);
-    }
+        LastUpdateInteractor lastUpdateInteractor = LastUpdateInteractor.create(context);
+        return new KeyWritableRepository(context, localPublicKeyStorage, localSecretKeyStorage, databaseNotifyManager,
+                lastUpdateInteractor);
+        }
 
     @VisibleForTesting
-    KeyWritableRepository(Context context, LocalPublicKeyStorage localPublicKeyStorage,
-            LastUpdateInteractor lastUpdateInteractor, DatabaseNotifyManager databaseNotifyManager) {
-        this(context, localPublicKeyStorage, lastUpdateInteractor, new OperationLog(), 0,
-                databaseNotifyManager);
+    KeyWritableRepository(Context context,
+            LocalPublicKeyStorage localPublicKeyStorage,
+            LocalSecretKeyStorage localSecretKeyStorage,
+            DatabaseNotifyManager databaseNotifyManager,
+            LastUpdateInteractor lastUpdateInteractor) {
+        this(context, localPublicKeyStorage, localSecretKeyStorage, databaseNotifyManager, lastUpdateInteractor,
+                new OperationLog(), 0);
     }
 
     private KeyWritableRepository(Context context, LocalPublicKeyStorage localPublicKeyStorage,
-            LastUpdateInteractor lastUpdateInteractor, OperationLog log, int indent,
-            DatabaseNotifyManager databaseNotifyManager) {
-        super(context.getContentResolver(), localPublicKeyStorage, log, indent);
+            LocalSecretKeyStorage localSecretKeyStorage, DatabaseNotifyManager databaseNotifyManager,
+            LastUpdateInteractor lastUpdateInteractor, OperationLog log, int indent) {
+        super(context.getContentResolver(), localPublicKeyStorage, localSecretKeyStorage, log, indent);
 
         this.context = context;
         this.databaseNotifyManager = databaseNotifyManager;
@@ -601,21 +604,15 @@ public class KeyWritableRepository extends KeyRepository {
         operations.add(ContentProviderOperation.newInsert(uri).withValues(values).build());
     }
 
-    private Uri writeSecretKeyRing(CanonicalizedSecretKeyRing keyRing, long masterKeyId) throws IOException {
+    private void writeSecretKeyRing(CanonicalizedSecretKeyRing keyRing, long masterKeyId) throws IOException {
         byte[] encodedKey = keyRing.getEncoded();
-
-        ContentValues values = new ContentValues();
-        values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
-        values.put(KeyRingData.KEY_RING_DATA, encodedKey);
-
-        // insert new version of this keyRing
-        Uri uri = KeyRingData.buildSecretKeyRingUri(masterKeyId);
-        return contentResolver.insert(uri, values);
+        localSecretKeyStorage.writeSecretKey(masterKeyId, encodedKey);
     }
 
     public boolean deleteKeyRing(long masterKeyId) {
         try {
             mLocalPublicKeyStorage.deletePublicKey(masterKeyId);
+            localSecretKeyStorage.deleteSecretKey(masterKeyId);
         } catch (IOException e) {
             Timber.e(e, "Could not delete file!");
             return false;
@@ -683,11 +680,7 @@ public class KeyWritableRepository extends KeyRepository {
 
             // save secret keyring
             try {
-                Uri insertedUri = writeSecretKeyRing(keyRing, masterKeyId);
-                if (insertedUri == null) {
-                    log(LogType.MSG_IS_DB_EXCEPTION);
-                    return SaveKeyringResult.RESULT_ERROR;
-                }
+                writeSecretKeyRing(keyRing, masterKeyId);
             } catch (IOException e) {
                 Timber.e(e, "Failed to encode key!");
                 log(LogType.MSG_IS_ERROR_IO_EXC);

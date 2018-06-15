@@ -136,7 +136,6 @@ public class KeychainContract {
     public static final String PATH_BY_SIGNER = "signer";
 
     public static final String PATH_PUBLIC = "public";
-    public static final String PATH_SECRET = "secret";
     public static final String PATH_USER_IDS = "user_ids";
     public static final String PATH_LINKED_IDS = "linked_ids";
     public static final String PATH_KEYS = "keys";
@@ -239,19 +238,6 @@ public class KeychainContract {
         public static Uri buildPublicKeyRingUri(Uri uri) {
             return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_PUBLIC).build();
         }
-
-        public static Uri buildSecretKeyRingUri() {
-            return CONTENT_URI.buildUpon().appendPath(PATH_SECRET).build();
-        }
-
-        public static Uri buildSecretKeyRingUri(long masterKeyId) {
-            return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId)).appendPath(PATH_SECRET).build();
-        }
-
-        public static Uri buildSecretKeyRingUri(Uri uri) {
-            return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_SECRET).build();
-        }
-
     }
 
     public static class Keys implements KeysColumns, BaseColumns {

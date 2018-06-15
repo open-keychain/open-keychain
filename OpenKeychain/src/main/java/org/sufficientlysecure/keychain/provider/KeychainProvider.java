@@ -60,14 +60,12 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
 
     private static final int KEY_RINGS_UNIFIED = 101;
     private static final int KEY_RINGS_PUBLIC = 102;
-    private static final int KEY_RINGS_SECRET = 103;
     private static final int KEY_RINGS_USER_IDS = 104;
 
     private static final int KEY_RING_UNIFIED = 200;
     private static final int KEY_RING_KEYS = 201;
     private static final int KEY_RING_USER_IDS = 202;
     private static final int KEY_RING_PUBLIC = 203;
-    private static final int KEY_RING_SECRET = 204;
     private static final int KEY_RING_CERTS = 205;
     private static final int KEY_RING_CERTS_SPECIFIC = 206;
     private static final int KEY_RING_LINKED_IDS = 207;
@@ -118,9 +116,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS
                         + "/" + KeychainContract.PATH_PUBLIC,
                 KEY_RINGS_PUBLIC);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS
-                        + "/" + KeychainContract.PATH_SECRET,
-                KEY_RINGS_SECRET);
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS
                         + "/" + KeychainContract.PATH_USER_IDS,
                 KEY_RINGS_USER_IDS);
@@ -180,9 +175,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
                 + KeychainContract.PATH_PUBLIC,
                 KEY_RING_PUBLIC);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
-                + KeychainContract.PATH_SECRET,
-                KEY_RING_SECRET);
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
                 + KeychainContract.PATH_CERTS,
                 KEY_RING_CERTS);
@@ -268,9 +260,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
             case KEY_RING_USER_IDS:
                 return UserPackets.CONTENT_TYPE;
 
-            case KEY_RING_SECRET:
-                return KeyRings.CONTENT_ITEM_TYPE;
-
             case UPDATED_KEYS:
                 return UpdatedKeys.CONTENT_TYPE;
 
@@ -349,9 +338,10 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                 projectionMap.put(KeyRings.VERIFIED, Tables.CERTS + "." + Certs.VERIFIED);
                 projectionMap.put(KeyRings.HAS_SECRET, Tables.KEYS + "." + KeyRings.HAS_SECRET);
                 projectionMap.put(KeyRings.HAS_ANY_SECRET,
-                        "(EXISTS (SELECT * FROM " + Tables.KEY_RINGS_SECRET + " WHERE "
-                                + Tables.KEYS + "." + Keys.MASTER_KEY_ID + " = "
-                                + Tables.KEY_RINGS_SECRET + "." + KeyRingData.MASTER_KEY_ID
+                        "(EXISTS (SELECT * FROM " + Tables.KEYS + " AS k WHERE "
+                                + "k." + Keys.HAS_SECRET + " != 0"
+                                + " AND k." + Keys.MASTER_KEY_ID + " = "
+                                + Tables.KEYS + "." + KeyRingData.MASTER_KEY_ID
                                 + ")) AS " + KeyRings.HAS_ANY_SECRET);
                 projectionMap.put(KeyRings.HAS_ENCRYPT,
                         "kE." + Keys.KEY_ID + " AS " + KeyRings.HAS_ENCRYPT);
@@ -641,24 +631,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                 break;
             }
 
-            case KEY_RINGS_SECRET:
-            case KEY_RING_SECRET: {
-                HashMap<String, String> projectionMap = new HashMap<>();
-                projectionMap.put(KeyRingData._ID, Tables.KEY_RINGS_SECRET + ".oid AS _id");
-                projectionMap.put(KeyRingData.MASTER_KEY_ID, KeyRingData.MASTER_KEY_ID);
-                projectionMap.put(KeyRingData.KEY_RING_DATA, KeyRingData.KEY_RING_DATA);
-                qb.setProjectionMap(projectionMap);
-
-                qb.setTables(Tables.KEY_RINGS_SECRET);
-
-                if(match == KEY_RING_SECRET) {
-                    qb.appendWhere(KeyRings.MASTER_KEY_ID + " = ");
-                    qb.appendWhereEscapeString(uri.getPathSegments().get(1));
-                }
-
-                break;
-            }
-
             case KEY_RING_CERTS:
             case KEY_RING_CERTS_SPECIFIC:
             case KEY_RING_LINKED_ID_CERTS: {
@@ -885,11 +857,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                     keyId = values.getAsLong(KeyRings.MASTER_KEY_ID);
                     break;
                 }
-                case KEY_RING_SECRET: {
-                    db.insertOrThrow(Tables.KEY_RINGS_SECRET, null, values);
-                    keyId = values.getAsLong(KeyRings.MASTER_KEY_ID);
-                    break;
-                }
                 case KEY_RING_KEYS: {
                     db.insertOrThrow(Tables.KEYS, null, values);
                     keyId = values.getAsLong(Keys.MASTER_KEY_ID);
@@ -982,6 +949,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                 count = db.delete(Tables.KEY_RINGS_PUBLIC, null, null);
                 break;
             }
+
             case KEY_RING_PUBLIC: {
                 @SuppressWarnings("ConstantConditions") // ensured by uriMatcher above
                 String selection = KeyRings.MASTER_KEY_ID + " = " + uri.getPathSegments().get(1);
@@ -990,15 +958,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                 }
                 // corresponding keys and userIds are deleted by ON DELETE CASCADE
                 count = db.delete(Tables.KEY_RINGS_PUBLIC, selection, selectionArgs);
-                break;
-            }
-            case KEY_RING_SECRET: {
-                @SuppressWarnings("ConstantConditions") // ensured by uriMatcher above
-                String selection  = KeyRings.MASTER_KEY_ID + " = " + uri.getPathSegments().get(1);
-                if (!TextUtils.isEmpty(additionalSelection)) {
-                    selection += " AND (" + additionalSelection + ")";
-                }
-                count = db.delete(Tables.KEY_RINGS_SECRET, selection, selectionArgs);
                 break;
             }
 

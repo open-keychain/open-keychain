@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS api_apps (
+    _id INTEGER PRIMARY KEY AUTOINCREMENT,
+    package_name TEXT NOT NULL UNIQUE,
+    package_signature BLOB
+);
+
+getAllowedKeys:
+SELECT
