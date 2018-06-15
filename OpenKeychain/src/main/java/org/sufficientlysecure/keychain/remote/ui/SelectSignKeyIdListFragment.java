@@ -33,35 +33,33 @@ import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.remote.ui.adapter.SelectSignKeyAdapter;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
-import org.sufficientlysecure.keychain.ui.util.adapter.CursorAdapter;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
-import timber.log.Timber;
+import org.sufficientlysecure.keychain.ui.util.adapter.CursorAdapter;
 
 
 public class SelectSignKeyIdListFragment extends RecyclerFragment<SelectSignKeyAdapter>
         implements SelectSignKeyAdapter.SelectSignKeyListener, LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final String ARG_DATA_URI = "uri";
+    private static final String ARG_PACKAGE_NAME = "package_name";
     private static final String ARG_PREF_UID = "pref_uid";
     public static final String ARG_DATA = "data";
 
-    private Uri mDataUri;
     private Intent mResult;
     private String mPrefUid;
     private ApiDataAccessObject mApiDao;
+    private String mPackageName;
 
     /**
      * Creates new instance of this fragment
      */
-    public static SelectSignKeyIdListFragment newInstance(Uri dataUri, Intent data, String preferredUserId) {
+    public static SelectSignKeyIdListFragment newInstance(String packageName, Intent data, String preferredUserId) {
         SelectSignKeyIdListFragment frag = new SelectSignKeyIdListFragment();
         Bundle args = new Bundle();
 
-        args.putParcelable(ARG_DATA_URI, dataUri);
+        args.putString(ARG_PACKAGE_NAME, packageName);
         args.putParcelable(ARG_DATA, data);
         args.putString(ARG_PREF_UID, preferredUserId);
 
@@ -85,7 +83,7 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<SelectSignKeyA
 
         mResult = getArguments().getParcelable(ARG_DATA);
         mPrefUid = getArguments().getString(ARG_PREF_UID);
-        mDataUri = getArguments().getParcelable(ARG_DATA_URI);
+        mPackageName = getArguments().getString(ARG_PACKAGE_NAME);
 
         // Give some text to display if there is no data. In a real
         // application this would come from a resource.
@@ -175,15 +173,8 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<SelectSignKeyA
 
     @Override
     public void onSelectKeyItemClicked(long masterKeyId) {
-        Uri allowedKeysUri = mDataUri.buildUpon()
-                .appendPath(KeychainContract.PATH_ALLOWED_KEYS)
-                .build();
-
-        mApiDao.addAllowedKeyIdForApp(allowedKeysUri, masterKeyId);
+        mApiDao.addAllowedKeyIdForApp(mPackageName, masterKeyId);
         mResult.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, masterKeyId);
-
-        Timber.d("allowedKeyId: " + masterKeyId);
-        Timber.d("allowedKeysUri: " + allowedKeysUri);
 
         getActivity().setResult(Activity.RESULT_OK, mResult);
         getActivity().finish();

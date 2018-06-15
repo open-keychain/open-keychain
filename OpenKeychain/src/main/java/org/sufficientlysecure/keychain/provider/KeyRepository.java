@@ -333,7 +333,7 @@ public class KeyRepository {
         try {
             return localSecretKeyStorage.readSecretKey(masterKeyId);
         } catch (IOException e) {
-            Timber.e(e, "Error reading public key from storage!");
+            Timber.e(e, "Error reading secret key from storage!");
             throw new NotFoundException();
         }
     }

@@ -17,11 +17,19 @@
 
 package org.sufficientlysecure.keychain.remote;
 
+
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
+
 import org.bouncycastle.bcpg.HashAlgorithmTags;
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.openintents.ssh.authentication.ISshAuthenticationService;
@@ -40,7 +48,6 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ssh.AuthenticationData;
@@ -49,13 +56,6 @@ import org.sufficientlysecure.keychain.ssh.AuthenticationParcel;
 import org.sufficientlysecure.keychain.ssh.AuthenticationResult;
 import org.sufficientlysecure.keychain.ssh.signature.SshSignatureConverter;
 import timber.log.Timber;
-
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
 
 
 public class SshAuthenticationService extends Service {
@@ -394,7 +394,7 @@ public class SshAuthenticationService extends Service {
 
     private HashSet<Long> getAllowedKeyIds() {
         String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
-        return mApiDao.getAllowedKeyIdsForApp(KeychainContract.ApiAllowedKeys.buildBaseUri(currentPkg));
+        return mApiDao.getAllowedKeyIdsForApp(currentPkg);
     }
 
     /**

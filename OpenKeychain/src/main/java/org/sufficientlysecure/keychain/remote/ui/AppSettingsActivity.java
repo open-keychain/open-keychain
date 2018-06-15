@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.view.Menu;
@@ -36,24 +35,26 @@ import android.widget.TextView;
 
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.model.ApiApp;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.remote.AppSettings;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.dialog.AdvancedAppSettingsDialogFragment;
 import timber.log.Timber;
 
 
 public class AppSettingsActivity extends BaseActivity {
-    private Uri mAppUri;
+    public static final String EXTRA_PACKAGE_NAME = "package_name";
+
+    private String packageName;
 
     private TextView mAppNameView;
     private ImageView mAppIconView;
 
 
     // model
-    AppSettings mAppSettings;
+    ApiApp mApiApp;
+    private ApiDataAccessObject apiDataAccessObject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,15 +69,16 @@ public class AppSettingsActivity extends BaseActivity {
         setTitle(null);
 
         Intent intent = getIntent();
-        mAppUri = intent.getData();
-        if (mAppUri == null) {
-            Timber.e("Intent data missing. Should be Uri of app!");
+        packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
+        if (packageName == null) {
+            Timber.e("Required extra package_name missing!");
             finish();
             return;
         }
 
-        Timber.d("uri: %s", mAppUri);
-        loadData(savedInstanceState, mAppUri);
+        apiDataAccessObject = new ApiDataAccessObject(this);
+
+        loadData(savedInstanceState);
     }
 
     private void save() {
@@ -138,7 +140,7 @@ public class AppSettingsActivity extends BaseActivity {
         // advanced info: package certificate SHA-256
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(mAppSettings.getPackageCertificate());
+            md.update(mApiApp.package_signature());
             byte[] digest = md.digest();
             certificate = new String(Hex.encode(digest));
         } catch (NoSuchAlgorithmException e) {
@@ -146,7 +148,7 @@ public class AppSettingsActivity extends BaseActivity {
         }
 
         AdvancedAppSettingsDialogFragment dialogFragment =
-                AdvancedAppSettingsDialogFragment.newInstance(mAppSettings.getPackageName(), certificate);
+                AdvancedAppSettingsDialogFragment.newInstance(mApiApp.package_name(), certificate);
 
         dialogFragment.show(getSupportFragmentManager(), "advancedDialog");
     }
@@ -155,7 +157,7 @@ public class AppSettingsActivity extends BaseActivity {
         Intent i;
         PackageManager manager = getPackageManager();
         try {
-            i = manager.getLaunchIntentForPackage(mAppSettings.getPackageName());
+            i = manager.getLaunchIntentForPackage(mApiApp.package_name());
             if (i == null)
                 throw new PackageManager.NameNotFoundException();
             // start like the Android launcher would do
@@ -167,31 +169,29 @@ public class AppSettingsActivity extends BaseActivity {
         }
     }
 
-    private void loadData(Bundle savedInstanceState, Uri appUri) {
-        mAppSettings = new ApiDataAccessObject(this).getApiAppSettings(appUri);
+    private void loadData(Bundle savedInstanceState) {
+        mApiApp = apiDataAccessObject.getApiApp(packageName);
 
         // get application name and icon from package manager
         String appName;
         Drawable appIcon = null;
         PackageManager pm = getApplicationContext().getPackageManager();
         try {
-            ApplicationInfo ai = pm.getApplicationInfo(mAppSettings.getPackageName(), 0);
+            ApplicationInfo ai = pm.getApplicationInfo(mApiApp.package_name(), 0);
 
             appName = (String) pm.getApplicationLabel(ai);
             appIcon = pm.getApplicationIcon(ai);
         } catch (PackageManager.NameNotFoundException e) {
             // fallback
-            appName = mAppSettings.getPackageName();
+            appName = mApiApp.package_name();
         }
         mAppNameView.setText(appName);
         mAppIconView.setImageDrawable(appIcon);
 
-        Uri allowedKeysUri = appUri.buildUpon().appendPath(KeychainContract.PATH_ALLOWED_KEYS).build();
-        Timber.d("allowedKeysUri: " + allowedKeysUri);
-        startListFragments(savedInstanceState, allowedKeysUri);
+        startListFragments(savedInstanceState);
     }
 
-    private void startListFragments(Bundle savedInstanceState, Uri allowedKeysUri) {
+    private void startListFragments(Bundle savedInstanceState) {
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
         // we could end up with overlapping fragments.
@@ -199,7 +199,8 @@ public class AppSettingsActivity extends BaseActivity {
             return;
         }
 
-        AppSettingsAllowedKeysListFragment allowedKeysFragment = AppSettingsAllowedKeysListFragment.newInstance(allowedKeysUri);
+        // Create an instance of the fragments
+        AppSettingsAllowedKeysListFragment allowedKeysFragment = AppSettingsAllowedKeysListFragment.newInstance(packageName);
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
         getSupportFragmentManager().beginTransaction()
@@ -210,9 +211,7 @@ public class AppSettingsActivity extends BaseActivity {
     }
 
     private void revokeAccess() {
-        if (getContentResolver().delete(mAppUri, null, null) <= 0) {
-            throw new RuntimeException();
-        }
+        apiDataAccessObject.deleteApiApp(packageName);
         finish();
     }
 

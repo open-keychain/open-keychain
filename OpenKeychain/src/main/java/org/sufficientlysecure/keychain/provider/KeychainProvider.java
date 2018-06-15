@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -38,8 +39,6 @@ import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAllowedKeys;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
@@ -70,10 +69,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
     private static final int KEY_RING_CERTS_SPECIFIC = 206;
     private static final int KEY_RING_LINKED_IDS = 207;
     private static final int KEY_RING_LINKED_ID_CERTS = 208;
-
-    private static final int API_APPS = 301;
-    private static final int API_APPS_BY_PACKAGE_NAME = 302;
-    private static final int API_ALLOWED_KEYS = 305;
 
     private static final int KEY_RINGS_FIND_BY_EMAIL = 400;
     private static final int KEY_RINGS_FIND_BY_SUBKEY = 401;
@@ -183,22 +178,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                 KEY_RING_CERTS_SPECIFIC);
 
         /*
-         * API apps
-         *
-         * <pre>
-         * api_apps
-         * api_apps/_ (package name)
-         *
-         * api_apps/_/allowed_keys
-         * </pre>
-         */
-        matcher.addURI(authority, KeychainContract.BASE_API_APPS, API_APPS);
-        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*", API_APPS_BY_PACKAGE_NAME);
-
-        matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*/"
-                + KeychainContract.PATH_ALLOWED_KEYS, API_ALLOWED_KEYS);
-
-        /*
          * Trust Identity access
          *
          * <pre>
@@ -268,15 +247,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
 
             case KEY_SIGNATURES:
                 return KeySignatures.CONTENT_TYPE;
-
-            case API_APPS:
-                return ApiApps.CONTENT_TYPE;
-
-            case API_APPS_BY_PACKAGE_NAME:
-                return ApiApps.CONTENT_ITEM_TYPE;
-
-            case API_ALLOWED_KEYS:
-                return ApiAllowedKeys.CONTENT_TYPE;
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -781,26 +751,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                 }
                 break;
             }
-
-            case API_APPS: {
-                qb.setTables(Tables.API_APPS);
-
-                break;
-            }
-            case API_APPS_BY_PACKAGE_NAME: {
-                qb.setTables(Tables.API_APPS);
-                qb.appendWhere(ApiApps.PACKAGE_NAME + " = ");
-                qb.appendWhereEscapeString(uri.getLastPathSegment());
-
-                break;
-            }
-            case API_ALLOWED_KEYS: {
-                qb.setTables(Tables.API_ALLOWED_KEYS);
-                qb.appendWhere(Tables.API_ALLOWED_KEYS + "." + ApiAllowedKeys.PACKAGE_NAME + " = ");
-                qb.appendWhereEscapeString(uri.getPathSegments().get(1));
-
-                break;
-            }
             default: {
                 throw new IllegalArgumentException("Unknown URI " + uri + " (" + match + ")");
             }
@@ -815,9 +765,10 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
             orderBy = sortOrder;
         }
 
-        SQLiteDatabase db = getDb().getReadableDatabase();
+        SupportSQLiteDatabase db = getDb().getReadableDatabase();
 
-        Cursor cursor = qb.query(db, projection, selection, selectionArgs, groupBy, null, orderBy);
+        String query = qb.buildQuery(projection, selection, groupBy, null, orderBy, null);
+        Cursor cursor = db.query(query, selectionArgs);
         if (cursor != null) {
             // Tell the cursor what uri to watch, so it knows when its source data changes
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
@@ -844,7 +795,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
     public Uri insert(Uri uri, ContentValues values) {
         Timber.d("insert(uri=" + uri + ", values=" + values.toString() + ")");
 
-        final SQLiteDatabase db = getDb().getWritableDatabase();
+        final SupportSQLiteDatabase db = getDb().getWritableDatabase();
 
         Uri rowUri = null;
         Long keyId = null;
@@ -853,12 +804,12 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
 
             switch (match) {
                 case KEY_RING_PUBLIC: {
-                    db.insertOrThrow(Tables.KEY_RINGS_PUBLIC, null, values);
+                    db.insert(Tables.KEY_RINGS_PUBLIC, SQLiteDatabase.CONFLICT_FAIL, values);
                     keyId = values.getAsLong(KeyRings.MASTER_KEY_ID);
                     break;
                 }
                 case KEY_RING_KEYS: {
-                    db.insertOrThrow(Tables.KEYS, null, values);
+                    db.insert(Tables.KEYS, SQLiteDatabase.CONFLICT_FAIL, values);
                     keyId = values.getAsLong(Keys.MASTER_KEY_ID);
                     break;
                 }
@@ -873,44 +824,31 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                     if (((Number) values.get(UserPacketsColumns.RANK)).intValue() == 0 && values.get(UserPacketsColumns.USER_ID) == null) {
                         throw new AssertionError("Rank 0 user packet must be a user id!");
                     }
-                    db.insertOrThrow(Tables.USER_PACKETS, null, values);
+                    db.insert(Tables.USER_PACKETS, SQLiteDatabase.CONFLICT_FAIL, values);
                     keyId = values.getAsLong(UserPackets.MASTER_KEY_ID);
                     break;
                 }
                 case KEY_RING_CERTS: {
                     // we replace here, keeping only the latest signature
                     // TODO this would be better handled in savePublicKeyRing directly!
-                    db.replaceOrThrow(Tables.CERTS, null, values);
+                    db.insert(Tables.CERTS, SQLiteDatabase.CONFLICT_FAIL, values);
                     keyId = values.getAsLong(Certs.MASTER_KEY_ID);
                     break;
                 }
                 case UPDATED_KEYS: {
                     keyId = values.getAsLong(UpdatedKeys.MASTER_KEY_ID);
                     try {
-                        db.insertOrThrow(Tables.UPDATED_KEYS, null, values);
+                        db.insert(Tables.UPDATED_KEYS, SQLiteDatabase.CONFLICT_FAIL, values);
                     } catch (SQLiteConstraintException e) {
-                        db.update(Tables.UPDATED_KEYS, values,
+                        db.update(Tables.UPDATED_KEYS, SQLiteDatabase.CONFLICT_IGNORE, values,
                                 UpdatedKeys.MASTER_KEY_ID + " = ?", new String[] { Long.toString(keyId) });
                     }
                     rowUri = UpdatedKeys.CONTENT_URI;
                     break;
                 }
                 case KEY_SIGNATURES: {
-                    db.insert(Tables.KEY_SIGNATURES, null, values);
+                    db.insert(Tables.KEY_SIGNATURES, SQLiteDatabase.CONFLICT_FAIL, values);
                     rowUri = KeySignatures.CONTENT_URI;
-                    break;
-                }
-                case API_APPS: {
-                    db.insert(Tables.API_APPS, null, values);
-                    break;
-                }
-                case API_ALLOWED_KEYS: {
-                    // set foreign key automatically based on given uri
-                    // e.g., api_apps/com.example.app/allowed_keys/
-                    String packageName = uri.getPathSegments().get(1);
-                    values.put(ApiAllowedKeys.PACKAGE_NAME, packageName);
-
-                    db.insert(Tables.API_ALLOWED_KEYS, null, values);
                     break;
                 }
                 default: {
@@ -937,7 +875,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
     public int delete(Uri uri, String additionalSelection, String[] selectionArgs) {
         Timber.v("delete(uri=" + uri + ")");
 
-        final SQLiteDatabase db = getDb().getWritableDatabase();
+        final SupportSQLiteDatabase db = getDb().getWritableDatabase();
 
         int count;
         final int match = mUriMatcher.match(uri);
@@ -980,16 +918,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                 count = db.delete(Tables.API_AUTOCRYPT_PEERS, selection, selectionArgs);
                 break;
 
-            case API_APPS_BY_PACKAGE_NAME: {
-                count = db.delete(Tables.API_APPS, buildDefaultApiAppsSelection(uri, additionalSelection),
-                        selectionArgs);
-                break;
-            }
-            case API_ALLOWED_KEYS: {
-                count = db.delete(Tables.API_ALLOWED_KEYS, buildDefaultApiAllowedKeysSelection(uri, additionalSelection),
-                        selectionArgs);
-                break;
-            }
             default: {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
             }
@@ -1005,7 +933,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         Timber.v("update(uri=" + uri + ", values=" + values.toString() + ")");
 
-        final SQLiteDatabase db = getDb().getWritableDatabase();
+        final SupportSQLiteDatabase db = getDb().getWritableDatabase();
 
         int count = 0;
         try {
@@ -1022,12 +950,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                     if (!TextUtils.isEmpty(selection)) {
                         actualSelection += " AND (" + selection + ")";
                     }
-                    count = db.update(Tables.KEYS, values, actualSelection, selectionArgs);
-                    break;
-                }
-                case API_APPS_BY_PACKAGE_NAME: {
-                    count = db.update(Tables.API_APPS, values,
-                            buildDefaultApiAppsSelection(uri, selection), selectionArgs);
+                    count = db.update(Tables.KEYS, SQLiteDatabase.CONFLICT_FAIL, values, actualSelection, selectionArgs);
                     break;
                 }
                 case UPDATED_KEYS: {
@@ -1040,7 +963,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                         throw new UnsupportedOperationException("can only reset all keys");
                     }
 
-                    db.update(Tables.UPDATED_KEYS, values, null, null);
+                    db.update(Tables.UPDATED_KEYS, SQLiteDatabase.CONFLICT_FAIL, values, null, null);
                     break;
                 }
                 case AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID: {
@@ -1049,11 +972,11 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                     values.put(ApiAutocryptPeer.PACKAGE_NAME, packageName);
                     values.put(ApiAutocryptPeer.IDENTIFIER, identifier);
 
-                    int updated = db.update(Tables.API_AUTOCRYPT_PEERS, values,
+                    int updated = db.update(Tables.API_AUTOCRYPT_PEERS, SQLiteDatabase.CONFLICT_IGNORE, values,
                             ApiAutocryptPeer.PACKAGE_NAME + "=? AND " + ApiAutocryptPeer.IDENTIFIER + "=?",
                             new String[] { packageName, identifier });
                     if (updated == 0) {
-                        db.insertOrThrow(Tables.API_AUTOCRYPT_PEERS, null, values);
+                        db.insert(Tables.API_AUTOCRYPT_PEERS, SQLiteDatabase.CONFLICT_FAIL,values);
                     }
 
                     break;
@@ -1068,35 +991,4 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
 
         return count;
     }
-
-    /**
-     * Build default selection statement for API apps. If no extra selection is specified only build
-     * where clause with rowId
-     *
-     * @param uri
-     * @param selection
-     * @return
-     */
-    private String buildDefaultApiAppsSelection(Uri uri, String selection) {
-        String packageName = DatabaseUtils.sqlEscapeString(uri.getLastPathSegment());
-
-        String andSelection = "";
-        if (!TextUtils.isEmpty(selection)) {
-            andSelection = " AND (" + selection + ")";
-        }
-
-        return ApiApps.PACKAGE_NAME + "=" + packageName + andSelection;
-    }
-
-    private String buildDefaultApiAllowedKeysSelection(Uri uri, String selection) {
-        String packageName = DatabaseUtils.sqlEscapeString(uri.getPathSegments().get(1));
-
-        String andSelection = "";
-        if (!TextUtils.isEmpty(selection)) {
-            andSelection = " AND (" + selection + ")";
-        }
-
-        return ApiAllowedKeys.PACKAGE_NAME + "=" + packageName + andSelection;
-    }
-
 }

@@ -20,11 +20,9 @@ package org.sufficientlysecure.keychain.remote.ui;
 
 import java.util.Set;
 
-import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -40,25 +38,24 @@ import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.KeySelectableAdapter;
 import org.sufficientlysecure.keychain.ui.widget.FixedListView;
-import timber.log.Timber;
 
 
 public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static final String ARG_DATA_URI = "uri";
+    private static final String ARG_PACKAGE_NAME = "package_name";
 
     private KeySelectableAdapter mAdapter;
     private ApiDataAccessObject mApiDao;
 
-    private Uri mDataUri;
+    private String packageName;
 
     /**
      * Creates new instance of this fragment
      */
-    public static AppSettingsAllowedKeysListFragment newInstance(Uri dataUri) {
+    public static AppSettingsAllowedKeysListFragment newInstance(String packageName) {
         AppSettingsAllowedKeysListFragment frag = new AppSettingsAllowedKeysListFragment();
         Bundle args = new Bundle();
 
-        args.putParcelable(ARG_DATA_URI, dataUri);
+        args.putString(ARG_PACKAGE_NAME, packageName);
 
         frag.setArguments(args);
 
@@ -101,13 +98,13 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mDataUri = getArguments().getParcelable(ARG_DATA_URI);
+        packageName = getArguments().getString(ARG_PACKAGE_NAME);
 
         // Give some text to display if there is no data. In a real
         // application this would come from a resource.
         setEmptyText(getString(R.string.list_empty));
 
-        Set<Long> checked = mApiDao.getAllowedKeyIdsForApp(mDataUri);
+        Set<Long> checked = mApiDao.getAllowedKeyIdsForApp(packageName);
         mAdapter = new KeySelectableAdapter(getActivity(), null, 0, checked);
         setListAdapter(mAdapter);
         getListView().setOnItemClickListener(mAdapter);
@@ -140,11 +137,7 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
     } */
 
     public void saveAllowedKeys() {
-        try {
-            mApiDao.saveAllowedKeyIdsForApp(mDataUri, getSelectedMasterKeyIds());
-        } catch (RemoteException | OperationApplicationException e) {
-            Timber.e(e, "Problem saving allowed key ids!");
-        }
+        mApiDao.saveAllowedKeyIdsForApp(packageName, getSelectedMasterKeyIds());
     }
 
     @Override

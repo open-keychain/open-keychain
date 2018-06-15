@@ -23,16 +23,18 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
+import android.arch.persistence.db.SupportSQLiteOpenHelper;
+import android.arch.persistence.db.SupportSQLiteOpenHelper.Callback;
+import android.arch.persistence.db.SupportSQLiteOpenHelper.Configuration;
+import android.arch.persistence.db.framework.FrameworkSQLiteOpenHelperFactory;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAllowedKeysColumns;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeerColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
@@ -53,10 +55,11 @@ import timber.log.Timber;
  * - TEXT. The value is a text string, stored using the database encoding (UTF-8, UTF-16BE or UTF-16LE).
  * - BLOB. The value is a blob of data, stored exactly as it was input.
  */
-public class KeychainDatabase extends SQLiteOpenHelper {
+public class KeychainDatabase {
     private static final String DATABASE_NAME = "openkeychain.db";
     private static final int DATABASE_VERSION = 26;
-    private Context mContext;
+    private final SupportSQLiteOpenHelper supportSQLiteOpenHelper;
+    private Context context;
 
     public interface Tables {
         String KEY_RINGS_PUBLIC = "keyrings_public";
@@ -65,17 +68,10 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         String KEY_SIGNATURES = "key_signatures";
         String USER_PACKETS = "user_packets";
         String CERTS = "certs";
-        String API_APPS = "api_apps";
         String API_ALLOWED_KEYS = "api_allowed_keys";
         String OVERRIDDEN_WARNINGS = "overridden_warnings";
         String API_AUTOCRYPT_PEERS = "api_autocrypt_peers";
     }
-
-    private static final String CREATE_KEYRINGS_PUBLIC =
-            "CREATE TABLE IF NOT EXISTS keyrings_public ("
-                + KeyRingsColumns.MASTER_KEY_ID + " INTEGER PRIMARY KEY,"
-                + KeyRingsColumns.KEY_RING_DATA + " BLOB"
-            + ")";
 
     private static final String CREATE_KEYS =
             "CREATE TABLE IF NOT EXISTS " + Tables.KEYS + " ("
@@ -143,15 +139,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     + Tables.USER_PACKETS + "(" + UserPacketsColumns.MASTER_KEY_ID + ", " + UserPacketsColumns.RANK + ") ON DELETE CASCADE"
             + ")";
 
-    private static final String CREATE_UPDATE_KEYS =
-            "CREATE TABLE IF NOT EXISTS " + Tables.UPDATED_KEYS + " ("
-                    + UpdatedKeysColumns.MASTER_KEY_ID + " INTEGER PRIMARY KEY, "
-                    + UpdatedKeysColumns.LAST_UPDATED + " INTEGER, "
-                    + UpdatedKeysColumns.SEEN_ON_KEYSERVERS + " INTEGER, "
-                    + "FOREIGN KEY(" + UpdatedKeysColumns.MASTER_KEY_ID + ") REFERENCES "
-                    + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
-                    + ")";
-
     private static final String CREATE_KEY_SIGNATURES =
             "CREATE TABLE IF NOT EXISTS " + Tables.KEY_SIGNATURES + " ("
                     + KeySignaturesColumns.MASTER_KEY_ID + " INTEGER NOT NULL, "
@@ -175,15 +162,8 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                     + "PRIMARY KEY(" + ApiAutocryptPeerColumns.PACKAGE_NAME + ", "
                         + ApiAutocryptPeerColumns.IDENTIFIER + "), "
                     + "FOREIGN KEY(" + ApiAutocryptPeerColumns.PACKAGE_NAME + ") REFERENCES "
-                        + Tables.API_APPS + "(" + ApiAppsColumns.PACKAGE_NAME + ") ON DELETE CASCADE"
+                        + "api_apps (package_signature) ON DELETE CASCADE"
                 + ")";
-
-    private static final String CREATE_API_APPS =
-            "CREATE TABLE IF NOT EXISTS " + Tables.API_APPS + " ("
-                + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + ApiAppsColumns.PACKAGE_NAME + " TEXT NOT NULL UNIQUE, "
-                + ApiAppsColumns.PACKAGE_CERTIFICATE + " BLOB"
-            + ")";
 
     private static final String CREATE_API_APPS_ALLOWED_KEYS =
             "CREATE TABLE IF NOT EXISTS " + Tables.API_ALLOWED_KEYS + " ("
@@ -194,7 +174,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 + "UNIQUE(" + ApiAppsAllowedKeysColumns.KEY_ID + ", "
                 + ApiAppsAllowedKeysColumns.PACKAGE_NAME + "), "
                 + "FOREIGN KEY(" + ApiAppsAllowedKeysColumns.PACKAGE_NAME + ") REFERENCES "
-                + Tables.API_APPS + "(" + ApiAppsAllowedKeysColumns.PACKAGE_NAME + ") ON DELETE CASCADE"
+                + "api_apps (" + ApiAppsAllowedKeysColumns.PACKAGE_NAME + ") ON DELETE CASCADE"
                 + ")";
 
     private static final String CREATE_OVERRIDDEN_WARNINGS =
@@ -204,12 +184,46 @@ public class KeychainDatabase extends SQLiteOpenHelper {
                 + ")";
 
     public KeychainDatabase(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        mContext = context;
+        this.context = context;
+        supportSQLiteOpenHelper =
+                new FrameworkSQLiteOpenHelperFactory()
+                        .create(Configuration.builder(context).name(DATABASE_NAME).callback(
+                                new Callback(DATABASE_VERSION) {
+                                    @Override
+                                    public void onCreate(SupportSQLiteDatabase db) {
+                                        KeychainDatabase.this.onCreate(db);
+                                    }
+
+                                    @Override
+                                    public void onUpgrade(SupportSQLiteDatabase db, int oldVersion, int newVersion) {
+                                        KeychainDatabase.this.onUpgrade(db, oldVersion, newVersion);
+                                    }
+
+                                    @Override
+                                    public void onDowngrade(SupportSQLiteDatabase db, int oldVersion, int newVersion) {
+                                        KeychainDatabase.this.onDowngrade(db, oldVersion, newVersion);
+                                    }
+
+                                    @Override
+                                    public void onOpen(SupportSQLiteDatabase db) {
+                                        super.onOpen(db);
+                                        if (!db.isReadOnly()) {
+                                            // Enable foreign key constraints
+                                            db.execSQL("PRAGMA foreign_keys=ON;");
+                                        }
+                                    }
+                                }).build());
     }
 
-    @Override
-    public void onCreate(SQLiteDatabase db) {
+    public SupportSQLiteDatabase getReadableDatabase() {
+        return supportSQLiteOpenHelper.getReadableDatabase();
+    }
+
+    public SupportSQLiteDatabase getWritableDatabase() {
+        return supportSQLiteOpenHelper.getWritableDatabase();
+    }
+
+    private void onCreate(SupportSQLiteDatabase db) {
         Timber.w("Creating database...");
 
         db.execSQL(CREATE_KEYRINGS_PUBLIC);
@@ -218,7 +232,6 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_CERTS);
         db.execSQL(CREATE_UPDATE_KEYS);
         db.execSQL(CREATE_KEY_SIGNATURES);
-        db.execSQL(CREATE_API_APPS);
         db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
         db.execSQL(CREATE_OVERRIDDEN_WARNINGS);
         db.execSQL(CREATE_API_AUTOCRYPT_PEERS);
@@ -231,20 +244,10 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         db.execSQL("CREATE INDEX uids_by_email ON user_packets ("
                 + UserPacketsColumns.EMAIL + ");");
 
-        Preferences.getPreferences(mContext).setKeySignaturesTableInitialized();
+        Preferences.getPreferences(context).setKeySignaturesTableInitialized();
     }
 
-    @Override
-    public void onOpen(SQLiteDatabase db) {
-        super.onOpen(db);
-        if (!db.isReadOnly()) {
-            // Enable foreign key constraints
-            db.execSQL("PRAGMA foreign_keys=ON;");
-        }
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    private void onUpgrade(SupportSQLiteDatabase db, int oldVersion, int newVersion) {
         Timber.d("Upgrading db from " + oldVersion + " to " + newVersion);
 
         switch (oldVersion) {
@@ -459,9 +462,9 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         }
     }
 
-    private void migrateSecretKeysFromDbToLocalStorage(SQLiteDatabase db) throws IOException {
-        LocalSecretKeyStorage localSecretKeyStorage = LocalSecretKeyStorage.getInstance(mContext);
-        Cursor cursor = db.rawQuery("SELECT master_key_id, key_ring_data FROM keyrings_secret", null);
+    private void migrateSecretKeysFromDbToLocalStorage(SupportSQLiteDatabase db) throws IOException {
+        LocalSecretKeyStorage localSecretKeyStorage = LocalSecretKeyStorage.getInstance(context);
+        Cursor cursor = db.query("SELECT master_key_id, key_ring_data FROM keyrings_secret");
         while (cursor.moveToNext()) {
             long masterKeyId = cursor.getLong(0);
             byte[] secretKeyBlob = cursor.getBlob(1);
@@ -473,8 +476,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
         // db.execSQL("DROP TABLE keyrings_secret");
     }
 
-    @Override
-    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public void onDowngrade(SupportSQLiteDatabase db, int oldVersion, int newVersion) {
         // Downgrade is ok for the debug version, makes it easier to work with branches
         if (Constants.DEBUG) {
             return;
@@ -528,7 +530,7 @@ public class KeychainDatabase extends SQLiteOpenHelper {
     public void clearDatabase() {
         getWritableDatabase().execSQL("delete from " + Tables.KEY_RINGS_PUBLIC);
         getWritableDatabase().execSQL("delete from " + Tables.API_ALLOWED_KEYS);
-        getWritableDatabase().execSQL("delete from " + Tables.API_APPS);
+        getWritableDatabase().execSQL("delete from api_apps");
     }
 
 }

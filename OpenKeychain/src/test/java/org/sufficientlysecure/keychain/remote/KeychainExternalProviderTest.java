@@ -18,6 +18,7 @@ import org.robolectric.shadows.ShadowBinder;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowPackageManager;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
+import org.sufficientlysecure.keychain.model.ApiApp;
 import org.sufficientlysecure.keychain.operations.CertifyOperation;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
@@ -82,7 +83,7 @@ public class KeychainExternalProviderTest {
         apiPermissionHelper = new ApiPermissionHelper(RuntimeEnvironment.application, apiDao);
         autocryptPeerDao = new AutocryptPeerDataAccessObject(RuntimeEnvironment.application, PACKAGE_NAME);
 
-        apiDao.insertApiApp(new AppSettings(PACKAGE_NAME, PACKAGE_SIGNATURE));
+        apiDao.insertApiApp(new ApiApp(PACKAGE_NAME, PACKAGE_SIGNATURE));
     }
 
     @Test(expected = AccessControlException.class)
@@ -99,7 +100,7 @@ public class KeychainExternalProviderTest {
     @Test(expected = AccessControlException.class)
     public void testPermission__withWrongPackageCert() throws Exception {
         apiDao.deleteApiApp(PACKAGE_NAME);
-        apiDao.insertApiApp(new AppSettings(PACKAGE_NAME, new byte[] { 1, 2, 4 }));
+        apiDao.insertApiApp(new ApiApp(PACKAGE_NAME, new byte[] { 1, 2, 4 }));
 
         contentResolver.query(
                 EmailStatus.CONTENT_URI,

@@ -17,12 +17,13 @@
 
 package org.sufficientlysecure.keychain.remote;
 
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
 
 public class PackageUninstallReceiver extends BroadcastReceiver {
 
@@ -34,8 +35,9 @@ public class PackageUninstallReceiver extends BroadcastReceiver {
                 return;
             }
             String packageName = uri.getEncodedSchemeSpecificPart();
-            Uri appUri = KeychainContract.ApiApps.buildByPackageNameUri(packageName);
-            context.getContentResolver().delete(appUri, null, null);
+
+            ApiDataAccessObject apiDao = new ApiDataAccessObject(context);
+            apiDao.deleteApiApp(packageName);
         }
     }
 }

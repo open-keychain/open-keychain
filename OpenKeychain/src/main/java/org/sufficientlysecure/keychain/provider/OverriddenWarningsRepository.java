@@ -18,6 +18,9 @@
 package org.sufficientlysecure.keychain.provider;
 
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
+import android.arch.persistence.db.SupportSQLiteQuery;
+import android.arch.persistence.db.SupportSQLiteQueryBuilder;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -47,34 +50,31 @@ public class OverriddenWarningsRepository {
     }
 
     public boolean isWarningOverridden(String identifier) {
-        SQLiteDatabase db = getDb().getReadableDatabase();
-        Cursor cursor = db.query(
-                Tables.OVERRIDDEN_WARNINGS,
-                new String[] { "COUNT(*)" },
-                OverriddenWarnings.IDENTIFIER + " = ?",
-                new String[] { identifier },
-                null, null, null);
+        SupportSQLiteDatabase db = getDb().getReadableDatabase();
+        SupportSQLiteQuery query = SupportSQLiteQueryBuilder
+                .builder(Tables.OVERRIDDEN_WARNINGS)
+                .columns(new String[] { "COUNT(*) FROM " })
+                .selection(OverriddenWarnings.IDENTIFIER + " = ?", new String[] { identifier })
+                .create();
+        Cursor cursor = db.query(query);
 
         try {
             cursor.moveToFirst();
             return cursor.getInt(0) > 0;
         } finally {
             cursor.close();
-            db.close();
         }
     }
 
     public void putOverride(String identifier) {
-        SQLiteDatabase db = getDb().getWritableDatabase();
+        SupportSQLiteDatabase db = getDb().getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(OverriddenWarnings.IDENTIFIER, identifier);
-        db.replace(Tables.OVERRIDDEN_WARNINGS, null, cv);
-        db.close();
+        db.insert(Tables.OVERRIDDEN_WARNINGS, SQLiteDatabase.CONFLICT_REPLACE, cv);
     }
 
     public void deleteOverride(String identifier) {
-        SQLiteDatabase db = getDb().getWritableDatabase();
+        SupportSQLiteDatabase db = getDb().getWritableDatabase();
         db.delete(Tables.OVERRIDDEN_WARNINGS, OverriddenWarnings.IDENTIFIER + " = ?", new String[] { identifier });
-        db.close();
     }
 }

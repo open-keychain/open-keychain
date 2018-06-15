@@ -17,8 +17,9 @@
 
 package org.sufficientlysecure.keychain.util;
 
+
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
 import timber.log.Timber;
@@ -56,8 +57,8 @@ public class DatabaseUtil {
         return result;
     }
 
-    public static void explainQuery(SQLiteDatabase db, String sql) {
-        Cursor explainCursor = db.rawQuery("EXPLAIN QUERY PLAN " + sql, new String[0]);
+    public static void explainQuery(SupportSQLiteDatabase db, String sql) {
+        Cursor explainCursor = db.query("EXPLAIN QUERY PLAN " + sql, new String[0]);
 
         // this is a debugging feature, we can be a little careless
         explainCursor.moveToFirst();

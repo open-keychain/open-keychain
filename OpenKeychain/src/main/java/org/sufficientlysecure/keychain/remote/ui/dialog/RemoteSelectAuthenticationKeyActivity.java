@@ -18,6 +18,8 @@
 package org.sufficientlysecure.keychain.remote.ui.dialog;
 
 
+import java.util.List;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -27,7 +29,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Drawable.ConstantState;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -48,20 +49,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mikepenz.materialdrawer.util.KeyboardUtil;
-
 import org.openintents.ssh.authentication.SshAuthenticationApi;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeyInfo;
+import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
+import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectAuthenticationKeyPresenter.RemoteSelectAuthenticationKeyView;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.DividerItemDecoration;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerItemClickListener;
-
-import java.util.List;
 
 
 public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
@@ -71,6 +68,7 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
 
 
     private RemoteSelectAuthenticationKeyPresenter presenter;
+    private String packageName;
 
 
     @Override
@@ -92,8 +90,7 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
         super.onStart();
 
         Intent intent = getIntent();
-        String packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
-
+        packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
 
         presenter.setupFromIntentData(packageName);
         presenter.startLoaders(getSupportLoaderManager());
@@ -104,14 +101,8 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
         Intent originalIntent = callingIntent.getParcelableExtra(
                 RemoteSecurityTokenOperationActivity.EXTRA_DATA);
 
-        Uri appUri = callingIntent.getData();
-
-        Uri allowedKeysUri = appUri.buildUpon()
-                .appendPath(KeychainContract.PATH_ALLOWED_KEYS)
-                .build();
-
         ApiDataAccessObject apiDao = new ApiDataAccessObject(getBaseContext());
-        apiDao.addAllowedKeyIdForApp(allowedKeysUri, masterKeyId);
+        apiDao.addAllowedKeyIdForApp(packageName, masterKeyId);
 
         originalIntent.putExtra(SshAuthenticationApi.EXTRA_KEY_ID, String.valueOf(masterKeyId));
 

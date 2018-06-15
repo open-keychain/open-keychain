@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
@@ -42,7 +43,6 @@ import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject.AutocryptRecommendationResult;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject.AutocryptState;
 import org.sufficientlysecure.keychain.provider.DatabaseNotifyManager;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiApps;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
@@ -54,7 +54,6 @@ import org.sufficientlysecure.keychain.provider.KeychainExternalContract.Autocry
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
 import org.sufficientlysecure.keychain.provider.KeychainProvider;
 import org.sufficientlysecure.keychain.provider.SimpleContentResolverInterface;
-import org.sufficientlysecure.keychain.util.CloseDatabaseCursorFactory;
 import timber.log.Timber;
 
 
@@ -63,9 +62,6 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
     private static final int AUTOCRYPT_STATUS = 201;
     private static final int AUTOCRYPT_STATUS_INTERNAL = 202;
-
-    private static final int API_APPS = 301;
-    private static final int API_APPS_BY_PACKAGE_NAME = 302;
 
     public static final String TEMP_TABLE_QUERIED_ADDRESSES = "queried_addresses";
     public static final String TEMP_TABLE_COLUMN_ADDRES = "address";
@@ -113,7 +109,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
         internalKeychainProvider = new KeychainProvider();
         internalKeychainProvider.attachInfo(context, null);
-        apiPermissionHelper = new ApiPermissionHelper(context, new ApiDataAccessObject(internalKeychainProvider));
+        apiPermissionHelper = new ApiPermissionHelper(context, new ApiDataAccessObject(getContext()));
         databaseNotifyManager = DatabaseNotifyManager.create(context);
         return true;
     }
@@ -127,13 +123,6 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
         switch (match) {
             case EMAIL_STATUS:
                 return EmailStatus.CONTENT_TYPE;
-
-            case API_APPS:
-                return ApiApps.CONTENT_TYPE;
-
-            case API_APPS_BY_PACKAGE_NAME:
-                return ApiApps.CONTENT_ITEM_TYPE;
-
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -154,7 +143,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
         String groupBy = null;
 
-        SQLiteDatabase db = new KeychainDatabase(getContext()).getReadableDatabase();
+        SupportSQLiteDatabase db = new KeychainDatabase(getContext()).getReadableDatabase();
 
         String callingPackageName = apiPermissionHelper.getCurrentCallingPackage();
 
@@ -169,7 +158,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                 ContentValues cv = new ContentValues();
                 for (String address : selectionArgs) {
                     cv.put(TEMP_TABLE_COLUMN_ADDRES, address);
-                    db.insert(TEMP_TABLE_QUERIED_ADDRESSES, null, cv);
+                    db.insert(TEMP_TABLE_QUERIED_ADDRESSES, SQLiteDatabase.CONFLICT_FAIL, cv);
                 }
 
                 HashMap<String, String> projectionMap = new HashMap<>();
@@ -256,7 +245,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                 ContentValues cv = new ContentValues();
                 for (String address : selectionArgs) {
                     cv.put(TEMP_TABLE_COLUMN_ADDRES, address);
-                    db.insert(TEMP_TABLE_QUERIED_ADDRESSES, null, cv);
+                    db.insert(TEMP_TABLE_QUERIED_ADDRESSES, SQLiteDatabase.CONFLICT_FAIL, cv);
                 }
 
                 boolean isWildcardSelector = selectionArgs.length == 1 && selectionArgs[0].contains("%");
@@ -321,8 +310,8 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
         }
 
         qb.setStrict(true);
-        qb.setCursorFactory(new CloseDatabaseCursorFactory());
-        Cursor cursor = qb.query(db, projection, null, null, groupBy, null, orderBy);
+        String query = qb.buildQuery(projection, null, null, groupBy, null, orderBy);
+        Cursor cursor = db.query(query);
         if (cursor != null) {
             // Tell the cursor what uri to watch, so it knows when its source data changes
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
@@ -337,7 +326,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
         return cursor;
     }
 
-    private void fillTempTableWithAutocryptRecommendations(SQLiteDatabase db,
+    private void fillTempTableWithAutocryptRecommendations(SupportSQLiteDatabase db,
             AutocryptPeerDataAccessObject autocryptPeerDao, String[] peerIds) {
         List<AutocryptRecommendationResult> autocryptStates =
                 autocryptPeerDao.determineAutocryptRecommendations(peerIds);
@@ -345,7 +334,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
         fillTempTableWithAutocryptRecommendations(db, autocryptStates);
     }
 
-    private void fillTempTableWithAutocryptRecommendations(SQLiteDatabase db,
+    private void fillTempTableWithAutocryptRecommendations(SupportSQLiteDatabase db,
             List<AutocryptRecommendationResult> autocryptRecommendations) {
         ContentValues cv = new ContentValues();
         for (AutocryptRecommendationResult peerResult : autocryptRecommendations) {
@@ -359,12 +348,12 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                         KeychainExternalContract.KEY_STATUS_UNVERIFIED);
             }
 
-            db.update(TEMP_TABLE_QUERIED_ADDRESSES, cv,TEMP_TABLE_COLUMN_ADDRES + "=?",
+            db.update(TEMP_TABLE_QUERIED_ADDRESSES, SQLiteDatabase.CONFLICT_IGNORE, cv,TEMP_TABLE_COLUMN_ADDRES + "=?",
                     new String[] { peerResult.peerId });
         }
     }
 
-    private void fillTempTableWithUidResult(SQLiteDatabase db, boolean isWildcardSelector) {
+    private void fillTempTableWithUidResult(SupportSQLiteDatabase db, boolean isWildcardSelector) {
         String cmpOperator = isWildcardSelector ? " LIKE " : " = ";
         long unixSeconds = System.currentTimeMillis() / 1000;
         db.execSQL("REPLACE INTO " + TEMP_TABLE_QUERIED_ADDRESSES +

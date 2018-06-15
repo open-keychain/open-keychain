@@ -915,8 +915,7 @@ public class OpenPgpService extends Service {
 
     private HashSet<Long> getAllowedKeyIds() {
         String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
-        return mApiDao.getAllowedKeyIdsForApp(
-                KeychainContract.ApiAllowedKeys.buildBaseUri(currentPkg));
+        return mApiDao.getAllowedKeyIdsForApp(currentPkg);
     }
 
     /**
