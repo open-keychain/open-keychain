@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.remote.ui.dialog;
 
 
-import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
@@ -31,10 +30,10 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 
-import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeyInfo;
 import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeySelector;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.remote.AutocryptInteractor;
 import timber.log.Timber;
 
 
@@ -44,7 +43,7 @@ class RemoteDeduplicatePresenter implements LoaderCallbacks<List<KeyInfo>> {
     private final int loaderId;
 
 
-    private AutocryptPeerDataAccessObject autocryptPeerDao;
+    private AutocryptInteractor autocryptInteractor;
     private String duplicateAddress;
 
     private RemoteDeduplicateView view;
@@ -73,7 +72,7 @@ class RemoteDeduplicatePresenter implements LoaderCallbacks<List<KeyInfo>> {
             return;
         }
 
-        autocryptPeerDao = new AutocryptPeerDataAccessObject(context, packageName);
+        this.autocryptInteractor = AutocryptInteractor.getInstance(context, packageName);
 
         this.duplicateAddress = duplicateAddress;
         view.setAddressText(duplicateAddress);
@@ -121,8 +120,8 @@ class RemoteDeduplicatePresenter implements LoaderCallbacks<List<KeyInfo>> {
             return;
         }
 
-         long masterKeyId = keyInfoData.get(selectedItem).getMasterKeyId();
-         autocryptPeerDao.updateKeyGossipFromDedup(duplicateAddress, new Date(), masterKeyId);
+        long masterKeyId = keyInfoData.get(selectedItem).getMasterKeyId();
+        autocryptInteractor.updateKeyGossipFromDedup(duplicateAddress, masterKeyId);
 
         view.finish();
     }

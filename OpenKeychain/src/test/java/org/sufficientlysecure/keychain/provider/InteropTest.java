@@ -246,7 +246,8 @@ public class InteropTest {
         KeyWritableRepository helper = new KeyWritableRepository(RuntimeEnvironment.application,
                 LocalPublicKeyStorage.getInstance(RuntimeEnvironment.application),
                 LocalSecretKeyStorage.getInstance(RuntimeEnvironment.application),
-                DatabaseNotifyManager.create(RuntimeEnvironment.application)) {
+                DatabaseNotifyManager.create(RuntimeEnvironment.application),
+                AutocryptPeerDao.getInstance(RuntimeEnvironment.application)) {
 
             @Override
             public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) throws PgpKeyNotFoundException {

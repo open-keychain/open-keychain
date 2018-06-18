@@ -29,7 +29,7 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.view.View;
 
-import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
+import org.sufficientlysecure.keychain.provider.AutocryptPeerDao;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter;
@@ -56,12 +56,14 @@ public class IdentitiesPresenter implements Observer<List<IdentityInfo>> {
     private final long masterKeyId;
     private final boolean isSecret;
     private final boolean showLinkedIds;
+    private AutocryptPeerDao autocryptPeerDao;
 
     public IdentitiesPresenter(Context context, IdentitiesMvpView view, ViewKeyMvpView viewKeyMvpView,
             long masterKeyId, boolean isSecret) {
         this.context = context;
         this.view = view;
         this.viewKeyMvpView = viewKeyMvpView;
+        this.autocryptPeerDao = AutocryptPeerDao.getInstance(context);
 
         this.masterKeyId = masterKeyId;
         this.isSecret = isSecret;
@@ -146,9 +148,7 @@ public class IdentitiesPresenter implements Observer<List<IdentityInfo>> {
             return;
         }
 
-        AutocryptPeerDataAccessObject autocryptPeerDao =
-                new AutocryptPeerDataAccessObject(context, info.getPackageName());
-        autocryptPeerDao.delete(info.getIdentity());
+        autocryptPeerDao.deleteByIdentifier(info.getPackageName(), info.getIdentity());
     }
 
     public LiveData<List<IdentityInfo>> getLiveDataInstance() {

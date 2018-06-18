@@ -36,7 +36,8 @@ import com.google.auto.value.AutoValue;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.linked.LinkedAttribute;
 import org.sufficientlysecure.keychain.linked.UriAttribute;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
+import org.sufficientlysecure.keychain.model.AutocryptPeer;
+import org.sufficientlysecure.keychain.provider.AutocryptPeerDao;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.util.PackageIconGetter;
@@ -71,30 +72,26 @@ public class IdentityDao {
 
     private static final String USER_IDS_WHERE = UserPackets.IS_REVOKED + " = 0";
 
-    private static final String[] AUTOCRYPT_PEER_PROJECTION = new String[] {
-            ApiAutocryptPeer._ID,
-            ApiAutocryptPeer.PACKAGE_NAME,
-            ApiAutocryptPeer.IDENTIFIER,
-    };
-    private static final int INDEX_PACKAGE_NAME = 1;
-    private static final int INDEX_IDENTIFIER = 2;
-
 
     private final ContentResolver contentResolver;
     private final PackageIconGetter packageIconGetter;
     private final PackageManager packageManager;
+    private final AutocryptPeerDao autocryptPeerDao;
 
     static IdentityDao getInstance(Context context) {
         ContentResolver contentResolver = context.getContentResolver();
         PackageManager packageManager = context.getPackageManager();
         PackageIconGetter iconGetter = PackageIconGetter.getInstance(context);
-        return new IdentityDao(contentResolver, packageManager, iconGetter);
+        AutocryptPeerDao autocryptPeerDao = AutocryptPeerDao.getInstance(context);
+        return new IdentityDao(contentResolver, packageManager, iconGetter, autocryptPeerDao);
     }
 
-    private IdentityDao(ContentResolver contentResolver, PackageManager packageManager, PackageIconGetter iconGetter) {
+    private IdentityDao(ContentResolver contentResolver, PackageManager packageManager, PackageIconGetter iconGetter,
+            AutocryptPeerDao autocryptPeerDao) {
         this.packageManager = packageManager;
         this.contentResolver = contentResolver;
         this.packageIconGetter = iconGetter;
+        this.autocryptPeerDao = autocryptPeerDao;
     }
 
     List<IdentityInfo> getIdentityInfos(long masterKeyId, boolean showLinkedIds) {
@@ -110,35 +107,24 @@ public class IdentityDao {
     }
 
     private void correlateOrAddAutocryptPeers(ArrayList<IdentityInfo> identities, long masterKeyId) {
-        Cursor cursor = contentResolver.query(ApiAutocryptPeer.buildByMasterKeyId(masterKeyId),
-                AUTOCRYPT_PEER_PROJECTION, null, null, null);
-        if (cursor == null) {
-            Timber.e("Error loading Autocrypt peers");
-            return;
-        }
+        for (AutocryptPeer autocryptPeer : autocryptPeerDao.getAutocryptPeersForKey(masterKeyId)) {
+            String packageName = autocryptPeer.package_name();
+            String autocryptId = autocryptPeer.identifier();
 
-        try {
-            while (cursor.moveToNext()) {
-                String packageName = cursor.getString(INDEX_PACKAGE_NAME);
-                String autocryptPeer = cursor.getString(INDEX_IDENTIFIER);
+            Drawable drawable = packageIconGetter.getDrawableForPackageName(packageName);
+            Intent autocryptPeerIntent = getAutocryptPeerActivityIntentIfResolvable(packageName, autocryptId);
 
-                Drawable drawable = packageIconGetter.getDrawableForPackageName(packageName);
-                Intent autocryptPeerIntent = getAutocryptPeerActivityIntentIfResolvable(packageName, autocryptPeer);
-
-                UserIdInfo associatedUserIdInfo = findUserIdMatchingAutocryptPeer(identities, autocryptPeer);
-                if (associatedUserIdInfo != null) {
-                    int position = identities.indexOf(associatedUserIdInfo);
-                    AutocryptPeerInfo autocryptPeerInfo = AutocryptPeerInfo
-                            .create(associatedUserIdInfo, autocryptPeer, packageName, drawable, autocryptPeerIntent);
-                    identities.set(position, autocryptPeerInfo);
-                } else {
-                    AutocryptPeerInfo autocryptPeerInfo = AutocryptPeerInfo
-                            .create(autocryptPeer, packageName, drawable, autocryptPeerIntent);
-                    identities.add(autocryptPeerInfo);
-                }
+            UserIdInfo associatedUserIdInfo = findUserIdMatchingAutocryptPeer(identities, autocryptId);
+            if (associatedUserIdInfo != null) {
+                int position = identities.indexOf(associatedUserIdInfo);
+                AutocryptPeerInfo autocryptPeerInfo = AutocryptPeerInfo
+                        .create(associatedUserIdInfo, autocryptId, packageName, drawable, autocryptPeerIntent);
+                identities.set(position, autocryptPeerInfo);
+            } else {
+                AutocryptPeerInfo autocryptPeerInfo = AutocryptPeerInfo
+                        .create(autocryptId, packageName, drawable, autocryptPeerIntent);
+                identities.add(autocryptPeerInfo);
             }
-        } finally {
-            cursor.close();
         }
     }
 

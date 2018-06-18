@@ -22,7 +22,6 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
 
 
 public class KeychainExternalContract {

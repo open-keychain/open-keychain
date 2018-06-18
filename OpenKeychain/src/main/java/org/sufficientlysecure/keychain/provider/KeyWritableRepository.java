@@ -55,7 +55,6 @@ import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -84,29 +83,34 @@ public class KeyWritableRepository extends KeyRepository {
 
     private final Context context;
     private final DatabaseNotifyManager databaseNotifyManager;
+    private AutocryptPeerDao autocryptPeerDao;
 
     public static KeyWritableRepository create(Context context) {
         LocalPublicKeyStorage localPublicKeyStorage = LocalPublicKeyStorage.getInstance(context);
         LocalSecretKeyStorage localSecretKeyStorage = LocalSecretKeyStorage.getInstance(context);
         DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
-        return new KeyWritableRepository(context, localPublicKeyStorage, localSecretKeyStorage, databaseNotifyManager);
+        AutocryptPeerDao autocryptPeerDao = AutocryptPeerDao.getInstance(context);
+        return new KeyWritableRepository(context, localPublicKeyStorage, localSecretKeyStorage, databaseNotifyManager,
+                autocryptPeerDao);
         }
 
     @VisibleForTesting
     KeyWritableRepository(Context context,
             LocalPublicKeyStorage localPublicKeyStorage,
             LocalSecretKeyStorage localSecretKeyStorage,
-            DatabaseNotifyManager databaseNotifyManager) {
-        this(context, localPublicKeyStorage, localSecretKeyStorage, databaseNotifyManager, new OperationLog(), 0);
+            DatabaseNotifyManager databaseNotifyManager, AutocryptPeerDao autocryptPeerDao) {
+        this(context, localPublicKeyStorage, localSecretKeyStorage, databaseNotifyManager, new OperationLog(), 0,
+                autocryptPeerDao);
     }
 
     private KeyWritableRepository(Context context, LocalPublicKeyStorage localPublicKeyStorage,
             LocalSecretKeyStorage localSecretKeyStorage, DatabaseNotifyManager databaseNotifyManager,
-            OperationLog log, int indent) {
+            OperationLog log, int indent, AutocryptPeerDao autocryptPeerDao) {
         super(context.getContentResolver(), localPublicKeyStorage, localSecretKeyStorage, log, indent);
 
         this.context = context;
         this.databaseNotifyManager = databaseNotifyManager;
+        this.autocryptPeerDao = autocryptPeerDao;
     }
 
     private LongSparseArray<CanonicalizedPublicKey> getTrustedMasterKeys() {
@@ -585,7 +589,7 @@ public class KeyWritableRepository extends KeyRepository {
             Timber.e(e, "Could not delete file!");
             return false;
         }
-        contentResolver.delete(ApiAutocryptPeer.buildByMasterKeyId(masterKeyId),null, null);
+        autocryptPeerDao.deleteByMasterKeyId(masterKeyId);
         int deletedRows = contentResolver.delete(KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null);
 
         databaseNotifyManager.notifyKeyChange(masterKeyId);

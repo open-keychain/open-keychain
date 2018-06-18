@@ -1,0 +1,13 @@
+-- TODO implement. this is only here for reference in SQLDelight
+CREATE TABLE IF NOT EXISTS certs(
+    master_key_id INTEGER,
+    rank INTEGER,
+    key_id_certifier INTEGER,
+    type INTEGER,
+    verified INTEGER,
+    creation INTEGER,
+    data BLOB,
+    PRIMARY KEY(master_key_id, rank, key_id_certifier),
+    FOREIGN KEY(master_key_id) REFERENCES keyrings_public(master_key_id) ON DELETE CASCADE
+    -- FOREIGN KEY(master_key_id, rank) REFERENCES user_packets(master_key_id, rank) ON DELETE CASCADE
+);

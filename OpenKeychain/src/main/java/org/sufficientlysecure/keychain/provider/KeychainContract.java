@@ -51,13 +51,6 @@ public class KeychainContract {
         String EXPIRY = "expiry";
     }
 
-    interface UpdatedKeysColumns {
-        String MASTER_KEY_ID = "master_key_id"; // not a database id
-        String LAST_UPDATED = "last_updated"; // time since epoch in seconds
-        String SEEN_ON_KEYSERVERS = "seen_on_keyservers";
-        String FINGERPRINT = "fingerprint";
-    }
-
     interface KeySignaturesColumns {
         String MASTER_KEY_ID = "master_key_id"; // not a database id
         String SIGNER_KEY_ID = "signer_key_id";
@@ -86,11 +79,6 @@ public class KeychainContract {
         String DATA = "data";
     }
 
-    interface ApiAppsColumns {
-        String PACKAGE_NAME = "package_name";
-        String PACKAGE_CERTIFICATE = "package_signature";
-    }
-
     interface ApiAppsAllowedKeysColumns {
         String KEY_ID = "key_id"; // not a database id
         String PACKAGE_NAME = "package_name"; // foreign key to api_apps.package_name
@@ -100,28 +88,12 @@ public class KeychainContract {
         String IDENTIFIER = "identifier";
     }
 
-    interface ApiAutocryptPeerColumns {
-        String PACKAGE_NAME = "package_name";
-        String IDENTIFIER = "identifier";
-        String LAST_SEEN = "last_seen";
-
-        String MASTER_KEY_ID = "master_key_id";
-        String LAST_SEEN_KEY = "last_seen_key";
-        String IS_MUTUAL = "is_mutual";
-
-        String GOSSIP_MASTER_KEY_ID = "gossip_master_key_id";
-        String GOSSIP_LAST_SEEN_KEY = "gossip_last_seen_key";
-        String GOSSIP_ORIGIN = "gossip_origin";
-    }
-
     public static final String CONTENT_AUTHORITY = Constants.PROVIDER_AUTHORITY;
 
     private static final Uri BASE_CONTENT_URI_INTERNAL = Uri
             .parse("content://" + CONTENT_AUTHORITY);
 
     public static final String BASE_KEY_RINGS = "key_rings";
-
-    public static final String BASE_UPDATED_KEYS = "updated_keys";
 
     public static final String BASE_KEY_SIGNATURES = "key_signatures";
 
@@ -140,11 +112,6 @@ public class KeychainContract {
     public static final String PATH_LINKED_IDS = "linked_ids";
     public static final String PATH_KEYS = "keys";
     public static final String PATH_CERTS = "certs";
-
-    public static final String PATH_BY_PACKAGE_NAME = "by_package_name";
-    public static final String PATH_BY_KEY_ID = "by_key_id";
-
-    public static final String BASE_AUTOCRYPT_PEERS = "autocrypt_peers";
 
     public static class KeyRings implements BaseColumns, KeysColumns, UserPacketsColumns {
         public static final String MASTER_KEY_ID = KeysColumns.MASTER_KEY_ID;
@@ -308,37 +275,6 @@ public class KeychainContract {
             return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_LINKED_IDS).build();
         }
 
-    }
-
-    public static class ApiAutocryptPeer implements ApiAutocryptPeerColumns, BaseColumns {
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
-                .appendPath(BASE_AUTOCRYPT_PEERS).build();
-        public static final String KEY_IS_REVOKED = "key_is_revoked";
-        public static final String KEY_IS_EXPIRED = "key_is_expired";
-        public static final String KEY_IS_VERIFIED = "key_is_verified";
-        public static final String GOSSIP_KEY_IS_REVOKED = "gossip_key_is_revoked";
-        public static final String GOSSIP_KEY_IS_EXPIRED = "gossip_key_is_expired";
-        public static final String GOSSIP_KEY_IS_VERIFIED = "gossip_key_is_verified";
-
-        public static final int GOSSIP_ORIGIN_AUTOCRYPT = 0;
-        public static final int GOSSIP_ORIGIN_SIGNATURE = 10;
-        public static final int GOSSIP_ORIGIN_DEDUP = 20;
-
-        public static Uri buildByKeyUri(Uri uri) {
-            return CONTENT_URI.buildUpon().appendPath(PATH_BY_KEY_ID).appendPath(uri.getPathSegments().get(1)).build();
-        }
-
-        public static Uri buildByPackageName(String packageName) {
-            return CONTENT_URI.buildUpon().appendPath(PATH_BY_PACKAGE_NAME).appendPath(packageName).build();
-        }
-
-        public static Uri buildByPackageNameAndAutocryptId(String packageName, String autocryptPeer) {
-            return CONTENT_URI.buildUpon().appendPath(PATH_BY_PACKAGE_NAME).appendPath(packageName).appendPath(autocryptPeer).build();
-        }
-
-        public static Uri buildByMasterKeyId(long masterKeyId) {
-            return CONTENT_URI.buildUpon().appendPath(PATH_BY_KEY_ID).appendPath(Long.toString(masterKeyId)).build();
-        }
     }
 
     public static class Certs implements CertsColumns, BaseColumns {

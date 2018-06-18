@@ -39,10 +39,6 @@ import android.text.TextUtils;
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
-import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
-import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject.AutocryptRecommendationResult;
-import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject.AutocryptState;
-import org.sufficientlysecure.keychain.provider.DatabaseNotifyManager;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
@@ -52,8 +48,9 @@ import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
-import org.sufficientlysecure.keychain.provider.KeychainProvider;
 import org.sufficientlysecure.keychain.provider.SimpleContentResolverInterface;
+import org.sufficientlysecure.keychain.remote.AutocryptInteractor.AutocryptRecommendationResult;
+import org.sufficientlysecure.keychain.remote.AutocryptInteractor.AutocryptState;
 import timber.log.Timber;
 
 
@@ -69,8 +66,6 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
     private UriMatcher uriMatcher;
     private ApiPermissionHelper apiPermissionHelper;
-    private KeychainProvider internalKeychainProvider;
-    private DatabaseNotifyManager databaseNotifyManager;
 
 
     /**
@@ -107,10 +102,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
             throw new NullPointerException("Context can't be null during onCreate!");
         }
 
-        internalKeychainProvider = new KeychainProvider();
-        internalKeychainProvider.attachInfo(context, null);
         apiPermissionHelper = new ApiPermissionHelper(context, new ApiDataAccessObject(getContext()));
-        databaseNotifyManager = DatabaseNotifyManager.create(context);
         return true;
     }
 
@@ -267,10 +259,9 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
                     throw new UnsupportedOperationException("Cannot wildcard-query autocrypt results!");
                 }
                 if (!isWildcardSelector && queriesAutocryptResult) {
-                    AutocryptPeerDataAccessObject autocryptPeerDao =
-                            new AutocryptPeerDataAccessObject(internalKeychainProvider, callingPackageName,
-                                    databaseNotifyManager);
-                    fillTempTableWithAutocryptRecommendations(db, autocryptPeerDao, selectionArgs);
+                    AutocryptInteractor autocryptInteractor =
+                            AutocryptInteractor.getInstance(getContext(), callingPackageName);
+                    fillTempTableWithAutocryptRecommendations(db, autocryptInteractor, selectionArgs);
                 }
 
                 HashMap<String, String> projectionMap = new HashMap<>();
@@ -310,7 +301,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
         }
 
         qb.setStrict(true);
-        String query = qb.buildQuery(projection, null, null, groupBy, null, orderBy);
+        String query = qb.buildQuery(projection, null, groupBy, null, orderBy, null);
         Cursor cursor = db.query(query);
         if (cursor != null) {
             // Tell the cursor what uri to watch, so it knows when its source data changes
@@ -327,9 +318,9 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
     }
 
     private void fillTempTableWithAutocryptRecommendations(SupportSQLiteDatabase db,
-            AutocryptPeerDataAccessObject autocryptPeerDao, String[] peerIds) {
+            AutocryptInteractor autocryptInteractor, String[] peerIds) {
         List<AutocryptRecommendationResult> autocryptStates =
-                autocryptPeerDao.determineAutocryptRecommendations(peerIds);
+                autocryptInteractor.determineAutocryptRecommendations(peerIds);
 
         fillTempTableWithAutocryptRecommendations(db, autocryptStates);
     }

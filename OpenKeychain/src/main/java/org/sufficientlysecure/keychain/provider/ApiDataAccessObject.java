@@ -54,8 +54,12 @@ public class ApiDataAccessObject {
     }
 
     public byte[] getApiAppCertificate(String packageName) {
-        Cursor cursor = db.query(ApiApp.FACTORY.getCertificate(packageName));
-        return ApiApp.FACTORY.getCertificateMapper().map(cursor);
+        try (Cursor cursor = db.query(ApiApp.FACTORY.getCertificate(packageName))) {
+            if (cursor.moveToFirst()) {
+                return ApiApp.FACTORY.getCertificateMapper().map(cursor);
+            }
+            return null;
+        }
     }
 
     public void insertApiApp(ApiApp apiApp) {

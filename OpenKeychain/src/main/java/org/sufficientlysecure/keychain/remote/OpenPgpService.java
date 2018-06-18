@@ -68,10 +68,9 @@ import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
-import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
+import org.sufficientlysecure.keychain.provider.AutocryptPeerDao;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
 import org.sufficientlysecure.keychain.provider.OverriddenWarningsRepository;
@@ -585,8 +584,8 @@ public class OpenPgpService extends Service {
             return signatureResult;
         }
 
-        AutocryptPeerDataAccessObject autocryptPeerentityDao = new AutocryptPeerDataAccessObject(getBaseContext(),
-                mApiPermissionHelper.getCurrentCallingPackage());
+        AutocryptPeerDao autocryptPeerentityDao =
+                AutocryptPeerDao.getInstance(getBaseContext());
         Long autocryptPeerMasterKeyId = autocryptPeerentityDao.getMasterKeyIdForAutocryptPeer(autocryptPeerId);
 
         long masterKeyId = signatureResult.getKeyId();
@@ -596,7 +595,9 @@ public class OpenPgpService extends Service {
             if (effectiveTime.after(now)) {
                 effectiveTime = now;
             }
-            autocryptPeerentityDao.updateKeyGossipFromSignature(autocryptPeerId, effectiveTime, masterKeyId);
+            AutocryptInteractor autocryptInteractor =
+                    AutocryptInteractor.getInstance(this, mApiPermissionHelper.getCurrentCallingPackage());
+            autocryptInteractor.updateKeyGossipFromSignature(autocryptPeerId, effectiveTime, masterKeyId);
             return signatureResult.withAutocryptPeerResult(AutocryptPeerResult.NEW);
         } else  if (masterKeyId == autocryptPeerMasterKeyId) {
             return signatureResult.withAutocryptPeerResult(AutocryptPeerResult.OK);
@@ -860,9 +861,8 @@ public class OpenPgpService extends Service {
 
     private Intent updateAutocryptPeerImpl(Intent data) {
         try {
-            AutocryptPeerDataAccessObject autocryptPeerDao = new AutocryptPeerDataAccessObject(getBaseContext(),
-                    mApiPermissionHelper.getCurrentCallingPackage());
-            AutocryptInteractor autocryptInteractor = AutocryptInteractor.getInstance(getBaseContext(), autocryptPeerDao);
+            AutocryptInteractor autocryptInteractor = AutocryptInteractor.getInstance(
+                    getBaseContext(), mApiPermissionHelper.getCurrentCallingPackage());
 
             if (data.hasExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_ID) &&
                     data.hasExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_UPDATE)) {

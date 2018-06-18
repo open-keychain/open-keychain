@@ -30,21 +30,21 @@ import android.arch.persistence.db.SupportSQLiteOpenHelper.Configuration;
 import android.arch.persistence.db.framework.FrameworkSQLiteOpenHelperFactory;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
 import android.provider.BaseColumns;
 
+import org.sufficientlysecure.keychain.AutocryptPeersModel;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.KeyMetadataModel;
 import org.sufficientlysecure.keychain.KeyRingsPublicModel;
 import org.sufficientlysecure.keychain.model.ApiApp;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAllowedKeysColumns;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeerColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeySignaturesColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.OverriddenWarnings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
@@ -60,20 +60,18 @@ import timber.log.Timber;
  */
 public class KeychainDatabase {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 27;
+    private static final int DATABASE_VERSION = 28;
     private final SupportSQLiteOpenHelper supportSQLiteOpenHelper;
     private Context context;
 
     public interface Tables {
         String KEY_RINGS_PUBLIC = "keyrings_public";
         String KEYS = "keys";
-        String UPDATED_KEYS = "updated_keys";
         String KEY_SIGNATURES = "key_signatures";
         String USER_PACKETS = "user_packets";
         String CERTS = "certs";
         String API_ALLOWED_KEYS = "api_allowed_keys";
         String OVERRIDDEN_WARNINGS = "overridden_warnings";
-        String API_AUTOCRYPT_PEERS = "api_autocrypt_peers";
     }
 
     private static final String CREATE_KEYS =
@@ -151,23 +149,6 @@ public class KeychainDatabase {
                     + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
                     + ")";
 
-    private static final String CREATE_API_AUTOCRYPT_PEERS =
-            "CREATE TABLE IF NOT EXISTS " + Tables.API_AUTOCRYPT_PEERS + " ("
-                    + ApiAutocryptPeerColumns.PACKAGE_NAME + " TEXT NOT NULL, "
-                    + ApiAutocryptPeerColumns.IDENTIFIER + " TEXT NOT NULL, "
-                    + ApiAutocryptPeerColumns.LAST_SEEN + " INTEGER, "
-                    + ApiAutocryptPeerColumns.LAST_SEEN_KEY + " INTEGER NULL, "
-                    + ApiAutocryptPeerColumns.IS_MUTUAL + " INTEGER NULL, "
-                    + ApiAutocryptPeerColumns.MASTER_KEY_ID + " INTEGER NULL, "
-                    + ApiAutocryptPeerColumns.GOSSIP_MASTER_KEY_ID + " INTEGER NULL, "
-                    + ApiAutocryptPeerColumns.GOSSIP_LAST_SEEN_KEY + " INTEGER NULL, "
-                    + ApiAutocryptPeerColumns.GOSSIP_ORIGIN + " INTEGER NULL, "
-                    + "PRIMARY KEY(" + ApiAutocryptPeerColumns.PACKAGE_NAME + ", "
-                        + ApiAutocryptPeerColumns.IDENTIFIER + "), "
-                    + "FOREIGN KEY(" + ApiAutocryptPeerColumns.PACKAGE_NAME + ") REFERENCES "
-                        + "api_apps (package_signature) ON DELETE CASCADE"
-                + ")";
-
     private static final String CREATE_API_APPS_ALLOWED_KEYS =
             "CREATE TABLE IF NOT EXISTS " + Tables.API_ALLOWED_KEYS + " ("
                 + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -237,7 +218,7 @@ public class KeychainDatabase {
         db.execSQL(CREATE_KEY_SIGNATURES);
         db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
         db.execSQL(CREATE_OVERRIDDEN_WARNINGS);
-        db.execSQL(CREATE_API_AUTOCRYPT_PEERS);
+        db.execSQL(AutocryptPeersModel.CREATE_TABLE);
         db.execSQL(ApiApp.CREATE_TABLE);
 
         db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysColumns.RANK + ", " + KeysColumns.MASTER_KEY_ID + ");");
@@ -466,6 +447,10 @@ public class KeychainDatabase {
             case 26: {
                 migrateUpdatedKeysToKeyMetadataTable(db);
             }
+
+            case 27: {
+                renameApiAutocryptPeersTable(db);
+            }
         }
     }
 
@@ -486,6 +471,10 @@ public class KeychainDatabase {
     private void migrateUpdatedKeysToKeyMetadataTable(SupportSQLiteDatabase db) {
         db.execSQL("ALTER TABLE updated_keys RENAME TO key_metadata;");
         db.execSQL("UPDATE key_metadata SET last_updated = last_updated * 1000;");
+    }
+
+    private void renameApiAutocryptPeersTable(SupportSQLiteDatabase db) {
+        db.execSQL("ALTER TABLE api_autocrypt_peers RENAME TO autocrypt_peers;");
     }
 
     public void onDowngrade(SupportSQLiteDatabase db, int oldVersion, int newVersion) {
