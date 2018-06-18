@@ -6,9 +6,10 @@ import java.util.List;
 
 import android.content.Context;
 
+import org.sufficientlysecure.keychain.model.KeyMetadata;
+import org.sufficientlysecure.keychain.provider.KeyMetadataDao;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.IdentityInfo;
-import org.sufficientlysecure.keychain.ui.keyview.loader.KeyserverStatusDao.KeyserverStatus;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.KeySubkeyStatus;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.SubKeyItem;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SystemContactDao.SystemContactInfo;
@@ -78,21 +79,21 @@ public class ViewKeyLiveData {
         }
     }
 
-    public static class KeyserverStatusLiveData extends AsyncTaskLiveData<KeyserverStatus> {
-        private final KeyserverStatusDao keyserverStatusDao;
+    public static class KeyserverStatusLiveData extends AsyncTaskLiveData<KeyMetadata> {
+        private final KeyMetadataDao keyMetadataDao;
 
         private final long masterKeyId;
 
         public KeyserverStatusLiveData(Context context, long masterKeyId) {
             super(context, KeyRings.buildGenericKeyRingUri(masterKeyId));
 
-            this.keyserverStatusDao = KeyserverStatusDao.getInstance(context);
+            this.keyMetadataDao = KeyMetadataDao.create(context);
             this.masterKeyId = masterKeyId;
         }
 
         @Override
-        public KeyserverStatus asyncLoadData() {
-            return keyserverStatusDao.getKeyserverStatus(masterKeyId);
+        public KeyMetadata asyncLoadData() {
+            return keyMetadataDao.getKeyMetadata(masterKeyId);
         }
     }
 }

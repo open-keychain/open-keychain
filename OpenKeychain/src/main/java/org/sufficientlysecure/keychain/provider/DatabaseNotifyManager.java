@@ -35,7 +35,7 @@ public class DatabaseNotifyManager {
         contentResolver.notifyChange(uri, null);
     }
 
-    public void notifyKeyserverStatusChange(long masterKeyId) {
+    public void notifyKeyMetadataChange(long masterKeyId) {
         Uri uri = KeyRings.buildGenericKeyRingUri(masterKeyId);
         contentResolver.notifyChange(uri, null);
     }

@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS keys (
+    master_key_id INTEGER,
+    rank INTEGER,
+    key_id INTEGER,
+    key_size INTEGER,
+    key_curve_oid TEXT,
+    algorithm INTEGER,
+    fingerprint BLOB,
+    can_certify INTEGER,
+    can_sign INTEGER,
+    can_encrypt INTEGER,
+    can_authenticate INTEGER,
+    is_revoked INTEGER,
+    has_secret INTEGER,
+    is_secure INTEGER,
+    creation INTEGER,
+    expiry INTEGER,
+    PRIMARY KEY(master_key_id, rank),
+    FOREIGN KEY(master_key_id) REFERENCES
+    keyrings_public(master_key_id) ON DELETE CASCADE
+);

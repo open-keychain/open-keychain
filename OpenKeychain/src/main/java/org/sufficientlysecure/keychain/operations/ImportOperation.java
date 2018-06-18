@@ -55,7 +55,7 @@ import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
-import org.sufficientlysecure.keychain.provider.LastUpdateInteractor;
+import org.sufficientlysecure.keychain.provider.KeyMetadataDao;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -90,7 +90,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
 
     public static final String CACHE_FILE_NAME = "key_import.pcl";
 
-    private final LastUpdateInteractor lastUpdateInteractor;
+    private final KeyMetadataDao keyMetadataDao;
 
     private FacebookKeyserverClient facebookServer;
     private KeybaseKeyserverClient keybaseServer;
@@ -98,14 +98,14 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
     public ImportOperation(Context context, KeyWritableRepository databaseInteractor, Progressable progressable) {
         super(context, databaseInteractor, progressable);
 
-        this.lastUpdateInteractor = LastUpdateInteractor.create(context);
+        this.keyMetadataDao = KeyMetadataDao.create(context);
     }
 
     public ImportOperation(Context context, KeyWritableRepository databaseInteractor,
                            Progressable progressable, AtomicBoolean cancelled) {
         super(context, databaseInteractor, progressable, cancelled);
 
-        this.lastUpdateInteractor = LastUpdateInteractor.create(context);
+        this.keyMetadataDao = KeyMetadataDao.create(context);
     }
 
     // Overloaded functions for using progressable supplied in constructor during import
@@ -200,7 +200,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
 
                         byte[] fingerprintHex = entry.getExpectedFingerprint();
                         if (fingerprintHex != null) {
-                            lastUpdateInteractor.renewKeyLastUpdatedTime(
+                            keyMetadataDao.renewKeyLastUpdatedTime(
                                     KeyFormattingUtils.getKeyIdFromFingerprint(fingerprintHex), false);
                         }
                         continue;
@@ -250,7 +250,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
                     }
 
                     if (!skipSave) {
-                        lastUpdateInteractor.renewKeyLastUpdatedTime(key.getMasterKeyId(), keyWasDownloaded);
+                        keyMetadataDao.renewKeyLastUpdatedTime(key.getMasterKeyId(), keyWasDownloaded);
                     }
                 }
 

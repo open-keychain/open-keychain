@@ -45,7 +45,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeySignatures;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
@@ -74,9 +73,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
     private static final int KEY_RINGS_FIND_BY_SUBKEY = 401;
     private static final int KEY_RINGS_FIND_BY_USER_ID = 402;
     private static final int KEY_RINGS_FILTER_BY_SIGNER = 403;
-
-    private static final int UPDATED_KEYS = 500;
-    private static final int UPDATED_KEYS_SPECIFIC = 501;
 
     private static final int AUTOCRYPT_PEERS_BY_MASTER_KEY_ID = 601;
     private static final int AUTOCRYPT_PEERS_BY_PACKAGE_NAME = 602;
@@ -192,14 +188,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
         matcher.addURI(authority, KeychainContract.BASE_AUTOCRYPT_PEERS + "/" +
                 KeychainContract.PATH_BY_PACKAGE_NAME + "/*/*", AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID);
 
-
-        /*
-         * to access table containing last updated dates of keys
-         */
-        matcher.addURI(authority, KeychainContract.BASE_UPDATED_KEYS, UPDATED_KEYS);
-        matcher.addURI(authority, KeychainContract.BASE_UPDATED_KEYS + "/*", UPDATED_KEYS_SPECIFIC);
-
-
         matcher.addURI(authority, KeychainContract.BASE_KEY_SIGNATURES, KEY_SIGNATURES);
 
 
@@ -238,12 +226,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
 
             case KEY_RING_USER_IDS:
                 return UserPackets.CONTENT_TYPE;
-
-            case UPDATED_KEYS:
-                return UpdatedKeys.CONTENT_TYPE;
-
-            case UPDATED_KEYS_SPECIFIC:
-                return UpdatedKeys.CONTENT_ITEM_TYPE;
 
             case KEY_SIGNATURES:
                 return KeySignatures.CONTENT_TYPE;
@@ -727,30 +709,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                 break;
             }
 
-            case UPDATED_KEYS:
-            case UPDATED_KEYS_SPECIFIC: {
-                HashMap<String, String> projectionMap = new HashMap<>();
-                projectionMap.put(UpdatedKeys.MASTER_KEY_ID,
-                        Tables.UPDATED_KEYS + "." + UpdatedKeys.MASTER_KEY_ID + " AS " + UpdatedKeys.MASTER_KEY_ID);
-                projectionMap.put(UpdatedKeys.LAST_UPDATED,
-                        Tables.UPDATED_KEYS + "." + UpdatedKeys.LAST_UPDATED + " AS " + UpdatedKeys.LAST_UPDATED);
-                projectionMap.put(UpdatedKeys.SEEN_ON_KEYSERVERS,
-                        Tables.UPDATED_KEYS + "." + UpdatedKeys.SEEN_ON_KEYSERVERS + " AS " + UpdatedKeys.SEEN_ON_KEYSERVERS);
-                projectionMap.put(UpdatedKeys.FINGERPRINT,
-                        Tables.KEYS + "." + Keys.FINGERPRINT + " AS " + UpdatedKeys.FINGERPRINT);
-                qb.setProjectionMap(projectionMap);
-
-                qb.setTables(Tables.UPDATED_KEYS +
-                        " LEFT JOIN " + Tables.KEYS +
-                            " ON (" + Tables.KEYS + "." + Keys.KEY_ID + " = " + Tables.UPDATED_KEYS + "." + UpdatedKeys.MASTER_KEY_ID + ")"
-                );
-
-                if (match == UPDATED_KEYS_SPECIFIC) {
-                    qb.appendWhere(Tables.UPDATED_KEYS + "." + UpdatedKeys.MASTER_KEY_ID + " = ");
-                    qb.appendWhereEscapeString(uri.getPathSegments().get(1));
-                }
-                break;
-            }
             default: {
                 throw new IllegalArgumentException("Unknown URI " + uri + " (" + match + ")");
             }
@@ -833,17 +791,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                     // TODO this would be better handled in savePublicKeyRing directly!
                     db.insert(Tables.CERTS, SQLiteDatabase.CONFLICT_FAIL, values);
                     keyId = values.getAsLong(Certs.MASTER_KEY_ID);
-                    break;
-                }
-                case UPDATED_KEYS: {
-                    keyId = values.getAsLong(UpdatedKeys.MASTER_KEY_ID);
-                    try {
-                        db.insert(Tables.UPDATED_KEYS, SQLiteDatabase.CONFLICT_FAIL, values);
-                    } catch (SQLiteConstraintException e) {
-                        db.update(Tables.UPDATED_KEYS, SQLiteDatabase.CONFLICT_IGNORE, values,
-                                UpdatedKeys.MASTER_KEY_ID + " = ?", new String[] { Long.toString(keyId) });
-                    }
-                    rowUri = UpdatedKeys.CONTENT_URI;
                     break;
                 }
                 case KEY_SIGNATURES: {
@@ -951,19 +898,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                         actualSelection += " AND (" + selection + ")";
                     }
                     count = db.update(Tables.KEYS, SQLiteDatabase.CONFLICT_FAIL, values, actualSelection, selectionArgs);
-                    break;
-                }
-                case UPDATED_KEYS: {
-                    if (values.size() != 2 ||
-                            !values.containsKey(UpdatedKeys.SEEN_ON_KEYSERVERS) ||
-                            !values.containsKey(UpdatedKeys.LAST_UPDATED) ||
-                            values.get(UpdatedKeys.LAST_UPDATED) != null ||
-                            values.get(UpdatedKeys.SEEN_ON_KEYSERVERS) != null ||
-                            selection != null || selectionArgs != null) {
-                        throw new UnsupportedOperationException("can only reset all keys");
-                    }
-
-                    db.update(Tables.UPDATED_KEYS, SQLiteDatabase.CONFLICT_FAIL, values, null, null);
                     break;
                 }
                 case AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID: {

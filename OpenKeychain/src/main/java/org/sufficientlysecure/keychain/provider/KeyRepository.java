@@ -27,7 +27,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.annotation.Nullable;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -39,9 +38,7 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import timber.log.Timber;
 
 
@@ -282,31 +279,6 @@ public class KeyRepository {
 
     public ContentResolver getContentResolver() {
         return contentResolver;
-    }
-
-    @Nullable
-    Long getLastUpdateTime(long masterKeyId) {
-        Cursor lastUpdatedCursor = contentResolver.query(
-                UpdatedKeys.CONTENT_URI,
-                new String[] { UpdatedKeys.LAST_UPDATED },
-                Tables.UPDATED_KEYS + "." + UpdatedKeys.MASTER_KEY_ID + " = ?",
-                new String[] { "" + masterKeyId },
-                null
-        );
-        if (lastUpdatedCursor == null) {
-            return null;
-        }
-
-        Long lastUpdateTime;
-        try {
-            if (!lastUpdatedCursor.moveToNext()) {
-                return null;
-            }
-            lastUpdateTime = lastUpdatedCursor.getLong(0);
-        } finally {
-            lastUpdatedCursor.close();
-        }
-        return lastUpdateTime;
     }
 
     public final byte[] loadPublicKeyRingData(long masterKeyId) throws NotFoundException {

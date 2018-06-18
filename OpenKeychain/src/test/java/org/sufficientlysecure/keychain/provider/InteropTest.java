@@ -16,6 +16,17 @@
 
 package org.sufficientlysecure.keychain.provider;
 
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URL;
+import java.security.Security;
+import java.util.ArrayList;
+
 import android.net.Uri;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -46,16 +57,6 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Passphrase;
-
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.net.URL;
-import java.security.Security;
-import java.util.ArrayList;
 
 @RunWith(KeychainTestRunner.class)
 public class InteropTest {
@@ -245,8 +246,7 @@ public class InteropTest {
         KeyWritableRepository helper = new KeyWritableRepository(RuntimeEnvironment.application,
                 LocalPublicKeyStorage.getInstance(RuntimeEnvironment.application),
                 LocalSecretKeyStorage.getInstance(RuntimeEnvironment.application),
-                DatabaseNotifyManager.create(RuntimeEnvironment.application),
-                LastUpdateInteractor.create(RuntimeEnvironment.application)) {
+                DatabaseNotifyManager.create(RuntimeEnvironment.application)) {
 
             @Override
             public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) throws PgpKeyNotFoundException {

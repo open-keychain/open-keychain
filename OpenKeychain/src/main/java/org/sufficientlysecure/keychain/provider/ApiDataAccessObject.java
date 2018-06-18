@@ -37,7 +37,6 @@ import org.sufficientlysecure.keychain.model.ApiApp;
 
 
 public class ApiDataAccessObject {
-
     private final SupportSQLiteDatabase db;
 
     public ApiDataAccessObject(Context context) {

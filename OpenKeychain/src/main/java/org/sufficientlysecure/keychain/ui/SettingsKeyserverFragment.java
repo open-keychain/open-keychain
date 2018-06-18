@@ -43,7 +43,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
-import org.sufficientlysecure.keychain.provider.LastUpdateInteractor;
+import org.sufficientlysecure.keychain.provider.KeyMetadataDao;
 import org.sufficientlysecure.keychain.ui.dialog.AddEditKeyserverDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -63,7 +63,7 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
     private List<HkpKeyserverAddress> mKeyservers;
     private KeyserverListAdapter mAdapter;
 
-    private LastUpdateInteractor lastUpdateInteractor;
+    private KeyMetadataDao keyMetadataDao;
 
     public static SettingsKeyserverFragment newInstance(ArrayList<HkpKeyserverAddress> keyservers) {
         Bundle args = new Bundle();
@@ -78,7 +78,7 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle
             savedInstanceState) {
-        lastUpdateInteractor = LastUpdateInteractor.create(getContext());
+        keyMetadataDao = KeyMetadataDao.create(getContext());
 
         return inflater.inflate(R.layout.settings_keyserver_fragment, null);
     }
@@ -230,7 +230,7 @@ public class SettingsKeyserverFragment extends Fragment implements RecyclerItemC
         Preferences.getPreferences(getActivity()).setKeyServers(mKeyserversMutable);
         mKeyservers = Collections.unmodifiableList(new ArrayList<>(mKeyserversMutable));
 
-        lastUpdateInteractor.resetAllLastUpdatedTimes();
+        keyMetadataDao.resetAllLastUpdatedTimes();
     }
 
     @Override

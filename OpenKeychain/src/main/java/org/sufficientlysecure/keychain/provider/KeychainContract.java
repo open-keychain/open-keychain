@@ -263,16 +263,6 @@ public class KeychainContract {
 
     }
 
-    public static class UpdatedKeys implements UpdatedKeysColumns, BaseColumns {
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
-                .appendPath(BASE_UPDATED_KEYS).build();
-
-        public static final String CONTENT_TYPE
-                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.updated_keys";
-        public static final String CONTENT_ITEM_TYPE
-                = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.updated_keys";
-    }
-
     public static class KeySignatures implements KeySignaturesColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_SIGNATURES).build();

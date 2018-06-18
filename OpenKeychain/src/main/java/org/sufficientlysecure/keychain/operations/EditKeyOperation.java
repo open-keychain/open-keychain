@@ -37,7 +37,7 @@ import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
-import org.sufficientlysecure.keychain.provider.LastUpdateInteractor;
+import org.sufficientlysecure.keychain.provider.KeyMetadataDao;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
@@ -57,14 +57,14 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
  *
  */
 public class EditKeyOperation extends BaseReadWriteOperation<SaveKeyringParcel> {
-    private final LastUpdateInteractor lastUpdateInteractor;
+    private final KeyMetadataDao keyMetadataDao;
 
 
     public EditKeyOperation(Context context, KeyWritableRepository databaseInteractor,
                             Progressable progressable, AtomicBoolean cancelled) {
         super(context, databaseInteractor, progressable, cancelled);
 
-        this.lastUpdateInteractor = LastUpdateInteractor.create(context);
+        this.keyMetadataDao = KeyMetadataDao.create(context);
     }
 
     /**
@@ -172,7 +172,7 @@ public class EditKeyOperation extends BaseReadWriteOperation<SaveKeyringParcel> 
         log.add(saveResult, 1);
 
         if (isNewKey) {
-            lastUpdateInteractor.renewKeyLastUpdatedTime(ring.getMasterKeyId(), saveParcel.isShouldUpload());
+            keyMetadataDao.renewKeyLastUpdatedTime(ring.getMasterKeyId(), saveParcel.isShouldUpload());
         }
 
         // If the save operation didn't succeed, exit here

@@ -39,10 +39,10 @@ import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
+import org.sufficientlysecure.keychain.model.KeyMetadata;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.IdentityInfo;
-import org.sufficientlysecure.keychain.ui.keyview.loader.KeyserverStatusDao.KeyserverStatus;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.KeySubkeyStatus;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SystemContactDao.SystemContactInfo;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.IdentitiesPresenter;
@@ -108,7 +108,7 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView, O
         private LiveData<List<IdentityInfo>> identityInfo;
         private LiveData<KeySubkeyStatus> subkeyStatus;
         private LiveData<SystemContactInfo> systemContactInfo;
-        private LiveData<KeyserverStatus> keyserverStatus;
+        private LiveData<KeyMetadata> keyserverStatus;
 
         LiveData<List<IdentityInfo>> getIdentityInfo(IdentitiesPresenter identitiesPresenter) {
             if (identityInfo == null) {
@@ -131,7 +131,7 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView, O
             return systemContactInfo;
         }
 
-        LiveData<KeyserverStatus> getKeyserverStatus(KeyserverStatusPresenter keyserverStatusPresenter) {
+        LiveData<KeyMetadata> getKeyserverStatus(KeyserverStatusPresenter keyserverStatusPresenter) {
             if (keyserverStatus == null) {
                 keyserverStatus = keyserverStatusPresenter.getLiveDataInstance();
             }

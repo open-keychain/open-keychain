@@ -61,7 +61,6 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeySignatures;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
@@ -84,36 +83,30 @@ public class KeyWritableRepository extends KeyRepository {
     private static final int MAX_CACHED_KEY_SIZE = 1024 * 50;
 
     private final Context context;
-    private final LastUpdateInteractor lastUpdateInteractor;
     private final DatabaseNotifyManager databaseNotifyManager;
 
     public static KeyWritableRepository create(Context context) {
         LocalPublicKeyStorage localPublicKeyStorage = LocalPublicKeyStorage.getInstance(context);
         LocalSecretKeyStorage localSecretKeyStorage = LocalSecretKeyStorage.getInstance(context);
         DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
-        LastUpdateInteractor lastUpdateInteractor = LastUpdateInteractor.create(context);
-        return new KeyWritableRepository(context, localPublicKeyStorage, localSecretKeyStorage, databaseNotifyManager,
-                lastUpdateInteractor);
+        return new KeyWritableRepository(context, localPublicKeyStorage, localSecretKeyStorage, databaseNotifyManager);
         }
 
     @VisibleForTesting
     KeyWritableRepository(Context context,
             LocalPublicKeyStorage localPublicKeyStorage,
             LocalSecretKeyStorage localSecretKeyStorage,
-            DatabaseNotifyManager databaseNotifyManager,
-            LastUpdateInteractor lastUpdateInteractor) {
-        this(context, localPublicKeyStorage, localSecretKeyStorage, databaseNotifyManager, lastUpdateInteractor,
-                new OperationLog(), 0);
+            DatabaseNotifyManager databaseNotifyManager) {
+        this(context, localPublicKeyStorage, localSecretKeyStorage, databaseNotifyManager, new OperationLog(), 0);
     }
 
     private KeyWritableRepository(Context context, LocalPublicKeyStorage localPublicKeyStorage,
             LocalSecretKeyStorage localSecretKeyStorage, DatabaseNotifyManager databaseNotifyManager,
-            LastUpdateInteractor lastUpdateInteractor, OperationLog log, int indent) {
+            OperationLog log, int indent) {
         super(context.getContentResolver(), localPublicKeyStorage, localSecretKeyStorage, log, indent);
 
         this.context = context;
         this.databaseNotifyManager = databaseNotifyManager;
-        this.lastUpdateInteractor = lastUpdateInteractor;
     }
 
     private LongSparseArray<CanonicalizedPublicKey> getTrustedMasterKeys() {
@@ -532,11 +525,6 @@ public class KeyWritableRepository extends KeyRepository {
             mIndent -= 1;
         }
 
-        ContentProviderOperation lastUpdateReinsertOp = getLastUpdatedReinsertOperationByMasterKeyId(masterKeyId);
-        if (lastUpdateReinsertOp != null) {
-            operations.add(lastUpdateReinsertOp);
-        }
-
         try {
             // delete old version of this keyRing (from database only!), which also deletes all keys and userIds on cascade
             int deleted = contentResolver.delete(
@@ -565,26 +553,6 @@ public class KeyWritableRepository extends KeyRepository {
             return SaveKeyringResult.RESULT_ERROR;
         }
 
-    }
-
-    private ContentProviderOperation getLastUpdatedReinsertOperationByMasterKeyId(long masterKeyId) {
-        Long lastUpdateTime = getLastUpdateTime(masterKeyId);
-        if (lastUpdateTime == null) {
-            return null;
-        }
-
-        Boolean seenOnKeyservers = lastUpdateInteractor.getSeenOnKeyservers(masterKeyId);
-
-        ContentValues lastUpdatedEntry = new ContentValues(2);
-        lastUpdatedEntry.put(UpdatedKeys.MASTER_KEY_ID, masterKeyId);
-        lastUpdatedEntry.put(UpdatedKeys.LAST_UPDATED, lastUpdateTime);
-        if (seenOnKeyservers != null){
-            lastUpdatedEntry.put(UpdatedKeys.SEEN_ON_KEYSERVERS, seenOnKeyservers);
-        }
-        return ContentProviderOperation
-                .newInsert(UpdatedKeys.CONTENT_URI)
-                .withValues(lastUpdatedEntry)
-                .build();
     }
 
     private void writePublicKeyRing(CanonicalizedPublicKeyRing keyRing, long masterKeyId,

@@ -25,11 +25,11 @@ import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
-import org.sufficientlysecure.keychain.ui.keyview.loader.KeyserverStatusDao.KeyserverStatus;
+import org.sufficientlysecure.keychain.model.KeyMetadata;
 import org.sufficientlysecure.keychain.ui.keyview.loader.ViewKeyLiveData.KeyserverStatusLiveData;
 
 
-public class KeyserverStatusPresenter implements Observer<KeyserverStatus> {
+public class KeyserverStatusPresenter implements Observer<KeyMetadata> {
     private final Context context;
     private final KeyserverStatusMvpView view;
 
@@ -46,12 +46,12 @@ public class KeyserverStatusPresenter implements Observer<KeyserverStatus> {
         this.isSecret = isSecret;
     }
 
-    public LiveData<KeyserverStatus> getLiveDataInstance() {
+    public LiveData<KeyMetadata> getLiveDataInstance() {
         return new KeyserverStatusLiveData(context, masterKeyId);
     }
 
     @Override
-    public void onChanged(@Nullable KeyserverStatus keyserverStatus) {
+    public void onChanged(@Nullable KeyMetadata keyserverStatus) {
         if (keyserverStatus == null) {
             view.setDisplayStatusUnknown();
             return;
@@ -63,7 +63,7 @@ public class KeyserverStatusPresenter implements Observer<KeyserverStatus> {
             } else {
                 view.setDisplayStatusNotPublished();
             }
-            view.setLastUpdated(keyserverStatus.getLastUpdated());
+            view.setLastUpdated(keyserverStatus.last_updated());
         } else {
             view.setDisplayStatusUnknown();
         }

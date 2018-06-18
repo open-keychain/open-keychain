@@ -34,6 +34,9 @@ import android.database.sqlite.SQLiteException;
 import android.provider.BaseColumns;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.KeyMetadataModel;
+import org.sufficientlysecure.keychain.KeyRingsPublicModel;
+import org.sufficientlysecure.keychain.model.ApiApp;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAllowedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeerColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
@@ -57,7 +60,7 @@ import timber.log.Timber;
  */
 public class KeychainDatabase {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 26;
+    private static final int DATABASE_VERSION = 27;
     private final SupportSQLiteOpenHelper supportSQLiteOpenHelper;
     private Context context;
 
@@ -226,15 +229,16 @@ public class KeychainDatabase {
     private void onCreate(SupportSQLiteDatabase db) {
         Timber.w("Creating database...");
 
-        db.execSQL(CREATE_KEYRINGS_PUBLIC);
+        db.execSQL(KeyRingsPublicModel.CREATE_TABLE);
         db.execSQL(CREATE_KEYS);
         db.execSQL(CREATE_USER_PACKETS);
         db.execSQL(CREATE_CERTS);
-        db.execSQL(CREATE_UPDATE_KEYS);
+        db.execSQL(KeyMetadataModel.CREATE_TABLE);
         db.execSQL(CREATE_KEY_SIGNATURES);
         db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
         db.execSQL(CREATE_OVERRIDDEN_WARNINGS);
         db.execSQL(CREATE_API_AUTOCRYPT_PEERS);
+        db.execSQL(ApiApp.CREATE_TABLE);
 
         db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysColumns.RANK + ", " + KeysColumns.MASTER_KEY_ID + ");");
         db.execSQL("CREATE INDEX uids_by_rank ON user_packets (" + UserPacketsColumns.RANK + ", "
@@ -459,6 +463,9 @@ public class KeychainDatabase {
                 }
             }
 
+            case 26: {
+                migrateUpdatedKeysToKeyMetadataTable(db);
+            }
         }
     }
 
@@ -474,6 +481,11 @@ public class KeychainDatabase {
 
         // we'll keep this around for now, but make sure to delete when migration looks ok!!
         // db.execSQL("DROP TABLE keyrings_secret");
+    }
+
+    private void migrateUpdatedKeysToKeyMetadataTable(SupportSQLiteDatabase db) {
+        db.execSQL("ALTER TABLE updated_keys RENAME TO key_metadata;");
+        db.execSQL("UPDATE key_metadata SET last_updated = last_updated * 1000;");
     }
 
     public void onDowngrade(SupportSQLiteDatabase db, int oldVersion, int newVersion) {

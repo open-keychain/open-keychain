@@ -26,8 +26,8 @@ import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
+import org.sufficientlysecure.keychain.provider.KeyMetadataDao;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
-import org.sufficientlysecure.keychain.provider.LastUpdateInteractor;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
@@ -49,14 +49,14 @@ public class KeyserverSyncWorker extends Worker {
             Constants.DEBUG_KEYSERVER_SYNC ? 2 : (int) TimeUnit.MINUTES.toSeconds(10);
 
     private AtomicBoolean cancellationSignal = new AtomicBoolean(false);
-    private LastUpdateInteractor lastUpdateInteractor;
+    private KeyMetadataDao keyMetadataDao;
     private KeyWritableRepository keyWritableRepository;
     private Preferences preferences;
 
     @NonNull
     @Override
     public WorkerResult doWork() {
-        lastUpdateInteractor = LastUpdateInteractor.create(getApplicationContext());
+        keyMetadataDao = KeyMetadataDao.create(getApplicationContext());
         keyWritableRepository = KeyWritableRepository.create(getApplicationContext());
         preferences = Preferences.getPreferences(getApplicationContext());
 
@@ -73,7 +73,7 @@ public class KeyserverSyncWorker extends Worker {
             Progressable notificationProgressable) {
         long staleKeyThreshold = System.currentTimeMillis() - (isForceUpdate ? 0 : KEY_STALE_THRESHOLD_MILLIS);
         List<byte[]> staleKeyFingerprints =
-                lastUpdateInteractor.getFingerprintsForKeysOlderThan(staleKeyThreshold, TimeUnit.MILLISECONDS);
+                keyMetadataDao.getFingerprintsForKeysOlderThan(staleKeyThreshold, TimeUnit.MILLISECONDS);
         List<ParcelableKeyRing> staleKeyParcelableKeyRings = fingerprintListToParcelableKeyRings(staleKeyFingerprints);
 
         if (isStopped()) { // if we've already been cancelled
