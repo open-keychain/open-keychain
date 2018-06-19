@@ -634,39 +634,8 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
      * {@inheritDoc}
      */
     @Override
-    public int delete(Uri uri, String additionalSelection, String[] selectionArgs) {
-        Timber.v("delete(uri=" + uri + ")");
-
-        final SupportSQLiteDatabase db = getDb().getWritableDatabase();
-
-        int count;
-        final int match = mUriMatcher.match(uri);
-
-        ContentResolver contentResolver = getContext().getContentResolver();
-        switch (match) {
-            // dangerous
-            case KEY_RINGS_UNIFIED: {
-                count = db.delete(Tables.KEY_RINGS_PUBLIC, null, null);
-                break;
-            }
-
-            case KEY_RING_PUBLIC: {
-                @SuppressWarnings("ConstantConditions") // ensured by uriMatcher above
-                String selection = KeyRings.MASTER_KEY_ID + " = " + uri.getPathSegments().get(1);
-                if (!TextUtils.isEmpty(additionalSelection)) {
-                    selection += " AND (" + additionalSelection + ")";
-                }
-                // corresponding keys and userIds are deleted by ON DELETE CASCADE
-                count = db.delete(Tables.KEY_RINGS_PUBLIC, selection, selectionArgs);
-                break;
-            }
-
-            default: {
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
-            }
-        }
-
-        return count;
+    public int delete(@NonNull Uri uri, String additionalSelection, String[] selectionArgs) {
+        throw new UnsupportedOperationException();
     }
 
     /**

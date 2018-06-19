@@ -38,6 +38,7 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v4.util.LongSparseArray;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
+import org.sufficientlysecure.keychain.KeyRingsPublicModel.DeleteByMasterKeyId;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -593,7 +594,10 @@ public class KeyWritableRepository extends KeyRepository {
             return false;
         }
         autocryptPeerDao.deleteByMasterKeyId(masterKeyId);
-        int deletedRows = contentResolver.delete(KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null);
+
+        DeleteByMasterKeyId deleteStatement = new DeleteByMasterKeyId(db);
+        deleteStatement.bind(masterKeyId);
+        int deletedRows = deleteStatement.executeUpdateDelete();
 
         databaseNotifyManager.notifyKeyChange(masterKeyId);
 

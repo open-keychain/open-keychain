@@ -7,3 +7,7 @@ selectByMasterKeyId:
 SELECT *
     FROM keyrings_public
     WHERE master_key_id = ?;
+
+deleteByMasterKeyId:
+DELETE FROM keyrings_public
+    WHERE master_key_id = ?;
