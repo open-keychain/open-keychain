@@ -103,7 +103,7 @@ public class EncryptDecryptFragment extends Fragment {
         }
 
         final CharSequence clipboardText = ClipboardReflection.getClipboardText(activity);
-        if (clipboardText == null || TextUtils.isEmpty(clipboardText)) {
+        if (TextUtils.isEmpty(clipboardText)) {
             Notify.create(activity, R.string.error_clipboard_empty, Style.ERROR).show();
             return;
         }
@@ -126,6 +126,9 @@ public class EncryptDecryptFragment extends Fragment {
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... voids) {
+                if (clipboardText == null) {
+                    return false;
+                }
 
                 // see if it looks like a pgp thing
                 Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(clipboardText);
