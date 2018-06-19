@@ -26,11 +26,11 @@ import java.util.List;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
-import android.support.v4.content.AsyncTaskLoader;
 
 import com.google.auto.value.AutoValue;
 import org.openintents.openpgp.util.OpenPgpApi;
@@ -38,14 +38,12 @@ import org.sufficientlysecure.keychain.linked.LinkedAttribute;
 import org.sufficientlysecure.keychain.linked.UriAttribute;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
-import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityLoader.IdentityInfo;
 import org.sufficientlysecure.keychain.ui.util.PackageIconGetter;
 import timber.log.Timber;
 
 
-public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
+public class IdentityDao {
     private static final String[] USER_PACKETS_PROJECTION = new String[]{
             UserPackets._ID,
             UserPackets.TYPE,
@@ -84,41 +82,34 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
 
     private final ContentResolver contentResolver;
     private final PackageIconGetter packageIconGetter;
-    private final long masterKeyId;
-    private final boolean showLinkedIds;
+    private final PackageManager packageManager;
 
-    private List<IdentityInfo> cachedResult;
-
-    private ForceLoadContentObserver identityObserver;
-
-
-    public IdentityLoader(Context context, ContentResolver contentResolver, long masterKeyId, boolean showLinkedIds) {
-        super(context);
-
-        this.contentResolver = contentResolver;
-        this.masterKeyId = masterKeyId;
-        this.showLinkedIds = showLinkedIds;
-
-        this.identityObserver = new ForceLoadContentObserver();
-        this.packageIconGetter = PackageIconGetter.getInstance(context);
-
-        this.identityObserver = new ForceLoadContentObserver();
+    static IdentityDao getInstance(Context context) {
+        ContentResolver contentResolver = context.getContentResolver();
+        PackageManager packageManager = context.getPackageManager();
+        PackageIconGetter iconGetter = PackageIconGetter.getInstance(context);
+        return new IdentityDao(contentResolver, packageManager, iconGetter);
     }
 
-    @Override
-    public List<IdentityInfo> loadInBackground() {
+    private IdentityDao(ContentResolver contentResolver, PackageManager packageManager, PackageIconGetter iconGetter) {
+        this.packageManager = packageManager;
+        this.contentResolver = contentResolver;
+        this.packageIconGetter = iconGetter;
+    }
+
+    List<IdentityInfo> getIdentityInfos(long masterKeyId, boolean showLinkedIds) {
         ArrayList<IdentityInfo> identities = new ArrayList<>();
 
         if (showLinkedIds) {
-            loadLinkedIds(identities);
+            loadLinkedIds(identities, masterKeyId);
         }
-        loadUserIds(identities);
-        correlateOrAddAutocryptPeers(identities);
+        loadUserIds(identities, masterKeyId);
+        correlateOrAddAutocryptPeers(identities, masterKeyId);
 
         return Collections.unmodifiableList(identities);
     }
 
-    private void correlateOrAddAutocryptPeers(ArrayList<IdentityInfo> identities) {
+    private void correlateOrAddAutocryptPeers(ArrayList<IdentityInfo> identities, long masterKeyId) {
         Cursor cursor = contentResolver.query(ApiAutocryptPeer.buildByMasterKeyId(masterKeyId),
                 AUTOCRYPT_PEER_PROJECTION, null, null, null);
         if (cursor == null) {
@@ -158,7 +149,7 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_ID, autocryptPeer);
 
-        List<ResolveInfo> resolveInfos = getContext().getPackageManager().queryIntentActivities(intent, 0);
+        List<ResolveInfo> resolveInfos = packageManager.queryIntentActivities(intent, 0);
         if (resolveInfos != null && !resolveInfos.isEmpty()) {
             return intent;
         } else {
@@ -178,7 +169,7 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
         return null;
     }
 
-    private void loadLinkedIds(ArrayList<IdentityInfo> identities) {
+    private void loadLinkedIds(ArrayList<IdentityInfo> identities, long masterKeyId) {
         Cursor cursor = contentResolver.query(UserPackets.buildLinkedIdsUri(masterKeyId),
                 USER_PACKETS_PROJECTION, USER_IDS_WHERE, null, null);
         if (cursor == null) {
@@ -208,7 +199,7 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
         }
     }
 
-    private void loadUserIds(ArrayList<IdentityInfo> identities) {
+    private void loadUserIds(ArrayList<IdentityInfo> identities, long masterKeyId) {
         Cursor cursor = contentResolver.query(UserPackets.buildUserIdsUri(masterKeyId),
                 USER_PACKETS_PROJECTION, USER_IDS_WHERE, null, null);
         if (cursor == null) {
@@ -236,36 +227,6 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
         }
     }
 
-    @Override
-    public void deliverResult(List<IdentityInfo> keySubkeyStatus) {
-        cachedResult = keySubkeyStatus;
-
-        if (isStarted()) {
-            super.deliverResult(keySubkeyStatus);
-        }
-    }
-
-    @Override
-    protected void onStartLoading() {
-        if (cachedResult != null) {
-            deliverResult(cachedResult);
-        }
-
-        if (takeContentChanged() || cachedResult == null) {
-            forceLoad();
-        }
-
-        getContext().getContentResolver().registerContentObserver(
-                KeyRings.buildGenericKeyRingUri(masterKeyId), true, identityObserver);
-    }
-
-    @Override
-    protected void onAbandon() {
-        super.onAbandon();
-
-        getContext().getContentResolver().unregisterContentObserver(identityObserver);
-    }
-
     public interface IdentityInfo {
         int getRank();
         int getVerified();
@@ -287,7 +248,7 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
 
         static UserIdInfo create(int rank, int verified, boolean isPrimary, String name, String email,
                 String comment) {
-            return new AutoValue_IdentityLoader_UserIdInfo(rank, verified, isPrimary, name, email, comment);
+            return new AutoValue_IdentityDao_UserIdInfo(rank, verified, isPrimary, name, email, comment);
         }
     }
 
@@ -300,7 +261,7 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
         public abstract UriAttribute getUriAttribute();
 
         static LinkedIdInfo create(int rank, int verified, boolean isPrimary, UriAttribute uriAttribute) {
-            return new AutoValue_IdentityLoader_LinkedIdInfo(rank, verified, isPrimary, uriAttribute);
+            return new AutoValue_IdentityDao_LinkedIdInfo(rank, verified, isPrimary, uriAttribute);
         }
     }
 
@@ -321,12 +282,12 @@ public class IdentityLoader extends AsyncTaskLoader<List<IdentityInfo>> {
 
         static AutocryptPeerInfo create(UserIdInfo userIdInfo, String autocryptPeer, String packageName,
                 Drawable appIcon, Intent autocryptPeerIntent) {
-            return new AutoValue_IdentityLoader_AutocryptPeerInfo(userIdInfo.getRank(), userIdInfo.getVerified(),
+            return new AutoValue_IdentityDao_AutocryptPeerInfo(userIdInfo.getRank(), userIdInfo.getVerified(),
                     userIdInfo.isPrimary(), autocryptPeer, packageName, appIcon, userIdInfo, autocryptPeerIntent);
         }
 
         static AutocryptPeerInfo create(String autocryptPeer, String packageName, Drawable appIcon, Intent autocryptPeerIntent) {
-            return new AutoValue_IdentityLoader_AutocryptPeerInfo(
+            return new AutoValue_IdentityDao_AutocryptPeerInfo(
                     0, Certs.VERIFIED_SELF, false, autocryptPeer, packageName, appIcon, null, autocryptPeerIntent);
         }
     }

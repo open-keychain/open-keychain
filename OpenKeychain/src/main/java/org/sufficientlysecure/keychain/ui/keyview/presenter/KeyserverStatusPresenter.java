@@ -20,46 +20,43 @@ package org.sufficientlysecure.keychain.ui.keyview.presenter;
 
 import java.util.Date;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
-import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.Loader;
+import android.support.annotation.Nullable;
 
-import org.sufficientlysecure.keychain.ui.keyview.loader.KeyserverStatusLoader;
-import org.sufficientlysecure.keychain.ui.keyview.loader.KeyserverStatusLoader.KeyserverStatus;
+import org.sufficientlysecure.keychain.ui.keyview.loader.KeyserverStatusDao.KeyserverStatus;
+import org.sufficientlysecure.keychain.ui.keyview.loader.ViewKeyLiveData.KeyserverStatusLiveData;
 
 
-public class KeyserverStatusPresenter implements LoaderCallbacks<KeyserverStatus> {
+public class KeyserverStatusPresenter implements Observer<KeyserverStatus> {
     private final Context context;
     private final KeyserverStatusMvpView view;
-    private final int loaderId;
 
     private final long masterKeyId;
     private final boolean isSecret;
 
 
-    public KeyserverStatusPresenter(Context context, KeyserverStatusMvpView view, int loaderId, long masterKeyId,
+    public KeyserverStatusPresenter(Context context, KeyserverStatusMvpView view, long masterKeyId,
             boolean isSecret) {
         this.context = context;
         this.view = view;
-        this.loaderId = loaderId;
 
         this.masterKeyId = masterKeyId;
         this.isSecret = isSecret;
     }
 
-    public void startLoader(LoaderManager loaderManager) {
-        loaderManager.restartLoader(loaderId, null, this);
+    public LiveData<KeyserverStatus> getLiveDataInstance() {
+        return new KeyserverStatusLiveData(context, masterKeyId);
     }
 
     @Override
-    public Loader<KeyserverStatus> onCreateLoader(int id, Bundle args) {
-        return new KeyserverStatusLoader(context, context.getContentResolver(), masterKeyId);
-    }
+    public void onChanged(@Nullable KeyserverStatus keyserverStatus) {
+        if (keyserverStatus == null) {
+            view.setDisplayStatusUnknown();
+            return;
+        }
 
-    @Override
-    public void onLoadFinished(Loader<KeyserverStatus> loader, KeyserverStatus keyserverStatus) {
         if (keyserverStatus.hasBeenUpdated()) {
             if (keyserverStatus.isPublished()) {
                 view.setDisplayStatusPublished();
@@ -70,11 +67,6 @@ public class KeyserverStatusPresenter implements LoaderCallbacks<KeyserverStatus
         } else {
             view.setDisplayStatusUnknown();
         }
-    }
-
-    @Override
-    public void onLoaderReset(Loader loader) {
-
     }
 
     public interface KeyserverStatusMvpView {

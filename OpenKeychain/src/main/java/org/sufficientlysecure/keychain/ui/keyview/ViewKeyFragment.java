@@ -18,6 +18,11 @@
 package org.sufficientlysecure.keychain.ui.keyview;
 
 
+import java.util.List;
+
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,6 +41,10 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.IdentityInfo;
+import org.sufficientlysecure.keychain.ui.keyview.loader.KeyserverStatusDao.KeyserverStatus;
+import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.KeySubkeyStatus;
+import org.sufficientlysecure.keychain.ui.keyview.loader.SystemContactDao.SystemContactInfo;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.IdentitiesPresenter;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyHealthPresenter;
 import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyserverStatusPresenter;
@@ -52,11 +61,6 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView, O
     public static final String ARG_IS_SECRET = "is_secret";
 
     boolean mIsSecret = false;
-
-    private static final int LOADER_IDENTITIES = 1;
-    private static final int LOADER_ID_LINKED_CONTACT = 2;
-    private static final int LOADER_ID_SUBKEY_STATUS = 3;
-    private static final int LOADER_ID_KEYSERVER_STATUS = 4;
 
     private IdentitiesCardView identitiesCardView;
     private IdentitiesPresenter identitiesPresenter;
@@ -100,6 +104,41 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView, O
         return root;
     }
 
+    public static class KeyFragmentViewModel extends ViewModel {
+        private LiveData<List<IdentityInfo>> identityInfo;
+        private LiveData<KeySubkeyStatus> subkeyStatus;
+        private LiveData<SystemContactInfo> systemContactInfo;
+        private LiveData<KeyserverStatus> keyserverStatus;
+
+        LiveData<List<IdentityInfo>> getIdentityInfo(IdentitiesPresenter identitiesPresenter) {
+            if (identityInfo == null) {
+                identityInfo = identitiesPresenter.getLiveDataInstance();
+            }
+            return identityInfo;
+        }
+
+        LiveData<KeySubkeyStatus> getSubkeyStatus(KeyHealthPresenter keyHealthPresenter) {
+            if (subkeyStatus == null) {
+                subkeyStatus = keyHealthPresenter.getLiveDataInstance();
+            }
+            return subkeyStatus;
+        }
+
+        LiveData<SystemContactInfo> getSystemContactInfo(SystemContactPresenter systemContactPresenter) {
+            if (systemContactInfo == null) {
+                systemContactInfo = systemContactPresenter.getLiveDataInstance();
+            }
+            return systemContactInfo;
+        }
+
+        LiveData<KeyserverStatus> getKeyserverStatus(KeyserverStatusPresenter keyserverStatusPresenter) {
+            if (keyserverStatus == null) {
+                keyserverStatus = keyserverStatusPresenter.getLiveDataInstance();
+            }
+            return keyserverStatus;
+        }
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -107,21 +146,22 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView, O
         long masterKeyId = getArguments().getLong(ARG_MASTER_KEY_ID);
         mIsSecret = getArguments().getBoolean(ARG_IS_SECRET);
 
+        KeyFragmentViewModel model = ViewModelProviders.of(this).get(KeyFragmentViewModel.class);
+
         identitiesPresenter = new IdentitiesPresenter(
-                getContext(), identitiesCardView, this, LOADER_IDENTITIES, masterKeyId, mIsSecret);
-        identitiesPresenter.startLoader(getLoaderManager());
+                getContext(), identitiesCardView, this, masterKeyId, mIsSecret);
+        model.getIdentityInfo(identitiesPresenter).observe(this, identitiesPresenter);
 
         systemContactPresenter = new SystemContactPresenter(
-                getContext(), systemContactCard, LOADER_ID_LINKED_CONTACT, masterKeyId, mIsSecret);
-        systemContactPresenter.startLoader(getLoaderManager());
+                getContext(), systemContactCard, masterKeyId, mIsSecret);
+        model.getSystemContactInfo(systemContactPresenter).observe(this, systemContactPresenter);
 
-        keyHealthPresenter = new KeyHealthPresenter(
-                getContext(), keyStatusHealth, LOADER_ID_SUBKEY_STATUS, masterKeyId, mIsSecret);
-        keyHealthPresenter.startLoader(getLoaderManager());
+        keyHealthPresenter = new KeyHealthPresenter(getContext(), keyStatusHealth, masterKeyId);
+        model.getSubkeyStatus(keyHealthPresenter).observe(this, keyHealthPresenter);
 
         keyserverStatusPresenter = new KeyserverStatusPresenter(
-                getContext(), keyStatusKeyserver, LOADER_ID_KEYSERVER_STATUS, masterKeyId, mIsSecret);
-        keyserverStatusPresenter.startLoader(getLoaderManager());
+                getContext(), keyStatusKeyserver, masterKeyId, mIsSecret);
+        model.getKeyserverStatus(keyserverStatusPresenter).observe(this, keyserverStatusPresenter);
     }
 
     @Override

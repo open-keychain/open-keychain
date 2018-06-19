@@ -21,21 +21,21 @@ package org.sufficientlysecure.keychain.ui.keyview.presenter;
 import java.util.Comparator;
 import java.util.Date;
 
+import android.app.Application;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
-import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.Loader;
+import android.support.annotation.Nullable;
 
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
+import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.KeySubkeyStatus;
+import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.SubKeyItem;
+import org.sufficientlysecure.keychain.ui.keyview.loader.ViewKeyLiveData.SubkeyStatusLiveData;
 import org.sufficientlysecure.keychain.ui.keyview.view.KeyStatusList.KeyDisplayStatus;
-import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusLoader;
-import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusLoader.KeySubkeyStatus;
-import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusLoader.SubKeyItem;
 
 
-public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
+public class KeyHealthPresenter implements Observer<KeySubkeyStatus> {
     private static final Comparator<SubKeyItem> SUBKEY_COMPARATOR = new Comparator<SubKeyItem>() {
         @Override
         public int compare(SubKeyItem one, SubKeyItem two) {
@@ -58,22 +58,16 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
 
     private final Context context;
     private final KeyHealthMvpView view;
-    private final int loaderId;
-
     private final long masterKeyId;
-    private final boolean isSecret;
 
     private KeySubkeyStatus subkeyStatus;
     private boolean showingExpandedInfo;
 
 
-    public KeyHealthPresenter(Context context, KeyHealthMvpView view, int loaderId, long masterKeyId, boolean isSecret) {
+    public KeyHealthPresenter(Context context, KeyHealthMvpView view, long masterKeyId) {
         this.context = context;
         this.view = view;
-        this.loaderId = loaderId;
-
         this.masterKeyId = masterKeyId;
-        this.isSecret = isSecret;
 
         view.setOnHealthClickListener(new KeyHealthClickListener() {
             @Override
@@ -83,18 +77,12 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
         });
     }
 
-    public void startLoader(LoaderManager loaderManager) {
-        loaderManager.restartLoader(loaderId, null, this);
-    }
-
     @Override
-    public Loader<KeySubkeyStatus> onCreateLoader(int id, Bundle args) {
-        return new SubkeyStatusLoader(context, context.getContentResolver(), masterKeyId, SUBKEY_COMPARATOR);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<KeySubkeyStatus> loader, KeySubkeyStatus subkeyStatus) {
+    public void onChanged(@Nullable KeySubkeyStatus subkeyStatus) {
         this.subkeyStatus = subkeyStatus;
+        if (subkeyStatus == null) {
+            return;
+        }
 
         KeyHealthStatus keyHealthStatus = determineKeyHealthStatus(subkeyStatus);
 
@@ -195,11 +183,6 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
         return KeyHealthStatus.OK;
     }
 
-    @Override
-    public void onLoaderReset(Loader loader) {
-
-    }
-
     private void onKeyHealthClick() {
         if (showingExpandedInfo) {
             showingExpandedInfo = false;
@@ -260,6 +243,10 @@ public class KeyHealthPresenter implements LoaderCallbacks<KeySubkeyStatus> {
         }
 
         return KeyDisplayStatus.OK;
+    }
+
+    public LiveData<KeySubkeyStatus> getLiveDataInstance() {
+        return new SubkeyStatusLiveData(context, masterKeyId, SUBKEY_COMPARATOR);
     }
 
     public enum KeyHealthStatus {

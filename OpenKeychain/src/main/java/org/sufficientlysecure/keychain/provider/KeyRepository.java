@@ -53,7 +53,7 @@ public class KeyRepository {
     public static final int FIELD_TYPE_STRING = 4;
     public static final int FIELD_TYPE_BLOB = 5;
 
-    final ContentResolver mContentResolver;
+    final ContentResolver contentResolver;
     final LocalPublicKeyStorage mLocalPublicKeyStorage;
     OperationLog mLog;
     int mIndent;
@@ -71,7 +71,7 @@ public class KeyRepository {
 
     KeyRepository(ContentResolver contentResolver, LocalPublicKeyStorage localPublicKeyStorage,
             OperationLog log, int indent) {
-        mContentResolver = contentResolver;
+        this.contentResolver = contentResolver;
         mLocalPublicKeyStorage = localPublicKeyStorage;
         mIndent = indent;
         mLog = log;
@@ -121,7 +121,7 @@ public class KeyRepository {
 
     private HashMap<String, Object> getGenericData(Uri uri, String[] proj, int[] types, String selection)
             throws NotFoundException {
-        Cursor cursor = mContentResolver.query(uri, proj, selection, null, null);
+        Cursor cursor = contentResolver.query(uri, proj, selection, null, null);
 
         try {
             HashMap<String, Object> result = new HashMap<>(proj.length);
@@ -184,7 +184,7 @@ public class KeyRepository {
     }
 
     public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(Uri queryUri) throws NotFoundException {
-        Cursor cursor = mContentResolver.query(queryUri,
+        Cursor cursor = contentResolver.query(queryUri,
                 new String[] { KeyRings.MASTER_KEY_ID, KeyRings.VERIFIED }, null, null, null);
         try {
             if (cursor != null && cursor.moveToFirst()) {
@@ -208,7 +208,7 @@ public class KeyRepository {
     }
 
     public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri queryUri) throws NotFoundException {
-        Cursor cursor = mContentResolver.query(queryUri,
+        Cursor cursor = contentResolver.query(queryUri,
                 new String[] { KeyRings.MASTER_KEY_ID, KeyRings.VERIFIED, KeyRings.HAS_ANY_SECRET }, null, null, null);
         try {
             if (cursor != null && cursor.moveToFirst()) {
@@ -232,7 +232,7 @@ public class KeyRepository {
     }
 
     public ArrayList<String> getConfirmedUserIds(long masterKeyId) throws NotFoundException {
-        Cursor cursor = mContentResolver.query(UserPackets.buildUserIdsUri(masterKeyId),
+        Cursor cursor = contentResolver.query(UserPackets.buildUserIdsUri(masterKeyId),
                 new String[]{UserPackets.USER_ID}, UserPackets.VERIFIED + " = " + Certs.VERIFIED_SECRET, null, null
         );
         if (cursor == null) {
@@ -276,12 +276,12 @@ public class KeyRepository {
     }
 
     public ContentResolver getContentResolver() {
-        return mContentResolver;
+        return contentResolver;
     }
 
     @Nullable
     Long getLastUpdateTime(long masterKeyId) {
-        Cursor lastUpdatedCursor = mContentResolver.query(
+        Cursor lastUpdatedCursor = contentResolver.query(
                 UpdatedKeys.CONTENT_URI,
                 new String[] { UpdatedKeys.LAST_UPDATED },
                 UpdatedKeys.MASTER_KEY_ID + " = ?",

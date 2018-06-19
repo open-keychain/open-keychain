@@ -50,6 +50,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.util.DatabaseUtil;
 import timber.log.Timber;
 
 import static android.database.DatabaseUtils.dumpCursorToString;
@@ -101,7 +102,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
 
         String authority = KeychainContract.CONTENT_AUTHORITY;
 
-        /**
+        /*
          * list key_rings
          *
          * <pre>
@@ -124,7 +125,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                         + "/" + KeychainContract.PATH_USER_IDS,
                 KEY_RINGS_USER_IDS);
 
-        /**
+        /*
          * find by criteria other than master key id
          *
          * key_rings/find/email/_
@@ -144,7 +145,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                         + KeychainContract.PATH_FILTER + "/" + KeychainContract.PATH_BY_SIGNER,
                 KEY_RINGS_FILTER_BY_SIGNER);
 
-        /**
+        /*
          * list key_ring specifics
          *
          * <pre>
@@ -189,7 +190,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                         + KeychainContract.PATH_CERTS + "/*/*",
                 KEY_RING_CERTS_SPECIFIC);
 
-        /**
+        /*
          * API apps
          *
          * <pre>
@@ -205,7 +206,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
         matcher.addURI(authority, KeychainContract.BASE_API_APPS + "/*/"
                 + KeychainContract.PATH_ALLOWED_KEYS, API_ALLOWED_KEYS);
 
-        /**
+        /*
          * Trust Identity access
          *
          * <pre>
@@ -221,7 +222,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                 KeychainContract.PATH_BY_PACKAGE_NAME + "/*/*", AUTOCRYPT_PEERS_BY_PACKAGE_NAME_AND_TRUST_ID);
 
 
-        /**
+        /*
          * to access table containing last updated dates of keys
          */
         matcher.addURI(authority, KeychainContract.BASE_UPDATED_KEYS, UPDATED_KEYS);
@@ -835,7 +836,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
 
         SQLiteDatabase db = getDb().getReadableDatabase();
 
-        Cursor cursor = qb.query(db, projection, selection, selectionArgs, groupBy, having, orderBy);
+        Cursor cursor = qb.query(db, projection, selection, selectionArgs, groupBy, null, orderBy);
         if (cursor != null) {
             // Tell the cursor what uri to watch, so it knows when its source data changes
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
@@ -849,27 +850,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
 
         if (Constants.DEBUG && Constants.DEBUG_EXPLAIN_QUERIES) {
             String rawQuery = qb.buildQuery(projection, selection, groupBy, having, orderBy, null);
-            Cursor explainCursor = db.rawQuery("EXPLAIN QUERY PLAN " + rawQuery, selectionArgs);
-
-            // this is a debugging feature, we can be a little careless
-            explainCursor.moveToFirst();
-
-            StringBuilder line = new StringBuilder();
-            for (int i = 0; i < explainCursor.getColumnCount(); i++) {
-                line.append(explainCursor.getColumnName(i)).append(", ");
-            }
-            Timber.d(line.toString());
-
-            while (!explainCursor.isAfterLast()) {
-                line = new StringBuilder();
-                for (int i = 0; i < explainCursor.getColumnCount(); i++) {
-                    line.append(explainCursor.getString(i)).append(", ");
-                }
-                Timber.d(line.toString());
-                explainCursor.moveToNext();
-            }
-
-            explainCursor.close();
+            DatabaseUtil.explainQuery(db, rawQuery);
         }
 
         return cursor;
@@ -966,9 +947,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                 rowUri = uri;
             }
 
-            // notify of changes in db
-            getContext().getContentResolver().notifyChange(uri, null);
-
         } catch (SQLiteConstraintException e) {
             Timber.d(e, "Constraint exception on insert! Entry already existing?");
         }
@@ -1003,7 +981,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                 }
                 // corresponding keys and userIds are deleted by ON DELETE CASCADE
                 count = db.delete(Tables.KEY_RINGS_PUBLIC, selection, selectionArgs);
-                contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(uri.getPathSegments().get(1)), null);
                 break;
             }
             case KEY_RING_SECRET: {
@@ -1013,7 +990,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                     selection += " AND (" + additionalSelection + ")";
                 }
                 count = db.delete(Tables.KEY_RINGS_SECRET, selection, selectionArgs);
-                contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(uri.getPathSegments().get(1)), null);
                 break;
             }
 
@@ -1024,20 +1000,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                 String selection = ApiAutocryptPeer.PACKAGE_NAME + " = ? AND " + ApiAutocryptPeer.IDENTIFIER + " = ?";
                 selectionArgs = new String[] { packageName, autocryptPeer };
 
-                Cursor cursor = db.query(Tables.API_AUTOCRYPT_PEERS, new String[] { ApiAutocryptPeer.MASTER_KEY_ID },
-                        selection, selectionArgs, null, null, null);
-                Long masterKeyId = null;
-                if (cursor != null && cursor.moveToNext() && !cursor.isNull(0)) {
-                    masterKeyId = cursor.getLong(0);
-                }
-
                 count = db.delete(Tables.API_AUTOCRYPT_PEERS, selection, selectionArgs);
-
-                if (masterKeyId != null) {
-                    contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(masterKeyId), null);
-                }
-                contentResolver.notifyChange(
-                        ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptPeer), null);
                 break;
             }
 
@@ -1047,7 +1010,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                     selection += " AND (" + additionalSelection + ")";
                 }
                 count = db.delete(Tables.API_AUTOCRYPT_PEERS, selection, selectionArgs);
-                contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(uri.getLastPathSegment()), null);
                 break;
 
             case API_APPS_BY_PACKAGE_NAME: {
@@ -1076,7 +1038,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
         Timber.v("update(uri=" + uri + ", values=" + values.toString() + ")");
 
         final SQLiteDatabase db = getDb().getWritableDatabase();
-        ContentResolver contentResolver = getContext().getContentResolver();
 
         int count = 0;
         try {
@@ -1127,25 +1088,12 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                         db.insertOrThrow(Tables.API_AUTOCRYPT_PEERS, null, values);
                     }
 
-                    Long masterKeyId = values.getAsLong(ApiAutocryptPeer.MASTER_KEY_ID);
-                    if (masterKeyId != null) {
-                        contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(masterKeyId), null);
-                    }
-                    Long gossipMasterKeyId = values.getAsLong(ApiAutocryptPeer.GOSSIP_MASTER_KEY_ID);
-                    if (gossipMasterKeyId != null && !gossipMasterKeyId.equals(masterKeyId)) {
-                        contentResolver.notifyChange(KeyRings.buildGenericKeyRingUri(gossipMasterKeyId), null);
-                    }
-
                     break;
                 }
                 default: {
                     throw new UnsupportedOperationException("Unknown uri: " + uri);
                 }
             }
-
-            // notify of changes in db
-            contentResolver.notifyChange(uri, null);
-
         } catch (SQLiteConstraintException e) {
             Timber.d(e, "Constraint exception on update! Entry already existing?");
         }

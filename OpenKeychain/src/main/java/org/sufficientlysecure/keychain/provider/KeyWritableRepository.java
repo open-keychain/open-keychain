@@ -83,32 +83,38 @@ import timber.log.Timber;
 public class KeyWritableRepository extends KeyRepository {
     private static final int MAX_CACHED_KEY_SIZE = 1024 * 50;
 
-    private final Context mContext;
+    private final Context context;
     private final LastUpdateInteractor lastUpdateInteractor;
+    private DatabaseNotifyManager databaseNotifyManager;
 
     public static KeyWritableRepository create(Context context) {
         LocalPublicKeyStorage localPublicKeyStorage = LocalPublicKeyStorage.getInstance(context);
         LastUpdateInteractor lastUpdateInteractor = LastUpdateInteractor.create(context);
+        DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
 
-        return new KeyWritableRepository(context, localPublicKeyStorage, lastUpdateInteractor);
+        return new KeyWritableRepository(context, localPublicKeyStorage, lastUpdateInteractor,
+                databaseNotifyManager);
     }
 
     @VisibleForTesting
     KeyWritableRepository(Context context, LocalPublicKeyStorage localPublicKeyStorage,
-            LastUpdateInteractor lastUpdateInteractor) {
-        this(context, localPublicKeyStorage, lastUpdateInteractor, new OperationLog(), 0);
+            LastUpdateInteractor lastUpdateInteractor, DatabaseNotifyManager databaseNotifyManager) {
+        this(context, localPublicKeyStorage, lastUpdateInteractor, new OperationLog(), 0,
+                databaseNotifyManager);
     }
 
     private KeyWritableRepository(Context context, LocalPublicKeyStorage localPublicKeyStorage,
-            LastUpdateInteractor lastUpdateInteractor, OperationLog log, int indent) {
+            LastUpdateInteractor lastUpdateInteractor, OperationLog log, int indent,
+            DatabaseNotifyManager databaseNotifyManager) {
         super(context.getContentResolver(), localPublicKeyStorage, log, indent);
 
-        mContext = context;
+        this.context = context;
+        this.databaseNotifyManager = databaseNotifyManager;
         this.lastUpdateInteractor = lastUpdateInteractor;
     }
 
     private LongSparseArray<CanonicalizedPublicKey> getTrustedMasterKeys() {
-        Cursor cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[] {
+        Cursor cursor = contentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[] {
                 KeyRings.MASTER_KEY_ID,
                 // we pick from cache only information that is not easily available from keyrings
                 KeyRings.HAS_ANY_SECRET, KeyRings.VERIFIED
@@ -530,7 +536,7 @@ public class KeyWritableRepository extends KeyRepository {
 
         try {
             // delete old version of this keyRing (from database only!), which also deletes all keys and userIds on cascade
-            int deleted = mContentResolver.delete(
+            int deleted = contentResolver.delete(
                     KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null);
             if (deleted > 0) {
                 log(LogType.MSG_IP_DELETE_OLD_OK);
@@ -540,7 +546,8 @@ public class KeyWritableRepository extends KeyRepository {
             }
 
             log(LogType.MSG_IP_APPLY_BATCH);
-            mContentResolver.applyBatch(KeychainContract.CONTENT_AUTHORITY, operations);
+            contentResolver.applyBatch(KeychainContract.CONTENT_AUTHORITY, operations);
+            databaseNotifyManager.notifyKeyChange(masterKeyId);
 
             log(LogType.MSG_IP_SUCCESS);
             return result;
@@ -603,7 +610,7 @@ public class KeyWritableRepository extends KeyRepository {
 
         // insert new version of this keyRing
         Uri uri = KeyRingData.buildSecretKeyRingUri(masterKeyId);
-        return mContentResolver.insert(uri, values);
+        return contentResolver.insert(uri, values);
     }
 
     public boolean deleteKeyRing(long masterKeyId) {
@@ -613,8 +620,11 @@ public class KeyWritableRepository extends KeyRepository {
             Timber.e(e, "Could not delete file!");
             return false;
         }
-        mContentResolver.delete(ApiAutocryptPeer.buildByMasterKeyId(masterKeyId),null, null);
-        int deletedRows = mContentResolver.delete(KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null);
+        contentResolver.delete(ApiAutocryptPeer.buildByMasterKeyId(masterKeyId),null, null);
+        int deletedRows = contentResolver.delete(KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null);
+
+        databaseNotifyManager.notifyKeyChange(masterKeyId);
+
         return deletedRows > 0;
     }
 
@@ -690,7 +700,7 @@ public class KeyWritableRepository extends KeyRepository {
                 // first, mark all keys as not available
                 ContentValues values = new ContentValues();
                 values.put(Keys.HAS_SECRET, SecretKeyType.GNU_DUMMY.getNum());
-                mContentResolver.update(uri, values, null, null);
+                contentResolver.update(uri, values, null, null);
 
                 // then, mark exactly the keys we have available
                 log(LogType.MSG_IS_IMPORTING_SUBKEYS);
@@ -699,7 +709,7 @@ public class KeyWritableRepository extends KeyRepository {
                     long id = sub.getKeyId();
                     SecretKeyType mode = sub.getSecretKeyTypeSuperExpensive();
                     values.put(Keys.HAS_SECRET, mode.getNum());
-                    int upd = mContentResolver.update(uri, values, Keys.KEY_ID + " = ?",
+                    int upd = contentResolver.update(uri, values, Keys.KEY_ID + " = ?",
                             new String[]{Long.toString(id)});
                     if (upd == 1) {
                         switch (mode) {
@@ -1030,11 +1040,11 @@ public class KeyWritableRepository extends KeyRepository {
         log.add(LogType.MSG_TRUST, 0);
 
         Cursor cursor;
-        Preferences preferences = Preferences.getPreferences(mContext);
+        Preferences preferences = Preferences.getPreferences(context);
         boolean isTrustDbInitialized = preferences.isKeySignaturesTableInitialized();
         if (!isTrustDbInitialized) {
             log.add(LogType.MSG_TRUST_INITIALIZE, 1);
-            cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsUri(),
+            cursor = contentResolver.query(KeyRings.buildUnifiedKeyRingsUri(),
                     new String[] { KeyRings.MASTER_KEY_ID }, null, null, null);
         } else {
             String[] signerMasterKeyIdStrings = new String[signerMasterKeyIds.size()];
@@ -1044,7 +1054,7 @@ public class KeyWritableRepository extends KeyRepository {
                 signerMasterKeyIdStrings[i++] = Long.toString(masterKeyId);
             }
 
-            cursor = mContentResolver.query(KeyRings.buildUnifiedKeyRingsFilterBySigner(),
+            cursor = contentResolver.query(KeyRings.buildUnifiedKeyRingsFilterBySigner(),
                     new String[] { KeyRings.MASTER_KEY_ID }, null, signerMasterKeyIdStrings, null);
         }
 

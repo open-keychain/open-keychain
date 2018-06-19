@@ -72,10 +72,11 @@ public class AutocryptPeerDataAccessObject {
 
     private final SimpleContentResolverInterface queryInterface;
     private final String packageName;
-
+    private final DatabaseNotifyManager databaseNotifyManager;
 
     public AutocryptPeerDataAccessObject(Context context, String packageName) {
         this.packageName = packageName;
+        this.databaseNotifyManager = DatabaseNotifyManager.create(context);
 
         final ContentResolver contentResolver = context.getContentResolver();
         queryInterface = new SimpleContentResolverInterface() {
@@ -102,9 +103,11 @@ public class AutocryptPeerDataAccessObject {
         };
     }
 
-    public AutocryptPeerDataAccessObject(SimpleContentResolverInterface queryInterface, String packageName) {
+    public AutocryptPeerDataAccessObject(SimpleContentResolverInterface queryInterface, String packageName,
+            DatabaseNotifyManager databaseNotifyManager) {
         this.queryInterface = queryInterface;
         this.packageName = packageName;
+        this.databaseNotifyManager = databaseNotifyManager;
     }
 
     public Long getMasterKeyIdForAutocryptPeer(String autocryptId) {
@@ -190,6 +193,7 @@ public class AutocryptPeerDataAccessObject {
         cv.put(ApiAutocryptPeer.IS_MUTUAL, isMutual ? 1 : 0);
         queryInterface
                 .update(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), cv, null, null);
+        databaseNotifyManager.notifyAutocryptUpdate(autocryptId, masterKeyId);
     }
 
     public void updateKeyGossipFromAutocrypt(String autocryptId, Date effectiveDate, long masterKeyId) {
@@ -211,10 +215,13 @@ public class AutocryptPeerDataAccessObject {
         cv.put(ApiAutocryptPeer.GOSSIP_ORIGIN, origin);
         queryInterface
                 .update(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), cv, null, null);
+        databaseNotifyManager.notifyAutocryptUpdate(autocryptId, masterKeyId);
     }
 
     public void delete(String autocryptId) {
+        Long masterKeyId = getMasterKeyIdForAutocryptPeer(autocryptId);
         queryInterface.delete(ApiAutocryptPeer.buildByPackageNameAndAutocryptId(packageName, autocryptId), null, null);
+        databaseNotifyManager.notifyAutocryptDelete(autocryptId, masterKeyId);
     }
 
     public List<AutocryptRecommendationResult> determineAutocryptRecommendations(String... autocryptIds) {

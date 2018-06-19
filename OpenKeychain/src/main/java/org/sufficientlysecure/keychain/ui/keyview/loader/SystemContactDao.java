@@ -20,22 +20,22 @@ package org.sufficientlysecure.keychain.ui.keyview.loader;
 
 import java.util.List;
 
+import android.Manifest;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.ContactsContract;
-import android.support.v4.content.AsyncTaskLoader;
-import android.util.Log;
+import android.support.v4.content.ContextCompat;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.ui.keyview.loader.SystemContactInfoLoader.SystemContactInfo;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import timber.log.Timber;
 
 
-public class SystemContactInfoLoader extends AsyncTaskLoader<SystemContactInfo> {
+public class SystemContactDao {
     private static final String[] PROJECTION = {
             ContactsContract.RawContacts.CONTACT_ID
     };
@@ -43,23 +43,30 @@ public class SystemContactInfoLoader extends AsyncTaskLoader<SystemContactInfo> 
     private static final String CONTACT_NOT_DELETED = "0";
 
 
+    private final Context context;
     private final ContentResolver contentResolver;
-    private final long masterKeyId;
-    private final boolean isSecret;
-
-    private SystemContactInfo cachedResult;
+    private final ContactHelper contactHelper;
 
 
-    public SystemContactInfoLoader(Context context, ContentResolver contentResolver, long masterKeyId, boolean isSecret) {
-        super(context);
-
-        this.contentResolver = contentResolver;
-        this.masterKeyId = masterKeyId;
-        this.isSecret = isSecret;
+    public static SystemContactDao getInstance(Context context) {
+        ContactHelper contactHelper = new ContactHelper(context);
+        ContentResolver contentResolver = context.getContentResolver();
+        return new SystemContactDao(context, contactHelper, contentResolver);
     }
 
-    @Override
-    public SystemContactInfo loadInBackground() {
+    private SystemContactDao(Context context, ContactHelper contactHelper, ContentResolver contentResolver) {
+        this.context = context;
+        this.contactHelper = contactHelper;
+        this.contentResolver = contentResolver;
+    }
+
+    SystemContactInfo getSystemContactInfo(long masterKeyId, boolean isSecret) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)
+                == PackageManager.PERMISSION_DENIED) {
+            Timber.w(Constants.TAG, "loading linked system contact not possible READ_CONTACTS permission denied!");
+            return null;
+        }
+
         Uri baseUri = isSecret ? ContactsContract.Profile.CONTENT_RAW_CONTACTS_URI :
                 ContactsContract.RawContacts.CONTENT_URI;
         Cursor cursor = contentResolver.query(baseUri, PROJECTION,
@@ -87,8 +94,6 @@ public class SystemContactInfoLoader extends AsyncTaskLoader<SystemContactInfo> 
                 return null;
             }
 
-            ContactHelper contactHelper = new ContactHelper(getContext());
-
             String contactName = null;
             if (isSecret) { //all secret keys are linked to "me" profile in contacts
                 List<String> mainProfileNames = contactHelper.getMainProfileContactName();
@@ -113,26 +118,6 @@ public class SystemContactInfoLoader extends AsyncTaskLoader<SystemContactInfo> 
             return new SystemContactInfo(masterKeyId, contactId, contactName, contactPicture);
         } finally {
             cursor.close();
-        }
-    }
-
-    @Override
-    public void deliverResult(SystemContactInfo systemContactInfo) {
-        cachedResult = systemContactInfo;
-
-        if (isStarted()) {
-            super.deliverResult(systemContactInfo);
-        }
-    }
-
-    @Override
-    protected void onStartLoading() {
-        if (cachedResult != null) {
-            deliverResult(cachedResult);
-        }
-
-        if (takeContentChanged() || cachedResult == null) {
-            forceLoad();
         }
     }
 

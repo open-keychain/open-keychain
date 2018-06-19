@@ -28,19 +28,15 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
-import android.support.v4.content.AsyncTaskLoader;
-import android.util.Log;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusLoader.KeySubkeyStatus;
 import timber.log.Timber;
 
 
-public class SubkeyStatusLoader extends AsyncTaskLoader<KeySubkeyStatus> {
+public class SubkeyStatusDao {
     public static final String[] PROJECTION = new String[] {
             Keys.KEY_ID,
             Keys.CREATION,
@@ -68,23 +64,18 @@ public class SubkeyStatusLoader extends AsyncTaskLoader<KeySubkeyStatus> {
 
 
     private final ContentResolver contentResolver;
-    private final long masterKeyId;
-    private final Comparator<SubKeyItem> comparator;
-
-    private KeySubkeyStatus cachedResult;
 
 
-    public SubkeyStatusLoader(Context context, ContentResolver contentResolver, long masterKeyId,
-            Comparator<SubKeyItem> comparator) {
-        super(context);
-
-        this.contentResolver = contentResolver;
-        this.masterKeyId = masterKeyId;
-        this.comparator = comparator;
+    public static SubkeyStatusDao getInstance(Context context) {
+        ContentResolver contentResolver = context.getContentResolver();
+        return new SubkeyStatusDao(contentResolver);
     }
 
-    @Override
-    public KeySubkeyStatus loadInBackground() {
+    private SubkeyStatusDao(ContentResolver contentResolver) {
+        this.contentResolver = contentResolver;
+    }
+
+    KeySubkeyStatus getSubkeyStatus(long masterKeyId, Comparator<SubKeyItem> comparator) {
         Cursor cursor = contentResolver.query(Keys.buildKeysUri(masterKeyId), PROJECTION, null, null, null);
         if (cursor == null) {
             Timber.e("Error loading key items!");
@@ -111,7 +102,10 @@ public class SubkeyStatusLoader extends AsyncTaskLoader<KeySubkeyStatus> {
             }
 
             if (keyCertify == null) {
-                throw new IllegalStateException("Certification key must be set at this point, it's a bug otherwise!");
+                if (!keysSign.isEmpty() || !keysEncrypt.isEmpty()) {
+                    throw new IllegalStateException("Certification key can't be missing for a key that hasn't been deleted!");
+                }
+                return null;
             }
 
             Collections.sort(keysSign, comparator);
@@ -120,26 +114,6 @@ public class SubkeyStatusLoader extends AsyncTaskLoader<KeySubkeyStatus> {
             return new KeySubkeyStatus(keyCertify, keysSign, keysEncrypt);
         } finally {
             cursor.close();
-        }
-    }
-
-    @Override
-    public void deliverResult(KeySubkeyStatus keySubkeyStatus) {
-        cachedResult = keySubkeyStatus;
-
-        if (isStarted()) {
-            super.deliverResult(keySubkeyStatus);
-        }
-    }
-
-    @Override
-    protected void onStartLoading() {
-        if (cachedResult != null) {
-            deliverResult(cachedResult);
-        }
-
-        if (takeContentChanged() || cachedResult == null) {
-            forceLoad();
         }
     }
 
