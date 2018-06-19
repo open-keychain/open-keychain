@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.PorterDuff;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -40,9 +39,8 @@ import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
@@ -67,12 +65,14 @@ public class SafeSlingerActivity extends BaseActivity
     private ArrayList<ParcelableKeyRing> mKeyList;
     private HkpKeyserverAddress mKeyserver;
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mOperationHelper;
+    private KeyRepository keyRepository;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        keyRepository = KeyRepository.create(this);
         mMasterKeyId = getIntent().getLongExtra(EXTRA_MASTER_KEY_ID, 0);
 
         NumberPicker picker = findViewById(R.id.safe_slinger_picker);
@@ -104,10 +104,8 @@ public class SafeSlingerActivity extends BaseActivity
     }
 
     private void startExchange(long masterKeyId, int number) {
-        // retrieve public key blob and start SafeSlinger
-        Uri uri = KeychainContract.KeyRingData.buildPublicKeyRingUri(masterKeyId);
         try {
-            byte[] keyBlob = KeyRepository.create(this).getCachedPublicKeyRing(uri).getEncoded();
+            byte[] keyBlob = keyRepository.loadPublicKeyRingData(masterKeyId);
 
             Intent slingerIntent = new Intent(this, ExchangeActivity.class);
 
@@ -115,8 +113,8 @@ public class SafeSlingerActivity extends BaseActivity
             slingerIntent.putExtra(ExchangeConfig.extra.USER_DATA, keyBlob);
             slingerIntent.putExtra(ExchangeConfig.extra.HOST_NAME, Constants.SAFESLINGER_SERVER);
             startActivityForResult(slingerIntent, REQUEST_CODE_SAFE_SLINGER);
-        } catch (PgpKeyNotFoundException e) {
-            Timber.e(e, "personal key not found");
+        } catch (NotFoundException e) {
+            Timber.e(e, "key for transfer not found");
         }
     }
 

@@ -57,7 +57,6 @@ import static android.database.DatabaseUtils.dumpCursorToString;
 public class KeychainProvider extends ContentProvider implements SimpleContentResolverInterface {
 
     private static final int KEY_RINGS_UNIFIED = 101;
-    private static final int KEY_RINGS_PUBLIC = 102;
     private static final int KEY_RINGS_USER_IDS = 104;
 
     private static final int KEY_RING_UNIFIED = 200;
@@ -90,17 +89,12 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
          *
          * <pre>
          * key_rings/unified
-         * key_rings/public
-         * key_rings/secret
          * key_rings/user_ids
          * </pre>
          */
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS
                         + "/" + KeychainContract.PATH_UNIFIED,
                 KEY_RINGS_UNIFIED);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS
-                        + "/" + KeychainContract.PATH_PUBLIC,
-                KEY_RINGS_PUBLIC);
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS
                         + "/" + KeychainContract.PATH_USER_IDS,
                 KEY_RINGS_USER_IDS);
@@ -133,12 +127,8 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
          * key_rings/_/keys
          * key_rings/_/user_ids
          * key_rings/_/linked_ids
-         * key_rings/_/linked_ids/_
-         * key_rings/_/linked_ids/_/certs
          * key_rings/_/public
-         * key_rings/_/secret
          * key_rings/_/certs
-         * key_rings/_/certs/_/_
          * </pre>
          */
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
@@ -190,9 +180,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
     public String getType(@NonNull Uri uri) {
         final int match = mUriMatcher.match(uri);
         switch (match) {
-            case KEY_RING_PUBLIC:
-                return KeyRings.CONTENT_ITEM_TYPE;
-
             case KEY_RING_KEYS:
                 return Keys.CONTENT_TYPE;
 
@@ -532,24 +519,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " ASC"
                             + "," + Tables.USER_PACKETS + "." + UserPackets.RANK + " ASC";
-                }
-
-                break;
-            }
-
-            case KEY_RINGS_PUBLIC:
-            case KEY_RING_PUBLIC: {
-                HashMap<String, String> projectionMap = new HashMap<>();
-                projectionMap.put(KeyRingData._ID, Tables.KEY_RINGS_PUBLIC + ".oid AS _id");
-                projectionMap.put(KeyRingData.MASTER_KEY_ID, KeyRingData.MASTER_KEY_ID);
-                projectionMap.put(KeyRingData.KEY_RING_DATA, KeyRingData.KEY_RING_DATA);
-                qb.setProjectionMap(projectionMap);
-
-                qb.setTables(Tables.KEY_RINGS_PUBLIC);
-
-                if(match == KEY_RING_PUBLIC) {
-                    qb.appendWhere(KeyRings.MASTER_KEY_ID + " = ");
-                    qb.appendWhereEscapeString(uri.getPathSegments().get(1));
                 }
 
                 break;

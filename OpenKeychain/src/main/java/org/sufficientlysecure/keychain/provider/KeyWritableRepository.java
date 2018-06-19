@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
@@ -90,23 +91,25 @@ public class KeyWritableRepository extends KeyRepository {
         LocalSecretKeyStorage localSecretKeyStorage = LocalSecretKeyStorage.getInstance(context);
         DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
         AutocryptPeerDao autocryptPeerDao = AutocryptPeerDao.getInstance(context);
-        return new KeyWritableRepository(context, localPublicKeyStorage, localSecretKeyStorage, databaseNotifyManager,
-                autocryptPeerDao);
+        SupportSQLiteDatabase db = new KeychainDatabase(context).getWritableDatabase();
+        return new KeyWritableRepository(context, db,
+                localPublicKeyStorage, localSecretKeyStorage, databaseNotifyManager, autocryptPeerDao);
         }
 
     @VisibleForTesting
     KeyWritableRepository(Context context,
-            LocalPublicKeyStorage localPublicKeyStorage,
+            SupportSQLiteDatabase db, LocalPublicKeyStorage localPublicKeyStorage,
             LocalSecretKeyStorage localSecretKeyStorage,
             DatabaseNotifyManager databaseNotifyManager, AutocryptPeerDao autocryptPeerDao) {
-        this(context, localPublicKeyStorage, localSecretKeyStorage, databaseNotifyManager, new OperationLog(), 0,
+        this(context, db, localPublicKeyStorage, localSecretKeyStorage, databaseNotifyManager, new OperationLog(), 0,
                 autocryptPeerDao);
     }
 
-    private KeyWritableRepository(Context context, LocalPublicKeyStorage localPublicKeyStorage,
+    private KeyWritableRepository(Context context, SupportSQLiteDatabase db,
+            LocalPublicKeyStorage localPublicKeyStorage,
             LocalSecretKeyStorage localSecretKeyStorage, DatabaseNotifyManager databaseNotifyManager,
             OperationLog log, int indent, AutocryptPeerDao autocryptPeerDao) {
-        super(context.getContentResolver(), localPublicKeyStorage, localSecretKeyStorage, log, indent);
+        super(context.getContentResolver(), db, localPublicKeyStorage, localSecretKeyStorage, log, indent);
 
         this.context = context;
         this.databaseNotifyManager = databaseNotifyManager;

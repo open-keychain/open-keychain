@@ -23,12 +23,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 
+import com.squareup.sqldelight.SqlDelightQuery;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
+import org.sufficientlysecure.keychain.model.KeyRingPublic;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
@@ -36,7 +39,6 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import timber.log.Timber;
@@ -54,6 +56,8 @@ public class KeyRepository {
     final ContentResolver contentResolver;
     final LocalPublicKeyStorage mLocalPublicKeyStorage;
     final LocalSecretKeyStorage localSecretKeyStorage;
+    final SupportSQLiteDatabase db;
+
     OperationLog mLog;
     int mIndent;
 
@@ -61,18 +65,23 @@ public class KeyRepository {
         ContentResolver contentResolver = context.getContentResolver();
         LocalPublicKeyStorage localPublicKeyStorage = LocalPublicKeyStorage.getInstance(context);
         LocalSecretKeyStorage localSecretKeyStorage = LocalSecretKeyStorage.getInstance(context);
+        SupportSQLiteDatabase db = new KeychainDatabase(context).getWritableDatabase();
 
-        return new KeyRepository(contentResolver, localPublicKeyStorage, localSecretKeyStorage);
+        return new KeyRepository(contentResolver, db, localPublicKeyStorage, localSecretKeyStorage);
     }
 
-    private KeyRepository(ContentResolver contentResolver, LocalPublicKeyStorage localPublicKeyStorage,
+    private KeyRepository(ContentResolver contentResolver, SupportSQLiteDatabase db,
+            LocalPublicKeyStorage localPublicKeyStorage,
             LocalSecretKeyStorage localSecretKeyStorage) {
-        this(contentResolver, localPublicKeyStorage, localSecretKeyStorage, new OperationLog(), 0);
+        this(contentResolver, db, localPublicKeyStorage, localSecretKeyStorage, new OperationLog(), 0);
     }
 
-    KeyRepository(ContentResolver contentResolver, LocalPublicKeyStorage localPublicKeyStorage,
-            LocalSecretKeyStorage localSecretKeyStorage, OperationLog log, int indent) {
+    KeyRepository(ContentResolver contentResolver, SupportSQLiteDatabase db,
+            LocalPublicKeyStorage localPublicKeyStorage,
+            LocalSecretKeyStorage localSecretKeyStorage,
+            OperationLog log, int indent) {
         this.contentResolver = contentResolver;
+        this.db = db;
         mLocalPublicKeyStorage = localPublicKeyStorage;
         this.localSecretKeyStorage = localSecretKeyStorage;
         mIndent = indent;
@@ -105,10 +114,6 @@ public class KeyRepository {
             throw new NotFoundException();
         }
         return result;
-    }
-
-    Object getGenericDataOrNull(Uri uri, String column, int type) throws NotFoundException {
-        return getGenericData(uri, new String[]{column}, new int[]{type}, null).get(column);
     }
 
     Object getGenericData(Uri uri, String column, int type, String selection)
@@ -282,23 +287,20 @@ public class KeyRepository {
     }
 
     public final byte[] loadPublicKeyRingData(long masterKeyId) throws NotFoundException {
-        byte[] data = (byte[]) getGenericDataOrNull(KeyRingData.buildPublicKeyRingUri(masterKeyId),
-                KeyRingData.KEY_RING_DATA, FIELD_TYPE_BLOB);
-
-        if (data == null) {
-            try {
-                data = mLocalPublicKeyStorage.readPublicKey(masterKeyId);
-            } catch (IOException e) {
-                Timber.e(e, "Error reading public key from storage!");
-                throw new NotFoundException();
+        SqlDelightQuery query = KeyRingPublic.FACTORY.selectByMasterKeyId(masterKeyId);
+        try (Cursor cursor = db.query(query)) {
+            if (cursor.moveToFirst()) {
+                KeyRingPublic keyRingPublic = KeyRingPublic.MAPPER.map(cursor);
+                byte[] keyRingData = keyRingPublic.key_ring_data();
+                if (keyRingData == null) {
+                    keyRingData = mLocalPublicKeyStorage.readPublicKey(masterKeyId);
+                }
+                return keyRingData;
             }
+        } catch (IOException e) {
+            Timber.e(e, "Error reading public key from storage!");
         }
-
-        if (data == null) {
-            throw new NotFoundException();
-        }
-
-        return data;
+        throw new NotFoundException();
     }
 
     public final byte[] loadSecretKeyRingData(long masterKeyId) throws NotFoundException {

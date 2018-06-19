@@ -186,21 +186,8 @@ public class KeychainContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
 
-        public static final String CONTENT_TYPE
-                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.key_ring_data";
-        public static final String CONTENT_ITEM_TYPE
-                = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.key_ring_data";
-
-        public static Uri buildPublicKeyRingUri() {
-            return CONTENT_URI.buildUpon().appendPath(PATH_PUBLIC).build();
-        }
-
         public static Uri buildPublicKeyRingUri(long masterKeyId) {
             return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId)).appendPath(PATH_PUBLIC).build();
-        }
-
-        public static Uri buildPublicKeyRingUri(Uri uri) {
-            return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_PUBLIC).build();
         }
     }
 
