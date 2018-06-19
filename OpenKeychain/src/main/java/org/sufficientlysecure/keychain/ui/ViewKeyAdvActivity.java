@@ -126,7 +126,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         mViewPager.setAdapter(mTabAdapter);
 
         // keep track which of these are action mode enabled!
-        mTabsWithActionMode = new boolean[5];
+        mTabsWithActionMode = new boolean[4];
 
         mTabAdapter.addTab(ViewKeyAdvStartFragment.class,
                 null, getString(R.string.key_view_tab_start));
@@ -149,12 +149,6 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         mTabAdapter.addTab(ViewKeyAdvSubkeysFragment.class,
                 keysBundle, getString(R.string.key_view_tab_keys));
         mTabsWithActionMode[3] = true;
-
-        Bundle certsBundle = new Bundle();
-        certsBundle.putParcelable(ViewKeyAdvCertsFragment.ARG_DATA_URI, dataUri);
-        mTabAdapter.addTab(ViewKeyAdvCertsFragment.class,
-                certsBundle, getString(R.string.key_view_tab_certs));
-        mTabsWithActionMode[4] = false;
 
         // update layout after operations
         mSlidingTabLayout.setViewPager(mViewPager);

@@ -99,8 +99,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
     private int lidRank;
     private long certifyKeyId;
 
-    public static LinkedIdViewFragment newInstance(Uri dataUri, int rank,
-            boolean isSecret, long masterKeyId) throws IOException {
+    public static LinkedIdViewFragment newInstance(Uri dataUri, int rank, boolean isSecret, long masterKeyId) {
         LinkedIdViewFragment frag = new LinkedIdViewFragment();
 
         Bundle args = new Bundle();

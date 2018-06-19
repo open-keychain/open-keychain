@@ -65,7 +65,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
     private static final int KEY_RING_USER_IDS = 202;
     private static final int KEY_RING_PUBLIC = 203;
     private static final int KEY_RING_CERTS = 205;
-    private static final int KEY_RING_CERTS_SPECIFIC = 206;
     private static final int KEY_RING_LINKED_IDS = 207;
     private static final int KEY_RING_LINKED_ID_CERTS = 208;
 
@@ -165,9 +164,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
                 + KeychainContract.PATH_CERTS,
                 KEY_RING_CERTS);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
-                        + KeychainContract.PATH_CERTS + "/*/*",
-                KEY_RING_CERTS_SPECIFIC);
 
         matcher.addURI(authority, KeychainContract.BASE_KEY_SIGNATURES, KEY_SIGNATURES);
 
@@ -565,7 +561,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
             }
 
             case KEY_RING_CERTS:
-            case KEY_RING_CERTS_SPECIFIC:
             case KEY_RING_LINKED_ID_CERTS: {
                 HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(Certs._ID, Tables.CERTS + ".oid AS " + Certs._ID);
@@ -599,12 +594,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
 
                 qb.appendWhere(Tables.CERTS + "." + Certs.MASTER_KEY_ID + " = ");
                 qb.appendWhereEscapeString(uri.getPathSegments().get(1));
-                if(match == KEY_RING_CERTS_SPECIFIC) {
-                    qb.appendWhere(" AND " + Tables.CERTS + "." + Certs.RANK + " = ");
-                    qb.appendWhereEscapeString(uri.getPathSegments().get(3));
-                    qb.appendWhere(" AND " + Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER+ " = ");
-                    qb.appendWhereEscapeString(uri.getPathSegments().get(4));
-                }
 
                 if (match == KEY_RING_LINKED_ID_CERTS) {
                     qb.appendWhere(" AND " + Tables.USER_PACKETS + "."

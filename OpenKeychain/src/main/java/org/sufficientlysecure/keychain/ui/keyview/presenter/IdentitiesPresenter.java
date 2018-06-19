@@ -114,14 +114,8 @@ public class IdentitiesPresenter implements Observer<List<IdentityInfo>> {
     }
 
     private void showLinkedId(final LinkedIdInfo info) {
-        final LinkedIdViewFragment frag;
-        try {
-            Uri dataUri = UserPackets.buildLinkedIdsUri(KeyRings.buildGenericKeyRingUri(masterKeyId));
-            frag = LinkedIdViewFragment.newInstance(dataUri, info.getRank(), isSecret, masterKeyId);
-        } catch (IOException e) {
-            Timber.e(e, "IOException");
-            return;
-        }
+        Uri dataUri = UserPackets.buildLinkedIdsUri(KeyRings.buildGenericKeyRingUri(masterKeyId));
+        LinkedIdViewFragment frag = LinkedIdViewFragment.newInstance(dataUri, info.getRank(), isSecret, masterKeyId);
 
         viewKeyMvpView.switchToFragment(frag, "linked_id");
     }

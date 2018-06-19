@@ -169,15 +169,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.ViewCertActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_view_cert"
-            android:parentActivityName=".ui.keyview.ViewKeyActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.keyview.ViewKeyActivity" />
-        </activity>
-        <activity
             android:name=".ui.SafeSlingerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_exchange_keys"
