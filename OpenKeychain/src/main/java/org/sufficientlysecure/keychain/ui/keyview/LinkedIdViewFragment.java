@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.ui.keyview;
 import java.io.IOException;
 import java.util.Collections;
 
+import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -54,6 +55,9 @@ import org.sufficientlysecure.keychain.linked.LinkedAttribute;
 import org.sufficientlysecure.keychain.linked.LinkedResource;
 import org.sufficientlysecure.keychain.linked.LinkedTokenResource;
 import org.sufficientlysecure.keychain.linked.UriAttribute;
+import org.sufficientlysecure.keychain.livedata.CertificationDao;
+import org.sufficientlysecure.keychain.livedata.GenericLiveData;
+import org.sufficientlysecure.keychain.model.Certification.CertDetails;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
@@ -407,15 +411,16 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
         viewHolder.vButtonRetry.setOnClickListener(v -> verifyResource());
         viewHolder.vButtonConfirm.setOnClickListener(v -> initiateCertifying());
 
-        {
-            Bundle args = new Bundle();
-            args.putParcelable(CertListWidget.ARG_URI, Certs.buildLinkedIdCertsUri(dataUri, lidRank));
-            args.putBoolean(CertListWidget.ARG_IS_SECRET, isSecret);
-            getLoaderManager().initLoader(CertListWidget.LOADER_ID_LINKED_CERTS,
-                    args, viewHolder.vLinkedCerts);
-        }
+        CertificationDao certificationDao = CertificationDao.getInstance(getContext());
+        LiveData<CertDetails> certDetailsLiveData = new GenericLiveData<>(
+                getContext(), null, () -> certificationDao.getVerifyingCertDetails(masterKeyId, lidRank));
+        certDetailsLiveData.observe(this, this::onLoadCertDetails);
 
         return root;
+    }
+
+    private void onLoadCertDetails(CertDetails certDetails) {
+        viewHolder.vLinkedCerts.setData(certDetails, isSecret);
     }
 
     void verifyResource() {

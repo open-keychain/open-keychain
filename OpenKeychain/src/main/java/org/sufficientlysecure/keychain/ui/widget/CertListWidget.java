@@ -33,43 +33,14 @@ import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.model.Certification.CertDetails;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 
-public class CertListWidget extends ViewAnimator
-        implements LoaderManager.LoaderCallbacks<Cursor> {
-
-    public static final int LOADER_ID_LINKED_CERTS = 38572;
-
-    public static final String ARG_URI = "uri";
-    public static final String ARG_IS_SECRET = "is_secret";
-
-
-    // These are the rows that we will retrieve.
-    static final String[] CERTS_PROJECTION = new String[]{
-            KeychainContract.Certs._ID,
-            KeychainContract.Certs.MASTER_KEY_ID,
-            KeychainContract.Certs.VERIFIED,
-            KeychainContract.Certs.TYPE,
-            KeychainContract.Certs.RANK,
-            KeychainContract.Certs.KEY_ID_CERTIFIER,
-            KeychainContract.Certs.USER_ID,
-            KeychainContract.Certs.SIGNER_UID,
-            KeychainContract.Certs.CREATION
-    };
-    public static final int INDEX_MASTER_KEY_ID = 1;
-    public static final int INDEX_VERIFIED = 2;
-    public static final int INDEX_TYPE = 3;
-    public static final int INDEX_RANK = 4;
-    public static final int INDEX_KEY_ID_CERTIFIER = 5;
-    public static final int INDEX_USER_ID = 6;
-    public static final int INDEX_SIGNER_UID = 7;
-    public static final int INDEX_CREATION = 8;
-
+public class CertListWidget extends ViewAnimator {
     private TextView vCollapsed;
     private ListView vExpanded;
     private View vExpandButton;
-    private boolean mIsSecret;
 
     public CertListWidget(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -105,41 +76,11 @@ public class CertListWidget extends ViewAnimator
         setDisplayedChild(expanded ? 1 : 0);
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Uri uri = args.getParcelable(ARG_URI);
-        mIsSecret = args.getBoolean(ARG_IS_SECRET, false);
-        return new CursorLoader(getContext(), uri,
-                CERTS_PROJECTION, null, null, null);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-        if (data == null || !data.moveToFirst()) {
-            return;
-        }
-
-        // TODO support external certificates
-        Long certTime = null;
-        while (!data.isAfterLast()) {
-
-            int verified = data.getInt(INDEX_VERIFIED);
-            long creation = data.getLong(INDEX_CREATION) * 1000;
-
-            if (verified == Certs.VERIFIED_SECRET) {
-                if (certTime == null || certTime > creation) {
-                    certTime = creation;
-                }
-            }
-
-            data.moveToNext();
-        }
-
-        if (certTime != null) {
+    public void setData(CertDetails certDetails, boolean isSecret) {
+        if (certDetails != null) {
             CharSequence relativeTimeStr = DateUtils
-                    .getRelativeTimeSpanString(certTime, System.currentTimeMillis(), 0, DateUtils.FORMAT_ABBREV_ALL);
-            if (mIsSecret) {
+                    .getRelativeTimeSpanString(certDetails.creation(), System.currentTimeMillis(), 0, DateUtils.FORMAT_ABBREV_ALL);
+            if (isSecret) {
                 vCollapsed.setText("You created this identity " + relativeTimeStr + ".");
             } else {
                 vCollapsed.setText("You verified and confirmed this identity " + relativeTimeStr + ".");
@@ -148,11 +89,6 @@ public class CertListWidget extends ViewAnimator
             vCollapsed.setText("This identity is not yet verified or confirmed.");
         }
 
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        setVisibility(View.GONE);
     }
 
 }

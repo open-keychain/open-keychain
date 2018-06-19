@@ -66,7 +66,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
     private static final int KEY_RING_PUBLIC = 203;
     private static final int KEY_RING_CERTS = 205;
     private static final int KEY_RING_LINKED_IDS = 207;
-    private static final int KEY_RING_LINKED_ID_CERTS = 208;
 
     private static final int KEY_RINGS_FIND_BY_EMAIL = 400;
     private static final int KEY_RINGS_FIND_BY_SUBKEY = 401;
@@ -154,10 +153,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
                         + KeychainContract.PATH_LINKED_IDS,
                 KEY_RING_LINKED_IDS);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
-                        + KeychainContract.PATH_LINKED_IDS + "/*/"
-                        + KeychainContract.PATH_CERTS,
-                KEY_RING_LINKED_ID_CERTS);
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
                 + KeychainContract.PATH_PUBLIC,
                 KEY_RING_PUBLIC);
@@ -555,55 +550,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                 if(match == KEY_RING_PUBLIC) {
                     qb.appendWhere(KeyRings.MASTER_KEY_ID + " = ");
                     qb.appendWhereEscapeString(uri.getPathSegments().get(1));
-                }
-
-                break;
-            }
-
-            case KEY_RING_CERTS:
-            case KEY_RING_LINKED_ID_CERTS: {
-                HashMap<String, String> projectionMap = new HashMap<>();
-                projectionMap.put(Certs._ID, Tables.CERTS + ".oid AS " + Certs._ID);
-                projectionMap.put(Certs.MASTER_KEY_ID, Tables.CERTS + "." + Certs.MASTER_KEY_ID);
-                projectionMap.put(Certs.RANK, Tables.CERTS + "." + Certs.RANK);
-                projectionMap.put(Certs.VERIFIED, Tables.CERTS + "." + Certs.VERIFIED);
-                projectionMap.put(Certs.TYPE, Tables.CERTS + "." + Certs.TYPE);
-                projectionMap.put(Certs.CREATION, Tables.CERTS + "." + Certs.CREATION);
-                projectionMap.put(Certs.KEY_ID_CERTIFIER, Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER);
-                projectionMap.put(Certs.DATA, Tables.CERTS + "." + Certs.DATA);
-                projectionMap.put(Certs.USER_ID, Tables.USER_PACKETS + "." + UserPackets.USER_ID);
-                projectionMap.put(Certs.SIGNER_UID, "signer." + UserPackets.USER_ID + " AS " + Certs.SIGNER_UID);
-                qb.setProjectionMap(projectionMap);
-
-                qb.setTables(Tables.CERTS
-                    + " JOIN " + Tables.USER_PACKETS + " ON ("
-                            + Tables.CERTS + "." + Certs.MASTER_KEY_ID + " = "
-                            + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID
-                        + " AND "
-                            + Tables.CERTS + "." + Certs.RANK + " = "
-                            + Tables.USER_PACKETS + "." + UserPackets.RANK
-                    + ") LEFT JOIN " + Tables.USER_PACKETS + " AS signer ON ("
-                            + Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER + " = "
-                            + "signer." + UserPackets.MASTER_KEY_ID
-                        + " AND "
-                            + "signer." + Keys.RANK + " = 0"
-                    + ")");
-
-                groupBy = Tables.CERTS + "." + Certs.RANK + ", "
-                        + Tables.CERTS + "." + Certs.KEY_ID_CERTIFIER;
-
-                qb.appendWhere(Tables.CERTS + "." + Certs.MASTER_KEY_ID + " = ");
-                qb.appendWhereEscapeString(uri.getPathSegments().get(1));
-
-                if (match == KEY_RING_LINKED_ID_CERTS) {
-                    qb.appendWhere(" AND " + Tables.USER_PACKETS + "."
-                            + UserPackets.TYPE + " IS NOT NULL");
-
-                    qb.appendWhere(" AND " + Tables.USER_PACKETS + "."
-                            + UserPackets.RANK + " = ");
-                    qb.appendWhereEscapeString(uri.getPathSegments().get(3));
-                } else {
-                    qb.appendWhere(" AND " + Tables.USER_PACKETS + "." + UserPackets.TYPE + " IS NULL");
                 }
 
                 break;
