@@ -248,6 +248,8 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
             }
 
             vIcon.setImageDrawable(info.getAppIcon());
+
+            vIcon.setVisibility(View.VISIBLE);
             vMore.setVisibility(View.VISIBLE);
 
             itemView.setClickable(info.getAutocryptPeerIntent() != null);
