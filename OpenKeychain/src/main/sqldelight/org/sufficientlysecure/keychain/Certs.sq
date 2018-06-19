@@ -8,8 +8,8 @@ CREATE TABLE IF NOT EXISTS certs(
     creation INTEGER NOT NULL,
     data BLOB NOT NULL,
     PRIMARY KEY(master_key_id, rank, key_id_certifier),
-    FOREIGN KEY(master_key_id) REFERENCES keyrings_public(master_key_id) ON DELETE CASCADE
-    -- FOREIGN KEY(master_key_id, rank) REFERENCES user_packets(master_key_id, rank) ON DELETE CASCADE
+    FOREIGN KEY(master_key_id) REFERENCES keyrings_public(master_key_id) ON DELETE CASCADE,
+    FOREIGN KEY(master_key_id, rank) REFERENCES user_packets(master_key_id, rank) ON DELETE CASCADE
 );
 
 selectVerifyingCertDetails:

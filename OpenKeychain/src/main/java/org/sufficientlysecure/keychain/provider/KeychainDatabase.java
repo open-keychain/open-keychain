@@ -34,11 +34,15 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
 import android.provider.BaseColumns;
 
+import org.sufficientlysecure.keychain.ApiAppsModel;
 import org.sufficientlysecure.keychain.AutocryptPeersModel;
+import org.sufficientlysecure.keychain.CertsModel;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.KeyMetadataModel;
 import org.sufficientlysecure.keychain.KeyRingsPublicModel;
+import org.sufficientlysecure.keychain.UserPacketsModel;
 import org.sufficientlysecure.keychain.model.ApiApp;
+import org.sufficientlysecure.keychain.model.Certification;
 import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAllowedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
@@ -120,26 +124,6 @@ public class KeychainDatabase {
                     + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
             + ")";
 
-    private static final String CREATE_CERTS =
-            "CREATE TABLE IF NOT EXISTS " + Tables.CERTS + "("
-                + CertsColumns.MASTER_KEY_ID + " INTEGER,"
-                + CertsColumns.RANK + " INTEGER, " // rank of certified uid
-
-                + CertsColumns.KEY_ID_CERTIFIER + " INTEGER, " // certifying key
-                + CertsColumns.TYPE + " INTEGER, "
-                + CertsColumns.VERIFIED + " INTEGER, "
-                + CertsColumns.CREATION + " INTEGER, "
-
-                + CertsColumns.DATA + " BLOB, "
-
-                + "PRIMARY KEY(" + CertsColumns.MASTER_KEY_ID + ", " + CertsColumns.RANK + ", "
-                    + CertsColumns.KEY_ID_CERTIFIER + "), "
-                + "FOREIGN KEY(" + CertsColumns.MASTER_KEY_ID + ") REFERENCES "
-                    + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE,"
-                + "FOREIGN KEY(" + CertsColumns.MASTER_KEY_ID + ", " + CertsColumns.RANK + ") REFERENCES "
-                    + Tables.USER_PACKETS + "(" + UserPacketsColumns.MASTER_KEY_ID + ", " + UserPacketsColumns.RANK + ") ON DELETE CASCADE"
-            + ")";
-
     private static final String CREATE_KEY_SIGNATURES =
             "CREATE TABLE IF NOT EXISTS " + Tables.KEY_SIGNATURES + " ("
                     + KeySignaturesColumns.MASTER_KEY_ID + " INTEGER NOT NULL, "
@@ -212,14 +196,14 @@ public class KeychainDatabase {
 
         db.execSQL(KeyRingsPublicModel.CREATE_TABLE);
         db.execSQL(CREATE_KEYS);
-        db.execSQL(CREATE_USER_PACKETS);
-        db.execSQL(CREATE_CERTS);
+        db.execSQL(UserPacketsModel.CREATE_TABLE);
+        db.execSQL(CertsModel.CREATE_TABLE);
         db.execSQL(KeyMetadataModel.CREATE_TABLE);
         db.execSQL(CREATE_KEY_SIGNATURES);
         db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
         db.execSQL(CREATE_OVERRIDDEN_WARNINGS);
         db.execSQL(AutocryptPeersModel.CREATE_TABLE);
-        db.execSQL(ApiApp.CREATE_TABLE);
+        db.execSQL(ApiAppsModel.CREATE_TABLE);
 
         db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysColumns.RANK + ", " + KeysColumns.MASTER_KEY_ID + ");");
         db.execSQL("CREATE INDEX uids_by_rank ON user_packets (" + UserPacketsColumns.RANK + ", "

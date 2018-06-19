@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS user_packets(
+    master_key_id INTEGER,
+    type INTEGER,
+    user_id TEXT,
+    name TEXT,
+    email TEXT,
+    comment TEXT,
+    attribute_data BLOB,
+    is_primary INTEGER,
+    is_revoked INTEGER,
+    rank INTEGER,
+    PRIMARY KEY(master_key_id, rank),
+    FOREIGN KEY(master_key_id) REFERENCES
+    keyrings_public(master_key_id) ON DELETE CASCADE
+);

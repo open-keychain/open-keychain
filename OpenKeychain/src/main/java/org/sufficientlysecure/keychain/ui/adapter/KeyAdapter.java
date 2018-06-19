@@ -17,15 +17,20 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.PorterDuff;
 import android.support.v4.widget.CursorAdapter;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -39,12 +44,6 @@ import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Highlighter;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 
 public class KeyAdapter extends CursorAdapter {
 
@@ -105,8 +104,6 @@ public class KeyAdapter extends CursorAdapter {
         public TextView mMainUserIdRest;
         public TextView mCreationDate;
         public ImageView mStatus;
-        public View mSlinger;
-        public ImageButton mSlingerButton;
 
         public KeyItem mDisplayedItem;
 
@@ -116,8 +113,6 @@ public class KeyAdapter extends CursorAdapter {
             mMainUserId = view.findViewById(R.id.key_list_item_name);
             mMainUserIdRest = view.findViewById(R.id.key_list_item_email);
             mStatus = view.findViewById(R.id.key_list_item_status_icon);
-            mSlinger = view.findViewById(R.id.key_list_item_slinger_view);
-            mSlingerButton = view.findViewById(R.id.key_list_item_slinger_button);
             mCreationDate = view.findViewById(R.id.key_list_item_creation);
         }
 
@@ -154,28 +149,17 @@ public class KeyAdapter extends CursorAdapter {
                     KeyFormattingUtils
                             .setStatusImage(context, mStatus, null, State.REVOKED, R.color.key_flag_gray);
                     mStatus.setVisibility(View.VISIBLE);
-                    mSlinger.setVisibility(View.GONE);
                     textColor = context.getResources().getColor(R.color.key_flag_gray);
                 } else if (item.mIsExpired) {
                     KeyFormattingUtils.setStatusImage(context, mStatus, null, State.EXPIRED, R.color.key_flag_gray);
                     mStatus.setVisibility(View.VISIBLE);
-                    mSlinger.setVisibility(View.GONE);
                     textColor = context.getResources().getColor(R.color.key_flag_gray);
                 } else if (!item.mIsSecure) {
                     KeyFormattingUtils.setStatusImage(context, mStatus, null, State.INSECURE, R.color.key_flag_gray);
                     mStatus.setVisibility(View.VISIBLE);
-                    mSlinger.setVisibility(View.GONE);
                     textColor = context.getResources().getColor(R.color.key_flag_gray);
                 } else if (item.mIsSecret) {
                     mStatus.setVisibility(View.GONE);
-                    if (mSlingerButton.hasOnClickListeners()) {
-                        mSlingerButton.setColorFilter(
-                                FormattingUtils.getColorFromAttr(context, R.attr.colorTertiaryText),
-                                PorterDuff.Mode.SRC_IN);
-                        mSlinger.setVisibility(View.VISIBLE);
-                    } else {
-                        mSlinger.setVisibility(View.GONE);
-                    }
                     textColor = FormattingUtils.getColorFromAttr(context, R.attr.colorText);
                 } else {
                     // this is a public key - show if it's verified
@@ -186,7 +170,6 @@ public class KeyAdapter extends CursorAdapter {
                         KeyFormattingUtils.setStatusImage(context, mStatus, State.UNVERIFIED);
                         mStatus.setVisibility(View.VISIBLE);
                     }
-                    mSlinger.setVisibility(View.GONE);
                     textColor = FormattingUtils.getColorFromAttr(context, R.attr.colorText);
                 }
 

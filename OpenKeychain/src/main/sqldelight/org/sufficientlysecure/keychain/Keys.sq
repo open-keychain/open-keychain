@@ -1,21 +1,37 @@
+import java.lang.Boolean;
+
 CREATE TABLE IF NOT EXISTS keys (
-    master_key_id INTEGER,
-    rank INTEGER,
-    key_id INTEGER,
+    master_key_id INTEGER NOT NULL,
+    rank INTEGER NOT NULL,
+    key_id INTEGER NOT NULL,
     key_size INTEGER,
     key_curve_oid TEXT,
-    algorithm INTEGER,
-    fingerprint BLOB,
-    can_certify INTEGER,
-    can_sign INTEGER,
-    can_encrypt INTEGER,
-    can_authenticate INTEGER,
-    is_revoked INTEGER,
-    has_secret INTEGER,
-    is_secure INTEGER,
-    creation INTEGER,
+    algorithm INTEGER NOT NULL,
+    fingerprint BLOB NOT NULL,
+    can_certify INTEGER AS Boolean NOT NULL,
+    can_sign INTEGER AS Boolean NOT NULL,
+    can_encrypt INTEGER AS Boolean NOT NULL,
+    can_authenticate INTEGER AS Boolean NOT NULL,
+    is_revoked INTEGER AS Boolean NOT NULL,
+    has_secret INTEGER AS Boolean NOT NULL,
+    is_secure INTEGER AS Boolean NOT NULL,
+    creation INTEGER NOT NULL,
     expiry INTEGER,
     PRIMARY KEY(master_key_id, rank),
     FOREIGN KEY(master_key_id) REFERENCES
     keyrings_public(master_key_id) ON DELETE CASCADE
 );
+
+selectAllUnifiedKeyInfo:
+SELECT keys.master_key_id, MIN(user_packets.rank), user_packets.name, user_packets.email, user_packets.comment, keys.creation, keys.expiry, keys.is_revoked, keys.is_secure, certs.verified,
+        (EXISTS (SELECT * FROM user_packets AS dups WHERE dups.master_key_id != keys.master_key_id AND dups.rank = 0 AND dups.name = user_packets.name COLLATE NOCASE AND dups.email = user_packets.email COLLATE NOCASE )) AS has_duplicate_int,
+        (EXISTS (SELECT * FROM keys AS k WHERE k.has_secret != 0 AND k.master_key_id = keys.master_key_id )) AS has_any_secret_int,
+        GROUP_CONCAT(DISTINCT aTI.package_name) AS autocrypt_package_names_csv,
+        GROUP_CONCAT(user_packets.user_id, '|||') AS user_id_list
+    FROM keys
+         INNER JOIN user_packets ON ( keys.master_key_id = user_packets.master_key_id AND user_packets.type IS NULL )
+         LEFT JOIN certs ON ( keys.master_key_id = certs.master_key_id AND certs.verified = 1 )
+         LEFT JOIN autocrypt_peers AS aTI ON ( aTI.master_key_id = keys.master_key_id )
+    WHERE keys.rank = 0
+    GROUP BY keys.master_key_id
+    ORDER BY has_secret DESC, user_packets.name COLLATE NOCASE ASC;

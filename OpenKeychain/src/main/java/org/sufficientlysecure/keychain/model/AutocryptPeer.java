@@ -28,8 +28,8 @@ public abstract class AutocryptPeer implements AutocryptPeersModel {
         }
 
         public boolean isGossipKeyRevoked() {
-            Long revokedInt = gossip_key_is_revoked_int();
-            return revokedInt != null && revokedInt != 0;
+            Boolean gossip_key_is_revoked = gossip_key_is_revoked_int();
+            return gossip_key_is_revoked != null && gossip_key_is_revoked;
         }
 
         public boolean isGossipKeyExpired() {
@@ -45,8 +45,8 @@ public abstract class AutocryptPeer implements AutocryptPeersModel {
         }
 
         public boolean isKeyRevoked() {
-            Long revokedInt = key_is_revoked_int();
-            return revokedInt != null && revokedInt != 0;
+            Boolean revoked = key_is_revoked_int();
+            return revoked != null && revoked;
         }
 
         public boolean isKeyExpired() {

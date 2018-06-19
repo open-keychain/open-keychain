@@ -36,7 +36,9 @@ dependencies {
 
     // RecyclerView
     compile 'com.tonicartos:superslim:0.4.13'
-    compile 'com.futuremind.recyclerfastscroll:fastscroll:0.2.4'
+    compile 'eu.davidea:flexible-adapter:5.0.5'
+    compile 'eu.davidea:flexible-adapter-ui:1.0.0-b5'
+    compile 'eu.davidea:flexible-adapter-livedata:1.0.0-b2'
 
     // Material Drawer
     compile 'com.mikepenz:materialdrawer:5.6.0@aar'
@@ -107,6 +109,7 @@ dependencies {
 // Comment out the libs referenced as git submodules!
 dependencyVerification {
     verify = [
+        'eu.davidea:flexible-adapter-ui:7ed5327d15c823e5fcf7d6e1017d8a47d079d1adc7141858f3cb427517ef35cd',
         'com.android.support:design:7225973f7ee03765008a9c2f17a40b154c6885169fef022276e811c926a2202c',
         'com.journeyapps:zxing-android-embedded:2422d83c2c09a7b645f516c8458ececba6a7da47b94e40778d876facf495c660',
         'org.sufficientlysecure:donations:2be4183afa5e35263e37346344cfea48681f3c987e6832dd4acde227c13ccad6',
@@ -115,6 +118,7 @@ dependencyVerification {
         'com.mikepenz:materialize:942ccf5e2aa1a46803aa884e8dc7bbaf2a9e8e9996a0cf92e3fe2f44a8592ba4',
         'com.android.support:appcompat-v7:0c7808fbbc5838d831e32e3c0a6f84e1f2c981deb8f11e010650f2b57923a335',
         'com.nispok:snackbar:46b5eb9d630d329e13c2ce00ee9fb115ffb66c23c72cff32ee97eedd76824c6f',
+        'eu.davidea:flexible-adapter:560e940e8cf0f4ed8f632f5f89527deeda7a61cce5f02f42cc0983f7c0d2de5f',
         'com.android.support:recyclerview-v7:d735e4727878e99ef3980c10d15dc3468462fd509d4fb60cb8bd20b0f735085c',
         'com.android.support:cardview-v7:8ed955dd037d82a7b4bbcaedb4f896523c3e4c1bf3ca698ce807c350767a2886',
         'org.sufficientlysecure:html-textview:ed740adf05cae2373999c7a3047c803183d9807b2cf66162902090d7c112a832',
@@ -145,6 +149,7 @@ dependencyVerification {
         'org.apache.james:apache-mime4j-core:561987f604911e1870b2b4eabf0b0658d666c66cb1e65fba3e9e4bffe63acab9',
         'com.splitwise:tokenautocomplete:f921f83ee26b5265f719b312c30452ef8e219557826c5ce5bf02e29647967939',
         'com.cocosw:bottomsheet:85bd91fd837b02ebd7a888501cb26035c7cd985a6aa87303fca249da8231a2c3',
+        'eu.davidea:flexible-adapter-livedata:c8718b46ff4fbf290ea18f0c5bfe8326badeadf5fd95899a1404c561a24f48a1',
         'com.mikepenz:materialdrawer:8bba1428dcef5ad7c2decf49c612ad980b38e2f1031cbd66c152a8a104793929',
         'com.mikepenz:iconics-core:478d7e245098f7c28b5b20a0e6b1e5cb108ef3eaf595af7190bc60f91063aa3d',
         'com.mikepenz:google-material-typeface:f27c629ba5d2a90ecfbd7f221ff98cd363e1ee6be06b099b82bae490766e14a5',

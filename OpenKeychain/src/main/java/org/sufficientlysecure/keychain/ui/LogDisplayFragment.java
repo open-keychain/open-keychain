@@ -17,6 +17,10 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.io.IOException;
+import java.io.OutputStream;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -26,19 +30,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.tonicartos.superslim.LayoutManager;
-
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.SubLogEntryParcel;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.adapter.NestedLogAdapter;
+import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ShareLogDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
-import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
-
-import java.io.IOException;
-import java.io.OutputStream;
 
 
 public class LogDisplayFragment extends RecyclerFragment<NestedLogAdapter>
