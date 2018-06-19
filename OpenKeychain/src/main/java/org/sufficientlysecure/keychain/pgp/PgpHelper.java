@@ -84,22 +84,16 @@ public class PgpHelper {
     }
 
     public static String getPgpMessageContent(@NonNull CharSequence input) {
-        Timber.d("input: %s");
-
         Matcher matcher = PgpHelper.PGP_MESSAGE.matcher(input);
         if (matcher.matches()) {
             String text = matcher.group(1);
             text = fixPgpMessage(text);
-
-            Timber.d("input fixed: %s", text);
             return text;
         } else {
             matcher = PgpHelper.PGP_CLEARTEXT_SIGNATURE.matcher(input);
             if (matcher.matches()) {
                 String text = matcher.group(1);
                 text = fixPgpCleartextSignature(text);
-
-                Timber.d("input fixed: %s", text);
                 return text;
             } else {
                 return null;
@@ -108,8 +102,6 @@ public class PgpHelper {
     }
 
     public static String getPgpPublicKeyContent(@NonNull CharSequence input) {
-        Timber.d("input: %s", input);
-
         Matcher matcher = PgpHelper.PGP_PUBLIC_KEY.matcher(input);
         if (!matcher.matches()) {
             return null;
