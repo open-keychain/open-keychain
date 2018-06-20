@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.service;
 
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,6 +36,7 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.PeriodicSync;
 import android.content.SyncResult;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -576,9 +578,9 @@ public class KeyserverSyncAdapterService extends Service {
         boolean syncExists = Preferences.getKeyserverSyncEnabled(context);
 
         if (syncExists) {
-            long oldInterval = ContentResolver.getPeriodicSyncs(
-                    account, Constants.PROVIDER_AUTHORITY).get(0).period;
-            if (oldInterval != SYNC_INTERVAL) {
+            List<PeriodicSync> periodicSyncs = ContentResolver.getPeriodicSyncs(
+                    account, Constants.PROVIDER_AUTHORITY);
+            if (periodicSyncs.isEmpty() || periodicSyncs.get(0).period != SYNC_INTERVAL) {
                 intervalChanged = true;
             }
         }
