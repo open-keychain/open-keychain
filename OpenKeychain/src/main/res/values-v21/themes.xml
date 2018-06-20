@@ -15,6 +15,7 @@
 
      <style name="Theme.Keychain.Dark" parent="Base.Theme.Keychain.Dark">
         <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:navigationBarColor">#33cccccc</item>
 
         <!-- enable window content transitions -->
         <item name="android:windowContentTransitions">true</item>
