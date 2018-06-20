@@ -114,7 +114,14 @@ public class KeychainApplication extends Application {
         TlsCertificatePinning.addPinnedCertificate("api.keybase.io", getAssets(), "api.keybase.io.CA.cer");
         TlsCertificatePinning.addPinnedCertificate("keyserver.ubuntu.com", getAssets(), "DigiCertGlobalRootCA.cer");
 
-        new Handler().postDelayed(() -> TemporaryFileProvider.cleanUp(getApplicationContext()), 1000);
+        new Handler().postDelayed(() -> {
+            try {
+                TemporaryFileProvider.cleanUp(getApplicationContext());
+            } catch (IllegalArgumentException e) {
+                // this happens on samsung devices for some reason :(
+                // will be fixed with work-manager in the future
+            }
+        }, 1000);
     }
 
     /**
