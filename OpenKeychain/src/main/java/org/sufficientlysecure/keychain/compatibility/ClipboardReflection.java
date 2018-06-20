@@ -34,18 +34,26 @@ public class ClipboardReflection {
             return null;
         }
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-
-        ClipData clip = clipboard.getPrimaryClip();
-        if (clip == null || clip.getItemCount() == 0) {
-            Timber.e("No clipboard data!");
+        if (clipboard == null) {
             return null;
         }
 
-        ClipData.Item item = clip.getItemAt(0);
-        CharSequence seq = item.coerceToText(context);
-        if (seq != null) {
-            return seq.toString();
+        try {
+            ClipData clip = clipboard.getPrimaryClip();
+            if (clip == null || clip.getItemCount() == 0) {
+                Timber.e("No clipboard data!");
+                return null;
+            }
+
+            ClipData.Item item = clip.getItemAt(0);
+            CharSequence seq = item.coerceToText(context);
+            if (seq != null) {
+                return seq.toString();
+            }
+            return null;
+        } catch (SecurityException e) {
+            Timber.e(e, "Not allowed to read clipboard");
+            return null;
         }
-        return null;
     }
 }
