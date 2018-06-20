@@ -392,7 +392,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         }
         // getSSID will return the ssid in quotes if it is valid utf-8. we only return it in that case.
         String ssid = info.getSSID();
-        if (ssid.charAt(0) != '"') {
+        if (ssid == null || ssid.isEmpty() || ssid.charAt(0) != '"') {
             return null;
         }
         return ssid.substring(1, ssid.length() -1);
