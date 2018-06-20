@@ -25,7 +25,6 @@ import java.util.List;
 
 import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.ContentProvider;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -39,7 +38,6 @@ import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.model.AutocryptPeer;
-import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -64,7 +62,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
     private static final int KEY_RING_USER_IDS = 202;
     private static final int KEY_RING_PUBLIC = 203;
     private static final int KEY_RING_CERTS = 205;
-    private static final int KEY_RING_LINKED_IDS = 207;
 
     private static final int KEY_RINGS_FIND_BY_EMAIL = 400;
     private static final int KEY_RINGS_FIND_BY_SUBKEY = 401;
@@ -140,9 +137,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
                 + KeychainContract.PATH_USER_IDS,
                 KEY_RING_USER_IDS);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
-                        + KeychainContract.PATH_LINKED_IDS,
-                KEY_RING_LINKED_IDS);
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/*/"
                 + KeychainContract.PATH_PUBLIC,
                 KEY_RING_PUBLIC);
@@ -473,8 +467,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
             }
 
             case KEY_RINGS_USER_IDS:
-            case KEY_RING_USER_IDS:
-            case KEY_RING_LINKED_IDS: {
+            case KEY_RING_USER_IDS: {
                 HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(UserPackets._ID, Tables.USER_PACKETS + ".oid AS _id");
                 projectionMap.put(UserPackets.MASTER_KEY_ID, Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID);
@@ -502,15 +495,10 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                 groupBy = Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID
                         + ", " + Tables.USER_PACKETS + "." + UserPackets.RANK;
 
-                if (match == KEY_RING_LINKED_IDS) {
-                    qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.TYPE + " = "
-                            + WrappedUserAttribute.UAT_URI_ATTRIBUTE);
-                } else {
-                    qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.TYPE + " IS NULL");
-                }
+                qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.TYPE + " IS NULL");
 
                 // If we are searching for a particular keyring's ids, add where
-                if (match == KEY_RING_USER_IDS || match == KEY_RING_LINKED_IDS) {
+                if (match == KEY_RING_USER_IDS) {
                     qb.appendWhere(" AND ");
                     qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = ");
                     qb.appendWhereEscapeString(uri.getPathSegments().get(1));

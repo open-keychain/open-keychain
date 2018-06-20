@@ -35,12 +35,11 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.linked.UriAttribute;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter.ViewHolder;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.AutocryptPeerInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.IdentityInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.LinkedIdInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.UserIdInfo;
-import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.AutocryptPeerInfo;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.SubtleAttentionSeeker;
@@ -158,7 +157,7 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
         public void bind(Context context, LinkedIdInfo info, boolean isSecret) {
             bindVerified(context, info, isSecret);
 
-            UriAttribute uriAttribute = info.getUriAttribute();
+            UriAttribute uriAttribute = info.getLinkedAttribute();
             bind(context, uriAttribute);
         }
 
@@ -178,19 +177,12 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
 
         private void bindVerified(Context context, IdentityInfo info, boolean isSecret) {
             if (!isSecret) {
-                switch (info.getVerified()) {
-                    case Certs.VERIFIED_SECRET:
-                        KeyFormattingUtils.setStatusImage(context, vVerified,
-                                null, State.VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
-                        break;
-                    case Certs.VERIFIED_SELF:
-                        KeyFormattingUtils.setStatusImage(context, vVerified,
-                                null, State.UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
-                        break;
-                    default:
-                        KeyFormattingUtils.setStatusImage(context, vVerified,
-                                null, State.INVALID, KeyFormattingUtils.DEFAULT_COLOR);
-                        break;
+                if (info.isVerified()) {
+                    KeyFormattingUtils.setStatusImage(context, vVerified,
+                            null, State.VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
+                } else {
+                    KeyFormattingUtils.setStatusImage(context, vVerified,
+                            null, State.UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
                 }
             }
         }

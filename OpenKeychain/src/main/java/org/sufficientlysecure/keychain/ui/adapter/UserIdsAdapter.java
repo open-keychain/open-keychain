@@ -17,13 +17,11 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
-import android.app.Activity;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.support.annotation.Nullable;
-import android.support.v4.content.CursorLoader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +31,6 @@ import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
@@ -184,14 +181,4 @@ public class UserIdsAdapter extends UserAttributesAdapter {
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         return mInflater.inflate(R.layout.view_key_adv_user_id_item, null);
     }
-
-    // don't show revoked user ids, irrelevant for average users
-    public static final String USER_IDS_WHERE = UserPackets.IS_REVOKED + " = 0";
-
-    public static CursorLoader createLoader(Context context, Uri dataUri) {
-        Uri baseUri = UserPackets.buildUserIdsUri(dataUri);
-        return new CursorLoader(context, baseUri,
-                UserIdsAdapter.USER_PACKETS_PROJECTION, USER_IDS_WHERE, null, null);
-    }
-
 }

@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui.dialog;
 
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -24,7 +25,6 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 
 public class UserIdInfoDialogFragment extends DialogFragment {
     private static final String ARG_IS_REVOKED = "is_revoked";
@@ -33,11 +33,11 @@ public class UserIdInfoDialogFragment extends DialogFragment {
     /**
      * Creates new instance of this dialog fragment
      */
-    public static UserIdInfoDialogFragment newInstance(boolean isRevoked, int isVerified) {
+    public static UserIdInfoDialogFragment newInstance(boolean isRevoked, boolean isVerified) {
         UserIdInfoDialogFragment frag = new UserIdInfoDialogFragment();
         Bundle args = new Bundle();
         args.putBoolean(ARG_IS_REVOKED, isRevoked);
-        args.putInt(ARG_IS_VERIFIED, isVerified);
+        args.putBoolean(ARG_IS_VERIFIED, isVerified);
 
         frag.setArguments(args);
 
@@ -51,7 +51,7 @@ public class UserIdInfoDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final Activity activity = getActivity();
 
-        int isVerified = getArguments().getInt(ARG_IS_VERIFIED);
+        boolean isVerified = getArguments().getBoolean(ARG_IS_VERIFIED);
         boolean isRevoked = getArguments().getBoolean(ARG_IS_REVOKED);
 
         CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(activity);
@@ -62,19 +62,12 @@ public class UserIdInfoDialogFragment extends DialogFragment {
             title = getString(R.string.user_id_info_revoked_title);
             message = getString(R.string.user_id_info_revoked_text);
         } else {
-            switch (isVerified) {
-                case KeychainContract.Certs.VERIFIED_SECRET:
-                    title = getString(R.string.user_id_info_certified_title);
-                    message = getString(R.string.user_id_info_certified_text);
-                    break;
-                case KeychainContract.Certs.VERIFIED_SELF:
-                    title = getString(R.string.user_id_info_uncertified_title);
-                    message = getString(R.string.user_id_info_uncertified_text);
-                    break;
-                default:
-                    title = getString(R.string.user_id_info_invalid_title);
-                    message = getString(R.string.user_id_info_invalid_text);
-                    break;
+            if (isVerified) {
+                title = getString(R.string.user_id_info_certified_title);
+                message = getString(R.string.user_id_info_certified_text);
+            } else {
+                title = getString(R.string.user_id_info_uncertified_title);
+                message = getString(R.string.user_id_info_uncertified_text);
             }
         }
 

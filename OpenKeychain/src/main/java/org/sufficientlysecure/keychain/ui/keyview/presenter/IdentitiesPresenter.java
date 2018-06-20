@@ -18,20 +18,17 @@
 package org.sufficientlysecure.keychain.ui.keyview.presenter;
 
 
-import java.io.IOException;
 import java.util.List;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.view.View;
 
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDao;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter.IdentityClickListener;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
@@ -114,17 +111,14 @@ public class IdentitiesPresenter implements Observer<List<IdentityInfo>> {
     }
 
     private void showLinkedId(final LinkedIdInfo info) {
-        Uri dataUri = UserPackets.buildLinkedIdsUri(KeyRings.buildGenericKeyRingUri(masterKeyId));
-        LinkedIdViewFragment frag = LinkedIdViewFragment.newInstance(dataUri, info.getRank(), isSecret, masterKeyId);
+        LinkedIdViewFragment frag = LinkedIdViewFragment.newInstance(masterKeyId, info.getRank(), isSecret);
 
         viewKeyMvpView.switchToFragment(frag, "linked_id");
     }
 
     private void showUserIdInfo(UserIdInfo info) {
         if (!isSecret) {
-            final int isVerified = info.getVerified();
-
-            UserIdInfoDialogFragment dialogFragment = UserIdInfoDialogFragment.newInstance(false, isVerified);
+            UserIdInfoDialogFragment dialogFragment = UserIdInfoDialogFragment.newInstance(false, info.isVerified());
             viewKeyMvpView.showDialogFragment(dialogFragment, "userIdInfoDialog");
         }
     }

@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -42,6 +43,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
@@ -179,7 +181,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
     private void showUserIdInfo(final int position) {
 
         final boolean isRevoked = mUserIdsAdapter.getIsRevoked(position);
-        final int isVerified = mUserIdsAdapter.getIsVerified(position);
+        final boolean isVerified = mUserIdsAdapter.getIsVerified(position) == Certs.VERIFIED_SECRET;
 
         DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
             public void run() {

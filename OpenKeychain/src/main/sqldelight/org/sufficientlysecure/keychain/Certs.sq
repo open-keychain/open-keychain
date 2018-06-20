@@ -1,10 +1,12 @@
+import java.lang.Integer;
+
 -- TODO implement. this is only here for reference in SQLDelight
 CREATE TABLE IF NOT EXISTS certs(
     master_key_id INTEGER NOT NULL,
     rank INTEGER NOT NULL,
     key_id_certifier INTEGER NOT NULL,
     type INTEGER NOT NULL,
-    verified INTEGER NOT NULL,
+    verified INTEGER AS Integer NOT NULL,
     creation INTEGER NOT NULL,
     data BLOB NOT NULL,
     PRIMARY KEY(master_key_id, rank, key_id_certifier),

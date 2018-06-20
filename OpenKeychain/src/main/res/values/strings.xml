@@ -727,8 +727,6 @@
     <string name="user_id_info_certified_text">"This identity has been confirmed by you."</string>
     <string name="user_id_info_uncertified_title">"Not confirmed"</string>
     <string name="user_id_info_uncertified_text">"This identity has not been confirmed yet. You cannot be sure if the identity really corresponds to a specific person."</string>
-    <string name="user_id_info_invalid_title">"Invalid"</string>
-    <string name="user_id_info_invalid_text">"Something is wrong with this identity!"</string>
 
     <!-- Key trust -->
     <string name="key_trust_no_cloud_evidence">"No proof from the Internet on this key’s trustworthiness."</string>
