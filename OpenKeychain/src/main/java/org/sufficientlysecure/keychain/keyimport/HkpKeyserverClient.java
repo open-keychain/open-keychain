@@ -81,11 +81,11 @@ public class HkpKeyserverClient implements KeyserverClient {
      * </ul>
      */
     private static final Pattern UID_LINE = Pattern
-            .compile("(?<uid>uid:" +              // group 1
-                            "(?<uidID>[^:\n]*)" +       // group 2
-                            "(?::(?<uidCreate>[0-9]*)" +  // group 3
-                            "(?::(?<uidExpire>[0-9]*)" +  // group 4
-                            "(?::(?<uidFlags>((?=(r(?!(.?r))|d(?!(.?d))|e(?!(.?e))))[rde]){0,3})" + // group 5
+            .compile("(uid:" +              // group 1
+                            "([^:\n]*)" +       // group 2
+                            "(?::([0-9]*)" +  // group 3
+                            "(?::([0-9]*)" +  // group 4
+                            "(?::(((?=(r(?!(.?r))|d(?!(.?d))|e(?!(.?e))))[rde]){0,3})" + // group 5
                             ")?)?)?\n)",
                     Pattern.CASE_INSENSITIVE);
 
@@ -121,15 +121,15 @@ public class HkpKeyserverClient implements KeyserverClient {
      * in Internet-Draft OpenPGP HTTP Keyserver Protocol Document
      */
     private static final Pattern PUB_KEY_LINE = Pattern
-            .compile( "(?<pub>pub:" +                 // group 1
-                            "(?<pubKeyID>[0-9a-fA-F]+)" +   // group 2
-                            "(?::(?<pubAlgo>[0-9]*)" +        // group 3
-                            "(?::(?<pubKeyLen>[0-9]*)" +      // group 4
-                            "(?::(?<pubCreate>[0-9]*)" +      // group 5
-                            "(?::(?<pubExpire>[0-9]*)" +      // group 6
-                            "(?::(?<pubFlags>(?:(?=(?:r(?!(.?r))|d(?!(.?d))|e(?!(.?e))))[rde]){0,3})" + // group 7
+            .compile( "(pub:" +                 // group 1
+                            "([0-9a-fA-F]+)" +   // group 2
+                            "(?::([0-9]*)" +        // group 3
+                            "(?::([0-9]*)" +      // group 4
+                            "(?::([0-9]*)" +      // group 5
+                            "(?::([0-9]*)" +      // group 6
+                            "(?::((?:(?=(?:r(?!(.?r))|d(?!(.?d))|e(?!(.?e))))[rde]){0,3})" + // group 7
                             ")?)?)?)?)?\n)"// pub line
-                            + "(?<pubUids>" + UID_LINE.pattern() + // group 11
+                            + "(" + UID_LINE.pattern() + // group 11
                             "+)", // one or more uid lines
                     Pattern.CASE_INSENSITIVE
             );
