@@ -18,64 +18,76 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.model.SubKey;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
+import org.sufficientlysecure.keychain.operations.results.ExportResult;
+import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
+import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
+import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
+import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
 
-public class BackupRestoreFragment extends Fragment {
+public class BackupRestoreFragment extends CryptoOperationFragment<BackupKeyringParcel, ExportResult> {
 
+    public static final int REQUEST_SAVE_FILE = 1;
     // masterKeyId & subKeyId for multi-key export
     private Iterator<Pair<Long, Long>> mIdsForRepeatAskPassphrase;
 
     private static final int REQUEST_REPEAT_PASSPHRASE = 0x00007002;
     private static final int REQUEST_CODE_INPUT = 0x00007003;
+    private View backupPublicKeys;
+    private Uri cachedBackupUri;
+    private boolean shareNotSave;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.backup_restore_fragment, container, false);
 
         View backupAll = view.findViewById(R.id.backup_all);
-        View backupPublicKeys = view.findViewById(R.id.backup_public_keys);
+        backupPublicKeys = view.findViewById(R.id.backup_public_keys);
         final View restore = view.findViewById(R.id.restore);
 
-        backupAll.setOnClickListener(v -> exportToFile(true));
-        backupPublicKeys.setOnClickListener(v -> exportToFile(false));
+        backupAll.setOnClickListener(v -> backupAllKeys());
+        backupPublicKeys.setOnClickListener(v -> exportContactKeys());
         restore.setOnClickListener(v -> restore());
 
         return view;
     }
 
-    private void exportToFile(boolean includeSecretKeys) {
+    private void backupAllKeys() {
         FragmentActivity activity = getActivity();
         if (activity == null) {
-            return;
-        }
-
-        if (!includeSecretKeys) {
-            startBackup(false);
             return;
         }
 
@@ -156,6 +168,85 @@ public class BackupRestoreFragment extends Fragment {
         }.execute();
     }
 
+    private void exportContactKeys() {
+        FragmentActivity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        PopupMenu popupMenu = new PopupMenu(getContext(), backupPublicKeys);
+        popupMenu.inflate(R.menu.export_public);
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.menu_export_file:
+                    shareNotSave = false;
+                    exportContactKeysToFileOrShare();
+                    break;
+                case R.id.menu_export_share:
+                    shareNotSave = true;
+                    exportContactKeysToFileOrShare();
+                    break;
+            }
+            return false;
+        });
+        popupMenu.show();
+    }
+
+    private void exportContactKeysToFileOrShare() {
+        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        String filename =
+                Constants.FILE_ENCRYPTED_BACKUP_PREFIX + date + Constants.FILE_EXTENSION_ENCRYPTED_BACKUP_PUBLIC;
+
+        if (cachedBackupUri == null) {
+            cachedBackupUri = TemporaryFileProvider.createFile(getContext(), filename,
+                    Constants.MIME_TYPE_ENCRYPTED_ALTERNATE);
+
+            cryptoOperation(CryptoInputParcel.createCryptoInputParcel());
+            return;
+        }
+
+        if (shareNotSave) {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType(Constants.MIME_TYPE_KEYS);
+            intent.putExtra(Intent.EXTRA_STREAM, cachedBackupUri);
+            startActivity(intent);
+        } else {
+            saveFile(filename, false);
+        }
+    }
+
+    private void saveFile(final String filename, boolean overwrite) {
+        FragmentActivity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        // for kitkat and above, we have the document api
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            FileHelper.saveDocument(this, filename, Constants.MIME_TYPE_ENCRYPTED_ALTERNATE, REQUEST_SAVE_FILE);
+            return;
+        }
+
+        if (!Constants.Path.APP_DIR.mkdirs()) {
+            Notify.create(activity, R.string.snack_backup_error_saving, Style.ERROR).show();
+            return;
+        }
+
+        File file = new File(Constants.Path.APP_DIR, filename);
+
+        if (!overwrite && file.exists()) {
+            Notify.create(activity, R.string.snack_backup_exists, Style.WARN, () -> saveFile(filename, true), R.string.snack_btn_overwrite).show();
+            return;
+        }
+
+        try {
+            FileHelper.copyUriData(activity, cachedBackupUri, Uri.fromFile(file));
+            Notify.create(activity, R.string.snack_backup_saved_dir, Style.OK).show();
+        } catch (IOException e) {
+            Notify.create(activity, R.string.snack_backup_error_saving, Style.ERROR).show();
+        }
+    }
+
     private void startPassphraseActivity() {
         Activity activity = getActivity();
         if (activity == null) {
@@ -208,10 +299,42 @@ public class BackupRestoreFragment extends Fragment {
                 break;
             }
 
+            case REQUEST_SAVE_FILE: {
+                FragmentActivity activity = getActivity();
+                if (resultCode != Activity.RESULT_OK || activity == null || data == null) {
+                    return;
+                }
+                try {
+                    Uri outputUri = data.getData();
+                    FileHelper.copyUriData(activity, cachedBackupUri, outputUri);
+                    Notify.create(activity, R.string.snack_backup_saved, Style.OK).show();
+                } catch (IOException e) {
+                    Notify.create(activity, R.string.snack_backup_error_saving, Style.ERROR).show();
+                }
+            }
+
             default: {
                 super.onActivityResult(requestCode, resultCode, data);
             }
         }
+    }
+
+    @Nullable
+    @Override
+    public BackupKeyringParcel createOperationInput() {
+        return BackupKeyringParcel
+                .create(null, false, false, true, cachedBackupUri);
+    }
+
+    @Override
+    public void onCryptoOperationSuccess(ExportResult result) {
+        exportContactKeysToFileOrShare();
+    }
+
+    @Override
+    public void onCryptoOperationError(ExportResult result) {
+        result.createNotify(getActivity()).show();
+        cachedBackupUri = null;
     }
 
     private void startBackup(boolean exportSecret) {

@@ -142,6 +142,8 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
                 // delegate action to ACTION_IMPORT_KEY
                 action = ACTION_IMPORT_KEY;
             }
+        } else if (Intent.ACTION_SEND.equals(action)) {
+            action = ACTION_IMPORT_KEY;
         } else if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action) && Constants.FINGERPRINT_SCHEME.equalsIgnoreCase(scheme)) {
             action = ACTION_IMPORT_KEY_FROM_KEYSERVER;
             extras.putString(EXTRA_FINGERPRINT, dataUri.getSchemeSpecificPart());
@@ -162,6 +164,8 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
 
                     // action: directly load data
                     startListFragment(importData, null, null, null);
+                } else if (extras.containsKey(Intent.EXTRA_STREAM)) {
+                    startListFragment(null, extras.getParcelable(Intent.EXTRA_STREAM), null, null);
                 } else {
                     startTopFileFragment();
                     startListFragment(null, null, null, null);
