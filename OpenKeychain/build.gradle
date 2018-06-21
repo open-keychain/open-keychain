@@ -103,6 +103,9 @@ dependencies {
     annotationProcessor "android.arch.lifecycle:compiler:1.0.0"
 
     compile "android.arch.persistence:db-framework:1.0.0"
+
+    // for debugging the db. don't enable by default, this will expose the database no the network!
+    // debugImplementation 'com.amitshekhar.android:debug-db:1.0.3'
 }
 
 // Output of ./gradlew -q calculateChecksums
