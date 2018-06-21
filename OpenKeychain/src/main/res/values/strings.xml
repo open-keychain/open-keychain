@@ -1497,8 +1497,8 @@
     <string name="first_time_blank_security_token_yes">"Use this Security Token"</string>
 
     <string name="backup_text">"Backups that include your own keys must never be shared with other people!"</string>
-    <string name="backup_all">"All keys + your own keys"</string>
-    <string name="backup_public_keys">"All keys"</string>
+    <string name="backup_all">"Full backup (encrypted)"</string>
+    <string name="backup_public_keys">"Export contact keys only"</string>
     <string name="backup_section">"Backup"</string>
     <string name="restore_section">"Restore"</string>
 
