@@ -238,9 +238,6 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
         // We have a menu item to show in action bar.
         setHasOptionsMenu(true);
 
-        // Start out with a progress indicator.
-        hideList(false);
-
         setLayoutManager(new LinearLayoutManager(activity));
 
         KeyListViewModel keyListViewModel = ViewModelProviders.of(this).get(KeyListViewModel.class);
@@ -288,8 +285,6 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
         } else {
             adapter.updateDataSet(flexibleKeyItems, true);
         }
-
-        showList(true);
     }
 
     private String getBubbleText(int position) {

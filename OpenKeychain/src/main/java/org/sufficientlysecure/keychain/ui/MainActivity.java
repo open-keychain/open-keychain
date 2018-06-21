@@ -46,7 +46,7 @@ import org.sufficientlysecure.keychain.ui.transfer.view.TransferNotAvailableFrag
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Preferences;
 
-public class MainActivity extends BaseSecurityTokenActivity implements FabContainer, OnBackStackChangedListener {
+public class MainActivity extends BaseSecurityTokenActivity implements FabContainer {
 
     static final int ID_KEYS = 1;
     static final int ID_ENCRYPT_DECRYPT = 2;
@@ -145,8 +145,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
             return;
         }
 
-        getSupportFragmentManager().addOnBackStackChangedListener(this);
-
         // all further initialization steps are saved as instance state
         if (savedInstanceState != null) {
             return;
@@ -159,7 +157,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
             result.createNotify(this).show();
         }
 
-        // always initialize keys fragment to the bottom of the backstack
         onKeysSelected();
 
         if (data != null && data.hasExtra(EXTRA_INIT_FRAG)) {
@@ -200,46 +197,41 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
         }
     }
 
-    private void setFragment(Fragment fragment, boolean addToBackStack) {
+    private void setFragment(Fragment frag) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.replace(R.id.main_fragment_container, fragment);
-        if (addToBackStack) {
-            ft.addToBackStack(null);
-        }
+        ft.replace(R.id.main_fragment_container, frag);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.commit();
-
     }
 
     public void onKeysSelected() {
         mToolbar.setTitle(R.string.app_name);
         mDrawer.setSelection(ID_KEYS, false);
         Fragment frag = new KeyListFragment();
-        setFragment(frag, false);
+        setFragment(frag);
     }
 
     private void onEnDecryptSelected() {
         mToolbar.setTitle(R.string.nav_encrypt_decrypt);
         mDrawer.setSelection(ID_ENCRYPT_DECRYPT, false);
         Fragment frag = new EncryptDecryptFragment();
-        setFragment(frag, true);
+        setFragment(frag);
     }
 
     private void onAppsSelected() {
         mToolbar.setTitle(R.string.nav_apps);
         mDrawer.setSelection(ID_APPS, false);
         Fragment frag = new AppsListFragment();
-        setFragment(frag, true);
+        setFragment(frag);
     }
 
     private void onBackupSelected() {
         mToolbar.setTitle(R.string.nav_backup);
         mDrawer.setSelection(ID_BACKUP, false);
         Fragment frag = new BackupRestoreFragment();
-        setFragment(frag, true);
+        setFragment(frag);
     }
 
     private void onTransferSelected() {
@@ -247,10 +239,10 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
         mDrawer.setSelection(ID_TRANSFER, false);
         if (Build.VERSION.SDK_INT < VERSION_CODES.LOLLIPOP) {
             Fragment frag = new TransferNotAvailableFragment();
-            setFragment(frag, true);
+            setFragment(frag);
         } else {
             Fragment frag = new TransferFragment();
-            setFragment(frag, true);
+            setFragment(frag);
         }
     }
 
@@ -267,7 +259,12 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
         if (mDrawer != null && mDrawer.isDrawerOpen()) {
             mDrawer.closeDrawer();
         } else {
-            super.onBackPressed();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            if (fragmentManager.findFragmentById(R.id.main_fragment_container) instanceof KeyListFragment) {
+                super.onBackPressed();
+            } else {
+                onKeysSelected();
+            }
         }
     }
 
@@ -286,37 +283,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                 .findFragmentById(R.id.main_fragment_container);
         if (fragment instanceof FabContainer) {
             ((FabContainer) fragment).fabRestorePosition();
-        }
-    }
-
-
-    @Override
-    public void onBackStackChanged() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        if (fragmentManager == null) {
-            return;
-        }
-        Fragment frag = fragmentManager.findFragmentById(R.id.main_fragment_container);
-        if (frag == null) {
-            return;
-        }
-
-        // make sure the selected icon is the one shown at this point
-        if (frag instanceof KeyListFragment) {
-            mToolbar.setTitle(R.string.app_name);
-            mDrawer.setSelection(mDrawer.getPosition(ID_KEYS), false);
-        } else if (frag instanceof EncryptDecryptFragment) {
-            mToolbar.setTitle(R.string.nav_encrypt_decrypt);
-            mDrawer.setSelection(mDrawer.getPosition(ID_ENCRYPT_DECRYPT), false);
-        } else if (frag instanceof AppsListFragment) {
-            mToolbar.setTitle(R.string.nav_apps);
-            mDrawer.setSelection(mDrawer.getPosition(ID_APPS), false);
-        } else if (frag instanceof BackupRestoreFragment) {
-            mToolbar.setTitle(R.string.nav_backup);
-            mDrawer.setSelection(mDrawer.getPosition(ID_BACKUP), false);
-        } else if (frag instanceof TransferFragment) {
-            mToolbar.setTitle(R.string.nav_transfer);
-            mDrawer.setSelection(mDrawer.getPosition(ID_TRANSFER), false);
         }
     }
 
