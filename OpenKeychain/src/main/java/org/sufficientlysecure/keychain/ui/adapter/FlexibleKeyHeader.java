@@ -9,18 +9,20 @@ import android.widget.TextView;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractHeaderItem;
 import eu.davidea.flexibleadapter.items.IFlexible;
+import eu.davidea.flexibleadapter.items.IHeader;
 import eu.davidea.viewholders.FlexibleViewHolder;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.adapter.FlexibleKeyHeader.FlexibleHeaderViewHolder;
 
 
-public class FlexibleKeyHeader extends AbstractHeaderItem<FlexibleHeaderViewHolder> {
+public class FlexibleKeyHeader extends FlexibleKeyItem<FlexibleHeaderViewHolder>
+        implements IHeader<FlexibleHeaderViewHolder> {
     private final String sectionTitle;
 
     FlexibleKeyHeader(String sectionTitle) {
+        super();
         this.sectionTitle = sectionTitle;
         setEnabled(false);
-        setSelectable(false);
     }
 
     @Override

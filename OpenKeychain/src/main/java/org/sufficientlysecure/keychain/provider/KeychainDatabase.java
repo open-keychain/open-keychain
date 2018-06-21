@@ -453,12 +453,28 @@ public class KeychainDatabase {
     }
 
     private void migrateUpdatedKeysToKeyMetadataTable(SupportSQLiteDatabase db) {
-        db.execSQL("ALTER TABLE updated_keys RENAME TO key_metadata;");
-        db.execSQL("UPDATE key_metadata SET last_updated = last_updated * 1000;");
+        try {
+            db.execSQL("ALTER TABLE updated_keys RENAME TO key_metadata;");
+            db.execSQL("UPDATE key_metadata SET last_updated = last_updated * 1000;");
+        } catch (SQLException e) {
+            if (Constants.DEBUG) {
+                Timber.e(e, "Ignoring migration exception, this probably happened before");
+                return;
+            }
+            throw e;
+        }
     }
 
     private void renameApiAutocryptPeersTable(SupportSQLiteDatabase db) {
-        db.execSQL("ALTER TABLE api_autocrypt_peers RENAME TO autocrypt_peers;");
+        try {
+            db.execSQL("ALTER TABLE api_autocrypt_peers RENAME TO autocrypt_peers;");
+        } catch (SQLException e) {
+            if (Constants.DEBUG) {
+                Timber.e(e, "Ignoring migration exception, this probably happened before");
+                return;
+            }
+            throw e;
+        }
     }
 
     public void onDowngrade(SupportSQLiteDatabase db, int oldVersion, int newVersion) {

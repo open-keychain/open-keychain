@@ -27,9 +27,12 @@ public class FlexibleKeyItemFactory {
         if (unifiedKeyInfos == null) {
             return result;
         }
+        if (unifiedKeyInfos.isEmpty() || !unifiedKeyInfos.get(0).has_any_secret()) {
+            result.add(new FlexibleKeyDummyItem(myKeysHeader));
+        }
         for (UnifiedKeyInfo unifiedKeyInfo : unifiedKeyInfos) {
             FlexibleKeyHeader header = getFlexibleKeyHeader(unifiedKeyInfo);
-            FlexibleKeyItem flexibleKeyItem = new FlexibleKeyItem(unifiedKeyInfo, header);
+            FlexibleKeyItem flexibleKeyItem = new FlexibleKeyDetailsItem(unifiedKeyInfo, header);
             result.add(flexibleKeyItem);
         }
         return result;

@@ -54,7 +54,6 @@ import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.FlexibleAdapter.OnItemClickListener;
 import eu.davidea.flexibleadapter.FlexibleAdapter.OnItemLongClickListener;
 import eu.davidea.flexibleadapter.SelectableAdapter.Mode;
-import eu.davidea.flexibleadapter.common.FlexibleItemDecoration;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
@@ -67,8 +66,11 @@ import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.service.BenchmarkInputParcel;
+import org.sufficientlysecure.keychain.ui.adapter.FlexibleKeyDetailsItem;
+import org.sufficientlysecure.keychain.ui.adapter.FlexibleKeyDummyItem;
 import org.sufficientlysecure.keychain.ui.adapter.FlexibleKeyHeader;
 import org.sufficientlysecure.keychain.ui.adapter.FlexibleKeyItem;
+import org.sufficientlysecure.keychain.ui.adapter.FlexibleKeyItem.FlexibleSectionableKeyItem;
 import org.sufficientlysecure.keychain.ui.adapter.FlexibleKeyItemFactory;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
@@ -76,7 +78,6 @@ import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.keyview.loader.AsyncTaskLiveData;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
-import org.sufficientlysecure.keychain.ui.util.recyclerview.DividerItemDecoration;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
@@ -163,7 +164,7 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
         List<Integer> selectedPositions = adapter.getSelectedPositions();
         long[] keyIds = new long[selectedPositions.size()];
         for (int i = 0; i < selectedPositions.size(); i++) {
-            FlexibleKeyItem selectedItem = adapter.getItem(selectedPositions.get(i));
+            FlexibleKeyDetailsItem selectedItem = adapter.getItem(selectedPositions.get(i), FlexibleKeyDetailsItem.class);
             if (selectedItem != null) {
                 keyIds[i] = selectedItem.keyInfo.master_key_id();
             }
@@ -174,7 +175,7 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
     private boolean isAnySecretKeySelected() {
         FlexibleAdapter<FlexibleKeyItem> adapter = getAdapter();
         for (int position : adapter.getSelectedPositions()) {
-            FlexibleKeyItem item = adapter.getItem(position);
+            FlexibleKeyDetailsItem item = adapter.getItem(position, FlexibleKeyDetailsItem.class);
             if (item != null && item.keyInfo.has_any_secret()) {
                 return true;
             }
@@ -296,8 +297,14 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
         if (item == null) {
             return "";
         }
-        FlexibleKeyHeader header = item.getHeader();
-        return header.getSectionTitle();
+        if (item instanceof FlexibleSectionableKeyItem) {
+            FlexibleKeyHeader header = ((FlexibleSectionableKeyItem) item).getHeader();
+            return header.getSectionTitle();
+        }
+        if (item instanceof FlexibleKeyHeader) {
+            return ((FlexibleKeyHeader) item).getSectionTitle();
+        }
+        return "";
     }
 
     @Override
@@ -404,12 +411,21 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
             return false;
         }
 
+        if (item instanceof FlexibleKeyDummyItem) {
+            createKey();
+            return false;
+        }
+
+        if (!(item instanceof FlexibleKeyDetailsItem)) {
+            return false;
+        }
+
         if (mActionMode != null && position != RecyclerView.NO_POSITION) {
             toggleSelection(position);
             return true;
         }
 
-        long masterKeyId = item.keyInfo.master_key_id();
+        long masterKeyId = ((FlexibleKeyDetailsItem) item).keyInfo.master_key_id();
         Intent viewIntent = new Intent(getActivity(), ViewKeyActivity.class);
         viewIntent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
         startActivityForResult(viewIntent, REQUEST_VIEW_KEY);
@@ -418,13 +434,15 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
 
     @Override
     public void onItemLongClick(int position) {
-        if (mActionMode == null) {
-            FragmentActivity activity = getActivity();
-            if (activity != null) {
-                mActionMode = activity.startActionMode(mActionCallback);
+        if (getAdapter().getItem(position) instanceof FlexibleKeyDetailsItem) {
+            if (mActionMode == null) {
+                FragmentActivity activity = getActivity();
+                if (activity != null) {
+                    mActionMode = activity.startActionMode(mActionCallback);
+                }
             }
+            toggleSelection(position);
         }
-        toggleSelection(position);
     }
 
     private void toggleSelection(int position) {
