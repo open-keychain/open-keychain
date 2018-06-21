@@ -28,9 +28,9 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -48,8 +48,6 @@ import timber.log.Timber;
 public class AppSettingsActivity extends BaseActivity {
     private Uri mAppUri;
 
-    private AppSettingsAllowedKeysListFragment mAllowedKeysFragment;
-
     private TextView mAppNameView;
     private ImageView mAppIconView;
 
@@ -64,19 +62,9 @@ public class AppSettingsActivity extends BaseActivity {
         mAppNameView = findViewById(R.id.api_app_settings_app_name);
         mAppIconView = findViewById(R.id.api_app_settings_app_icon);
 
-        findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startApp();
-            }
-        });
+        findViewById(R.id.fab).setOnClickListener(v -> startApp());
 
-        setFullScreenDialogClose(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cancel();
-            }
-        });
+        setFullScreenDialogClose(v -> cancel());
         setTitle(null);
 
         Intent intent = getIntent();
@@ -92,7 +80,19 @@ public class AppSettingsActivity extends BaseActivity {
     }
 
     private void save() {
-        mAllowedKeysFragment.saveAllowedKeys();
+        FragmentManager supportFragmentManager = getSupportFragmentManager();
+        if (supportFragmentManager == null) {
+            Timber.e("Could not retrieve fragmentmanager for saving!");
+            return;
+        }
+        AppSettingsAllowedKeysListFragment allowedKeysFragment = (AppSettingsAllowedKeysListFragment)
+                supportFragmentManager.findFragmentById(R.id.api_allowed_keys_list_fragment);
+        if (allowedKeysFragment == null) {
+            Timber.e("Could not retrieve fragment for saving!");
+            return;
+        }
+
+        allowedKeysFragment.saveAllowedKeys();
         setResult(Activity.RESULT_OK);
         finish();
     }
@@ -199,12 +199,11 @@ public class AppSettingsActivity extends BaseActivity {
             return;
         }
 
-        // Create an instance of the fragments
-        mAllowedKeysFragment = AppSettingsAllowedKeysListFragment.newInstance(allowedKeysUri);
+        AppSettingsAllowedKeysListFragment allowedKeysFragment = AppSettingsAllowedKeysListFragment.newInstance(allowedKeysUri);
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.api_allowed_keys_list_fragment, mAllowedKeysFragment)
+                .replace(R.id.api_allowed_keys_list_fragment, allowedKeysFragment)
                 .commitAllowingStateLoss();
         // do it immediately!
         getSupportFragmentManager().executePendingTransactions();
