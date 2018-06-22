@@ -127,11 +127,7 @@ public class OpenPgpSignatureResultBuilder {
 
         ArrayList<String> allUserIds = signingRing.getUnorderedUserIds();
         ArrayList<String> confirmedUserIds;
-        try {
-            confirmedUserIds = mKeyRepository.getConfirmedUserIds(signingRing.getMasterKeyId());
-        } catch (NotFoundException e) {
-            throw new IllegalStateException("Key didn't exist anymore for user id query!", e);
-        }
+        confirmedUserIds = mKeyRepository.getConfirmedUserIds(signingRing.getMasterKeyId());
         setUserIds(allUserIds, confirmedUserIds);
 
         mSenderStatusResult = processSenderStatusResult(allUserIds, confirmedUserIds);

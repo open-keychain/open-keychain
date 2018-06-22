@@ -42,20 +42,22 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds.Email;
+import android.provider.ContactsContract.Data;
 import android.support.v4.content.ContextCompat;
 import android.util.Patterns;
 
-import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
+import org.sufficientlysecure.keychain.model.UserPacket.UserId;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import timber.log.Timber;
 
 public class ContactHelper {
 
     private static final Map<Long, Bitmap> photoCache = new HashMap<>();
+    private final KeyRepository keyRepository;
 
     private Context mContext;
     private ContentResolver mContentResolver;
@@ -63,6 +65,7 @@ public class ContactHelper {
     public ContactHelper(Context context) {
         mContext = context;
         mContentResolver = context.getContentResolver();
+        keyRepository = KeyRepository.create(context);
     }
 
     public List<String> getPossibleUserEmails() {
@@ -838,29 +841,17 @@ public class ContactHelper {
      */
     private void writeContactEmail(ArrayList<ContentProviderOperation> ops,
                                    long rawContactId, long masterKeyId) {
-        ops.add(selectByRawContactAndItemType(
-                ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI),
-                rawContactId, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE).build());
-        Cursor ids = mContentResolver.query(UserPackets.buildUserIdsUri(masterKeyId),
-                new String[]{
-                        UserPackets.USER_ID
-                },
-                UserPackets.IS_REVOKED + "=0",
-                null, null);
-        if (ids != null) {
-            while (ids.moveToNext()) {
-                OpenPgpUtils.UserId userId = KeyRing.splitUserId(ids.getString(0));
-                if (userId.email != null) {
-                    ops.add(referenceRawContact(
-                            ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI),
-                            rawContactId)
-                            .withValue(ContactsContract.Data.MIMETYPE,
-                                    ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
-                            .withValue(ContactsContract.CommonDataKinds.Email.DATA, userId.email)
-                            .build());
-                }
-            }
-            ids.close();
+        ContentProviderOperation deleteOp = selectByRawContactAndItemType(
+                ContentProviderOperation.newDelete(Data.CONTENT_URI), rawContactId, Email.CONTENT_ITEM_TYPE).build();
+        ops.add(deleteOp);
+
+        for (UserId userId : keyRepository.getUserIds(masterKeyId)) {
+            ContentProviderOperation insertOp =
+                    referenceRawContact(ContentProviderOperation.newInsert(Data.CONTENT_URI), rawContactId)
+                            .withValue(Data.MIMETYPE, Email.CONTENT_ITEM_TYPE)
+                            .withValue(Email.DATA, userId.email())
+                            .build();
+            ops.add(insertOp);
         }
     }
 

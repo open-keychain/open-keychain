@@ -22,6 +22,12 @@ SELECT user_packets.master_key_id, user_packets.rank, user_id, name, email, comm
         LEFT JOIN certs ON ( user_packets.master_key_id = certs.master_key_id AND user_packets.rank = certs.rank AND certs.verified > 0 )
     WHERE user_packets.type IS NULL AND user_packets.is_revoked = 0 AND user_packets.master_key_id = ?;
 
+selectUserIdsByMasterKeyIdAndVerification:
+SELECT user_packets.master_key_id, user_packets.rank, user_id, name, email, comment, is_primary, is_revoked, certs.verified
+    FROM user_packets
+        LEFT JOIN certs ON ( user_packets.master_key_id = certs.master_key_id AND user_packets.rank = certs.rank AND certs.verified > 0 )
+    WHERE user_packets.type IS NULL AND user_packets.is_revoked = 0 AND user_packets.master_key_id = ? AND certs.verified = ?;
+
 selectUserAttributesByTypeAndMasterKeyId:
 SELECT user_packets.master_key_id, user_packets.rank, attribute_data, is_primary, is_revoked, certs.verified
     FROM user_packets

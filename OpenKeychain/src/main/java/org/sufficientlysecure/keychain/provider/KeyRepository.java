@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -31,6 +32,8 @@ import android.net.Uri;
 import com.squareup.sqldelight.SqlDelightQuery;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.model.KeyRingPublic;
+import org.sufficientlysecure.keychain.model.UserPacket;
+import org.sufficientlysecure.keychain.model.UserPacket.UserId;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
@@ -39,7 +42,6 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import timber.log.Timber;
 
 
@@ -239,25 +241,19 @@ public class KeyRepository extends AbstractDao {
         }
     }
 
-    public ArrayList<String> getConfirmedUserIds(long masterKeyId) throws NotFoundException {
-        Cursor cursor = contentResolver.query(UserPackets.buildUserIdsUri(masterKeyId),
-                new String[]{UserPackets.USER_ID}, UserPackets.VERIFIED + " = " + Certs.VERIFIED_SECRET, null, null
-        );
-        if (cursor == null) {
-            throw new NotFoundException("Key id for requested user ids not found");
-        }
+    public List<UserId> getUserIds(long masterKeyId) {
+        SqlDelightQuery query = UserPacket.FACTORY.selectUserIdsByMasterKeyId(masterKeyId);
+        return mapAllRows(query, UserPacket.USER_ID_MAPPER::map);
+    }
 
-        try {
-            ArrayList<String> userIds = new ArrayList<>(cursor.getCount());
-            while (cursor.moveToNext()) {
-                String userId = cursor.getString(0);
-                userIds.add(userId);
-            }
-
-            return userIds;
-        } finally {
-            cursor.close();
+    public ArrayList<String> getConfirmedUserIds(long masterKeyId) {
+        ArrayList<String> userIds = new ArrayList<>();
+        SqlDelightQuery query =
+                UserPacket.FACTORY.selectUserIdsByMasterKeyIdAndVerification(masterKeyId, Certs.VERIFIED_SECRET);
+        for (UserId userId : mapAllRows(query, UserPacket.USER_ID_MAPPER::map)) {
+            userIds.add(userId.user_id());
         }
+        return userIds;
     }
 
     private byte[] getKeyRingAsArmoredData(byte[] data) throws IOException, PgpGeneralException {
