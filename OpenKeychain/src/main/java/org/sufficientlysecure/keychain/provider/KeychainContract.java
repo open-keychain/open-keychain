@@ -130,11 +130,6 @@ public class KeychainContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
 
-        public static final String CONTENT_TYPE
-                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.key_rings";
-        public static final String CONTENT_ITEM_TYPE
-                = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.key_rings";
-
         public static Uri buildUnifiedKeyRingsUri() {
             return CONTENT_URI.buildUpon().appendPath(PATH_UNIFIED).build();
         }
@@ -194,24 +189,8 @@ public class KeychainContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
 
-        /**
-         * Use if multiple items get returned
-         */
-        public static final String CONTENT_TYPE
-                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.keychain.keys";
-
-        /**
-         * Use if a single item is returned
-         */
-        public static final String CONTENT_ITEM_TYPE
-                = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.keychain.keys";
-
         public static Uri buildKeysUri(long masterKeyId) {
             return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId)).appendPath(PATH_KEYS).build();
-        }
-
-        public static Uri buildKeysUri(Uri uri) {
-            return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_KEYS).build();
         }
 
     }
@@ -219,9 +198,6 @@ public class KeychainContract {
     public static class KeySignatures implements KeySignaturesColumns, BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_SIGNATURES).build();
-
-        public static final String CONTENT_TYPE
-                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.key_signatures";
     }
 
     public static class UserPackets implements UserPacketsColumns, BaseColumns {
@@ -235,11 +211,6 @@ public class KeychainContract {
     }
 
     public static class Certs implements CertsColumns, BaseColumns {
-        public static final String USER_ID = UserPacketsColumns.USER_ID;
-        public static final String NAME = UserPacketsColumns.NAME;
-        public static final String EMAIL = UserPacketsColumns.EMAIL;
-        public static final String COMMENT = UserPacketsColumns.COMMENT;
-
         public static final int UNVERIFIED = 0;
         public static final int VERIFIED_SECRET = 1;
         public static final int VERIFIED_SELF = 2;

@@ -24,97 +24,59 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import android.content.ContentResolver;
 import android.content.Context;
-import android.database.Cursor;
 import android.support.annotation.NonNull;
 
+import org.sufficientlysecure.keychain.model.SubKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import timber.log.Timber;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 
 
 public class SubkeyStatusDao {
-    public static final String[] PROJECTION = new String[] {
-            Keys.KEY_ID,
-            Keys.CREATION,
-            Keys.CAN_CERTIFY,
-            Keys.CAN_SIGN,
-            Keys.CAN_ENCRYPT,
-            Keys.HAS_SECRET,
-            Keys.EXPIRY,
-            Keys.IS_REVOKED,
-            Keys.ALGORITHM,
-            Keys.KEY_SIZE,
-            Keys.KEY_CURVE_OID
-    };
-    private static final int INDEX_KEY_ID = 0;
-    private static final int INDEX_CREATION = 1;
-    private static final int INDEX_CAN_CERTIFY = 2;
-    private static final int INDEX_CAN_SIGN = 3;
-    private static final int INDEX_CAN_ENCRYPT = 4;
-    private static final int INDEX_HAS_SECRET = 5;
-    private static final int INDEX_EXPIRY = 6;
-    private static final int INDEX_IS_REVOKED = 7;
-    private static final int INDEX_ALGORITHM = 8;
-    private static final int INDEX_KEY_SIZE = 9;
-    private static final int INDEX_KEY_CURVE_OID = 10;
-
-
-    private final ContentResolver contentResolver;
+    private final KeyRepository keyRepository;
 
 
     public static SubkeyStatusDao getInstance(Context context) {
-        ContentResolver contentResolver = context.getContentResolver();
-        return new SubkeyStatusDao(contentResolver);
+        KeyRepository keyRepository = KeyRepository.create(context);
+        return new SubkeyStatusDao(keyRepository);
     }
 
-    private SubkeyStatusDao(ContentResolver contentResolver) {
-        this.contentResolver = contentResolver;
+    private SubkeyStatusDao(KeyRepository keyRepository) {
+        this.keyRepository = keyRepository;
     }
 
     KeySubkeyStatus getSubkeyStatus(long masterKeyId, Comparator<SubKeyItem> comparator) {
-        Cursor cursor = contentResolver.query(Keys.buildKeysUri(masterKeyId), PROJECTION, null, null, null);
-        if (cursor == null) {
-            Timber.e("Error loading key items!");
+        SubKeyItem keyCertify = null;
+        ArrayList<SubKeyItem> keysSign = new ArrayList<>();
+        ArrayList<SubKeyItem> keysEncrypt = new ArrayList<>();
+        for (SubKey subKey : keyRepository.getSubKeysByMasterKeyId(masterKeyId)) {
+            SubKeyItem ski = new SubKeyItem(masterKeyId, subKey);
+
+            if (ski.mKeyId == masterKeyId) {
+                keyCertify = ski;
+            }
+
+            if (ski.mCanSign) {
+                keysSign.add(ski);
+            }
+            if (ski.mCanEncrypt) {
+                keysEncrypt.add(ski);
+            }
+        }
+
+        if (keyCertify == null) {
+            if (!keysSign.isEmpty() || !keysEncrypt.isEmpty()) {
+                throw new IllegalStateException("Certification key can't be missing for a key that hasn't been deleted!");
+            }
             return null;
         }
 
-        try {
-            SubKeyItem keyCertify = null;
-            ArrayList<SubKeyItem> keysSign = new ArrayList<>();
-            ArrayList<SubKeyItem> keysEncrypt = new ArrayList<>();
-            while (cursor.moveToNext()) {
-                SubKeyItem ski = new SubKeyItem(masterKeyId, cursor);
+        Collections.sort(keysSign, comparator);
+        Collections.sort(keysEncrypt, comparator);
 
-                if (ski.mKeyId == masterKeyId) {
-                    keyCertify = ski;
-                }
-
-                if (ski.mCanSign) {
-                    keysSign.add(ski);
-                }
-                if (ski.mCanEncrypt) {
-                    keysEncrypt.add(ski);
-                }
-            }
-
-            if (keyCertify == null) {
-                if (!keysSign.isEmpty() || !keysEncrypt.isEmpty()) {
-                    throw new IllegalStateException("Certification key can't be missing for a key that hasn't been deleted!");
-                }
-                return null;
-            }
-
-            Collections.sort(keysSign, comparator);
-            Collections.sort(keysEncrypt, comparator);
-
-            return new KeySubkeyStatus(keyCertify, keysSign, keysEncrypt);
-        } finally {
-            cursor.close();
-        }
+        return new KeySubkeyStatus(keyCertify, keysSign, keysEncrypt);
     }
 
     public static class KeySubkeyStatus {
@@ -131,7 +93,6 @@ public class SubkeyStatusDao {
     }
 
     public static class SubKeyItem {
-        final int mPosition;
         final long mKeyId;
         final Date mCreation;
         public final SecretKeyType mSecretKeyType;
@@ -140,25 +101,23 @@ public class SubkeyStatusDao {
         final boolean mCanCertify, mCanSign, mCanEncrypt;
         public final KeySecurityProblem mSecurityProblem;
 
-        SubKeyItem(long masterKeyId, Cursor cursor) {
-            mPosition = cursor.getPosition();
+        SubKeyItem(long masterKeyId, SubKey subKey) {
+            mKeyId = subKey.key_id();
+            mCreation = new Date(subKey.creation() * 1000);
 
-            mKeyId = cursor.getLong(INDEX_KEY_ID);
-            mCreation = new Date(cursor.getLong(INDEX_CREATION) * 1000);
+            mSecretKeyType = subKey.has_secret();
 
-            mSecretKeyType = SecretKeyType.fromNum(cursor.getInt(INDEX_HAS_SECRET));
-
-            mIsRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
-            mExpiry = cursor.isNull(INDEX_EXPIRY) ? null : new Date(cursor.getLong(INDEX_EXPIRY) * 1000);
+            mIsRevoked = subKey.is_revoked();
+            mExpiry = subKey.expiry() == null ? null : new Date(subKey.expiry() * 1000);
             mIsExpired = mExpiry != null && mExpiry.before(new Date());
 
-            mCanCertify = cursor.getInt(INDEX_CAN_CERTIFY) > 0;
-            mCanSign = cursor.getInt(INDEX_CAN_SIGN) > 0;
-            mCanEncrypt = cursor.getInt(INDEX_CAN_ENCRYPT) > 0;
+            mCanCertify = subKey.can_certify();
+            mCanSign = subKey.can_sign();
+            mCanEncrypt = subKey.can_encrypt();
 
-            int algorithm = cursor.getInt(INDEX_ALGORITHM);
-            Integer bitStrength = cursor.isNull(INDEX_KEY_SIZE) ? null : cursor.getInt(INDEX_KEY_SIZE);
-            String curveOid = cursor.getString(INDEX_KEY_CURVE_OID);
+            int algorithm = subKey.algorithm();
+            Integer bitStrength = subKey.key_size();
+            String curveOid = subKey.key_curve_oid();
 
             mSecurityProblem = PgpSecurityConstants.getKeySecurityProblem(
                     masterKeyId, mKeyId, algorithm, bitStrength, curveOid);

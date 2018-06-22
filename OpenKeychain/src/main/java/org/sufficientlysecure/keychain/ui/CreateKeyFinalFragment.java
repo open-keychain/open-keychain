@@ -20,11 +20,11 @@ package org.sufficientlysecure.keychain.ui;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -43,6 +43,7 @@ import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
+import org.sufficientlysecure.keychain.model.SubKey;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.UploadResult;
@@ -50,7 +51,6 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
@@ -410,31 +410,20 @@ public class CreateKeyFinalFragment extends Fragment {
 
     private void moveToCard(final EditKeyResult saveKeyResult) {
         CreateKeyActivity activity = (CreateKeyActivity) getActivity();
+        KeyRepository keyRepository = KeyRepository.create(getContext());
 
         SaveKeyringParcel.Builder builder;
-        CachedPublicKeyRing key = (KeyRepository.create(getContext()))
-                .getCachedPublicKeyRing(saveKeyResult.mMasterKeyId);
+        CachedPublicKeyRing key = keyRepository.getCachedPublicKeyRing(saveKeyResult.mMasterKeyId);
         try {
-            builder = SaveKeyringParcel.buildChangeKeyringParcel(key.getMasterKeyId(), key.getFingerprint());
+            builder = SaveKeyringParcel.buildChangeKeyringParcel(saveKeyResult.mMasterKeyId, key.getFingerprint());
         } catch (PgpKeyNotFoundException e) {
             Timber.e("Key that should be moved to Security Token not found in database!");
             return;
         }
 
-        // define subkeys that should be moved to the card
-        Cursor cursor = activity.getContentResolver().query(
-                KeychainContract.Keys.buildKeysUri(builder.getMasterKeyId()),
-                new String[]{KeychainContract.Keys.KEY_ID,}, null, null, null
-        );
-        try {
-            while (cursor != null && cursor.moveToNext()) {
-                long subkeyId = cursor.getLong(0);
-                builder.addOrReplaceSubkeyChange(SubkeyChange.createMoveToSecurityTokenChange(subkeyId));
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+        List<SubKey> subKeys = keyRepository.getSubKeysByMasterKeyId(saveKeyResult.mMasterKeyId);
+        for (SubKey subKey : subKeys) {
+            builder.addOrReplaceSubkeyChange(SubkeyChange.createMoveToSecurityTokenChange(subKey.key_id()));
         }
 
         // define new PIN and Admin PIN for the card

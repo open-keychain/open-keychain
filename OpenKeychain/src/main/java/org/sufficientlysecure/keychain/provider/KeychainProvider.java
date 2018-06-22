@@ -168,17 +168,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
      */
     @Override
     public String getType(@NonNull Uri uri) {
-        final int match = mUriMatcher.match(uri);
-        switch (match) {
-            case KEY_RING_KEYS:
-                return Keys.CONTENT_TYPE;
-
-            case KEY_SIGNATURES:
-                return KeySignatures.CONTENT_TYPE;
-
-            default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
-        }
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -194,7 +184,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
         int match = mUriMatcher.match(uri);
 
         // all query() parameters, for good measure
-        String groupBy = null, having = null;
+        String groupBy;
 
         switch (match) {
             case KEY_RING_UNIFIED:
@@ -431,34 +421,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                 break;
             }
 
-            case KEY_RING_KEYS: {
-                HashMap<String, String> projectionMap = new HashMap<>();
-                projectionMap.put(Keys._ID, Tables.KEYS + ".oid AS _id");
-                projectionMap.put(Keys.MASTER_KEY_ID, Tables.KEYS + "." + Keys.MASTER_KEY_ID);
-                projectionMap.put(Keys.RANK, Tables.KEYS + "." + Keys.RANK);
-                projectionMap.put(Keys.KEY_ID, Keys.KEY_ID);
-                projectionMap.put(Keys.KEY_SIZE, Keys.KEY_SIZE);
-                projectionMap.put(Keys.KEY_CURVE_OID, Keys.KEY_CURVE_OID);
-                projectionMap.put(Keys.IS_REVOKED, Tables.KEYS + "." + Keys.IS_REVOKED);
-                projectionMap.put(Keys.IS_SECURE, Tables.KEYS + "." + Keys.IS_SECURE);
-                projectionMap.put(Keys.CAN_CERTIFY, Keys.CAN_CERTIFY);
-                projectionMap.put(Keys.CAN_ENCRYPT, Keys.CAN_ENCRYPT);
-                projectionMap.put(Keys.CAN_SIGN, Keys.CAN_SIGN);
-                projectionMap.put(Keys.CAN_AUTHENTICATE, Keys.CAN_AUTHENTICATE);
-                projectionMap.put(Keys.HAS_SECRET, Keys.HAS_SECRET);
-                projectionMap.put(Keys.CREATION, Keys.CREATION);
-                projectionMap.put(Keys.EXPIRY, Keys.EXPIRY);
-                projectionMap.put(Keys.ALGORITHM, Keys.ALGORITHM);
-                projectionMap.put(Keys.FINGERPRINT, Keys.FINGERPRINT);
-                qb.setProjectionMap(projectionMap);
-
-                qb.setTables(Tables.KEYS);
-                qb.appendWhere(Keys.MASTER_KEY_ID + " = ");
-                qb.appendWhereEscapeString(uri.getPathSegments().get(1));
-
-                break;
-            }
-
             default: {
                 throw new IllegalArgumentException("Unknown URI " + uri + " (" + match + ")");
             }
@@ -489,7 +451,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
         }
 
         if (Constants.DEBUG && Constants.DEBUG_EXPLAIN_QUERIES) {
-            String rawQuery = qb.buildQuery(projection, selection, groupBy, having, orderBy, null);
+            String rawQuery = qb.buildQuery(projection, selection, groupBy, null, orderBy, null);
             DatabaseUtil.explainQuery(db, rawQuery);
         }
 

@@ -1,19 +1,20 @@
 import java.lang.Boolean;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 
 CREATE TABLE IF NOT EXISTS keys (
     master_key_id INTEGER NOT NULL,
     rank INTEGER NOT NULL,
     key_id INTEGER NOT NULL,
-    key_size INTEGER,
+    key_size INTEGER AS Integer,
     key_curve_oid TEXT,
-    algorithm INTEGER NOT NULL,
+    algorithm INTEGER AS Integer NOT NULL,
     fingerprint BLOB NOT NULL,
     can_certify INTEGER AS Boolean NOT NULL,
     can_sign INTEGER AS Boolean NOT NULL,
     can_encrypt INTEGER AS Boolean NOT NULL,
     can_authenticate INTEGER AS Boolean NOT NULL,
     is_revoked INTEGER AS Boolean NOT NULL,
-    has_secret INTEGER AS Boolean NOT NULL,
+    has_secret INTEGER AS SecretKeyType NOT NULL,
     is_secure INTEGER AS Boolean NOT NULL,
     creation INTEGER NOT NULL,
     expiry INTEGER,
@@ -35,3 +36,14 @@ SELECT keys.master_key_id, MIN(user_packets.rank), user_packets.name, user_packe
     WHERE keys.rank = 0
     GROUP BY keys.master_key_id
     ORDER BY has_secret DESC, user_packets.name COLLATE NOCASE ASC;
+
+selectSubkeysByMasterKeyId:
+SELECT *
+    FROM keys
+    WHERE master_key_id = ?
+    ORDER BY rank ASC;
+
+selectSecretKeyType:
+SELECT has_secret
+    FROM keys
+    WHERE key_id = ?;

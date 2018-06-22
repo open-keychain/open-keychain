@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 
 import com.squareup.sqldelight.ColumnAdapter;
 import org.sufficientlysecure.keychain.model.AutocryptPeer.GossipOrigin;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 
 
 
@@ -48,6 +49,19 @@ public final class CustomColumnAdapters {
                 case DEDUP: return 20L;
                 default: throw new IllegalArgumentException("Unhandled database value!");
             }
+        }
+    };
+
+    public static final ColumnAdapter<SecretKeyType,Long> SECRET_KEY_TYPE_ADAPTER = new ColumnAdapter<SecretKeyType, Long>() {
+        @NonNull
+        @Override
+        public SecretKeyType decode(Long databaseValue) {
+            return databaseValue == null ? SecretKeyType.UNAVAILABLE : SecretKeyType.fromNum(databaseValue.intValue());
+        }
+
+        @Override
+        public Long encode(@NonNull SecretKeyType value) {
+            return (long) value.getNum();
         }
     };
 }

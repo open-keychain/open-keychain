@@ -17,7 +17,7 @@ import eu.davidea.flexibleadapter.items.IFilterable;
 import eu.davidea.flexibleadapter.items.IFlexible;
 import eu.davidea.viewholders.FlexibleViewHolder;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.model.Key.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.ui.adapter.FlexibleKeyDetailsItem.FlexibleKeyItemViewHolder;
 import org.sufficientlysecure.keychain.ui.adapter.FlexibleKeyItem.FlexibleSectionableKeyItem;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;

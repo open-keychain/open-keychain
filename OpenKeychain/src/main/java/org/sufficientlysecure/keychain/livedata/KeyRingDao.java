@@ -9,8 +9,8 @@ import android.content.Context;
 import android.database.Cursor;
 
 import com.squareup.sqldelight.SqlDelightQuery;
-import org.sufficientlysecure.keychain.model.Key;
-import org.sufficientlysecure.keychain.model.Key.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.SubKey;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 
 
@@ -28,11 +28,11 @@ public class KeyRingDao {
     }
 
     public List<UnifiedKeyInfo> getUnifiedKeyInfo() {
-        SqlDelightQuery query = Key.FACTORY.selectAllUnifiedKeyInfo();
+        SqlDelightQuery query = SubKey.FACTORY.selectAllUnifiedKeyInfo();
         List<UnifiedKeyInfo> result = new ArrayList<>();
         try (Cursor cursor = db.query(query)) {
             while (cursor.moveToNext()) {
-                UnifiedKeyInfo unifiedKeyInfo = Key.UNIFIED_KEY_INFO_MAPPER.map(cursor);
+                UnifiedKeyInfo unifiedKeyInfo = SubKey.UNIFIED_KEY_INFO_MAPPER.map(cursor);
                 result.add(unifiedKeyInfo);
             }
         }

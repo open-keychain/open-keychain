@@ -20,15 +20,14 @@ package org.sufficientlysecure.keychain.ui.adapter;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.CursorAdapter;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -37,121 +36,64 @@ import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
+import org.sufficientlysecure.keychain.model.SubKey;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
-public class SubkeysAdapter extends CursorAdapter {
-    private LayoutInflater mInflater;
+public class SubkeysAdapter extends BaseAdapter {
+    private final Context context;
+    private final LayoutInflater layoutInflater;
+
+    private List<SubKey> data;
     private SaveKeyringParcel.Builder mSkpBuilder;
 
-    private boolean mHasAnySecret;
     private ColorStateList mDefaultTextColor;
 
-    public static final String[] SUBKEYS_PROJECTION = new String[]{
-            Keys._ID,
-            Keys.KEY_ID,
-            Keys.RANK,
-            Keys.ALGORITHM,
-            Keys.KEY_SIZE,
-            Keys.KEY_CURVE_OID,
-            Keys.HAS_SECRET,
-            Keys.CAN_CERTIFY,
-            Keys.CAN_ENCRYPT,
-            Keys.CAN_SIGN,
-            Keys.CAN_AUTHENTICATE,
-            Keys.IS_REVOKED,
-            Keys.IS_SECURE,
-            Keys.CREATION,
-            Keys.EXPIRY,
-            Keys.FINGERPRINT
-    };
-    private static final int INDEX_ID = 0;
-    private static final int INDEX_KEY_ID = 1;
-    private static final int INDEX_RANK = 2;
-    private static final int INDEX_ALGORITHM = 3;
-    private static final int INDEX_KEY_SIZE = 4;
-    private static final int INDEX_KEY_CURVE_OID = 5;
-    private static final int INDEX_HAS_SECRET = 6;
-    private static final int INDEX_CAN_CERTIFY = 7;
-    private static final int INDEX_CAN_ENCRYPT = 8;
-    private static final int INDEX_CAN_SIGN = 9;
-    private static final int INDEX_CAN_AUTHENTICATE = 10;
-    private static final int INDEX_IS_REVOKED = 11;
-    private static final int INDEX_IS_SECURE = 12;
-    private static final int INDEX_CREATION = 13;
-    private static final int INDEX_EXPIRY = 14;
-    private static final int INDEX_FINGERPRINT = 15;
-
-    public SubkeysAdapter(Context context, Cursor c, int flags) {
-        super(context, c, flags);
-
-        mInflater = LayoutInflater.from(context);
+    public SubkeysAdapter(Context context) {
+        this.context = context;
+        layoutInflater = LayoutInflater.from(context);
     }
 
-    public long getKeyId(int position) {
-        mCursor.moveToPosition(position);
-        return mCursor.getLong(INDEX_KEY_ID);
+    public void setData(List<SubKey> data) {
+        this.data = data;
+        notifyDataSetChanged();
     }
 
-    public long getCreationDate(int position) {
-        mCursor.moveToPosition(position);
-        return mCursor.getLong(INDEX_CREATION);
+    @Override
+    public int getCount() {
+        return data != null ? data.size() : 0;
     }
 
-    public Long getExpiryDate(int position) {
-        mCursor.moveToPosition(position);
-        if (mCursor.isNull(INDEX_EXPIRY)) {
-            return null;
+    @Override
+    public SubKey getItem(int position) {
+        return data.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return data.get(position).key_id();
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view;
+        if (convertView != null) {
+            view = convertView;
         } else {
-            return mCursor.getLong(INDEX_EXPIRY);
-        }
-    }
-
-    public int getAlgorithm(int position) {
-        mCursor.moveToPosition(position);
-        return mCursor.getInt(INDEX_ALGORITHM);
-    }
-
-    public int getKeySize(int position) {
-        mCursor.moveToPosition(position);
-        return mCursor.getInt(INDEX_KEY_SIZE);
-    }
-
-    public String getCurveOid(int position) {
-        mCursor.moveToPosition(position);
-        return mCursor.getString(INDEX_KEY_CURVE_OID);
-    }
-
-    public SecretKeyType getSecretKeyType(int position) {
-        mCursor.moveToPosition(position);
-        return SecretKeyType.fromNum(mCursor.getInt(INDEX_HAS_SECRET));
-    }
-
-    @Override
-    public Cursor swapCursor(Cursor newCursor) {
-        mHasAnySecret = false;
-        if (newCursor != null && newCursor.moveToFirst()) {
-            do {
-                SecretKeyType hasSecret = SecretKeyType.fromNum(newCursor.getInt(INDEX_HAS_SECRET));
-                if (hasSecret.isUsable()) {
-                    mHasAnySecret = true;
-                    break;
-                }
-            } while (newCursor.moveToNext());
+            view = layoutInflater.inflate(R.layout.view_key_adv_subkey_item, parent, false);
         }
 
-        return super.swapCursor(newCursor);
-    }
+        if (mDefaultTextColor == null) {
+            TextView keyId = view.findViewById(R.id.subkey_item_key_id);
+            mDefaultTextColor = keyId.getTextColors();
+        }
 
-    @Override
-    public void bindView(View view, Context context, Cursor cursor) {
         TextView vKeyId = view.findViewById(R.id.subkey_item_key_id);
         TextView vKeyDetails = view.findViewById(R.id.subkey_item_details);
         TextView vKeyExpiry = view.findViewById(R.id.subkey_item_expiry);
@@ -166,19 +108,20 @@ public class SubkeysAdapter extends CursorAdapter {
         ImageView deleteImage = view.findViewById(R.id.subkey_item_delete_button);
         deleteImage.setVisibility(View.GONE);
 
-        long keyId = cursor.getLong(INDEX_KEY_ID);
-        vKeyId.setText(KeyFormattingUtils.beautifyKeyId(keyId));
+        SubKey subKey = getItem(position);
+
+        vKeyId.setText(KeyFormattingUtils.beautifyKeyId(subKey.key_id()));
 
         // may be set with additional "stripped" later on
         SpannableStringBuilder algorithmStr = new SpannableStringBuilder();
         algorithmStr.append(KeyFormattingUtils.getAlgorithmInfo(
                 context,
-                cursor.getInt(INDEX_ALGORITHM),
-                cursor.getInt(INDEX_KEY_SIZE),
-                cursor.getString(INDEX_KEY_CURVE_OID)
+                subKey.algorithm(),
+                subKey.key_size(),
+                subKey.key_curve_oid()
         ));
 
-        SubkeyChange change = mSkpBuilder != null ? mSkpBuilder.getSubkeyChange(keyId) : null;
+        SubkeyChange change = mSkpBuilder != null ? mSkpBuilder.getSubkeyChange(subKey.key_id()) : null;
         if (change != null && (change.getDummyStrip() || change.getMoveKeyToSecurityToken())) {
             if (change.getDummyStrip()) {
                 algorithmStr.append(", ");
@@ -197,7 +140,7 @@ public class SubkeysAdapter extends CursorAdapter {
                 algorithmStr.append(boldDivert);
             }
         } else {
-            switch (SecretKeyType.fromNum(cursor.getInt(INDEX_HAS_SECRET))) {
+            switch (subKey.has_secret()) {
                 case GNU_DUMMY:
                     algorithmStr.append(", ");
                     algorithmStr.append(context.getString(R.string.key_stripped));
@@ -218,7 +161,7 @@ public class SubkeysAdapter extends CursorAdapter {
         }
         vKeyDetails.setText(algorithmStr, TextView.BufferType.SPANNABLE);
 
-        boolean isMasterKey = cursor.getInt(INDEX_RANK) == 0;
+        boolean isMasterKey = subKey.rank() == 0;
         if (isMasterKey) {
             vKeyId.setTypeface(null, Typeface.BOLD);
         } else {
@@ -226,22 +169,21 @@ public class SubkeysAdapter extends CursorAdapter {
         }
 
         // Set icons according to properties
-        vCertifyIcon.setVisibility(cursor.getInt(INDEX_CAN_CERTIFY) != 0 ? View.VISIBLE : View.GONE);
-        vEncryptIcon.setVisibility(cursor.getInt(INDEX_CAN_ENCRYPT) != 0 ? View.VISIBLE : View.GONE);
-        vSignIcon.setVisibility(cursor.getInt(INDEX_CAN_SIGN) != 0 ? View.VISIBLE : View.GONE);
-        vAuthenticateIcon.setVisibility(cursor.getInt(INDEX_CAN_AUTHENTICATE) != 0 ? View.VISIBLE : View.GONE);
+        vCertifyIcon.setVisibility(subKey.can_certify() ? View.VISIBLE : View.GONE);
+        vEncryptIcon.setVisibility(subKey.can_encrypt() ? View.VISIBLE : View.GONE);
+        vSignIcon.setVisibility(subKey.can_sign() ? View.VISIBLE : View.GONE);
+        vAuthenticateIcon.setVisibility(subKey.can_authenticate() ? View.VISIBLE : View.GONE);
 
-        boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
-        boolean isSecure = cursor.getInt(INDEX_IS_SECURE) > 0;
+        boolean isRevoked = subKey.is_revoked();
 
         Date expiryDate = null;
-        if (!cursor.isNull(INDEX_EXPIRY)) {
-            expiryDate = new Date(cursor.getLong(INDEX_EXPIRY) * 1000);
+        if (subKey.expires()) {
+            expiryDate = new Date(subKey.expiry() * 1000);
         }
 
         // for edit key
         if (mSkpBuilder != null) {
-            boolean revokeThisSubkey = (mSkpBuilder.getMutableRevokeSubKeys().contains(keyId));
+            boolean revokeThisSubkey = (mSkpBuilder.getMutableRevokeSubKeys().contains(subKey.key_id()));
 
             if (revokeThisSubkey) {
                 if (!isRevoked) {
@@ -249,7 +191,7 @@ public class SubkeysAdapter extends CursorAdapter {
                 }
             }
 
-            SaveKeyringParcel.SubkeyChange subkeyChange = mSkpBuilder.getSubkeyChange(keyId);
+            SaveKeyringParcel.SubkeyChange subkeyChange = mSkpBuilder.getSubkeyChange(subKey.key_id());
             if (subkeyChange != null) {
                 if (subkeyChange.getExpiry() == null || subkeyChange.getExpiry() == 0L) {
                     expiryDate = null;
@@ -280,37 +222,37 @@ public class SubkeysAdapter extends CursorAdapter {
         }
 
         // if key is expired or revoked...
-        boolean isInvalid = isRevoked || isExpired || !isSecure;
+        boolean isInvalid = isRevoked || isExpired || !subKey.is_secure();
         if (isInvalid) {
             vStatus.setVisibility(View.VISIBLE);
 
             vCertifyIcon.setColorFilter(
-                    mContext.getResources().getColor(R.color.key_flag_gray),
+                    context.getResources().getColor(R.color.key_flag_gray),
                     PorterDuff.Mode.SRC_IN);
             vSignIcon.setColorFilter(
-                    mContext.getResources().getColor(R.color.key_flag_gray),
+                    context.getResources().getColor(R.color.key_flag_gray),
                     PorterDuff.Mode.SRC_IN);
             vEncryptIcon.setColorFilter(
-                    mContext.getResources().getColor(R.color.key_flag_gray),
+                    context.getResources().getColor(R.color.key_flag_gray),
                     PorterDuff.Mode.SRC_IN);
             vAuthenticateIcon.setColorFilter(
-                    mContext.getResources().getColor(R.color.key_flag_gray),
+                    context.getResources().getColor(R.color.key_flag_gray),
                     PorterDuff.Mode.SRC_IN);
 
             if (isRevoked) {
                 vStatus.setImageResource(R.drawable.status_signature_revoked_cutout_24dp);
                 vStatus.setColorFilter(
-                        mContext.getResources().getColor(R.color.key_flag_gray),
+                        context.getResources().getColor(R.color.key_flag_gray),
                         PorterDuff.Mode.SRC_IN);
             } else if (isExpired) {
                 vStatus.setImageResource(R.drawable.status_signature_expired_cutout_24dp);
                 vStatus.setColorFilter(
-                        mContext.getResources().getColor(R.color.key_flag_gray),
+                        context.getResources().getColor(R.color.key_flag_gray),
                         PorterDuff.Mode.SRC_IN);
-            } else if (!isSecure) {
+            } else if (!subKey.is_secure()) {
                 vStatus.setImageResource(R.drawable.status_signature_invalid_cutout_24dp);
                 vStatus.setColorFilter(
-                        mContext.getResources().getColor(R.color.key_flag_gray),
+                        context.getResources().getColor(R.color.key_flag_gray),
                         PorterDuff.Mode.SRC_IN);
             }
         } else {
@@ -328,36 +270,20 @@ public class SubkeysAdapter extends CursorAdapter {
         vKeyId.setEnabled(!isInvalid);
         vKeyDetails.setEnabled(!isInvalid);
         vKeyExpiry.setEnabled(!isInvalid);
-    }
 
-    @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = mInflater.inflate(R.layout.view_key_adv_subkey_item, null);
-        if (mDefaultTextColor == null) {
-            TextView keyId = view.findViewById(R.id.subkey_item_key_id);
-            mDefaultTextColor = keyId.getTextColors();
-        }
         return view;
     }
 
     // Disable selection of items, http://stackoverflow.com/a/4075045
     @Override
     public boolean areAllItemsEnabled() {
-        if (mSkpBuilder == null) {
-            return false;
-        } else {
-            return super.areAllItemsEnabled();
-        }
+        return mSkpBuilder != null && super.areAllItemsEnabled();
     }
 
     // Disable selection of items, http://stackoverflow.com/a/4075045
     @Override
     public boolean isEnabled(int position) {
-        if (mSkpBuilder == null) {
-            return false;
-        } else {
-            return super.isEnabled(position);
-        }
+        return mSkpBuilder != null && super.isEnabled(position);
     }
 
     /** Set this adapter into edit mode. This mode displays additional info for
@@ -372,6 +298,7 @@ public class SubkeysAdapter extends CursorAdapter {
      */
     public void setEditMode(@Nullable SaveKeyringParcel.Builder builder) {
         mSkpBuilder = builder;
+        notifyDataSetChanged();
     }
 
 }

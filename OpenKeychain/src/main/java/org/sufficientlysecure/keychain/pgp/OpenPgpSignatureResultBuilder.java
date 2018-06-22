@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.OpenPgpSignatureResult.SenderStatusResult;
@@ -27,7 +28,6 @@ import org.openintents.openpgp.util.OpenPgpUtils;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import timber.log.Timber;
 
 
@@ -41,8 +41,8 @@ public class OpenPgpSignatureResultBuilder {
 
     // OpenPgpSignatureResult
     private String mPrimaryUserId;
-    private ArrayList<String> mUserIds = new ArrayList<>();
-    private ArrayList<String> mConfirmedUserIds;
+    private List<String> mUserIds = new ArrayList<>();
+    private List<String> mConfirmedUserIds;
     private long mKeyId;
     private SenderStatusResult mSenderStatusResult;
 
@@ -101,7 +101,7 @@ public class OpenPgpSignatureResultBuilder {
         this.mIsKeyExpired = keyExpired;
     }
 
-    public void setUserIds(ArrayList<String> userIds, ArrayList<String> confirmedUserIds) {
+    public void setUserIds(List<String> userIds, List<String> confirmedUserIds) {
         this.mUserIds = userIds;
         this.mConfirmedUserIds = confirmedUserIds;
     }
@@ -125,9 +125,8 @@ public class OpenPgpSignatureResultBuilder {
         }
         setSignatureKeyCertified(signingRing.getVerified() > 0);
 
-        ArrayList<String> allUserIds = signingRing.getUnorderedUserIds();
-        ArrayList<String> confirmedUserIds;
-        confirmedUserIds = mKeyRepository.getConfirmedUserIds(signingRing.getMasterKeyId());
+        List<String> allUserIds = signingRing.getUnorderedUserIds();
+        List<String> confirmedUserIds = mKeyRepository.getConfirmedUserIds(signingRing.getMasterKeyId());
         setUserIds(allUserIds, confirmedUserIds);
 
         mSenderStatusResult = processSenderStatusResult(allUserIds, confirmedUserIds);
@@ -138,7 +137,7 @@ public class OpenPgpSignatureResultBuilder {
     }
 
     private SenderStatusResult processSenderStatusResult(
-            ArrayList<String> allUserIds, ArrayList<String> confirmedUserIds) {
+            List<String> allUserIds, List<String> confirmedUserIds) {
         if (mSenderAddress == null) {
             return SenderStatusResult.UNKNOWN;
         }
@@ -152,7 +151,7 @@ public class OpenPgpSignatureResultBuilder {
         }
     }
 
-    private static boolean userIdListContainsAddress(String senderAddress, ArrayList<String> confirmedUserIds) {
+    private static boolean userIdListContainsAddress(String senderAddress, List<String> confirmedUserIds) {
         for (String rawUserId : confirmedUserIds) {
             UserId userId = OpenPgpUtils.splitUserId(rawUserId);
             if (senderAddress.equalsIgnoreCase(userId.email)) {

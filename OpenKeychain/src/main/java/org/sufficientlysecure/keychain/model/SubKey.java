@@ -6,14 +6,23 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.auto.value.AutoValue;
+import com.squareup.sqldelight.RowMapper;
 import org.sufficientlysecure.keychain.KeysModel;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 
 
 @AutoValue
-public abstract class Key implements KeysModel {
-    public static final Factory<Key> FACTORY = new Factory<>(AutoValue_Key::new);
+public abstract class SubKey implements KeysModel {
+    public static final Factory<SubKey> FACTORY =
+            new Factory<>(AutoValue_SubKey::new, CustomColumnAdapters.SECRET_KEY_TYPE_ADAPTER);
     public static final SelectAllUnifiedKeyInfoMapper<UnifiedKeyInfo> UNIFIED_KEY_INFO_MAPPER =
-            FACTORY.selectAllUnifiedKeyInfoMapper(AutoValue_Key_UnifiedKeyInfo::new);
+            FACTORY.selectAllUnifiedKeyInfoMapper(AutoValue_SubKey_UnifiedKeyInfo::new);
+    public static Mapper<SubKey> SUBKEY_MAPPER = new Mapper<>(FACTORY);
+    public static RowMapper<SecretKeyType> SKT_MAPPER = FACTORY.selectSecretKeyTypeMapper();
+
+    public boolean expires() {
+        return expiry() != null;
+    }
 
     @AutoValue
     public static abstract class UnifiedKeyInfo implements SelectAllUnifiedKeyInfoModel {
@@ -45,6 +54,5 @@ public abstract class Key implements KeysModel {
             }
             return autocryptPackageNames;
         }
-
     }
 }

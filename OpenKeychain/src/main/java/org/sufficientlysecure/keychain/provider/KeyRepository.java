@@ -32,11 +32,13 @@ import android.net.Uri;
 import com.squareup.sqldelight.SqlDelightQuery;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.model.KeyRingPublic;
+import org.sufficientlysecure.keychain.model.SubKey;
 import org.sufficientlysecure.keychain.model.UserPacket;
 import org.sufficientlysecure.keychain.model.UserPacket.UserId;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
@@ -117,11 +119,6 @@ public class KeyRepository extends AbstractDao {
             throw new NotFoundException();
         }
         return result;
-    }
-
-    Object getGenericData(Uri uri, String column, int type, String selection)
-            throws NotFoundException {
-        return getGenericData(uri, new String[]{column}, new int[]{type}, selection).get(column);
     }
 
     private HashMap<String, Object> getGenericData(Uri uri, String[] proj, int[] types)
@@ -246,7 +243,7 @@ public class KeyRepository extends AbstractDao {
         return mapAllRows(query, UserPacket.USER_ID_MAPPER::map);
     }
 
-    public ArrayList<String> getConfirmedUserIds(long masterKeyId) {
+    public List<String> getConfirmedUserIds(long masterKeyId) {
         ArrayList<String> userIds = new ArrayList<>();
         SqlDelightQuery query =
                 UserPacket.FACTORY.selectUserIdsByMasterKeyIdAndVerification(masterKeyId, Certs.VERIFIED_SECRET);
@@ -254,6 +251,21 @@ public class KeyRepository extends AbstractDao {
             userIds.add(userId.user_id());
         }
         return userIds;
+    }
+
+    public List<SubKey> getSubKeysByMasterKeyId(long masterKeyId) {
+        SqlDelightQuery query = SubKey.FACTORY.selectSubkeysByMasterKeyId(masterKeyId);
+        return mapAllRows(query, SubKey.SUBKEY_MAPPER::map);
+    }
+
+    public SecretKeyType getSecretKeyType(long keyId) {
+        SqlDelightQuery query = SubKey.FACTORY.selectSecretKeyType(keyId);
+        try (Cursor cursor = getReadableDb().query(query)) {
+            if (cursor.moveToFirst()) {
+                return SubKey.SKT_MAPPER.map(cursor);
+            }
+            return null;
+        }
     }
 
     private byte[] getKeyRingAsArmoredData(byte[] data) throws IOException, PgpGeneralException {

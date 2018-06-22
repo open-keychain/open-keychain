@@ -18,6 +18,9 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.util.List;
+
+import android.arch.lifecycle.LiveData;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -41,8 +44,11 @@ import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
+import org.sufficientlysecure.keychain.livedata.GenericLiveData;
+import org.sufficientlysecure.keychain.model.SubKey;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
@@ -62,7 +68,6 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
     public static final String ARG_DATA_URI = "data_uri";
 
     private static final int LOADER_ID_UNIFIED = 0;
-    private static final int LOADER_ID_SUBKEYS = 1;
 
     private ListView mSubkeysList;
     private ListView mSubkeysAddedList;
@@ -78,7 +83,6 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
 
     private long mMasterKeyId;
     private byte[] mFingerprint;
-    private boolean mHasSecret;
     private SaveKeyringParcel.Builder mEditModeSkpBuilder;
 
     @Override
@@ -148,13 +152,14 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
         mDataUri = dataUri;
 
         // Create an empty adapter we will use to display the loaded data.
-        mSubkeysAdapter = new SubkeysAdapter(getActivity(), null, 0);
+        mSubkeysAdapter = new SubkeysAdapter(requireContext());
         mSubkeysList.setAdapter(mSubkeysAdapter);
 
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
         getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
-        getLoaderManager().initLoader(LOADER_ID_SUBKEYS, null, this);
+
+        setContentShown(false);
     }
 
     // These are the rows that we will retrieve.
@@ -178,14 +183,6 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
                         PROJECTION, null, null, null);
             }
 
-            case LOADER_ID_SUBKEYS: {
-                setContentShown(false);
-
-                Uri subkeysUri = KeychainContract.Keys.buildKeysUri(mDataUri);
-                return new CursorLoader(getActivity(), subkeysUri,
-                        SubkeysAdapter.SUBKEYS_PROJECTION, null, null, null);
-            }
-
             default:
                 return null;
         }
@@ -202,21 +199,21 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
                 data.moveToFirst();
 
                 mMasterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
-                mHasSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
                 mFingerprint = data.getBlob(INDEX_FINGERPRINT);
-                break;
-            }
-            case LOADER_ID_SUBKEYS: {
-                // Swap the new cursor in. (The framework will take care of closing the
-                // old cursor once we return.)
-                mSubkeysAdapter.swapCursor(data);
 
-                // TODO: maybe show not before both are loaded!
-                setContentShown(true);
+                KeyRepository keyRepository = KeyRepository.create(requireContext());
+                LiveData<List<SubKey>> subKeyLiveData = new GenericLiveData<>(requireContext(), null,
+                        () -> keyRepository.getSubKeysByMasterKeyId(mMasterKeyId));
+                subKeyLiveData.observe(this, this::onLoadSubKeys);
                 break;
             }
         }
 
+    }
+
+    private void onLoadSubKeys(List<SubKey> subKeys) {
+        mSubkeysAdapter.setData(subKeys);
+        setContentShown(true);
     }
 
     /**
@@ -224,7 +221,7 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
      * We need to make sure we are no longer using it.
      */
     public void onLoaderReset(Loader<Cursor> loader) {
-        mSubkeysAdapter.swapCursor(null);
+
     }
 
     @Override
@@ -256,7 +253,6 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
                 mSubkeyAddFabLayout.setDisplayedChild(1);
 
                 mSubkeysAdapter.setEditMode(mEditModeSkpBuilder);
-                getLoaderManager().restartLoader(LOADER_ID_SUBKEYS, null, ViewKeyAdvSubkeysFragment.this);
 
                 mode.setTitle(R.string.title_edit_subkeys);
                 mode.getMenuInflater().inflate(R.menu.action_edit_uids, menu);
@@ -281,7 +277,6 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
                 mSubkeysAdapter.setEditMode(null);
                 mSubkeysAddedLayout.setVisibility(View.GONE);
                 mSubkeyAddFabLayout.setDisplayedChild(0);
-                getLoaderManager().restartLoader(LOADER_ID_SUBKEYS, null, ViewKeyAdvSubkeysFragment.this);
             }
         });
     }
@@ -309,7 +304,7 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
     }
 
     private void editSubkey(final int position) {
-        final long keyId = mSubkeysAdapter.getKeyId(position);
+        final SubKey subKey = mSubkeysAdapter.getItem(position);
 
         Handler returnHandler = new Handler() {
             @Override
@@ -320,29 +315,28 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
                         break;
                     case EditSubkeyDialogFragment.MESSAGE_REVOKE:
                         // toggle
-                        if (mEditModeSkpBuilder.getMutableRevokeSubKeys().contains(keyId)) {
-                            mEditModeSkpBuilder.removeRevokeSubkey(keyId);
+                        if (mEditModeSkpBuilder.getMutableRevokeSubKeys().contains(subKey.key_id())) {
+                            mEditModeSkpBuilder.removeRevokeSubkey(subKey.key_id());
                         } else {
-                            mEditModeSkpBuilder.addRevokeSubkey(keyId);
+                            mEditModeSkpBuilder.addRevokeSubkey(subKey.key_id());
                         }
                         break;
                     case EditSubkeyDialogFragment.MESSAGE_STRIP: {
-                        SecretKeyType secretKeyType = mSubkeysAdapter.getSecretKeyType(position);
-                        if (secretKeyType == SecretKeyType.GNU_DUMMY) {
+                        if (subKey.has_secret() == SecretKeyType.GNU_DUMMY) {
                             // Key is already stripped; this is a no-op.
                             break;
                         }
 
-                        SubkeyChange change = mEditModeSkpBuilder.getSubkeyChange(keyId);
+                        SubkeyChange change = mEditModeSkpBuilder.getSubkeyChange(subKey.key_id());
                         if (change == null || !change.getDummyStrip()) {
-                            mEditModeSkpBuilder.addOrReplaceSubkeyChange(SubkeyChange.createStripChange(keyId));
+                            mEditModeSkpBuilder.addOrReplaceSubkeyChange(SubkeyChange.createStripChange(subKey.key_id()));
                         } else {
                             mEditModeSkpBuilder.removeSubkeyChange(change);
                         }
                         break;
                     }
                 }
-                getLoaderManager().getLoader(LOADER_ID_SUBKEYS).forceLoad();
+                mSubkeysAdapter.notifyDataSetChanged();
             }
         };
 
@@ -360,9 +354,10 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
     }
 
     private void editSubkeyExpiry(final int position) {
-        final long keyId = mSubkeysAdapter.getKeyId(position);
-        final Long creationDate = mSubkeysAdapter.getCreationDate(position);
-        final Long expiryDate = mSubkeysAdapter.getExpiryDate(position);
+        SubKey subKey = mSubkeysAdapter.getItem(position);
+        final long keyId = subKey.key_id();
+        final Long creationDate = subKey.creation();
+        final Long expiryDate = subKey.expiry();
 
         Handler returnHandler = new Handler() {
             @Override
@@ -375,7 +370,7 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
                                 SubkeyChange.createFlagsOrExpiryChange(keyId, null, expiry));
                         break;
                 }
-                getLoaderManager().getLoader(LOADER_ID_SUBKEYS).forceLoad();
+                mSubkeysAdapter.notifyDataSetChanged();
             }
         };
 

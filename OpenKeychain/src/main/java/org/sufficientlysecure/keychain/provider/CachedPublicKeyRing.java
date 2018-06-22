@@ -25,7 +25,6 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import timber.log.Timber;
 
 
@@ -227,10 +226,6 @@ public class CachedPublicKeyRing extends KeyRing {
         }
     }
 
-    public boolean hasSecretAuthentication() throws PgpKeyNotFoundException {
-        return getSecretAuthenticationId() != 0;
-    }
-
     public long getAuthenticationId() throws PgpKeyNotFoundException {
         try {
             Object data = mKeyRepository.getGenericData(mUri,
@@ -240,10 +235,6 @@ public class CachedPublicKeyRing extends KeyRing {
         } catch(KeyWritableRepository.NotFoundException e) {
             throw new PgpKeyNotFoundException(e);
         }
-    }
-
-    public boolean hasAuthentication() throws PgpKeyNotFoundException {
-        return getAuthenticationId() != 0;
     }
 
     @Override
@@ -270,11 +261,11 @@ public class CachedPublicKeyRing extends KeyRing {
     }
 
     public SecretKeyType getSecretKeyType(long keyId) throws NotFoundException {
-        Object data = mKeyRepository.getGenericData(Keys.buildKeysUri(mUri),
-                KeyRings.HAS_SECRET,
-                KeyRepository.FIELD_TYPE_INTEGER,
-                KeyRings.KEY_ID + " = " + Long.toString(keyId));
-        return SecretKeyType.fromNum(((Long) data).intValue());
+        SecretKeyType secretKeyType = mKeyRepository.getSecretKeyType(keyId);
+        if (secretKeyType == null) {
+            throw new NotFoundException();
+        }
+        return secretKeyType;
     }
 
     public byte[] getEncoded() throws PgpKeyNotFoundException {

@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -36,10 +37,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.model.SubKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.FileHelper;
@@ -138,31 +139,18 @@ public class BackupRestoreFragment extends Fragment {
             }
 
             private Long getFirstSubKeyWithPassphrase(long masterKeyId, ContentResolver resolver) {
-                Cursor cursor = resolver.query(
-                        KeychainContract.Keys.buildKeysUri(masterKeyId), new String[]{
-                                Keys.KEY_ID,
-                                Keys.HAS_SECRET,
-                        }, Keys.HAS_SECRET + " != 0", null, null);
-                try {
-                    if (cursor != null) {
-                        while(cursor.moveToNext()) {
-                            SecretKeyType secretKeyType = SecretKeyType.fromNum(cursor.getInt(1));
-                            switch (secretKeyType) {
-                                case PASSPHRASE_EMPTY:
-                                case DIVERT_TO_CARD:
-                                case UNAVAILABLE:
-                                    return null;
-                                case GNU_DUMMY:
-                                    continue;
-                                default: {
-                                    return cursor.getLong(0);
-                                }
-                            }
+                KeyRepository keyRepository = KeyRepository.create(requireContext());
+                for (SubKey subKey : keyRepository.getSubKeysByMasterKeyId(masterKeyId)) {
+                    switch (subKey.has_secret()) {
+                        case PASSPHRASE_EMPTY:
+                        case DIVERT_TO_CARD:
+                        case UNAVAILABLE:
+                            return null;
+                        case GNU_DUMMY:
+                            continue;
+                        default: {
+                            return subKey.key_id();
                         }
-                    }
-                } finally {
-                    if (cursor != null) {
-                        cursor.close();
                     }
                 }
                 return null;
