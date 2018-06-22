@@ -20,19 +20,22 @@ selectUserIdsByMasterKeyId:
 SELECT user_packets.master_key_id, user_packets.rank, user_id, name, email, comment, is_primary, is_revoked, certs.verified
     FROM user_packets
         LEFT JOIN certs ON ( user_packets.master_key_id = certs.master_key_id AND user_packets.rank = certs.rank AND certs.verified > 0 )
-    WHERE user_packets.type IS NULL AND user_packets.is_revoked = 0 AND user_packets.master_key_id = ?;
+    WHERE user_packets.type IS NULL AND user_packets.is_revoked = 0 AND user_packets.master_key_id IN ?
+    ORDER BY user_packets.master_key_id ASC,user_packets.rank ASC;
 
 selectUserIdsByMasterKeyIdAndVerification:
 SELECT user_packets.master_key_id, user_packets.rank, user_id, name, email, comment, is_primary, is_revoked, certs.verified
     FROM user_packets
         LEFT JOIN certs ON ( user_packets.master_key_id = certs.master_key_id AND user_packets.rank = certs.rank AND certs.verified > 0 )
-    WHERE user_packets.type IS NULL AND user_packets.is_revoked = 0 AND user_packets.master_key_id = ? AND certs.verified = ?;
+    WHERE user_packets.type IS NULL AND user_packets.is_revoked = 0 AND user_packets.master_key_id = ? AND certs.verified = ?
+    ORDER BY user_packets.rank ASC;
 
 selectUserAttributesByTypeAndMasterKeyId:
 SELECT user_packets.master_key_id, user_packets.rank, attribute_data, is_primary, is_revoked, certs.verified
     FROM user_packets
         LEFT JOIN certs ON ( user_packets.master_key_id = certs.master_key_id AND user_packets.rank = certs.rank AND certs.verified > 0 )
-    WHERE user_packets.type = ? AND user_packets.is_revoked = 0 AND user_packets.master_key_id = ?;
+    WHERE user_packets.type = ? AND user_packets.is_revoked = 0 AND user_packets.master_key_id = ?
+    ORDER BY user_packets.rank ASC;
 
 selectSpecificUserAttribute:
 SELECT user_packets.master_key_id, user_packets.rank, attribute_data, is_primary, is_revoked, certs.verified

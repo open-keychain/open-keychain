@@ -55,7 +55,6 @@ import static android.database.DatabaseUtils.dumpCursorToString;
 public class KeychainProvider extends ContentProvider implements SimpleContentResolverInterface {
 
     private static final int KEY_RINGS_UNIFIED = 101;
-    private static final int KEY_RINGS_USER_IDS = 104;
 
     private static final int KEY_RING_UNIFIED = 200;
     private static final int KEY_RING_KEYS = 201;
@@ -92,9 +91,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS
                         + "/" + KeychainContract.PATH_UNIFIED,
                 KEY_RINGS_UNIFIED);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS
-                        + "/" + KeychainContract.PATH_USER_IDS,
-                KEY_RINGS_USER_IDS);
 
         /*
          * find by criteria other than master key id
@@ -459,44 +455,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                 qb.setTables(Tables.KEYS);
                 qb.appendWhere(Keys.MASTER_KEY_ID + " = ");
                 qb.appendWhereEscapeString(uri.getPathSegments().get(1));
-
-                break;
-            }
-
-            case KEY_RINGS_USER_IDS: {
-                HashMap<String, String> projectionMap = new HashMap<>();
-                projectionMap.put(UserPackets._ID, Tables.USER_PACKETS + ".oid AS _id");
-                projectionMap.put(UserPackets.MASTER_KEY_ID, Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID);
-                projectionMap.put(UserPackets.TYPE, Tables.USER_PACKETS + "." + UserPackets.TYPE);
-                projectionMap.put(UserPackets.USER_ID, Tables.USER_PACKETS + "." + UserPackets.USER_ID);
-                projectionMap.put(UserPackets.NAME, Tables.USER_PACKETS + "." + UserPackets.NAME);
-                projectionMap.put(UserPackets.EMAIL, Tables.USER_PACKETS + "." + UserPackets.EMAIL);
-                projectionMap.put(UserPackets.COMMENT, Tables.USER_PACKETS + "." + UserPackets.COMMENT);
-                projectionMap.put(UserPackets.ATTRIBUTE_DATA, Tables.USER_PACKETS + "." + UserPackets.ATTRIBUTE_DATA);
-                projectionMap.put(UserPackets.RANK, Tables.USER_PACKETS + "." + UserPackets.RANK);
-                projectionMap.put(UserPackets.IS_PRIMARY, Tables.USER_PACKETS + "." + UserPackets.IS_PRIMARY);
-                projectionMap.put(UserPackets.IS_REVOKED, Tables.USER_PACKETS + "." + UserPackets.IS_REVOKED);
-                // we take the minimum (>0) here, where "1" is "verified by known secret key"
-                projectionMap.put(UserPackets.VERIFIED, "MIN(" + Certs.VERIFIED + ") AS " + UserPackets.VERIFIED);
-                qb.setProjectionMap(projectionMap);
-
-                qb.setTables(Tables.USER_PACKETS
-                        + " LEFT JOIN " + Tables.CERTS + " ON ("
-                            + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = "
-                                + Tables.CERTS + "." + Certs.MASTER_KEY_ID
-                            + " AND " + Tables.USER_PACKETS + "." + UserPackets.RANK + " = "
-                                + Tables.CERTS + "." + Certs.RANK
-                            + " AND " + Tables.CERTS + "." + Certs.VERIFIED + " > 0"
-                        + ")");
-                groupBy = Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID
-                        + ", " + Tables.USER_PACKETS + "." + UserPackets.RANK;
-
-                qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.TYPE + " IS NULL");
-
-                if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " ASC"
-                            + "," + Tables.USER_PACKETS + "." + UserPackets.RANK + " ASC";
-                }
 
                 break;
             }

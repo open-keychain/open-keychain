@@ -229,10 +229,6 @@ public class KeychainContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
 
-        public static Uri buildUserIdsUri() {
-            return CONTENT_URI.buildUpon().appendPath(PATH_USER_IDS).build();
-        }
-
         public static Uri buildUserIdsUri(long masterKeyId) {
             return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId)).appendPath(PATH_USER_IDS).build();
         }
@@ -243,7 +239,6 @@ public class KeychainContract {
         public static final String NAME = UserPacketsColumns.NAME;
         public static final String EMAIL = UserPacketsColumns.EMAIL;
         public static final String COMMENT = UserPacketsColumns.COMMENT;
-        public static final String SIGNER_UID = "signer_user_id";
 
         public static final int UNVERIFIED = 0;
         public static final int VERIFIED_SECRET = 1;

@@ -241,8 +241,8 @@ public class KeyRepository extends AbstractDao {
         }
     }
 
-    public List<UserId> getUserIds(long masterKeyId) {
-        SqlDelightQuery query = UserPacket.FACTORY.selectUserIdsByMasterKeyId(masterKeyId);
+    public List<UserId> getUserIds(long... masterKeyIds) {
+        SqlDelightQuery query = UserPacket.FACTORY.selectUserIdsByMasterKeyId(masterKeyIds);
         return mapAllRows(query, UserPacket.USER_ID_MAPPER::map);
     }
 

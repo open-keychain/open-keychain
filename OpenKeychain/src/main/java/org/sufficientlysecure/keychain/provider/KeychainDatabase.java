@@ -152,7 +152,7 @@ public class KeychainDatabase {
                 + ")";
 
     public KeychainDatabase(Context context) {
-        this.context = context;
+        this.context = context.getApplicationContext();
         supportSQLiteOpenHelper =
                 new FrameworkSQLiteOpenHelperFactory()
                         .create(Configuration.builder(context).name(DATABASE_NAME).callback(

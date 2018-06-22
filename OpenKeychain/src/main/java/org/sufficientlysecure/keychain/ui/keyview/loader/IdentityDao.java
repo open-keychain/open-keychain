@@ -172,7 +172,7 @@ public class IdentityDao {
         return null;
     }
 
-    private void loadUserIds(ArrayList<IdentityInfo> identities, long masterKeyId) {
+    private void loadUserIds(ArrayList<IdentityInfo> identities, long... masterKeyId) {
         SqlDelightQuery query = UserPacket.FACTORY.selectUserIdsByMasterKeyId(masterKeyId);
         try (Cursor cursor = db.query(query)) {
             while (cursor.moveToNext()) {
