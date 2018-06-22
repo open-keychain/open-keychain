@@ -17,7 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.net.Uri;
+
 import android.os.Bundle;
 
 import org.sufficientlysecure.keychain.R;
@@ -27,24 +27,20 @@ import timber.log.Timber;
 
 
 public class EditKeyActivity extends BaseActivity {
-
     public static final String EXTRA_SAVE_KEYRING_PARCEL = "save_keyring_parcel";
-
-    private EditKeyFragment mEditKeyFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Uri dataUri = getIntent().getData();
         SaveKeyringParcel saveKeyringParcel = getIntent().getParcelableExtra(EXTRA_SAVE_KEYRING_PARCEL);
-        if (dataUri == null && saveKeyringParcel == null) {
+        if (saveKeyringParcel == null) {
             Timber.e("Either a key Uri or EXTRA_SAVE_KEYRING_PARCEL is required!");
             finish();
             return;
         }
 
-        loadFragment(savedInstanceState, dataUri, saveKeyringParcel);
+        loadFragment(savedInstanceState, saveKeyringParcel);
     }
 
     @Override
@@ -52,7 +48,7 @@ public class EditKeyActivity extends BaseActivity {
         setContentView(R.layout.edit_key_activity);
     }
 
-    private void loadFragment(Bundle savedInstanceState, Uri dataUri, SaveKeyringParcel saveKeyringParcel) {
+    private void loadFragment(Bundle savedInstanceState, SaveKeyringParcel saveKeyringParcel) {
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
         // we could end up with overlapping fragments.
@@ -61,16 +57,12 @@ public class EditKeyActivity extends BaseActivity {
         }
 
         // Create an instance of the fragment
-        if (dataUri != null) {
-            mEditKeyFragment = EditKeyFragment.newInstance(dataUri);
-        } else {
-            mEditKeyFragment = EditKeyFragment.newInstance(saveKeyringParcel);
-        }
+        EditKeyFragment editKeyFragment = EditKeyFragment.newInstance(saveKeyringParcel);
 
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.edit_key_fragment_container, mEditKeyFragment)
+                .replace(R.id.edit_key_fragment_container, editKeyFragment)
                 .commitAllowingStateLoss();
         // do it immediately!
         getSupportFragmentManager().executePendingTransactions();

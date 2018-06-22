@@ -18,6 +18,9 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.util.List;
+
+import android.arch.lifecycle.LiveData;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -41,10 +44,14 @@ import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
+import org.sufficientlysecure.keychain.livedata.GenericLiveData;
+import org.sufficientlysecure.keychain.model.UserPacket.UserId;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
+import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
+import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAddedAdapter;
@@ -63,7 +70,6 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
     public static final String ARG_DATA_URI = "uri";
 
     private static final int LOADER_ID_UNIFIED = 0;
-    private static final int LOADER_ID_USER_IDS = 1;
 
     private ListView mUserIds;
     private ListView mUserIdsAddedList;
@@ -162,7 +168,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
                         }
                         break;
                 }
-                getLoaderManager().getLoader(LOADER_ID_USER_IDS).forceLoad();
+                mUserIdsAdapter.notifyDataSetChanged();
             }
         };
 
@@ -244,13 +250,30 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
 
         Timber.i("dataUri: " + mDataUri);
 
-        mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0);
+        mUserIdsAdapter = new UserIdsAdapter(getActivity(), false);
         mUserIds.setAdapter(mUserIdsAdapter);
 
         // Prepare the loaders. Either re-connect with an existing ones,
         // or start new ones.
         getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
-        getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
+
+        KeyRepository keyRepository = KeyRepository.create(getContext());
+        try {
+            Uri uri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
+            CachedPublicKeyRing keyRing = keyRepository.getCachedPublicKeyRing(uri);
+            long masterKeyId = keyRing.getMasterKeyId();
+
+            LiveData<List<UserId>> userIdLiveData =
+                    new GenericLiveData<>(getContext(), null, () -> keyRepository.getUserIds(masterKeyId));
+            userIdLiveData.observe(this, this::onUserIdsLoaded);
+        } catch (PgpKeyNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void onUserIdsLoaded(List<UserId> userIds) {
+        mUserIdsAdapter.setData(userIds);
+        setContentShown(true);
     }
 
     // These are the rows that we will retrieve.
@@ -273,14 +296,6 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
                         PROJECTION, null, null, null);
             }
 
-            case LOADER_ID_USER_IDS: {
-                setContentShown(false);
-
-                Uri userIdUri = UserPackets.buildUserIdsUri(mDataUri);
-                return new CursorLoader(getActivity(), userIdUri,
-                        UserIdsAdapter.USER_PACKETS_PROJECTION, null, null, null);
-            }
-
             default:
                 return null;
         }
@@ -301,14 +316,6 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
                 mFingerprint = data.getBlob(INDEX_FINGERPRINT);
                 break;
             }
-            case LOADER_ID_USER_IDS: {
-                // Swap the new cursor in. (The framework will take care of closing the
-                // old cursor once we return.)
-                mUserIdsAdapter.swapCursor(data);
-
-                setContentShown(true);
-                break;
-            }
         }
     }
 
@@ -317,10 +324,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
      * We need to make sure we are no longer using it.
      */
     public void onLoaderReset(Loader<Cursor> loader) {
-        if (loader.getId() != LOADER_ID_USER_IDS) {
-            return;
-        }
-        mUserIdsAdapter.swapCursor(null);
+
     }
 
     @Override
@@ -352,7 +356,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
                 mUserIdAddFabLayout.setDisplayedChild(1);
 
                 mUserIdsAdapter.setEditMode(mSkpBuilder);
-                getLoaderManager().restartLoader(LOADER_ID_USER_IDS, null, ViewKeyAdvUserIdsFragment.this);
+                mUserIdsAdapter.notifyDataSetChanged();
 
                 mode.setTitle(R.string.title_edit_identities);
                 mode.getMenuInflater().inflate(R.menu.action_edit_uids, menu);
@@ -377,7 +381,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
                 mUserIdsAdapter.setEditMode(null);
                 mUserIdsAddedLayout.setVisibility(View.GONE);
                 mUserIdAddFabLayout.setDisplayedChild(0);
-                getLoaderManager().restartLoader(LOADER_ID_USER_IDS, null, ViewKeyAdvUserIdsFragment.this);
+                mUserIdsAdapter.notifyDataSetChanged();
             }
         });
     }

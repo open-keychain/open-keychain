@@ -229,28 +229,12 @@ public class KeychainContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
 
-        /**
-         * Use if multiple items get returned
-         */
-        public static final String CONTENT_TYPE
-                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.user_ids";
-
-        /**
-         * Use if a single item is returned
-         */
-        public static final String CONTENT_ITEM_TYPE
-                = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.provider.user_ids";
-
         public static Uri buildUserIdsUri() {
             return CONTENT_URI.buildUpon().appendPath(PATH_USER_IDS).build();
         }
 
         public static Uri buildUserIdsUri(long masterKeyId) {
             return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId)).appendPath(PATH_USER_IDS).build();
-        }
-
-        public static Uri buildUserIdsUri(Uri uri) {
-            return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).appendPath(PATH_USER_IDS).build();
         }
     }
 

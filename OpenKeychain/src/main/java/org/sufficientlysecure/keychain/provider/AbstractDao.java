@@ -33,8 +33,10 @@ class AbstractDao {
     <T> List<T> mapAllRows(SupportSQLiteQuery query, Mapper<T> mapper) {
         ArrayList<T> result = new ArrayList<>();
         try (Cursor cursor = getReadableDb().query(query)) {
-            T item = mapper.map(cursor);
-            result.add(item);
+            while (cursor.moveToNext()) {
+                T item = mapper.map(cursor);
+                result.add(item);
+            }
         }
         return result;
     }

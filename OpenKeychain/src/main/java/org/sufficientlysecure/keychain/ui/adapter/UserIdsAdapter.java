@@ -18,41 +18,73 @@
 package org.sufficientlysecure.keychain.ui.adapter;
 
 
+import java.util.List;
+
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.model.UserPacket.UserId;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 
-public class UserIdsAdapter extends UserAttributesAdapter {
-    protected LayoutInflater mInflater;
+// TODO move to RecyclerView
+public class UserIdsAdapter extends BaseAdapter {
+    private Context context;
+    private List<UserId> data;
     private SaveKeyringParcel.Builder mSkpBuilder;
     private boolean mShowStatusImages;
+    private LayoutInflater layoutInflater;
 
-    public UserIdsAdapter(Context context, Cursor c, int flags, boolean showStatusImages) {
-        super(context, c, flags);
-        mInflater = LayoutInflater.from(context);
+    public UserIdsAdapter(Context context, boolean showStatusImages) {
+        super();
 
+        this.context = context;
+        this.layoutInflater = LayoutInflater.from(context);
         mShowStatusImages = showStatusImages;
     }
 
-    public UserIdsAdapter(Context context, Cursor c, int flags) {
-        this(context, c, flags, true);
+    @Override
+    public int getCount() {
+        return data != null ? data.size() : 0;
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public UserId getItem(int position) {
+        return data.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return data.get(position).master_key_id();
+    }
+
+    public void setData(List<UserId> data) {
+        this.data = data;
+        notifyDataSetChanged();
+    }
+
+    @NonNull
+    @Override
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        View view;
+        if (convertView != null) {
+            view = convertView;
+        } else {
+            view = layoutInflater.inflate(R.layout.view_key_adv_user_id_item, parent, false);
+        }
+
         TextView vName = view.findViewById(R.id.user_id_item_name);
         TextView vAddress = view.findViewById(R.id.user_id_item_address);
         TextView vComment = view.findViewById(R.id.user_id_item_comment);
@@ -62,37 +94,35 @@ public class UserIdsAdapter extends UserAttributesAdapter {
         ImageView vDeleteButton = view.findViewById(R.id.user_id_item_delete_button);
         vDeleteButton.setVisibility(View.GONE); // not used
 
-        String userId = cursor.getString(INDEX_USER_ID);
-        String name = cursor.getString(INDEX_NAME);
-        String email = cursor.getString(INDEX_EMAIL);
-        String comment = cursor.getString(INDEX_COMMENT);
-        if (name != null) {
-            vName.setText(name);
+        UserId userId = getItem(position);
+
+        if (userId.name() != null) {
+            vName.setText(userId.name());
         } else {
             vName.setText(R.string.user_id_no_name);
         }
-        if (email != null) {
-            vAddress.setText(email);
+        if (userId.email() != null) {
+            vAddress.setText(userId.email());
             vAddress.setVisibility(View.VISIBLE);
         } else {
             vAddress.setVisibility(View.GONE);
         }
-        if (comment != null) {
-            vComment.setText(comment);
+        if (userId.comment() != null) {
+            vComment.setText(userId.comment());
             vComment.setVisibility(View.VISIBLE);
         } else {
             vComment.setVisibility(View.GONE);
         }
 
-        boolean isPrimary = cursor.getInt(INDEX_IS_PRIMARY) != 0;
-        boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
+        boolean isPrimary = userId.is_primary();
+        boolean isRevoked = userId.is_revoked();
 
         // for edit key
         if (mSkpBuilder != null) {
             String changePrimaryUserId = mSkpBuilder.getChangePrimaryUserId();
             boolean changeAnyPrimaryUserId = (changePrimaryUserId != null);
-            boolean changeThisPrimaryUserId = (changeAnyPrimaryUserId && changePrimaryUserId.equals(userId));
-            boolean revokeThisUserId = (mSkpBuilder.getMutableRevokeUserIds().contains(userId));
+            boolean changeThisPrimaryUserId = (changeAnyPrimaryUserId && changePrimaryUserId.equals(userId.user_id()));
+            boolean revokeThisUserId = (mSkpBuilder.getMutableRevokeUserIds().contains(userId.user_id()));
 
             // only if primary user id will be changed
             // (this is not triggered if the user id is currently the primary one)
@@ -114,7 +144,7 @@ public class UserIdsAdapter extends UserAttributesAdapter {
 
         if (isRevoked) {
             // set revocation icon (can this even be primary?)
-            KeyFormattingUtils.setStatusImage(mContext, vVerified, null, State.REVOKED, R.color.key_flag_gray);
+            KeyFormattingUtils.setStatusImage(context, vVerified, null, State.REVOKED, R.color.key_flag_gray);
 
             // disable revoked user ids
             vName.setEnabled(false);
@@ -133,24 +163,25 @@ public class UserIdsAdapter extends UserAttributesAdapter {
                 vAddress.setTypeface(null, Typeface.NORMAL);
             }
 
-            int isVerified = cursor.getInt(INDEX_VERIFIED);
+            int isVerified = getIsVerified(position);
             switch (isVerified) {
                 case Certs.VERIFIED_SECRET:
-                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, State.VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
+                    KeyFormattingUtils.setStatusImage(context, vVerified, null, State.VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
                 case Certs.VERIFIED_SELF:
-                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, State.UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
+                    KeyFormattingUtils.setStatusImage(context, vVerified, null, State.UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
                 default:
-                    KeyFormattingUtils.setStatusImage(mContext, vVerified, null, State.INVALID, KeyFormattingUtils.DEFAULT_COLOR);
+                    KeyFormattingUtils.setStatusImage(context, vVerified, null, State.INVALID, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
             }
         }
+
+        return view;
     }
 
     public boolean getIsRevokedPending(int position) {
-        mCursor.moveToPosition(position);
-        String userId = mCursor.getString(INDEX_USER_ID);
+        String userId = getUserId(position);
 
         boolean isRevokedPending = false;
         if (mSkpBuilder != null) {
@@ -177,8 +208,15 @@ public class UserIdsAdapter extends UserAttributesAdapter {
         mSkpBuilder = saveKeyringParcel;
     }
 
-    @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return mInflater.inflate(R.layout.view_key_adv_user_id_item, null);
+    public String getUserId(int position) {
+        return data.get(position).user_id();
+    }
+
+    public boolean getIsRevoked(int position) {
+        return data.get(position).is_revoked();
+    }
+
+    public int getIsVerified(int position) {
+        return data.get(position).verified();
     }
 }

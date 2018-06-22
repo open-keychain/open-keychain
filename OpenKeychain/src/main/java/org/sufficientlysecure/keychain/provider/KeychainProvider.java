@@ -177,9 +177,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
             case KEY_RING_KEYS:
                 return Keys.CONTENT_TYPE;
 
-            case KEY_RING_USER_IDS:
-                return UserPackets.CONTENT_TYPE;
-
             case KEY_SIGNATURES:
                 return KeySignatures.CONTENT_TYPE;
 
@@ -466,8 +463,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                 break;
             }
 
-            case KEY_RINGS_USER_IDS:
-            case KEY_RING_USER_IDS: {
+            case KEY_RINGS_USER_IDS: {
                 HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(UserPackets._ID, Tables.USER_PACKETS + ".oid AS _id");
                 projectionMap.put(UserPackets.MASTER_KEY_ID, Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID);
@@ -496,13 +492,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                         + ", " + Tables.USER_PACKETS + "." + UserPackets.RANK;
 
                 qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.TYPE + " IS NULL");
-
-                // If we are searching for a particular keyring's ids, add where
-                if (match == KEY_RING_USER_IDS) {
-                    qb.appendWhere(" AND ");
-                    qb.appendWhere(Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = ");
-                    qb.appendWhereEscapeString(uri.getPathSegments().get(1));
-                }
 
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " ASC"
