@@ -37,7 +37,7 @@ import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.model.ApiApp;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
+import org.sufficientlysecure.keychain.provider.ApiAppDao;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.dialog.AdvancedAppSettingsDialogFragment;
 import timber.log.Timber;
@@ -54,7 +54,7 @@ public class AppSettingsActivity extends BaseActivity {
 
     // model
     ApiApp mApiApp;
-    private ApiDataAccessObject apiDataAccessObject;
+    private ApiAppDao apiAppDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +76,7 @@ public class AppSettingsActivity extends BaseActivity {
             return;
         }
 
-        apiDataAccessObject = new ApiDataAccessObject(this);
+        apiAppDao = ApiAppDao.getInstance(this);
 
         loadData(savedInstanceState);
     }
@@ -170,7 +170,7 @@ public class AppSettingsActivity extends BaseActivity {
     }
 
     private void loadData(Bundle savedInstanceState) {
-        mApiApp = apiDataAccessObject.getApiApp(packageName);
+        mApiApp = apiAppDao.getApiApp(packageName);
 
         // get application name and icon from package manager
         String appName;
@@ -211,7 +211,7 @@ public class AppSettingsActivity extends BaseActivity {
     }
 
     private void revokeAccess() {
-        apiDataAccessObject.deleteApiApp(packageName);
+        apiAppDao.deleteApiApp(packageName);
         finish();
     }
 

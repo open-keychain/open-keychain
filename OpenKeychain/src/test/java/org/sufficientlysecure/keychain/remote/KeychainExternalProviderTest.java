@@ -24,7 +24,7 @@ import org.sufficientlysecure.keychain.operations.CertifyOperation;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
+import org.sufficientlysecure.keychain.provider.ApiAppDao;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDao;
 import org.sufficientlysecure.keychain.provider.KeyRepositorySaveTest;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
@@ -63,7 +63,7 @@ public class KeychainExternalProviderTest {
             KeyWritableRepository.create(RuntimeEnvironment.application);
     ContentResolver contentResolver = RuntimeEnvironment.application.getContentResolver();
     ApiPermissionHelper apiPermissionHelper;
-    ApiDataAccessObject apiDao;
+    ApiAppDao apiAppDao;
     AutocryptPeerDao autocryptPeerDao;
 
 
@@ -80,16 +80,16 @@ public class KeychainExternalProviderTest {
 
         ShadowBinder.setCallingUid(PACKAGE_UID);
 
-        apiDao = new ApiDataAccessObject(RuntimeEnvironment.application);
-        apiPermissionHelper = new ApiPermissionHelper(RuntimeEnvironment.application, apiDao);
+        apiAppDao = ApiAppDao.getInstance(RuntimeEnvironment.application);
+        apiPermissionHelper = new ApiPermissionHelper(RuntimeEnvironment.application, apiAppDao);
         autocryptPeerDao = AutocryptPeerDao.getInstance(RuntimeEnvironment.application);
 
-        apiDao.insertApiApp(ApiApp.create(PACKAGE_NAME, PACKAGE_SIGNATURE));
+        apiAppDao.insertApiApp(ApiApp.create(PACKAGE_NAME, PACKAGE_SIGNATURE));
     }
 
     @Test(expected = AccessControlException.class)
     public void testPermission__withMissingPackage() throws Exception {
-        apiDao.deleteApiApp(PACKAGE_NAME);
+        apiAppDao.deleteApiApp(PACKAGE_NAME);
 
         contentResolver.query(
                 EmailStatus.CONTENT_URI,
@@ -100,8 +100,8 @@ public class KeychainExternalProviderTest {
 
     @Test(expected = AccessControlException.class)
     public void testPermission__withWrongPackageCert() throws Exception {
-        apiDao.deleteApiApp(PACKAGE_NAME);
-        apiDao.insertApiApp(ApiApp.create(PACKAGE_NAME, new byte[] { 1, 2, 4 }));
+        apiAppDao.deleteApiApp(PACKAGE_NAME);
+        apiAppDao.insertApiApp(ApiApp.create(PACKAGE_NAME, new byte[] { 1, 2, 4 }));
 
         contentResolver.query(
                 EmailStatus.CONTENT_URI,

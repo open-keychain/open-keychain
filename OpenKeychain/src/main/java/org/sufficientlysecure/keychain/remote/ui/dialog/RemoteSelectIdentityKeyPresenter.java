@@ -38,7 +38,7 @@ import org.sufficientlysecure.keychain.model.ApiApp;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
+import org.sufficientlysecure.keychain.provider.ApiAppDao;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -57,14 +57,14 @@ class RemoteSelectIdentityKeyPresenter {
     private UserId userId;
     private long selectedMasterKeyId;
     private byte[] generatedKeyData;
-    private ApiDataAccessObject apiDao;
+    private ApiAppDao apiAppDao;
     private ApiApp apiApp;
 
 
     RemoteSelectIdentityKeyPresenter(Context context, RemoteSelectIdViewModel viewModel, LifecycleOwner lifecycleOwner) {
         this.context = context;
         this.viewModel = viewModel;
-        this.apiDao = new ApiDataAccessObject(context);
+        this.apiAppDao = ApiAppDao.getInstance(context);
 
         packageManager = context.getPackageManager();
 
@@ -200,15 +200,15 @@ class RemoteSelectIdentityKeyPresenter {
     }
 
     void onHighlightFinished() {
-        apiDao.insertApiApp(apiApp);
-        apiDao.addAllowedKeyIdForApp(apiApp.package_name(), selectedMasterKeyId);
+        apiAppDao.insertApiApp(apiApp);
+        apiAppDao.addAllowedKeyIdForApp(apiApp.package_name(), selectedMasterKeyId);
         view.finishAndReturn(selectedMasterKeyId);
     }
 
     void onImportOpSuccess(ImportKeyResult result) {
         long importedMasterKeyId = result.getImportedMasterKeyIds()[0];
-        apiDao.insertApiApp(apiApp);
-        apiDao.addAllowedKeyIdForApp(apiApp.package_name(), selectedMasterKeyId);
+        apiAppDao.insertApiApp(apiApp);
+        apiAppDao.addAllowedKeyIdForApp(apiApp.package_name(), selectedMasterKeyId);
         view.finishAndReturn(importedMasterKeyId);
     }
 

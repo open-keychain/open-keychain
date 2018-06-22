@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.Nullable;
@@ -39,25 +38,21 @@ import org.sufficientlysecure.keychain.model.AutocryptPeer.AutocryptKeyStatus;
 import org.sufficientlysecure.keychain.model.AutocryptPeer.GossipOrigin;
 
 
-public class AutocryptPeerDao {
-    private final SupportSQLiteDatabase db;
-    private final DatabaseNotifyManager databaseNotifyManager;
-
+public class AutocryptPeerDao extends AbstractDao {
     public static AutocryptPeerDao getInstance(Context context) {
         KeychainDatabase keychainDatabase = new KeychainDatabase(context);
         DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
 
-        return new AutocryptPeerDao(keychainDatabase.getWritableDatabase(), databaseNotifyManager);
+        return new AutocryptPeerDao(keychainDatabase, databaseNotifyManager);
     }
 
-    private AutocryptPeerDao(SupportSQLiteDatabase writableDatabase, DatabaseNotifyManager databaseNotifyManager) {
-        this.db = writableDatabase;
-        this.databaseNotifyManager = databaseNotifyManager;
+    private AutocryptPeerDao(KeychainDatabase database, DatabaseNotifyManager databaseNotifyManager) {
+        super(database, databaseNotifyManager);
     }
 
     public Long getMasterKeyIdForAutocryptPeer(String autocryptId) {
         SqlDelightQuery query = AutocryptPeer.FACTORY.selectMasterKeyIdByIdentifier(autocryptId);
-        try (Cursor cursor = db.query(query)) {
+        try (Cursor cursor = getReadableDb().query(query)) {
             if (cursor.moveToFirst()) {
                 return AutocryptPeer.FACTORY.selectMasterKeyIdByIdentifierMapper().map(cursor);
             }
@@ -74,10 +69,10 @@ public class AutocryptPeerDao {
         return null;
     }
 
-    public List<AutocryptPeer> getAutocryptPeers(String packageName, String... autocryptId) {
+    private List<AutocryptPeer> getAutocryptPeers(String packageName, String... autocryptId) {
         ArrayList<AutocryptPeer> result = new ArrayList<>(autocryptId.length);
         SqlDelightQuery query = AutocryptPeer.FACTORY.selectByIdentifiers(packageName, autocryptId);
-        try (Cursor cursor = db.query(query)) {
+        try (Cursor cursor = getReadableDb().query(query)) {
             if (cursor.moveToNext()) {
                 AutocryptPeer autocryptPeer = AutocryptPeer.PEER_MAPPER.map(cursor);
                 result.add(autocryptPeer);
@@ -89,7 +84,7 @@ public class AutocryptPeerDao {
     public List<AutocryptKeyStatus> getAutocryptKeyStatus(String packageName, String[] autocryptIds) {
         ArrayList<AutocryptKeyStatus> result = new ArrayList<>(autocryptIds.length);
         SqlDelightQuery query = AutocryptPeer.FACTORY.selectAutocryptKeyStatus(packageName, autocryptIds, System.currentTimeMillis());
-        try (Cursor cursor = db.query(query)) {
+        try (Cursor cursor = getReadableDb().query(query)) {
             if (cursor.moveToNext()) {
                 AutocryptKeyStatus autocryptPeer = AutocryptPeer.KEY_STATUS_MAPPER.map(cursor);
                 result.add(autocryptPeer);
@@ -99,12 +94,12 @@ public class AutocryptPeerDao {
     }
 
     public void insertOrUpdateLastSeen(String packageName, String autocryptId, Date date) {
-        UpdateLastSeen updateStatement = new UpdateLastSeen(db, AutocryptPeer.FACTORY);
+        UpdateLastSeen updateStatement = new UpdateLastSeen(getWritableDb(), AutocryptPeer.FACTORY);
         updateStatement.bind(packageName, autocryptId, date);
         int updated = updateStatement.executeUpdateDelete();
 
         if (updated == 0) {
-            InsertPeer insertStatement = new InsertPeer(db, AutocryptPeer.FACTORY);
+            InsertPeer insertStatement = new InsertPeer(getWritableDb(), AutocryptPeer.FACTORY);
             insertStatement.bind(packageName, autocryptId, date);
             insertStatement.executeInsert();
         }
@@ -112,30 +107,30 @@ public class AutocryptPeerDao {
 
     public void updateKey(String packageName, String autocryptId, Date effectiveDate, long masterKeyId,
             boolean isMutual) {
-        UpdateKey updateStatement = new UpdateKey(db, AutocryptPeer.FACTORY);
+        UpdateKey updateStatement = new UpdateKey(getWritableDb(), AutocryptPeer.FACTORY);
         updateStatement.bind(packageName, autocryptId, effectiveDate, masterKeyId, isMutual);
         int rowsUpdated = updateStatement.executeUpdateDelete();
         if (rowsUpdated == 0) {
             throw new IllegalStateException("No rows updated! Was this peer inserted before the update?");
         }
-        databaseNotifyManager.notifyAutocryptUpdate(autocryptId, masterKeyId);
+        getDatabaseNotifyManager().notifyAutocryptUpdate(autocryptId, masterKeyId);
     }
 
     public void updateKeyGossip(String packageName, String autocryptId, Date effectiveDate, long masterKeyId,
             GossipOrigin origin) {
-        UpdateGossipKey updateStatement = new UpdateGossipKey(db, AutocryptPeer.FACTORY);
+        UpdateGossipKey updateStatement = new UpdateGossipKey(getWritableDb(), AutocryptPeer.FACTORY);
         updateStatement.bind(packageName, autocryptId, effectiveDate, masterKeyId, origin);
         int rowsUpdated = updateStatement.executeUpdateDelete();
         if (rowsUpdated == 0) {
             throw new IllegalStateException("No rows updated! Was this peer inserted before the update?");
         }
-        databaseNotifyManager.notifyAutocryptUpdate(autocryptId, masterKeyId);
+        getDatabaseNotifyManager().notifyAutocryptUpdate(autocryptId, masterKeyId);
     }
 
     public List<AutocryptPeer> getAutocryptPeersForKey(long masterKeyId) {
         ArrayList<AutocryptPeer> result = new ArrayList<>();
         SqlDelightQuery query = AutocryptPeer.FACTORY.selectByMasterKeyId(masterKeyId);
-        try (Cursor cursor = db.query(query)) {
+        try (Cursor cursor = getReadableDb().query(query)) {
             if (cursor.moveToNext()) {
                 AutocryptPeer autocryptPeer = AutocryptPeer.PEER_MAPPER.map(cursor);
                 result.add(autocryptPeer);
@@ -146,16 +141,16 @@ public class AutocryptPeerDao {
 
     public void deleteByIdentifier(String packageName, String autocryptId) {
         Long masterKeyId = getMasterKeyIdForAutocryptPeer(autocryptId);
-        DeleteByIdentifier deleteStatement = new DeleteByIdentifier(db);
+        DeleteByIdentifier deleteStatement = new DeleteByIdentifier(getReadableDb());
         deleteStatement.bind(packageName, autocryptId);
         deleteStatement.execute();
         if (masterKeyId != null) {
-            databaseNotifyManager.notifyAutocryptDelete(autocryptId, masterKeyId);
+            getDatabaseNotifyManager().notifyAutocryptDelete(autocryptId, masterKeyId);
         }
     }
 
     public void deleteByMasterKeyId(long masterKeyId) {
-        DeleteByMasterKeyId deleteStatement = new DeleteByMasterKeyId(db);
+        DeleteByMasterKeyId deleteStatement = new DeleteByMasterKeyId(getReadableDb());
         deleteStatement.bind(masterKeyId);
         deleteStatement.execute();
     }

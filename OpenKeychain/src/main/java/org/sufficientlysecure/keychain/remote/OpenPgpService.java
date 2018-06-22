@@ -67,7 +67,7 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
+import org.sufficientlysecure.keychain.provider.ApiAppDao;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDao;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
@@ -97,7 +97,7 @@ public class OpenPgpService extends Service {
 
     private ApiPermissionHelper mApiPermissionHelper;
     private KeyRepository mKeyRepository;
-    private ApiDataAccessObject mApiDao;
+    private ApiAppDao mApiAppDao;
     private OpenPgpServiceKeyIdExtractor mKeyIdExtractor;
     private ApiPendingIntentFactory mApiPendingIntentFactory;
 
@@ -105,8 +105,8 @@ public class OpenPgpService extends Service {
     public void onCreate() {
         super.onCreate();
         mKeyRepository = KeyRepository.create(this);
-        mApiDao = new ApiDataAccessObject(this);
-        mApiPermissionHelper = new ApiPermissionHelper(this, mApiDao);
+        mApiAppDao = ApiAppDao.getInstance(this);
+        mApiPermissionHelper = new ApiPermissionHelper(this, mApiAppDao);
         mApiPendingIntentFactory = new ApiPendingIntentFactory(getBaseContext());
         mKeyIdExtractor = OpenPgpServiceKeyIdExtractor.getInstance(getContentResolver(), mApiPendingIntentFactory);
     }
@@ -915,7 +915,7 @@ public class OpenPgpService extends Service {
 
     private HashSet<Long> getAllowedKeyIds() {
         String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
-        return mApiDao.getAllowedKeyIdsForApp(currentPkg);
+        return mApiAppDao.getAllowedKeyIdsForApp(currentPkg);
     }
 
     /**

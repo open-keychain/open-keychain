@@ -52,7 +52,7 @@ import com.mikepenz.materialdrawer.util.KeyboardUtil;
 import org.openintents.ssh.authentication.SshAuthenticationApi;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeyInfo;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
+import org.sufficientlysecure.keychain.provider.ApiAppDao;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectAuthenticationKeyPresenter.RemoteSelectAuthenticationKeyView;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
@@ -101,8 +101,8 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
         Intent originalIntent = callingIntent.getParcelableExtra(
                 RemoteSecurityTokenOperationActivity.EXTRA_DATA);
 
-        ApiDataAccessObject apiDao = new ApiDataAccessObject(getBaseContext());
-        apiDao.addAllowedKeyIdForApp(packageName, masterKeyId);
+        ApiAppDao apiAppDao = ApiAppDao.getInstance(getBaseContext());
+        apiAppDao.addAllowedKeyIdForApp(packageName, masterKeyId);
 
         originalIntent.putExtra(SshAuthenticationApi.EXTRA_KEY_ID, String.valueOf(masterKeyId));
 

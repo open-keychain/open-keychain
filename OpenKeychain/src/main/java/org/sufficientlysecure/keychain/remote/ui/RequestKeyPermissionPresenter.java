@@ -29,7 +29,7 @@ import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
+import org.sufficientlysecure.keychain.provider.ApiAppDao;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
@@ -42,7 +42,7 @@ import timber.log.Timber;
 class RequestKeyPermissionPresenter {
     private final Context context;
     private final PackageManager packageManager;
-    private final ApiDataAccessObject apiDataAccessObject;
+    private final ApiAppDao apiAppDao;
     private final ApiPermissionHelper apiPermissionHelper;
 
     private RequestKeyPermissionMvpView view;
@@ -54,19 +54,19 @@ class RequestKeyPermissionPresenter {
 
     static RequestKeyPermissionPresenter createRequestKeyPermissionPresenter(Context context) {
         PackageManager packageManager = context.getPackageManager();
-        ApiDataAccessObject apiDataAccessObject = new ApiDataAccessObject(context);
-        ApiPermissionHelper apiPermissionHelper = new ApiPermissionHelper(context, apiDataAccessObject);
+        ApiAppDao apiAppDao = ApiAppDao.getInstance(context);
+        ApiPermissionHelper apiPermissionHelper = new ApiPermissionHelper(context, apiAppDao);
         KeyRepository keyRepository =
                 KeyRepository.create(context);
 
-        return new RequestKeyPermissionPresenter(context, apiDataAccessObject, apiPermissionHelper, packageManager,
+        return new RequestKeyPermissionPresenter(context, apiAppDao, apiPermissionHelper, packageManager,
                 keyRepository);
     }
 
-    private RequestKeyPermissionPresenter(Context context, ApiDataAccessObject apiDataAccessObject,
+    private RequestKeyPermissionPresenter(Context context, ApiAppDao apiAppDao,
             ApiPermissionHelper apiPermissionHelper, PackageManager packageManager, KeyRepository keyRepository) {
         this.context = context;
-        this.apiDataAccessObject = apiDataAccessObject;
+        this.apiAppDao = apiAppDao;
         this.apiPermissionHelper = apiPermissionHelper;
         this.packageManager = packageManager;
         this.keyRepository = keyRepository;
@@ -160,7 +160,7 @@ class RequestKeyPermissionPresenter {
     }
 
     void onClickAllow() {
-        apiDataAccessObject.addAllowedKeyIdForApp(packageName, masterKeyId);
+        apiAppDao.addAllowedKeyIdForApp(packageName, masterKeyId);
         view.finish();
     }
 

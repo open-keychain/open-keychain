@@ -45,7 +45,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.SshPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
+import org.sufficientlysecure.keychain.provider.ApiAppDao;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -63,7 +63,7 @@ public class SshAuthenticationService extends Service {
 
     private ApiPermissionHelper mApiPermissionHelper;
     private KeyRepository mKeyRepository;
-    private ApiDataAccessObject mApiDao;
+    private ApiAppDao mApiAppDao;
     private ApiPendingIntentFactory mApiPendingIntentFactory;
 
     private static final List<Integer> SUPPORTED_VERSIONS = Collections.unmodifiableList(Collections.singletonList(1));
@@ -74,9 +74,9 @@ public class SshAuthenticationService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mApiPermissionHelper = new ApiPermissionHelper(this, new ApiDataAccessObject(this));
+        mApiPermissionHelper = new ApiPermissionHelper(this, ApiAppDao.getInstance(this));
         mKeyRepository = KeyRepository.create(this);
-        mApiDao = new ApiDataAccessObject(this);
+        mApiAppDao = ApiAppDao.getInstance(this);
 
         mApiPendingIntentFactory = new ApiPendingIntentFactory(getBaseContext());
     }
@@ -394,7 +394,7 @@ public class SshAuthenticationService extends Service {
 
     private HashSet<Long> getAllowedKeyIds() {
         String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
-        return mApiDao.getAllowedKeyIdsForApp(currentPkg);
+        return mApiAppDao.getAllowedKeyIdsForApp(currentPkg);
     }
 
     /**

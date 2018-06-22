@@ -27,12 +27,12 @@ import android.graphics.drawable.Drawable;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.model.ApiApp;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
+import org.sufficientlysecure.keychain.provider.ApiAppDao;
 import timber.log.Timber;
 
 
 class RemoteRegisterPresenter {
-    private final ApiDataAccessObject apiDao;
+    private final ApiAppDao apiAppDao;
     private final PackageManager packageManager;
     private final Context context;
 
@@ -45,7 +45,7 @@ class RemoteRegisterPresenter {
     RemoteRegisterPresenter(Context context) {
         this.context = context;
 
-        apiDao = new ApiDataAccessObject(context);
+        apiAppDao = ApiAppDao.getInstance(context);
         packageManager = context.getPackageManager();
     }
 
@@ -76,7 +76,7 @@ class RemoteRegisterPresenter {
     }
 
     void onClickAllow() {
-        apiDao.insertApiApp(apiApp);
+        apiAppDao.insertApiApp(apiApp);
         view.finishWithResult(resultData);
     }
 

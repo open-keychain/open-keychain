@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -36,16 +35,20 @@ import org.sufficientlysecure.keychain.model.ApiAllowedKey;
 import org.sufficientlysecure.keychain.model.ApiApp;
 
 
-public class ApiDataAccessObject {
-    private final SupportSQLiteDatabase db;
-
-    public ApiDataAccessObject(Context context) {
+public class ApiAppDao extends AbstractDao {
+    public static ApiAppDao getInstance(Context context) {
         KeychainDatabase keychainDatabase = new KeychainDatabase(context);
-        db = keychainDatabase.getWritableDatabase();
+        DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
+
+        return new ApiAppDao(keychainDatabase, databaseNotifyManager);
+    }
+
+    private ApiAppDao(KeychainDatabase keychainDatabase, DatabaseNotifyManager databaseNotifyManager) {
+        super(keychainDatabase, databaseNotifyManager);
     }
 
     public ApiApp getApiApp(String packageName) {
-        try (Cursor cursor = db.query(ApiApp.FACTORY.selectByPackageName(packageName))) {
+        try (Cursor cursor = getReadableDb().query(ApiApp.FACTORY.selectByPackageName(packageName))) {
             if (cursor.moveToFirst()) {
                 return ApiApp.FACTORY.selectByPackageNameMapper().map(cursor);
             }
@@ -54,7 +57,7 @@ public class ApiDataAccessObject {
     }
 
     public byte[] getApiAppCertificate(String packageName) {
-        try (Cursor cursor = db.query(ApiApp.FACTORY.getCertificate(packageName))) {
+        try (Cursor cursor = getReadableDb().query(ApiApp.FACTORY.getCertificate(packageName))) {
             if (cursor.moveToFirst()) {
                 return ApiApp.FACTORY.getCertificateMapper().map(cursor);
             }
@@ -63,13 +66,13 @@ public class ApiDataAccessObject {
     }
 
     public void insertApiApp(ApiApp apiApp) {
-        InsertApiApp statement = new ApiAppsModel.InsertApiApp(db);
+        InsertApiApp statement = new ApiAppsModel.InsertApiApp(getWritableDb());
         statement.bind(apiApp.package_name(), apiApp.package_signature());
         statement.execute();
     }
 
     public void deleteApiApp(String packageName) {
-        DeleteByPackageName deleteByPackageName = new DeleteByPackageName(db);
+        DeleteByPackageName deleteByPackageName = new DeleteByPackageName(getWritableDb());
         deleteByPackageName.bind(packageName);
         deleteByPackageName.executeUpdateDelete();
     }
@@ -77,7 +80,7 @@ public class ApiDataAccessObject {
     public HashSet<Long> getAllowedKeyIdsForApp(String packageName) {
         SqlDelightQuery allowedKeys = ApiAllowedKey.FACTORY.getAllowedKeys(packageName);
         HashSet<Long> keyIds = new HashSet<>();
-        try (Cursor cursor = db.query(allowedKeys)) {
+        try (Cursor cursor = getReadableDb().query(allowedKeys)) {
             while (cursor.moveToNext()) {
                 long allowedKeyId = ApiAllowedKey.FACTORY.getAllowedKeysMapper().map(cursor);
                 keyIds.add(allowedKeyId);
@@ -87,11 +90,11 @@ public class ApiDataAccessObject {
     }
 
     public void saveAllowedKeyIdsForApp(String packageName, Set<Long> allowedKeyIds) {
-        ApiAllowedKey.DeleteByPackageName deleteByPackageName = new ApiAllowedKey.DeleteByPackageName(db);
+        ApiAllowedKey.DeleteByPackageName deleteByPackageName = new ApiAllowedKey.DeleteByPackageName(getWritableDb());
         deleteByPackageName.bind(packageName);
         deleteByPackageName.executeUpdateDelete();
 
-        InsertAllowedKey statement = new InsertAllowedKey(db);
+        InsertAllowedKey statement = new InsertAllowedKey(getWritableDb());
         for (Long keyId : allowedKeyIds) {
             statement.bind(packageName, keyId);
             statement.execute();
@@ -99,7 +102,7 @@ public class ApiDataAccessObject {
     }
 
     public void addAllowedKeyIdForApp(String packageName, long allowedKeyId) {
-        InsertAllowedKey statement = new InsertAllowedKey(db);
+        InsertAllowedKey statement = new InsertAllowedKey(getWritableDb());
         statement.bind(packageName, allowedKeyId);
         statement.execute();
     }
@@ -108,7 +111,7 @@ public class ApiDataAccessObject {
         SqlDelightQuery query = ApiApp.FACTORY.selectAll();
 
         ArrayList<ApiApp> result = new ArrayList<>();
-        try (Cursor cursor = db.query(query)) {
+        try (Cursor cursor = getReadableDb().query(query)) {
             while (cursor.moveToNext()) {
                 ApiApp apiApp = ApiApp.FACTORY.selectAllMapper().map(cursor);
                 result.add(apiApp);

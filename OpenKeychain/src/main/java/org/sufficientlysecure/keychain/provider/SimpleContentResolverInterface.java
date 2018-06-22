@@ -26,7 +26,7 @@ import android.net.Uri;
  * from {#android.content.ContentResolver}. It is used to allow substitution
  * of a ContentResolver in DAOs.
  *
- * @see ApiDataAccessObject
+ * @see ApiAppDao
  */
 public interface SimpleContentResolverInterface {
     Cursor query(Uri contentUri, String[] projection, String selection, String[] selectionArgs, String sortOrder);

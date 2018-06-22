@@ -23,7 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
+import org.sufficientlysecure.keychain.provider.ApiAppDao;
 
 public class PackageUninstallReceiver extends BroadcastReceiver {
 
@@ -36,8 +36,8 @@ public class PackageUninstallReceiver extends BroadcastReceiver {
             }
             String packageName = uri.getEncodedSchemeSpecificPart();
 
-            ApiDataAccessObject apiDao = new ApiDataAccessObject(context);
-            apiDao.deleteApiApp(packageName);
+            ApiAppDao apiAppDao = ApiAppDao.getInstance(context);
+            apiAppDao.deleteApiApp(packageName);
         }
     }
 }

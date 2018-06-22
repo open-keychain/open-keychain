@@ -35,7 +35,7 @@ import android.os.Binder;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
+import org.sufficientlysecure.keychain.provider.ApiAppDao;
 import timber.log.Timber;
 
 
@@ -45,13 +45,13 @@ import timber.log.Timber;
 public class ApiPermissionHelper {
 
     private final Context mContext;
-    private final ApiDataAccessObject mApiDao;
+    private final ApiAppDao mApiAppDao;
     private PackageManager mPackageManager;
 
-    public ApiPermissionHelper(Context context, ApiDataAccessObject apiDao) {
+    public ApiPermissionHelper(Context context, ApiAppDao apiAppDao) {
         mContext = context;
         mPackageManager = context.getPackageManager();
-        mApiDao = apiDao;
+        mApiAppDao = apiAppDao;
     }
 
     public static class WrongPackageCertificateException extends Exception {
@@ -206,7 +206,7 @@ public class ApiPermissionHelper {
     public boolean isPackageAllowed(String packageName) throws WrongPackageCertificateException {
         Timber.d("isPackageAllowed packageName: " + packageName);
 
-        byte[] storedPackageCert = mApiDao.getApiAppCertificate(packageName);
+        byte[] storedPackageCert = mApiAppDao.getApiAppCertificate(packageName);
 
         boolean isKnownPackage = storedPackageCert != null;
         if (!isKnownPackage) {

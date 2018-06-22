@@ -33,7 +33,7 @@ import android.widget.ListView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ListFragmentWorkaround;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
+import org.sufficientlysecure.keychain.provider.ApiAppDao;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.KeySelectableAdapter;
@@ -44,7 +44,7 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
     private static final String ARG_PACKAGE_NAME = "package_name";
 
     private KeySelectableAdapter mAdapter;
-    private ApiDataAccessObject mApiDao;
+    private ApiAppDao mApiAppDao;
 
     private String packageName;
 
@@ -66,7 +66,7 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mApiDao = new ApiDataAccessObject(getActivity());
+        mApiAppDao = ApiAppDao.getInstance(getActivity());
     }
 
     @Override
@@ -104,7 +104,7 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
         // application this would come from a resource.
         setEmptyText(getString(R.string.list_empty));
 
-        Set<Long> checked = mApiDao.getAllowedKeyIdsForApp(packageName);
+        Set<Long> checked = mApiAppDao.getAllowedKeyIdsForApp(packageName);
         mAdapter = new KeySelectableAdapter(getActivity(), null, 0, checked);
         setListAdapter(mAdapter);
         getListView().setOnItemClickListener(mAdapter);
@@ -137,7 +137,7 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
     } */
 
     public void saveAllowedKeys() {
-        mApiDao.saveAllowedKeyIdsForApp(packageName, getSelectedMasterKeyIds());
+        mApiAppDao.saveAllowedKeyIdsForApp(packageName, getSelectedMasterKeyIds());
     }
 
     @Override

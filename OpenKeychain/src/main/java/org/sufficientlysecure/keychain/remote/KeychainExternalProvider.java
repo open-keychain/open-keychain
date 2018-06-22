@@ -38,7 +38,7 @@ import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
+import org.sufficientlysecure.keychain.provider.ApiAppDao;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
@@ -102,7 +102,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
             throw new NullPointerException("Context can't be null during onCreate!");
         }
 
-        apiPermissionHelper = new ApiPermissionHelper(context, new ApiDataAccessObject(getContext()));
+        apiPermissionHelper = new ApiPermissionHelper(context, ApiAppDao.getInstance(getContext()));
         return true;
     }
 

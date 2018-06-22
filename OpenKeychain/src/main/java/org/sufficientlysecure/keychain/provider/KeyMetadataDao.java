@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -15,26 +14,21 @@ import org.sufficientlysecure.keychain.KeyMetadataModel.ReplaceKeyMetadata;
 import org.sufficientlysecure.keychain.model.KeyMetadata;
 
 
-public class KeyMetadataDao {
-    private final SupportSQLiteDatabase db;
-    private DatabaseNotifyManager databaseNotifyManager;
-
-
+public class KeyMetadataDao extends AbstractDao {
     public static KeyMetadataDao create(Context context) {
-        SupportSQLiteDatabase supportSQLiteDatabase = new KeychainDatabase(context).getWritableDatabase();
+        KeychainDatabase database = new KeychainDatabase(context);
         DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
 
-        return new KeyMetadataDao(supportSQLiteDatabase, databaseNotifyManager);
+        return new KeyMetadataDao(database, databaseNotifyManager);
     }
 
-    private KeyMetadataDao(SupportSQLiteDatabase supportSQLiteDatabase, DatabaseNotifyManager databaseNotifyManager) {
-        this.db = supportSQLiteDatabase;
-        this.databaseNotifyManager = databaseNotifyManager;
+    private KeyMetadataDao(KeychainDatabase database, DatabaseNotifyManager databaseNotifyManager) {
+        super(database, databaseNotifyManager);
     }
 
     public KeyMetadata getKeyMetadata(long masterKeyId) {
         SqlDelightQuery query = KeyMetadata.FACTORY.selectByMasterKeyId(masterKeyId);
-        try (Cursor cursor = db.query(query)) {
+        try (Cursor cursor = getReadableDb().query(query)) {
             if (cursor.moveToFirst()) {
                 return KeyMetadata.FACTORY.selectByMasterKeyIdMapper().map(cursor);
             }
@@ -43,22 +37,22 @@ public class KeyMetadataDao {
     }
 
     public void resetAllLastUpdatedTimes() {
-        new KeyMetadata.DeleteAllLastUpdatedTimes(db).execute();
+        new KeyMetadata.DeleteAllLastUpdatedTimes(getWritableDb()).execute();
     }
 
     public void renewKeyLastUpdatedTime(long masterKeyId, boolean seenOnKeyservers) {
-        ReplaceKeyMetadata replaceStatement = new ReplaceKeyMetadata(db, KeyMetadata.FACTORY);
+        ReplaceKeyMetadata replaceStatement = new ReplaceKeyMetadata(getWritableDb(), KeyMetadata.FACTORY);
         replaceStatement.bind(masterKeyId, new Date(), seenOnKeyservers);
         replaceStatement.executeInsert();
 
-        databaseNotifyManager.notifyKeyMetadataChange(masterKeyId);
+        getDatabaseNotifyManager().notifyKeyMetadataChange(masterKeyId);
     }
 
     public List<byte[]> getFingerprintsForKeysOlderThan(long olderThan, TimeUnit timeUnit) {
         SqlDelightQuery query = KeyMetadata.FACTORY.selectFingerprintsForKeysOlderThan(new Date(timeUnit.toMillis(olderThan)));
 
         List<byte[]> fingerprintList = new ArrayList<>();
-        try (Cursor cursor = db.query(query)) {
+        try (Cursor cursor = getReadableDb().query(query)) {
             while (cursor.moveToNext()) {
                 byte[] fingerprint = KeyMetadata.FACTORY.selectFingerprintsForKeysOlderThanMapper().map(cursor);
                 fingerprintList.add(fingerprint);

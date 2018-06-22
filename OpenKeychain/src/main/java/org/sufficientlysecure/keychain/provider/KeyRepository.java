@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -44,7 +43,7 @@ import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import timber.log.Timber;
 
 
-public class KeyRepository {
+public class KeyRepository extends AbstractDao {
     // If we ever switch to api level 11, we can ditch this whole mess!
     public static final int FIELD_TYPE_NULL = 1;
     // this is called integer to stay coherent with the constants in Cursor (api level 11)
@@ -56,7 +55,6 @@ public class KeyRepository {
     final ContentResolver contentResolver;
     final LocalPublicKeyStorage mLocalPublicKeyStorage;
     final LocalSecretKeyStorage localSecretKeyStorage;
-    final SupportSQLiteDatabase db;
 
     OperationLog mLog;
     int mIndent;
@@ -65,23 +63,26 @@ public class KeyRepository {
         ContentResolver contentResolver = context.getContentResolver();
         LocalPublicKeyStorage localPublicKeyStorage = LocalPublicKeyStorage.getInstance(context);
         LocalSecretKeyStorage localSecretKeyStorage = LocalSecretKeyStorage.getInstance(context);
-        SupportSQLiteDatabase db = new KeychainDatabase(context).getWritableDatabase();
+        KeychainDatabase database = new KeychainDatabase(context);
+        DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
 
-        return new KeyRepository(contentResolver, db, localPublicKeyStorage, localSecretKeyStorage);
+        return new KeyRepository(contentResolver, database, databaseNotifyManager, localPublicKeyStorage, localSecretKeyStorage);
     }
 
-    private KeyRepository(ContentResolver contentResolver, SupportSQLiteDatabase db,
+    private KeyRepository(ContentResolver contentResolver, KeychainDatabase database,
+            DatabaseNotifyManager databaseNotifyManager,
             LocalPublicKeyStorage localPublicKeyStorage,
             LocalSecretKeyStorage localSecretKeyStorage) {
-        this(contentResolver, db, localPublicKeyStorage, localSecretKeyStorage, new OperationLog(), 0);
+        this(contentResolver, database, databaseNotifyManager, localPublicKeyStorage, localSecretKeyStorage, new OperationLog(), 0);
     }
 
-    KeyRepository(ContentResolver contentResolver, SupportSQLiteDatabase db,
+    KeyRepository(ContentResolver contentResolver, KeychainDatabase database,
+            DatabaseNotifyManager databaseNotifyManager,
             LocalPublicKeyStorage localPublicKeyStorage,
             LocalSecretKeyStorage localSecretKeyStorage,
             OperationLog log, int indent) {
+        super(database, databaseNotifyManager);
         this.contentResolver = contentResolver;
-        this.db = db;
         mLocalPublicKeyStorage = localPublicKeyStorage;
         this.localSecretKeyStorage = localSecretKeyStorage;
         mIndent = indent;
@@ -288,7 +289,7 @@ public class KeyRepository {
 
     public final byte[] loadPublicKeyRingData(long masterKeyId) throws NotFoundException {
         SqlDelightQuery query = KeyRingPublic.FACTORY.selectByMasterKeyId(masterKeyId);
-        try (Cursor cursor = db.query(query)) {
+        try (Cursor cursor = getReadableDb().query(query)) {
             if (cursor.moveToFirst()) {
                 KeyRingPublic keyRingPublic = KeyRingPublic.MAPPER.map(cursor);
                 byte[] keyRingData = keyRingPublic.key_ring_data();

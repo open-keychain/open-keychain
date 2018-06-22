@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
@@ -92,25 +91,26 @@ public class KeyWritableRepository extends KeyRepository {
         LocalSecretKeyStorage localSecretKeyStorage = LocalSecretKeyStorage.getInstance(context);
         DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
         AutocryptPeerDao autocryptPeerDao = AutocryptPeerDao.getInstance(context);
-        SupportSQLiteDatabase db = new KeychainDatabase(context).getWritableDatabase();
-        return new KeyWritableRepository(context, db,
+        KeychainDatabase database = new KeychainDatabase(context);
+
+        return new KeyWritableRepository(context, database,
                 localPublicKeyStorage, localSecretKeyStorage, databaseNotifyManager, autocryptPeerDao);
         }
 
     @VisibleForTesting
     KeyWritableRepository(Context context,
-            SupportSQLiteDatabase db, LocalPublicKeyStorage localPublicKeyStorage,
+            KeychainDatabase database, LocalPublicKeyStorage localPublicKeyStorage,
             LocalSecretKeyStorage localSecretKeyStorage,
             DatabaseNotifyManager databaseNotifyManager, AutocryptPeerDao autocryptPeerDao) {
-        this(context, db, localPublicKeyStorage, localSecretKeyStorage, databaseNotifyManager, new OperationLog(), 0,
+        this(context, database, localPublicKeyStorage, localSecretKeyStorage, databaseNotifyManager, new OperationLog(), 0,
                 autocryptPeerDao);
     }
 
-    private KeyWritableRepository(Context context, SupportSQLiteDatabase db,
+    private KeyWritableRepository(Context context, KeychainDatabase database,
             LocalPublicKeyStorage localPublicKeyStorage,
             LocalSecretKeyStorage localSecretKeyStorage, DatabaseNotifyManager databaseNotifyManager,
             OperationLog log, int indent, AutocryptPeerDao autocryptPeerDao) {
-        super(context.getContentResolver(), db, localPublicKeyStorage, localSecretKeyStorage, log, indent);
+        super(context.getContentResolver(), database, databaseNotifyManager, localPublicKeyStorage, localSecretKeyStorage, log, indent);
 
         this.context = context;
         this.databaseNotifyManager = databaseNotifyManager;
@@ -535,9 +535,11 @@ public class KeyWritableRepository extends KeyRepository {
 
         try {
             // delete old version of this keyRing (from database only!), which also deletes all keys and userIds on cascade
-            int deleted = contentResolver.delete(
-                    KeyRingData.buildPublicKeyRingUri(masterKeyId), null, null);
-            if (deleted > 0) {
+            DeleteByMasterKeyId deleteStatement = new DeleteByMasterKeyId(getWritableDb());
+            deleteStatement.bind(masterKeyId);
+            int deletedRows = deleteStatement.executeUpdateDelete();
+
+            if (deletedRows > 0) {
                 log(LogType.MSG_IP_DELETE_OLD_OK);
                 result |= SaveKeyringResult.UPDATED;
             } else {
@@ -595,7 +597,7 @@ public class KeyWritableRepository extends KeyRepository {
         }
         autocryptPeerDao.deleteByMasterKeyId(masterKeyId);
 
-        DeleteByMasterKeyId deleteStatement = new DeleteByMasterKeyId(db);
+        DeleteByMasterKeyId deleteStatement = new DeleteByMasterKeyId(getWritableDb());
         deleteStatement.bind(masterKeyId);
         int deletedRows = deleteStatement.executeUpdateDelete();
 

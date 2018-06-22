@@ -41,7 +41,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.model.ApiApp;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
+import org.sufficientlysecure.keychain.provider.ApiAppDao;
 import org.sufficientlysecure.keychain.remote.ui.AppsListFragment.ApiAppAdapter;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
 import org.sufficientlysecure.keychain.ui.keyview.loader.AsyncTaskLiveData;
@@ -169,14 +169,14 @@ public class AppsListFragment extends RecyclerFragment<ApiAppAdapter> {
     }
 
     public static class ApiAppsLiveData extends AsyncTaskLiveData<List<ListedApp>> {
-        private final ApiDataAccessObject apiDao;
+        private final ApiAppDao apiAppDao;
         private final PackageManager packageManager;
 
         ApiAppsLiveData(Context context) {
             super(context, null);
 
             packageManager = getContext().getPackageManager();
-            apiDao = new ApiDataAccessObject(context);
+            apiAppDao = ApiAppDao.getInstance(context);
         }
 
         @Override
@@ -191,7 +191,7 @@ public class AppsListFragment extends RecyclerFragment<ApiAppAdapter> {
         }
 
         private void loadRegisteredApps(ArrayList<ListedApp> result) {
-            List<ApiApp> registeredApiApps = apiDao.getAllApiApps();
+            List<ApiApp> registeredApiApps = apiAppDao.getAllApiApps();
 
             for (ApiApp apiApp : registeredApiApps) {
                 ListedApp listedApp;

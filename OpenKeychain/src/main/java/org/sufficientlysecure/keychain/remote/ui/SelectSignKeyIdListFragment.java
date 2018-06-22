@@ -32,7 +32,7 @@ import org.openintents.openpgp.util.OpenPgpApi;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
+import org.sufficientlysecure.keychain.provider.ApiAppDao;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.remote.ui.adapter.SelectSignKeyAdapter;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
@@ -49,7 +49,7 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<SelectSignKeyA
 
     private Intent mResult;
     private String mPrefUid;
-    private ApiDataAccessObject mApiDao;
+    private ApiAppDao mApiAppDao;
     private String mPackageName;
 
     /**
@@ -71,7 +71,7 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<SelectSignKeyA
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mApiDao = new ApiDataAccessObject(getActivity());
+        mApiAppDao = ApiAppDao.getInstance(getActivity());
     }
 
     /**
@@ -173,7 +173,7 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<SelectSignKeyA
 
     @Override
     public void onSelectKeyItemClicked(long masterKeyId) {
-        mApiDao.addAllowedKeyIdForApp(mPackageName, masterKeyId);
+        mApiAppDao.addAllowedKeyIdForApp(mPackageName, masterKeyId);
         mResult.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, masterKeyId);
 
         getActivity().setResult(Activity.RESULT_OK, mResult);
