@@ -196,7 +196,8 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
         try {
 
             Intent viewKeyIntent = new Intent(getActivity(), ViewKeyActivity.class);
-            long masterKeyId = KeyRepository.create(getContext()).getCachedPublicKeyRing(
+            KeyRepository keyRepository = KeyRepository.create(requireContext());
+            long masterKeyId = keyRepository.getCachedPublicKeyRing(
                     KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(keyId)
             ).getMasterKeyId();
             viewKeyIntent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));

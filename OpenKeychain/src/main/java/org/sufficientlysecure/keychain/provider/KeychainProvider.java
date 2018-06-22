@@ -65,7 +65,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
     private static final int KEY_RINGS_FIND_BY_EMAIL = 400;
     private static final int KEY_RINGS_FIND_BY_SUBKEY = 401;
     private static final int KEY_RINGS_FIND_BY_USER_ID = 402;
-    private static final int KEY_RINGS_FILTER_BY_SIGNER = 403;
 
     private static final int KEY_SIGNATURES = 700;
 
@@ -108,9 +107,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
                         + KeychainContract.PATH_FIND + "/" + KeychainContract.PATH_BY_USER_ID + "/*",
                 KEY_RINGS_FIND_BY_USER_ID);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
-                        + KeychainContract.PATH_FILTER + "/" + KeychainContract.PATH_BY_SIGNER,
-                KEY_RINGS_FILTER_BY_SIGNER);
 
         /*
          * list key_ring specifics
@@ -191,8 +187,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
             case KEY_RINGS_UNIFIED:
             case KEY_RINGS_FIND_BY_EMAIL:
             case KEY_RINGS_FIND_BY_SUBKEY:
-            case KEY_RINGS_FIND_BY_USER_ID:
-            case KEY_RINGS_FILTER_BY_SIGNER: {
+            case KEY_RINGS_FIND_BY_USER_ID: {
                 HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(KeyRings._ID, Tables.KEYS + ".oid AS _id");
                 projectionMap.put(KeyRings.MASTER_KEY_ID, Tables.KEYS + "." + Keys.MASTER_KEY_ID);
@@ -354,23 +349,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                             Timber.e(e, "Malformed find by subkey query!");
                             qb.appendWhere(" AND 0");
                         }
-                        break;
-                    }
-                    case KEY_RINGS_FILTER_BY_SIGNER: {
-                        StringBuilder signerKeyIds = new StringBuilder();
-                        signerKeyIds.append(selectionArgs[0]);
-                        for (int i = 1; i < selectionArgs.length; i++) {
-                            signerKeyIds.append(',').append(selectionArgs[i]);
-                        }
-
-                        qb.appendWhere(" AND EXISTS (SELECT 1 FROM " + Tables.KEY_SIGNATURES + " WHERE " +
-                                Tables.KEY_SIGNATURES + "." + KeySignatures.MASTER_KEY_ID + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID +
-                                " AND " +
-                                Tables.KEY_SIGNATURES + "." + KeySignatures.SIGNER_KEY_ID + " IN (" + signerKeyIds + ")" +
-                                ")");
-
-                        selection = null;
-                        selectionArgs = null;
                         break;
                     }
                     case KEY_RINGS_FIND_BY_EMAIL:

@@ -3,6 +3,10 @@ CREATE TABLE IF NOT EXISTS keyrings_public (
     key_ring_data BLOB NULL
 );
 
+selectAllMasterKeyIds:
+SELECT master_key_id
+    FROM keyrings_public;
+
 selectByMasterKeyId:
 SELECT *
     FROM keyrings_public

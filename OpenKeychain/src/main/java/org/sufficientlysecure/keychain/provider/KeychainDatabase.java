@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.CertsModel;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.KeyMetadataModel;
 import org.sufficientlysecure.keychain.KeyRingsPublicModel;
+import org.sufficientlysecure.keychain.KeySignaturesModel;
 import org.sufficientlysecure.keychain.UserPacketsModel;
 import org.sufficientlysecure.keychain.model.ApiApp;
 import org.sufficientlysecure.keychain.model.Certification;
@@ -199,7 +200,7 @@ public class KeychainDatabase {
         db.execSQL(UserPacketsModel.CREATE_TABLE);
         db.execSQL(CertsModel.CREATE_TABLE);
         db.execSQL(KeyMetadataModel.CREATE_TABLE);
-        db.execSQL(CREATE_KEY_SIGNATURES);
+        db.execSQL(KeySignaturesModel.CREATE_TABLE);
         db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
         db.execSQL(CREATE_OVERRIDDEN_WARNINGS);
         db.execSQL(AutocryptPeersModel.CREATE_TABLE);

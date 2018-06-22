@@ -104,9 +104,6 @@ public class KeychainContract {
     public static final String PATH_BY_SUBKEY = "subkey";
     public static final String PATH_BY_USER_ID = "user_id";
 
-    public static final String PATH_FILTER = "filter";
-    public static final String PATH_BY_SIGNER = "signer";
-
     public static final String PATH_PUBLIC = "public";
     public static final String PATH_USER_IDS = "user_ids";
     public static final String PATH_KEYS = "keys";
@@ -169,10 +166,6 @@ public class KeychainContract {
         public static Uri buildUnifiedKeyRingsFindBySubkeyUri(long subkey) {
             return CONTENT_URI.buildUpon().appendPath(PATH_FIND)
                     .appendPath(PATH_BY_SUBKEY).appendPath(Long.toString(subkey)).build();
-        }
-
-        public static Uri buildUnifiedKeyRingsFilterBySigner() {
-            return CONTENT_URI.buildUpon().appendPath(PATH_FILTER).appendPath(PATH_BY_SIGNER).build();
         }
     }
 

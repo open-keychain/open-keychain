@@ -30,7 +30,6 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -113,15 +112,14 @@ public abstract class BaseOperation<T extends Parcelable> implements PassphraseC
 
     @Override
     public Passphrase getCachedPassphrase(long subKeyId) throws NoSecretKeyException {
-        try {
-            if (subKeyId != key.symmetric) {
-                long masterKeyId = mKeyRepository.getMasterKeyId(subKeyId);
-                return getCachedPassphrase(masterKeyId, subKeyId);
+        if (subKeyId != key.symmetric) {
+            Long masterKeyId = mKeyRepository.getMasterKeyIdBySubkeyId(subKeyId);
+            if (masterKeyId == null) {
+                throw new PassphraseCacheInterface.NoSecretKeyException();
             }
-            return getCachedPassphrase(key.symmetric, key.symmetric);
-        } catch (NotFoundException e) {
-            throw new PassphraseCacheInterface.NoSecretKeyException();
+            return getCachedPassphrase(masterKeyId, subKeyId);
         }
+        return getCachedPassphrase(key.symmetric, key.symmetric);
     }
 
     @Override

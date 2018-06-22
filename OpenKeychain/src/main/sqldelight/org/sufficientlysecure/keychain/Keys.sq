@@ -47,3 +47,8 @@ selectSecretKeyType:
 SELECT has_secret
     FROM keys
     WHERE key_id = ?;
+
+-- TODO move to KeySignatures.sq
+selectMasterKeyIdsBySigner:
+SELECT master_key_id
+    FROM key_signatures WHERE signer_key_id IN ?;

@@ -1013,30 +1013,18 @@ public class KeyWritableRepository extends KeyRepository {
 
         log.add(LogType.MSG_TRUST, 0);
 
-        Cursor cursor;
         Preferences preferences = Preferences.getPreferences(context);
         boolean isTrustDbInitialized = preferences.isKeySignaturesTableInitialized();
+
+        List<Long> masterKeyIds;
         if (!isTrustDbInitialized) {
             log.add(LogType.MSG_TRUST_INITIALIZE, 1);
-            cursor = contentResolver.query(KeyRings.buildUnifiedKeyRingsUri(),
-                    new String[] { KeyRings.MASTER_KEY_ID }, null, null, null);
+            masterKeyIds = getAllMasterKeyIds();
         } else {
-            String[] signerMasterKeyIdStrings = new String[signerMasterKeyIds.size()];
-            int i = 0;
-            for (Long masterKeyId : signerMasterKeyIds) {
-                log.add(LogType.MSG_TRUST_KEY, 1, KeyFormattingUtils.beautifyKeyId(masterKeyId));
-                signerMasterKeyIdStrings[i++] = Long.toString(masterKeyId);
-            }
-
-            cursor = contentResolver.query(KeyRings.buildUnifiedKeyRingsFilterBySigner(),
-                    new String[] { KeyRings.MASTER_KEY_ID }, null, signerMasterKeyIdStrings, null);
+            masterKeyIds = getMasterKeyIdsBySigner(signerMasterKeyIds);
         }
 
-        if (cursor == null) {
-            throw new IllegalStateException();
-        }
-
-        int totalKeys = cursor.getCount();
+        int totalKeys = masterKeyIds.size();
         int processedKeys = 0;
 
         if (totalKeys == 0) {
@@ -1046,34 +1034,30 @@ public class KeyWritableRepository extends KeyRepository {
             log.add(LogType.MSG_TRUST_COUNT, 1, totalKeys);
         }
 
-        try {
-            while (cursor.moveToNext()) {
-                try {
-                    long masterKeyId = cursor.getLong(0);
+        for (long masterKeyId : masterKeyIds) {
+            try {
+                log.add(LogType.MSG_TRUST_KEY, 1, KeyFormattingUtils.beautifyKeyId(masterKeyId));
 
-                    byte[] pubKeyData = loadPublicKeyRingData(masterKeyId);
-                    UncachedKeyRing uncachedKeyRing = UncachedKeyRing.decodeFromData(pubKeyData);
+                byte[] pubKeyData = loadPublicKeyRingData(masterKeyId);
+                UncachedKeyRing uncachedKeyRing = UncachedKeyRing.decodeFromData(pubKeyData);
 
-                    clearLog();
-                    SaveKeyringResult result = savePublicKeyRing(uncachedKeyRing, true);
+                clearLog();
+                SaveKeyringResult result = savePublicKeyRing(uncachedKeyRing, true);
 
-                    log.add(result, 1);
-                    progress.setProgress(processedKeys++, totalKeys);
-                } catch (NotFoundException | PgpGeneralException | IOException e) {
-                    Timber.e(e, "Error updating trust database");
-                    return new UpdateTrustResult(UpdateTrustResult.RESULT_ERROR, log);
-                }
+                log.add(result, 1);
+                progress.setProgress(processedKeys++, totalKeys);
+            } catch (NotFoundException | PgpGeneralException | IOException e) {
+                Timber.e(e, "Error updating trust database");
+                return new UpdateTrustResult(UpdateTrustResult.RESULT_ERROR, log);
             }
-
-            if (!isTrustDbInitialized) {
-                preferences.setKeySignaturesTableInitialized();
-            }
-
-            log.add(LogType.MSG_TRUST_OK, 1);
-            return new UpdateTrustResult(UpdateTrustResult.RESULT_OK, log);
-        } finally {
-            cursor.close();
         }
+
+        if (!isTrustDbInitialized) {
+            preferences.setKeySignaturesTableInitialized();
+        }
+
+        log.add(LogType.MSG_TRUST_OK, 1);
+        return new UpdateTrustResult(UpdateTrustResult.RESULT_OK, log);
     }
 
     /**

@@ -58,11 +58,11 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.keysync.KeyserverSyncManager;
-import org.sufficientlysecure.keychain.livedata.KeyRingDao;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.BenchmarkResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.service.BenchmarkInputParcel;
@@ -256,18 +256,18 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
     }
 
     public static class KeyListLiveData extends AsyncTaskLiveData<List<FlexibleKeyItem>> {
-        private final KeyRingDao keyRingDao;
+        private final KeyRepository keyRepository;
         private FlexibleKeyItemFactory flexibleKeyItemFactory;
 
         KeyListLiveData(@NonNull Context context) {
             super(context, KeyRings.CONTENT_URI);
-            keyRingDao = KeyRingDao.getInstance(context.getApplicationContext());
+            keyRepository = KeyRepository.create(context.getApplicationContext());
             flexibleKeyItemFactory = new FlexibleKeyItemFactory(context.getResources());
         }
 
         @Override
         protected List<FlexibleKeyItem> asyncLoadData() {
-            List<UnifiedKeyInfo> unifiedKeyInfo = keyRingDao.getUnifiedKeyInfo();
+            List<UnifiedKeyInfo> unifiedKeyInfo = keyRepository.getUnifiedKeyInfo();
             return flexibleKeyItemFactory.mapUnifiedKeyInfoToFlexibleKeyItems(unifiedKeyInfo);
         }
     }

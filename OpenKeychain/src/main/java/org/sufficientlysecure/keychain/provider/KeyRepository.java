@@ -33,6 +33,7 @@ import com.squareup.sqldelight.SqlDelightQuery;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.model.KeyRingPublic;
 import org.sufficientlysecure.keychain.model.SubKey;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.model.UserPacket;
 import org.sufficientlysecure.keychain.model.UserPacket.UserId;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -172,7 +173,7 @@ public class KeyRepository extends AbstractDao {
         return getGenericData(KeyRings.buildUnifiedKeyRingUri(masterKeyId), proj, types);
     }
 
-    public long getMasterKeyId(long subKeyId) throws NotFoundException {
+    public long getMasterKeyIdBySubKeyId(long subKeyId) throws NotFoundException {
         return (Long) getGenericData(KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId),
                 KeyRings.MASTER_KEY_ID, FIELD_TYPE_INTEGER);
     }
@@ -236,6 +237,33 @@ public class KeyRepository extends AbstractDao {
                 cursor.close();
             }
         }
+    }
+
+    public List<Long> getAllMasterKeyIds() {
+        SqlDelightQuery query = KeyRingPublic.FACTORY.selectAllMasterKeyIds();
+        return mapAllRows(query, KeyRingPublic.FACTORY.selectAllMasterKeyIdsMapper()::map);
+    }
+
+    public List<Long> getMasterKeyIdsBySigner(List<Long> signerMasterKeyIds) {
+        long[] signerKeyIds = new long[signerMasterKeyIds.size()];
+        int i = 0;
+        for (Long signerKeyId : signerMasterKeyIds) {
+            signerKeyIds[i++] = signerKeyId;
+        }
+        SqlDelightQuery query = SubKey.FACTORY.selectMasterKeyIdsBySigner(signerKeyIds);
+        return mapAllRows(query, KeyRingPublic.FACTORY.selectAllMasterKeyIdsMapper()::map);
+    }
+
+    public List<UnifiedKeyInfo> getUnifiedKeyInfo() {
+        SqlDelightQuery query = SubKey.FACTORY.selectAllUnifiedKeyInfo();
+        List<UnifiedKeyInfo> result = new ArrayList<>();
+        try (Cursor cursor = getReadableDb().query(query)) {
+            while (cursor.moveToNext()) {
+                UnifiedKeyInfo unifiedKeyInfo = SubKey.UNIFIED_KEY_INFO_MAPPER.map(cursor);
+                result.add(unifiedKeyInfo);
+            }
+        }
+        return result;
     }
 
     public List<UserId> getUserIds(long... masterKeyIds) {
