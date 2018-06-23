@@ -41,6 +41,7 @@ import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,7 +63,6 @@ import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.ViewKeyAdvActivity.ViewKeyAdvViewModel;
-import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -70,7 +70,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import timber.log.Timber;
 
-public class ViewKeyAdvShareFragment extends LoaderFragment {
+public class ViewKeyAdvShareFragment extends Fragment {
     private ImageView mQrCode;
     private CardView mQrCodeLayout;
     private TextView mFingerprintView;
@@ -79,9 +79,8 @@ public class ViewKeyAdvShareFragment extends LoaderFragment {
     private UnifiedKeyInfo unifiedKeyInfo;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
-        View root = super.onCreateView(inflater, superContainer, savedInstanceState);
-        View view = inflater.inflate(R.layout.view_key_adv_share_fragment, getContainer());
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.view_key_adv_share_fragment, viewGroup, false);
 
         mFingerprintView = view.findViewById(R.id.view_key_fingerprint);
         mQrCode = view.findViewById(R.id.view_key_qr_code);
@@ -132,7 +131,7 @@ public class ViewKeyAdvShareFragment extends LoaderFragment {
         vKeySshClipboardButton.setOnClickListener(v -> shareKey(true, true));
         vKeyUploadButton.setOnClickListener(v -> uploadToKeyserver());
 
-        return root;
+        return view;
     }
 
     private void startSafeSlinger() {
@@ -316,8 +315,6 @@ public class ViewKeyAdvShareFragment extends LoaderFragment {
 
         final String fingerprint = KeyFormattingUtils.convertFingerprintToHex(unifiedKeyInfo.fingerprint());
         mFingerprintView.setText(KeyFormattingUtils.formatFingerprint(fingerprint));
-
-        setContentShown(true);
     }
 
     private void onLoadQrCode(Bitmap qrCode) {

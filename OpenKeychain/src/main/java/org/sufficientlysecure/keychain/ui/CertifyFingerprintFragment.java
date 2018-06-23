@@ -22,6 +22,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -34,13 +36,11 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import timber.log.Timber;
 
 
-public class CertifyFingerprintFragment extends LoaderFragment implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+public class CertifyFingerprintFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     static final int REQUEST_CERTIFY = 1;
 
@@ -69,9 +69,8 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
-        View root = super.onCreateView(inflater, superContainer, savedInstanceState);
-        View view = inflater.inflate(R.layout.certify_fingerprint_fragment, getContainer());
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.certify_fingerprint_fragment, viewGroup, false);
 
         TextView actionNo = view.findViewById(R.id.certify_fingerprint_button_no);
         mActionYes = view.findViewById(R.id.certify_fingerprint_button_yes);
@@ -93,7 +92,7 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
             }
         });
 
-        return root;
+        return view;
     }
 
     @Override
@@ -127,7 +126,6 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
     static final int INDEX_UNIFIED_FINGERPRINT = 1;
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        setContentShown(false);
         switch (id) {
             case LOADER_ID_UNIFIED: {
                 Uri baseUri = KeyRings.buildUnifiedKeyRingUri(mDataUri);
@@ -161,7 +159,6 @@ public class CertifyFingerprintFragment extends LoaderFragment implements
             }
 
         }
-        setContentShown(true);
     }
 
     private void displayHexConfirm(byte[] fingerprintBlob) {

@@ -26,6 +26,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -48,13 +50,12 @@ import org.sufficientlysecure.keychain.ui.ViewKeyAdvActivity.ViewKeyAdvViewModel
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAddedAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.dialog.AddSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyExpiryDialogFragment;
 
 
-public class ViewKeyAdvSubkeysFragment extends LoaderFragment {
+public class ViewKeyAdvSubkeysFragment extends Fragment {
     private ListView mSubkeysList;
     private ListView mSubkeysAddedList;
     private View mSubkeysAddedLayout;
@@ -69,9 +70,8 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment {
     private UnifiedKeyInfo unifiedKeyInfo;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
-        View root = super.onCreateView(inflater, superContainer, savedInstanceState);
-        View view = inflater.inflate(R.layout.view_key_adv_subkeys_fragment, getContainer());
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.view_key_adv_subkeys_fragment, viewGroup, false);
 
         mSubkeysList = view.findViewById(R.id.view_key_subkeys);
         mSubkeysAddedList = view.findViewById(R.id.view_key_subkeys_added);
@@ -95,7 +95,7 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment {
 
         setHasOptionsMenu(true);
 
-        return root;
+        return view;
     }
 
     @Override
@@ -109,8 +109,6 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment {
         ViewKeyAdvViewModel viewModel = ViewModelProviders.of(requireActivity()).get(ViewKeyAdvViewModel.class);
         viewModel.getUnifiedKeyInfoLiveData(requireContext()).observe(this, this::onLoadFinished);
         viewModel.getSubkeyLiveData(requireContext()).observe(this, this::onLoadSubKeys);
-
-        setContentShown(false);
     }
 
     public void onLoadFinished(UnifiedKeyInfo unifiedKeyInfo) {
@@ -124,9 +122,7 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment {
 
     private void onLoadSubKeys(List<SubKey> subKeys) {
         mSubkeysAdapter.setData(subKeys);
-        setContentShown(true);
     }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

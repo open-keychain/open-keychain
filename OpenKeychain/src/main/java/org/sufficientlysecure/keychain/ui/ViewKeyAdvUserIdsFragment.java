@@ -26,6 +26,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -47,14 +49,13 @@ import org.sufficientlysecure.keychain.ui.ViewKeyAdvActivity.ViewKeyAdvViewModel
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAddedAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 
 
-public class ViewKeyAdvUserIdsFragment extends LoaderFragment {
+public class ViewKeyAdvUserIdsFragment extends Fragment {
     private ListView mUserIds;
     private ListView mUserIdsAddedList;
     private View mUserIdsAddedLayout;
@@ -69,9 +70,8 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment {
     private UnifiedKeyInfo unifiedKeyInfo;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
-        View root = super.onCreateView(inflater, superContainer, savedInstanceState);
-        View view = inflater.inflate(R.layout.view_key_adv_user_ids_fragment, getContainer());
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.view_key_adv_user_ids_fragment, viewGroup, false);
 
         mUserIds = view.findViewById(R.id.view_key_user_ids);
         mUserIdsAddedList = view.findViewById(R.id.view_key_user_ids_added);
@@ -95,7 +95,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment {
 
         setHasOptionsMenu(true);
 
-        return root;
+        return view;
     }
 
     private void showOrEditUserIdInfo(final int position) {
@@ -198,8 +198,6 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment {
         ViewKeyAdvViewModel viewModel = ViewModelProviders.of(requireActivity()).get(ViewKeyAdvViewModel.class);
         viewModel.getUnifiedKeyInfoLiveData(requireContext()).observe(this, this::onLoadUnifiedKeyInfo);
         viewModel.getUserIdLiveData(requireContext()).observe(this, this::onLoadUserIds);
-
-        setContentShown(false);
     }
 
     public void onLoadUnifiedKeyInfo(UnifiedKeyInfo unifiedKeyInfo) {
@@ -211,7 +209,6 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment {
 
     private void onLoadUserIds(List<UserId> userIds) {
         mUserIdsAdapter.setData(userIds);
-        setContentShown(true);
     }
 
     @Override

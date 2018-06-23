@@ -28,6 +28,8 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -55,12 +57,11 @@ import org.sufficientlysecure.keychain.operations.results.KeybaseVerificationRes
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.KeybaseVerificationParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 
-public class ViewKeyKeybaseFragment extends LoaderFragment implements
+public class ViewKeyKeybaseFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
         CryptoOperationHelper.Callback<KeybaseVerificationParcel, KeybaseVerificationResult> {
 
@@ -99,9 +100,8 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
-        View root = super.onCreateView(inflater, superContainer, savedInstanceState);
-        View view = inflater.inflate(R.layout.view_key_adv_keybase_fragment, getContainer());
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.view_key_adv_keybase_fragment, viewGroup, false);
         mInflater = inflater;
 
         mReportHeader = view.findViewById(R.id.view_key_trust_cloud_narrative);
@@ -113,7 +113,7 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
         mProofVerifyHeader.setVisibility(View.GONE);
         mProofVerifyDetail.setVisibility(View.GONE);
 
-        return root;
+        return view;
     }
 
     @Override
@@ -140,8 +140,6 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
     static final int INDEX_VERIFIED = 5;
 
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        setContentShown(false);
-
         switch (id) {
             case LOADER_ID_DATABASE: {
                 Uri baseUri = KeyRings.buildUnifiedKeyRingUri(masterKeyId);
@@ -173,8 +171,6 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
 
             startSearch(fingerprint);
         }
-
-        setContentShown(true);
     }
 
     private void startSearch(final String fingerprint) {
