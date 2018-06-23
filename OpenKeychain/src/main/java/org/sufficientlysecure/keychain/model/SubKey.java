@@ -58,5 +58,9 @@ public abstract class SubKey implements KeysModel {
         public boolean has_auth_key() {
             return has_auth_key_int() != 0;
         }
+
+        public boolean has_encrypt_key() {
+            return has_encrypt_key_int() != 0;
+        }
     }
 }

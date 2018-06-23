@@ -21,7 +21,6 @@ package org.sufficientlysecure.keychain.ui.keyview.presenter;
 import java.util.Comparator;
 import java.util.Date;
 
-import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.content.Context;

@@ -88,7 +88,6 @@ public class IdentitiesPresenter implements Observer<List<IdentityInfo>> {
 
     @Override
     public void onChanged(@Nullable List<IdentityInfo> identityInfos) {
-        viewKeyMvpView.setContentShown(true, false);
         identitiesAdapter.setData(identityInfos);
     }
 

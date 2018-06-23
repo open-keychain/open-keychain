@@ -26,11 +26,11 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.PopupMenu.OnDismissListener;
 import android.support.v7.widget.PopupMenu.OnMenuItemClickListener;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -40,8 +40,9 @@ import android.view.ViewGroup;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.model.KeyMetadata;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
+import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity.ViewKeyViewModel;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.IdentityInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.KeySubkeyStatus;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SystemContactDao.SystemContactInfo;
@@ -56,12 +57,7 @@ import org.sufficientlysecure.keychain.ui.keyview.view.KeyserverStatusView;
 import org.sufficientlysecure.keychain.ui.keyview.view.SystemContactCardView;
 
 
-public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView, OnMenuItemClickListener {
-    public static final String ARG_MASTER_KEY_ID = "master_key_id";
-    public static final String ARG_IS_SECRET = "is_secret";
-
-    boolean mIsSecret = false;
-
+public class ViewKeyFragment extends Fragment implements ViewKeyMvpView, OnMenuItemClickListener {
     private IdentitiesCardView identitiesCardView;
     private IdentitiesPresenter identitiesPresenter;
 
@@ -76,32 +72,20 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView, O
 
     private Integer displayedContextMenuPosition;
 
-    /**
-     * Creates new instance of this fragment
-     */
-    public static ViewKeyFragment newInstance(long masterKeyId, boolean isSecret) {
-        ViewKeyFragment frag = new ViewKeyFragment();
-        Bundle args = new Bundle();
-        args.putLong(ARG_MASTER_KEY_ID, masterKeyId);
-        args.putBoolean(ARG_IS_SECRET, isSecret);
-
-        frag.setArguments(args);
-
-        return frag;
+    public static ViewKeyFragment newInstance() {
+        return new ViewKeyFragment();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
-        View root = super.onCreateView(inflater, superContainer, savedInstanceState);
-        View view = inflater.inflate(R.layout.view_key_fragment, getContainer());
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.view_key_fragment, viewGroup, false);
 
         identitiesCardView = view.findViewById(R.id.card_identities);
-
         systemContactCard = view.findViewById(R.id.linked_system_contact_card);
         keyStatusHealth = view.findViewById(R.id.key_status_health);
         keyStatusKeyserver = view.findViewById(R.id.key_status_keyserver);
 
-        return root;
+        return view;
     }
 
     public static class KeyFragmentViewModel extends ViewModel {
@@ -143,39 +127,36 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView, O
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        long masterKeyId = getArguments().getLong(ARG_MASTER_KEY_ID);
-        mIsSecret = getArguments().getBoolean(ARG_IS_SECRET);
+        ViewKeyViewModel viewKeyViewModel = ViewModelProviders.of(requireActivity()).get(ViewKeyViewModel.class);
+        viewKeyViewModel.getUnifiedKeyInfoLiveData(requireContext()).observe(this, this::onLoadUnifiedKeyInfo);
+    }
 
+    private void onLoadUnifiedKeyInfo(UnifiedKeyInfo unifiedKeyInfo) {
         KeyFragmentViewModel model = ViewModelProviders.of(this).get(KeyFragmentViewModel.class);
 
         identitiesPresenter = new IdentitiesPresenter(
-                getContext(), identitiesCardView, this, masterKeyId, mIsSecret);
+                getContext(), identitiesCardView, this, unifiedKeyInfo.master_key_id(), unifiedKeyInfo.has_any_secret());
         model.getIdentityInfo(identitiesPresenter).observe(this, identitiesPresenter);
 
         systemContactPresenter = new SystemContactPresenter(
-                getContext(), systemContactCard, masterKeyId, mIsSecret);
+                getContext(), systemContactCard, unifiedKeyInfo.master_key_id(), unifiedKeyInfo.has_any_secret());
         model.getSystemContactInfo(systemContactPresenter).observe(this, systemContactPresenter);
 
-        keyHealthPresenter = new KeyHealthPresenter(getContext(), keyStatusHealth, masterKeyId);
+        keyHealthPresenter = new KeyHealthPresenter(getContext(), keyStatusHealth, unifiedKeyInfo.master_key_id());
         model.getSubkeyStatus(keyHealthPresenter).observe(this, keyHealthPresenter);
 
         keyserverStatusPresenter = new KeyserverStatusPresenter(
-                getContext(), keyStatusKeyserver, masterKeyId, mIsSecret);
+                getContext(), keyStatusKeyserver, unifiedKeyInfo.master_key_id(), unifiedKeyInfo.has_any_secret());
         model.getKeyserverStatus(keyserverStatusPresenter).observe(this, keyserverStatusPresenter);
     }
 
     @Override
     public void switchToFragment(final Fragment frag, final String backStackName) {
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                getFragmentManager().beginTransaction()
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                        .replace(R.id.view_key_fragment, frag)
-                        .addToBackStack(backStackName)
-                        .commit();
-            }
-        });
+        new Handler().post(() -> requireFragmentManager().beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(R.id.view_key_fragment, frag)
+                .addToBackStack(backStackName)
+                .commit());
     }
 
     @Override
@@ -189,10 +170,6 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView, O
         }
     }
 
-    public boolean isValidForData(boolean isSecret) {
-        return isSecret == mIsSecret;
-    }
-
     @Override
     public void startActivityAndShowResultSnackbar(Intent intent) {
         startActivityForResult(intent, 0);
@@ -200,26 +177,18 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView, O
 
     @Override
     public void showDialogFragment(final DialogFragment dialogFragment, final String tag) {
-        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
-            public void run() {
-                dialogFragment.show(getActivity().getSupportFragmentManager(), tag);
-            }
-        });
+        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(
+                () -> dialogFragment.show(requireFragmentManager(), tag));
     }
 
     @Override
     public void showContextMenu(int position, View anchor) {
         displayedContextMenuPosition = position;
 
-        PopupMenu menu = new PopupMenu(getContext(), anchor);
+        PopupMenu menu = new PopupMenu(requireContext(), anchor);
         menu.inflate(R.menu.identity_context_menu);
         menu.setOnMenuItemClickListener(this);
-        menu.setOnDismissListener(new OnDismissListener() {
-            @Override
-            public void onDismiss(PopupMenu popupMenu) {
-                displayedContextMenuPosition = null;
-            }
-        });
+        menu.setOnDismissListener(popupMenu -> displayedContextMenuPosition = null);
         menu.show();
     }
 

@@ -28,6 +28,7 @@ SELECT keys.master_key_id, keys.fingerprint, MIN(user_packets.rank), user_packet
         (EXISTS (SELECT * FROM user_packets AS dups WHERE dups.master_key_id != keys.master_key_id AND dups.rank = 0 AND dups.name = user_packets.name COLLATE NOCASE AND dups.email = user_packets.email COLLATE NOCASE )) AS has_duplicate_int,
         (EXISTS (SELECT * FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.has_secret != 0 )) AS has_any_secret_int,
         (EXISTS (SELECT * FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_authenticate != 0 )) AS has_auth_key_int,
+        (EXISTS (SELECT * FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_encrypt != 0 )) AS has_encrypt_key_int,
         GROUP_CONCAT(DISTINCT aTI.package_name) AS autocrypt_package_names_csv,
         GROUP_CONCAT(user_packets.user_id, '|||') AS user_id_list
     FROM keys
@@ -43,6 +44,7 @@ SELECT keys.master_key_id, keys.fingerprint, MIN(user_packets.rank), user_packet
        (EXISTS (SELECT * FROM user_packets AS dups WHERE dups.master_key_id != keys.master_key_id AND dups.rank = 0 AND dups.name = user_packets.name COLLATE NOCASE AND dups.email = user_packets.email COLLATE NOCASE )) AS has_duplicate_int,
        (EXISTS (SELECT * FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.has_secret != 0 )) AS has_any_secret_int,
        (EXISTS (SELECT * FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_authenticate != 0 )) AS has_auth_key_int,
+        (EXISTS (SELECT * FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_encrypt != 0 )) AS has_encrypt_key_int,
        GROUP_CONCAT(DISTINCT aTI.package_name) AS autocrypt_package_names_csv,
        GROUP_CONCAT(user_packets.user_id, '|||') AS user_id_list
        FROM keys
