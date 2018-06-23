@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui.linked;
 
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -61,19 +62,18 @@ import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import javax.net.ssl.HttpsURLConnection;
+import org.bouncycastle.util.encoders.Hex;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.linked.LinkedAttribute;
 import org.sufficientlysecure.keychain.linked.resources.GithubResource;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
-import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
+import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.widget.StatusIndicator;
@@ -433,8 +433,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
             @Override
             public void run() {
                 FragmentActivity activity = getActivity();
-                Intent intent = new Intent(activity, ViewKeyActivity.class);
-                intent.setData(KeyRings.buildGenericKeyRingUri(mMasterKeyId));
+                Intent intent = ViewKeyActivity.getViewKeyActivityIntent(requireActivity(), mMasterKeyId);
                 // intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

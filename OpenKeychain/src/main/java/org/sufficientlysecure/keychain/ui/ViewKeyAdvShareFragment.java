@@ -18,45 +18,50 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.security.NoSuchAlgorithmException;
+
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Transformations;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import org.openintents.openpgp.util.OpenPgpUtils;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.livedata.GenericLiveData;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.SshPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
+import org.sufficientlysecure.keychain.ui.ViewKeyAdvActivity.ViewKeyAdvViewModel;
 import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -65,28 +70,13 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import timber.log.Timber;
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.security.NoSuchAlgorithmException;
-
-public class ViewKeyAdvShareFragment extends LoaderFragment implements
-        LoaderManager.LoaderCallbacks<Cursor> {
-
-    public static final String ARG_DATA_URI = "uri";
-
+public class ViewKeyAdvShareFragment extends LoaderFragment {
     private ImageView mQrCode;
     private CardView mQrCodeLayout;
     private TextView mFingerprintView;
 
-    private static final int LOADER_ID_UNIFIED = 0;
-
-    private Uri mDataUri;
-
-    private byte[] mFingerprint;
-    private String mUserId;
     private Bitmap mQrCodeBitmapCache;
+    private UnifiedKeyInfo unifiedKeyInfo;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
@@ -102,34 +92,24 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         // just calls requestLayout when it is finished, this way the loader and
         // background task are disconnected from any layouting the ImageView may
         // undergo. Please note how these six lines are perfectly right-aligned.
-        mQrCode.addOnLayoutChangeListener(new OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop,
-                    int oldRight,
-                    int oldBottom) {
-                // bitmap scaling is expensive, avoid doing it if we already have the correct size!
-                int mCurrentWidth = 0, mCurrentHeight = 0;
-                if (mQrCodeBitmapCache != null) {
-                    if (mCurrentWidth == mQrCode.getWidth() && mCurrentHeight == mQrCode.getHeight()) {
-                        return;
-                    }
-                    mCurrentWidth = mQrCode.getWidth();
-                    mCurrentHeight = mQrCode.getHeight();
-                    // scale the image up to our actual size. we do this in code rather
-                    // than let the ImageView do this because we don't require filtering.
-                    Bitmap scaled = Bitmap.createScaledBitmap(mQrCodeBitmapCache,
-                            mCurrentWidth, mCurrentHeight, false);
-                    mQrCode.setImageBitmap(scaled);
+        mQrCode.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            // bitmap scaling is expensive, avoid doing it if we already have the correct size!
+            int mCurrentWidth = 0, mCurrentHeight = 0;
+            if (mQrCodeBitmapCache != null) {
+                if (mCurrentWidth == mQrCode.getWidth() && mCurrentHeight == mQrCode.getHeight()) {
+                    return;
                 }
+                mCurrentWidth = mQrCode.getWidth();
+                mCurrentHeight = mQrCode.getHeight();
+                // scale the image up to our actual size. we do this in code rather
+                // than let the ImageView do this because we don't require filtering.
+                Bitmap scaled = Bitmap.createScaledBitmap(mQrCodeBitmapCache,
+                        mCurrentWidth, mCurrentHeight, false);
+                mQrCode.setImageBitmap(scaled);
             }
         });
         mQrCodeLayout = view.findViewById(R.id.view_key_qr_code_layout);
-        mQrCodeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showQrCodeDialog();
-            }
-        });
+        mQrCodeLayout.setOnClickListener(v -> showQrCodeDialog());
 
         View vFingerprintShareButton = view.findViewById(R.id.view_key_action_fingerprint_share);
         View vFingerprintClipboardButton = view.findViewById(R.id.view_key_action_fingerprint_clipboard);
@@ -139,106 +119,43 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
         View vKeySshShareButton = view.findViewById(R.id.view_key_action_key_ssh_share);
         View vKeySshClipboardButton = view.findViewById(R.id.view_key_action_key_ssh_clipboard);
         View vKeyUploadButton = view.findViewById(R.id.view_key_action_upload);
-        vKeySafeSlingerButton.setColorFilter(FormattingUtils.getColorFromAttr(getActivity(), R.attr.colorTertiaryText),
+        vKeySafeSlingerButton.setColorFilter(FormattingUtils.getColorFromAttr(requireContext(), R.attr.colorTertiaryText),
                 PorterDuff.Mode.SRC_IN);
 
-        vFingerprintShareButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shareFingerprint(false);
-            }
-        });
-        vFingerprintClipboardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shareFingerprint(true);
-            }
-        });
-        vKeyShareButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shareKey(false, false);
-            }
-        });
-        vKeyClipboardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shareKey(true, false);
-            }
-        });
+        vFingerprintShareButton.setOnClickListener(v -> shareFingerprint(false));
+        vFingerprintClipboardButton.setOnClickListener(v -> shareFingerprint(true));
+        vKeyShareButton.setOnClickListener(v -> shareKey(false, false));
+        vKeyClipboardButton.setOnClickListener(v -> shareKey(true, false));
 
-        vKeySafeSlingerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startSafeSlinger(mDataUri);
-            }
-        });
-        vKeySshShareButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shareKey(false, true);
-            }
-        });
-        vKeySshClipboardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                shareKey(true, true);
-            }
-        });
-        vKeyUploadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                uploadToKeyserver();
-            }
-        });
+        vKeySafeSlingerButton.setOnClickListener(v -> startSafeSlinger());
+        vKeySshShareButton.setOnClickListener(v -> shareKey(false, true));
+        vKeySshClipboardButton.setOnClickListener(v -> shareKey(true, true));
+        vKeyUploadButton.setOnClickListener(v -> uploadToKeyserver());
 
         return root;
     }
 
-    private void startSafeSlinger(Uri dataUri) {
-        long keyId = 0;
-        try {
-            keyId = KeyRepository.create(getContext())
-                    .getCachedPublicKeyRing(dataUri)
-                    .extractOrGetMasterKeyId();
-        } catch (PgpKeyNotFoundException e) {
-            Timber.e(e, "key not found!");
-        }
+    private void startSafeSlinger() {
         Intent safeSlingerIntent = new Intent(getActivity(), SafeSlingerActivity.class);
-        safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, keyId);
+        safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, unifiedKeyInfo.master_key_id());
         startActivityForResult(safeSlingerIntent, 0);
-    }
-
-    private boolean hasAuthenticationKey() {
-        KeyRepository keyRepository = KeyRepository.create(getContext());
-        long masterKeyId = Constants.key.none;
-        long authSubKeyId = Constants.key.none;
-        try {
-            masterKeyId = keyRepository.getCachedPublicKeyRing(mDataUri).extractOrGetMasterKeyId();
-            CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(masterKeyId);
-            authSubKeyId = cachedPublicKeyRing.getAuthenticationId();
-        } catch (PgpKeyNotFoundException e) {
-            Timber.e(e, "key not found!");
-        }
-        return authSubKeyId != Constants.key.none;
     }
 
     private String getShareKeyContent(boolean asSshKey)
             throws PgpKeyNotFoundException, KeyRepository.NotFoundException, IOException, PgpGeneralException,
             NoSuchAlgorithmException {
 
-        KeyRepository keyRepository = KeyRepository.create(getContext());
+        KeyRepository keyRepository = KeyRepository.create(requireContext());
 
         String content;
-        long masterKeyId = keyRepository.getCachedPublicKeyRing(mDataUri).extractOrGetMasterKeyId();
         if (asSshKey) {
-            long authSubKeyId = keyRepository.getCachedPublicKeyRing(masterKeyId).getAuthenticationId();
-            CanonicalizedPublicKey publicKey = keyRepository.getCanonicalizedPublicKeyRing(masterKeyId)
+            long authSubKeyId = keyRepository.getCachedPublicKeyRing(unifiedKeyInfo.master_key_id()).getAuthenticationId();
+            CanonicalizedPublicKey publicKey = keyRepository.getCanonicalizedPublicKeyRing(unifiedKeyInfo.master_key_id())
                                                             .getPublicKey(authSubKeyId);
             SshPublicKey sshPublicKey = new SshPublicKey(publicKey);
             content = sshPublicKey.getEncodedKey();
         } else {
-            content = keyRepository.getPublicKeyRingAsArmoredString(masterKeyId);
+            content = keyRepository.getPublicKeyRingAsArmoredString(unifiedKeyInfo.master_key_id());
         }
 
         return content;
@@ -246,10 +163,10 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
 
     private void shareKey(boolean toClipboard, boolean asSshKey) {
         Activity activity = getActivity();
-        if (activity == null || mFingerprint == null) {
+        if (activity == null || unifiedKeyInfo == null) {
             return;
         }
-        if (asSshKey && !hasAuthenticationKey()) {
+        if (asSshKey && !unifiedKeyInfo.has_auth_key()) {
             Notify.create(activity, R.string.authentication_subkey_not_found, Style.ERROR).show();
             return;
         }
@@ -281,10 +198,11 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
             try {
                 TemporaryFileProvider shareFileProv = new TemporaryFileProvider();
 
-                String filename = KeyFormattingUtils.convertFingerprintToHex(mFingerprint);
-                OpenPgpUtils.UserId mainUserId = KeyRing.splitUserId(mUserId);
-                if (mainUserId.name != null) {
-                    filename = mainUserId.name;
+                String filename;
+                if (unifiedKeyInfo.name() != null) {
+                    filename = unifiedKeyInfo.name();
+                } else {
+                    filename = KeyFormattingUtils.convertFingerprintToHex(unifiedKeyInfo.fingerprint());
                 }
                 Uri contentUri = TemporaryFileProvider.createFile(activity, filename + Constants.FILE_EXTENSION_ASC);
 
@@ -316,12 +234,12 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
 
     private void shareFingerprint(boolean toClipboard) {
         Activity activity = getActivity();
-        if (activity == null || mFingerprint == null) {
+        if (activity == null || unifiedKeyInfo == null) {
             return;
         }
 
         String content;
-        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(mFingerprint);
+        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(unifiedKeyInfo.fingerprint());
         if (!toClipboard) {
             content = Constants.FINGERPRINT_SCHEME + ":" + fingerprint;
         } else {
@@ -365,141 +283,63 @@ public class ViewKeyAdvShareFragment extends LoaderFragment implements
             opts = options.toBundle();
         }
 
-        qrCodeIntent.setData(mDataUri);
-        ActivityCompat.startActivity(getActivity(), qrCodeIntent, opts);
+        qrCodeIntent.setData(KeyRings.buildUnifiedKeyRingUri(unifiedKeyInfo.master_key_id()));
+        ActivityCompat.startActivity(requireActivity(), qrCodeIntent, opts);
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
-        if (dataUri == null) {
-            Timber.e("Data missing. Should be Uri of key!");
-            getActivity().finish();
+        ViewKeyAdvViewModel viewModel = ViewModelProviders.of(requireActivity()).get(ViewKeyAdvViewModel.class);
+        LiveData<UnifiedKeyInfo> unifiedKeyInfoLiveData = viewModel.getUnifiedKeyInfoLiveData(requireContext());
+        unifiedKeyInfoLiveData.observe(this, this::onLoadUnifiedKeyInfo);
+
+        LiveData<Bitmap> qrCodeLiveData = Transformations.switchMap(unifiedKeyInfoLiveData,
+                (unifiedKeyInfo) -> new GenericLiveData<>(getContext(), null,
+                        () -> {
+                            String fingerprintHex = KeyFormattingUtils.convertFingerprintToHex(unifiedKeyInfo.fingerprint());
+                            Uri uri = new Uri.Builder().scheme(Constants.FINGERPRINT_SCHEME).opaquePart(fingerprintHex).build();
+                            // render with minimal size
+                            return QrCodeUtils.getQRCodeBitmap(uri, 0);
+                        }
+                ));
+        qrCodeLiveData.observe(this, this::onLoadQrCode);
+    }
+
+    public void onLoadUnifiedKeyInfo(UnifiedKeyInfo unifiedKeyInfo) {
+        if (unifiedKeyInfo == null) {
             return;
         }
 
-        loadData(dataUri);
-    }
+        this.unifiedKeyInfo = unifiedKeyInfo;
 
-    private void loadData(Uri dataUri) {
-        mDataUri = dataUri;
+        final String fingerprint = KeyFormattingUtils.convertFingerprintToHex(unifiedKeyInfo.fingerprint());
+        mFingerprintView.setText(KeyFormattingUtils.formatFingerprint(fingerprint));
 
-        // Prepare the loaders. Either re-connect with an existing ones,
-        // or start new ones.
-        getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
-    }
-
-    static final String[] UNIFIED_PROJECTION = new String[]{
-            KeyRings._ID, KeyRings.FINGERPRINT, KeyRings.USER_ID
-    };
-
-    static final int INDEX_UNIFIED_FINGERPRINT = 1;
-    static final int INDEX_UNIFIED_USER_ID = 2;
-
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        setContentShown(false);
-        switch (id) {
-            case LOADER_ID_UNIFIED: {
-                Uri baseUri = KeyRings.buildUnifiedKeyRingUri(mDataUri);
-                return new CursorLoader(getActivity(), baseUri, UNIFIED_PROJECTION, null, null, null);
-            }
-
-            default:
-                return null;
-        }
-    }
-
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Avoid NullPointerExceptions...
-        if (data == null || data.getCount() == 0) {
-            return;
-        }
-        // Swap the new cursor in. (The framework will take care of closing the
-        // old cursor once we return.)
-        switch (loader.getId()) {
-            case LOADER_ID_UNIFIED: {
-                if (data.moveToFirst()) {
-
-                    byte[] fingerprintBlob = data.getBlob(INDEX_UNIFIED_FINGERPRINT);
-                    setFingerprint(fingerprintBlob);
-
-                    mUserId = data.getString(INDEX_UNIFIED_USER_ID);
-
-                    break;
-                }
-            }
-
-        }
         setContentShown(true);
     }
 
-    /**
-     * This is called when the last Cursor provided to onLoadFinished() above is about to be closed.
-     * We need to make sure we are no longer using it.
-     */
-    public void onLoaderReset(Loader<Cursor> loader) {
-        mFingerprint = null;
-        mQrCodeBitmapCache = null;
-    }
-
-    /**
-     * Load QR Code asynchronously and with a fade in animation
-     */
-    private void setFingerprint(byte[] fingerprintBlob) {
-        mFingerprint = fingerprintBlob;
-
-        final String fingerprint = KeyFormattingUtils.convertFingerprintToHex(fingerprintBlob);
-        mFingerprintView.setText(KeyFormattingUtils.formatFingerprint(fingerprint));
-
+    private void onLoadQrCode(Bitmap qrCode) {
         if (mQrCodeBitmapCache != null) {
             return;
         }
 
-        AsyncTask<Void, Void, Bitmap> loadTask =
-                new AsyncTask<Void, Void, Bitmap>() {
-                    protected Bitmap doInBackground(Void... unused) {
-                        Uri uri = new Uri.Builder()
-                                .scheme(Constants.FINGERPRINT_SCHEME)
-                                .opaquePart(fingerprint)
-                                .build();
-                        // render with minimal size
-                        return QrCodeUtils.getQRCodeBitmap(uri, 0);
-                    }
+        mQrCodeBitmapCache = qrCode;
+        if (ViewKeyAdvShareFragment.this.isAdded()) {
+            mQrCode.requestLayout();
 
-                    protected void onPostExecute(Bitmap qrCode) {
-                        // cache for later, and if we are attached request re-layout
-                        mQrCodeBitmapCache = qrCode;
-
-                        if (ViewKeyAdvShareFragment.this.isAdded()) {
-                            mQrCode.requestLayout();
-
-                            // simple fade-in animation
-                            AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
-                            anim.setDuration(200);
-                            mQrCode.startAnimation(anim);
-                        }
-                    }
-                };
-
-        loadTask.execute();
+            // simple fade-in animation
+            AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);
+            anim.setDuration(200);
+            mQrCode.startAnimation(anim);
+        }
     }
 
     private void uploadToKeyserver() {
-        long keyId;
-        try {
-            keyId = KeyRepository.create(getContext())
-                    .getCachedPublicKeyRing(mDataUri)
-                    .extractOrGetMasterKeyId();
-        } catch (PgpKeyNotFoundException e) {
-            Timber.e(e, "key not found!");
-            Notify.create(getActivity(), "key not found", Style.ERROR).show();
-            return;
-        }
         Intent uploadIntent = new Intent(getActivity(), UploadKeyActivity.class);
-        uploadIntent.setData(mDataUri);
-        uploadIntent.putExtra(MultiUserIdsFragment.EXTRA_KEY_IDS, new long[]{keyId});
+        uploadIntent.setData(KeyRings.buildUnifiedKeyRingUri(unifiedKeyInfo.master_key_id()));
+        uploadIntent.putExtra(MultiUserIdsFragment.EXTRA_KEY_IDS, new long[]{ unifiedKeyInfo.master_key_id() });
         startActivityForResult(uploadIntent, 0);
     }
 

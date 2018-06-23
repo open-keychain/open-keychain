@@ -322,7 +322,7 @@ public class ContactHelper {
         return new ArrayList<>(names);
     }
 
-    public Uri dataUriFromContactUri(Uri contactUri) {
+    public Long masterKeyIdFromContactsDataUri(Uri contactUri) {
         if (!isContactsPermissionGranted()) {
             return null;
         }
@@ -332,7 +332,7 @@ public class ContactHelper {
         if (contactMasterKey != null) {
             try {
                 if (contactMasterKey.moveToNext()) {
-                    return KeychainContract.KeyRings.buildGenericKeyRingUri(contactMasterKey.getLong(0));
+                    return contactMasterKey.getLong(0);
                 }
             } finally {
                 contactMasterKey.close();

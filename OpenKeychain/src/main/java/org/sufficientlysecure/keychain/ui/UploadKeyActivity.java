@@ -18,27 +18,22 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.util.ArrayList;
+
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.operations.results.UploadResult;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.util.Preferences;
-import timber.log.Timber;
-
-import java.util.ArrayList;
 
 /**
  * Sends the selected public key to a keyserver
@@ -47,8 +42,6 @@ public class UploadKeyActivity extends BaseActivity
         implements CryptoOperationHelper.Callback<UploadKeyringParcel, UploadResult> {
     private View mUploadButton;
     private Spinner mKeyServerSpinner;
-
-    private Uri mDataUri;
 
     // CryptoOperationHelper.Callback vars
     private HkpKeyserverAddress mKeyserver;
@@ -82,14 +75,6 @@ public class UploadKeyActivity extends BaseActivity
                 uploadKey();
             }
         });
-
-        mDataUri = getIntent().getData();
-        if (mDataUri == null) {
-            Timber.e("Intent data missing. Should be Uri of key!");
-            finish();
-            return;
-        }
-
     }
 
     private String[] getKeyserversArray() {
@@ -124,19 +109,6 @@ public class UploadKeyActivity extends BaseActivity
 
         mUploadOpHelper = new CryptoOperationHelper<>(1, this, this, R.string.progress_uploading);
         mUploadOpHelper.cryptoOperation();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home: {
-                Intent viewIntent = NavUtils.getParentActivityIntent(this);
-                viewIntent.setData(KeychainContract.KeyRings.buildGenericKeyRingUri(mDataUri));
-                NavUtils.navigateUpTo(this, viewIntent);
-                return true;
-            }
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

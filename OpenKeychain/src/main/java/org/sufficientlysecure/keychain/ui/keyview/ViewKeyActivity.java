@@ -28,6 +28,7 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -41,6 +42,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.provider.ContactsContract;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -73,7 +75,6 @@ import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
@@ -124,12 +125,11 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     static final int REQUEST_CERTIFY = 3;
     static final int REQUEST_DELETE = 4;
 
+    public static final String EXTRA_MASTER_KEY_ID = "master_key_id";
     public static final String EXTRA_DISPLAY_RESULT = "display_result";
     public static final String EXTRA_LINKED_TRANSITION = "linked_transition";
 
     KeyRepository keyRepository;
-
-    protected Uri dataUri;
 
     // For CryptoOperationHelper.Callback
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> importOpHelper;
@@ -167,6 +167,12 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     private long masterKeyId;
     private byte[] fingerprint;
+
+    public static Intent getViewKeyActivityIntent(@NonNull Context context, long masterKeyId) {
+        Intent viewIntent = new Intent(context, ViewKeyActivity.class);
+        viewIntent.putExtra(ViewKeyActivity.EXTRA_MASTER_KEY_ID, masterKeyId);
+        return viewIntent;
+    }
 
     @SuppressLint("InflateParams")
     @Override
@@ -244,30 +250,29 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         });
         refreshView = getLayoutInflater().inflate(R.layout.indeterminate_progress, null);
 
-        dataUri = getIntent().getData();
-        if (dataUri == null) {
-            Timber.e("Data missing. Should be uri of key!");
-            finish();
-            return;
-        }
-        if (dataUri.getHost().equals(ContactsContract.AUTHORITY)) {
-            dataUri = new ContactHelper(this).dataUriFromContactUri(dataUri);
-            if (dataUri == null) {
+        Intent intent = getIntent();
+        Uri dataUri = intent.getData();
+        if (intent.hasExtra(EXTRA_MASTER_KEY_ID)) {
+            masterKeyId = intent.getLongExtra(EXTRA_MASTER_KEY_ID, 0L);
+        } else if (dataUri != null && dataUri.getHost().equals(ContactsContract.AUTHORITY)) {
+            Long contactMasterKeyId = new ContactHelper(this).masterKeyIdFromContactsDataUri(dataUri);
+            if (contactMasterKeyId == null) {
                 Timber.e("Contact Data missing. Should be uri of key!");
                 Toast.makeText(this, R.string.error_contacts_key_id_missing, Toast.LENGTH_LONG).show();
                 finish();
                 return;
             }
+            masterKeyId = contactMasterKeyId;
+        } else {
+            throw new IllegalArgumentException("Missing required extra master_key_id or contact uri");
         }
 
-        Timber.i("dataUri: " + dataUri);
-
-        actionEncryptFile.setOnClickListener(v -> encrypt(dataUri, false));
-        actionEncryptText.setOnClickListener(v -> encrypt(dataUri, true));
+        actionEncryptFile.setOnClickListener(v -> encrypt(false));
+        actionEncryptText.setOnClickListener(v -> encrypt(true));
 
         floatingActionButton.setOnClickListener(v -> {
             if (isSecret) {
-                startSafeSlinger(dataUri);
+                startSafeSlinger();
             } else {
                 scanQrCode();
             }
@@ -279,8 +284,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         // or start new ones.
         getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
 
-        if (savedInstanceState == null && getIntent().hasExtra(EXTRA_DISPLAY_RESULT)) {
-            OperationResult result = getIntent().getParcelableExtra(EXTRA_DISPLAY_RESULT);
+        if (savedInstanceState == null && intent.hasExtra(EXTRA_DISPLAY_RESULT)) {
+            OperationResult result = intent.getParcelableExtra(EXTRA_DISPLAY_RESULT);
             result.createNotify(this).show();
         }
 
@@ -291,7 +296,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
         if (Preferences.getPreferences(this).getExperimentalEnableKeybase()) {
             FragmentManager manager = getSupportFragmentManager();
-            final ViewKeyKeybaseFragment keybaseFrag = ViewKeyKeybaseFragment.newInstance(dataUri);
+            final ViewKeyKeybaseFragment keybaseFrag = ViewKeyKeybaseFragment.newInstance(masterKeyId);
             manager.beginTransaction()
                     .replace(R.id.view_key_keybase_fragment, keybaseFrag)
                     .commit();
@@ -341,7 +346,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             }
             case R.id.menu_key_view_advanced: {
                 Intent advancedIntent = new Intent(this, ViewKeyAdvActivity.class);
-                advancedIntent.setData(dataUri);
+                advancedIntent.putExtra(ViewKeyAdvActivity.EXTRA_MASTER_KEY_ID, masterKeyId);
                 startActivity(advancedIntent);
                 return true;
             }
@@ -350,7 +355,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                 return true;
             }
             case R.id.menu_key_view_certify_fingerprint: {
-                certifyFingerprint(dataUri);
+                certifyFingerprint();
                 return true;
             }
         }
@@ -440,9 +445,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         startActivityForResult(scanQrCode, REQUEST_QR_FINGERPRINT);
     }
 
-    private void certifyFingerprint(Uri dataUri) {
+    private void certifyFingerprint() {
         Intent intent = new Intent(this, CertifyFingerprintActivity.class);
-        intent.setData(dataUri);
+        intent.setData(KeyRings.buildUnifiedKeyRingUri(masterKeyId));
 
         startActivityForResult(intent, REQUEST_CERTIFY);
     }
@@ -466,7 +471,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             opts = options.toBundle();
         }
 
-        qrCodeIntent.setData(dataUri);
+        qrCodeIntent.setData(KeyRings.buildUnifiedKeyRingUri(masterKeyId));
         ActivityCompat.startActivity(this, qrCodeIntent, opts);
     }
 
@@ -615,45 +620,30 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         });
     }
 
-    private void encrypt(Uri dataUri, boolean text) {
+    private void encrypt(boolean text) {
         // If there is no encryption key, don't bother.
         if (!hasEncrypt) {
             Notify.create(this, R.string.error_no_encrypt_subkey, Notify.Style.ERROR).show();
             return;
         }
-        try {
-            long keyId = KeyRepository.create(this)
-                    .getCachedPublicKeyRing(dataUri)
-                    .extractOrGetMasterKeyId();
-            long[] encryptionKeyIds = new long[]{keyId};
-            Intent intent;
-            if (text) {
-                intent = new Intent(this, EncryptTextActivity.class);
-                intent.setAction(EncryptTextActivity.ACTION_ENCRYPT_TEXT);
-                intent.putExtra(EncryptTextActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
-            } else {
-                intent = new Intent(this, EncryptFilesActivity.class);
-                intent.setAction(EncryptFilesActivity.ACTION_ENCRYPT_DATA);
-                intent.putExtra(EncryptFilesActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
-            }
-            // used instead of startActivity set actionbar based on callingPackage
-            startActivityForResult(intent, 0);
-        } catch (PgpKeyNotFoundException e) {
-            Timber.e(e, "key not found!");
+        long[] encryptionKeyIds = new long[] { masterKeyId };
+        Intent intent;
+        if (text) {
+            intent = new Intent(this, EncryptTextActivity.class);
+            intent.setAction(EncryptTextActivity.ACTION_ENCRYPT_TEXT);
+            intent.putExtra(EncryptTextActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
+        } else {
+            intent = new Intent(this, EncryptFilesActivity.class);
+            intent.setAction(EncryptFilesActivity.ACTION_ENCRYPT_DATA);
+            intent.putExtra(EncryptFilesActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
         }
+        // used instead of startActivity set actionbar based on callingPackage
+        startActivityForResult(intent, 0);
     }
 
-    private void startSafeSlinger(Uri dataUri) {
-        long keyId = 0;
-        try {
-            keyId = KeyRepository.create(this)
-                    .getCachedPublicKeyRing(dataUri)
-                    .extractOrGetMasterKeyId();
-        } catch (PgpKeyNotFoundException e) {
-            Timber.e(e, "key not found!");
-        }
+    private void startSafeSlinger() {
         Intent safeSlingerIntent = new Intent(this, SafeSlingerActivity.class);
-        safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, keyId);
+        safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, masterKeyId);
         startActivityForResult(safeSlingerIntent, 0);
     }
 
@@ -727,7 +717,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
             case LOADER_ID_UNIFIED: {
-                Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri);
+                Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(masterKeyId);
                 return new CursorLoader(this, baseUri, PROJECTION, null, null, null);
             }
 

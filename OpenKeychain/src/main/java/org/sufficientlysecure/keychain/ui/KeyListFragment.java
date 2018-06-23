@@ -267,7 +267,7 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
 
         @Override
         protected List<FlexibleKeyItem> asyncLoadData() {
-            List<UnifiedKeyInfo> unifiedKeyInfo = keyRepository.getUnifiedKeyInfo();
+            List<UnifiedKeyInfo> unifiedKeyInfo = keyRepository.getAllUnifiedKeyInfo();
             return flexibleKeyItemFactory.mapUnifiedKeyInfoToFlexibleKeyItems(unifiedKeyInfo);
         }
     }
@@ -421,8 +421,7 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
         }
 
         long masterKeyId = ((FlexibleKeyDetailsItem) item).keyInfo.master_key_id();
-        Intent viewIntent = new Intent(getActivity(), ViewKeyActivity.class);
-        viewIntent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
+        Intent viewIntent = ViewKeyActivity.getViewKeyActivityIntent(requireActivity(), masterKeyId);
         startActivityForResult(viewIntent, REQUEST_VIEW_KEY);
         return false;
     }

@@ -195,12 +195,11 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
     private void showKey(long keyId) {
         try {
 
-            Intent viewKeyIntent = new Intent(getActivity(), ViewKeyActivity.class);
             KeyRepository keyRepository = KeyRepository.create(requireContext());
             long masterKeyId = keyRepository.getCachedPublicKeyRing(
                     KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(keyId)
             ).getMasterKeyId();
-            viewKeyIntent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
+            Intent viewKeyIntent = ViewKeyActivity.getViewKeyActivityIntent(requireActivity(), masterKeyId);
             startActivity(viewKeyIntent);
 
         } catch (PgpKeyNotFoundException e) {

@@ -20,38 +20,31 @@ package org.sufficientlysecure.keychain.ui;
 
 import java.util.List;
 
-import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
-import org.sufficientlysecure.keychain.livedata.GenericLiveData;
 import org.sufficientlysecure.keychain.model.SubKey;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
+import org.sufficientlysecure.keychain.ui.ViewKeyAdvActivity.ViewKeyAdvViewModel;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.SubkeysAddedAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
@@ -59,16 +52,9 @@ import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.dialog.AddSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyExpiryDialogFragment;
-import timber.log.Timber;
 
 
-public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
-        LoaderManager.LoaderCallbacks<Cursor> {
-
-    public static final String ARG_DATA_URI = "data_uri";
-
-    private static final int LOADER_ID_UNIFIED = 0;
-
+public class ViewKeyAdvSubkeysFragment extends LoaderFragment {
     private ListView mSubkeysList;
     private ListView mSubkeysAddedList;
     private View mSubkeysAddedLayout;
@@ -79,11 +65,8 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
 
     private CryptoOperationHelper<SaveKeyringParcel, EditKeyResult> mEditKeyHelper;
 
-    private Uri mDataUri;
-
-    private long mMasterKeyId;
-    private byte[] mFingerprint;
     private SaveKeyringParcel.Builder mEditModeSkpBuilder;
+    private UnifiedKeyInfo unifiedKeyInfo;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
@@ -94,12 +77,7 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
         mSubkeysAddedList = view.findViewById(R.id.view_key_subkeys_added);
         mSubkeysAddedLayout = view.findViewById(R.id.view_key_subkeys_add_layout);
 
-        mSubkeysList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                editSubkey(position);
-            }
-        });
+        mSubkeysList.setOnItemClickListener((parent, view1, position, id) -> editSubkey(position));
 
         View footer = new View(getActivity());
         int spacing = (int) android.util.TypedValue.applyDimension(
@@ -113,12 +91,7 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
         mSubkeysAddedList.addFooterView(footer, null, false);
 
         mSubkeyAddFabLayout = view.findViewById(R.id.view_key_subkey_fab_layout);
-        view.findViewById(R.id.view_key_subkey_fab).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addSubkey();
-            }
-        });
+        view.findViewById(R.id.view_key_subkey_fab).setOnClickListener(v -> addSubkey());
 
         setHasOptionsMenu(true);
 
@@ -129,15 +102,31 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
-        if (dataUri == null) {
-            Timber.e("Data missing. Should be Uri of key!");
-            getActivity().finish();
+        // Create an empty adapter we will use to display the loaded data.
+        mSubkeysAdapter = new SubkeysAdapter(requireContext());
+        mSubkeysList.setAdapter(mSubkeysAdapter);
+
+        ViewKeyAdvViewModel viewModel = ViewModelProviders.of(requireActivity()).get(ViewKeyAdvViewModel.class);
+        viewModel.getUnifiedKeyInfoLiveData(requireContext()).observe(this, this::onLoadFinished);
+        viewModel.getSubkeyLiveData(requireContext()).observe(this, this::onLoadSubKeys);
+
+        setContentShown(false);
+    }
+
+    public void onLoadFinished(UnifiedKeyInfo unifiedKeyInfo) {
+        // Avoid NullPointerExceptions, if we get an empty result set.
+        if (unifiedKeyInfo == null) {
             return;
         }
 
-        loadData(dataUri);
+        this.unifiedKeyInfo = unifiedKeyInfo;
     }
+
+    private void onLoadSubKeys(List<SubKey> subKeys) {
+        mSubkeysAdapter.setData(subKeys);
+        setContentShown(true);
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -146,82 +135,6 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
         }
 
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    private void loadData(Uri dataUri) {
-        mDataUri = dataUri;
-
-        // Create an empty adapter we will use to display the loaded data.
-        mSubkeysAdapter = new SubkeysAdapter(requireContext());
-        mSubkeysList.setAdapter(mSubkeysAdapter);
-
-        // Prepare the loaders. Either re-connect with an existing ones,
-        // or start new ones.
-        getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
-
-        setContentShown(false);
-    }
-
-    // These are the rows that we will retrieve.
-    static final String[] PROJECTION = new String[]{
-            KeychainContract.KeyRings._ID,
-            KeychainContract.KeyRings.MASTER_KEY_ID,
-            KeychainContract.KeyRings.HAS_ANY_SECRET,
-            KeychainContract.KeyRings.FINGERPRINT,
-    };
-
-    static final int INDEX_MASTER_KEY_ID = 1;
-    static final int INDEX_HAS_ANY_SECRET = 2;
-    static final int INDEX_FINGERPRINT = 3;
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        switch (id) {
-            case LOADER_ID_UNIFIED: {
-                Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
-                return new CursorLoader(getActivity(), baseUri,
-                        PROJECTION, null, null, null);
-            }
-
-            default:
-                return null;
-        }
-    }
-
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Avoid NullPointerExceptions, if we get an empty result set.
-        if (data.getCount() == 0) {
-            return;
-        }
-
-        switch (loader.getId()) {
-            case LOADER_ID_UNIFIED: {
-                data.moveToFirst();
-
-                mMasterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
-                mFingerprint = data.getBlob(INDEX_FINGERPRINT);
-
-                KeyRepository keyRepository = KeyRepository.create(requireContext());
-                LiveData<List<SubKey>> subKeyLiveData = new GenericLiveData<>(requireContext(), null,
-                        () -> keyRepository.getSubKeysByMasterKeyId(mMasterKeyId));
-                subKeyLiveData.observe(this, this::onLoadSubKeys);
-                break;
-            }
-        }
-
-    }
-
-    private void onLoadSubKeys(List<SubKey> subKeys) {
-        mSubkeysAdapter.setData(subKeys);
-        setContentShown(true);
-    }
-
-    /**
-     * This is called when the last Cursor provided to onLoadFinished() above is about to be closed.
-     * We need to make sure we are no longer using it.
-     */
-    public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 
     @Override
@@ -244,7 +157,7 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 
-                mEditModeSkpBuilder = SaveKeyringParcel.buildChangeKeyringParcel(mMasterKeyId, mFingerprint);
+                mEditModeSkpBuilder = SaveKeyringParcel.buildChangeKeyringParcel(unifiedKeyInfo.master_key_id(), unifiedKeyInfo.fingerprint());
 
                 mSubkeysAddedAdapter = new SubkeysAddedAdapter(
                         getActivity(), mEditModeSkpBuilder.getMutableAddSubKeys(), false);
@@ -292,15 +205,8 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
         AddSubkeyDialogFragment addSubkeyDialogFragment =
                 AddSubkeyDialogFragment.newInstance(willBeMasterKey);
         addSubkeyDialogFragment
-                .setOnAlgorithmSelectedListener(
-                        new AddSubkeyDialogFragment.OnAlgorithmSelectedListener() {
-                            @Override
-                            public void onAlgorithmSelected(SaveKeyringParcel.SubkeyAdd newSubkey) {
-                                mSubkeysAddedAdapter.add(newSubkey);
-                            }
-                        }
-                );
-        addSubkeyDialogFragment.show(getActivity().getSupportFragmentManager(), "addSubkeyDialog");
+                .setOnAlgorithmSelectedListener(newSubkey -> mSubkeysAddedAdapter.add(newSubkey));
+        addSubkeyDialogFragment.show(requireFragmentManager(), "addSubkeyDialog");
     }
 
     private void editSubkey(final int position) {
@@ -343,13 +249,11 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
         // Create a new Messenger for the communication back
         final Messenger messenger = new Messenger(returnHandler);
 
-        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
-            public void run() {
-                EditSubkeyDialogFragment dialogFragment =
-                        EditSubkeyDialogFragment.newInstance(messenger);
+        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(() -> {
+            EditSubkeyDialogFragment dialogFragment =
+                    EditSubkeyDialogFragment.newInstance(messenger);
 
-                dialogFragment.show(getActivity().getSupportFragmentManager(), "editSubkeyDialog");
-            }
+            dialogFragment.show(requireFragmentManager(), "editSubkeyDialog");
         });
     }
 
@@ -377,13 +281,11 @@ public class ViewKeyAdvSubkeysFragment extends LoaderFragment implements
         // Create a new Messenger for the communication back
         final Messenger messenger = new Messenger(returnHandler);
 
-        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
-            public void run() {
-                EditSubkeyExpiryDialogFragment dialogFragment =
-                        EditSubkeyExpiryDialogFragment.newInstance(messenger, creationDate, expiryDate);
+        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(() -> {
+            EditSubkeyExpiryDialogFragment dialogFragment =
+                    EditSubkeyExpiryDialogFragment.newInstance(messenger, creationDate, expiryDate);
 
-                dialogFragment.show(getActivity().getSupportFragmentManager(), "editSubkeyExpiryDialog");
-            }
+            dialogFragment.show(requireFragmentManager(), "editSubkeyExpiryDialog");
         });
     }
 

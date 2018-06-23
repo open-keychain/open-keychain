@@ -54,5 +54,9 @@ public abstract class SubKey implements KeysModel {
             }
             return autocryptPackageNames;
         }
+
+        public boolean has_auth_key() {
+            return has_auth_key_int() != 0;
+        }
     }
 }

@@ -17,6 +17,11 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Typeface;
@@ -43,29 +48,23 @@ import com.textuality.keybase.lib.KeybaseException;
 import com.textuality.keybase.lib.KeybaseQuery;
 import com.textuality.keybase.lib.Proof;
 import com.textuality.keybase.lib.User;
-
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.network.OkHttpKeybaseClient;
+import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 import org.sufficientlysecure.keychain.operations.results.KeybaseVerificationResult;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.KeybaseVerificationParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.network.OkHttpKeybaseClient;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
-import timber.log.Timber;
-
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
 
 public class ViewKeyKeybaseFragment extends LoaderFragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
         CryptoOperationHelper.Callback<KeybaseVerificationParcel, KeybaseVerificationResult> {
 
-    public static final String ARG_DATA_URI = "uri";
+    public static final String ARG_MASTER_KEY_ID = "master_key_id";
 
     private TextView mReportHeader;
     private TableLayout mProofListing;
@@ -76,7 +75,7 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
     private static final int LOADER_ID_DATABASE = 1;
 
     // for retrieving the key we’re working on
-    private Uri mDataUri;
+    private long masterKeyId;
 
     private Proof mProof;
 
@@ -89,10 +88,10 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
     /**
      * Creates new instance of this fragment
      */
-    public static ViewKeyKeybaseFragment newInstance(Uri dataUri) {
+    public static ViewKeyKeybaseFragment newInstance(long masterKeyId) {
         ViewKeyKeybaseFragment frag = new ViewKeyKeybaseFragment();
         Bundle args = new Bundle();
-        args.putParcelable(ARG_DATA_URI, dataUri);
+        args.putLong(ARG_MASTER_KEY_ID, masterKeyId);
 
         frag.setArguments(args);
 
@@ -121,13 +120,10 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
-        if (dataUri == null) {
-            Timber.e("Data missing. Should be Uri of key!");
-            getActivity().finish();
-            return;
+        masterKeyId = getArguments().getLong(ARG_MASTER_KEY_ID);
+        if (masterKeyId == 0L) {
+            throw new IllegalArgumentException();
         }
-        mDataUri = dataUri;
 
         // retrieve the key from the database
         getLoaderManager().initLoader(LOADER_ID_DATABASE, null, this);
@@ -148,7 +144,7 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
 
         switch (id) {
             case LOADER_ID_DATABASE: {
-                Uri baseUri = KeyRings.buildUnifiedKeyRingUri(mDataUri);
+                Uri baseUri = KeyRings.buildUnifiedKeyRingUri(masterKeyId);
                 return new CursorLoader(getActivity(), baseUri, TRUST_PROJECTION, null, null, null);
             }
             // decided to just use an AsyncTask for keybase, but maybe later

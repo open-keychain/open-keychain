@@ -135,14 +135,6 @@ public class KeychainContract {
             return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId)).build();
         }
 
-        public static Uri buildGenericKeyRingUri(String masterKeyId) {
-            return CONTENT_URI.buildUpon().appendPath(masterKeyId).build();
-        }
-
-        public static Uri buildGenericKeyRingUri(Uri uri) {
-            return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1)).build();
-        }
-
         public static Uri buildUnifiedKeyRingUri(long masterKeyId) {
             return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId))
                     .appendPath(PATH_UNIFIED).build();

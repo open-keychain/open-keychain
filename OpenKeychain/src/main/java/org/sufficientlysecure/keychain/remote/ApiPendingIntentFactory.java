@@ -130,8 +130,7 @@ public class ApiPendingIntentFactory {
     }
 
     PendingIntent createShowKeyPendingIntent(Intent data, long masterKeyId) {
-        Intent intent = new Intent(mContext, ViewKeyActivity.class);
-        intent.setData(KeychainContract.KeyRings.buildGenericKeyRingUri(masterKeyId));
+        Intent intent = ViewKeyActivity.getViewKeyActivityIntent(mContext, masterKeyId);
 
         return createInternal(data, intent);
     }
