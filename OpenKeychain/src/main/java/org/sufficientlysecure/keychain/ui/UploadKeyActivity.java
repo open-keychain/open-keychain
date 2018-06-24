@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
@@ -40,7 +39,8 @@ import org.sufficientlysecure.keychain.util.Preferences;
  */
 public class UploadKeyActivity extends BaseActivity
         implements CryptoOperationHelper.Callback<UploadKeyringParcel, UploadResult> {
-    private View mUploadButton;
+    public static final String EXTRA_KEY_IDS = "extra_key_ids";
+
     private Spinner mKeyServerSpinner;
 
     // CryptoOperationHelper.Callback vars
@@ -51,7 +51,7 @@ public class UploadKeyActivity extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mUploadButton = findViewById(R.id.upload_key_action_upload);
+        View uploadButton = findViewById(R.id.upload_key_action_upload);
         mKeyServerSpinner = findViewById(R.id.upload_key_keyserver);
 
         MultiUserIdsFragment mMultiUserIdsFragment = (MultiUserIdsFragment)
@@ -66,15 +66,10 @@ public class UploadKeyActivity extends BaseActivity
         if (adapter.getCount() > 0) {
             mKeyServerSpinner.setSelection(0);
         } else {
-            mUploadButton.setEnabled(false);
+            uploadButton.setEnabled(false);
         }
 
-        mUploadButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                uploadKey();
-            }
-        });
+        uploadButton.setOnClickListener(v -> uploadKey());
     }
 
     private String[] getKeyserversArray() {
@@ -113,8 +108,7 @@ public class UploadKeyActivity extends BaseActivity
 
     @Override
     public UploadKeyringParcel createOperationInput() {
-        long[] masterKeyIds = getIntent().getLongArrayExtra(MultiUserIdsFragment.EXTRA_KEY_IDS);
-
+        long[] masterKeyIds = getIntent().getLongArrayExtra(EXTRA_KEY_IDS);
         return UploadKeyringParcel.createWithKeyId(mKeyserver, masterKeyIds[0]);
     }
 

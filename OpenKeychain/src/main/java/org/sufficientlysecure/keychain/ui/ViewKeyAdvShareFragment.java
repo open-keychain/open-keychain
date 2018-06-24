@@ -60,7 +60,6 @@ import org.sufficientlysecure.keychain.pgp.SshPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.ViewKeyAdvActivity.ViewKeyAdvViewModel;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
@@ -335,8 +334,7 @@ public class ViewKeyAdvShareFragment extends Fragment {
 
     private void uploadToKeyserver() {
         Intent uploadIntent = new Intent(getActivity(), UploadKeyActivity.class);
-        uploadIntent.setData(KeyRings.buildUnifiedKeyRingUri(unifiedKeyInfo.master_key_id()));
-        uploadIntent.putExtra(MultiUserIdsFragment.EXTRA_KEY_IDS, new long[]{ unifiedKeyInfo.master_key_id() });
+        uploadIntent.putExtra(UploadKeyActivity.EXTRA_KEY_IDS, new long[] { unifiedKeyInfo.master_key_id() });
         startActivityForResult(uploadIntent, 0);
     }
 
