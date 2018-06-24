@@ -464,7 +464,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             opts = options.toBundle();
         }
 
-        qrCodeIntent.setData(KeyRings.buildUnifiedKeyRingUri(unifiedKeyInfo.master_key_id()));
+        qrCodeIntent.putExtra(QrCodeViewActivity.EXTRA_MASTER_KEY_ID, unifiedKeyInfo.master_key_id());
         ActivityCompat.startActivity(this, qrCodeIntent, opts);
     }
 

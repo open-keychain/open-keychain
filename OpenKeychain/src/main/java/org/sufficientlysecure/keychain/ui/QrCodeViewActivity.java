@@ -17,95 +17,73 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.CardView;
-import android.view.View;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ImageView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
+import org.sufficientlysecure.keychain.ui.keyview.UnifiedKeyInfoViewModel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
-import timber.log.Timber;
 
 
 public class QrCodeViewActivity extends BaseActivity {
+    public static final String EXTRA_MASTER_KEY_ID = "master_key_id";
 
-    private ImageView mQrCode;
-    private CardView mQrCodeLayout;
+    private ImageView qrCodeImageView;
+    private Bitmap qrCode;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Inflate a "Done" custom action bar
-        setFullScreenDialogClose(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // "Done"
-                        ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
-                    }
-                }
-        );
+        setFullScreenDialogClose(v -> ActivityCompat.finishAfterTransition(QrCodeViewActivity.this));
 
-        Uri dataUri = getIntent().getData();
-        if (dataUri == null) {
-            Timber.e("Data missing. Should be Uri of key!");
+        qrCodeImageView = findViewById(R.id.qr_code_image);
+        CardView mQrCodeLayout = findViewById(R.id.qr_code_image_layout);
+
+        mQrCodeLayout.setOnClickListener(v -> ActivityCompat.finishAfterTransition(QrCodeViewActivity.this));
+
+        if (!getIntent().hasExtra(EXTRA_MASTER_KEY_ID)) {
+            throw new IllegalArgumentException("Missing required extra master_key_id");
+        }
+
+        UnifiedKeyInfoViewModel viewModel = ViewModelProviders.of(this).get(UnifiedKeyInfoViewModel.class);
+        viewModel.setMasterKeyId(getIntent().getLongExtra(EXTRA_MASTER_KEY_ID, 0L));
+        viewModel.getUnifiedKeyInfoLiveData(getApplicationContext()).observe(this, this::onLoadUnifiedKeyInfo);
+
+        qrCodeImageView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            if (qrCode != null) {
+                Bitmap scaled = Bitmap.createScaledBitmap(qrCode, qrCodeImageView.getWidth(), qrCodeImageView.getWidth(), false);
+                qrCodeImageView.setImageBitmap(scaled);
+            }
+        });
+    }
+
+    private void onLoadUnifiedKeyInfo(UnifiedKeyInfo unifiedKeyInfo) {
+        if (unifiedKeyInfo == null) {
+            Notify.create(this, R.string.error_key_not_found, Style.ERROR).show();
             ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
             return;
         }
 
-        mQrCode = findViewById(R.id.qr_code_image);
-        mQrCodeLayout = findViewById(R.id.qr_code_image_layout);
+        Uri uri = new Uri.Builder()
+                .scheme(Constants.FINGERPRINT_SCHEME)
+                .opaquePart(KeyFormattingUtils.convertFingerprintToHex(unifiedKeyInfo.fingerprint()))
+                .build();
+        qrCode = QrCodeUtils.getQRCodeBitmap(uri, 0);
 
-        mQrCodeLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
-            }
-        });
-
-        KeyRepository keyRepository = KeyRepository.create(this);
-        try {
-            byte[] blob = keyRepository.getCachedPublicKeyRing(dataUri).getFingerprint();
-            if (blob == null) {
-                Timber.e("key not found!");
-                Notify.create(this, R.string.error_key_not_found, Style.ERROR).show();
-                ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
-            }
-
-            Uri uri = new Uri.Builder()
-                    .scheme(Constants.FINGERPRINT_SCHEME)
-                    .opaquePart(KeyFormattingUtils.convertFingerprintToHex(blob))
-                    .build();
-            // create a minimal size qr code, we can keep this in ram no problem
-            final Bitmap qrCode = QrCodeUtils.getQRCodeBitmap(uri, 0);
-
-            mQrCode.getViewTreeObserver().addOnGlobalLayoutListener(
-                    new OnGlobalLayoutListener() {
-                        @Override
-                        public void onGlobalLayout() {
-                            // create actual bitmap in display dimensions
-                            Bitmap scaled = Bitmap.createScaledBitmap(qrCode,
-                                    mQrCode.getWidth(), mQrCode.getWidth(), false);
-                            mQrCode.setImageBitmap(scaled);
-                        }
-                    });
-        } catch (PgpKeyNotFoundException e) {
-            Timber.e(e, "key not found!");
-            Notify.create(this, R.string.error_key_not_found, Style.ERROR).show();
-            ActivityCompat.finishAfterTransition(QrCodeViewActivity.this);
-        }
+        qrCodeImageView.requestLayout();
     }
 
     @Override
