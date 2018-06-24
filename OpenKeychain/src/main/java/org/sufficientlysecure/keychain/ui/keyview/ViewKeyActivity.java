@@ -285,11 +285,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         manager.beginTransaction().replace(R.id.view_key_fragment, frag, "view_key_fragment").commit();
 
         if (Preferences.getPreferences(this).getExperimentalEnableKeybase()) {
-            manager = getSupportFragmentManager();
-            final ViewKeyKeybaseFragment keybaseFrag = ViewKeyKeybaseFragment.newInstance(masterKeyId);
-            manager.beginTransaction()
-                    .replace(R.id.view_key_keybase_fragment, keybaseFrag)
-                    .commit();
+            final ViewKeyKeybaseFragment keybaseFrag = ViewKeyKeybaseFragment.newInstance();
+            manager.beginTransaction().replace(R.id.view_key_keybase_fragment, keybaseFrag).commit();
         }
     }
 
