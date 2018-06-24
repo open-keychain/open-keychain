@@ -831,9 +831,7 @@ public class PgpEncryptDecryptTest {
         { // decryption with passphrase cached should succeed for the other key if first is gone
 
             // delete first key from database
-            KeyWritableRepository.create(RuntimeEnvironment.application).getContentResolver().delete(
-                    KeyRingData.buildPublicKeyRingUri(mStaticRing1.getMasterKeyId()), null, null
-            );
+            KeyWritableRepository.create(RuntimeEnvironment.application).deleteKeyRing(mStaticRing1.getMasterKeyId());
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
@@ -912,9 +910,7 @@ public class PgpEncryptDecryptTest {
         { // decryption with passphrase cached should succeed for the other key if first is gone
 
             // delete first key from database
-            KeyWritableRepository.create(RuntimeEnvironment.application).getContentResolver().delete(
-                    KeyRingData.buildPublicKeyRingUri(mStaticRing1.getMasterKeyId()), null, null
-            );
+            KeyWritableRepository.create(RuntimeEnvironment.application).deleteKeyRing(mStaticRing1.getMasterKeyId());
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);

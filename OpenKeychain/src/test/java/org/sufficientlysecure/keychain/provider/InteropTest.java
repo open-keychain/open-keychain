@@ -244,6 +244,7 @@ public class InteropTest {
                 KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(verify.getMasterKeyId()) : null;
 
         KeyWritableRepository helper = new KeyWritableRepository(RuntimeEnvironment.application,
+                new KeychainDatabase(RuntimeEnvironment.application),
                 LocalPublicKeyStorage.getInstance(RuntimeEnvironment.application),
                 LocalSecretKeyStorage.getInstance(RuntimeEnvironment.application),
                 DatabaseNotifyManager.create(RuntimeEnvironment.application),
