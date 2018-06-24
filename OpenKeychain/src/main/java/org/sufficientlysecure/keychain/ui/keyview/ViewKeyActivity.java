@@ -28,8 +28,6 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
@@ -70,7 +68,6 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
-import org.sufficientlysecure.keychain.livedata.GenericLiveData;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
@@ -269,7 +266,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
         qrCodeLayout.setOnClickListener(v -> showQrCodeDialog());
 
-        ViewKeyViewModel viewModel = ViewModelProviders.of(this).get(ViewKeyViewModel.class);
+        UnifiedKeyInfoViewModel viewModel = ViewModelProviders.of(this).get(UnifiedKeyInfoViewModel.class);
         viewModel.setMasterKeyId(getIntent().getLongExtra(EXTRA_MASTER_KEY_ID, 0L));
 
         if (savedInstanceState == null && intent.hasExtra(EXTRA_DISPLAY_RESULT)) {
@@ -293,30 +290,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             manager.beginTransaction()
                     .replace(R.id.view_key_keybase_fragment, keybaseFrag)
                     .commit();
-        }
-    }
-
-    public static class ViewKeyViewModel extends ViewModel {
-        private Long masterKeyId;
-        private LiveData<UnifiedKeyInfo> unifiedKeyInfoLiveData;
-
-        void setMasterKeyId(long masterKeyId) {
-            if (this.masterKeyId != null) {
-                throw new IllegalStateException("cannot change masterKeyId once set!");
-            }
-            this.masterKeyId = masterKeyId;
-        }
-
-        LiveData<UnifiedKeyInfo> getUnifiedKeyInfoLiveData(Context context) {
-            if (masterKeyId == null) {
-                throw new IllegalStateException("masterKeyId must be set to retrieve this!");
-            }
-            if (unifiedKeyInfoLiveData == null) {
-                KeyRepository keyRepository = KeyRepository.create(context);
-                unifiedKeyInfoLiveData = new GenericLiveData<>(context, KeyRings.buildGenericKeyRingUri(masterKeyId),
-                        () -> keyRepository.getUnifiedKeyInfo(masterKeyId));
-            }
-            return unifiedKeyInfoLiveData;
         }
     }
 
@@ -467,7 +440,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     private void certifyFingerprint() {
         Intent intent = new Intent(this, CertifyFingerprintActivity.class);
-        intent.setData(KeyRings.buildUnifiedKeyRingUri(unifiedKeyInfo.master_key_id()));
+        intent.putExtra(CertifyFingerprintActivity.EXTRA_MASTER_KEY_ID, unifiedKeyInfo.master_key_id());
 
         startActivityForResult(intent, REQUEST_CERTIFY);
     }

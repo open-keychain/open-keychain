@@ -17,24 +17,22 @@
 
 package org.sufficientlysecure.keychain.ui.linked;
 
+
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.linked.resources.GenericHttpsResource;
+
 
 public class LinkedIdCreateHttpsStep1Fragment extends Fragment {
-
-    LinkedIdWizard mLinkedIdWizard;
-
     EditText mEditUri;
 
     public static LinkedIdCreateHttpsStep1Fragment newInstance() {
@@ -47,44 +45,23 @@ public class LinkedIdCreateHttpsStep1Fragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        mLinkedIdWizard = (LinkedIdWizard) getActivity();
-
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.linked_create_https_fragment_step1, container, false);
 
-        view.findViewById(R.id.next_button).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        view.findViewById(R.id.next_button).setOnClickListener(v -> {
+            String uri = "https://" + mEditUri.getText();
 
-                String uri = "https://" + mEditUri.getText();
-
-                if (!checkUri(uri)) {
-                    return;
-                }
-
-                String proofText = GenericHttpsResource.generateText(getActivity(),
-                        mLinkedIdWizard.mFingerprint);
-
-                LinkedIdCreateHttpsStep2Fragment frag =
-                        LinkedIdCreateHttpsStep2Fragment.newInstance(uri, proofText);
-
-                mLinkedIdWizard.loadFragment(null, frag, LinkedIdWizard.FRAG_ACTION_TO_RIGHT);
-
+            if (!checkUri(uri)) {
+                return;
             }
+
+            LinkedIdCreateHttpsStep2Fragment frag = LinkedIdCreateHttpsStep2Fragment.newInstance(uri);
+
+            ((LinkedIdWizard) requireActivity()).loadFragment(frag, LinkedIdWizard.FRAG_ACTION_TO_RIGHT);
         });
 
-        view.findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mLinkedIdWizard.loadFragment(null, null, LinkedIdWizard.FRAG_ACTION_TO_LEFT);
-            }
-        });
+        view.findViewById(R.id.back_button).setOnClickListener(
+                v -> ((LinkedIdWizard) requireActivity()).loadFragment(null, LinkedIdWizard.FRAG_ACTION_TO_LEFT));
 
         mEditUri = view.findViewById(R.id.linked_create_https_uri);
 

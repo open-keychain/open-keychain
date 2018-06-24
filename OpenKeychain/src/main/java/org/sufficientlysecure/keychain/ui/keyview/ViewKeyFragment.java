@@ -46,11 +46,9 @@ import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDao;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter.IdentityClickListener;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
-import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity.ViewKeyViewModel;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.AutocryptPeerInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.IdentityInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.LinkedIdInfo;
@@ -119,7 +117,7 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
 
         Context context = requireContext();
 
-        ViewKeyViewModel viewKeyViewModel = ViewModelProviders.of(requireActivity()).get(ViewKeyViewModel.class);
+        UnifiedKeyInfoViewModel viewKeyViewModel = ViewModelProviders.of(requireActivity()).get(UnifiedKeyInfoViewModel.class);
         LiveData<UnifiedKeyInfo> unifiedKeyInfoLiveData = viewKeyViewModel.getUnifiedKeyInfoLiveData(requireContext());
 
         unifiedKeyInfoLiveData.observe(this, this::onLoadUnifiedKeyInfo);
@@ -277,7 +275,7 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
 
     private void addLinkedIdentity() {
         Intent intent = new Intent(requireContext(), LinkedIdWizard.class);
-        intent.setData(KeyRings.buildUnifiedKeyRingUri(unifiedKeyInfo.master_key_id()));
+        intent.putExtra(LinkedIdWizard.EXTRA_MASTER_KEY_ID, unifiedKeyInfo.master_key_id());
         startActivity(intent);
     }
 

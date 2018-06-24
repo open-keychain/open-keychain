@@ -18,79 +18,42 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.ui.keyview.UnifiedKeyInfoViewModel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import timber.log.Timber;
 
 
-public class CertifyFingerprintFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-
+public class CertifyFingerprintFragment extends Fragment {
     static final int REQUEST_CERTIFY = 1;
 
-    public static final String ARG_DATA_URI = "uri";
+    private TextView vFingerprint;
 
-    private TextView mActionYes;
-    private TextView mFingerprint;
-    private TextView mIntro;
-    private TextView mHeader;
+    private UnifiedKeyInfoViewModel viewModel;
 
-    private static final int LOADER_ID_UNIFIED = 0;
-
-    private Uri mDataUri;
-
-    /**
-     * Creates new instance of this fragment
-     */
-    public static CertifyFingerprintFragment newInstance(Uri dataUri) {
-        CertifyFingerprintFragment frag = new CertifyFingerprintFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_DATA_URI, dataUri);
-
-        frag.setArguments(args);
-
-        return frag;
+    public static CertifyFingerprintFragment newInstance() {
+        return new CertifyFingerprintFragment();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.certify_fingerprint_fragment, viewGroup, false);
 
-        TextView actionNo = view.findViewById(R.id.certify_fingerprint_button_no);
-        mActionYes = view.findViewById(R.id.certify_fingerprint_button_yes);
+        vFingerprint = view.findViewById(R.id.certify_fingerprint_fingerprint);
 
-        mFingerprint = view.findViewById(R.id.certify_fingerprint_fingerprint);
-        mIntro = view.findViewById(R.id.certify_fingerprint_intro);
-        mHeader = view.findViewById(R.id.certify_fingerprint_fingerprint_header);
-
-        actionNo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getActivity().finish();
-            }
-        });
-        mActionYes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                certify(mDataUri);
-            }
-        });
+        view.findViewById(R.id.certify_fingerprint_button_no).setOnClickListener(v -> requireActivity().finish());
+        view.findViewById(R.id.certify_fingerprint_button_yes).setOnClickListener(v -> startCertifyActivity());
 
         return view;
     }
@@ -99,103 +62,35 @@ public class CertifyFingerprintFragment extends Fragment implements LoaderManage
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
-        if (dataUri == null) {
-            Timber.e("Data missing. Should be Uri of key!");
-            getActivity().finish();
+        viewModel = ViewModelProviders.of(requireActivity()).get(UnifiedKeyInfoViewModel.class);
+        viewModel.getUnifiedKeyInfoLiveData(requireContext()).observe(this, this::onLoadUnifiedKeyInfo);
+    }
+
+    private void onLoadUnifiedKeyInfo(UnifiedKeyInfo unifiedKeyInfo) {
+        if (unifiedKeyInfo == null) {
             return;
         }
 
-        loadData(dataUri);
+        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(unifiedKeyInfo.fingerprint());
+        vFingerprint.setText(KeyFormattingUtils.formatFingerprint(fingerprint));
     }
 
-    private void loadData(Uri dataUri) {
-        mDataUri = dataUri;
-
-        Timber.i("dataUri: " + mDataUri.toString());
-
-        // Prepare the loaders. Either re-connect with an existing ones,
-        // or start new ones.
-        getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
-    }
-
-    static final String[] UNIFIED_PROJECTION = new String[]{
-            KeyRings._ID, KeyRings.FINGERPRINT,
-
-    };
-    static final int INDEX_UNIFIED_FINGERPRINT = 1;
-
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        switch (id) {
-            case LOADER_ID_UNIFIED: {
-                Uri baseUri = KeyRings.buildUnifiedKeyRingUri(mDataUri);
-                return new CursorLoader(getActivity(), baseUri, UNIFIED_PROJECTION, null, null, null);
-            }
-
-            default:
-                return null;
-        }
-    }
-
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        /* TODO better error handling? May cause problems when a key is deleted,
-         * because the notification triggers faster than the activity closes.
-         */
-        // Avoid NullPointerExceptions...
-        if (data.getCount() == 0) {
-            return;
-        }
-        // Swap the new cursor in. (The framework will take care of closing the
-        // old cursor once we return.)
-        switch (loader.getId()) {
-            case LOADER_ID_UNIFIED: {
-                if (data.moveToFirst()) {
-                    byte[] fingerprintBlob = data.getBlob(INDEX_UNIFIED_FINGERPRINT);
-
-                    displayHexConfirm(fingerprintBlob);
-
-                    break;
-                }
-            }
-
-        }
-    }
-
-    private void displayHexConfirm(byte[] fingerprintBlob) {
-        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(fingerprintBlob);
-        mFingerprint.setText(KeyFormattingUtils.formatFingerprint(fingerprint));
-    }
-
-    /**
-     * This is called when the last Cursor provided to onLoadFinished() above is about to be closed.
-     * We need to make sure we are no longer using it.
-     */
-    public void onLoaderReset(Loader<Cursor> loader) {
-    }
-
-    private void certify(Uri dataUri) {
-        long keyId = 0;
-        try {
-            keyId = KeyRepository.create(getContext())
-                    .getCachedPublicKeyRing(dataUri)
-                    .extractOrGetMasterKeyId();
-        } catch (PgpKeyNotFoundException e) {
-            Timber.e(e, "key not found!");
-        }
+    private void startCertifyActivity() {
         Intent certifyIntent = new Intent(getActivity(), CertifyKeyActivity.class);
-        certifyIntent.putExtras(getActivity().getIntent());
-        certifyIntent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[]{keyId});
+        certifyIntent.putExtras(requireActivity().getIntent());
+        certifyIntent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[] { viewModel.getMasterKeyId() });
         startActivityForResult(certifyIntent, REQUEST_CERTIFY);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // always just pass this one through
         if (requestCode == REQUEST_CERTIFY) {
-            getActivity().setResult(resultCode, data);
-            getActivity().finish();
+            FragmentActivity activity = requireActivity();
+            activity.setResult(resultCode, data);
+            activity.finish();
             return;
         }
+
         super.onActivityResult(requestCode, resultCode, data);
     }
 

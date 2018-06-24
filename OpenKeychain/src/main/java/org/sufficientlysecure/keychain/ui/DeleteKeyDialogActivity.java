@@ -17,8 +17,11 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.Date;
+import java.util.HashMap;
+
 import android.app.Activity;
-import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,6 +29,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,12 +38,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.RevokeResult;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.DeleteKeyringParcel;
 import org.sufficientlysecure.keychain.service.RevokeKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -47,9 +50,6 @@ import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import timber.log.Timber;
-
-import java.util.Date;
-import java.util.HashMap;
 
 public class DeleteKeyDialogActivity extends FragmentActivity {
     public static final String EXTRA_DELETE_MASTER_KEY_IDS = "extra_delete_master_key_ids";
@@ -81,6 +81,7 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
             log.add(OperationResult.LogType.MSG_DEL_ERROR_MULTI_SECRET, 0);
             returnResult(new DeleteResult(OperationResult.RESULT_ERROR, log, 0,
                     mMasterKeyIds.length));
+            return;
         }
 
         if (mMasterKeyIds.length == 1 && mHasSecret) {

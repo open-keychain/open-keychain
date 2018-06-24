@@ -33,13 +33,11 @@ import java.util.Random;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -47,11 +45,9 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.FragmentActivity;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.WebView;
@@ -69,10 +65,12 @@ import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.linked.LinkedAttribute;
 import org.sufficientlysecure.keychain.linked.resources.GithubResource;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
+import org.sufficientlysecure.keychain.ui.keyview.UnifiedKeyInfoViewModel;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
@@ -109,7 +107,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
     }
 
     @Override @NonNull
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.linked_create_github_fragment, container, false);
 
         mButtonContainer = view.findViewById(R.id.button_container);
@@ -125,24 +123,15 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
         mLinkedIdTitle = view.findViewById(R.id.linked_id_title);
         mLinkedIdComment = view.findViewById(R.id.linked_id_comment);
 
-        view.findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LinkedIdWizard activity = (LinkedIdWizard) getActivity();
-                if (activity == null) {
-                    return;
-                }
-                activity.loadFragment(null, null, LinkedIdWizard.FRAG_ACTION_TO_LEFT);
-            }
+        view.findViewById(R.id.back_button).setOnClickListener(v -> {
+            LinkedIdWizard activity = (LinkedIdWizard) requireActivity();
+            activity.loadFragment(null, LinkedIdWizard.FRAG_ACTION_TO_LEFT);
         });
 
-        view.findViewById(R.id.button_send).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                step1GetOAuthCode();
-                // for animation testing
-                // onCryptoOperationSuccess(null);
-            }
+        view.findViewById(R.id.button_send).setOnClickListener(v -> {
+            step1GetOAuthCode();
+            // for animation testing
+            // onCryptoOperationSuccess(null);
         });
 
         return view;
@@ -152,34 +141,29 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        LinkedIdWizard wizard = (LinkedIdWizard) getActivity();
-        mFingerprint = wizard.mFingerprint;
-        mMasterKeyId = wizard.mMasterKeyId;
+        UnifiedKeyInfoViewModel viewModel = ViewModelProviders.of(requireActivity()).get(UnifiedKeyInfoViewModel.class);
+        viewModel.getUnifiedKeyInfoLiveData(requireContext()).observe(this, this::onLoadUnifiedKeyInfo);
+    }
+
+    private void onLoadUnifiedKeyInfo(UnifiedKeyInfo unifiedKeyInfo) {
+        this.mMasterKeyId = unifiedKeyInfo.master_key_id();
+        this.mFingerprint = unifiedKeyInfo.fingerprint();
     }
 
     private void step1GetOAuthCode() {
-
         setState(State.AUTH_PROCESS);
 
         mButtonContainer.setDisplayedChild(1);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                oAuthRequest("github.com/login/oauth/authorize", BuildConfig.GITHUB_CLIENT_ID, "gist");
-            }
-        }, 300);
+        new Handler().postDelayed(
+                () -> oAuthRequest("github.com/login/oauth/authorize", BuildConfig.GITHUB_CLIENT_ID, "gist"), 300);
 
     }
 
     private void showRetryForOAuth() {
-
-        mRetryButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                v.setOnClickListener(null);
-                step1GetOAuthCode();
-            }
+        mRetryButton.setOnClickListener(v -> {
+            v.setOnClickListener(null);
+            step1GetOAuthCode();
         });
         mButtonContainer.setDisplayedChild(3);
 
@@ -402,14 +386,11 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
 
         setState(State.LID_PROCESS);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                WrappedUserAttribute ua = LinkedAttribute.fromResource(resource).toUserAttribute();
-                mSkpBuilder = SaveKeyringParcel.buildChangeKeyringParcel(mMasterKeyId, mFingerprint);
-                mSkpBuilder.addUserAttribute(ua);
-                cryptoOperation();
-            }
+        new Handler().postDelayed(() -> {
+            WrappedUserAttribute ua = LinkedAttribute.fromResource(resource).toUserAttribute();
+            mSkpBuilder = SaveKeyringParcel.buildChangeKeyringParcel(mMasterKeyId, mFingerprint);
+            mSkpBuilder.addUserAttribute(ua);
+            cryptoOperation();
         }, 250);
 
     }
@@ -429,31 +410,28 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
         mButtonContainer.getInAnimation().setDuration(750);
         mButtonContainer.setDisplayedChild(2);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                FragmentActivity activity = getActivity();
-                Intent intent = ViewKeyActivity.getViewKeyActivityIntent(requireActivity(), mMasterKeyId);
-                // intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        new Handler().postDelayed(() -> {
+            Activity activity = requireActivity();
+            Intent intent = ViewKeyActivity.getViewKeyActivityIntent(requireActivity(), mMasterKeyId);
+            // intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    intent.putExtra(ViewKeyActivity.EXTRA_LINKED_TRANSITION, true);
-                    View linkedItem = mButtonContainer.getChildAt(2);
+            if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+                intent.putExtra(ViewKeyActivity.EXTRA_LINKED_TRANSITION, true);
+                View linkedItem = mButtonContainer.getChildAt(2);
 
-                    Bundle options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                            activity, linkedItem, linkedItem.getTransitionName()).toBundle();
-                    activity.startActivity(intent, options);
-                    mFinishOnStop = true;
-                } else {
-                    activity.startActivity(intent);
-                    activity.finish();
-                }
+                Bundle options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        activity, linkedItem, linkedItem.getTransitionName()).toBundle();
+                activity.startActivity(intent, options);
+                mFinishOnStop = true;
+            } else {
+                activity.startActivity(intent);
+                activity.finish();
             }
         }, 1000);
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         // cookies are automatically saved, we don't want that
@@ -463,7 +441,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         if (savedInstanceState != null) {
@@ -491,7 +469,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
         super.onStop();
 
         if (mFinishOnStop) {
-            Activity activity = getActivity();
+            Activity activity = requireActivity();
             activity.setResult(Activity.RESULT_OK);
             activity.finish();
         }
@@ -505,14 +483,11 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
 
     @Override
     public void onCryptoOperationCancelled() {
-        mRetryButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                v.setOnClickListener(null);
-                mButtonContainer.setDisplayedChild(1);
-                setState(State.LID_PROCESS);
-                cryptoOperation();
-            }
+        mRetryButton.setOnClickListener(v -> {
+            v.setOnClickListener(null);
+            mButtonContainer.setDisplayedChild(1);
+            setState(State.LID_PROCESS);
+            cryptoOperation();
         });
         mButtonContainer.setDisplayedChild(3);
         setState(State.LID_ERROR);
@@ -573,12 +548,7 @@ public class LinkedIdCreateGithubFragment extends CryptoOperationFragment<SaveKe
 
         auth_dialog.setTitle(R.string.linked_webview_title_github);
         auth_dialog.setCancelable(true);
-        auth_dialog.setOnDismissListener(new OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                step1GetOAuthToken();
-            }
-        });
+        auth_dialog.setOnDismissListener(dialog -> step1GetOAuthToken());
         auth_dialog.show();
 
         web.loadUrl("https://" + hostAndPath +

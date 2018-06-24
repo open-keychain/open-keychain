@@ -140,11 +140,6 @@ public class KeychainContract {
                     .appendPath(PATH_UNIFIED).build();
         }
 
-        public static Uri buildUnifiedKeyRingUri(Uri uri) {
-            return CONTENT_URI.buildUpon().appendPath(uri.getPathSegments().get(1))
-                    .appendPath(PATH_UNIFIED).build();
-        }
-
         public static Uri buildUnifiedKeyRingsFindByEmailUri(String email) {
             return CONTENT_URI.buildUpon().appendPath(PATH_FIND)
                     .appendPath(PATH_BY_EMAIL).appendPath(email).build();

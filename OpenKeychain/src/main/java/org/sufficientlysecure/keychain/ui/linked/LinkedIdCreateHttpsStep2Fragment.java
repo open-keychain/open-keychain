@@ -17,47 +17,46 @@
 
 package org.sufficientlysecure.keychain.ui.linked;
 
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Environment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.EditText;
-
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
-import org.sufficientlysecure.keychain.linked.resources.GenericHttpsResource;
-import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.ui.util.Notify.Style;
-import org.sufficientlysecure.keychain.util.FileHelper;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class LinkedIdCreateHttpsStep2Fragment extends LinkedIdCreateFinalFragment {
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
 
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.linked.resources.GenericHttpsResource;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
+import org.sufficientlysecure.keychain.util.FileHelper;
+import timber.log.Timber;
+
+public class LinkedIdCreateHttpsStep2Fragment extends LinkedIdCreateFinalFragment {
     private static final int REQUEST_CODE_OUTPUT = 0x00007007;
 
-    public static final String ARG_URI = "uri", ARG_TEXT = "text";
+    public static final String ARG_URI = "uri";
 
     EditText mEditUri;
 
     URI mResourceUri;
     String mResourceString;
 
-    public static LinkedIdCreateHttpsStep2Fragment newInstance
-            (String uri, String proofText) {
+    public static LinkedIdCreateHttpsStep2Fragment newInstance(String uri) {
 
         LinkedIdCreateHttpsStep2Fragment frag = new LinkedIdCreateHttpsStep2Fragment();
 
         Bundle args = new Bundle();
         args.putString(ARG_URI, uri);
-        args.putString(ARG_TEXT, proofText);
         frag.setArguments(args);
 
         return frag;
@@ -75,47 +74,33 @@ public class LinkedIdCreateHttpsStep2Fragment extends LinkedIdCreateFinalFragmen
         try {
             mResourceUri = new URI(getArguments().getString(ARG_URI));
         } catch (URISyntaxException e) {
-            e.printStackTrace();
-            getActivity().finish();
+            Timber.e(e);
+            requireActivity().finish();
         }
 
-        mResourceString = getArguments().getString(ARG_TEXT);
-
-    }
-
-    protected View newView(LayoutInflater inflater,
-            ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.linked_create_https_fragment_step2, container, false);
+        mResourceString = GenericHttpsResource.generateText(requireActivity(), fingerprint);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    protected View newView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.linked_create_https_fragment_step2, container, false);
+    }
+
+    @NonNull
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
-        if (view != null) {
+        view.findViewById(R.id.button_send).setOnClickListener(v -> proofSend());
+        view.findViewById(R.id.button_save).setOnClickListener(v -> proofSave());
 
-            view.findViewById(R.id.button_send).setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    proofSend();
-                }
-            });
-
-            view.findViewById(R.id.button_save).setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    proofSave();
-                }
-            });
-
-            mEditUri = view.findViewById(R.id.linked_create_https_uri);
-            mEditUri.setText(mResourceUri.toString());
-        }
+        mEditUri = view.findViewById(R.id.linked_create_https_uri);
+        mEditUri.setText(mResourceUri.toString());
 
         return view;
     }
 
-    private void proofSend () {
+    private void proofSend() {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, mResourceString);
@@ -123,7 +108,7 @@ public class LinkedIdCreateHttpsStep2Fragment extends LinkedIdCreateFinalFragmen
         startActivity(sendIntent);
     }
 
-    private void proofSave () {
+    private void proofSave() {
         String state = Environment.getExternalStorageState();
         if (!Environment.MEDIA_MOUNTED.equals(state)) {
             Notify.create(getActivity(), "External storage not available!", Style.ERROR).show();
@@ -138,8 +123,7 @@ public class LinkedIdCreateHttpsStep2Fragment extends LinkedIdCreateFinalFragmen
 
     private void saveFile(Uri uri) {
         try {
-            PrintWriter out =
-                    new PrintWriter(getActivity().getContentResolver().openOutputStream(uri));
+            PrintWriter out = new PrintWriter(requireActivity().getContentResolver().openOutputStream(uri));
             out.print(mResourceString);
             if (out.checkError()) {
                 Notify.create(getActivity(), "Error writing file!", Style.ERROR).show();

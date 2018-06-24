@@ -18,36 +18,27 @@
 package org.sufficientlysecure.keychain.ui.linked;
 
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NavUtils;
-import android.support.v4.app.TaskStackBuilder;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
+import org.sufficientlysecure.keychain.ui.keyview.UnifiedKeyInfoViewModel;
 import timber.log.Timber;
 
 
 public class LinkedIdWizard extends BaseActivity {
+    public static final String EXTRA_MASTER_KEY_ID = "master_key_id";
 
     public static final int FRAG_ACTION_START = 0;
     public static final int FRAG_ACTION_TO_RIGHT = 1;
     public static final int FRAG_ACTION_TO_LEFT = 2;
-
-    long mMasterKeyId;
-    byte[] mFingerprint;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,27 +46,32 @@ public class LinkedIdWizard extends BaseActivity {
 
         setTitle(getString(R.string.title_linked_id_create));
 
-        try {
-            Uri uri = getIntent().getData();
-            uri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(uri);
-            CachedPublicKeyRing ring = KeyRepository.create(this).getCachedPublicKeyRing(uri);
-            if (!ring.hasAnySecret()) {
-                Timber.e("Linked Identities can only be added to secret keys!");
-                finish();
-                return;
-            }
-
-            mMasterKeyId = ring.extractOrGetMasterKeyId();
-            mFingerprint = ring.getFingerprint();
-        } catch (PgpKeyNotFoundException e) {
-            Timber.e("Invalid uri given, key does not exist!");
+        Bundle extras = getIntent().getExtras();
+        if (extras == null || !extras.containsKey(EXTRA_MASTER_KEY_ID)) {
+            Timber.e("Missing required extra master_key_id!");
             finish();
             return;
         }
 
+        long masterKeyId = extras.getLong(EXTRA_MASTER_KEY_ID);
+        UnifiedKeyInfoViewModel viewModel = ViewModelProviders.of(this).get(UnifiedKeyInfoViewModel.class);
+        viewModel.setMasterKeyId(masterKeyId);
+        viewModel.getUnifiedKeyInfoLiveData(this).observe(this, this::onLoadUnifiedKeyInfo);
+
+        hideKeyboard();
+
         // pass extras into fragment
-        LinkedIdSelectFragment frag = LinkedIdSelectFragment.newInstance();
-        loadFragment(null, frag, FRAG_ACTION_START);
+        if (savedInstanceState == null) {
+            LinkedIdSelectFragment frag = LinkedIdSelectFragment.newInstance();
+            loadFragment(frag, FRAG_ACTION_START);
+        }
+    }
+
+    private void onLoadUnifiedKeyInfo(UnifiedKeyInfo unifiedKeyInfo) {
+        if (!unifiedKeyInfo.has_any_secret()) {
+            Timber.e("Linked Identities can only be added to secret keys!");
+            finish();
+        }
     }
 
     @Override
@@ -83,16 +79,7 @@ public class LinkedIdWizard extends BaseActivity {
         setContentView(R.layout.create_key_activity);
     }
 
-    public void loadFragment(Bundle savedInstanceState, Fragment fragment, int action) {
-        // However, if we're being restored from a previous state,
-        // then we don't need to do anything and should return or else
-        // we could end up with overlapping fragments.
-        if (savedInstanceState != null) {
-            return;
-        }
-
-        hideKeyboard();
-
+    public void loadFragment(Fragment fragment, int action) {
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -115,50 +102,17 @@ public class LinkedIdWizard extends BaseActivity {
                 break;
 
         }
-        // do it immediately!
         getSupportFragmentManager().executePendingTransactions();
     }
 
     private void hideKeyboard() {
-        InputMethodManager inputManager = (InputMethodManager)
-                getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
-        // check if no view has focus
         View v = getCurrentFocus();
-        if (v == null)
+        if (v == null || inputManager == null) {
             return;
+        }
 
         inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }
-
-    @Override
-    public void onBackPressed() {
-        if (!getFragmentManager().popBackStackImmediate()) {
-            navigateBack();
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                navigateBack();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void navigateBack() {
-        Intent upIntent = NavUtils.getParentActivityIntent(this);
-        upIntent.setData(KeyRings.buildGenericKeyRingUri(mMasterKeyId));
-        // This activity is NOT part of this app's task, so create a new task
-        // when navigating up, with a synthesized back stack.
-        TaskStackBuilder.create(this)
-                // Add all of this activity's parents to the back stack
-                .addNextIntentWithParentStack(upIntent)
-                // Navigate up to the closest parent
-                .startActivities();
-    }
-
 }

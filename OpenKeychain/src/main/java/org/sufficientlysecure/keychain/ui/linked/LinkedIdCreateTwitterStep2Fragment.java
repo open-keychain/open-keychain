@@ -17,20 +17,23 @@
 
 package org.sufficientlysecure.keychain.ui.linked;
 
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.linked.LinkedTokenResource;
 import org.sufficientlysecure.keychain.linked.resources.TwitterResource;
+import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 
 public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragment {
 
@@ -39,9 +42,7 @@ public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragm
     String mResourceHandle;
     String mResourceString;
 
-    public static LinkedIdCreateTwitterStep2Fragment newInstance
-            (String handle) {
-
+    public static LinkedIdCreateTwitterStep2Fragment newInstance(String handle) {
         LinkedIdCreateTwitterStep2Fragment frag = new LinkedIdCreateTwitterStep2Fragment();
 
         Bundle args = new Bundle();
@@ -52,39 +53,23 @@ public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragm
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        mResourceString =
-                TwitterResource.generate(mLinkedIdWizard.mFingerprint);
-
+        mResourceString = TwitterResource.generate(fingerprint);
         mResourceHandle = getArguments().getString(ARG_HANDLE);
-
     }
 
+    @NonNull
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
-        if (view != null) {
-            view.findViewById(R.id.button_send).setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    proofSend();
-                }
-            });
+        view.findViewById(R.id.button_send).setOnClickListener(v -> proofSend());
+        view.findViewById(R.id.button_share).setOnClickListener(v -> proofShare());
 
-            view.findViewById(R.id.button_share).setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    proofShare();
-                }
-            });
-
-            ((TextView) view.findViewById(R.id.linked_tweet_published)).setText(
-                    Html.fromHtml(getString(R.string.linked_create_twitter_2_3, mResourceHandle))
-            );
-        }
+        Spanned tweetText = Html.fromHtml(getString(R.string.linked_create_twitter_2_3, mResourceHandle));
+        ((TextView) view.findViewById(R.id.linked_tweet_published)).setText(tweetText);
 
         return view;
     }
@@ -109,13 +94,12 @@ public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragm
     }
 
     private void proofSend() {
-
         Uri.Builder builder = Uri.parse("https://twitter.com/intent/tweet").buildUpon();
         builder.appendQueryParameter("text", mResourceString);
         Uri uri = builder.build();
 
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-        getActivity().startActivity(intent);
+        startActivity(intent);
     }
 
 }
