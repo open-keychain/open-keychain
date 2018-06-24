@@ -47,7 +47,7 @@ public class SubkeyStatusDao {
         this.keyRepository = keyRepository;
     }
 
-    KeySubkeyStatus getSubkeyStatus(long masterKeyId, Comparator<SubKeyItem> comparator) {
+    public KeySubkeyStatus getSubkeyStatus(long masterKeyId) {
         SubKeyItem keyCertify = null;
         ArrayList<SubKeyItem> keysSign = new ArrayList<>();
         ArrayList<SubKeyItem> keysEncrypt = new ArrayList<>();
@@ -73,10 +73,89 @@ public class SubkeyStatusDao {
             return null;
         }
 
-        Collections.sort(keysSign, comparator);
-        Collections.sort(keysEncrypt, comparator);
+        Collections.sort(keysSign, SUBKEY_COMPARATOR);
+        Collections.sort(keysEncrypt, SUBKEY_COMPARATOR);
 
-        return new KeySubkeyStatus(keyCertify, keysSign, keysEncrypt);
+        KeyHealthStatus keyHealthStatus = determineKeyHealthStatus(keyCertify, keysSign, keysEncrypt);
+
+        return new KeySubkeyStatus(keyCertify, keysSign, keysEncrypt, keyHealthStatus);
+    }
+
+    private KeyHealthStatus determineKeyHealthStatus(SubKeyItem keyCertify,
+            ArrayList<SubKeyItem> keysSign,
+            ArrayList<SubKeyItem> keysEncrypt) {
+        if (keyCertify.mIsRevoked) {
+            return KeyHealthStatus.REVOKED;
+        }
+
+        if (keyCertify.mIsExpired) {
+            return KeyHealthStatus.EXPIRED;
+        }
+
+        if (keyCertify.mSecurityProblem != null) {
+            return KeyHealthStatus.INSECURE;
+        }
+
+        if (!keysSign.isEmpty() && keysEncrypt.isEmpty()) {
+            SubKeyItem keySign = keysSign.get(0);
+            if (!keySign.isValid()) {
+                return KeyHealthStatus.BROKEN;
+            }
+
+            if (keySign.mSecurityProblem != null) {
+                return KeyHealthStatus.INSECURE;
+            }
+
+            return KeyHealthStatus.SIGN_ONLY;
+        }
+
+        if (keysSign.isEmpty() || keysEncrypt.isEmpty()) {
+            return KeyHealthStatus.BROKEN;
+        }
+
+        SubKeyItem keySign = keysSign.get(0);
+        SubKeyItem keyEncrypt = keysEncrypt.get(0);
+
+        if (keySign.mSecurityProblem != null && keySign.isValid()
+                || keyEncrypt.mSecurityProblem != null && keyEncrypt.isValid()) {
+            return KeyHealthStatus.INSECURE;
+        }
+
+        if (!keySign.isValid() || !keyEncrypt.isValid()) {
+            return KeyHealthStatus.BROKEN;
+        }
+
+        if (keyCertify.mSecretKeyType == SecretKeyType.GNU_DUMMY
+                && keySign.mSecretKeyType == SecretKeyType.GNU_DUMMY
+                && keyEncrypt.mSecretKeyType == SecretKeyType.GNU_DUMMY) {
+            return KeyHealthStatus.STRIPPED;
+        }
+
+        if (keyCertify.mSecretKeyType == SecretKeyType.DIVERT_TO_CARD
+                && keySign.mSecretKeyType == SecretKeyType.DIVERT_TO_CARD
+                && keyEncrypt.mSecretKeyType == SecretKeyType.DIVERT_TO_CARD) {
+            return KeyHealthStatus.DIVERT;
+        }
+
+        boolean containsDivertKeys = keyCertify.mSecretKeyType == SecretKeyType.DIVERT_TO_CARD ||
+                keySign.mSecretKeyType == SecretKeyType.DIVERT_TO_CARD ||
+                keyEncrypt.mSecretKeyType == SecretKeyType.DIVERT_TO_CARD;
+        if (containsDivertKeys) {
+            return KeyHealthStatus.DIVERT_PARTIAL;
+        }
+
+        boolean containsStrippedKeys = keyCertify.mSecretKeyType == SecretKeyType.GNU_DUMMY
+                || keySign.mSecretKeyType == SecretKeyType.GNU_DUMMY
+                || keyEncrypt.mSecretKeyType == SecretKeyType.GNU_DUMMY;
+        if (containsStrippedKeys) {
+            return KeyHealthStatus.PARTIAL_STRIPPED;
+        }
+
+        return KeyHealthStatus.OK;
+    }
+
+    public enum KeyHealthStatus {
+        OK, DIVERT, DIVERT_PARTIAL, REVOKED, EXPIRED, INSECURE, SIGN_ONLY, STRIPPED, PARTIAL_STRIPPED, BROKEN
     }
 
     public static class KeySubkeyStatus {
@@ -84,11 +163,14 @@ public class SubkeyStatusDao {
         public final SubKeyItem keyCertify;
         public final List<SubKeyItem> keysSign;
         public final List<SubKeyItem> keysEncrypt;
+        public final KeyHealthStatus keyHealthStatus;
 
-        KeySubkeyStatus(@NonNull SubKeyItem keyCertify, List<SubKeyItem> keysSign, List<SubKeyItem> keysEncrypt) {
+        KeySubkeyStatus(@NonNull SubKeyItem keyCertify, List<SubKeyItem> keysSign, List<SubKeyItem> keysEncrypt,
+                KeyHealthStatus keyHealthStatus) {
             this.keyCertify = keyCertify;
             this.keysSign = keysSign;
             this.keysEncrypt = keysEncrypt;
+            this.keyHealthStatus = keyHealthStatus;
         }
     }
 
@@ -131,4 +213,24 @@ public class SubkeyStatusDao {
             return !mIsRevoked && !mIsExpired;
         }
     }
+
+    private static final Comparator<SubKeyItem> SUBKEY_COMPARATOR = (one, two) -> {
+        if (one == two) {
+            return 0;
+        }
+        // if one is valid and the other isn't, the valid one always comes first
+        if (one.isValid() ^ two.isValid()) {
+            return one.isValid() ? -1 : 1;
+        }
+        // compare usability, if one is "more usable" than the other, that one comes first
+        int usability = one.mSecretKeyType.compareUsability(two.mSecretKeyType);
+        if (usability != 0) {
+            return usability;
+        }
+        if ((one.mSecurityProblem == null) ^ (two.mSecurityProblem == null)) {
+            return one.mSecurityProblem == null ? -1 : 1;
+        }
+        // otherwise, the newer one comes first
+        return one.newerThan(two) ? -1 : 1;
+    };
 }

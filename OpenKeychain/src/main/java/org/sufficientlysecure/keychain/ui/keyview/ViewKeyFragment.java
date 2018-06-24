@@ -21,11 +21,13 @@ package org.sufficientlysecure.keychain.ui.keyview;
 import java.util.List;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -42,35 +44,43 @@ import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.model.KeyMetadata;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
+import org.sufficientlysecure.keychain.provider.AutocryptPeerDao;
+import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter.IdentityClickListener;
+import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity.ViewKeyViewModel;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.AutocryptPeerInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.IdentityInfo;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.LinkedIdInfo;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.UserIdInfo;
+import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.KeyHealthStatus;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.KeySubkeyStatus;
+import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.SubKeyItem;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SystemContactDao.SystemContactInfo;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.IdentitiesPresenter;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyHealthPresenter;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyserverStatusPresenter;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.SystemContactPresenter;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.ViewKeyMvpView;
 import org.sufficientlysecure.keychain.ui.keyview.view.IdentitiesCardView;
 import org.sufficientlysecure.keychain.ui.keyview.view.KeyHealthView;
+import org.sufficientlysecure.keychain.ui.keyview.view.KeyStatusList.KeyDisplayStatus;
 import org.sufficientlysecure.keychain.ui.keyview.view.KeyserverStatusView;
 import org.sufficientlysecure.keychain.ui.keyview.view.SystemContactCardView;
+import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
+import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
 
 
-public class ViewKeyFragment extends Fragment implements ViewKeyMvpView, OnMenuItemClickListener {
+public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener {
     private IdentitiesCardView identitiesCardView;
-    private IdentitiesPresenter identitiesPresenter;
+    private SystemContactCardView systemContactCard;
+    private KeyHealthView keyStatusHealth;
+    private KeyserverStatusView keyserverStatusView;
 
-    SystemContactCardView systemContactCard;
-    SystemContactPresenter systemContactPresenter;
-
-    KeyHealthView keyStatusHealth;
-    KeyserverStatusView keyStatusKeyserver;
-
-    KeyHealthPresenter keyHealthPresenter;
-    KeyserverStatusPresenter keyserverStatusPresenter;
+    IdentityAdapter identitiesAdapter;
 
     private Integer displayedContextMenuPosition;
+    private UnifiedKeyInfo unifiedKeyInfo;
+    private KeySubkeyStatus subkeyStatus;
+    private boolean showingExpandedInfo;
 
     public static ViewKeyFragment newInstance() {
         return new ViewKeyFragment();
@@ -83,74 +93,233 @@ public class ViewKeyFragment extends Fragment implements ViewKeyMvpView, OnMenuI
         identitiesCardView = view.findViewById(R.id.card_identities);
         systemContactCard = view.findViewById(R.id.linked_system_contact_card);
         keyStatusHealth = view.findViewById(R.id.key_status_health);
-        keyStatusKeyserver = view.findViewById(R.id.key_status_keyserver);
+        keyserverStatusView = view.findViewById(R.id.key_status_keyserver);
+
+        identitiesAdapter = new IdentityAdapter(requireContext(), new IdentityClickListener() {
+            @Override
+            public void onClickIdentity(int position) {
+                showIdentityInfo(position);
+            }
+
+            @Override
+            public void onClickIdentityMore(int position, View anchor) {
+                showIdentityContextMenu(position, anchor);
+            }
+        });
+        identitiesCardView.setIdentitiesAdapter(identitiesAdapter);
+
+        keyStatusHealth.setOnHealthClickListener((v) -> onKeyHealthClick());
 
         return view;
-    }
-
-    public static class KeyFragmentViewModel extends ViewModel {
-        private LiveData<List<IdentityInfo>> identityInfo;
-        private LiveData<KeySubkeyStatus> subkeyStatus;
-        private LiveData<SystemContactInfo> systemContactInfo;
-        private LiveData<KeyMetadata> keyserverStatus;
-
-        LiveData<List<IdentityInfo>> getIdentityInfo(IdentitiesPresenter identitiesPresenter) {
-            if (identityInfo == null) {
-                identityInfo = identitiesPresenter.getLiveDataInstance();
-            }
-            return identityInfo;
-        }
-
-        LiveData<KeySubkeyStatus> getSubkeyStatus(KeyHealthPresenter keyHealthPresenter) {
-            if (subkeyStatus == null) {
-                subkeyStatus = keyHealthPresenter.getLiveDataInstance();
-            }
-            return subkeyStatus;
-        }
-
-        LiveData<SystemContactInfo> getSystemContactInfo(SystemContactPresenter systemContactPresenter) {
-            if (systemContactInfo == null) {
-                systemContactInfo = systemContactPresenter.getLiveDataInstance();
-            }
-            return systemContactInfo;
-        }
-
-        LiveData<KeyMetadata> getKeyserverStatus(KeyserverStatusPresenter keyserverStatusPresenter) {
-            if (keyserverStatus == null) {
-                keyserverStatus = keyserverStatusPresenter.getLiveDataInstance();
-            }
-            return keyserverStatus;
-        }
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        Context context = requireContext();
+
         ViewKeyViewModel viewKeyViewModel = ViewModelProviders.of(requireActivity()).get(ViewKeyViewModel.class);
-        viewKeyViewModel.getUnifiedKeyInfoLiveData(requireContext()).observe(this, this::onLoadUnifiedKeyInfo);
+        LiveData<UnifiedKeyInfo> unifiedKeyInfoLiveData = viewKeyViewModel.getUnifiedKeyInfoLiveData(requireContext());
+
+        unifiedKeyInfoLiveData.observe(this, this::onLoadUnifiedKeyInfo);
+
+        KeyFragmentViewModel model = ViewModelProviders.of(this).get(KeyFragmentViewModel.class);
+
+        boolean showLinkedIds = Preferences.getPreferences(context).getExperimentalEnableLinkedIdentities();
+        model.getIdentityInfo(context, unifiedKeyInfoLiveData, showLinkedIds).observe(this, this::onLoadIdentityInfo);
+        model.getKeyserverStatus(context, unifiedKeyInfoLiveData).observe(this, this::onLoadKeyMetadata);
+        model.getSystemContactInfo(context, unifiedKeyInfoLiveData).observe(this, this::onLoadSystemContact);
+        model.getSubkeyStatus(context, unifiedKeyInfoLiveData).observe(this, this::onLoadSubkeyStatus);
+    }
+
+    private void onLoadSubkeyStatus(KeySubkeyStatus subkeyStatus) {
+        if (subkeyStatus == null) {
+            return;
+        }
+
+        this.subkeyStatus = subkeyStatus;
+
+        KeyHealthStatus keyHealthStatus = subkeyStatus.keyHealthStatus;
+
+        boolean isInsecure = keyHealthStatus == KeyHealthStatus.INSECURE;
+        boolean isExpired = keyHealthStatus == KeyHealthStatus.EXPIRED;
+        if (isInsecure) {
+            boolean primaryKeySecurityProblem = subkeyStatus.keyCertify.mSecurityProblem != null;
+            if (primaryKeySecurityProblem) {
+                keyStatusHealth.setKeyStatus(keyHealthStatus);
+                keyStatusHealth.setPrimarySecurityProblem(subkeyStatus.keyCertify.mSecurityProblem);
+                keyStatusHealth.setShowExpander(false);
+            } else {
+                keyStatusHealth.setKeyStatus(keyHealthStatus);
+                keyStatusHealth.setShowExpander(false);
+                displayExpandedInfo(false);
+            }
+        } else if (isExpired) {
+            keyStatusHealth.setKeyStatus(keyHealthStatus);
+            keyStatusHealth.setPrimaryExpiryDate(subkeyStatus.keyCertify.mExpiry);
+            keyStatusHealth.setShowExpander(false);
+            keyStatusHealth.hideExpandedInfo();
+        } else {
+            keyStatusHealth.setKeyStatus(keyHealthStatus);
+            keyStatusHealth.setShowExpander(keyHealthStatus != KeyHealthStatus.REVOKED);
+            keyStatusHealth.hideExpandedInfo();
+        }
+    }
+
+    private void displayExpandedInfo(boolean displayAll) {
+        SubKeyItem keyCertify = subkeyStatus.keyCertify;
+        SubKeyItem keySign = subkeyStatus.keysSign.isEmpty() ? null : subkeyStatus.keysSign.get(0);
+        SubKeyItem keyEncrypt = subkeyStatus.keysEncrypt.isEmpty() ? null : subkeyStatus.keysEncrypt.get(0);
+
+        KeyDisplayStatus certDisplayStatus = getKeyDisplayStatus(keyCertify);
+        KeyDisplayStatus signDisplayStatus = getKeyDisplayStatus(keySign);
+        KeyDisplayStatus encryptDisplayStatus = getKeyDisplayStatus(keyEncrypt);
+
+        if (!displayAll) {
+            if (certDisplayStatus == KeyDisplayStatus.OK) {
+                certDisplayStatus = null;
+            }
+            if (certDisplayStatus == KeyDisplayStatus.INSECURE) {
+                signDisplayStatus = null;
+                encryptDisplayStatus = null;
+            }
+            if (signDisplayStatus == KeyDisplayStatus.OK) {
+                signDisplayStatus = null;
+            }
+            if (encryptDisplayStatus == KeyDisplayStatus.OK) {
+                encryptDisplayStatus = null;
+            }
+        }
+
+        keyStatusHealth.showExpandedState(certDisplayStatus, signDisplayStatus, encryptDisplayStatus);
+    }
+
+    private void onKeyHealthClick() {
+        if (showingExpandedInfo) {
+            showingExpandedInfo = false;
+            keyStatusHealth.hideExpandedInfo();
+        } else {
+            showingExpandedInfo = true;
+            displayExpandedInfo(true);
+        }
+    }
+
+    private KeyDisplayStatus getKeyDisplayStatus(SubKeyItem subKeyItem) {
+        if (subKeyItem == null) {
+            return KeyDisplayStatus.UNAVAILABLE;
+        }
+
+        if (subKeyItem.mIsRevoked) {
+            return KeyDisplayStatus.REVOKED;
+        }
+        if (subKeyItem.mIsExpired) {
+            return KeyDisplayStatus.EXPIRED;
+        }
+        if (subKeyItem.mSecurityProblem != null) {
+            return KeyDisplayStatus.INSECURE;
+        }
+        if (subKeyItem.mSecretKeyType == SecretKeyType.GNU_DUMMY) {
+            return KeyDisplayStatus.STRIPPED;
+        }
+        if (subKeyItem.mSecretKeyType == SecretKeyType.DIVERT_TO_CARD) {
+            return KeyDisplayStatus.DIVERT;
+        }
+
+        return KeyDisplayStatus.OK;
     }
 
     private void onLoadUnifiedKeyInfo(UnifiedKeyInfo unifiedKeyInfo) {
-        KeyFragmentViewModel model = ViewModelProviders.of(this).get(KeyFragmentViewModel.class);
+        if (unifiedKeyInfo == null) {
+            return;
+        }
 
-        identitiesPresenter = new IdentitiesPresenter(
-                getContext(), identitiesCardView, this, unifiedKeyInfo.master_key_id(), unifiedKeyInfo.has_any_secret());
-        model.getIdentityInfo(identitiesPresenter).observe(this, identitiesPresenter);
+        Context context = requireContext();
 
-        systemContactPresenter = new SystemContactPresenter(
-                getContext(), systemContactCard, unifiedKeyInfo.master_key_id(), unifiedKeyInfo.has_any_secret());
-        model.getSystemContactInfo(systemContactPresenter).observe(this, systemContactPresenter);
+        this.unifiedKeyInfo = unifiedKeyInfo;
 
-        keyHealthPresenter = new KeyHealthPresenter(getContext(), keyStatusHealth, unifiedKeyInfo.master_key_id());
-        model.getSubkeyStatus(keyHealthPresenter).observe(this, keyHealthPresenter);
-
-        keyserverStatusPresenter = new KeyserverStatusPresenter(
-                getContext(), keyStatusKeyserver, unifiedKeyInfo.master_key_id(), unifiedKeyInfo.has_any_secret());
-        model.getKeyserverStatus(keyserverStatusPresenter).observe(this, keyserverStatusPresenter);
+        boolean showLinkedIds = Preferences.getPreferences(context).getExperimentalEnableLinkedIdentities();
+        boolean isSecret = unifiedKeyInfo.has_any_secret();
+        identitiesCardView.setAddLinkedIdButtonVisible(showLinkedIds && isSecret);
+        identitiesCardView.setIdentitiesCardListener((v) -> addLinkedIdentity());
     }
 
-    @Override
+    private void showIdentityInfo(final int position) {
+        IdentityInfo info = identitiesAdapter.getInfo(position);
+        if (info instanceof LinkedIdInfo) {
+            showLinkedId((LinkedIdInfo) info);
+        } else if (info instanceof UserIdInfo) {
+            showUserIdInfo((UserIdInfo) info);
+        } else if (info instanceof AutocryptPeerInfo) {
+            Intent autocryptPeerIntent = ((AutocryptPeerInfo) info).getAutocryptPeerIntent();
+            if (autocryptPeerIntent != null) {
+                startActivity(autocryptPeerIntent);
+            }
+        }
+    }
+
+    private void showIdentityContextMenu(int position, View anchor) {
+        showContextMenu(position, anchor);
+    }
+
+    private void showLinkedId(final LinkedIdInfo info) {
+        LinkedIdViewFragment frag = LinkedIdViewFragment.newInstance(info.getMasterKeyId(), info.getRank(), unifiedKeyInfo.has_any_secret());
+
+        switchToFragment(frag, "linked_id");
+    }
+
+    private void showUserIdInfo(UserIdInfo info) {
+        if (!unifiedKeyInfo.has_any_secret()) {
+            UserIdInfoDialogFragment dialogFragment = UserIdInfoDialogFragment.newInstance(false, info.isVerified());
+            showDialogFragment(dialogFragment, "userIdInfoDialog");
+        }
+    }
+
+    private void addLinkedIdentity() {
+        Intent intent = new Intent(requireContext(), LinkedIdWizard.class);
+        intent.setData(KeyRings.buildUnifiedKeyRingUri(unifiedKeyInfo.master_key_id()));
+        startActivity(intent);
+    }
+
+    public void onClickForgetIdentity(int position) {
+        AutocryptPeerInfo info = (AutocryptPeerInfo) identitiesAdapter.getInfo(position);
+        if (info == null) {
+            Timber.e("got a 'forget' click on a bad trust id");
+            return;
+        }
+
+        AutocryptPeerDao.getInstance(requireContext()).deleteByIdentifier(info.getPackageName(), info.getIdentity());
+    }
+
+    private void onLoadIdentityInfo(List<IdentityInfo> identityInfos) {
+        identitiesAdapter.setData(identityInfos, unifiedKeyInfo.has_any_secret());
+    }
+
+    private void onLoadSystemContact(SystemContactInfo systemContactInfo) {
+        if (systemContactInfo == null) {
+            systemContactCard.hideLinkedSystemContact();
+            return;
+        }
+
+        systemContactCard.showLinkedSystemContact(systemContactInfo.contactName, systemContactInfo.contactPicture);
+        systemContactCard.setSystemContactClickListener((v) -> launchAndroidContactActivity(systemContactInfo.contactId));
+    }
+
+    private void onLoadKeyMetadata(KeyMetadata keyMetadata) {
+        if (keyMetadata == null) {
+            keyserverStatusView.setDisplayStatusUnknown();
+        } else if (keyMetadata.hasBeenUpdated()) {
+            if (keyMetadata.isPublished()) {
+                keyserverStatusView.setDisplayStatusPublished();
+            } else {
+                keyserverStatusView.setDisplayStatusNotPublished();
+            }
+            keyserverStatusView.setLastUpdated(keyMetadata.last_updated());
+        } else {
+            keyserverStatusView.setDisplayStatusUnknown();
+        }
+    }
+
     public void switchToFragment(final Fragment frag, final String backStackName) {
         new Handler().post(() -> requireFragmentManager().beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
@@ -170,18 +339,11 @@ public class ViewKeyFragment extends Fragment implements ViewKeyMvpView, OnMenuI
         }
     }
 
-    @Override
-    public void startActivityAndShowResultSnackbar(Intent intent) {
-        startActivityForResult(intent, 0);
-    }
-
-    @Override
     public void showDialogFragment(final DialogFragment dialogFragment, final String tag) {
         DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(
                 () -> dialogFragment.show(requireFragmentManager(), tag));
     }
 
-    @Override
     public void showContextMenu(int position, View anchor) {
         displayedContextMenuPosition = position;
 
@@ -202,10 +364,17 @@ public class ViewKeyFragment extends Fragment implements ViewKeyMvpView, OnMenuI
             case R.id.autocrypt_forget:
                 int position = displayedContextMenuPosition;
                 displayedContextMenuPosition = null;
-                identitiesPresenter.onClickForgetIdentity(position);
+                onClickForgetIdentity(position);
                 return true;
         }
 
         return false;
+    }
+
+    private void launchAndroidContactActivity(long contactId) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, String.valueOf(contactId));
+        intent.setData(uri);
+        startActivity(intent);
     }
 }

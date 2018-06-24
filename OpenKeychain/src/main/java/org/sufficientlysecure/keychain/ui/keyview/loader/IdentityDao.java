@@ -71,7 +71,7 @@ public class IdentityDao {
         this.autocryptPeerDao = autocryptPeerDao;
     }
 
-    List<IdentityInfo> getIdentityInfos(long masterKeyId, boolean showLinkedIds) {
+    public List<IdentityInfo> getIdentityInfos(long masterKeyId, boolean showLinkedIds) {
         ArrayList<IdentityInfo> identities = new ArrayList<>();
 
         if (showLinkedIds) {
@@ -95,11 +95,11 @@ public class IdentityDao {
             if (associatedUserIdInfo != null) {
                 int position = identities.indexOf(associatedUserIdInfo);
                 AutocryptPeerInfo autocryptPeerInfo = AutocryptPeerInfo
-                        .create(associatedUserIdInfo, autocryptId, packageName, drawable, autocryptPeerIntent);
+                        .create(masterKeyId, associatedUserIdInfo, autocryptId, packageName, drawable, autocryptPeerIntent);
                 identities.set(position, autocryptPeerInfo);
             } else {
                 AutocryptPeerInfo autocryptPeerInfo = AutocryptPeerInfo
-                        .create(autocryptId, packageName, drawable, autocryptPeerIntent);
+                        .create(masterKeyId, autocryptId, packageName, drawable, autocryptPeerIntent);
                 identities.add(autocryptPeerInfo);
             }
         }
@@ -163,7 +163,7 @@ public class IdentityDao {
         try {
             UriAttribute uriAttribute = LinkedAttribute.fromAttributeData(userAttribute.attribute_data());
             if (uriAttribute instanceof LinkedAttribute) {
-                return LinkedIdInfo.create(userAttribute.rank(),
+                return LinkedIdInfo.create(userAttribute.master_key_id(), userAttribute.rank(),
                         userAttribute.isVerified(), userAttribute.is_primary(), (LinkedAttribute) uriAttribute);
             }
         } catch (IOException e) {
@@ -180,7 +180,7 @@ public class IdentityDao {
 
                 if (userId.name() != null || userId.email() != null) {
                     IdentityInfo identityInfo = UserIdInfo.create(
-                            userId.rank(), userId.isVerified(), userId.is_primary(), userId.name(), userId.email(), userId.comment());
+                            userId.master_key_id(), userId.rank(), userId.isVerified(), userId.is_primary(), userId.name(), userId.email(), userId.comment());
                     identities.add(identityInfo);
                 }
             }
@@ -188,6 +188,7 @@ public class IdentityDao {
     }
 
     public interface IdentityInfo {
+        long getMasterKeyId();
         int getRank();
         boolean isVerified();
         boolean isPrimary();
@@ -195,6 +196,7 @@ public class IdentityDao {
 
     @AutoValue
     public abstract static class UserIdInfo implements IdentityInfo {
+        public abstract long getMasterKeyId();
         public abstract int getRank();
         public abstract boolean isVerified();
         public abstract boolean isPrimary();
@@ -206,27 +208,29 @@ public class IdentityDao {
         @Nullable
         public abstract String getComment();
 
-        static UserIdInfo create(int rank, boolean isVerified, boolean isPrimary, String name, String email,
+        static UserIdInfo create(long masterKeyId, int rank, boolean isVerified, boolean isPrimary, String name, String email,
                 String comment) {
-            return new AutoValue_IdentityDao_UserIdInfo(rank, isVerified, isPrimary, name, email, comment);
+            return new AutoValue_IdentityDao_UserIdInfo(masterKeyId, rank, isVerified, isPrimary, name, email, comment);
         }
     }
 
     @AutoValue
     public abstract static class LinkedIdInfo implements IdentityInfo {
+        public abstract long getMasterKeyId();
         public abstract int getRank();
         public abstract boolean isVerified();
         public abstract boolean isPrimary();
 
         public abstract LinkedAttribute getLinkedAttribute();
 
-        static LinkedIdInfo create(int rank, boolean isVerified, boolean isPrimary, LinkedAttribute linkedAttribute) {
-            return new AutoValue_IdentityDao_LinkedIdInfo(rank, isVerified, isPrimary, linkedAttribute);
+        static LinkedIdInfo create(long masterKeyId, int rank, boolean isVerified, boolean isPrimary, LinkedAttribute linkedAttribute) {
+            return new AutoValue_IdentityDao_LinkedIdInfo(masterKeyId, rank, isVerified, isPrimary, linkedAttribute);
         }
     }
 
     @AutoValue
     public abstract static class AutocryptPeerInfo implements IdentityInfo {
+        public abstract long getMasterKeyId();
         public abstract int getRank();
         public abstract boolean isVerified();
         public abstract boolean isPrimary();
@@ -240,15 +244,14 @@ public class IdentityDao {
         @Nullable
         public abstract Intent getAutocryptPeerIntent();
 
-        static AutocryptPeerInfo create(UserIdInfo userIdInfo, String autocryptPeer, String packageName,
+        static AutocryptPeerInfo create(long masterKeyId, UserIdInfo userIdInfo, String autocryptPeer, String packageName,
                 Drawable appIcon, Intent autocryptPeerIntent) {
-            return new AutoValue_IdentityDao_AutocryptPeerInfo(userIdInfo.getRank(), userIdInfo.isVerified(),
+            return new AutoValue_IdentityDao_AutocryptPeerInfo(masterKeyId, userIdInfo.getRank(), userIdInfo.isVerified(),
                     userIdInfo.isPrimary(), autocryptPeer, packageName, appIcon, userIdInfo, autocryptPeerIntent);
         }
 
-        static AutocryptPeerInfo create(String autocryptPeer, String packageName, Drawable appIcon, Intent autocryptPeerIntent) {
-            return new AutoValue_IdentityDao_AutocryptPeerInfo(
-                    0, false, false, autocryptPeer, packageName, appIcon, null, autocryptPeerIntent);
+        static AutocryptPeerInfo create(long masterKeyId, String autocryptPeer, String packageName, Drawable appIcon, Intent autocryptPeerIntent) {
+            return new AutoValue_IdentityDao_AutocryptPeerInfo(masterKeyId,0, false, false, autocryptPeer, packageName, appIcon, null, autocryptPeerIntent);
         }
     }
 

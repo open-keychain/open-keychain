@@ -34,10 +34,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyserverStatusPresenter.KeyserverStatusMvpView;
 
 
-public class KeyserverStatusView extends FrameLayout implements KeyserverStatusMvpView {
+public class KeyserverStatusView extends FrameLayout {
     private final View vLayout;
     private final TextView vTitle;
     private final TextView vSubtitle;
@@ -75,23 +74,19 @@ public class KeyserverStatusView extends FrameLayout implements KeyserverStatusM
         }
     }
 
-    @Override
     public void setDisplayStatusPublished() {
         setDisplayStatus(KeyserverDisplayStatus.PUBLISHED);
     }
 
-    @Override
     public void setDisplayStatusNotPublished() {
         setDisplayStatus(KeyserverDisplayStatus.NOT_PUBLISHED);
     }
 
-    @Override
     public void setDisplayStatusUnknown() {
         setDisplayStatus(KeyserverDisplayStatus.UNKNOWN);
         vSubtitle.setText(R.string.keyserver_last_updated_never);
     }
 
-    @Override
     public void setLastUpdated(Date lastUpdated) {
         String lastUpdatedText = DateFormat.getMediumDateFormat(getContext()).format(lastUpdated);
         vSubtitle.setText(getResources().getString(R.string.keyserver_last_updated, lastUpdatedText));

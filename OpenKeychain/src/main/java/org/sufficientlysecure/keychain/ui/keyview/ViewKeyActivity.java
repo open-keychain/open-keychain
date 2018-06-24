@@ -313,7 +313,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             }
             if (unifiedKeyInfoLiveData == null) {
                 KeyRepository keyRepository = KeyRepository.create(context);
-                unifiedKeyInfoLiveData = new GenericLiveData<>(context, null,
+                unifiedKeyInfoLiveData = new GenericLiveData<>(context, KeyRings.buildGenericKeyRingUri(masterKeyId),
                         () -> keyRepository.getUnifiedKeyInfo(masterKeyId));
             }
             return unifiedKeyInfoLiveData;

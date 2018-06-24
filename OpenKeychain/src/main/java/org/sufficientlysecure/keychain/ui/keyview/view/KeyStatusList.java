@@ -30,10 +30,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyHealthPresenter.KeyStatusMvpView;
 
 
-public class KeyStatusList extends LinearLayout implements KeyStatusMvpView {
+public class KeyStatusList extends LinearLayout {
     private final TextView vCertText, vSignText, vDecryptText;
     private final ImageView vCertIcon, vSignIcon, vDecryptIcon;
     private final View vCertToken, vSignToken, vDecryptToken;
@@ -107,7 +106,6 @@ public class KeyStatusList extends LinearLayout implements KeyStatusMvpView {
 
     }
 
-    @Override
     public void setCertifyStatus(KeyDisplayStatus keyDisplayStatus) {
         if (keyDisplayStatus == null) {
             vCertifyLayout.setVisibility(View.GONE);
@@ -121,7 +119,6 @@ public class KeyStatusList extends LinearLayout implements KeyStatusMvpView {
         vCertifyLayout.setVisibility(View.VISIBLE);
     }
 
-    @Override
     public void setSignStatus(KeyDisplayStatus keyDisplayStatus) {
         if (keyDisplayStatus == null) {
             vSignLayout.setVisibility(View.GONE);
@@ -134,7 +131,6 @@ public class KeyStatusList extends LinearLayout implements KeyStatusMvpView {
         vSignLayout.setVisibility(View.VISIBLE);
     }
 
-    @Override
     public void setDecryptStatus(KeyDisplayStatus keyDisplayStatus) {
         if (keyDisplayStatus == null) {
             vDecryptLayout.setVisibility(View.GONE);

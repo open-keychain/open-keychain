@@ -39,14 +39,12 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureBitStrength;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.NotWhitelistedCurve;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.UnidentifiedKeyProblem;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyHealthPresenter.KeyHealthClickListener;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyHealthPresenter.KeyHealthMvpView;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyHealthPresenter.KeyHealthStatus;
+import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.KeyHealthStatus;
 import org.sufficientlysecure.keychain.ui.keyview.view.KeyStatusList.KeyDisplayStatus;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 
-public class KeyHealthView extends LinearLayout implements KeyHealthMvpView, OnClickListener {
+public class KeyHealthView extends LinearLayout implements OnClickListener {
     private final View vLayout;
     private final TextView vTitle, vSubtitle;
     private final ImageView vIcon;
@@ -59,7 +57,7 @@ public class KeyHealthView extends LinearLayout implements KeyHealthMvpView, OnC
     private final View vExpiryLayout;
     private final TextView vExpiryText;
 
-    private KeyHealthClickListener keyHealthClickListener;
+    private OnClickListener keyHealthClickListener;
 
     public KeyHealthView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -125,7 +123,6 @@ public class KeyHealthView extends LinearLayout implements KeyHealthMvpView, OnC
         }
     }
 
-    @Override
     public void setKeyStatus(KeyHealthStatus keyHealthStatus) {
         switch (keyHealthStatus) {
             case OK:
@@ -161,7 +158,6 @@ public class KeyHealthView extends LinearLayout implements KeyHealthMvpView, OnC
         }
     }
 
-    @Override
     public void setPrimarySecurityProblem(KeySecurityProblem securityProblem) {
         if (securityProblem == null) {
             vInsecureLayout.setVisibility(View.GONE);
@@ -190,7 +186,6 @@ public class KeyHealthView extends LinearLayout implements KeyHealthMvpView, OnC
 
     }
 
-    @Override
     public void setPrimaryExpiryDate(Date expiry) {
         if (expiry == null) {
             vExpiryLayout.setVisibility(View.GONE);
@@ -205,23 +200,20 @@ public class KeyHealthView extends LinearLayout implements KeyHealthMvpView, OnC
     @Override
     public void onClick(View view) {
         if (keyHealthClickListener != null) {
-            keyHealthClickListener.onKeyHealthClick();
+            keyHealthClickListener.onClick(view);
         }
     }
 
-    @Override
-    public void setOnHealthClickListener(KeyHealthClickListener keyHealthClickListener) {
+    public void setOnHealthClickListener(OnClickListener keyHealthClickListener) {
         this.keyHealthClickListener = keyHealthClickListener;
         vLayout.setClickable(keyHealthClickListener != null);
     }
 
-    @Override
     public void setShowExpander(boolean showExpander) {
         vLayout.setClickable(showExpander);
         vExpander.setVisibility(showExpander ? View.VISIBLE : View.GONE);
     }
 
-    @Override
     public void showExpandedState(KeyDisplayStatus certifyStatus, KeyDisplayStatus signStatus,
             KeyDisplayStatus encryptStatus) {
         if (certifyStatus == null && signStatus == null && encryptStatus == null) {
@@ -240,7 +232,6 @@ public class KeyHealthView extends LinearLayout implements KeyHealthMvpView, OnC
 
     }
 
-    @Override
     public void hideExpandedInfo() {
         showExpandedState(null, null, null);
     }
