@@ -43,6 +43,7 @@ import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysResultList
 import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
@@ -94,7 +95,8 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                     keyRing = mKeyRepository.getCachedPublicKeyRing(keyId);
                 }
                 keyState.mAlreadyPresent = true;
-                keyState.mVerified = keyRing.getVerified() > 0;
+                VerificationStatus verified = keyRing.getVerified();
+                keyState.mVerified = verified != null && verified != VerificationStatus.UNVERIFIED;
             } catch (KeyRepository.NotFoundException | PgpKeyNotFoundException ignored) {
             }
 

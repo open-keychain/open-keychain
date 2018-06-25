@@ -37,12 +37,12 @@ import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
@@ -137,7 +137,7 @@ public class CertifyOperationTest {
                 .getCanonicalizedPublicKeyRing(mStaticRing1.getMasterKeyId());
         Assert.assertEquals("secret key must be marked self-certified in database",
                 // TODO this should be more correctly be VERIFIED_SELF at some point!
-                Certs.VERIFIED_SECRET, ring.getVerified());
+                VerificationStatus.VERIFIED_SECRET, ring.getVerified());
 
     }
 
@@ -150,7 +150,7 @@ public class CertifyOperationTest {
             CanonicalizedPublicKeyRing ring = KeyWritableRepository.create(RuntimeEnvironment.application)
                     .getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
             Assert.assertEquals("public key must not be marked verified prior to certification",
-                    Certs.UNVERIFIED, ring.getVerified());
+                    VerificationStatus.UNVERIFIED, ring.getVerified());
         }
 
         CertifyActionsParcel.Builder actions = CertifyActionsParcel.builder(mStaticRing1.getMasterKeyId());
@@ -164,7 +164,7 @@ public class CertifyOperationTest {
             CanonicalizedPublicKeyRing ring = KeyWritableRepository.create(RuntimeEnvironment.application)
                     .getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
             Assert.assertEquals("new key must be verified now",
-                    Certs.VERIFIED_SECRET, ring.getVerified());
+                    VerificationStatus.UNVERIFIED, ring.getVerified());
         }
 
     }
@@ -178,7 +178,7 @@ public class CertifyOperationTest {
             CanonicalizedPublicKeyRing ring = KeyWritableRepository.create(RuntimeEnvironment.application)
                     .getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
             Assert.assertEquals("public key must not be marked verified prior to certification",
-                    Certs.UNVERIFIED, ring.getVerified());
+                    VerificationStatus.UNVERIFIED, ring.getVerified());
         }
 
         CertifyActionsParcel.Builder actions = CertifyActionsParcel.builder(mStaticRing1.getMasterKeyId());
@@ -192,7 +192,7 @@ public class CertifyOperationTest {
             CanonicalizedPublicKeyRing ring = KeyWritableRepository.create(RuntimeEnvironment.application)
                     .getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
             Assert.assertEquals("new key must be verified now",
-                    Certs.VERIFIED_SECRET, ring.getVerified());
+                    VerificationStatus.VERIFIED_SECRET, ring.getVerified());
         }
 
     }

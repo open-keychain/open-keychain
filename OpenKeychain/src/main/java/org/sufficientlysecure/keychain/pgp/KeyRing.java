@@ -21,6 +21,7 @@ import android.text.TextUtils;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 
 import java.io.Serializable;
@@ -58,7 +59,7 @@ public abstract class KeyRing {
 
     abstract public boolean hasEncrypt() throws PgpKeyNotFoundException;
 
-    abstract public int getVerified() throws PgpKeyNotFoundException;
+    abstract public VerificationStatus getVerified() throws PgpKeyNotFoundException;
 
     /**
      * Splits userId string into naming part, email part, and comment part

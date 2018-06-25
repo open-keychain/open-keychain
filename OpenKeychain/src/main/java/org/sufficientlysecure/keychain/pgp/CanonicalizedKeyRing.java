@@ -43,9 +43,9 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
  */
 public abstract class CanonicalizedKeyRing extends KeyRing {
 
-    private final int mVerified;
+    private final VerificationStatus mVerified;
 
-    CanonicalizedKeyRing(int verified) {
+    CanonicalizedKeyRing(VerificationStatus verified) {
         mVerified = verified;
     }
 
@@ -53,7 +53,7 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
         return getRing().getPublicKey().getKeyID();
     }
 
-    public int getVerified() {
+    public VerificationStatus getVerified() {
         return mVerified;
     }
 
@@ -192,6 +192,10 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
             }
         }
         return false;
+    }
+
+    public enum VerificationStatus {
+        UNVERIFIED, VERIFIED_SELF, VERIFIED_SECRET
     }
 
 }

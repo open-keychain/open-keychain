@@ -179,7 +179,6 @@ public class KeychainContract {
     }
 
     public static class Certs implements CertsColumns, BaseColumns {
-        public static final int UNVERIFIED = 0;
         public static final int VERIFIED_SECRET = 1;
         public static final int VERIFIED_SELF = 2;
 

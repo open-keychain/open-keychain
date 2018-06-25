@@ -31,6 +31,8 @@ import android.net.Uri;
 
 import com.squareup.sqldelight.SqlDelightQuery;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
+import org.sufficientlysecure.keychain.model.Certification;
+import org.sufficientlysecure.keychain.model.CustomColumnAdapters;
 import org.sufficientlysecure.keychain.model.KeyRingPublic;
 import org.sufficientlysecure.keychain.model.SubKey;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
@@ -38,12 +40,12 @@ import org.sufficientlysecure.keychain.model.UserPacket;
 import org.sufficientlysecure.keychain.model.UserPacket.UserId;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import timber.log.Timber;
 
@@ -197,10 +199,11 @@ public class KeyRepository extends AbstractDao {
         try {
             if (cursor != null && cursor.moveToFirst()) {
                 long masterKeyId = cursor.getLong(0);
-                int verified = cursor.getInt(1);
+                long verified = cursor.getLong(1);
 
                 byte[] publicKeyData = loadPublicKeyRingData(masterKeyId);
-                return new CanonicalizedPublicKeyRing(publicKeyData, verified);
+                VerificationStatus verificationStatus = CustomColumnAdapters.VERIFICATON_STATUS_ADAPTER.decode(verified);
+                return new CanonicalizedPublicKeyRing(publicKeyData, verificationStatus);
             } else {
                 throw new NotFoundException("Key not found!");
             }
@@ -221,14 +224,16 @@ public class KeyRepository extends AbstractDao {
         try {
             if (cursor != null && cursor.moveToFirst()) {
                 long masterKeyId = cursor.getLong(0);
-                int verified = cursor.getInt(1);
+                long verified = cursor.getLong(1);
                 int hasAnySecret = cursor.getInt(2);
                 if (hasAnySecret == 0) {
                     throw new NotFoundException("No secret key available or unknown public key!");
                 }
 
+                VerificationStatus verificationStatus = CustomColumnAdapters.VERIFICATON_STATUS_ADAPTER.decode(verified);
+
                 byte[] secretKeyData = loadSecretKeyRingData(masterKeyId);
-                return new CanonicalizedSecretKeyRing(secretKeyData, verified);
+                return new CanonicalizedSecretKeyRing(secretKeyData, verificationStatus);
             } else {
                 throw new NotFoundException("Key not found!");
             }
@@ -286,8 +291,8 @@ public class KeyRepository extends AbstractDao {
 
     public List<String> getConfirmedUserIds(long masterKeyId) {
         ArrayList<String> userIds = new ArrayList<>();
-        SqlDelightQuery query =
-                UserPacket.FACTORY.selectUserIdsByMasterKeyIdAndVerification(masterKeyId, Certs.VERIFIED_SECRET);
+        SqlDelightQuery query = UserPacket.FACTORY.selectUserIdsByMasterKeyIdAndVerification(
+                Certification.FACTORY, masterKeyId, VerificationStatus.VERIFIED_SECRET);
         for (UserId userId : mapAllRows(query, UserPacket.USER_ID_MAPPER::map)) {
             userIds.add(userId.user_id());
         }

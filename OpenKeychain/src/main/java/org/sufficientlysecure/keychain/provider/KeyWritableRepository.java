@@ -39,11 +39,13 @@ import android.support.v4.util.LongSparseArray;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.KeyRingsPublicModel.DeleteByMasterKeyId;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.model.CustomColumnAdapters;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.operations.results.UpdateTrustResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
@@ -134,10 +136,11 @@ public class KeyWritableRepository extends KeyRepository {
             while (cursor.moveToNext()) {
                 try {
                     long masterKeyId = cursor.getLong(0);
-                    int verified = cursor.getInt(2);
+                    long verified = cursor.getLong(2);
                     byte[] blob = loadPublicKeyRingData(masterKeyId);
+                    VerificationStatus verificationStatus = CustomColumnAdapters.VERIFICATON_STATUS_ADAPTER.decode(verified);
                     if (blob != null) {
-                        result.put(masterKeyId, new CanonicalizedPublicKeyRing(blob, verified).getPublicKey());
+                        result.put(masterKeyId, new CanonicalizedPublicKeyRing(blob, verificationStatus).getPublicKey());
                     }
                 } catch (NotFoundException e) {
                     throw new IllegalStateException("Error reading secret key data, this should not happen!", e);
@@ -499,7 +502,7 @@ public class KeyWritableRepository extends KeyRepository {
 
                 if (item.selfRevocation != null) {
                     operations.add(buildCertOperations(masterKeyId, userIdRank, item.selfRevocation,
-                            Certs.VERIFIED_SELF));
+                            VerificationStatus.VERIFIED_SELF));
                     // don't bother with trusted certs if the uid is revoked, anyways
                     continue;
                 }
@@ -509,7 +512,7 @@ public class KeyWritableRepository extends KeyRepository {
                 }
 
                 operations.add(buildCertOperations(masterKeyId, userIdRank, item.selfCert,
-                        selfCertsAreTrusted ? Certs.VERIFIED_SECRET : Certs.VERIFIED_SELF));
+                        selfCertsAreTrusted ? VerificationStatus.VERIFIED_SECRET : VerificationStatus.VERIFIED_SELF));
 
                 // iterate over signatures
                 for (int i = 0; i < item.trustedCerts.size(); i++) {
@@ -521,7 +524,7 @@ public class KeyWritableRepository extends KeyRepository {
                     }
                     // otherwise, build database operation
                     operations.add(buildCertOperations(
-                            masterKeyId, userIdRank, sig, Certs.VERIFIED_SECRET));
+                            masterKeyId, userIdRank, sig, VerificationStatus.VERIFIED_SECRET));
                 }
             }
 
@@ -1064,7 +1067,7 @@ public class KeyWritableRepository extends KeyRepository {
      * Build ContentProviderOperation to add PGPPublicKey to database corresponding to a keyRing
      */
     private ContentProviderOperation
-    buildCertOperations(long masterKeyId, int rank, WrappedSignature cert, int verified)
+    buildCertOperations(long masterKeyId, int rank, WrappedSignature cert, VerificationStatus verificationStatus)
             throws IOException {
         ContentValues values = new ContentValues();
         values.put(Certs.MASTER_KEY_ID, masterKeyId);
@@ -1072,7 +1075,7 @@ public class KeyWritableRepository extends KeyRepository {
         values.put(Certs.KEY_ID_CERTIFIER, cert.getKeyId());
         values.put(Certs.TYPE, cert.getSignatureType());
         values.put(Certs.CREATION, cert.getCreationTime().getTime() / 1000);
-        values.put(Certs.VERIFIED, verified);
+        values.put(Certs.VERIFIED, CustomColumnAdapters.VERIFICATON_STATUS_ADAPTER.encode(verificationStatus));
         values.put(Certs.DATA, cert.getEncoded());
 
         Uri uri = Certs.buildCertsUri(masterKeyId);

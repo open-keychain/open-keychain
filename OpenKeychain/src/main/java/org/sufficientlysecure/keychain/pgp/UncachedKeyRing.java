@@ -64,6 +64,7 @@ import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
@@ -1115,8 +1116,8 @@ public class UncachedKeyRing {
             log.add(LogType.MSG_KC_SUCCESS, indent);
         }
 
-        return isSecret() ? new CanonicalizedSecretKeyRing((PGPSecretKeyRing) ring, 1)
-                          : new CanonicalizedPublicKeyRing((PGPPublicKeyRing) ring, 0);
+        return isSecret() ? new CanonicalizedSecretKeyRing((PGPSecretKeyRing) ring, VerificationStatus.VERIFIED_SECRET)
+                          : new CanonicalizedPublicKeyRing((PGPPublicKeyRing) ring, VerificationStatus.UNVERIFIED);
     }
 
     /** This operation merges information from a different keyring, returning a combined

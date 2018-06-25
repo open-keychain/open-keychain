@@ -8,6 +8,7 @@ import java.util.List;
 import com.google.auto.value.AutoValue;
 import com.squareup.sqldelight.RowMapper;
 import org.sufficientlysecure.keychain.KeysModel;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 
 
@@ -15,8 +16,9 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 public abstract class SubKey implements KeysModel {
     public static final Factory<SubKey> FACTORY =
             new Factory<>(AutoValue_SubKey::new, CustomColumnAdapters.SECRET_KEY_TYPE_ADAPTER);
-    public static final UnifiedKeyViewMapper<UnifiedKeyInfo> UNIFIED_KEY_INFO_MAPPER =
-            FACTORY.selectUnifiedKeyInfoByMasterKeyIdMapper(AutoValue_SubKey_UnifiedKeyInfo::new);
+    public static final UnifiedKeyViewMapper<UnifiedKeyInfo, Certification> UNIFIED_KEY_INFO_MAPPER =
+            FACTORY.selectAllUnifiedKeyInfoMapper(
+                    AutoValue_SubKey_UnifiedKeyInfo::new, Certification.FACTORY);
     public static Mapper<SubKey> SUBKEY_MAPPER = new Mapper<>(FACTORY);
     public static RowMapper<SecretKeyType> SKT_MAPPER = FACTORY.selectSecretKeyTypeMapper();
 
@@ -38,8 +40,8 @@ public abstract class SubKey implements KeysModel {
         }
 
         public boolean is_verified() {
-            Integer verified = verified();
-            return verified != null && verified == 1;
+            VerificationStatus verified = verified();
+            return verified != null && verified == VerificationStatus.VERIFIED_SECRET;
         }
 
         public boolean has_duplicate() {

@@ -35,12 +35,12 @@ public class CanonicalizedSecretKeyRing extends CanonicalizedKeyRing {
 
     private PGPSecretKeyRing mRing;
 
-    CanonicalizedSecretKeyRing(PGPSecretKeyRing ring, int verified) {
+    CanonicalizedSecretKeyRing(PGPSecretKeyRing ring, VerificationStatus verified) {
         super(verified);
         mRing = ring;
     }
 
-    public CanonicalizedSecretKeyRing(byte[] blob, int verified)
+    public CanonicalizedSecretKeyRing(byte[] blob, VerificationStatus verified)
     {
         super(verified);
         JcaPGPObjectFactory factory = new JcaPGPObjectFactory(blob);

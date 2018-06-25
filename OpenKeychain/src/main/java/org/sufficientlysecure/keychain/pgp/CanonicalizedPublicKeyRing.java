@@ -41,12 +41,12 @@ public class CanonicalizedPublicKeyRing extends CanonicalizedKeyRing {
 
     private PGPPublicKeyRing mRing;
 
-    CanonicalizedPublicKeyRing(PGPPublicKeyRing ring, int verified) {
+    CanonicalizedPublicKeyRing(PGPPublicKeyRing ring, VerificationStatus verified) {
         super(verified);
         mRing = ring;
     }
 
-    public CanonicalizedPublicKeyRing(byte[] blob, int verified) {
+    public CanonicalizedPublicKeyRing(byte[] blob, VerificationStatus verified) {
         super(verified);
         if(mRing == null) {
             // get first object in block

@@ -20,6 +20,8 @@ package org.sufficientlysecure.keychain.provider;
 
 import android.net.Uri;
 
+import org.sufficientlysecure.keychain.model.CustomColumnAdapters;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
@@ -238,12 +240,12 @@ public class CachedPublicKeyRing extends KeyRing {
     }
 
     @Override
-    public int getVerified() throws PgpKeyNotFoundException {
+    public VerificationStatus getVerified() throws PgpKeyNotFoundException {
         try {
             Object data = mKeyRepository.getGenericData(mUri,
                     KeychainContract.KeyRings.VERIFIED,
                     KeyRepository.FIELD_TYPE_INTEGER);
-            return ((Long) data).intValue();
+            return CustomColumnAdapters.VERIFICATON_STATUS_ADAPTER.decode((Long) data);
         } catch(KeyWritableRepository.NotFoundException e) {
             throw new PgpKeyNotFoundException(e);
         }

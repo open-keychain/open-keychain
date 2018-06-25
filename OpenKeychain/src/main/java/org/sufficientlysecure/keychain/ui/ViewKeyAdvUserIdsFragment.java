@@ -43,6 +43,7 @@ import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.model.UserPacket.UserId;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.ViewKeyAdvActivity.ViewKeyAdvViewModel;
@@ -155,7 +156,7 @@ public class ViewKeyAdvUserIdsFragment extends Fragment {
     private void showUserIdInfo(final int position) {
 
         final boolean isRevoked = mUserIdsAdapter.getIsRevoked(position);
-        final boolean isVerified = mUserIdsAdapter.getIsVerified(position) == Certs.VERIFIED_SECRET;
+        final boolean isVerified = mUserIdsAdapter.getVerificationStatus(position) == VerificationStatus.VERIFIED_SECRET;
 
         DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(() -> {
             UserIdInfoDialogFragment dialogFragment =

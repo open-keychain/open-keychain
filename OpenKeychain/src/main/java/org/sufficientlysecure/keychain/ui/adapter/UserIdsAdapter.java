@@ -34,7 +34,7 @@ import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.model.UserPacket.UserId;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
@@ -163,12 +163,12 @@ public class UserIdsAdapter extends BaseAdapter {
                 vAddress.setTypeface(null, Typeface.NORMAL);
             }
 
-            int isVerified = getIsVerified(position);
+            VerificationStatus isVerified = getVerificationStatus(position);
             switch (isVerified) {
-                case Certs.VERIFIED_SECRET:
+                case VERIFIED_SECRET:
                     KeyFormattingUtils.setStatusImage(context, vVerified, null, State.VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
-                case Certs.VERIFIED_SELF:
+                case VERIFIED_SELF:
                     KeyFormattingUtils.setStatusImage(context, vVerified, null, State.UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
                     break;
                 default:
@@ -216,7 +216,7 @@ public class UserIdsAdapter extends BaseAdapter {
         return data.get(position).is_revoked();
     }
 
-    public int getIsVerified(int position) {
+    public VerificationStatus getVerificationStatus(int position) {
         return data.get(position).verified();
     }
 }

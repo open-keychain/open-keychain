@@ -7,8 +7,8 @@ import android.support.annotation.NonNull;
 
 import com.squareup.sqldelight.ColumnAdapter;
 import org.sufficientlysecure.keychain.model.AutocryptPeer.GossipOrigin;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
-
 
 
 public final class CustomColumnAdapters {
@@ -62,6 +62,32 @@ public final class CustomColumnAdapters {
         @Override
         public Long encode(@NonNull SecretKeyType value) {
             return (long) value.getNum();
+        }
+    };
+
+    public static final ColumnAdapter<VerificationStatus,Long> VERIFICATON_STATUS_ADAPTER = new ColumnAdapter<VerificationStatus, Long>() {
+        @NonNull
+        @Override
+        public VerificationStatus decode(Long databaseValue) {
+            if (databaseValue == null) {
+                return VerificationStatus.UNVERIFIED;
+            }
+            switch (databaseValue.intValue()) {
+                case 0: return VerificationStatus.UNVERIFIED;
+                case 1: return VerificationStatus.VERIFIED_SECRET;
+                case 2: return VerificationStatus.VERIFIED_SELF;
+                default: throw new IllegalArgumentException();
+            }
+        }
+
+        @Override
+        public Long encode(@NonNull VerificationStatus value) {
+            switch (value) {
+                case UNVERIFIED: return 0L;
+                case VERIFIED_SECRET: return 1L;
+                case VERIFIED_SELF: return 2L;
+                default: throw new IllegalArgumentException();
+            }
         }
     };
 }
