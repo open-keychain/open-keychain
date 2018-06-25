@@ -18,12 +18,11 @@
 package org.sufficientlysecure.keychain.operations;
 
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import android.content.Context;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.v4.os.CancellationSignal;
 
 import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -38,7 +37,7 @@ public abstract class BaseOperation<T extends Parcelable> implements PassphraseC
 
     final public Context mContext;
     final public Progressable mProgressable;
-    final public AtomicBoolean mCancelled;
+    final public CancellationSignal mCancelled;
 
     final public KeyRepository mKeyRepository;
 
@@ -72,7 +71,7 @@ public abstract class BaseOperation<T extends Parcelable> implements PassphraseC
     }
 
     public BaseOperation(Context context, KeyRepository keyRepository,
-            Progressable progressable, AtomicBoolean cancelled) {
+            Progressable progressable, CancellationSignal cancelled) {
         mContext = context;
         mProgressable = progressable;
         mKeyRepository = keyRepository;
@@ -101,7 +100,7 @@ public abstract class BaseOperation<T extends Parcelable> implements PassphraseC
     }
 
     protected boolean checkCancelled() {
-        return mCancelled != null && mCancelled.get();
+        return mCancelled != null && mCancelled.isCanceled();
     }
 
     protected void setPreventCancel () {

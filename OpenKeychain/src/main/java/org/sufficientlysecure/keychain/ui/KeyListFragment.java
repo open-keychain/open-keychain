@@ -32,6 +32,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.os.CancellationSignal;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -57,9 +58,12 @@ import eu.davidea.flexibleadapter.SelectableAdapter.Mode;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
+import org.sufficientlysecure.keychain.operations.KeySyncOperation;
 import org.sufficientlysecure.keychain.keysync.KeyserverSyncManager;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.operations.KeySyncParcel;
 import org.sufficientlysecure.keychain.operations.results.BenchmarkResult;
+import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
@@ -499,7 +503,7 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
                 return true;
             }
             case R.id.menu_key_list_debug_bgsync: {
-                KeyserverSyncManager.runSyncNow(false, false);
+                KeyserverSyncManager.debugRunSyncNow();
                 return true;
             }
             case R.id.menu_key_list_debug_bench: {
@@ -558,8 +562,37 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
     }
 
     private void updateAllKeys() {
-        KeyserverSyncManager.getSyncWorkerLiveData().observe(this, this::onSyncWorkerUpdate);
-        KeyserverSyncManager.runSyncNow(true, true);
+        CryptoOperationHelper.Callback<KeySyncParcel, ImportKeyResult> callback
+                = new CryptoOperationHelper.Callback<KeySyncParcel, ImportKeyResult>() {
+
+            @Override
+            public KeySyncParcel createOperationInput() {
+                return KeySyncParcel.createRefreshAll();
+            }
+
+            @Override
+            public void onCryptoOperationSuccess(ImportKeyResult result) {
+                result.createNotify(getActivity()).show();
+            }
+
+            @Override
+            public void onCryptoOperationCancelled() {
+            }
+
+            @Override
+            public void onCryptoOperationError(ImportKeyResult result) {
+                result.createNotify(getActivity()).show();
+            }
+
+            @Override
+            public boolean onCryptoSetProgress(String msg, int progress, int max) {
+                return false;
+            }
+        };
+
+        CryptoOperationHelper opHelper = new CryptoOperationHelper<>(3, this, callback, R.string.progress_importing);
+        opHelper.setProgressCancellable(true);
+        opHelper.cryptoOperation();
     }
 
     private void benchmark() {

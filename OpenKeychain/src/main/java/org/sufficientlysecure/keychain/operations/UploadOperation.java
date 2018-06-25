@@ -18,15 +18,21 @@
 package org.sufficientlysecure.keychain.operations;
 
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.Proxy;
+
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.os.CancellationSignal;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverClient;
 import org.sufficientlysecure.keychain.keyimport.KeyserverClient.AddKeyException;
-import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
+import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.UploadResult;
@@ -43,13 +49,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 import timber.log.Timber;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.net.Proxy;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -58,7 +58,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
 
     public UploadOperation(Context context, KeyRepository keyRepository,
-            Progressable progressable, AtomicBoolean cancelled) {
+            Progressable progressable, CancellationSignal cancelled) {
         super(context, keyRepository, progressable, cancelled);
     }
 

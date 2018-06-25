@@ -33,11 +33,11 @@ import java.security.SignatureException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.os.CancellationSignal;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.bcpg.BCPGOutputStream;
@@ -105,7 +105,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
         }
     }
 
-    public PgpSignEncryptOperation(Context context, KeyRepository keyRepository, Progressable progressable, AtomicBoolean cancelled) {
+    public PgpSignEncryptOperation(Context context, KeyRepository keyRepository, Progressable progressable, CancellationSignal cancelled) {
         super(context, keyRepository, progressable, cancelled);
     }
 

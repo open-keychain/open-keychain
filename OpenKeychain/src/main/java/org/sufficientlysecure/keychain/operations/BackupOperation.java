@@ -36,6 +36,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.os.CancellationSignal;
 import android.text.TextUtils;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
@@ -95,7 +96,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
     }
 
     public BackupOperation(Context context, KeyRepository keyRepository,
-                           Progressable progressable, AtomicBoolean cancelled) {
+                           Progressable progressable, CancellationSignal cancelled) {
         super(context, keyRepository, progressable, cancelled);
     }
 

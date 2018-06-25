@@ -116,7 +116,6 @@ public final class Constants {
 
     public static final class NotificationChannels {
         public static final String KEYSERVER_SYNC = "keyserverSync";
-        public static final String KEYSERVER_SYNC_FOREGROUND = "keyserverSyncForeground";
     }
 
     public static final class Pref {

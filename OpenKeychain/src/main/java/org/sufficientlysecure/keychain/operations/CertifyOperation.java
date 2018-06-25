@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.os.CancellationSignal;
 
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -64,7 +65,7 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParcel> {
     private final KeyMetadataDao keyMetadataDao;
 
-    public CertifyOperation(Context context, KeyWritableRepository keyWritableRepository, Progressable progressable, AtomicBoolean
+    public CertifyOperation(Context context, KeyWritableRepository keyWritableRepository, Progressable progressable, CancellationSignal
             cancelled) {
         super(context, keyWritableRepository, progressable, cancelled);
 

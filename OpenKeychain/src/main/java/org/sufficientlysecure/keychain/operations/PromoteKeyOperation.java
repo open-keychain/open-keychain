@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.os.CancellationSignal;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -50,7 +51,7 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
  */
 public class PromoteKeyOperation extends BaseReadWriteOperation<PromoteKeyringParcel> {
     public PromoteKeyOperation(Context context, KeyWritableRepository databaseInteractor,
-                               Progressable progressable, AtomicBoolean cancelled) {
+                               Progressable progressable, CancellationSignal cancelled) {
         super(context, databaseInteractor, progressable, cancelled);
     }
 

@@ -18,24 +18,17 @@
 package org.sufficientlysecure.keychain.keysync;
 
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
-import android.support.annotation.NonNull;
 
 import androidx.work.Constraints.Builder;
-import androidx.work.Data;
-import androidx.work.ExistingWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
-import androidx.work.WorkStatus;
-import androidx.work.Worker;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
 
@@ -45,7 +38,6 @@ public class KeyserverSyncManager {
     private static final TimeUnit SYNC_INTERVAL_UNIT = TimeUnit.DAYS;
 
     private static final String PERIODIC_WORK_TAG = "keyserverSync";
-    private static final String UNIQUE_WORK_NAME = "keySync";
 
     public static void updateKeyserverSyncSchedule(Context context, boolean forceReschedule) {
         Preferences prefs = Preferences.getPreferences(context);
@@ -73,7 +65,7 @@ public class KeyserverSyncManager {
         }
 
         PeriodicWorkRequest workRequest =
-                new PeriodicWorkRequest.Builder(KeyserverSyncLauncherWorker.class, SYNC_INTERVAL, SYNC_INTERVAL_UNIT)
+                new PeriodicWorkRequest.Builder(KeyserverSyncWorker.class, SYNC_INTERVAL, SYNC_INTERVAL_UNIT)
                         .setConstraints(constraints.build())
                         .addTag(PERIODIC_WORK_TAG)
                         .build();
@@ -82,36 +74,9 @@ public class KeyserverSyncManager {
         prefs.setKeyserverSyncScheduled(true);
     }
 
-    public static class KeyserverSyncLauncherWorker extends Worker {
-        @NonNull
-        @Override
-        public WorkerResult doWork() {
-            runSyncNow(false, false);
-            return WorkerResult.SUCCESS;
-        }
-    }
-
-    public static void runSyncNow(boolean isForeground, boolean isForceUpdate) {
+    public static void debugRunSyncNow() {
         WorkManager workManager = WorkManager.getInstance();
-        if (workManager == null) {
-            Timber.e("WorkManager unavailable!");
-            return;
-        }
-
-        Data workData = new Data.Builder()
-                .putBoolean(KeyserverSyncWorker.DATA_IS_FOREGROUND, isForeground)
-                .putBoolean(KeyserverSyncWorker.DATA_IS_FORCE, isForceUpdate)
-                .build();
-
-        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(KeyserverSyncWorker.class)
-                .setInputData(workData)
-                .build();
-        workManager.beginUniqueWork(UNIQUE_WORK_NAME,
-                isForeground ? ExistingWorkPolicy.REPLACE : ExistingWorkPolicy.KEEP, workRequest).enqueue();
-     }
-
-     public static LiveData<List<WorkStatus>> getSyncWorkerLiveData() {
-         WorkManager workManager = WorkManager.getInstance();
-         return workManager.getStatusesForUniqueWork(UNIQUE_WORK_NAME);
-     }
+        OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(KeyserverSyncWorker.class).build();
+        workManager.enqueue(workRequest);
+    }
 }
