@@ -115,11 +115,13 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
 
                 log.add(LogType.MSG_RET_LOCAL_SEARCH, 1, KeyFormattingUtils.convertKeyIdToHex(keyId));
                 try {
-                    CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(
-                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(keyId)
-                    );
+                    Long masterKeyId = keyRepository.getMasterKeyIdBySubkeyId(keyId);
+                    if (masterKeyId == null) {
+                        log.add(LogType.MSG_RET_LOCAL_NOT_FOUND, 2);
+                        continue;
+                    }
+                    CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(masterKeyId);
 
-                    long masterKeyId = cachedPublicKeyRing.getMasterKeyId();
                     // TODO check fingerprint
                     // if (!Arrays.equals(fingerprints, cachedPublicKeyRing.getFingerprint())) {
                     //     log.add(LogType.MSG_RET_LOCAL_FP_MISMATCH, 1);
@@ -147,7 +149,7 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
                             throw new IllegalStateException("Unhandled SecretKeyType!");
                         }
                     }
-                } catch (PgpKeyNotFoundException | NotFoundException e) {
+                } catch (NotFoundException e) {
                     log.add(LogType.MSG_RET_LOCAL_NOT_FOUND, 2);
                 }
             }

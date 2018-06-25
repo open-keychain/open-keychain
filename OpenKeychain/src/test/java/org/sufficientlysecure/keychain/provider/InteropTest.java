@@ -266,14 +266,12 @@ public class InteropTest {
                 };
             }
 
-            @Override
             public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(Uri q)
                     throws NotFoundException {
                 Assert.assertEquals(msg + ": query should be for verification key", q, verifyUri);
                 return verify;
             }
 
-            @Override
             public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri q)
                     throws NotFoundException {
                 Assert.assertEquals(msg + ": query should be for the decryption key", q, decryptUri);

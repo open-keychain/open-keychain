@@ -19,7 +19,6 @@ package org.sufficientlysecure.keychain.operations;
 
 
 import android.content.Context;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
@@ -29,7 +28,6 @@ import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.RevokeKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -59,8 +57,7 @@ public class RevokeOperation extends BaseReadWriteOperation<RevokeKeyringParcel>
 
         try {
 
-            Uri secretUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(masterKeyId);
-            CachedPublicKeyRing keyRing = mKeyRepository.getCachedPublicKeyRing(secretUri);
+            CachedPublicKeyRing keyRing = mKeyRepository.getCachedPublicKeyRing(masterKeyId);
 
             // check if this is a master secret key we can work with
             switch (keyRing.getSecretKeyType(masterKeyId)) {

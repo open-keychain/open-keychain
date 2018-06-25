@@ -33,7 +33,6 @@ import org.sufficientlysecure.keychain.provider.ApiAppDao;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.remote.ApiPermissionHelper;
 import org.sufficientlysecure.keychain.remote.ApiPermissionHelper.WrongPackageCertificateException;
 import timber.log.Timber;
@@ -118,9 +117,11 @@ class RequestKeyPermissionPresenter {
         CachedPublicKeyRing publicFallbackRing = null;
         for (long candidateSubKeyId : subKeyIds) {
             try {
-                CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(
-                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(candidateSubKeyId)
-                );
+                Long masterKeyId = keyRepository.getMasterKeyIdBySubkeyId(candidateSubKeyId);
+                if (masterKeyId == null) {
+                    continue;
+                }
+                CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(masterKeyId);
 
                 SecretKeyType secretKeyType = cachedPublicKeyRing.getSecretKeyType(candidateSubKeyId);
                 if (secretKeyType.isUsable()) {
@@ -129,7 +130,7 @@ class RequestKeyPermissionPresenter {
                 if (publicFallbackRing == null) {
                     publicFallbackRing = cachedPublicKeyRing;
                 }
-            } catch (PgpKeyNotFoundException | NotFoundException e) {
+            } catch (NotFoundException e) {
                 // no matter
             }
         }

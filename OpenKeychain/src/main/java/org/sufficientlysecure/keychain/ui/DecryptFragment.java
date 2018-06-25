@@ -29,7 +29,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -41,14 +40,12 @@ import android.widget.ViewAnimator;
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpUtils;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
@@ -193,18 +190,14 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
     }
 
     private void showKey(long keyId) {
-        try {
-
-            KeyRepository keyRepository = KeyRepository.create(requireContext());
-            long masterKeyId = keyRepository.getCachedPublicKeyRing(
-                    KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(keyId)
-            ).getMasterKeyId();
-            Intent viewKeyIntent = ViewKeyActivity.getViewKeyActivityIntent(requireActivity(), masterKeyId);
-            startActivity(viewKeyIntent);
-
-        } catch (PgpKeyNotFoundException e) {
+        KeyRepository keyRepository = KeyRepository.create(requireContext());
+        Long masterKeyId = keyRepository.getMasterKeyIdBySubkeyId(keyId);
+        if (masterKeyId == null) {
             Notify.create(getActivity(), R.string.error_key_not_found, Style.ERROR).show();
+            return;
         }
+        Intent viewKeyIntent = ViewKeyActivity.getViewKeyActivityIntent(requireActivity(), masterKeyId);
+        startActivity(viewKeyIntent);
     }
 
     protected void loadVerifyResult(DecryptVerifyResult decryptVerifyResult) {

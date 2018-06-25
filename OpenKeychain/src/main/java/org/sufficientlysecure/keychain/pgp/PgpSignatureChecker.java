@@ -40,7 +40,6 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureSigningAlgori
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import timber.log.Timber;
 
 
@@ -160,9 +159,11 @@ class PgpSignatureChecker {
         for (int i = 0; i < sigList.size(); ++i) {
             try {
                 long sigKeyId = sigList.get(i).getKeyID();
-                CanonicalizedPublicKeyRing signingRing = mKeyRepository.getCanonicalizedPublicKeyRing(
-                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
-                );
+                Long masterKeyId = mKeyRepository.getMasterKeyIdBySubkeyId(sigKeyId);
+                if (masterKeyId == null) {
+                    continue;
+                }
+                CanonicalizedPublicKeyRing signingRing = mKeyRepository.getCanonicalizedPublicKeyRing(masterKeyId);
                 CanonicalizedPublicKey keyCandidate = signingRing.getPublicKey(sigKeyId);
                 if ( ! keyCandidate.canSign()) {
                     continue;
@@ -183,9 +184,11 @@ class PgpSignatureChecker {
         for (int i = 0; i < sigList.size(); ++i) {
             try {
                 long sigKeyId = sigList.get(i).getKeyID();
-                CanonicalizedPublicKeyRing signingRing = mKeyRepository.getCanonicalizedPublicKeyRing(
-                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
-                );
+                Long masterKeyId = mKeyRepository.getMasterKeyIdBySubkeyId(sigKeyId);
+                if (masterKeyId == null) {
+                    continue;
+                }
+                CanonicalizedPublicKeyRing signingRing = mKeyRepository.getCanonicalizedPublicKeyRing(masterKeyId);
                 CanonicalizedPublicKey keyCandidate = signingRing.getPublicKey(sigKeyId);
                 if ( ! keyCandidate.canSign()) {
                     continue;

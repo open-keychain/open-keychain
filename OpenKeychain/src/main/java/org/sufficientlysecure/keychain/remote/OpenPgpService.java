@@ -627,10 +627,7 @@ public class OpenPgpService extends Service {
             }
 
             try {
-                // try to find key, throws NotFoundException if not in db!
-                CanonicalizedPublicKeyRing keyRing =
-                        mKeyRepository.getCanonicalizedPublicKeyRing(
-                                KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(masterKeyId));
+                CanonicalizedPublicKeyRing keyRing = mKeyRepository.getCanonicalizedPublicKeyRing(masterKeyId);
 
                 Intent result = new Intent();
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);

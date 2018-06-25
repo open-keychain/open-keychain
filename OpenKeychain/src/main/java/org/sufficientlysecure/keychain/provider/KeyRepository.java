@@ -32,7 +32,6 @@ import android.net.Uri;
 import com.squareup.sqldelight.SqlDelightQuery;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.model.Certification;
-import org.sufficientlysecure.keychain.model.CustomColumnAdapters;
 import org.sufficientlysecure.keychain.model.KeyRingPublic;
 import org.sufficientlysecure.keychain.model.SubKey;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
@@ -175,11 +174,6 @@ public class KeyRepository extends AbstractDao {
         return getGenericData(KeyRings.buildUnifiedKeyRingUri(masterKeyId), proj, types);
     }
 
-    public long getMasterKeyIdBySubKeyId(long subKeyId) throws NotFoundException {
-        return (Long) getGenericData(KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId),
-                KeyRings.MASTER_KEY_ID, FIELD_TYPE_INTEGER);
-    }
-
     public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) throws PgpKeyNotFoundException {
         long masterKeyId = new CachedPublicKeyRing(this, queryUri).extractOrGetMasterKeyId();
         return getCachedPublicKeyRing(masterKeyId);
@@ -189,59 +183,26 @@ public class KeyRepository extends AbstractDao {
         return new CachedPublicKeyRing(this, KeyRings.buildUnifiedKeyRingUri(id));
     }
 
-    public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(long id) throws NotFoundException {
-        return getCanonicalizedPublicKeyRing(KeyRings.buildUnifiedKeyRingUri(id));
-    }
-
-    public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(Uri queryUri) throws NotFoundException {
-        Cursor cursor = contentResolver.query(queryUri,
-                new String[] { KeyRings.MASTER_KEY_ID, KeyRings.VERIFIED }, null, null, null);
-        try {
-            if (cursor != null && cursor.moveToFirst()) {
-                long masterKeyId = cursor.getLong(0);
-                long verified = cursor.getLong(1);
-
-                byte[] publicKeyData = loadPublicKeyRingData(masterKeyId);
-                VerificationStatus verificationStatus = CustomColumnAdapters.VERIFICATON_STATUS_ADAPTER.decode(verified);
-                return new CanonicalizedPublicKeyRing(publicKeyData, verificationStatus);
-            } else {
-                throw new NotFoundException("Key not found!");
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+    public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(long masterKeyId) throws NotFoundException {
+        UnifiedKeyInfo unifiedKeyInfo = getUnifiedKeyInfo(masterKeyId);
+        if (unifiedKeyInfo == null) {
+            throw new NotFoundException();
         }
+
+        byte[] publicKeyData = loadPublicKeyRingData(masterKeyId);
+        return new CanonicalizedPublicKeyRing(publicKeyData, unifiedKeyInfo.verified());
     }
 
-    public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(long id) throws NotFoundException {
-        return getCanonicalizedSecretKeyRing(KeyRings.buildUnifiedKeyRingUri(id));
-    }
-
-    public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri queryUri) throws NotFoundException {
-        Cursor cursor = contentResolver.query(queryUri,
-                new String[] { KeyRings.MASTER_KEY_ID, KeyRings.VERIFIED, KeyRings.HAS_ANY_SECRET }, null, null, null);
-        try {
-            if (cursor != null && cursor.moveToFirst()) {
-                long masterKeyId = cursor.getLong(0);
-                long verified = cursor.getLong(1);
-                int hasAnySecret = cursor.getInt(2);
-                if (hasAnySecret == 0) {
-                    throw new NotFoundException("No secret key available or unknown public key!");
-                }
-
-                VerificationStatus verificationStatus = CustomColumnAdapters.VERIFICATON_STATUS_ADAPTER.decode(verified);
-
-                byte[] secretKeyData = loadSecretKeyRingData(masterKeyId);
-                return new CanonicalizedSecretKeyRing(secretKeyData, verificationStatus);
-            } else {
-                throw new NotFoundException("Key not found!");
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+    public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(long masterKeyId) throws NotFoundException {
+        UnifiedKeyInfo unifiedKeyInfo = getUnifiedKeyInfo(masterKeyId);
+        if (unifiedKeyInfo == null || !unifiedKeyInfo.has_any_secret()) {
+            throw new NotFoundException();
         }
+        byte[] secretKeyData = loadSecretKeyRingData(masterKeyId);
+        if (secretKeyData == null) {
+            throw new IllegalStateException("Missing expected secret key data!");
+        }
+        return new CanonicalizedSecretKeyRing(secretKeyData, unifiedKeyInfo.verified());
     }
 
     public List<Long> getAllMasterKeyIds() {
@@ -257,6 +218,16 @@ public class KeyRepository extends AbstractDao {
         }
         SqlDelightQuery query = SubKey.FACTORY.selectMasterKeyIdsBySigner(signerKeyIds);
         return mapAllRows(query, KeyRingPublic.FACTORY.selectAllMasterKeyIdsMapper()::map);
+    }
+
+    public Long getMasterKeyIdBySubkeyId(long subKeyId) {
+        SqlDelightQuery query = SubKey.FACTORY.selectMasterKeyIdBySubkey(subKeyId);
+        try (Cursor cursor = getReadableDb().query(query)) {
+            if (cursor.moveToFirst()) {
+                return SubKey.FACTORY.selectMasterKeyIdBySubkeyMapper().map(cursor);
+            }
+            return null;
+        }
     }
 
     public UnifiedKeyInfo getUnifiedKeyInfo(long masterKeyId) {

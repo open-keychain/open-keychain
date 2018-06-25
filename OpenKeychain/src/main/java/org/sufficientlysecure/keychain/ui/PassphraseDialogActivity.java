@@ -285,10 +285,9 @@ public class PassphraseDialogActivity extends FragmentActivity {
                     } else {
                         long subKeyId = subKeyIds[0];
 
-                        KeyRepository helper =
-                                KeyRepository.create(getContext());
-                        CachedPublicKeyRing cachedPublicKeyRing = helper.getCachedPublicKeyRing(
-                                KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
+                        KeyRepository keyRepository = KeyRepository.create(getContext());
+                        Long masterKeyId = keyRepository.getMasterKeyIdBySubkeyId(subKeyId);
+                        CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(masterKeyId);
                         // yes the inner try/catch block is necessary, otherwise the final variable
                         // above can't be statically verified to have been set in all cases because
                         // the catch clause doesn't return.
@@ -534,11 +533,13 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
                         CanonicalizedSecretKey canonicalizedSecretKey = null;
                         for (long subKeyId : mRequiredInput.getSubKeyIds()) {
-                            CanonicalizedSecretKeyRing secretKeyRing =
-                                    KeyRepository.create(getContext()).getCanonicalizedSecretKeyRing(
-                                            KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId));
-                            CanonicalizedSecretKey secretKeyToUnlock =
-                                    secretKeyRing.getSecretKey(subKeyId);
+                            KeyRepository keyRepository = KeyRepository.create(getContext());
+                            Long masterKeyId = keyRepository.getMasterKeyIdBySubkeyId(subKeyId);
+                            if (masterKeyId == null) {
+                                continue;
+                            }
+                            CanonicalizedSecretKeyRing secretKeyRing = keyRepository.getCanonicalizedSecretKeyRing(masterKeyId);
+                            CanonicalizedSecretKey secretKeyToUnlock = secretKeyRing.getSecretKey(subKeyId);
 
                             // this is the operation may take a very long time (100ms to several seconds!)
                             boolean unlockSucceeded = secretKeyToUnlock.unlock(passphrase);

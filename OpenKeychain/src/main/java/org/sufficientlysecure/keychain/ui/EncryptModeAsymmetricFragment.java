@@ -36,7 +36,6 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter.KeyItem;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -139,8 +138,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
     private void preselectKeys(Long signatureKeyId, long[] encryptionKeyIds) {
         if (signatureKeyId != null) {
             try {
-                CachedPublicKeyRing keyring = mKeyRepository.getCachedPublicKeyRing(
-                        KeyRings.buildUnifiedKeyRingUri(signatureKeyId));
+                CachedPublicKeyRing keyring = mKeyRepository.getCachedPublicKeyRing(signatureKeyId);
                 if (keyring.hasAnySecret()) {
                     mSignKeySpinner.setPreSelectedKeyId(signatureKeyId);
                 }

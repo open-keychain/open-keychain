@@ -651,8 +651,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
     private boolean processEncryptionMasterKeyId(int indent, OperationLog log, PgpSignEncryptData data,
             PGPEncryptedDataGenerator cPk, long encryptMasterKeyId) {
         try {
-            CanonicalizedPublicKeyRing keyRing = mKeyRepository.getCanonicalizedPublicKeyRing(
-                    KeyRings.buildUnifiedKeyRingUri(encryptMasterKeyId));
+            CanonicalizedPublicKeyRing keyRing = mKeyRepository.getCanonicalizedPublicKeyRing(encryptMasterKeyId);
             Set<Long> encryptSubKeyIds = keyRing.getEncryptIds();
             for (Long subKeyId : encryptSubKeyIds) {
                 CanonicalizedPublicKey key = keyRing.getPublicKey(subKeyId);

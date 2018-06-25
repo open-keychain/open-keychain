@@ -199,12 +199,11 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                     throw new IOException(getString(R.string.error_wrong_security_token));
                 }
 
-                KeyRepository keyRepository =
-                        KeyRepository.create(this);
+                KeyRepository keyRepository = KeyRepository.create(this);
                 CanonicalizedPublicKeyRing publicKeyRing;
                 try {
-                    publicKeyRing = keyRepository.getCanonicalizedPublicKeyRing(
-                            KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mRequiredInput.getMasterKeyId()));
+                    Long masterKeyId = keyRepository.getMasterKeyIdBySubkeyId(mRequiredInput.getMasterKeyId());
+                    publicKeyRing = keyRepository.getCanonicalizedPublicKeyRing(masterKeyId);
                 } catch (KeyRepository.NotFoundException e) {
                     throw new IOException("Couldn't find subkey for key to token operation.");
                 }
@@ -263,9 +262,8 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                         KeyRepository.create(this);
                 CanonicalizedSecretKeyRing secretKeyRing;
                 try {
-                    secretKeyRing = keyRepository.getCanonicalizedSecretKeyRing(
-                            KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(mRequiredInput.getMasterKeyId())
-                    );
+                    Long masterKeyId = keyRepository.getMasterKeyIdBySubkeyId(mRequiredInput.getMasterKeyId());
+                    secretKeyRing = keyRepository.getCanonicalizedSecretKeyRing(masterKeyId);
                 } catch (KeyRepository.NotFoundException e) {
                     throw new IOException("Couldn't find subkey for key to token operation.");
                 }
