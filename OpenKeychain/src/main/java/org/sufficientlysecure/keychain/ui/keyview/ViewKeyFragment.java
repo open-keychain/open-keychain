@@ -72,6 +72,7 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
     private SystemContactCardView systemContactCard;
     private KeyHealthView keyStatusHealth;
     private KeyserverStatusView keyserverStatusView;
+    private View keyStatusCardView;
 
     IdentityAdapter identitiesAdapter;
 
@@ -90,6 +91,7 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
 
         identitiesCardView = view.findViewById(R.id.card_identities);
         systemContactCard = view.findViewById(R.id.linked_system_contact_card);
+        keyStatusCardView = view.findViewById(R.id.subkey_status_card);
         keyStatusHealth = view.findViewById(R.id.key_status_health);
         keyserverStatusView = view.findViewById(R.id.key_status_keyserver);
 
@@ -105,6 +107,9 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
             }
         });
         identitiesCardView.setIdentitiesAdapter(identitiesAdapter);
+
+        identitiesCardView.setVisibility(View.GONE);
+        keyStatusCardView.setVisibility(View.GONE);
 
         keyStatusHealth.setOnHealthClickListener((v) -> onKeyHealthClick());
 
@@ -135,6 +140,8 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
         if (subkeyStatus == null) {
             return;
         }
+
+        keyStatusCardView.setVisibility(View.VISIBLE);
 
         this.subkeyStatus = subkeyStatus;
 
@@ -291,6 +298,7 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
 
     private void onLoadIdentityInfo(List<IdentityInfo> identityInfos) {
         identitiesAdapter.setData(identityInfos, unifiedKeyInfo.has_any_secret());
+        identitiesCardView.setVisibility(View.VISIBLE);
     }
 
     private void onLoadSystemContact(SystemContactInfo systemContactInfo) {
