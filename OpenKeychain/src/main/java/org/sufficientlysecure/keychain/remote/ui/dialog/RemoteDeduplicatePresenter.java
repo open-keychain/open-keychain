@@ -20,62 +20,59 @@ package org.sufficientlysecure.keychain.remote.ui.dialog;
 
 import java.util.List;
 
+import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.Loader;
 
-import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeyInfo;
-import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeySelector;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.remote.AutocryptInteractor;
+import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteDeduplicateActivity.DeduplicateViewModel;
 import timber.log.Timber;
 
 
-class RemoteDeduplicatePresenter implements LoaderCallbacks<List<KeyInfo>> {
+class RemoteDeduplicatePresenter {
     private final PackageManager packageManager;
     private final Context context;
-    private final int loaderId;
+    private final LifecycleOwner lifecycleOwner;
 
 
     private AutocryptInteractor autocryptInteractor;
-    private String duplicateAddress;
 
+    private DeduplicateViewModel viewModel;
     private RemoteDeduplicateView view;
     private Integer selectedItem;
-    private List<KeyInfo> keyInfoData;
+    private List<UnifiedKeyInfo> keyInfoData;
 
 
-    RemoteDeduplicatePresenter(Context context, int loaderId) {
+    RemoteDeduplicatePresenter(Context context, LifecycleOwner lifecycleOwner) {
         this.context = context;
+        this.lifecycleOwner = lifecycleOwner;
 
         packageManager = context.getPackageManager();
-
-        this.loaderId = loaderId;
     }
 
     public void setView(RemoteDeduplicateView view) {
         this.view = view;
     }
 
-    void setupFromIntentData(String packageName, String duplicateAddress) {
+    void setupFromViewModel(DeduplicateViewModel viewModel) {
+        this.viewModel = viewModel;
+        this.autocryptInteractor = AutocryptInteractor.getInstance(context, viewModel.getPackageName());
+
         try {
-            setPackageInfo(packageName);
+            setPackageInfo(viewModel.getPackageName());
         } catch (NameNotFoundException e) {
             Timber.e("Unable to find info of calling app!");
             view.finishAsCancelled();
             return;
         }
 
-        this.autocryptInteractor = AutocryptInteractor.getInstance(context, packageName);
+        view.setAddressText(viewModel.getDuplicateAddress());
 
-        this.duplicateAddress = duplicateAddress;
-        view.setAddressText(duplicateAddress);
+        viewModel.getKeyInfoLiveData(context).observe(lifecycleOwner, this::onLoadKeyInfos);
     }
 
     private void setPackageInfo(String packageName) throws NameNotFoundException {
@@ -85,29 +82,9 @@ class RemoteDeduplicatePresenter implements LoaderCallbacks<List<KeyInfo>> {
         view.setTitleClientIcon(appIcon);
     }
 
-    void startLoaders(LoaderManager loaderManager) {
-        loaderManager.restartLoader(loaderId, null, this);
-    }
-
-    @Override
-    public Loader<List<KeyInfo>> onCreateLoader(int id, Bundle args) {
-        KeySelector keySelector = KeySelector.create(
-                KeyRings.buildUnifiedKeyRingsFindByEmailUri(duplicateAddress), null);
-
-        return new KeyInfoLoader(context, context.getContentResolver(), keySelector);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<List<KeyInfo>> loader, List<KeyInfo> data) {
+    private void onLoadKeyInfos(List<UnifiedKeyInfo> data) {
         this.keyInfoData = data;
         view.setKeyListData(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader loader) {
-        if (view != null) {
-            view.setKeyListData(null);
-        }
     }
 
     void onClickSelect() {
@@ -120,8 +97,8 @@ class RemoteDeduplicatePresenter implements LoaderCallbacks<List<KeyInfo>> {
             return;
         }
 
-        long masterKeyId = keyInfoData.get(selectedItem).getMasterKeyId();
-        autocryptInteractor.updateKeyGossipFromDedup(duplicateAddress, masterKeyId);
+        long masterKeyId = keyInfoData.get(selectedItem).master_key_id();
+        autocryptInteractor.updateKeyGossipFromDedup(viewModel.getDuplicateAddress(), masterKeyId);
 
         view.finish();
     }
@@ -151,7 +128,7 @@ class RemoteDeduplicatePresenter implements LoaderCallbacks<List<KeyInfo>> {
         void setAddressText(String text);
         void setTitleClientIcon(Drawable drawable);
 
-        void setKeyListData(List<KeyInfo> data);
+        void setKeyListData(List<UnifiedKeyInfo> data);
         void setActiveItem(Integer position);
         void setEnableSelectButton(boolean enabled);
     }

@@ -207,9 +207,9 @@ class SecurityProblemPresenter {
     }
 
     void onClickViewKey() {
-        Intent viewKeyIntent = new Intent(context, ViewKeyActivity.class);
-        viewKeyIntent.setData(KeyRings.buildGenericKeyRingUri(viewKeyMasterKeyId));
-        context.startActivity(viewKeyIntent);
+        Intent intent = new Intent(context, ViewKeyActivity.class);
+        intent.putExtra(ViewKeyActivity.EXTRA_MASTER_KEY_ID, viewKeyMasterKeyId);
+        context.startActivity(intent);
     }
 
     void onClickOverride() {

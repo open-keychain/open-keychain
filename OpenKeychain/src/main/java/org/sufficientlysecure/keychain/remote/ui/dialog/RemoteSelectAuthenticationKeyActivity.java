@@ -23,6 +23,9 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -42,7 +45,6 @@ import android.text.format.DateUtils;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -51,8 +53,10 @@ import android.widget.TextView;
 import com.mikepenz.materialdrawer.util.KeyboardUtil;
 import org.openintents.ssh.authentication.SshAuthenticationApi;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeyInfo;
+import org.sufficientlysecure.keychain.livedata.GenericLiveData;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.provider.ApiAppDao;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectAuthenticationKeyPresenter.RemoteSelectAuthenticationKeyView;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
@@ -64,8 +68,6 @@ import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerItemClickLis
 public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
     public static final String EXTRA_PACKAGE_NAME = "package_name";
 
-    public static final int LOADER_ID_KEYS = 0;
-
 
     private RemoteSelectAuthenticationKeyPresenter presenter;
     private String packageName;
@@ -75,7 +77,7 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        presenter = new RemoteSelectAuthenticationKeyPresenter(getBaseContext(), LOADER_ID_KEYS);
+        presenter = new RemoteSelectAuthenticationKeyPresenter(getBaseContext(), this);
 
         KeyboardUtil.hideKeyboard(this);
 
@@ -92,8 +94,33 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
         Intent intent = getIntent();
         packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
 
-        presenter.setupFromIntentData(packageName);
-        presenter.startLoaders(getSupportLoaderManager());
+        SelectAuthKeyViewModel viewModel = ViewModelProviders.of(this).get(SelectAuthKeyViewModel.class);
+        viewModel.setPackageName(packageName);
+
+        presenter.setupFromViewModel(viewModel);
+    }
+
+    public static class SelectAuthKeyViewModel extends ViewModel {
+        private LiveData<List<UnifiedKeyInfo>> keyInfoLiveData;
+        private String packageName;
+
+        public LiveData<List<UnifiedKeyInfo>> getKeyInfoLiveData(Context context) {
+            if (keyInfoLiveData == null) {
+                keyInfoLiveData = new GenericLiveData<>(context, null, () -> {
+                    KeyRepository keyRepository = KeyRepository.create(context);
+                    return keyRepository.getAllUnifiedKeyInfoWithSecret();
+                });
+            }
+            return keyInfoLiveData;
+        }
+
+        public void setPackageName(String packageName) {
+            this.packageName = packageName;
+        }
+
+        public String getPackageName() {
+            return packageName;
+        }
     }
 
     private void onKeySelected(long masterKeyId) {
@@ -121,7 +148,7 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final Activity activity = getActivity();
+            Activity activity = requireActivity();
 
             ContextThemeWrapper theme = ThemeChanger.getDialogThemeWrapper(activity);
             CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(theme);
@@ -149,7 +176,7 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
 
-            presenter = ((RemoteSelectAuthenticationKeyActivity) getActivity()).presenter;
+            presenter = ((RemoteSelectAuthenticationKeyActivity) requireActivity()).presenter;
             presenter.setView(mvpView);
         }
 
@@ -207,7 +234,7 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
                 }
 
                 @Override
-                public void setKeyListData(List<KeyInfo> data) {
+                public void setKeyListData(List<UnifiedKeyInfo> data) {
                     keyChoiceAdapter.setData(data);
                 }
 
@@ -224,34 +251,17 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
         }
 
         private void setupListenersForPresenter() {
-            buttonSelect.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    presenter.onClickSelect();
-                }
-            });
-
-            buttonCancel.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    presenter.onClickCancel();
-                }
-            });
-
+            buttonSelect.setOnClickListener(view -> presenter.onClickSelect());
+            buttonCancel.setOnClickListener(view -> presenter.onClickCancel());
             keyChoiceList.addOnItemTouchListener(new RecyclerItemClickListener(getContext(),
-                    new RecyclerItemClickListener.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(View view, int position) {
-                            presenter.onKeyItemClick(position);
-                        }
-                    }));
+                    (view, position) -> presenter.onKeyItemClick(position)));
         }
     }
 
     private static class KeyChoiceAdapter extends Adapter<KeyChoiceViewHolder> {
         private final LayoutInflater layoutInflater;
         private final Resources resources;
-        private List<KeyInfo> data;
+        private List<UnifiedKeyInfo> data;
         private Drawable iconUnselected;
         private Drawable iconSelected;
         private Integer activeItem;
@@ -261,15 +271,16 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
             this.resources = resources;
         }
 
+        @NonNull
         @Override
-        public KeyChoiceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public KeyChoiceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View keyChoiceItemView = layoutInflater.inflate(R.layout.authentication_key_item, parent, false);
             return new KeyChoiceViewHolder(keyChoiceItemView);
         }
 
         @Override
-        public void onBindViewHolder(KeyChoiceViewHolder holder, int position) {
-            KeyInfo keyInfo = data.get(position);
+        public void onBindViewHolder(@NonNull KeyChoiceViewHolder holder, int position) {
+            UnifiedKeyInfo keyInfo = data.get(position);
             Drawable icon = (activeItem != null && position == activeItem) ? iconSelected : iconUnselected;
             holder.bind(keyInfo, icon);
         }
@@ -279,7 +290,7 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
             return data != null ? data.size() : 0;
         }
 
-        public void setData(List<KeyInfo> data) {
+        public void setData(List<UnifiedKeyInfo> data) {
             this.data = data;
             notifyDataSetChanged();
         }
@@ -324,11 +335,11 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
             vIcon = itemView.findViewById(R.id.key_list_item_icon);
         }
 
-        void bind(KeyInfo keyInfo, Drawable selectionIcon) {
-            vName.setText(keyInfo.getName());
+        void bind(UnifiedKeyInfo keyInfo, Drawable selectionIcon) {
+            vName.setText(keyInfo.name());
 
             Context context = vCreation.getContext();
-            String dateTime = DateUtils.formatDateTime(context, keyInfo.getCreationDate(),
+            String dateTime = DateUtils.formatDateTime(context, keyInfo.creation(),
                     DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME |
                             DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_ABBREV_MONTH);
             vCreation.setText(context.getString(R.string.label_key_created, dateTime));

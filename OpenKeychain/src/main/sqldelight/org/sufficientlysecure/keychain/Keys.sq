@@ -23,8 +23,9 @@ CREATE TABLE IF NOT EXISTS keys (
     keyrings_public(master_key_id) ON DELETE CASCADE
 );
 
-selectAllUnifiedKeyInfo:
-SELECT keys.master_key_id, keys.fingerprint, MIN(user_packets.rank), user_packets.name, user_packets.email, user_packets.comment, keys.creation, keys.expiry, keys.is_revoked, keys.is_secure, certs.verified,
+unifiedKeyView:
+CREATE VIEW unifiedKeyView AS
+    SELECT keys.master_key_id, keys.fingerprint, MIN(user_packets.rank), user_packets.name, user_packets.email, user_packets.comment, keys.creation, keys.expiry, keys.is_revoked, keys.is_secure, certs.verified,
         (EXISTS (SELECT * FROM user_packets AS dups WHERE dups.master_key_id != keys.master_key_id AND dups.rank = 0 AND dups.name = user_packets.name COLLATE NOCASE AND dups.email = user_packets.email COLLATE NOCASE )) AS has_duplicate_int,
         (EXISTS (SELECT * FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.has_secret != 0 )) AS has_any_secret_int,
         (EXISTS (SELECT * FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_authenticate != 0 )) AS has_auth_key_int,
@@ -36,23 +37,25 @@ SELECT keys.master_key_id, keys.fingerprint, MIN(user_packets.rank), user_packet
          LEFT JOIN certs ON ( keys.master_key_id = certs.master_key_id AND certs.verified = 1 )
          LEFT JOIN autocrypt_peers AS aTI ON ( aTI.master_key_id = keys.master_key_id )
     WHERE keys.rank = 0
-    GROUP BY keys.master_key_id
-    ORDER BY has_secret DESC, user_packets.name COLLATE NOCASE ASC;
+    GROUP BY keys.master_key_id;
+
+selectAllUnifiedKeyInfo:
+SELECT * FROM unifiedKeyView
+    ORDER BY has_any_secret_int DESC, name COLLATE NOCASE ASC, creation DESC;
 
 selectUnifiedKeyInfoByMasterKeyId:
-SELECT keys.master_key_id, keys.fingerprint, MIN(user_packets.rank), user_packets.name, user_packets.email, user_packets.comment, keys.creation, keys.expiry, keys.is_revoked, keys.is_secure, certs.verified,
-       (EXISTS (SELECT * FROM user_packets AS dups WHERE dups.master_key_id != keys.master_key_id AND dups.rank = 0 AND dups.name = user_packets.name COLLATE NOCASE AND dups.email = user_packets.email COLLATE NOCASE )) AS has_duplicate_int,
-       (EXISTS (SELECT * FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.has_secret != 0 )) AS has_any_secret_int,
-       (EXISTS (SELECT * FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_authenticate != 0 )) AS has_auth_key_int,
-        (EXISTS (SELECT * FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_encrypt != 0 )) AS has_encrypt_key_int,
-       GROUP_CONCAT(DISTINCT aTI.package_name) AS autocrypt_package_names_csv,
-       GROUP_CONCAT(user_packets.user_id, '|||') AS user_id_list
-       FROM keys
-           INNER JOIN user_packets ON ( keys.master_key_id = user_packets.master_key_id AND user_packets.type IS NULL )
-           LEFT JOIN certs ON ( keys.master_key_id = certs.master_key_id AND certs.verified = 1 )
-           LEFT JOIN autocrypt_peers AS aTI ON ( aTI.master_key_id = keys.master_key_id )
-       WHERE keys.rank = 0 AND keys.master_key_id = ?
-       GROUP BY keys.master_key_id;
+SELECT * FROM unifiedKeyView
+   WHERE is_revoked = 0 AND master_key_id = ?;
+
+selectUnifiedKeyInfoSearchMailAddress:
+SELECT * FROM unifiedKeyView
+   WHERE email LIKE ?
+   ORDER BY creation DESC;
+
+selectAllUnifiedKeyInfoWithSecret:
+SELECT * FROM unifiedKeyView
+    WHERE has_any_secret_int = 1
+   ORDER BY creation DESC;
 
 selectSubkeysByMasterKeyId:
 SELECT *

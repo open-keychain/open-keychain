@@ -15,8 +15,8 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 public abstract class SubKey implements KeysModel {
     public static final Factory<SubKey> FACTORY =
             new Factory<>(AutoValue_SubKey::new, CustomColumnAdapters.SECRET_KEY_TYPE_ADAPTER);
-    public static final SelectAllUnifiedKeyInfoMapper<UnifiedKeyInfo> UNIFIED_KEY_INFO_MAPPER =
-            FACTORY.selectAllUnifiedKeyInfoMapper(AutoValue_SubKey_UnifiedKeyInfo::new);
+    public static final UnifiedKeyViewMapper<UnifiedKeyInfo> UNIFIED_KEY_INFO_MAPPER =
+            FACTORY.selectUnifiedKeyInfoByMasterKeyIdMapper(AutoValue_SubKey_UnifiedKeyInfo::new);
     public static Mapper<SubKey> SUBKEY_MAPPER = new Mapper<>(FACTORY);
     public static RowMapper<SecretKeyType> SKT_MAPPER = FACTORY.selectSecretKeyTypeMapper();
 
@@ -25,7 +25,7 @@ public abstract class SubKey implements KeysModel {
     }
 
     @AutoValue
-    public static abstract class UnifiedKeyInfo implements SelectAllUnifiedKeyInfoModel {
+    public static abstract class UnifiedKeyInfo implements KeysModel.UnifiedKeyViewModel {
         private List<String> autocryptPackageNames;
 
         public boolean is_expired() {

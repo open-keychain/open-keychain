@@ -23,6 +23,8 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -58,8 +60,11 @@ import android.widget.Toast;
 import com.mikepenz.materialdrawer.util.KeyboardUtil;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeyInfo;
+import org.sufficientlysecure.keychain.livedata.GenericLiveData;
+import org.sufficientlysecure.keychain.livedata.PgpKeyGenerationLiveData;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectIdentityKeyPresenter.RemoteSelectIdentityKeyView;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.MainActivity;
@@ -89,12 +94,17 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        RemoteSelectIdViewModel viewModel =
-                ViewModelProviders.of(this).get(RemoteSelectIdViewModel.class);
-
-        presenter = new RemoteSelectIdentityKeyPresenter(getBaseContext(), viewModel, this);
+        presenter = new RemoteSelectIdentityKeyPresenter(getBaseContext(), this);
 
         KeyboardUtil.hideKeyboard(this);
+
+        RemoteSelectIdViewModel viewModel = ViewModelProviders.of(this).get(RemoteSelectIdViewModel.class);
+
+        Intent intent = getIntent();
+        viewModel.rawUserId = intent.getStringExtra(EXTRA_USER_ID);
+        viewModel.packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
+        viewModel.packageSignature = intent.getByteArrayExtra(EXTRA_PACKAGE_SIGNATURE);
+        viewModel.clientHasAutocryptSetupMsg = intent.getBooleanExtra(EXTRA_SHOW_AUTOCRYPT_HINT, false);
 
         if (savedInstanceState == null) {
             RemoteSelectIdentityKeyDialogFragment frag = new RemoteSelectIdentityKeyDialogFragment();
@@ -106,13 +116,45 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
     protected void onStart() {
         super.onStart();
 
-        Intent intent = getIntent();
-        String userId = intent.getStringExtra(EXTRA_USER_ID);
-        String packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
-        byte[] packageSignature = intent.getByteArrayExtra(EXTRA_PACKAGE_SIGNATURE);
-        boolean showAutocryptHint = intent.getBooleanExtra(EXTRA_SHOW_AUTOCRYPT_HINT, false);
+        RemoteSelectIdViewModel viewModel = ViewModelProviders.of(this).get(RemoteSelectIdViewModel.class);
+        presenter.setupFromViewModel(viewModel);
+    }
 
-        presenter.setupFromIntentData(packageName, packageSignature, userId, showAutocryptHint);
+    public static class RemoteSelectIdViewModel extends ViewModel {
+        public String packageName;
+        public byte[] packageSignature;
+        public String rawUserId;
+        public boolean clientHasAutocryptSetupMsg;
+
+        public List<UnifiedKeyInfo> filteredKeyInfo;
+
+        private LiveData<List<UnifiedKeyInfo>> keyInfo;
+        private PgpKeyGenerationLiveData keyGenerationData;
+        private boolean listAllKeys;
+
+        public LiveData<List<UnifiedKeyInfo>> getSecretUnifiedKeyInfo(Context context) {
+            if (keyInfo == null) {
+                KeyRepository keyRepository = KeyRepository.create(context);
+                keyInfo = new GenericLiveData<>(context, null, keyRepository::getAllUnifiedKeyInfoWithSecret);
+            }
+            return keyInfo;
+        }
+
+        public PgpKeyGenerationLiveData getKeyGenerationLiveData(Context context) {
+            if (keyGenerationData == null) {
+                keyGenerationData = new PgpKeyGenerationLiveData(context);
+            }
+            return keyGenerationData;
+        }
+
+        public boolean isListAllKeys() {
+            return listAllKeys;
+        }
+
+        public void setListAllKeys(boolean listAllKeys) {
+            this.listAllKeys = listAllKeys;
+        }
+
     }
 
     public static class RemoteSelectIdentityKeyDialogFragment extends DialogFragment {
@@ -135,7 +177,7 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final Activity activity = getActivity();
+            Activity activity = requireActivity();
 
             ContextThemeWrapper theme = ThemeChanger.getDialogThemeWrapper(activity);
             CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(theme);
@@ -177,7 +219,7 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
 
-            presenter = ((RemoteSelectIdKeyActivity) getActivity()).presenter;
+            presenter = ((RemoteSelectIdKeyActivity) requireActivity()).presenter;
             presenter.setView(mvpView);
         }
 
@@ -203,7 +245,7 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
         @NonNull
         private RemoteSelectIdentityKeyView createMvpView(final ViewGroup rootView, LayoutInflater layoutInflater) {
             // final ImageView iconClientApp = rootView.findViewById(R.id.icon_client_app);
-            final KeyChoiceAdapter keyChoiceAdapter = new KeyChoiceAdapter(layoutInflater, getResources());
+            final KeyChoiceAdapter keyChoiceAdapter = new KeyChoiceAdapter(layoutInflater);
             final TextView titleText = rootView.findViewById(R.id.text_title_select_key);
             final TextView addressText = rootView.findViewById(R.id.text_user_id);
             final TextView autocryptHint = rootView.findViewById(R.id.key_import_autocrypt_hint);
@@ -309,7 +351,7 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
                 }
 
                 @Override
-                public void setKeyListData(List<KeyInfo> data) {
+                public void setKeyListData(List<UnifiedKeyInfo> data) {
                     keyChoiceAdapter.setData(data);
                 }
 
@@ -405,19 +447,18 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
 
     private static class KeyChoiceAdapter extends Adapter<KeyChoiceViewHolder> {
         private final LayoutInflater layoutInflater;
-        private final Resources resources;
-        private List<KeyInfo> data;
+        private List<UnifiedKeyInfo> data;
         private Drawable iconUnselected;
         private Drawable iconSelected;
         private Integer activeItem;
 
-        KeyChoiceAdapter(LayoutInflater layoutInflater, Resources resources) {
+        KeyChoiceAdapter(LayoutInflater layoutInflater) {
             this.layoutInflater = layoutInflater;
-            this.resources = resources;
         }
 
+        @NonNull
         @Override
-        public KeyChoiceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public KeyChoiceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View keyChoiceItemView = layoutInflater.inflate(R.layout.api_select_identity_item, parent, false);
             return new KeyChoiceViewHolder(keyChoiceItemView);
         }
@@ -428,8 +469,8 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
         }
 
         @Override
-        public void onBindViewHolder(KeyChoiceViewHolder holder, int position) {
-            KeyInfo keyInfo = data.get(position);
+        public void onBindViewHolder(@NonNull KeyChoiceViewHolder holder, int position) {
+            UnifiedKeyInfo keyInfo = data.get(position);
             boolean hasActiveItem = activeItem != null;
             boolean isActiveItem = hasActiveItem && position == activeItem;
 
@@ -444,7 +485,7 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
             return data != null ? data.size() : 0;
         }
 
-        public void setData(List<KeyInfo> data) {
+        public void setData(List<UnifiedKeyInfo> data) {
             this.data = data;
             notifyDataSetChanged();
         }
@@ -469,11 +510,11 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
             vIcon = itemView.findViewById(R.id.key_list_item_icon);
         }
 
-        void bind(KeyInfo keyInfo, Drawable selectionIcon) {
+        void bind(UnifiedKeyInfo keyInfo, Drawable selectionIcon) {
             Context context = vCreation.getContext();
 
-            String email = keyInfo.getEmail();
-            String name = keyInfo.getName();
+            String email = keyInfo.email();
+            String name = keyInfo.name();
             if (email != null) {
                 vName.setText(context.getString(R.string.use_key, email));
             } else if (name != null) {
@@ -482,7 +523,7 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
                 vName.setText(context.getString(R.string.use_key_no_name));
             }
 
-            String dateTime = DateUtils.formatDateTime(context, keyInfo.getCreationDate(),
+            String dateTime = DateUtils.formatDateTime(context, keyInfo.creation(),
                     DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME |
                             DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_ABBREV_MONTH);
             vCreation.setText(context.getString(R.string.label_key_created, dateTime));

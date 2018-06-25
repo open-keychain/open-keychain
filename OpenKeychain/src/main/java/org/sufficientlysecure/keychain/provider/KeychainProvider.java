@@ -28,7 +28,6 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -62,9 +61,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
     private static final int KEY_RING_PUBLIC = 203;
     private static final int KEY_RING_CERTS = 205;
 
-    private static final int KEY_RINGS_FIND_BY_EMAIL = 400;
     private static final int KEY_RINGS_FIND_BY_SUBKEY = 401;
-    private static final int KEY_RINGS_FIND_BY_USER_ID = 402;
 
     private static final int KEY_SIGNATURES = 700;
 
@@ -94,19 +91,12 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
         /*
          * find by criteria other than master key id
          *
-         * key_rings/find/email/_
          * key_rings/find/subkey/_
          *
          */
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
-                + KeychainContract.PATH_FIND + "/" + KeychainContract.PATH_BY_EMAIL + "/*",
-                KEY_RINGS_FIND_BY_EMAIL);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
                 + KeychainContract.PATH_FIND + "/" + KeychainContract.PATH_BY_SUBKEY + "/*",
                 KEY_RINGS_FIND_BY_SUBKEY);
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
-                        + KeychainContract.PATH_FIND + "/" + KeychainContract.PATH_BY_USER_ID + "/*",
-                KEY_RINGS_FIND_BY_USER_ID);
 
         /*
          * list key_ring specifics
@@ -185,9 +175,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
         switch (match) {
             case KEY_RING_UNIFIED:
             case KEY_RINGS_UNIFIED:
-            case KEY_RINGS_FIND_BY_EMAIL:
-            case KEY_RINGS_FIND_BY_SUBKEY:
-            case KEY_RINGS_FIND_BY_USER_ID: {
+            case KEY_RINGS_FIND_BY_SUBKEY: {
                 HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(KeyRings._ID, Tables.KEYS + ".oid AS _id");
                 projectionMap.put(KeyRings.MASTER_KEY_ID, Tables.KEYS + "." + Keys.MASTER_KEY_ID);
@@ -347,42 +335,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                                     + ")");
                         } catch(NumberFormatException e) {
                             Timber.e(e, "Malformed find by subkey query!");
-                            qb.appendWhere(" AND 0");
-                        }
-                        break;
-                    }
-                    case KEY_RINGS_FIND_BY_EMAIL:
-                    case KEY_RINGS_FIND_BY_USER_ID: {
-                        String chunks[] = uri.getLastPathSegment().split(" *, *");
-                        boolean gotCondition = false;
-                        String emailWhere = "";
-                        // JAVA ♥
-                        for (int i = 0; i < chunks.length; ++i) {
-                            if (chunks[i].length() == 0) {
-                                continue;
-                            }
-                            if (i != 0) {
-                                emailWhere += " OR ";
-                            }
-                            if (match == KEY_RINGS_FIND_BY_EMAIL) {
-                                emailWhere += "tmp." + UserPackets.EMAIL + " LIKE "
-                                        + DatabaseUtils.sqlEscapeString(chunks[i]);
-                            } else {
-                                emailWhere += "tmp." + UserPackets.USER_ID + " LIKE "
-                                        + DatabaseUtils.sqlEscapeString("%" + chunks[i] + "%");
-                            }
-                            gotCondition = true;
-                        }
-                        if(gotCondition) {
-                            qb.appendWhere(" AND EXISTS ("
-                                + " SELECT 1 FROM " + Tables.USER_PACKETS + " AS tmp"
-                                    + " WHERE tmp." + UserPackets.MASTER_KEY_ID
-                                            + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
-                                        + " AND (" + emailWhere + ")"
-                                + ")");
-                        } else {
-                            // TODO better way to do this?
-                            Timber.e("Malformed find by email query!");
                             qb.appendWhere(" AND 0");
                         }
                         break;

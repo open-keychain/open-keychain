@@ -264,8 +264,18 @@ public class KeyRepository extends AbstractDao {
         }
     }
 
+    public List<UnifiedKeyInfo> getUnifiedKeyInfosByMailAddress(String mailAddress) {
+        SqlDelightQuery query = SubKey.FACTORY.selectUnifiedKeyInfoSearchMailAddress('%' + mailAddress + '%');
+        return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER::map);
+    }
+
     public List<UnifiedKeyInfo> getAllUnifiedKeyInfo() {
         SqlDelightQuery query = SubKey.FACTORY.selectAllUnifiedKeyInfo();
+        return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER::map);
+    }
+
+    public List<UnifiedKeyInfo> getAllUnifiedKeyInfoWithSecret() {
+        SqlDelightQuery query = SubKey.FACTORY.selectAllUnifiedKeyInfoWithSecret();
         return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER::map);
     }
 

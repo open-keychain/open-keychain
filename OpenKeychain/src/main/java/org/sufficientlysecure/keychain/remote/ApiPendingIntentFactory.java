@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.remote;
 
+
 import java.util.ArrayList;
 
 import android.app.PendingIntent;
@@ -25,7 +26,6 @@ import android.content.Intent;
 import android.os.Build;
 
 import org.sufficientlysecure.keychain.pgp.DecryptVerifySecurityProblem;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.remote.ui.RemoteBackupActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteDisplayTransferCodeActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteErrorActivity;

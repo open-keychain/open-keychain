@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.KeyMetadataModel;
 import org.sufficientlysecure.keychain.KeyRingsPublicModel;
 import org.sufficientlysecure.keychain.KeySignaturesModel;
+import org.sufficientlysecure.keychain.KeysModel;
 import org.sufficientlysecure.keychain.UserPacketsModel;
 import org.sufficientlysecure.keychain.model.ApiApp;
 import org.sufficientlysecure.keychain.model.Certification;
@@ -65,7 +66,7 @@ import timber.log.Timber;
  */
 public class KeychainDatabase {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 28;
+    private static final int DATABASE_VERSION = 29;
     private final SupportSQLiteOpenHelper supportSQLiteOpenHelper;
     private Context context;
 
@@ -205,6 +206,7 @@ public class KeychainDatabase {
         db.execSQL(CREATE_OVERRIDDEN_WARNINGS);
         db.execSQL(AutocryptPeersModel.CREATE_TABLE);
         db.execSQL(ApiAppsModel.CREATE_TABLE);
+        db.execSQL(KeysModel.UNIFIEDKEYVIEW);
 
         db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysColumns.RANK + ", " + KeysColumns.MASTER_KEY_ID + ");");
         db.execSQL("CREATE INDEX uids_by_rank ON user_packets (" + UserPacketsColumns.RANK + ", "
@@ -429,14 +431,20 @@ public class KeychainDatabase {
                 }
             }
 
-            case 26: {
+            case 26:
                 migrateUpdatedKeysToKeyMetadataTable(db);
-            }
 
-            case 27: {
+            case 27:
                 renameApiAutocryptPeersTable(db);
-            }
+
+            case 28:
+                recreateUnifiedKeyView(db);
         }
+    }
+
+    private void recreateUnifiedKeyView(SupportSQLiteDatabase db) {
+        db.execSQL("DROP VIEW IF EXISTS " + KeysModel.UNIFIEDKEYVIEW_VIEW_NAME);
+        db.execSQL(KeysModel.UNIFIEDKEYVIEW);
     }
 
     private void migrateSecretKeysFromDbToLocalStorage(SupportSQLiteDatabase db) throws IOException {
@@ -456,7 +464,6 @@ public class KeychainDatabase {
     private void migrateUpdatedKeysToKeyMetadataTable(SupportSQLiteDatabase db) {
         try {
             db.execSQL("ALTER TABLE updated_keys RENAME TO key_metadata;");
-            db.execSQL("UPDATE key_metadata SET last_updated = last_updated * 1000;");
         } catch (SQLException e) {
             if (Constants.DEBUG) {
                 Timber.e(e, "Ignoring migration exception, this probably happened before");
