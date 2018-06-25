@@ -18,6 +18,7 @@
         android:layout_height="24dp"
         android:layout_margin="4dp"
         android:id="@+id/key_list_item_tid_icon"
+        android:visibility="gone"
         tools:src="@drawable/apps_k9" />
 
     <LinearLayout
@@ -26,7 +27,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
-        android:focusable="true"
         android:orientation="vertical"
         android:paddingLeft="8dp"
         android:paddingRight="4dp"
