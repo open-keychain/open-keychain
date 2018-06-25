@@ -44,7 +44,7 @@ public class OverriddenWarningsRepository {
 
     private KeychainDatabase getDb() {
         if (keychainDatabase == null) {
-            keychainDatabase = new KeychainDatabase(context);
+            keychainDatabase = KeychainDatabase.getInstance(context);
         }
         return keychainDatabase;
     }

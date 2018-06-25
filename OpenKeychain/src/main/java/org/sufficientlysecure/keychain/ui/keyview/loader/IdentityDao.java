@@ -55,7 +55,7 @@ public class IdentityDao {
     private final AutocryptPeerDao autocryptPeerDao;
 
     public static IdentityDao getInstance(Context context) {
-        SupportSQLiteDatabase db = new KeychainDatabase(context).getWritableDatabase();
+        SupportSQLiteDatabase db = KeychainDatabase.getInstance(context).getWritableDatabase();
         PackageManager packageManager = context.getPackageManager();
         PackageIconGetter iconGetter = PackageIconGetter.getInstance(context);
         AutocryptPeerDao autocryptPeerDao = AutocryptPeerDao.getInstance(context);

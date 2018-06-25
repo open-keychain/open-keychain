@@ -93,7 +93,7 @@ public class KeyWritableRepository extends KeyRepository {
         LocalSecretKeyStorage localSecretKeyStorage = LocalSecretKeyStorage.getInstance(context);
         DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
         AutocryptPeerDao autocryptPeerDao = AutocryptPeerDao.getInstance(context);
-        KeychainDatabase database = new KeychainDatabase(context);
+        KeychainDatabase database = KeychainDatabase.getInstance(context);
 
         return new KeyWritableRepository(context, database,
                 localPublicKeyStorage, localSecretKeyStorage, databaseNotifyManager, autocryptPeerDao);

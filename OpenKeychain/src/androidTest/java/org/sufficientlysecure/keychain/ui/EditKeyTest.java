@@ -63,7 +63,7 @@ public class EditKeyTest {
     public void test01Edit() throws Exception {
         Activity activity = mActivity.getActivity();
 
-        new KeychainDatabase(activity).clearDatabase();
+        KeychainDatabase.getInstance(activity).clearDatabase();
 
         // import key for testing, get a stable initial state
         importKeysFromResource(activity, "x.sec.asc");

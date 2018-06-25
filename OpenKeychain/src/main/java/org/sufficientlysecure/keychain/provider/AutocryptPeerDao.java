@@ -40,7 +40,7 @@ import org.sufficientlysecure.keychain.model.AutocryptPeer.GossipOrigin;
 
 public class AutocryptPeerDao extends AbstractDao {
     public static AutocryptPeerDao getInstance(Context context) {
-        KeychainDatabase keychainDatabase = new KeychainDatabase(context);
+        KeychainDatabase keychainDatabase = KeychainDatabase.getInstance(context);
         DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
 
         return new AutocryptPeerDao(keychainDatabase, databaseNotifyManager);

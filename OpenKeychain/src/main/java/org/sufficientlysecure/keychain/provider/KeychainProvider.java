@@ -145,7 +145,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
 
     public KeychainDatabase getDb() {
         if(mKeychainDatabase == null)
-            mKeychainDatabase = new KeychainDatabase(getContext());
+            mKeychainDatabase = KeychainDatabase.getInstance(getContext());
         return mKeychainDatabase;
     }
 

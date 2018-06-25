@@ -37,7 +37,7 @@ import org.sufficientlysecure.keychain.model.ApiApp;
 
 public class ApiAppDao extends AbstractDao {
     public static ApiAppDao getInstance(Context context) {
-        KeychainDatabase keychainDatabase = new KeychainDatabase(context);
+        KeychainDatabase keychainDatabase = KeychainDatabase.getInstance(context);
         DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
 
         return new ApiAppDao(keychainDatabase, databaseNotifyManager);

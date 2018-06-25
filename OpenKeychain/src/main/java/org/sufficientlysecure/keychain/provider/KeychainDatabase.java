@@ -32,7 +32,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
-import android.provider.BaseColumns;
 
 import org.sufficientlysecure.keychain.ApiAppsModel;
 import org.sufficientlysecure.keychain.AutocryptPeersModel;
@@ -42,15 +41,10 @@ import org.sufficientlysecure.keychain.KeyMetadataModel;
 import org.sufficientlysecure.keychain.KeyRingsPublicModel;
 import org.sufficientlysecure.keychain.KeySignaturesModel;
 import org.sufficientlysecure.keychain.KeysModel;
+import org.sufficientlysecure.keychain.OverriddenWarningsModel;
 import org.sufficientlysecure.keychain.UserPacketsModel;
-import org.sufficientlysecure.keychain.model.ApiApp;
-import org.sufficientlysecure.keychain.model.Certification;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAppsAllowedKeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingsColumns;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeySignaturesColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
-import org.sufficientlysecure.keychain.provider.KeychainContract.OverriddenWarnings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
@@ -68,7 +62,15 @@ public class KeychainDatabase {
     private static final String DATABASE_NAME = "openkeychain.db";
     private static final int DATABASE_VERSION = 29;
     private final SupportSQLiteOpenHelper supportSQLiteOpenHelper;
-    private Context context;
+
+    private static KeychainDatabase sInstance;
+
+    public static KeychainDatabase getInstance(Context context) {
+        if (sInstance == null) {
+            sInstance = new KeychainDatabase(context.getApplicationContext());
+        }
+        return sInstance;
+    }
 
     public interface Tables {
         String KEY_RINGS_PUBLIC = "keyrings_public";
@@ -80,98 +82,24 @@ public class KeychainDatabase {
         String OVERRIDDEN_WARNINGS = "overridden_warnings";
     }
 
-    private static final String CREATE_KEYS =
-            "CREATE TABLE IF NOT EXISTS " + Tables.KEYS + " ("
-                + KeysColumns.MASTER_KEY_ID + " INTEGER, "
-                + KeysColumns.RANK + " INTEGER, "
-
-                + KeysColumns.KEY_ID + " INTEGER, "
-                + KeysColumns.KEY_SIZE + " INTEGER, "
-                + KeysColumns.KEY_CURVE_OID + " TEXT, "
-                + KeysColumns.ALGORITHM + " INTEGER, "
-                + KeysColumns.FINGERPRINT + " BLOB, "
-
-                + KeysColumns.CAN_CERTIFY + " INTEGER, "
-                + KeysColumns.CAN_SIGN + " INTEGER, "
-                + KeysColumns.CAN_ENCRYPT + " INTEGER, "
-                + KeysColumns.CAN_AUTHENTICATE + " INTEGER, "
-                + KeysColumns.IS_REVOKED + " INTEGER, "
-                + KeysColumns.HAS_SECRET + " INTEGER, "
-                + KeysColumns.IS_SECURE + " INTEGER, "
-
-                + KeysColumns.CREATION + " INTEGER, "
-                + KeysColumns.EXPIRY + " INTEGER, "
-
-                + "PRIMARY KEY(" + KeysColumns.MASTER_KEY_ID + ", " + KeysColumns.RANK + "),"
-                + "FOREIGN KEY(" + KeysColumns.MASTER_KEY_ID + ") REFERENCES "
-                    + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
-            + ")";
-
-    private static final String CREATE_USER_PACKETS =
-            "CREATE TABLE IF NOT EXISTS " + Tables.USER_PACKETS + "("
-                + UserPacketsColumns.MASTER_KEY_ID + " INTEGER, "
-                + UserPacketsColumns.TYPE + " INT, "
-                + UserPacketsColumns.USER_ID + " TEXT, "
-                + UserPacketsColumns.NAME + " TEXT, "
-                + UserPacketsColumns.EMAIL + " TEXT, "
-                + UserPacketsColumns.COMMENT + " TEXT, "
-                + UserPacketsColumns.ATTRIBUTE_DATA + " BLOB, "
-
-                + UserPacketsColumns.IS_PRIMARY + " INTEGER, "
-                + UserPacketsColumns.IS_REVOKED + " INTEGER, "
-                + UserPacketsColumns.RANK+ " INTEGER, "
-
-                + "PRIMARY KEY(" + UserPacketsColumns.MASTER_KEY_ID + ", " + UserPacketsColumns.RANK + "), "
-                + "FOREIGN KEY(" + UserPacketsColumns.MASTER_KEY_ID + ") REFERENCES "
-                    + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
-            + ")";
-
-    private static final String CREATE_KEY_SIGNATURES =
-            "CREATE TABLE IF NOT EXISTS " + Tables.KEY_SIGNATURES + " ("
-                    + KeySignaturesColumns.MASTER_KEY_ID + " INTEGER NOT NULL, "
-                    + KeySignaturesColumns.SIGNER_KEY_ID + " INTEGER NOT NULL, "
-                    + "PRIMARY KEY(" + KeySignaturesColumns.MASTER_KEY_ID + ", " + KeySignaturesColumns.SIGNER_KEY_ID + "), "
-                    + "FOREIGN KEY(" + KeySignaturesColumns.MASTER_KEY_ID + ") REFERENCES "
-                    + Tables.KEY_RINGS_PUBLIC + "(" + KeyRingsColumns.MASTER_KEY_ID + ") ON DELETE CASCADE"
-                    + ")";
-
-    private static final String CREATE_API_APPS_ALLOWED_KEYS =
-            "CREATE TABLE IF NOT EXISTS " + Tables.API_ALLOWED_KEYS + " ("
-                + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + ApiAppsAllowedKeysColumns.KEY_ID + " INTEGER, "
-                + ApiAppsAllowedKeysColumns.PACKAGE_NAME + " TEXT NOT NULL, "
-
-                + "UNIQUE(" + ApiAppsAllowedKeysColumns.KEY_ID + ", "
-                + ApiAppsAllowedKeysColumns.PACKAGE_NAME + "), "
-                + "FOREIGN KEY(" + ApiAppsAllowedKeysColumns.PACKAGE_NAME + ") REFERENCES "
-                + "api_apps (" + ApiAppsAllowedKeysColumns.PACKAGE_NAME + ") ON DELETE CASCADE"
-                + ")";
-
-    private static final String CREATE_OVERRIDDEN_WARNINGS =
-            "CREATE TABLE IF NOT EXISTS " + Tables.OVERRIDDEN_WARNINGS + " ("
-                    + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    + OverriddenWarnings.IDENTIFIER + " TEXT NOT NULL UNIQUE "
-                + ")";
-
-    public KeychainDatabase(Context context) {
-        this.context = context.getApplicationContext();
+    private KeychainDatabase(Context context) {
         supportSQLiteOpenHelper =
                 new FrameworkSQLiteOpenHelperFactory()
                         .create(Configuration.builder(context).name(DATABASE_NAME).callback(
                                 new Callback(DATABASE_VERSION) {
                                     @Override
                                     public void onCreate(SupportSQLiteDatabase db) {
-                                        KeychainDatabase.this.onCreate(db);
+                                        KeychainDatabase.this.onCreate(db, context);
                                     }
 
                                     @Override
                                     public void onUpgrade(SupportSQLiteDatabase db, int oldVersion, int newVersion) {
-                                        KeychainDatabase.this.onUpgrade(db, oldVersion, newVersion);
+                                        KeychainDatabase.this.onUpgrade(db, context, oldVersion, newVersion);
                                     }
 
                                     @Override
                                     public void onDowngrade(SupportSQLiteDatabase db, int oldVersion, int newVersion) {
-                                        KeychainDatabase.this.onDowngrade(db, oldVersion, newVersion);
+                                        KeychainDatabase.this.onDowngrade();
                                     }
 
                                     @Override
@@ -193,17 +121,17 @@ public class KeychainDatabase {
         return supportSQLiteOpenHelper.getWritableDatabase();
     }
 
-    private void onCreate(SupportSQLiteDatabase db) {
+    private void onCreate(SupportSQLiteDatabase db, Context context) {
         Timber.w("Creating database...");
 
         db.execSQL(KeyRingsPublicModel.CREATE_TABLE);
-        db.execSQL(CREATE_KEYS);
+        db.execSQL(KeysModel.CREATE_TABLE);
         db.execSQL(UserPacketsModel.CREATE_TABLE);
         db.execSQL(CertsModel.CREATE_TABLE);
         db.execSQL(KeyMetadataModel.CREATE_TABLE);
         db.execSQL(KeySignaturesModel.CREATE_TABLE);
-        db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
-        db.execSQL(CREATE_OVERRIDDEN_WARNINGS);
+        db.execSQL(ApiAppsModel.CREATE_TABLE);
+        db.execSQL(OverriddenWarningsModel.CREATE_TABLE);
         db.execSQL(AutocryptPeersModel.CREATE_TABLE);
         db.execSQL(ApiAppsModel.CREATE_TABLE);
         db.execSQL(KeysModel.UNIFIEDKEYVIEW);
@@ -219,7 +147,7 @@ public class KeychainDatabase {
         Preferences.getPreferences(context).setKeySignaturesTableInitialized();
     }
 
-    private void onUpgrade(SupportSQLiteDatabase db, int oldVersion, int newVersion) {
+    private void onUpgrade(SupportSQLiteDatabase db, Context context, int oldVersion, int newVersion) {
         Timber.d("Upgrading db from " + oldVersion + " to " + newVersion);
 
         switch (oldVersion) {
@@ -258,7 +186,7 @@ public class KeychainDatabase {
             case 7:
                 // new table for allowed key ids in API
                 try {
-                    db.execSQL(CREATE_API_APPS_ALLOWED_KEYS);
+                    db.execSQL(ApiAppsModel.CREATE_TABLE);
                 } catch (Exception e) {
                     // never mind, the column probably already existed
                 }
@@ -336,14 +264,6 @@ public class KeychainDatabase {
             case 19:
                 // emergency fix for crashing consolidate
                 db.execSQL("UPDATE keys SET is_secure = 1;");
-            /* TODO actually drop this table. leaving it around for now!
-            case 20:
-                db.execSQL("DROP TABLE api_accounts");
-                if (oldVersion == 20) {
-                    // no need to consolidate
-                    return;
-                }
-            */
             case 20:
                 db.execSQL(
                         "CREATE TABLE IF NOT EXISTS overridden_warnings ("
@@ -365,7 +285,7 @@ public class KeychainDatabase {
                         + "last_updated INTEGER NOT NULL, "
                         + "last_seen_key INTEGER NOT NULL, "
                         + "state INTEGER NOT NULL, "
-                        + "master_key_id INTEGER NULL, "
+                        + "master_key_id INTEGER, "
                         + "PRIMARY KEY(package_name, identifier), "
                         + "FOREIGN KEY(package_name) REFERENCES api_apps(package_name) ON DELETE CASCADE"
                         + ")");
@@ -425,7 +345,7 @@ public class KeychainDatabase {
 
             case 25: {
                 try {
-                    migrateSecretKeysFromDbToLocalStorage(db);
+                    migrateSecretKeysFromDbToLocalStorage(db, context);
                 } catch (IOException e) {
                     throw new IllegalStateException("Error migrating secret keys! This is bad!!");
                 }
@@ -439,15 +359,18 @@ public class KeychainDatabase {
 
             case 28:
                 recreateUnifiedKeyView(db);
+                // drop old table from version 20
+                db.execSQL("DROP TABLE IF EXISTS api_accounts");
         }
     }
 
     private void recreateUnifiedKeyView(SupportSQLiteDatabase db) {
+        // noinspection deprecation
         db.execSQL("DROP VIEW IF EXISTS " + KeysModel.UNIFIEDKEYVIEW_VIEW_NAME);
         db.execSQL(KeysModel.UNIFIEDKEYVIEW);
     }
 
-    private void migrateSecretKeysFromDbToLocalStorage(SupportSQLiteDatabase db) throws IOException {
+    private void migrateSecretKeysFromDbToLocalStorage(SupportSQLiteDatabase db, Context context) throws IOException {
         LocalSecretKeyStorage localSecretKeyStorage = LocalSecretKeyStorage.getInstance(context);
         Cursor cursor = db.query("SELECT master_key_id, key_ring_data FROM keyrings_secret");
         while (cursor.moveToNext()) {
@@ -485,7 +408,7 @@ public class KeychainDatabase {
         }
     }
 
-    public void onDowngrade(SupportSQLiteDatabase db, int oldVersion, int newVersion) {
+    private void onDowngrade() {
         // Downgrade is ok for the debug version, makes it easier to work with branches
         if (Constants.DEBUG) {
             return;

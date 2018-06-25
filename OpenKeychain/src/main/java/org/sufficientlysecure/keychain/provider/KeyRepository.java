@@ -70,7 +70,7 @@ public class KeyRepository extends AbstractDao {
         ContentResolver contentResolver = context.getContentResolver();
         LocalPublicKeyStorage localPublicKeyStorage = LocalPublicKeyStorage.getInstance(context);
         LocalSecretKeyStorage localSecretKeyStorage = LocalSecretKeyStorage.getInstance(context);
-        KeychainDatabase database = new KeychainDatabase(context);
+        KeychainDatabase database = KeychainDatabase.getInstance(context);
         DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
 
         return new KeyRepository(contentResolver, database, databaseNotifyManager, localPublicKeyStorage, localSecretKeyStorage);

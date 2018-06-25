@@ -66,7 +66,7 @@ public class KeyRepositorySaveTest {
         result = KeyWritableRepository.create(RuntimeEnvironment.application).savePublicKeyRing(second);
         Assert.assertFalse("second keyring import should fail", result.success());
 
-        new KeychainDatabase(RuntimeEnvironment.application).clearDatabase();
+        KeychainDatabase.getInstance(RuntimeEnvironment.application).clearDatabase();
 
         // and the other way around
         result = KeyWritableRepository.create(RuntimeEnvironment.application).savePublicKeyRing(second);

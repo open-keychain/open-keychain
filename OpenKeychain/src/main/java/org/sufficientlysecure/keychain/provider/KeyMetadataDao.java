@@ -16,7 +16,7 @@ import org.sufficientlysecure.keychain.model.KeyMetadata;
 
 public class KeyMetadataDao extends AbstractDao {
     public static KeyMetadataDao create(Context context) {
-        KeychainDatabase database = new KeychainDatabase(context);
+        KeychainDatabase database = KeychainDatabase.getInstance(context);
         DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
 
         return new KeyMetadataDao(database, databaseNotifyManager);

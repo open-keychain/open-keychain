@@ -17,7 +17,7 @@ public class CertificationDao {
     private final DatabaseNotifyManager databaseNotifyManager;
 
     public static CertificationDao getInstance(Context context) {
-        KeychainDatabase keychainDatabase = new KeychainDatabase(context);
+        KeychainDatabase keychainDatabase = KeychainDatabase.getInstance(context);
         DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
 
         return new CertificationDao(keychainDatabase.getWritableDatabase(), databaseNotifyManager);

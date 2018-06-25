@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS overridden_warnings (
+    _id INTEGER PRIMARY KEY AUTOINCREMENT,
+    identifier TEXT NOT NULL UNIQUE
+);

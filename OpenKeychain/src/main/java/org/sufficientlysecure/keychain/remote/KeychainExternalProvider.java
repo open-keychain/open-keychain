@@ -135,7 +135,7 @@ public class KeychainExternalProvider extends ContentProvider implements SimpleC
 
         String groupBy = null;
 
-        SupportSQLiteDatabase db = new KeychainDatabase(getContext()).getReadableDatabase();
+        SupportSQLiteDatabase db = KeychainDatabase.getInstance(getContext()).getReadableDatabase();
 
         String callingPackageName = apiPermissionHelper.getCurrentCallingPackage();
 
