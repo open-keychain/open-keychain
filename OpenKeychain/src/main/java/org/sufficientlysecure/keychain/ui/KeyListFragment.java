@@ -24,15 +24,12 @@ import java.util.List;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.annotation.WorkerThread;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.os.CancellationSignal;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -58,7 +55,6 @@ import eu.davidea.flexibleadapter.SelectableAdapter.Mode;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
-import org.sufficientlysecure.keychain.operations.KeySyncOperation;
 import org.sufficientlysecure.keychain.keysync.KeyserverSyncManager;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.KeySyncParcel;
@@ -78,8 +74,8 @@ import org.sufficientlysecure.keychain.ui.adapter.FlexibleKeyItem.FlexibleSectio
 import org.sufficientlysecure.keychain.ui.adapter.FlexibleKeyItemFactory;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
+import org.sufficientlysecure.keychain.ui.keyview.GenericViewModel;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
-import org.sufficientlysecure.keychain.ui.keyview.loader.AsyncTaskLiveData;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FabContainer;
@@ -100,6 +96,9 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
     private ViewAnimator vSearchContainer;
 
     private FloatingActionsMenu mFab;
+
+    private KeyRepository keyRepository;
+    private FlexibleKeyItemFactory flexibleKeyItemFactory;
 
     private final ActionMode.Callback mActionCallback = new ActionMode.Callback() {
         @Override
@@ -244,36 +243,18 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
 
         setLayoutManager(new LinearLayoutManager(activity));
 
-        KeyListViewModel keyListViewModel = ViewModelProviders.of(this).get(KeyListViewModel.class);
-        keyListViewModel.getLiveData(getContext()).observe(this, this::onLoadKeyItems);
+        keyRepository = KeyRepository.create(requireContext());
+        flexibleKeyItemFactory = new FlexibleKeyItemFactory(requireContext().getResources());
+
+        GenericViewModel viewModel = ViewModelProviders.of(this).get(GenericViewModel.class);
+        LiveData<List<FlexibleKeyItem>> liveData = viewModel.getGenericLiveData(requireContext(), this::loadFlexibleKeyItems);
+        liveData.observe(this, this::onLoadKeyItems);
     }
 
-    public static class KeyListViewModel extends ViewModel {
-        LiveData<List<FlexibleKeyItem>> liveData;
-
-        LiveData<List<FlexibleKeyItem>> getLiveData(Context context) {
-            if (liveData == null) {
-                liveData = new KeyListLiveData(context);
-            }
-            return liveData;
-        }
-    }
-
-    public static class KeyListLiveData extends AsyncTaskLiveData<List<FlexibleKeyItem>> {
-        private final KeyRepository keyRepository;
-        private FlexibleKeyItemFactory flexibleKeyItemFactory;
-
-        KeyListLiveData(@NonNull Context context) {
-            super(context, KeyRings.CONTENT_URI);
-            keyRepository = KeyRepository.create(context.getApplicationContext());
-            flexibleKeyItemFactory = new FlexibleKeyItemFactory(context.getResources());
-        }
-
-        @Override
-        protected List<FlexibleKeyItem> asyncLoadData() {
-            List<UnifiedKeyInfo> unifiedKeyInfo = keyRepository.getAllUnifiedKeyInfo();
-            return flexibleKeyItemFactory.mapUnifiedKeyInfoToFlexibleKeyItems(unifiedKeyInfo);
-        }
+    @WorkerThread
+    private List<FlexibleKeyItem> loadFlexibleKeyItems() {
+        List<UnifiedKeyInfo> unifiedKeyInfo = keyRepository.getAllUnifiedKeyInfo();
+        return flexibleKeyItemFactory.mapUnifiedKeyInfoToFlexibleKeyItems(unifiedKeyInfo);
     }
 
     private void onLoadKeyItems(List<FlexibleKeyItem> flexibleKeyItems) {

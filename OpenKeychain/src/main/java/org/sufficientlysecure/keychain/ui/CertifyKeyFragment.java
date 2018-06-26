@@ -20,8 +20,11 @@ package org.sufficientlysecure.keychain.ui;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import android.app.Activity;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -42,9 +45,10 @@ import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
+import org.sufficientlysecure.keychain.ui.keyview.GenericViewModel;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
+import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 
@@ -53,13 +57,20 @@ public class CertifyKeyFragment
 
     private CheckBox mUploadKeyCheckbox;
 
-    private CertifyKeySpinner mCertifyKeySpinner;
+    private KeySpinner mCertifyKeySpinner;
 
     private MultiUserIdsFragment mMultiUserIdsFragment;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        GenericViewModel viewModel = ViewModelProviders.of(this).get(GenericViewModel.class);
+        LiveData<List<UnifiedKeyInfo>> liveData = viewModel.getGenericLiveData(requireContext(), () -> {
+            KeyRepository keyRepository = KeyRepository.create(requireContext());
+            return keyRepository.getAllUnifiedKeyInfoWithSecret();
+        });
+        liveData.observe(this, mCertifyKeySpinner::setData);
 
         if (savedInstanceState == null) {
             // preselect certify key id if given
@@ -89,6 +100,8 @@ public class CertifyKeyFragment
         mUploadKeyCheckbox = view.findViewById(R.id.sign_key_upload_checkbox);
         mMultiUserIdsFragment = (MultiUserIdsFragment)
                 getChildFragmentManager().findFragmentById(R.id.multi_user_ids_fragment);
+
+        mCertifyKeySpinner.setShowNone(R.string.choice_select_cert);
 
         // make certify image gray, like action icons
         ImageView vActionCertifyImage =

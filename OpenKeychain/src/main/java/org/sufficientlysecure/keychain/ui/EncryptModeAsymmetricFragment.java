@@ -22,7 +22,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,12 +39,12 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter.KeyItem;
+import org.sufficientlysecure.keychain.ui.keyview.GenericViewModel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
-import org.sufficientlysecure.keychain.ui.widget.KeySpinner.OnKeyChangedListener;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import timber.log.Timber;
 
@@ -57,9 +60,6 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
     public static final String ARG_ENCRYPTION_KEY_IDS = "encryption_key_ids";
 
 
-    /**
-     * Creates new instance of this fragment
-     */
     public static EncryptModeAsymmetricFragment newInstance(long signatureKey, long[] encryptionKeyIds) {
         EncryptModeAsymmetricFragment frag = new EncryptModeAsymmetricFragment();
 
@@ -75,23 +75,21 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
      * Inflate the layout for this fragment
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_asymmetric_fragment, container, false);
 
-        mSignKeySpinner = view.findViewById(R.id.sign);
+        mSignKeySpinner = view.findViewById(R.id.sign_key_spinner);
         mEncryptKeyView = view.findViewById(R.id.recipient_list);
         mEncryptKeyView.setThreshold(1); // Start working from first character
 
         final ViewAnimator vSignatureIcon = view.findViewById(R.id.result_signature_icon);
-        mSignKeySpinner.setOnKeyChangedListener(new OnKeyChangedListener() {
-            @Override
-            public void onKeyChanged(long masterKeyId) {
-                int child = masterKeyId != Constants.key.none ? 1 : 0;
-                if (vSignatureIcon.getDisplayedChild() != child) {
-                    vSignatureIcon.setDisplayedChild(child);
-                }
+        mSignKeySpinner.setOnKeyChangedListener(masterKeyId -> {
+            int child = masterKeyId != Constants.key.none ? 1 : 0;
+            if (vSignatureIcon.getDisplayedChild() != child) {
+                vSignatureIcon.setDisplayedChild(child);
             }
         });
+        mSignKeySpinner.setShowNone(R.string.cert_none);
 
         final ViewAnimator vEncryptionIcon = view.findViewById(R.id.result_encryption_icon);
         mEncryptKeyView.setTokenListener(new TokenListener<KeyItem>() {
@@ -117,7 +115,12 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mKeyRepository = KeyRepository.create(getContext());
+        mKeyRepository = KeyRepository.create(requireContext());
+
+        GenericViewModel viewModel = ViewModelProviders.of(this).get(GenericViewModel.class);
+        LiveData<List<UnifiedKeyInfo>> liveData = viewModel.getGenericLiveData(requireContext(),
+                mKeyRepository::getAllUnifiedKeyInfoWithSecret);
+        liveData.observe(this, mSignKeySpinner::setData);
 
         // preselect keys given, from state or arguments
         if (savedInstanceState == null) {

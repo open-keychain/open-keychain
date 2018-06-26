@@ -127,7 +127,7 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
         Vector<String> userIds = new Vector<>();
         for (int i = 0; i < getListView().getCount(); ++i) {
             if (getListView().isItemChecked(i)) {
-                userIds.add(mAdapter.getUserId(i));
+                userIds.add(spinnerAdapter.getUserId(i));
             }
         }
 

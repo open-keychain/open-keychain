@@ -95,8 +95,8 @@
                 android:text="@string/label_asymmetric_from"
                 android:paddingRight="8dp"/>
 
-            <org.sufficientlysecure.keychain.ui.widget.SignKeySpinner
-                android:id="@+id/sign"
+            <org.sufficientlysecure.keychain.ui.widget.KeySpinner
+                android:id="@+id/sign_key_spinner"
                 android:minHeight="56dip"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

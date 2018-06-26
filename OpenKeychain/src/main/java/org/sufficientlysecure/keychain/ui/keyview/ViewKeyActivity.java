@@ -268,6 +268,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
         UnifiedKeyInfoViewModel viewModel = ViewModelProviders.of(this).get(UnifiedKeyInfoViewModel.class);
         viewModel.setMasterKeyId(getIntent().getLongExtra(EXTRA_MASTER_KEY_ID, 0L));
+        viewModel.getUnifiedKeyInfoLiveData(getApplicationContext()).observe(this, this::onLoadUnifiedKeyInfo);
 
         if (savedInstanceState == null && intent.hasExtra(EXTRA_DISPLAY_RESULT)) {
             OperationResult result = intent.getParcelableExtra(EXTRA_DISPLAY_RESULT);

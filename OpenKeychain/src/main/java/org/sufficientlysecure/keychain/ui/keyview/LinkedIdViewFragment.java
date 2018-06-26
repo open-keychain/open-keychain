@@ -19,8 +19,11 @@ package org.sufficientlysecure.keychain.ui.keyview;
 
 
 import java.util.Collections;
+import java.util.List;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -52,6 +55,7 @@ import org.sufficientlysecure.keychain.linked.UriAttribute;
 import org.sufficientlysecure.keychain.livedata.CertificationDao;
 import org.sufficientlysecure.keychain.livedata.GenericLiveData;
 import org.sufficientlysecure.keychain.model.Certification.CertDetails;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
@@ -69,7 +73,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.SubtleAttentionSeeker;
 import org.sufficientlysecure.keychain.ui.widget.CertListWidget;
-import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
+import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import timber.log.Timber;
 
 
@@ -118,11 +122,15 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements OnB
 
         isSecret = args.getBoolean(ARG_IS_SECRET);
         masterKeyId = args.getLong(ARG_MASTER_KEY_ID);
+    }
 
-        IdentityDao identityDao = IdentityDao.getInstance(getContext());
-        GenericLiveData<LinkedIdInfo> uriAttributeLiveData =
-                new GenericLiveData<>(getContext(), null, () -> identityDao.getLinkedIdInfo(masterKeyId, lidRank));
-        uriAttributeLiveData.observe(this, this::onLinkedIdInfoLoaded);
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        LinkedIdViewModel viewModel = ViewModelProviders.of(this).get(LinkedIdViewModel.class);
+        viewModel.getLinkedIdInfo(requireContext(), masterKeyId, lidRank).observe(this, this::onLinkedIdInfoLoaded);
+        viewModel.getCertifyingKeys(requireContext()).observe(this, viewHolder.vKeySpinner::setData);
     }
 
     private void onLinkedIdInfoLoaded(LinkedIdInfo linkedIdInfo) {
@@ -191,7 +199,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements OnB
 
         private ViewAnimator vButtonSwitcher;
         private CertListWidget vLinkedCerts;
-        private CertifyKeySpinner vKeySpinner;
+        private KeySpinner vKeySpinner;
         private final View vButtonVerify;
         private final View vButtonRetry;
         private final View vButtonConfirm;
@@ -236,6 +244,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements OnB
                     if (!isSecret) {
                         showButton(2);
                         if (!vKeySpinner.isSingleEntry()) {
+                            vKeySpinner.setShowNone(R.string.choice_select_cert);
                             vKeySpinnerContainer.setVisibility(View.VISIBLE);
                         }
                     } else {
@@ -351,10 +360,8 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements OnB
         viewHolder.vButtonRetry.setOnClickListener(v -> verifyResource());
         viewHolder.vButtonConfirm.setOnClickListener(v -> initiateCertifying());
 
-        CertificationDao certificationDao = CertificationDao.getInstance(context);
-        LiveData<CertDetails> certDetailsLiveData = new GenericLiveData<>(
-                context, null, () -> certificationDao.getVerifyingCertDetails(masterKeyId, lidRank));
-        certDetailsLiveData.observe(this, this::onLoadCertDetails);
+        LinkedIdViewModel viewModel = ViewModelProviders.of(this).get(LinkedIdViewModel.class);
+        viewModel.getCertDetails(context, masterKeyId, lidRank).observe(this, this::onLoadCertDetails);
 
         return root;
     }
@@ -481,6 +488,40 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements OnB
     @Override
     public boolean onCryptoSetProgress(String msg, int progress, int max) {
         return true;
+    }
+
+    public static class LinkedIdViewModel extends ViewModel {
+        LiveData<List<UnifiedKeyInfo>> certifyingKeysLiveData;
+        LiveData<CertDetails> certDetailsLiveData;
+        LiveData<LinkedIdInfo> linkedIfInfoLiveData;
+
+        LiveData<List<UnifiedKeyInfo>> getCertifyingKeys(Context context) {
+            if (certifyingKeysLiveData == null) {
+                certifyingKeysLiveData = new GenericLiveData<>(context, null, () -> {
+                    KeyRepository keyRepository = KeyRepository.create(context);
+                    return keyRepository.getAllUnifiedKeyInfoWithSecret();
+                });
+            }
+            return certifyingKeysLiveData;
+        }
+
+        LiveData<CertDetails> getCertDetails(Context context, long masterKeyId, int lidRank) {
+            if (certDetailsLiveData == null) {
+                CertificationDao certificationDao = CertificationDao.getInstance(context);
+                certDetailsLiveData = new GenericLiveData<>(context, null,
+                        () -> certificationDao.getVerifyingCertDetails(masterKeyId, lidRank));
+            }
+            return certDetailsLiveData;
+        }
+
+        public LiveData<LinkedIdInfo> getLinkedIdInfo(Context context, long masterKeyId, int lidRank) {
+            if (linkedIfInfoLiveData == null) {
+                IdentityDao identityDao = IdentityDao.getInstance(context);
+                linkedIfInfoLiveData = new GenericLiveData<>(context, null,
+                        () -> identityDao.getLinkedIdInfo(masterKeyId, lidRank));
+            }
+            return linkedIfInfoLiveData;
+        }
     }
 
 }

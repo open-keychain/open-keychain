@@ -25,6 +25,7 @@ import java.util.List;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
+import android.support.annotation.WorkerThread;
 
 import com.squareup.sqldelight.SqlDelightQuery;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
@@ -43,6 +44,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import timber.log.Timber;
 
 
+@WorkerThread
 public class KeyRepository extends AbstractDao {
     final ContentResolver contentResolver;
     final LocalPublicKeyStorage mLocalPublicKeyStorage;
