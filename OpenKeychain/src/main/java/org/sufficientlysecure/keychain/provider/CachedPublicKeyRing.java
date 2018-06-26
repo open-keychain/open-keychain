@@ -18,16 +18,11 @@
 package org.sufficientlysecure.keychain.provider;
 
 
-import android.net.Uri;
-
-import org.sufficientlysecure.keychain.model.CustomColumnAdapters;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import timber.log.Timber;
 
 
 /** This implementation of KeyRing provides a cached view of PublicKeyRing
@@ -47,234 +42,64 @@ import timber.log.Timber;
  *
  */
 public class CachedPublicKeyRing extends KeyRing {
+    private UnifiedKeyInfo unifiedKeyInfo;
 
-    final KeyRepository mKeyRepository;
-    final Uri mUri;
-
-    public CachedPublicKeyRing(KeyRepository keyRepository, Uri uri) {
-        mKeyRepository = keyRepository;
-        mUri = uri;
+    public CachedPublicKeyRing(UnifiedKeyInfo unifiedKeyInfo) {
+        this.unifiedKeyInfo = unifiedKeyInfo;
     }
 
     @Override
-    public long getMasterKeyId() throws PgpKeyNotFoundException {
-        try {
-            Object data = mKeyRepository.getGenericData(mUri,
-                    KeychainContract.KeyRings.MASTER_KEY_ID, KeyRepository.FIELD_TYPE_INTEGER);
-            return (Long) data;
-        } catch (KeyWritableRepository.NotFoundException e) {
-            throw new PgpKeyNotFoundException(e);
-        }
+    public long getMasterKeyId() {
+        return unifiedKeyInfo.master_key_id();
     }
 
-    /**
-     * Find the master key id related to a given query. The id will either be extracted from the
-     * query, which should work for all specific /key_rings/ queries, or will be queried if it can't.
-     */
-    public long extractOrGetMasterKeyId() throws PgpKeyNotFoundException {
-        // try extracting from the uri first
-        String firstSegment = mUri.getPathSegments().get(1);
-        if (!"find".equals(firstSegment)) try {
-            return Long.parseLong(firstSegment);
-        } catch (NumberFormatException e) {
-            // didn't work? oh well.
-            Timber.d("Couldn't get masterKeyId from URI, querying...");
-        }
-        return getMasterKeyId();
+    public byte[] getFingerprint() {
+        return unifiedKeyInfo.fingerprint();
     }
 
-    public byte[] getFingerprint() throws PgpKeyNotFoundException {
-        try {
-            Object data = mKeyRepository.getGenericData(mUri,
-                    KeychainContract.KeyRings.FINGERPRINT, KeyRepository.FIELD_TYPE_BLOB);
-            return (byte[]) data;
-        } catch (KeyWritableRepository.NotFoundException e) {
-            throw new PgpKeyNotFoundException(e);
-        }
-    }
-
-    public long getCreationTime() throws PgpKeyNotFoundException {
-        try {
-            Object data = mKeyRepository.getGenericData(mUri,
-                    KeychainContract.KeyRings.CREATION, KeyRepository.FIELD_TYPE_INTEGER);
-            return (long) data;
-        } catch (KeyWritableRepository.NotFoundException e) {
-            throw new PgpKeyNotFoundException(e);
-        }
+    public long getCreationTime() {
+        return unifiedKeyInfo.creation();
     }
 
     @Override
-    public String getPrimaryUserId() throws PgpKeyNotFoundException {
-        try {
-            Object data = mKeyRepository.getGenericData(mUri,
-                    KeychainContract.KeyRings.USER_ID,
-                    KeyRepository.FIELD_TYPE_STRING);
-            return (String) data;
-        } catch(KeyWritableRepository.NotFoundException e) {
-            throw new PgpKeyNotFoundException(e);
-        }
+    public String getPrimaryUserId() {
+        return unifiedKeyInfo.user_id();
     }
 
-    public String getPrimaryUserIdWithFallback() throws PgpKeyNotFoundException {
+    public String getPrimaryUserIdWithFallback() {
         return getPrimaryUserId();
     }
 
-    public String getName() throws PgpKeyNotFoundException {
-        try {
-            Object data = mKeyRepository.getGenericData(mUri,
-                    KeyRings.NAME,
-                    KeyRepository.FIELD_TYPE_STRING);
-            return (String) data;
-        } catch(KeyWritableRepository.NotFoundException e) {
-            throw new PgpKeyNotFoundException(e);
-        }
-    }
-
-    public String getEmail() throws PgpKeyNotFoundException {
-        try {
-            Object data = mKeyRepository.getGenericData(mUri,
-                    KeyRings.EMAIL,
-                    KeyRepository.FIELD_TYPE_STRING);
-            return (String) data;
-        } catch(KeyWritableRepository.NotFoundException e) {
-            throw new PgpKeyNotFoundException(e);
-        }
-    }
-
-
-    public String getComment() throws PgpKeyNotFoundException {
-        try {
-            Object data = mKeyRepository.getGenericData(mUri,
-                    KeyRings.COMMENT,
-                    KeyRepository.FIELD_TYPE_STRING);
-            return (String) data;
-        } catch(KeyWritableRepository.NotFoundException e) {
-            throw new PgpKeyNotFoundException(e);
-        }
+    @Override
+    public boolean isRevoked() {
+        return unifiedKeyInfo.is_revoked();
     }
 
     @Override
-    public boolean isRevoked() throws PgpKeyNotFoundException {
-        try {
-            Object data = mKeyRepository.getGenericData(mUri,
-                    KeychainContract.KeyRings.IS_REVOKED,
-                    KeyRepository.FIELD_TYPE_INTEGER);
-            return (Long) data > 0;
-        } catch(KeyWritableRepository.NotFoundException e) {
-            throw new PgpKeyNotFoundException(e);
-        }
+    public boolean canCertify() {
+        return unifiedKeyInfo.can_certify();
     }
 
     @Override
-    public boolean canCertify() throws PgpKeyNotFoundException {
-        try {
-            Object data = mKeyRepository.getGenericData(mUri,
-                    KeychainContract.KeyRings.HAS_CERTIFY_SECRET,
-                    KeyRepository.FIELD_TYPE_NULL);
-            return !((Boolean) data);
-        } catch(KeyWritableRepository.NotFoundException e) {
-            throw new PgpKeyNotFoundException(e);
-        }
+    public long getEncryptId() {
+        return unifiedKeyInfo.has_encrypt_key_int();
     }
 
     @Override
-    public long getEncryptId() throws PgpKeyNotFoundException {
-        try {
-            Object data = mKeyRepository.getGenericData(mUri,
-                    KeyRings.HAS_ENCRYPT,
-                    KeyRepository.FIELD_TYPE_INTEGER);
-            return (Long) data;
-        } catch(KeyWritableRepository.NotFoundException e) {
-            throw new PgpKeyNotFoundException(e);
-        }
+    public boolean hasEncrypt() {
+        return unifiedKeyInfo.has_encrypt_key();
+    }
+
+    public long getAuthenticationId() {
+        return unifiedKeyInfo.has_auth_key_int();
     }
 
     @Override
-    public boolean hasEncrypt() throws PgpKeyNotFoundException {
-        return getEncryptId() != 0;
+    public VerificationStatus getVerified() {
+        return unifiedKeyInfo.verified();
     }
 
-    /** Returns the key id which should be used for signing.
-     *
-     * This method returns keys which are actually available (ie. secret available, and not stripped,
-     * revoked, or expired), hence only works on keyrings where a secret key is available!
-     *
-     */
-    public long getSecretSignId() throws PgpKeyNotFoundException {
-        try {
-            Object data = mKeyRepository.getGenericData(mUri,
-                    KeyRings.HAS_SIGN_SECRET,
-                    KeyRepository.FIELD_TYPE_INTEGER);
-            return (Long) data;
-        } catch(KeyWritableRepository.NotFoundException e) {
-            throw new PgpKeyNotFoundException(e);
-        }
-    }
-
-    /** Returns the key id which should be used for authentication.
-     *
-     * This method returns keys which are actually available (ie. secret available, and not stripped,
-     * revoked, or expired), hence only works on keyrings where a secret key is available!
-     *
-     */
-    public long getSecretAuthenticationId() throws PgpKeyNotFoundException {
-        try {
-            Object data = mKeyRepository.getGenericData(mUri,
-                    KeyRings.HAS_AUTHENTICATE_SECRET,
-                    KeyRepository.FIELD_TYPE_INTEGER);
-            return (Long) data;
-        } catch(KeyWritableRepository.NotFoundException e) {
-            throw new PgpKeyNotFoundException(e);
-        }
-    }
-
-    public long getAuthenticationId() throws PgpKeyNotFoundException {
-        try {
-            Object data = mKeyRepository.getGenericData(mUri,
-                    KeyRings.HAS_AUTHENTICATE,
-                    KeyRepository.FIELD_TYPE_INTEGER);
-            return (Long) data;
-        } catch(KeyWritableRepository.NotFoundException e) {
-            throw new PgpKeyNotFoundException(e);
-        }
-    }
-
-    @Override
-    public VerificationStatus getVerified() throws PgpKeyNotFoundException {
-        try {
-            Object data = mKeyRepository.getGenericData(mUri,
-                    KeychainContract.KeyRings.VERIFIED,
-                    KeyRepository.FIELD_TYPE_INTEGER);
-            return CustomColumnAdapters.VERIFICATON_STATUS_ADAPTER.decode((Long) data);
-        } catch(KeyWritableRepository.NotFoundException e) {
-            throw new PgpKeyNotFoundException(e);
-        }
-    }
-
-    public boolean hasAnySecret() throws PgpKeyNotFoundException {
-        try {
-            Object data = mKeyRepository.getGenericData(mUri,
-                    KeychainContract.KeyRings.HAS_ANY_SECRET,
-                    KeyRepository.FIELD_TYPE_INTEGER);
-            return (Long) data > 0;
-        } catch(KeyWritableRepository.NotFoundException e) {
-            throw new PgpKeyNotFoundException(e);
-        }
-    }
-
-    public SecretKeyType getSecretKeyType(long keyId) throws NotFoundException {
-        SecretKeyType secretKeyType = mKeyRepository.getSecretKeyType(keyId);
-        if (secretKeyType == null) {
-            throw new NotFoundException();
-        }
-        return secretKeyType;
-    }
-
-    public byte[] getEncoded() throws PgpKeyNotFoundException {
-        try {
-            return mKeyRepository.loadPublicKeyRingData(getMasterKeyId());
-        } catch(KeyWritableRepository.NotFoundException e) {
-            throw new PgpKeyNotFoundException(e);
-        }
+    public boolean hasAnySecret() {
+        return unifiedKeyInfo.has_any_secret();
     }
 }

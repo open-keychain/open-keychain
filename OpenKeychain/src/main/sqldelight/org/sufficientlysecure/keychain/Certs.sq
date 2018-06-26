@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS certs(
     rank INTEGER NOT NULL,
     key_id_certifier INTEGER NOT NULL,
     type INTEGER NOT NULL,
-    verified INTEGER AS VerificationStatus NOT NULL,
+    verified INTEGER AS VerificationStatus NOT NULL DEFAULT 0,
     creation INTEGER NOT NULL,
     data BLOB NOT NULL,
     PRIMARY KEY(master_key_id, rank, key_id_certifier),

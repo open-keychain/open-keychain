@@ -55,6 +55,7 @@ import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
@@ -672,7 +673,7 @@ public class PgpKeyOperationTest {
             resetBuilder();
             builder.addRevokeSubkey(123L);
 
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), VerificationStatus.UNVERIFIED);
             UncachedKeyRing otherModified = op.modifySecretKeyRing(secretRing, cryptoInput, builder.build()).getRing();
 
             Assert.assertNull("revoking a nonexistent subkey should fail", otherModified);
@@ -869,7 +870,7 @@ public class PgpKeyOperationTest {
             securityTokenBuilder.addOrReplaceSubkeyChange(SubkeyChange.createMoveToSecurityTokenChange(keyId));
 
             CanonicalizedSecretKeyRing secretRing =
-                    new CanonicalizedSecretKeyRing(ringSecurityToken.getEncoded(), 0);
+                    new CanonicalizedSecretKeyRing(ringSecurityToken.getEncoded(), VerificationStatus.UNVERIFIED);
             PgpKeyOperation op = new PgpKeyOperation(null);
             PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, securityTokenBuilder.build());
             Assert.assertTrue("moveKeyToSecurityToken operation should be pending", result.isPending());
@@ -904,7 +905,7 @@ public class PgpKeyOperationTest {
             securityTokenBuilder.addOrReplaceSubkeyChange(SubkeyChange.createRecertifyChange(keyId, true));
 
             CanonicalizedSecretKeyRing secretRing =
-                    new CanonicalizedSecretKeyRing(modified.getEncoded(), 0);
+                    new CanonicalizedSecretKeyRing(modified.getEncoded(), VerificationStatus.UNVERIFIED);
             PgpKeyOperation op = new PgpKeyOperation(null);
             PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, securityTokenBuilder.build());
             Assert.assertTrue("moveKeyToSecurityToken operation should be pending", result.isPending());
@@ -1187,7 +1188,7 @@ public class PgpKeyOperationTest {
 
             // we should still be able to modify it (and change its passphrase) without errors
             PgpKeyOperation op = new PgpKeyOperation(null);
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(modified.getEncoded(), 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(modified.getEncoded(), VerificationStatus.UNVERIFIED);
             PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, otherCryptoInput, builder.build());
             Assert.assertTrue("key modification must succeed", result.success());
             Assert.assertFalse("log must not contain a warning",
@@ -1201,7 +1202,7 @@ public class PgpKeyOperationTest {
             modified = KeyringTestingHelper.injectPacket(modified, sKeyWithPassphrase.buf, sKeyWithPassphrase.position);
 
             PgpKeyOperation op = new PgpKeyOperation(null);
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(modified.getEncoded(), 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(modified.getEncoded(), VerificationStatus.UNVERIFIED);
             PgpEditKeyResult result = op.modifySecretKeyRing(secretRing,
                     CryptoInputParcel.createCryptoInputParcel(otherPassphrase2), builder.build());
             Assert.assertTrue("key modification must succeed", result.success());
@@ -1214,7 +1215,7 @@ public class PgpKeyOperationTest {
     @Test
     public void testRestricted() throws Exception {
 
-        CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), 0);
+        CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), VerificationStatus.UNVERIFIED);
 
         builder.addUserId("discord");
         PgpKeyOperation op = new PgpKeyOperation(null);
@@ -1250,7 +1251,7 @@ public class PgpKeyOperationTest {
         try {
 
             Assert.assertTrue("modified keyring must be secret", ring.isSecret());
-            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), 0);
+            CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), VerificationStatus.UNVERIFIED);
 
             PgpKeyOperation op = new PgpKeyOperation(null);
             PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcel);
@@ -1323,7 +1324,7 @@ public class PgpKeyOperationTest {
                                      SaveKeyringParcel parcel, CryptoInputParcel cryptoInput, LogType expected)
             throws Exception {
 
-        CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), 0);
+        CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), VerificationStatus.UNVERIFIED);
         PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcel);
 
         Assert.assertFalse(reason, result.success());
@@ -1337,7 +1338,7 @@ public class PgpKeyOperationTest {
                                      LogType expected)
             throws Exception {
 
-        CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), 0);
+        CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), VerificationStatus.UNVERIFIED);
         PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcel);
 
         Assert.assertFalse(reason, result.success());

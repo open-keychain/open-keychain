@@ -123,7 +123,7 @@ class RequestKeyPermissionPresenter {
                 }
                 CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(masterKeyId);
 
-                SecretKeyType secretKeyType = cachedPublicKeyRing.getSecretKeyType(candidateSubKeyId);
+                SecretKeyType secretKeyType = keyRepository.getSecretKeyType(candidateSubKeyId);
                 if (secretKeyType.isUsable()) {
                     return cachedPublicKeyRing;
                 }

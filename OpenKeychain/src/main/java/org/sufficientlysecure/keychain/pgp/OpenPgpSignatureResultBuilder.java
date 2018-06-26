@@ -124,7 +124,7 @@ public class OpenPgpSignatureResultBuilder {
         } catch (PgpKeyNotFoundException e) {
             Timber.d("No primary user id in keyring with master key id " + signingRing.getMasterKeyId());
         }
-        setSignatureKeyCertified(signingRing.getVerified() != VerificationStatus.UNVERIFIED);
+        setSignatureKeyCertified(signingRing.getVerified() == VerificationStatus.VERIFIED_SECRET);
 
         List<String> allUserIds = signingRing.getUnorderedUserIds();
         List<String> confirmedUserIds = mKeyRepository.getConfirmedUserIds(signingRing.getMasterKeyId());

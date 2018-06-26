@@ -41,6 +41,15 @@ class AbstractDao {
         return result;
     }
 
+    <T> T mapSingleRow(SupportSQLiteQuery query, Mapper<T> mapper) {
+        try (Cursor cursor = getReadableDb().query(query)) {
+            if (cursor.moveToNext()) {
+                return mapper.map(cursor);
+            }
+        }
+        return null;
+    }
+
     interface Mapper<T> {
         T map(Cursor cursor);
     }

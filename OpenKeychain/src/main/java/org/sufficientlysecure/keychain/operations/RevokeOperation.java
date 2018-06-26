@@ -21,12 +21,11 @@ package org.sufficientlysecure.keychain.operations;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.RevokeResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.RevokeKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -56,18 +55,21 @@ public class RevokeOperation extends BaseReadWriteOperation<RevokeKeyringParcel>
                 KeyFormattingUtils.beautifyKeyId(masterKeyId));
 
         try {
-
-            CachedPublicKeyRing keyRing = mKeyRepository.getCachedPublicKeyRing(masterKeyId);
+            UnifiedKeyInfo keyInfo = mKeyRepository.getUnifiedKeyInfo(masterKeyId);
+            if (keyInfo == null) {
+                log.add(OperationResult.LogType.MSG_REVOKE_ERROR_KEY_FAIL, 1);
+                return new RevokeResult(RevokeResult.RESULT_ERROR, log, masterKeyId);
+            }
 
             // check if this is a master secret key we can work with
-            switch (keyRing.getSecretKeyType(masterKeyId)) {
+            switch (mKeyRepository.getSecretKeyType(masterKeyId)) {
                 case GNU_DUMMY:
                     log.add(OperationResult.LogType.MSG_EK_ERROR_DUMMY, 1);
                     return new RevokeResult(RevokeResult.RESULT_ERROR, log, masterKeyId);
             }
 
             SaveKeyringParcel.Builder saveKeyringParcel =
-                    SaveKeyringParcel.buildChangeKeyringParcel(masterKeyId, keyRing.getFingerprint());
+                    SaveKeyringParcel.buildChangeKeyringParcel(masterKeyId, keyInfo.fingerprint());
 
             // all revoke operations are made atomic as of now
             saveKeyringParcel.setUpdateOptions(revokeKeyringParcel.isShouldUpload(), true,
@@ -93,7 +95,7 @@ public class RevokeOperation extends BaseReadWriteOperation<RevokeKeyringParcel>
                 return new RevokeResult(RevokeResult.RESULT_ERROR, log, masterKeyId);
             }
 
-        } catch (PgpKeyNotFoundException | KeyWritableRepository.NotFoundException e) {
+        } catch (KeyWritableRepository.NotFoundException e) {
             Timber.e(e, "could not find key to revoke");
             log.add(OperationResult.LogType.MSG_REVOKE_ERROR_KEY_FAIL, 1);
             return new RevokeResult(RevokeResult.RESULT_ERROR, log, masterKeyId);

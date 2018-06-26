@@ -483,8 +483,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     private boolean keyHasPassphrase() {
         try {
             long masterKeyId = unifiedKeyInfo.master_key_id();
-            SecretKeyType secretKeyType =
-                    keyRepository.getCachedPublicKeyRing(masterKeyId).getSecretKeyType(masterKeyId);
+            SecretKeyType secretKeyType = keyRepository.getSecretKeyType(masterKeyId);
             switch (secretKeyType) {
                 // all of these make no sense to ask
                 case PASSPHRASE_EMPTY:

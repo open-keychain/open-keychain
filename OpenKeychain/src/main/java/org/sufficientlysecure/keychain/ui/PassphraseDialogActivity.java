@@ -61,7 +61,6 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -115,10 +114,9 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
         // handle empty passphrases by directly returning an empty crypto input parcel
         try {
-            CachedPublicKeyRing pubRing =
-                    KeyRepository.create(this).getCachedPublicKeyRing(requiredInput.getMasterKeyId());
+            KeyRepository keyRepository = KeyRepository.create(this);
             // use empty passphrase for empty passphrase
-            if (pubRing.getSecretKeyType(requiredInput.getSubKeyId()) == SecretKeyType.PASSPHRASE_EMPTY) {
+            if (keyRepository.getSecretKeyType(requiredInput.getSubKeyId()) == SecretKeyType.PASSPHRASE_EMPTY) {
                 // also return passphrase back to activity
                 Intent returnIntent = new Intent();
                 cryptoInputParcel = cryptoInputParcel.withPassphrase(new Passphrase(""), requiredInput.getSubKeyId());
@@ -299,7 +297,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                             userId = getString(R.string.user_id_no_name);
                         }
 
-                        keyType = cachedPublicKeyRing.getSecretKeyType(subKeyId);
+                        keyType = keyRepository.getSecretKeyType(subKeyId);
                         switch (keyType) {
                             case PASSPHRASE:
                                 message = getString(R.string.passphrase_for, userId);
@@ -316,7 +314,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
                                 throw new AssertionError("Unhandled SecretKeyType (should not happen)");
                         }
                     }
-                } catch (PgpKeyNotFoundException | KeyRepository.NotFoundException e) {
+                } catch (KeyRepository.NotFoundException e) {
                     alert.setTitle(R.string.title_key_not_found);
                     alert.setMessage(getString(R.string.key_not_found, mRequiredInput.getSubKeyId()));
                     alert.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {

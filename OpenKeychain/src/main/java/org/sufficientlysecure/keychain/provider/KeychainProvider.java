@@ -61,8 +61,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
     private static final int KEY_RING_PUBLIC = 203;
     private static final int KEY_RING_CERTS = 205;
 
-    private static final int KEY_RINGS_FIND_BY_SUBKEY = 401;
-
     private static final int KEY_SIGNATURES = 700;
 
     protected UriMatcher mUriMatcher;
@@ -87,16 +85,6 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
         matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS
                         + "/" + KeychainContract.PATH_UNIFIED,
                 KEY_RINGS_UNIFIED);
-
-        /*
-         * find by criteria other than master key id
-         *
-         * key_rings/find/subkey/_
-         *
-         */
-        matcher.addURI(authority, KeychainContract.BASE_KEY_RINGS + "/"
-                + KeychainContract.PATH_FIND + "/" + KeychainContract.PATH_BY_SUBKEY + "/*",
-                KEY_RINGS_FIND_BY_SUBKEY);
 
         /*
          * list key_ring specifics
@@ -174,8 +162,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
 
         switch (match) {
             case KEY_RING_UNIFIED:
-            case KEY_RINGS_UNIFIED:
-            case KEY_RINGS_FIND_BY_SUBKEY: {
+            case KEY_RINGS_UNIFIED: {
                 HashMap<String, String> projectionMap = new HashMap<>();
                 projectionMap.put(KeyRings._ID, Tables.KEYS + ".oid AS _id");
                 projectionMap.put(KeyRings.MASTER_KEY_ID, Tables.KEYS + "." + Keys.MASTER_KEY_ID);
@@ -318,28 +305,8 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
                 // in case there are multiple verifying certificates
                 groupBy = Tables.KEYS + "." + Keys.MASTER_KEY_ID;
 
-                switch(match) {
-                    case KEY_RING_UNIFIED: {
-                        qb.appendWhere(" AND " + Tables.KEYS + "." + Keys.MASTER_KEY_ID + " = ");
-                        qb.appendWhereEscapeString(uri.getPathSegments().get(1));
-                        break;
-                    }
-                    case KEY_RINGS_FIND_BY_SUBKEY: {
-                        try {
-                            String subkey = Long.valueOf(uri.getLastPathSegment()).toString();
-                            qb.appendWhere(" AND EXISTS ("
-                                    + " SELECT 1 FROM " + Tables.KEYS + " AS tmp"
-                                    + " WHERE tmp." + UserPackets.MASTER_KEY_ID
-                                    + " = " + Tables.KEYS + "." + Keys.MASTER_KEY_ID
-                                    + " AND tmp." + Keys.KEY_ID + " = " + subkey + ""
-                                    + ")");
-                        } catch(NumberFormatException e) {
-                            Timber.e(e, "Malformed find by subkey query!");
-                            qb.appendWhere(" AND 0");
-                        }
-                        break;
-                    }
-                }
+                qb.appendWhere(" AND " + Tables.KEYS + "." + Keys.MASTER_KEY_ID + " = ");
+                qb.appendWhereEscapeString(uri.getPathSegments().get(1));
 
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = Tables.USER_PACKETS + "." + UserPackets.USER_ID + " ASC";

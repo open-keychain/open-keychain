@@ -71,7 +71,6 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem.EncryptionAlgorithmPr
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.MissingMdc;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -633,7 +632,6 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     break;
                 }
 
-                CachedPublicKeyRing cachedPublicKeyRing;
                 try {
                     // get actual keyring object based on master key id
                     Long masterKeyId = mKeyRepository.getMasterKeyIdBySubkeyId(subKeyId);
@@ -641,7 +639,6 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                         log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
                         continue;
                     }
-                    cachedPublicKeyRing = mKeyRepository.getCachedPublicKeyRing(masterKeyId);
 
                     // allow only specific keys for decryption?
                     if (input.getAllowedKeyIds() != null) {
@@ -658,7 +655,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                         }
                     }
 
-                    SecretKeyType secretKeyType = cachedPublicKeyRing.getSecretKeyType(subKeyId);
+                    SecretKeyType secretKeyType = mKeyRepository.getSecretKeyType(subKeyId);
                     if (!secretKeyType.isUsable()) {
                         decryptionKey = null;
                         log.add(LogType.MSG_DC_ASKIP_UNAVAILABLE, indent + 1);

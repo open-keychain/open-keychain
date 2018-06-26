@@ -36,9 +36,9 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -75,7 +75,7 @@ public class CertifyKeyFragment
                     if (key.canCertify()) {
                         mCertifyKeySpinner.setPreSelectedKeyId(certifyKeyId);
                     }
-                } catch (PgpKeyNotFoundException e) {
+                } catch (NotFoundException e) {
                     Timber.e(e, "certify certify check failed");
                 }
             }

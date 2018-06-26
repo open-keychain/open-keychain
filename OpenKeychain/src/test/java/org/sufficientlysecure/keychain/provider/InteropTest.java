@@ -27,8 +27,6 @@ import java.net.URL;
 import java.security.Security;
 import java.util.ArrayList;
 
-import android.net.Uri;
-
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -45,14 +43,9 @@ import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.InputData;
@@ -62,7 +55,7 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 public class InteropTest {
 
     @BeforeClass
-    public static void setUpOnce() throws Exception {
+    public static void setUpOnce() {
         Security.insertProviderAt(new BouncyCastleProvider(), 1);
         ShadowLog.stream = System.out;
     }
@@ -104,11 +97,11 @@ public class InteropTest {
         }
     }
 
-    private static final String asString(File json) throws Exception {
+    private static String asString(File json) throws Exception {
         return new String(asBytes(json), "utf-8");
     }
 
-    private static final byte[] asBytes(File f) throws Exception {
+    private static byte[] asBytes(File f) throws Exception {
         FileInputStream fin = null;
         try {
             fin = new FileInputStream(f);
@@ -123,16 +116,14 @@ public class InteropTest {
     private void runDecryptTest(JSONObject config, File base) throws Exception {
         File root = base.getParentFile();
         String baseName = getBaseName(base);
-        CanonicalizedPublicKeyRing verify;
+        UncachedKeyRing verify;
         if (config.has("verifyKey")) {
-            verify = (CanonicalizedPublicKeyRing)
-                    readRingFromFile(new File(root, config.getString("verifyKey")));
+            verify = readUncachedRingFromFile(new File(root, config.getString("verifyKey")));
         } else {
             verify = null;
         }
 
-        CanonicalizedSecretKeyRing decrypt = (CanonicalizedSecretKeyRing)
-                readRingFromFile(new File(root, config.getString("decryptKey")));
+        UncachedKeyRing decrypt = readUncachedRingFromFile(new File(root, config.getString("decryptKey")));
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ByteArrayInputStream in =
@@ -154,9 +145,10 @@ public class InteropTest {
         if (verify != null) {
             // Certain keys are too short, so we check appropriately.
             int code = result.getSignatureResult().getResult();
-            Assert.assertTrue(base + ": should have a signature",
-                    (code == OpenPgpSignatureResult.RESULT_INVALID_KEY_INSECURE) ||
-                    (code == OpenPgpSignatureResult.RESULT_VALID_KEY_UNCONFIRMED));
+            Assert.assertTrue(base + ": should have a signature (code: " + code + ")",
+                    code == OpenPgpSignatureResult.RESULT_INVALID_KEY_INSECURE ||
+                            code == OpenPgpSignatureResult.RESULT_VALID_KEY_UNCONFIRMED
+                            || code == OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED);
         }
         OpenPgpMetadata metadata = result.getDecryptionMetadata();
         Assert.assertEquals(base + ": filesize must be correct",
@@ -168,11 +160,10 @@ public class InteropTest {
     private void runImportTest(JSONObject config, File base) throws Exception {
         File root = base.getParentFile();
         String baseName = getBaseName(base);
-        CanonicalizedKeyRing pkr =
-                readRingFromFile(new File(root, baseName + ".asc"));
+        CanonicalizedKeyRing pkr = readRingFromFile(new File(root, baseName + ".asc"));
 
         // Check we have the correct uids.
-        ArrayList<String> expected = new ArrayList<String>();
+        ArrayList<String> expected = new ArrayList<>();
         JSONArray uids = config.getJSONArray("expected_uids");
         for (int i = 0; i < uids.length(); i++) {
             expected.add(uids.getString(i));
@@ -188,7 +179,7 @@ public class InteropTest {
                 expected.add(subkeys.getJSONObject(i).getString("expected_fingerprint"));
             }
         }
-        ArrayList<String> actual = new ArrayList<String>();
+        ArrayList<String> actual = new ArrayList<>();
         for (CanonicalizedPublicKey pk: pkr.publicKeyIterator()) {
             if (pk.isValid()) {
                 actual.add(KeyFormattingUtils.convertFingerprintToHex(pk.getFingerprint()));
@@ -204,7 +195,7 @@ public class InteropTest {
         }
     }
 
-    UncachedKeyRing readUncachedRingFromFile(File path) throws Exception {
+    private UncachedKeyRing readUncachedRingFromFile(File path) throws Exception {
         BufferedInputStream bin = null;
         try {
             bin = new BufferedInputStream(new FileInputStream(path));
@@ -214,87 +205,40 @@ public class InteropTest {
         }
     }
 
-    CanonicalizedKeyRing readRingFromFile(File path) throws Exception {
+    private CanonicalizedKeyRing readRingFromFile(File path) throws Exception {
         UncachedKeyRing ukr = readUncachedRingFromFile(path);
         OperationLog log = new OperationLog();
         return ukr.canonicalize(log, 0);
     }
 
-    private  static final void close(Closeable v) {
+    private  static void close(Closeable v) {
         if (v != null) {
             try {
                 v.close();
-            } catch (Throwable any) {
+            } catch (Throwable ignored) {
             }
         }
     }
 
-    private static final String getBaseName(File base) {
+    private static String getBaseName(File base) {
         String name = base.getName();
         return name.substring(0, name.length() - ".json".length());
     }
 
     private PgpDecryptVerifyOperation makeOperation(final String msg, final Passphrase passphrase,
-            final CanonicalizedSecretKeyRing decrypt, final CanonicalizedPublicKeyRing verify)
-            throws Exception {
+            UncachedKeyRing decrypt, UncachedKeyRing verify) {
+        KeyWritableRepository keyRepository = KeyWritableRepository.create(RuntimeEnvironment.application);
 
-        final long decryptId = decrypt.getEncryptId();
-        final Uri decryptUri = KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(decryptId);
-        final Uri verifyUri =  verify != null ?
-                KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(verify.getMasterKeyId()) : null;
+        Assert.assertTrue(keyRepository.saveSecretKeyRing(decrypt).success());
+        if (verify != null) {
+            Assert.assertTrue(keyRepository.savePublicKeyRing(verify).success());
+        }
 
-        KeyWritableRepository helper = new KeyWritableRepository(RuntimeEnvironment.application,
-                KeychainDatabase.getInstance(RuntimeEnvironment.application),
-                LocalPublicKeyStorage.getInstance(RuntimeEnvironment.application),
-                LocalSecretKeyStorage.getInstance(RuntimeEnvironment.application),
-                DatabaseNotifyManager.create(RuntimeEnvironment.application),
-                AutocryptPeerDao.getInstance(RuntimeEnvironment.application)) {
-
+        return new PgpDecryptVerifyOperation(RuntimeEnvironment.application, keyRepository, null) {
             @Override
-            public CachedPublicKeyRing getCachedPublicKeyRing(Uri queryUri) throws PgpKeyNotFoundException {
-                Assert.assertEquals(msg + ": query should be for the decryption key", queryUri, decryptUri);
-                return new CachedPublicKeyRing(this, queryUri) {
-                    @Override
-                    public long getMasterKeyId() throws PgpKeyNotFoundException {
-                        return decrypt.getMasterKeyId();
-                    }
-
-                    @Override
-                    public SecretKeyType getSecretKeyType(long keyId) throws NotFoundException {
-                        return decrypt.getSecretKey(keyId).getSecretKeyTypeSuperExpensive();
-                    }
-                };
-            }
-
-            public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(Uri q)
-                    throws NotFoundException {
-                Assert.assertEquals(msg + ": query should be for verification key", q, verifyUri);
-                return verify;
-            }
-
-            public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(Uri q)
-                    throws NotFoundException {
-                Assert.assertEquals(msg + ": query should be for the decryption key", q, decryptUri);
-                return decrypt;
-            }
-
-            @Override
-            public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(long masterKeyId)
-                    throws NotFoundException {
-                Assert.assertEquals(msg + ": query should be for the decryption key",
-                        masterKeyId, decrypt.getMasterKeyId());
-                return decrypt;
-            }
-        };
-
-        return new PgpDecryptVerifyOperation(RuntimeEnvironment.application, helper, null) {
-            @Override
-            public Passphrase getCachedPassphrase(long masterKeyId, long subKeyId)
-                    throws NoSecretKeyException {
+            public Passphrase getCachedPassphrase(long masterKeyId, long subKeyId) {
                 Assert.assertEquals(msg + ": passphrase should be for the secret key",
                         masterKeyId, decrypt.getMasterKeyId());
-                Assert.assertEquals(msg + ": passphrase should refer to the decryption subkey",
-                        subKeyId, decryptId);
                 return passphrase;
             }
         };

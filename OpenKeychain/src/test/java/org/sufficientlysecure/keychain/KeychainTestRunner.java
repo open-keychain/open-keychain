@@ -1,5 +1,6 @@
 package org.sufficientlysecure.keychain;
 
+
 import org.junit.runners.model.InitializationError;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;

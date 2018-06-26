@@ -32,7 +32,6 @@ import com.tokenautocomplete.TokenCompleteTextView.TokenListener;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
@@ -142,7 +141,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
                 if (keyring.hasAnySecret()) {
                     mSignKeySpinner.setPreSelectedKeyId(signatureKeyId);
                 }
-            } catch (PgpKeyNotFoundException e) {
+            } catch (NotFoundException e) {
                 Timber.e(e, "key not found for signing!");
                 Notify.create(getActivity(), getString(R.string.error_preselect_sign_key,
                         KeyFormattingUtils.beautifyKeyId(signatureKeyId)),

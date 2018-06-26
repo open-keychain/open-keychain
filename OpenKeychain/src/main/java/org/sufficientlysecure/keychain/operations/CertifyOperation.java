@@ -86,10 +86,8 @@ public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParce
 
             log.add(LogType.MSG_CRT_MASTER_FETCH, 1);
 
-            CachedPublicKeyRing cachedPublicKeyRing = mKeyRepository.getCachedPublicKeyRing(masterKeyId);
             Passphrase passphrase;
-
-            switch (cachedPublicKeyRing.getSecretKeyType(masterKeyId)) {
+            switch (mKeyRepository.getSecretKeyType(masterKeyId)) {
                 case PASSPHRASE:
                     passphrase = cryptoInput.getPassphrase();
                     if (passphrase == null) {

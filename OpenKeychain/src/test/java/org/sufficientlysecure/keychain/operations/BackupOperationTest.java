@@ -162,15 +162,6 @@ public class BackupOperationTest {
 
         assertTrue("export must be a success", result);
 
-        long masterKeyId1, masterKeyId2;
-        if (mStaticRing1.getMasterKeyId() < mStaticRing2.getMasterKeyId()) {
-            masterKeyId1 = mStaticRing1.getMasterKeyId();
-            masterKeyId2 = mStaticRing2.getMasterKeyId();
-        } else {
-            masterKeyId2 = mStaticRing1.getMasterKeyId();
-            masterKeyId1 = mStaticRing2.getMasterKeyId();
-        }
-
         IteratorWithIOThrow<UncachedKeyRing> unc =
                 UncachedKeyRing.fromStream(new ByteArrayInputStream(out.toByteArray()));
 
@@ -178,7 +169,7 @@ public class BackupOperationTest {
             assertTrue("export must have two keys (1/2)", unc.hasNext());
             UncachedKeyRing ring = unc.next();
             Assert.assertEquals("first exported key has correct masterkeyid",
-                    masterKeyId1, ring.getMasterKeyId());
+                    mStaticRing2.getMasterKeyId(), ring.getMasterKeyId());
             assertFalse("first exported key must not be secret", ring.isSecret());
             assertFalse("there must be no local signatures in an exported keyring",
                     checkForLocal(ring));
@@ -188,7 +179,7 @@ public class BackupOperationTest {
             assertTrue("export must have two keys (2/2)", unc.hasNext());
             UncachedKeyRing ring = unc.next();
             Assert.assertEquals("second exported key has correct masterkeyid",
-                    masterKeyId2, ring.getMasterKeyId());
+                    mStaticRing1.getMasterKeyId(), ring.getMasterKeyId());
             assertFalse("second exported key must not be secret", ring.isSecret());
             assertFalse("there must be no local signatures in an exported keyring",
                     checkForLocal(ring));
@@ -205,7 +196,7 @@ public class BackupOperationTest {
             assertTrue("export must have four keys (1/4)", unc.hasNext());
             UncachedKeyRing ring = unc.next();
             Assert.assertEquals("1/4 exported key has correct masterkeyid",
-                    masterKeyId1, ring.getMasterKeyId());
+                    mStaticRing2.getMasterKeyId(), ring.getMasterKeyId());
             assertFalse("1/4 exported key must not be public", ring.isSecret());
             assertFalse("there must be no local signatures in an exported keyring",
                     checkForLocal(ring));
@@ -213,7 +204,7 @@ public class BackupOperationTest {
             assertTrue("export must have four keys (2/4)", unc.hasNext());
             ring = unc.next();
             Assert.assertEquals("2/4 exported key has correct masterkeyid",
-                    masterKeyId1, ring.getMasterKeyId());
+                    mStaticRing2.getMasterKeyId(), ring.getMasterKeyId());
             assertTrue("2/4 exported key must be public", ring.isSecret());
             assertFalse("there must be no local signatures in an exported keyring",
                     checkForLocal(ring));
@@ -223,7 +214,7 @@ public class BackupOperationTest {
             assertTrue("export must have four keys (3/4)", unc.hasNext());
             UncachedKeyRing ring = unc.next();
             Assert.assertEquals("3/4 exported key has correct masterkeyid",
-                    masterKeyId2, ring.getMasterKeyId());
+                    mStaticRing1.getMasterKeyId(), ring.getMasterKeyId());
             assertFalse("3/4 exported key must not be public", ring.isSecret());
             assertFalse("there must be no local signatures in an exported keyring",
                     checkForLocal(ring));
@@ -231,7 +222,7 @@ public class BackupOperationTest {
             assertTrue("export must have four keys (4/4)", unc.hasNext());
             ring = unc.next();
             Assert.assertEquals("4/4 exported key has correct masterkeyid",
-                    masterKeyId2, ring.getMasterKeyId());
+                    mStaticRing1.getMasterKeyId(), ring.getMasterKeyId());
             assertTrue("4/4 exported key must be public", ring.isSecret());
             assertFalse("there must be no local signatures in an exported keyring",
                     checkForLocal(ring));

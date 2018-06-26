@@ -63,10 +63,9 @@ import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainComp
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainHashAlgorithmTags;
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -226,8 +225,8 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 Long signingSubKeyId = data.getSignatureSubKeyId();
                 if (signingSubKeyId == null) {
                     try {
-                        signingSubKeyId = mKeyRepository.getCachedPublicKeyRing(signingMasterKeyId).getSecretSignId();
-                    } catch (PgpKeyNotFoundException e) {
+                        signingSubKeyId = mKeyRepository.getSecretSignId(signingMasterKeyId);
+                    } catch (NotFoundException e) {
                         log.add(LogType.MSG_PSE_ERROR_KEY_SIGN, indent);
                         return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                     }
@@ -257,7 +256,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                     return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                 }
 
-                switch (mKeyRepository.getCachedPublicKeyRing(signingMasterKeyId).getSecretKeyType(signingSubKeyId)) {
+                switch (mKeyRepository.getSecretKeyType(signingSubKeyId)) {
                     case DIVERT_TO_CARD:
                     case PASSPHRASE_EMPTY: {
                         if (!signingKey.unlock(new Passphrase())) {

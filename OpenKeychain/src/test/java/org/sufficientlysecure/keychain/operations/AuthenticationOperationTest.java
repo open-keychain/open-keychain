@@ -19,6 +19,13 @@
 package org.sufficientlysecure.keychain.operations;
 
 
+import java.io.PrintStream;
+import java.security.MessageDigest;
+import java.security.PublicKey;
+import java.security.Security;
+import java.security.Signature;
+import java.util.ArrayList;
+
 import org.bouncycastle.bcpg.HashAlgorithmTags;
 import org.bouncycastle.jcajce.provider.asymmetric.eddsa.EdDSAEngine;
 import org.bouncycastle.jcajce.provider.asymmetric.eddsa.spec.EdDSANamedCurveTable;
@@ -43,13 +50,6 @@ import org.sufficientlysecure.keychain.ssh.AuthenticationParcel;
 import org.sufficientlysecure.keychain.ssh.AuthenticationResult;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.util.Passphrase;
-
-import java.io.PrintStream;
-import java.security.MessageDigest;
-import java.security.PublicKey;
-import java.security.Security;
-import java.security.Signature;
-import java.util.ArrayList;
 
 @RunWith(KeychainTestRunner.class)
 public class AuthenticationOperationTest {
@@ -160,7 +160,7 @@ public class AuthenticationOperationTest {
         KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
 
         long masterKeyId = mStaticRingRsa.getMasterKeyId();
-        Long authSubKeyId = keyRepository.getCachedPublicKeyRing(masterKeyId).getSecretAuthenticationId();
+        Long authSubKeyId = keyRepository.getSecretAuthenticationId(masterKeyId);
 
         { // sign challenge
             AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.application,
@@ -206,7 +206,7 @@ public class AuthenticationOperationTest {
         KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
 
         long masterKeyId = mStaticRingEcDsa.getMasterKeyId();
-        Long authSubKeyId = keyRepository.getCachedPublicKeyRing(masterKeyId).getSecretAuthenticationId();
+        Long authSubKeyId = keyRepository.getSecretAuthenticationId(masterKeyId);
 
         { // sign challenge
             AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.application,
@@ -252,7 +252,7 @@ public class AuthenticationOperationTest {
         KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
 
         long masterKeyId = mStaticRingEdDsa.getMasterKeyId();
-        Long authSubKeyId = keyRepository.getCachedPublicKeyRing(masterKeyId).getSecretAuthenticationId();
+        Long authSubKeyId = keyRepository.getSecretAuthenticationId(masterKeyId);
 
         { // sign challenge
             AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.application,
@@ -300,7 +300,7 @@ public class AuthenticationOperationTest {
         KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
 
         long masterKeyId = mStaticRingDsa.getMasterKeyId();
-        Long authSubKeyId = keyRepository.getCachedPublicKeyRing(masterKeyId).getSecretAuthenticationId();
+        Long authSubKeyId = keyRepository.getSecretAuthenticationId(masterKeyId);
 
         { // sign challenge
             AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.application,
@@ -345,7 +345,7 @@ public class AuthenticationOperationTest {
         KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
 
         long masterKeyId = mStaticRingEcDsa.getMasterKeyId();
-        Long authSubKeyId = keyRepository.getCachedPublicKeyRing(masterKeyId).getSecretAuthenticationId();
+        Long authSubKeyId = keyRepository.getSecretAuthenticationId(masterKeyId);
 
         { // sign challenge - should succeed with selected key allowed
             AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.application,

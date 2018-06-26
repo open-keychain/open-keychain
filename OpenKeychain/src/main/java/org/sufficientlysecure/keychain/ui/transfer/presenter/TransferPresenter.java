@@ -414,7 +414,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
             byte[] armoredSecretKey = databaseInteractor.getSecretKeyRingAsArmoredData(masterKeyId);
             secretKeyAdapter.focusItem(masterKeyId);
             connectionSend(armoredSecretKey, Long.toString(masterKeyId));
-        } catch (IOException | NotFoundException | PgpGeneralException e) {
+        } catch (IOException | NotFoundException e) {
             // TODO
             e.printStackTrace();
         }

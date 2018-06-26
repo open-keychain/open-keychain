@@ -18,6 +18,8 @@
 package org.sufficientlysecure.keychain.service;
 
 
+import java.util.Date;
+
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -41,13 +43,10 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.NotificationIds;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
-
-import java.util.Date;
 
 /**
  * This service runs in its own process, but is available to all other processes as the main
@@ -246,8 +245,8 @@ public class PassphraseCacheService extends Service {
                 + masterKeyId + ", subKeyId " + subKeyId);
 
         // get the type of key (from the database)
-        CachedPublicKeyRing keyRing = KeyRepository.create(this).getCachedPublicKeyRing(masterKeyId);
-        SecretKeyType keyType = keyRing.getSecretKeyType(subKeyId);
+        KeyRepository keyRepository = KeyRepository.create(this);
+        SecretKeyType keyType = keyRepository.getSecretKeyType(subKeyId);
 
         switch (keyType) {
             case PASSPHRASE_EMPTY:

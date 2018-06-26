@@ -18,6 +18,10 @@
 
 package org.sufficientlysecure.keychain.provider;
 
+
+import java.util.Arrays;
+import java.util.Iterator;
+
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Assert;
@@ -35,9 +39,6 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.util.IterableIterator;
-
-import java.util.Arrays;
-import java.util.Iterator;
 
 @RunWith(KeychainTestRunner.class)
 public class KeyRepositorySaveTest {
@@ -153,9 +154,8 @@ public class KeyRepositorySaveTest {
             Assert.assertTrue("canCertify() should be true", key.canCertify());
             Assert.assertTrue("canSign() should be true", key.canSign());
 
-            // cached
             Assert.assertEquals("all subkeys from CachedPublicKeyRing should be divert-to-key",
-                    SecretKeyType.DIVERT_TO_CARD, cachedRing.getSecretKeyType(key.getKeyId()));
+                    SecretKeyType.DIVERT_TO_CARD, mDatabaseInteractor.getSecretKeyType(key.getKeyId()));
         }
 
         { // second subkey
@@ -169,7 +169,7 @@ public class KeyRepositorySaveTest {
 
             // cached
             Assert.assertEquals("all subkeys from CachedPublicKeyRing should be divert-to-key",
-                    SecretKeyType.DIVERT_TO_CARD, cachedRing.getSecretKeyType(key.getKeyId()));
+                    SecretKeyType.DIVERT_TO_CARD, mDatabaseInteractor.getSecretKeyType(key.getKeyId()));
         }
 
         { // third subkey
@@ -183,7 +183,7 @@ public class KeyRepositorySaveTest {
 
             // cached
             Assert.assertEquals("all subkeys from CachedPublicKeyRing should be divert-to-key",
-                    SecretKeyType.DIVERT_TO_CARD, cachedRing.getSecretKeyType(key.getKeyId()));
+                    SecretKeyType.DIVERT_TO_CARD, mDatabaseInteractor.getSecretKeyType(key.getKeyId()));
         }
 
         Assert.assertFalse("keyring should have 3 subkeys (4)", it.hasNext());
@@ -233,14 +233,14 @@ public class KeyRepositorySaveTest {
             Assert.assertTrue("master key should have sign flag", ring.getPublicKey().canSign());
             Assert.assertTrue("master key should have encrypt flag", ring.getPublicKey().canEncrypt());
 
-            signId = mDatabaseInteractor.getCachedPublicKeyRing(masterKeyId).getSecretSignId();
+            signId = mDatabaseInteractor.getSecretSignId(masterKeyId);
             Assert.assertNotEquals("encrypt id should not be 0", 0, signId);
-            Assert.assertNotEquals("encrypt key should be different from master key", masterKeyId, signId);
+            Assert.assertNotEquals("signing key should be different from master key", masterKeyId, signId);
         }
 
         {
-            CachedPublicKeyRing ring = mDatabaseInteractor.getCachedPublicKeyRing(masterKeyId);
-            Assert.assertEquals("signing key should be same id cached as uncached", signId, ring.getSecretSignId());
+            Assert.assertEquals("signing key should be same id cached as uncached",
+                    signId, mDatabaseInteractor.getSecretSignId(masterKeyId));
         }
 
     }

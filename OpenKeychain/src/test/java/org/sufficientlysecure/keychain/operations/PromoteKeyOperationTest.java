@@ -105,8 +105,9 @@ public class PromoteKeyOperationTest {
 
     @Test
     public void testPromote() throws Exception {
+        KeyWritableRepository keyRepository = KeyWritableRepository.create(RuntimeEnvironment.application);
         PromoteKeyOperation op = new PromoteKeyOperation(RuntimeEnvironment.application,
-                KeyWritableRepository.create(RuntimeEnvironment.application), null, null);
+                keyRepository, null, null);
 
         PromoteKeyResult result = op.execute(
                 PromoteKeyringParcel.createPromoteKeyringParcel(mStaticRing.getMasterKeyId(), null, null), null);
@@ -114,15 +115,14 @@ public class PromoteKeyOperationTest {
         Assert.assertTrue("promotion must succeed", result.success());
 
         {
-            CachedPublicKeyRing ring = KeyWritableRepository.create(RuntimeEnvironment.application)
-                    .getCachedPublicKeyRing(mStaticRing.getMasterKeyId());
+            CachedPublicKeyRing ring = keyRepository.getCachedPublicKeyRing(mStaticRing.getMasterKeyId());
             Assert.assertTrue("key must have a secret now", ring.hasAnySecret());
 
             Iterator<UncachedPublicKey> it = mStaticRing.getPublicKeys();
             while (it.hasNext()) {
                 long keyId = it.next().getKeyId();
                 Assert.assertEquals("all subkeys must be gnu dummy",
-                        SecretKeyType.GNU_DUMMY, ring.getSecretKeyType(keyId));
+                        SecretKeyType.GNU_DUMMY, keyRepository.getSecretKeyType(keyId));
             }
         }
 

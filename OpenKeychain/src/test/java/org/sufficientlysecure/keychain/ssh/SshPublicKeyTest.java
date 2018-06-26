@@ -76,7 +76,7 @@ public class SshPublicKeyTest {
         KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
 
         long masterKeyId = mStaticRingEcDsa.getMasterKeyId();
-        long authSubKeyId = keyRepository.getCachedPublicKeyRing(masterKeyId).getSecretAuthenticationId();
+        long authSubKeyId = keyRepository.getSecretAuthenticationId(masterKeyId);
         CanonicalizedPublicKey canonicalizedPublicKey = keyRepository.getCanonicalizedPublicKeyRing(masterKeyId)
                                                                      .getPublicKey(authSubKeyId);
 

@@ -99,9 +99,6 @@ public class KeychainContract {
 
     public static final String PATH_UNIFIED = "unified";
 
-    public static final String PATH_FIND = "find";
-    public static final String PATH_BY_SUBKEY = "subkey";
-
     public static final String PATH_PUBLIC = "public";
     public static final String PATH_USER_IDS = "user_ids";
     public static final String PATH_KEYS = "keys";
@@ -131,16 +128,6 @@ public class KeychainContract {
 
         public static Uri buildGenericKeyRingUri(long masterKeyId) {
             return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId)).build();
-        }
-
-        public static Uri buildUnifiedKeyRingUri(long masterKeyId) {
-            return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId))
-                    .appendPath(PATH_UNIFIED).build();
-        }
-
-        public static Uri buildUnifiedKeyRingsFindBySubkeyUri(long subkey) {
-            return CONTENT_URI.buildUpon().appendPath(PATH_FIND)
-                    .appendPath(PATH_BY_SUBKEY).appendPath(Long.toString(subkey)).build();
         }
     }
 

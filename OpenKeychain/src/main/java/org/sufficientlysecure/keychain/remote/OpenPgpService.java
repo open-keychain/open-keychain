@@ -66,12 +66,11 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ApiAppDao;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDao;
 import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
 import org.sufficientlysecure.keychain.provider.OverriddenWarningsRepository;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResult;
@@ -139,9 +138,9 @@ public class OpenPgpService extends Service {
 
                 // get first usable subkey capable of signing
                 try {
-                    long signSubKeyId = mKeyRepository.getCachedPublicKeyRing(signKeyId).getSecretSignId();
+                    long signSubKeyId = mKeyRepository.getSecretSignId(signKeyId);
                     pgpData.setSignatureSubKeyId(signSubKeyId);
-                } catch (PgpKeyNotFoundException e) {
+                } catch (NotFoundException e) {
                     throw new Exception("signing subkey not found!", e);
                 }
             }
@@ -230,7 +229,7 @@ public class OpenPgpService extends Service {
                 if (signKeyId == Constants.key.none) {
                     throw new Exception("No signing key given");
                 }
-                long signSubKeyId = mKeyRepository.getCachedPublicKeyRing(signKeyId).getSecretSignId();
+                long signSubKeyId = mKeyRepository.getSecretSignId(signKeyId);
 
                 pgpData.setSignatureMasterKeyId(signKeyId)
                         .setSignatureSubKeyId(signSubKeyId)
@@ -627,7 +626,8 @@ public class OpenPgpService extends Service {
             }
 
             try {
-                CanonicalizedPublicKeyRing keyRing = mKeyRepository.getCanonicalizedPublicKeyRing(masterKeyId);
+                CanonicalizedPublicKeyRing keyRing =
+                        mKeyRepository.getCanonicalizedPublicKeyRing(masterKeyId);
 
                 Intent result = new Intent();
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
@@ -749,7 +749,7 @@ public class OpenPgpService extends Service {
 
                 result.putExtra(OpenPgpApi.RESULT_PRIMARY_USER_ID, userId);
                 result.putExtra(OpenPgpApi.RESULT_KEY_CREATION_TIME, creationTime);
-            } catch (PgpKeyNotFoundException e) {
+            } catch (NotFoundException e) {
                 Timber.e(e, "Error loading key info");
                 return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
             }

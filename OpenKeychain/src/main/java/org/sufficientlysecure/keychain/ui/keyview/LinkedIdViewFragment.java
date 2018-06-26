@@ -54,8 +54,8 @@ import org.sufficientlysecure.keychain.livedata.GenericLiveData;
 import org.sufficientlysecure.keychain.model.Certification.CertDetails;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter;
@@ -382,9 +382,8 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements OnB
 
                 byte[] fingerprint;
                 try {
-                    fingerprint = KeyRepository.create(activity).getCachedPublicKeyRing(
-                            masterKeyId).getFingerprint();
-                } catch (PgpKeyNotFoundException e) {
+                    fingerprint = KeyRepository.create(activity).getCachedPublicKeyRing(masterKeyId).getFingerprint();
+                } catch (NotFoundException e) {
                     throw new IllegalStateException("Key to verify linked id for must exist in db!");
                 }
 

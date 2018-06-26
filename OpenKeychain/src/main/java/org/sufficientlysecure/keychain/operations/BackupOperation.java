@@ -24,24 +24,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.os.CancellationSignal;
-import android.text.TextUtils;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -56,14 +53,13 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.Numeric9x4PassphraseUtil;
 import org.sufficientlysecure.keychain.util.CountingOutputStream;
 import org.sufficientlysecure.keychain.util.InputData;
+import org.sufficientlysecure.keychain.util.Numeric9x4PassphraseUtil;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import timber.log.Timber;
 
@@ -84,8 +80,6 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             KeyRings.MASTER_KEY_ID,
             KeyRings.HAS_ANY_SECRET
     };
-    private static final int INDEX_MASTER_KEY_ID = 0;
-    private static final int INDEX_HAS_ANY_SECRET = 1;
 
     // this is a very simple matcher, we only need basic sanitization
     private static final Pattern HEADER_PATTERN = Pattern.compile("[a-zA-Z0-9_-]+: [^\\n]+");
@@ -224,42 +218,36 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             OutputStream outStream, List<String> extraSecretKeyHeaders) {
         // noinspection unused TODO use these in a log entry
         int okSecret = 0, okPublic = 0;
-
         int progress = 0;
 
-        Cursor cursor = queryForKeys(masterKeyIds);
-
-        if (cursor == null || !cursor.moveToFirst()) {
-            log.add(LogType.MSG_BACKUP_ERROR_DB, 1);
-            return false; // new ExportResult(ExportResult.RESULT_ERROR, log);
-        }
-
         try {
-
-            int numKeys = cursor.getCount();
+            List<UnifiedKeyInfo> unifiedKeyInfos;
+            if (masterKeyIds == null) {
+                unifiedKeyInfos = mKeyRepository.getAllUnifiedKeyInfo();
+            } else {
+                unifiedKeyInfos = mKeyRepository.getUnifiedKeyInfo(masterKeyIds);
+            }
+            int numKeys = unifiedKeyInfos.size();
 
             updateProgress(mContext.getResources().getQuantityString(R.plurals.progress_exporting_key, numKeys),
                     0, numKeys);
 
             // For each public masterKey id
-            while (!cursor.isAfterLast()) {
-
-                long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
-                log.add(LogType.MSG_BACKUP_PUBLIC, 1, KeyFormattingUtils.beautifyKeyId(masterKeyId));
+            for (UnifiedKeyInfo keyInfo : unifiedKeyInfos) {
+                log.add(LogType.MSG_BACKUP_PUBLIC, 1, KeyFormattingUtils.beautifyKeyId(keyInfo.master_key_id()));
 
                 boolean publicKeyWriteOk = false;
                 if (exportPublic) {
-                    publicKeyWriteOk = writePublicKeyToStream(masterKeyId, log, outStream);
+                    publicKeyWriteOk = writePublicKeyToStream(keyInfo.master_key_id(), log, outStream);
                     if (publicKeyWriteOk) {
                         okPublic += 1;
                     }
                 }
 
                 if (publicKeyWriteOk || !exportPublic) {
-                    boolean hasSecret = cursor.getInt(INDEX_HAS_ANY_SECRET) > 0;
-                    if (exportSecret && hasSecret) {
-                        log.add(LogType.MSG_BACKUP_SECRET, 2, KeyFormattingUtils.beautifyKeyId(masterKeyId));
-                        if (writeSecretKeyToStream(masterKeyId, log, outStream, extraSecretKeyHeaders)) {
+                    if (exportSecret && keyInfo.has_any_secret()) {
+                        log.add(LogType.MSG_BACKUP_SECRET, 2, KeyFormattingUtils.beautifyKeyId(keyInfo.master_key_id()));
+                        if (writeSecretKeyToStream(keyInfo.master_key_id(), log, outStream, extraSecretKeyHeaders)) {
                             okSecret += 1;
                         }
                         extraSecretKeyHeaders = null;
@@ -267,7 +255,6 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
                 }
 
                 updateProgress(progress++, numKeys);
-                cursor.moveToNext();
             }
 
             updateProgress(R.string.progress_done, numKeys, numKeys);
@@ -282,7 +269,6 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             } catch (Exception e) {
                 Timber.e(e, "error closing stream");
             }
-            cursor.close();
         }
 
         return true;
@@ -340,31 +326,6 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             int sep = header.indexOf(':');
             arOutStream.setHeader(header.substring(0, sep), header.substring(sep + 2));
         }
-    }
-
-    private Cursor queryForKeys(long[] masterKeyIds) {
-        String selection = null, selectionArgs[] = null;
-
-        if (masterKeyIds != null) {
-            // convert long[] to String[]
-            selectionArgs = new String[masterKeyIds.length];
-            for (int i = 0; i < masterKeyIds.length; i++) {
-                selectionArgs[i] = Long.toString(masterKeyIds[i]);
-            }
-
-            // generates ?,?,? as placeholders for selectionArgs
-            String placeholders = TextUtils.join(",",
-                    Collections.nCopies(masterKeyIds.length, "?"));
-
-            // put together selection string
-            selection = Tables.KEYS + "." + KeyRings.MASTER_KEY_ID
-                    + " IN (" + placeholders + ")";
-        }
-
-        return mKeyRepository.getContentResolver().query(
-                KeyRings.buildUnifiedKeyRingsUri(), PROJECTION, selection, selectionArgs,
-                Tables.KEYS + "." + KeyRings.MASTER_KEY_ID
-        );
     }
 
 }

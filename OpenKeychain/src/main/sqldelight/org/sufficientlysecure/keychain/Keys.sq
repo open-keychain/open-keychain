@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS keys (
     can_encrypt INTEGER AS Boolean NOT NULL,
     can_authenticate INTEGER AS Boolean NOT NULL,
     is_revoked INTEGER AS Boolean NOT NULL,
-    has_secret INTEGER AS SecretKeyType NOT NULL,
+    has_secret INTEGER AS SecretKeyType NOT NULL DEFAULT 0,
     is_secure INTEGER AS Boolean NOT NULL,
     creation INTEGER NOT NULL,
     expiry INTEGER,
@@ -25,11 +25,12 @@ CREATE TABLE IF NOT EXISTS keys (
 
 unifiedKeyView:
 CREATE VIEW unifiedKeyView AS
-    SELECT keys.master_key_id, keys.fingerprint, MIN(user_packets.rank), user_packets.name, user_packets.email, user_packets.comment, keys.creation, keys.expiry, keys.is_revoked, keys.is_secure, certs.verified,
+    SELECT keys.master_key_id, keys.fingerprint, MIN(user_packets.rank), user_packets.user_id, user_packets.name, user_packets.email, user_packets.comment, keys.creation, keys.expiry, keys.is_revoked, keys.is_secure, keys.can_certify, certs.verified,
         (EXISTS (SELECT * FROM user_packets AS dups WHERE dups.master_key_id != keys.master_key_id AND dups.rank = 0 AND dups.name = user_packets.name COLLATE NOCASE AND dups.email = user_packets.email COLLATE NOCASE )) AS has_duplicate_int,
         (EXISTS (SELECT * FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.has_secret != 0 )) AS has_any_secret_int,
-        (EXISTS (SELECT * FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_authenticate != 0 )) AS has_auth_key_int,
-        (EXISTS (SELECT * FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_encrypt != 0 )) AS has_encrypt_key_int,
+        (SELECT key_id FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_encrypt != 0 LIMIT 1) AS has_encrypt_key_int,
+        (SELECT key_id FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_sign != 0 LIMIT 1) AS has_sign_key_int,
+        (SELECT key_id FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_authenticate != 0 LIMIT 1) AS has_auth_key_int,
         GROUP_CONCAT(DISTINCT aTI.package_name) AS autocrypt_package_names_csv,
         GROUP_CONCAT(user_packets.user_id, '|||') AS user_id_list
     FROM keys
@@ -46,6 +47,10 @@ SELECT * FROM unifiedKeyView
 selectUnifiedKeyInfoByMasterKeyId:
 SELECT * FROM unifiedKeyView
    WHERE is_revoked = 0 AND master_key_id = ?;
+
+selectUnifiedKeyInfoByMasterKeyIds:
+SELECT * FROM unifiedKeyView
+   WHERE is_revoked = 0 AND master_key_id IN ?;
 
 selectUnifiedKeyInfoSearchMailAddress:
 SELECT * FROM unifiedKeyView
@@ -73,7 +78,19 @@ SELECT has_secret
     FROM keys
     WHERE key_id = ?;
 
+selectEffectiveSignKeyIdByMasterKeyId:
+SELECT key_id
+    FROM keys
+    WHERE is_revoked = 0 AND is_secure = 1 AND has_secret > 1 AND ( expiry IS NULL OR expiry >= date('now') )
+        AND can_sign = 1 AND master_key_id = ?;
+
+selectEffectiveAuthKeyIdByMasterKeyId:
+SELECT key_id
+    FROM keys
+    WHERE is_revoked = 0 AND is_secure = 1 AND has_secret > 1 AND ( expiry IS NULL OR expiry >= date('now') )
+        AND can_authenticate = 1 AND master_key_id = ?;
+
 -- TODO move to KeySignatures.sq
 selectMasterKeyIdsBySigner:
 SELECT master_key_id
-    FROM key_signatures WHERE signer_key_id IN ?;
+   FROM key_signatures WHERE signer_key_id IN ?;

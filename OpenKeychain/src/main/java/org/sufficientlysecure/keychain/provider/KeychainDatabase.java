@@ -32,7 +32,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
+import android.support.annotation.VisibleForTesting;
 
+import org.sufficientlysecure.keychain.ApiAllowedKeysModel;
 import org.sufficientlysecure.keychain.ApiAppsModel;
 import org.sufficientlysecure.keychain.AutocryptPeersModel;
 import org.sufficientlysecure.keychain.CertsModel;
@@ -66,10 +68,13 @@ public class KeychainDatabase {
     private static KeychainDatabase sInstance;
 
     public static KeychainDatabase getInstance(Context context) {
-        if (sInstance == null) {
             sInstance = new KeychainDatabase(context.getApplicationContext());
-        }
         return sInstance;
+    }
+
+    @VisibleForTesting
+    public static void resetSingleton() {
+        sInstance = null;
     }
 
     public interface Tables {
@@ -133,7 +138,7 @@ public class KeychainDatabase {
         db.execSQL(ApiAppsModel.CREATE_TABLE);
         db.execSQL(OverriddenWarningsModel.CREATE_TABLE);
         db.execSQL(AutocryptPeersModel.CREATE_TABLE);
-        db.execSQL(ApiAppsModel.CREATE_TABLE);
+        db.execSQL(ApiAllowedKeysModel.CREATE_TABLE);
         db.execSQL(KeysModel.UNIFIEDKEYVIEW);
 
         db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysColumns.RANK + ", " + KeysColumns.MASTER_KEY_ID + ");");
@@ -460,8 +465,8 @@ public class KeychainDatabase {
 
     // DANGEROUS, use in test code ONLY!
     public void clearDatabase() {
-        getWritableDatabase().execSQL("delete from " + Tables.KEY_RINGS_PUBLIC);
-        getWritableDatabase().execSQL("delete from " + Tables.API_ALLOWED_KEYS);
+        getWritableDatabase().execSQL("delete from " + KeyRingsPublicModel.TABLE_NAME);
+        getWritableDatabase().execSQL("delete from " + ApiAllowedKeysModel.TABLE_NAME);
         getWritableDatabase().execSQL("delete from api_apps");
     }
 

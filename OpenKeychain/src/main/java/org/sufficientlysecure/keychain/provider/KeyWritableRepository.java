@@ -29,7 +29,6 @@ import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
@@ -40,6 +39,7 @@ import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.KeyRingsPublicModel.DeleteByMasterKeyId;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.model.CustomColumnAdapters;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
@@ -60,7 +60,6 @@ import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeySignatures;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
@@ -99,8 +98,7 @@ public class KeyWritableRepository extends KeyRepository {
                 localPublicKeyStorage, localSecretKeyStorage, databaseNotifyManager, autocryptPeerDao);
         }
 
-    @VisibleForTesting
-    KeyWritableRepository(Context context,
+    private KeyWritableRepository(Context context,
             KeychainDatabase database, LocalPublicKeyStorage localPublicKeyStorage,
             LocalSecretKeyStorage localSecretKeyStorage,
             DatabaseNotifyManager databaseNotifyManager, AutocryptPeerDao autocryptPeerDao) {
@@ -120,40 +118,22 @@ public class KeyWritableRepository extends KeyRepository {
     }
 
     private LongSparseArray<CanonicalizedPublicKey> getTrustedMasterKeys() {
-        Cursor cursor = contentResolver.query(KeyRings.buildUnifiedKeyRingsUri(), new String[] {
-                KeyRings.MASTER_KEY_ID,
-                // we pick from cache only information that is not easily available from keyrings
-                KeyRings.HAS_ANY_SECRET, KeyRings.VERIFIED
-        }, KeyRings.HAS_ANY_SECRET + " = 1", null, null);
+        LongSparseArray<CanonicalizedPublicKey> result = new LongSparseArray<>();
 
-        try {
-            LongSparseArray<CanonicalizedPublicKey> result = new LongSparseArray<>();
-
-            if (cursor == null) {
-                return result;
-            }
-
-            while (cursor.moveToNext()) {
-                try {
-                    long masterKeyId = cursor.getLong(0);
-                    long verified = cursor.getLong(2);
-                    byte[] blob = loadPublicKeyRingData(masterKeyId);
-                    VerificationStatus verificationStatus = CustomColumnAdapters.VERIFICATON_STATUS_ADAPTER.decode(verified);
-                    if (blob != null) {
-                        result.put(masterKeyId, new CanonicalizedPublicKeyRing(blob, verificationStatus).getPublicKey());
-                    }
-                } catch (NotFoundException e) {
-                    throw new IllegalStateException("Error reading secret key data, this should not happen!", e);
+        List<UnifiedKeyInfo> unifiedKeyInfoWithSecret = getAllUnifiedKeyInfoWithSecret();
+        for (UnifiedKeyInfo unifiedKeyInfo : unifiedKeyInfoWithSecret) {
+            try {
+                byte[] blob = loadPublicKeyRingData(unifiedKeyInfo.master_key_id());
+                if (blob != null) {
+                    result.put(unifiedKeyInfo.master_key_id(),
+                            new CanonicalizedPublicKeyRing(blob, unifiedKeyInfo.verified()).getPublicKey());
                 }
-            }
-
-            return result;
-        } finally {
-            if (cursor != null) {
-                cursor.close();
+            } catch (NotFoundException e) {
+                throw new IllegalStateException("Error reading secret key data, this should not happen!", e);
             }
         }
 
+        return result;
     }
 
     // bits, in order: CESA. make SURE these are correct, we will get bad log entries otherwise!!
