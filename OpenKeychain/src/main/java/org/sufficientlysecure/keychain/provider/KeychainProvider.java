@@ -413,7 +413,7 @@ public class KeychainProvider extends ContentProvider implements SimpleContentRe
             }
 
             if (keyId != null) {
-                uri = KeyRings.buildGenericKeyRingUri(keyId);
+                uri = DatabaseNotifyManager.getNotifyUriMasterKeyId(keyId);
                 rowUri = uri;
             }
 

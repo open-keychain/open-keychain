@@ -4,9 +4,11 @@ package org.sufficientlysecure.keychain.ui.keyview;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
+import android.net.Uri;
 
 import org.sufficientlysecure.keychain.livedata.GenericLiveData;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.provider.DatabaseNotifyManager;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 
@@ -32,7 +34,8 @@ public class UnifiedKeyInfoViewModel extends ViewModel {
         }
         if (unifiedKeyInfoLiveData == null) {
             KeyRepository keyRepository = KeyRepository.create(context);
-            unifiedKeyInfoLiveData = new GenericLiveData<>(context, KeyRings.buildGenericKeyRingUri(masterKeyId),
+            Uri notifyUri = DatabaseNotifyManager.getNotifyUriMasterKeyId(masterKeyId);
+            unifiedKeyInfoLiveData = new GenericLiveData<>(context, notifyUri,
                     () -> keyRepository.getUnifiedKeyInfo(masterKeyId));
         }
         return unifiedKeyInfoLiveData;

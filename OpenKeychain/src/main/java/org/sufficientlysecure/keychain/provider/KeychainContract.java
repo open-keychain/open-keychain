@@ -125,10 +125,6 @@ public class KeychainContract {
         public static Uri buildUnifiedKeyRingsUri() {
             return CONTENT_URI.buildUpon().appendPath(PATH_UNIFIED).build();
         }
-
-        public static Uri buildGenericKeyRingUri(long masterKeyId) {
-            return CONTENT_URI.buildUpon().appendPath(Long.toString(masterKeyId)).build();
-        }
     }
 
     public static class KeyRingData implements KeyRingsColumns, BaseColumns {
