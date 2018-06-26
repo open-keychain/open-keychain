@@ -40,13 +40,13 @@ import org.openintents.ssh.authentication.response.PublicKeyResponse;
 import org.openintents.ssh.authentication.response.SigningResponse;
 import org.openintents.ssh.authentication.response.SshPublicKeyResponse;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.SshPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ApiAppDao;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -368,18 +368,19 @@ public class SshAuthenticationService extends Service {
 
     private CanonicalizedPublicKey getPublicKey(long masterKeyId) throws NotFoundException {
         KeyRepository keyRepository = KeyRepository.create(getApplicationContext());
-        long authSubKeyId = keyRepository.getCachedPublicKeyRing(masterKeyId)
-                .getAuthenticationId();
-        return keyRepository.getCanonicalizedPublicKeyRing(masterKeyId)
-                .getPublicKey(authSubKeyId);
+        UnifiedKeyInfo unifiedKeyInfo = keyRepository.getUnifiedKeyInfo(masterKeyId);
+        if (unifiedKeyInfo == null) {
+            throw new NotFoundException();
+        }
+        return keyRepository.getCanonicalizedPublicKeyRing(masterKeyId).getPublicKey(unifiedKeyInfo.has_auth_key_int());
     }
 
     private String getDescription(long masterKeyId) throws NotFoundException {
-        CachedPublicKeyRing cachedPublicKeyRing = mKeyRepository.getCachedPublicKeyRing(masterKeyId);
+        UnifiedKeyInfo unifiedKeyInfo = mKeyRepository.getUnifiedKeyInfo(masterKeyId);
 
         String description = "";
         long authSubKeyId = mKeyRepository.getSecretAuthenticationId(masterKeyId);
-        description += cachedPublicKeyRing.getPrimaryUserId();
+        description += unifiedKeyInfo.user_id();
         description += " (" + Long.toHexString(authSubKeyId) + ")";
 
         return description;

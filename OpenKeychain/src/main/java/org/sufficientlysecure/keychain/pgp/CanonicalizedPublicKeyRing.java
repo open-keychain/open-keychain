@@ -100,7 +100,7 @@ public class CanonicalizedPublicKeyRing extends CanonicalizedKeyRing {
      * - the user id that matches the userIdToKeep parameter, or the primary user id if none matches
      * each with their most recent binding certificates
      */
-    public CanonicalizedPublicKeyRing minimize(@Nullable String userIdToKeep) throws IOException, PgpKeyNotFoundException {
+    public CanonicalizedPublicKeyRing minimize(@Nullable String userIdToKeep) throws IOException {
         CanonicalizedPublicKey masterKey = getPublicKey();
         PGPPublicKey masterPubKey = masterKey.getPublicKey();
         boolean userIdStrippedOk = false;

@@ -58,7 +58,6 @@ import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.SshPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.ViewKeyAdvActivity.ViewKeyAdvViewModel;
@@ -140,14 +139,13 @@ public class ViewKeyAdvShareFragment extends Fragment {
     }
 
     private String getShareKeyContent(boolean asSshKey)
-            throws PgpKeyNotFoundException, KeyRepository.NotFoundException, IOException, PgpGeneralException,
-            NoSuchAlgorithmException {
+            throws KeyRepository.NotFoundException, IOException, PgpGeneralException, NoSuchAlgorithmException {
 
         KeyRepository keyRepository = KeyRepository.create(requireContext());
 
         String content;
         if (asSshKey) {
-            long authSubKeyId = keyRepository.getCachedPublicKeyRing(unifiedKeyInfo.master_key_id()).getAuthenticationId();
+            long authSubKeyId = unifiedKeyInfo.has_auth_key_int();
             CanonicalizedPublicKey publicKey = keyRepository.getCanonicalizedPublicKeyRing(unifiedKeyInfo.master_key_id())
                                                             .getPublicKey(authSubKeyId);
             SshPublicKey sshPublicKey = new SshPublicKey(publicKey);
@@ -224,7 +222,7 @@ public class ViewKeyAdvShareFragment extends Fragment {
         } catch (PgpGeneralException | IOException | NoSuchAlgorithmException e) {
             Timber.e(e, "error processing key!");
             Notify.create(activity, R.string.error_key_processing, Notify.Style.ERROR).show();
-        } catch (PgpKeyNotFoundException | KeyRepository.NotFoundException e) {
+        } catch (KeyRepository.NotFoundException e) {
             Timber.e(e, "key not found!");
             Notify.create(activity, R.string.error_key_not_found, Notify.Style.ERROR).show();
         }

@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.provider;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import android.content.ContentResolver;
@@ -102,15 +101,6 @@ public class KeyRepository extends AbstractDao {
         mLog = new OperationLog();
     }
 
-    // replace with getUnifiedKeyInfo
-    public CachedPublicKeyRing getCachedPublicKeyRing(long masterKeyId) throws NotFoundException {
-        UnifiedKeyInfo unifiedKeyInfo = getUnifiedKeyInfo(masterKeyId);
-        if (unifiedKeyInfo == null) {
-            throw new NotFoundException();
-        }
-        return new CachedPublicKeyRing(unifiedKeyInfo);
-    }
-
     public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(long masterKeyId) throws NotFoundException {
         UnifiedKeyInfo unifiedKeyInfo = getUnifiedKeyInfo(masterKeyId);
         if (unifiedKeyInfo == null) {
@@ -146,22 +136,12 @@ public class KeyRepository extends AbstractDao {
 
     public Long getMasterKeyIdBySubkeyId(long subKeyId) {
         SqlDelightQuery query = SubKey.FACTORY.selectMasterKeyIdBySubkey(subKeyId);
-        try (Cursor cursor = getReadableDb().query(query)) {
-            if (cursor.moveToFirst()) {
-                return SubKey.FACTORY.selectMasterKeyIdBySubkeyMapper().map(cursor);
-            }
-            return null;
-        }
+        return mapSingleRow(query, SubKey.FACTORY.selectMasterKeyIdBySubkeyMapper()::map);
     }
 
     public UnifiedKeyInfo getUnifiedKeyInfo(long masterKeyId) {
         SqlDelightQuery query = SubKey.FACTORY.selectUnifiedKeyInfoByMasterKeyId(masterKeyId);
-        try (Cursor cursor = getReadableDb().query(query)) {
-            if (cursor.moveToNext()) {
-                return SubKey.UNIFIED_KEY_INFO_MAPPER.map(cursor);
-            }
-            return null;
-        }
+        return mapSingleRow(query, SubKey.UNIFIED_KEY_INFO_MAPPER::map);
     }
 
     public List<UnifiedKeyInfo> getUnifiedKeyInfo(long... masterKeyIds) {
@@ -190,13 +170,9 @@ public class KeyRepository extends AbstractDao {
     }
 
     public List<String> getConfirmedUserIds(long masterKeyId) {
-        ArrayList<String> userIds = new ArrayList<>();
         SqlDelightQuery query = UserPacket.FACTORY.selectUserIdsByMasterKeyIdAndVerification(
                 Certification.FACTORY, masterKeyId, VerificationStatus.VERIFIED_SECRET);
-        for (UserId userId : mapAllRows(query, UserPacket.USER_ID_MAPPER::map)) {
-            userIds.add(userId.user_id());
-        }
-        return userIds;
+        return mapAllRows(query, (cursor) -> UserPacket.USER_ID_MAPPER.map(cursor).user_id());
     }
 
     public List<SubKey> getSubKeysByMasterKeyId(long masterKeyId) {
@@ -206,12 +182,12 @@ public class KeyRepository extends AbstractDao {
 
     public SecretKeyType getSecretKeyType(long keyId) throws NotFoundException {
         SqlDelightQuery query = SubKey.FACTORY.selectSecretKeyType(keyId);
-        try (Cursor cursor = getReadableDb().query(query)) {
-            if (cursor.moveToFirst()) {
-                return SubKey.SKT_MAPPER.map(cursor);
-            }
-            throw new NotFoundException();
-        }
+        return mapSingleRowOrThrow(query, SubKey.SKT_MAPPER::map);
+    }
+
+    public byte[] getFingerprintByKeyId(long keyId) throws NotFoundException {
+        SqlDelightQuery query = SubKey.FACTORY.selectFingerprintByKeyId(keyId);
+        return mapSingleRowOrThrow(query, SubKey.FACTORY.selectFingerprintByKeyIdMapper()::map);
     }
 
     private byte[] getKeyRingAsArmoredData(byte[] data) throws IOException {
@@ -267,20 +243,12 @@ public class KeyRepository extends AbstractDao {
 
     public long getSecretSignId(long masterKeyId) throws NotFoundException {
         SqlDelightQuery query = SubKey.FACTORY.selectEffectiveSignKeyIdByMasterKeyId(masterKeyId);
-        Long signKeyId = mapSingleRow(query, SubKey.FACTORY.selectEffectiveSignKeyIdByMasterKeyIdMapper()::map);
-        if (signKeyId == null) {
-            throw new NotFoundException();
-        }
-        return signKeyId;
+        return mapSingleRowOrThrow(query, SubKey.FACTORY.selectEffectiveSignKeyIdByMasterKeyIdMapper()::map);
     }
 
-    public Long getSecretAuthenticationId(long masterKeyId) throws NotFoundException {
+    public long getSecretAuthenticationId(long masterKeyId) throws NotFoundException {
         SqlDelightQuery query = SubKey.FACTORY.selectEffectiveAuthKeyIdByMasterKeyId(masterKeyId);
-        Long authKeyId = mapSingleRow(query, SubKey.FACTORY.selectEffectiveAuthKeyIdByMasterKeyIdMapper()::map);
-        if (authKeyId == null) {
-            throw new NotFoundException();
-        }
-        return authKeyId;
+        return mapSingleRowOrThrow(query, SubKey.FACTORY.selectEffectiveAuthKeyIdByMasterKeyIdMapper()::map);
     }
 
     public static class NotFoundException extends Exception {

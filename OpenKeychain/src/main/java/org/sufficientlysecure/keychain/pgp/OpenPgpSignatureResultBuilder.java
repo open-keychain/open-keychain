@@ -119,11 +119,7 @@ public class OpenPgpSignatureResultBuilder {
 
         // from RING
         setKeyId(signingRing.getMasterKeyId());
-        try {
-            setPrimaryUserId(signingRing.getPrimaryUserIdWithFallback());
-        } catch (PgpKeyNotFoundException e) {
-            Timber.d("No primary user id in keyring with master key id " + signingRing.getMasterKeyId());
-        }
+        setPrimaryUserId(signingRing.getPrimaryUserIdWithFallback());
         setSignatureKeyCertified(signingRing.getVerified() == VerificationStatus.VERIFIED_SECRET);
 
         List<String> allUserIds = signingRing.getUnorderedUserIds();

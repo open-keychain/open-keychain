@@ -34,11 +34,10 @@ import android.widget.ImageView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -47,7 +46,6 @@ import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
 import org.sufficientlysecure.keychain.util.Preferences;
-import timber.log.Timber;
 
 
 public class CertifyKeyFragment
@@ -68,15 +66,10 @@ public class CertifyKeyFragment
             long certifyKeyId = getActivity().getIntent()
                     .getLongExtra(CertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, Constants.key.none);
             if (certifyKeyId != Constants.key.none) {
-                try {
-                    CachedPublicKeyRing key = (KeyRepository
-                            .create(getContext()))
-                            .getCachedPublicKeyRing(certifyKeyId);
-                    if (key.canCertify()) {
-                        mCertifyKeySpinner.setPreSelectedKeyId(certifyKeyId);
-                    }
-                } catch (NotFoundException e) {
-                    Timber.e(e, "certify certify check failed");
+                KeyRepository keyRepository = KeyRepository.create(getContext());
+                UnifiedKeyInfo unifiedKeyInfo = keyRepository.getUnifiedKeyInfo(certifyKeyId);
+                if (unifiedKeyInfo != null && unifiedKeyInfo.can_certify()) {
+                    mCertifyKeySpinner.setPreSelectedKeyId(certifyKeyId);
                 }
             }
         }

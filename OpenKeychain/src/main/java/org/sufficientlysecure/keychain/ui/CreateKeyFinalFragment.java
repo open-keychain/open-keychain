@@ -48,7 +48,6 @@ import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.UploadResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
@@ -414,8 +413,8 @@ public class CreateKeyFinalFragment extends Fragment {
 
         SaveKeyringParcel.Builder builder;
         try {
-            CachedPublicKeyRing key = keyRepository.getCachedPublicKeyRing(saveKeyResult.mMasterKeyId);
-            builder = SaveKeyringParcel.buildChangeKeyringParcel(saveKeyResult.mMasterKeyId, key.getFingerprint());
+            byte[] fingerprint = keyRepository.getFingerprintByKeyId(saveKeyResult.mMasterKeyId);
+            builder = SaveKeyringParcel.buildChangeKeyringParcel(saveKeyResult.mMasterKeyId, fingerprint);
         } catch (NotFoundException e) {
             Timber.e("Key that should be moved to Security Token not found in database!");
             return;

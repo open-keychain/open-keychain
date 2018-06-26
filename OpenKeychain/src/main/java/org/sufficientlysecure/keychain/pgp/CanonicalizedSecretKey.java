@@ -326,7 +326,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             spGen.setSignatureCreationTime(false, creationTimestamp);
             signatureGenerator.setHashedSubpackets(spGen.generate());
             return signatureGenerator;
-        } catch (PgpKeyNotFoundException | PGPException e) {
+        } catch (PGPException e) {
             // TODO: simply throw PGPException!
             throw new PgpGeneralException("Error initializing signature!", e);
         }

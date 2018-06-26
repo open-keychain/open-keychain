@@ -52,6 +52,7 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.OpenPgpSignatureResult.AutocryptPeerResult;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.BackupOperation;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
@@ -68,7 +69,6 @@ import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem;
 import org.sufficientlysecure.keychain.provider.ApiAppDao;
 import org.sufficientlysecure.keychain.provider.AutocryptPeerDao;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
@@ -742,17 +742,16 @@ public class OpenPgpService extends Service {
         result.putExtra(OpenPgpApi.RESULT_SIGN_KEY_ID, signKeyId);
 
         if (signKeyId != Constants.key.none) {
-            try {
-                CachedPublicKeyRing cachedPublicKeyRing = mKeyRepository.getCachedPublicKeyRing(signKeyId);
-                String userId = cachedPublicKeyRing.getPrimaryUserId();
-                long creationTime = cachedPublicKeyRing.getCreationTime() * 1000;
-
-                result.putExtra(OpenPgpApi.RESULT_PRIMARY_USER_ID, userId);
-                result.putExtra(OpenPgpApi.RESULT_KEY_CREATION_TIME, creationTime);
-            } catch (NotFoundException e) {
-                Timber.e(e, "Error loading key info");
-                return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
+            UnifiedKeyInfo unifiedKeyInfo = mKeyRepository.getUnifiedKeyInfo(signKeyId);
+            if (unifiedKeyInfo == null) {
+                Timber.e("Error loading key info");
+                return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, "Signing key not found!");
             }
+            String userId = unifiedKeyInfo.user_id();
+            long creationTime = unifiedKeyInfo.creation() * 1000;
+
+            result.putExtra(OpenPgpApi.RESULT_PRIMARY_USER_ID, userId);
+            result.putExtra(OpenPgpApi.RESULT_KEY_CREATION_TIME, creationTime);
         }
 
         return result;

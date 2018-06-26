@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLog;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
@@ -42,7 +43,6 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
@@ -115,8 +115,8 @@ public class PromoteKeyOperationTest {
         Assert.assertTrue("promotion must succeed", result.success());
 
         {
-            CachedPublicKeyRing ring = keyRepository.getCachedPublicKeyRing(mStaticRing.getMasterKeyId());
-            Assert.assertTrue("key must have a secret now", ring.hasAnySecret());
+            UnifiedKeyInfo unifiedKeyInfo = keyRepository.getUnifiedKeyInfo(mStaticRing.getMasterKeyId());
+            Assert.assertTrue("key must have a secret now", unifiedKeyInfo.has_any_secret());
 
             Iterator<UncachedPublicKey> it = mStaticRing.getPublicKeys();
             while (it.hasNext()) {

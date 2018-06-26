@@ -31,8 +31,8 @@ import android.widget.ViewAnimator;
 import com.tokenautocomplete.TokenCompleteTextView.TokenListener;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter.KeyItem;
@@ -136,16 +136,12 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
      */
     private void preselectKeys(Long signatureKeyId, long[] encryptionKeyIds) {
         if (signatureKeyId != null) {
-            try {
-                CachedPublicKeyRing keyring = mKeyRepository.getCachedPublicKeyRing(signatureKeyId);
-                if (keyring.hasAnySecret()) {
-                    mSignKeySpinner.setPreSelectedKeyId(signatureKeyId);
-                }
-            } catch (NotFoundException e) {
-                Timber.e(e, "key not found for signing!");
-                Notify.create(getActivity(), getString(R.string.error_preselect_sign_key,
-                        KeyFormattingUtils.beautifyKeyId(signatureKeyId)),
-                        Style.ERROR).show();
+            UnifiedKeyInfo unifiedKeyInfo = mKeyRepository.getUnifiedKeyInfo(signatureKeyId);
+            if (unifiedKeyInfo == null) {
+                String beautifyKeyId = KeyFormattingUtils.beautifyKeyId(signatureKeyId);
+                Notify.create(getActivity(), getString(R.string.error_preselect_sign_key, beautifyKeyId), Style.ERROR).show();
+            } else if (unifiedKeyInfo.has_any_secret()) {
+                mSignKeySpinner.setPreSelectedKeyId(signatureKeyId);
             }
         }
 

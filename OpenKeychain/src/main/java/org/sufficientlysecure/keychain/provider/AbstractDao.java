@@ -8,6 +8,8 @@ import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.db.SupportSQLiteQuery;
 import android.database.Cursor;
 
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
+
 
 class AbstractDao {
     private final KeychainDatabase db;
@@ -37,6 +39,14 @@ class AbstractDao {
                 T item = mapper.map(cursor);
                 result.add(item);
             }
+        }
+        return result;
+    }
+
+    <T> T mapSingleRowOrThrow(SupportSQLiteQuery query, Mapper<T> mapper) throws NotFoundException {
+        T result = mapSingleRow(query, mapper);
+        if (result == null) {
+            throw new NotFoundException();
         }
         return result;
     }

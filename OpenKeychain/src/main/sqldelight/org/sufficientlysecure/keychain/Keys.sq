@@ -78,6 +78,11 @@ SELECT has_secret
     FROM keys
     WHERE key_id = ?;
 
+selectFingerprintByKeyId:
+SELECT fingerprint
+    FROM keys
+    WHERE key_id = ?;
+
 selectEffectiveSignKeyIdByMasterKeyId:
 SELECT key_id
     FROM keys

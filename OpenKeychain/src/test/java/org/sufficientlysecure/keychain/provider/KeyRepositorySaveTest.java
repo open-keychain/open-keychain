@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLog;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
@@ -113,11 +114,11 @@ public class KeyRepositorySaveTest {
 
         mDatabaseInteractor.savePublicKeyRing(pub);
 
-        CachedPublicKeyRing cachedRing = mDatabaseInteractor.getCachedPublicKeyRing(keyId);
+        UnifiedKeyInfo unifiedKeyInfo = mDatabaseInteractor.getUnifiedKeyInfo(keyId);
         CanonicalizedPublicKeyRing pubRing = mDatabaseInteractor.getCanonicalizedPublicKeyRing(keyId);
 
         Assert.assertEquals("master key should be encryption key", keyId, pubRing.getEncryptId());
-        Assert.assertEquals("master key should be encryption key (cached)", keyId, cachedRing.getEncryptId());
+        Assert.assertEquals("master key should be encryption key (cached)", keyId, unifiedKeyInfo.has_encrypt_key_int());
 
         Assert.assertEquals("canonicalized key flags should be zero",
                 0, (long) pubRing.getPublicKey().getKeyUsage());
@@ -139,7 +140,6 @@ public class KeyRepositorySaveTest {
 
         // make sure both the CanonicalizedSecretKeyRing as well as the CachedPublicKeyRing correctly
         // indicate the secret key type
-        CachedPublicKeyRing cachedRing = mDatabaseInteractor.getCachedPublicKeyRing(keyId);
         CanonicalizedSecretKeyRing secRing = mDatabaseInteractor.getCanonicalizedSecretKeyRing(keyId);
 
         Iterator<CanonicalizedSecretKey> it = secRing.secretKeyIterator().iterator();

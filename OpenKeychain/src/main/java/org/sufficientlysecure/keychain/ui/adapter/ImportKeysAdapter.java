@@ -44,8 +44,6 @@ import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
@@ -88,16 +86,15 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             KeyState keyState = new KeyState();
             long keyId = KeyFormattingUtils.convertKeyIdHexToKeyId(entry.getKeyIdHex());
             try {
-                KeyRing keyRing;
+                VerificationStatus verified;
                 if (entry.isSecretKey()) {
-                    keyRing = mKeyRepository.getCanonicalizedSecretKeyRing(keyId);
+                    verified = mKeyRepository.getCanonicalizedSecretKeyRing(keyId).getVerified();
                 } else {
-                    keyRing = mKeyRepository.getCachedPublicKeyRing(keyId);
+                    verified = mKeyRepository.getUnifiedKeyInfo(keyId).verified();
                 }
                 keyState.mAlreadyPresent = true;
-                VerificationStatus verified = keyRing.getVerified();
                 keyState.mVerified = verified != null && verified != VerificationStatus.UNVERIFIED;
-            } catch (KeyRepository.NotFoundException | PgpKeyNotFoundException ignored) {
+            } catch (KeyRepository.NotFoundException ignored) {
             }
 
             mKeyStates[i] = keyState;

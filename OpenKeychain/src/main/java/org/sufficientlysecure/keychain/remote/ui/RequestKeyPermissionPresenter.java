@@ -25,12 +25,11 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 
-import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.provider.ApiAppDao;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.remote.ApiPermissionHelper;
@@ -94,18 +93,16 @@ class RequestKeyPermissionPresenter {
     }
 
     private void setRequestedMasterKeyId(long[] subKeyIds) throws PgpKeyNotFoundException {
-        CachedPublicKeyRing secretKeyRingOrPublicFallback = findSecretKeyRingOrPublicFallback(subKeyIds);
+        UnifiedKeyInfo secretKeyRingOrPublicFallback = findSecretKeyRingOrPublicFallback(subKeyIds);
 
         if (secretKeyRingOrPublicFallback == null) {
             throw new PgpKeyNotFoundException("No key found among requested!");
         }
 
-        this.masterKeyId = secretKeyRingOrPublicFallback.getMasterKeyId();
+        masterKeyId = secretKeyRingOrPublicFallback.master_key_id();
+        view.displayKeyInfo(secretKeyRingOrPublicFallback.name());
 
-        UserId userId = secretKeyRingOrPublicFallback.getSplitPrimaryUserIdWithFallback();
-        view.displayKeyInfo(userId);
-
-        if (secretKeyRingOrPublicFallback.hasAnySecret()) {
+        if (secretKeyRingOrPublicFallback.has_any_secret()) {
             view.switchToLayoutRequestKeyChoice();
         } else {
             view.switchToLayoutNoSecret();
@@ -113,22 +110,22 @@ class RequestKeyPermissionPresenter {
     }
 
     @Nullable
-    private CachedPublicKeyRing findSecretKeyRingOrPublicFallback(long[] subKeyIds) {
-        CachedPublicKeyRing publicFallbackRing = null;
+    private UnifiedKeyInfo findSecretKeyRingOrPublicFallback(long[] subKeyIds) {
+        UnifiedKeyInfo publicFallbackRing = null;
         for (long candidateSubKeyId : subKeyIds) {
             try {
                 Long masterKeyId = keyRepository.getMasterKeyIdBySubkeyId(candidateSubKeyId);
                 if (masterKeyId == null) {
                     continue;
                 }
-                CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(masterKeyId);
+                UnifiedKeyInfo unifiedKeyInfo = keyRepository.getUnifiedKeyInfo(masterKeyId);
 
                 SecretKeyType secretKeyType = keyRepository.getSecretKeyType(candidateSubKeyId);
                 if (secretKeyType.isUsable()) {
-                    return cachedPublicKeyRing;
+                    return unifiedKeyInfo;
                 }
                 if (publicFallbackRing == null) {
-                    publicFallbackRing = cachedPublicKeyRing;
+                    publicFallbackRing = unifiedKeyInfo;
                 }
             } catch (NotFoundException e) {
                 // no matter
@@ -180,7 +177,7 @@ class RequestKeyPermissionPresenter {
         void setTitleText(String text);
         void setTitleClientIcon(Drawable drawable);
 
-        void displayKeyInfo(UserId userId);
+        void displayKeyInfo(String userIdName);
 
         void finish();
         void finishAsCancelled();

@@ -382,7 +382,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements OnB
 
                 byte[] fingerprint;
                 try {
-                    fingerprint = KeyRepository.create(activity).getCachedPublicKeyRing(masterKeyId).getFingerprint();
+                    fingerprint = KeyRepository.create(activity).getFingerprintByKeyId(masterKeyId);
                 } catch (NotFoundException e) {
                     throw new IllegalStateException("Key to verify linked id for must exist in db!");
                 }

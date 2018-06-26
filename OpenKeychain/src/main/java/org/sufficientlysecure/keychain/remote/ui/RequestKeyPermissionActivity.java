@@ -152,8 +152,8 @@ public class RequestKeyPermissionActivity extends FragmentActivity {
                 }
 
                 @Override
-                public void displayKeyInfo(UserId userId) {
-                    keyUserIdView.setText(userId.name);
+                public void displayKeyInfo(String userIdName) {
+                    keyUserIdView.setText(userIdName);
                 }
 
                 @Override
