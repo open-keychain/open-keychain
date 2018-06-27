@@ -4,6 +4,7 @@ package org.sufficientlysecure.keychain.ui.adapter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import android.content.Context;
@@ -25,12 +26,27 @@ import org.sufficientlysecure.keychain.ui.adapter.KeyChoiceAdapter.KeyChoiceItem
 
 
 public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
+    private final OnKeyClickListener onKeyClickListener;
     private Integer activeItem;
 
-    public KeyChoiceAdapter(boolean isMultiChoice, List<UnifiedKeyInfo> items) {
+    public static KeyChoiceAdapter createSingleClickableAdapter(List<UnifiedKeyInfo> items,
+            OnKeyClickListener onKeyClickListener) {
+        return new KeyChoiceAdapter(items, Objects.requireNonNull(onKeyClickListener), Mode.IDLE);
+    }
+
+    public static KeyChoiceAdapter createSingleChoiceAdapter(List<UnifiedKeyInfo> items) {
+        return new KeyChoiceAdapter(items, null, Mode.SINGLE);
+    }
+
+    public static KeyChoiceAdapter createMultiChoiceAdapter(List<UnifiedKeyInfo> items) {
+        return new KeyChoiceAdapter(items, null, Mode.MULTI);
+    }
+
+    private KeyChoiceAdapter(List<UnifiedKeyInfo> items, OnKeyClickListener onKeyClickListener, int idle) {
         super(getKeyChoiceItems(items));
-        setMode(isMultiChoice ? Mode.MULTI : Mode.SINGLE);
+        setMode(idle);
         addListener((OnItemClickListener) (view, position) -> onClickItem(position));
+        this.onKeyClickListener = onKeyClickListener;
     }
 
     @Nullable
@@ -50,10 +66,15 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
         if (getMode() == Mode.MULTI) {
             toggleSelection(position);
             notifyItemChanged(position);
-        } else {
+            return true;
+        } else if (getMode() == Mode.SINGLE) {
             setActiveItem(position);
+            return true;
         }
-        return true;
+
+        KeyChoiceItem item = getItem(position);
+        onKeyClickListener.onKeyClick(item.keyInfo);
+        return false;
     }
 
     public void setActiveItem(Integer newActiveItem) {
@@ -211,5 +232,9 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
                 }
             }
         }
+    }
+
+    public interface OnKeyClickListener {
+        void onKeyClick(UnifiedKeyInfo keyInfo);
     }
 }

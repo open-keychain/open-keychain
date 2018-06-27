@@ -62,7 +62,7 @@ class RemoteDeduplicatePresenter {
 
     private void onLoadKeyInfos(List<UnifiedKeyInfo> data) {
         if (keyChoiceAdapter == null) {
-            keyChoiceAdapter = new KeyChoiceAdapter(false, data);
+            keyChoiceAdapter = KeyChoiceAdapter.createSingleChoiceAdapter(data);
             view.setKeyListAdapter(keyChoiceAdapter);
         } else {
             keyChoiceAdapter.setUnifiedKeyInfoItems(data);
