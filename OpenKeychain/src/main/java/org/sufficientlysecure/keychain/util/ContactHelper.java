@@ -20,11 +20,9 @@ package org.sufficientlysecure.keychain.util;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 
@@ -49,14 +47,12 @@ import android.util.Patterns;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.model.UserPacket.UserId;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import timber.log.Timber;
 
 public class ContactHelper {
-
-    private static final Map<Long, Bitmap> photoCache = new HashMap<>();
     private final KeyRepository keyRepository;
 
     private Context mContext;
@@ -396,16 +392,6 @@ public class ContactHelper {
         return contactName;
     }
 
-    private Bitmap getCachedPhotoByMasterKeyId(long masterKeyId) {
-        if (masterKeyId == -1) {
-            return null;
-        }
-        if (!photoCache.containsKey(masterKeyId)) {
-            photoCache.put(masterKeyId, loadPhotoByMasterKeyId(masterKeyId, false));
-        }
-        return photoCache.get(masterKeyId);
-    }
-
     public Bitmap loadPhotoByMasterKeyId(long masterKeyId, boolean highRes) {
         if (!isContactsPermissionGranted()) {
             return null;
@@ -449,29 +435,6 @@ public class ContactHelper {
         return BitmapFactory.decodeStream(photoInputStream);
     }
 
-    public static final String[] KEYS_TO_CONTACT_PROJECTION = new String[]{
-            KeychainContract.KeyRings.MASTER_KEY_ID,
-            KeychainContract.KeyRings.USER_ID,
-            KeychainContract.KeyRings.IS_EXPIRED,
-            KeychainContract.KeyRings.IS_REVOKED,
-            KeychainContract.KeyRings.VERIFIED,
-            KeychainContract.KeyRings.HAS_SECRET,
-            KeychainContract.KeyRings.HAS_ANY_SECRET,
-            KeychainContract.KeyRings.NAME,
-            KeychainContract.KeyRings.EMAIL,
-            KeychainContract.KeyRings.COMMENT };
-
-    public static final int INDEX_MASTER_KEY_ID = 0;
-    public static final int INDEX_USER_ID = 1;
-    public static final int INDEX_IS_EXPIRED = 2;
-    public static final int INDEX_IS_REVOKED = 3;
-    public static final int INDEX_VERIFIED = 4;
-    public static final int INDEX_HAS_SECRET = 5;
-    public static final int INDEX_HAS_ANY_SECRET = 6;
-    public static final int INDEX_NAME = 7;
-    public static final int INDEX_EMAIL = 8;
-    public static final int INDEX_COMMENT = 9;
-
     /**
      * Write/Update the current OpenKeychain keys to the contact db
      */
@@ -506,35 +469,28 @@ public class ContactHelper {
         Set<Long> deletedKeys = getRawContactMasterKeyIds();
 
         // Load all public Keys from OK
-        // TODO: figure out why using selectionArgs does not work in this case
-        Cursor cursor = mContentResolver.query(KeychainContract.KeyRings.buildUnifiedKeyRingsUri(),
-                KEYS_TO_CONTACT_PROJECTION,
-                KeychainContract.KeyRings.HAS_ANY_SECRET + "=0",
-                null, null);
+        for (UnifiedKeyInfo keyInfo : keyRepository.getAllUnifiedKeyInfo()) {
+            if (keyInfo.has_any_secret()) {
+                continue;
+            }
 
-        if (cursor != null) {
-            while (cursor.moveToNext()) {
-                long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
-                String name = cursor.getString(INDEX_NAME);
-                boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
-                boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
-                boolean isVerified = cursor.getInt(INDEX_VERIFIED) > 0;
+            long masterKeyId = keyInfo.master_key_id();
+            String name = keyInfo.name();
 
-                Timber.d("masterKeyId: " + masterKeyId);
+            deletedKeys.remove(masterKeyId);
 
-                deletedKeys.remove(masterKeyId);
+            ArrayList<ContentProviderOperation> ops = new ArrayList<>();
 
-                ArrayList<ContentProviderOperation> ops = new ArrayList<>();
-
-                // Do not store expired or revoked or unverified keys in contact db - and
-                // remove them if they already exist. Secret keys do not reach this point
-                if (isExpired || isRevoked || !isVerified) {
-                    Timber.d("Expired or revoked or unverified: Deleting masterKeyId "
-                            + masterKeyId);
-                    if (masterKeyId != -1) {
-                        deleteRawContactByMasterKeyId(masterKeyId);
-                    }
-                } else if (name != null) {
+            // Do not store expired or revoked or unverified keys in contact db - and
+            // remove them if they already exist. Secret keys do not reach this point
+            if (keyInfo.is_expired() || keyInfo.is_revoked() || !keyInfo.is_verified()) {
+                Timber.d("Expired or revoked or unverified: Deleting masterKeyId "
+                        + masterKeyId);
+                if (masterKeyId != -1) {
+                    deleteRawContactByMasterKeyId(masterKeyId);
+                }
+            } else {
+                if (name != null) {
 
                     // get raw contact to this master key id
                     long rawContactId = findRawContactId(masterKeyId);
@@ -559,7 +515,6 @@ public class ContactHelper {
                     }
                 }
             }
-            cursor.close();
         }
 
         // Delete master key ids that are no longer present in OK
@@ -581,40 +536,29 @@ public class ContactHelper {
 
         // get all keys which have associated secret keys
         // TODO: figure out why using selectionArgs does not work in this case
-        Cursor cursor = mContentResolver.query(KeychainContract.KeyRings.buildUnifiedKeyRingsUri(),
-                KEYS_TO_CONTACT_PROJECTION,
-                KeychainContract.KeyRings.HAS_ANY_SECRET + "!=0",
-                null, null);
-        if (cursor != null) try {
-            while (cursor.moveToNext()) {
-                long masterKeyId = cursor.getLong(INDEX_MASTER_KEY_ID);
-                boolean isExpired = cursor.getInt(INDEX_IS_EXPIRED) != 0;
-                boolean isRevoked = cursor.getInt(INDEX_IS_REVOKED) > 0;
-                String name = cursor.getString(INDEX_NAME);
+        for (UnifiedKeyInfo keyInfo : keyRepository.getAllUnifiedKeyInfoWithSecret()) {
+            long masterKeyId = keyInfo.master_key_id();
 
-                if (!isExpired && !isRevoked && name != null) {
-                    // if expired or revoked will not be removed from keysToDelete or inserted
-                    // into main profile ("me" contact)
-                    boolean existsInMainProfile = keysToDelete.remove(masterKeyId);
-                    if (!existsInMainProfile) {
-                        long rawContactId = -1;//new raw contact
+            if (!keyInfo.is_expired() && !keyInfo.is_revoked() && keyInfo.name() != null) {
+                // if expired or revoked will not be removed from keysToDelete or inserted
+                // into main profile ("me" contact)
+                boolean existsInMainProfile = keysToDelete.remove(masterKeyId);
+                if (!existsInMainProfile) {
+                    long rawContactId = -1;//new raw contact
 
-                        Timber.d("masterKeyId with secret " + masterKeyId);
+                    Timber.d("masterKeyId with secret " + masterKeyId);
 
-                        ArrayList<ContentProviderOperation> ops = new ArrayList<>();
-                        insertMainProfileRawContact(ops, masterKeyId);
-                        writeContactKey(ops, rawContactId, masterKeyId, name);
+                    ArrayList<ContentProviderOperation> ops = new ArrayList<>();
+                    insertMainProfileRawContact(ops, masterKeyId);
+                    writeContactKey(ops, rawContactId, masterKeyId, keyInfo.name());
 
-                        try {
-                            mContentResolver.applyBatch(ContactsContract.AUTHORITY, ops);
-                        } catch (Exception e) {
-                            Timber.w(e);
-                        }
+                    try {
+                        mContentResolver.applyBatch(ContactsContract.AUTHORITY, ops);
+                    } catch (Exception e) {
+                        Timber.w(e);
                     }
                 }
             }
-        } finally {
-            cursor.close();
         }
 
         for (long masterKeyId : keysToDelete) {
