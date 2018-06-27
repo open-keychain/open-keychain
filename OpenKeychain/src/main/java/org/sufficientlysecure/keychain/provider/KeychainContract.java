@@ -97,34 +97,14 @@ public class KeychainContract {
 
     public static final String BASE_KEY_SIGNATURES = "key_signatures";
 
-    public static final String PATH_UNIFIED = "unified";
-
     public static final String PATH_PUBLIC = "public";
     public static final String PATH_USER_IDS = "user_ids";
     public static final String PATH_KEYS = "keys";
     public static final String PATH_CERTS = "certs";
 
     public static class KeyRings implements BaseColumns, KeysColumns, UserPacketsColumns {
-        public static final String MASTER_KEY_ID = KeysColumns.MASTER_KEY_ID;
-        public static final String IS_REVOKED = KeysColumns.IS_REVOKED;
-        public static final String IS_SECURE = KeysColumns.IS_SECURE;
-        public static final String VERIFIED = CertsColumns.VERIFIED;
-        public static final String IS_EXPIRED = "is_expired";
-        public static final String HAS_ANY_SECRET = "has_any_secret";
-        public static final String HAS_ENCRYPT = "has_encrypt";
-        public static final String HAS_SIGN_SECRET = "has_sign_secret";
-        public static final String HAS_CERTIFY_SECRET = "has_certify_secret";
-        public static final String HAS_AUTHENTICATE = "has_authenticate";
-        public static final String HAS_AUTHENTICATE_SECRET = "has_authenticate_secret";
-        public static final String HAS_DUPLICATE_USER_ID = "has_duplicate_user_id";
-        public static final String API_KNOWN_TO_PACKAGE_NAMES = "known_to_apps";
-
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_INTERNAL.buildUpon()
                 .appendPath(BASE_KEY_RINGS).build();
-
-        public static Uri buildUnifiedKeyRingsUri() {
-            return CONTENT_URI.buildUpon().appendPath(PATH_UNIFIED).build();
-        }
     }
 
     public static class KeyRingData implements KeyRingsColumns, BaseColumns {

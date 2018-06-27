@@ -31,7 +31,6 @@ import com.nispok.snackbar.Snackbar;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter.KeyItem;
 
 import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
