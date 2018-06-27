@@ -40,7 +40,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.CoreMatchers.allOf;
-import static org.sufficientlysecure.keychain.TestHelpers.importKeysFromResource;
+import static org.sufficientlysecure.keychain.AndroidTestHelpers.importKeysFromResource;
 import static org.sufficientlysecure.keychain.actions.CustomActions.tokenEncryptViewAddToken;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withKeyItemId;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withKeyToken;

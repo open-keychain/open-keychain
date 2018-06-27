@@ -53,7 +53,7 @@ import static org.hamcrest.CoreMatchers.endsWith;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withSnackbarLineColor;
 
 
-public class TestHelpers {
+public class AndroidTestHelpers {
 
     public static void dismissSnackbar() {
         onView(withClassName(endsWith("Snackbar")))
@@ -161,5 +161,4 @@ public class TestHelpers {
         PassphraseCacheService.clearCachedPassphrases(context);
 
     }
-
 }

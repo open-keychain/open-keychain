@@ -108,9 +108,15 @@ public final class Constants {
         public static final File APP_DIR = new File(Environment.getExternalStorageDirectory(), "OpenKeychain");
     }
 
-    public static final class Notification {
+    public static final class NotificationIds {
         public static final int PASSPHRASE_CACHE = 1;
         public static final int KEYSERVER_SYNC_FAIL_ORBOT = 2;
+        public static final int KEYSERVER_SYNC = 3;
+    }
+
+    public static final class NotificationChannels {
+        public static final String KEYSERVER_SYNC = "keyserverSync";
+        public static final String KEYSERVER_SYNC_FOREGROUND = "keyserverSyncForeground";
     }
 
     public static final class Pref {
@@ -145,6 +151,7 @@ public final class Constants {
         public static final String SYNC_CONTACTS = "syncContacts";
         public static final String SYNC_KEYSERVER = "syncKeyserver";
         public static final String ENABLE_WIFI_SYNC_ONLY = "enableWifiSyncOnly";
+        public static final String SYNC_IS_SCHEDULED = "syncIsScheduled";
         // other settings
         public static final String EXPERIMENTAL_ENABLE_LINKED_IDENTITIES = "experimentalEnableLinkedIdentities";
         public static final String EXPERIMENTAL_ENABLE_KEYBASE = "experimentalEnableKeybase";

@@ -18,6 +18,11 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.Manifest;
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -48,19 +53,15 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.AppCompatPreferenceActivity;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
+import org.sufficientlysecure.keychain.keysync.KeyserverSyncManager;
+import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
-import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 import timber.log.Timber;
-
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
@@ -398,6 +399,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * This fragment shows the keyserver/wifi-only-sync/contacts sync preferences
      */
     public static class SyncPrefsFragment extends PresetPreferenceFragment {
+        boolean syncPrefChanged = false;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -405,6 +407,22 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
             // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.sync_preferences);
+
+            findPreference(Constants.Pref.SYNC_KEYSERVER).setOnPreferenceChangeListener(
+                    (preference, newValue) -> {
+                        syncPrefChanged = true;
+                        return true;
+                    });
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+
+            if (syncPrefChanged) {
+                KeyserverSyncManager.updateKeyserverSyncSchedule(getActivity(), true);
+                syncPrefChanged = false;
+            }
         }
 
         @Override
@@ -413,12 +431,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // this needs to be done in onResume since the user can change sync values from Android
             // settings and we need to reflect that change when the user navigates back
             final Account account = KeychainApplication.createAccountIfNecessary(getActivity());
-            // for keyserver sync
-            initializeSyncCheckBox(
-                    (SwitchPreference) findPreference(Constants.Pref.SYNC_KEYSERVER),
-                    account,
-                    Constants.PROVIDER_AUTHORITY
-            );
             // for contacts sync
             initializeSyncCheckBox(
                     (SwitchPreference) findPreference(Constants.Pref.SYNC_CONTACTS),

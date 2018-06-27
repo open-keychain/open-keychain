@@ -25,6 +25,7 @@ import android.content.Context;
 import android.database.Cursor;
 
 import org.sufficientlysecure.keychain.provider.KeychainContract.UpdatedKeys;
+import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
 import timber.log.Timber;
 
 
@@ -50,7 +51,7 @@ public class KeyserverStatusDao {
 
     public KeyserverStatus getKeyserverStatus(long masterKeyId) {
         Cursor cursor = contentResolver.query(UpdatedKeys.CONTENT_URI, PROJECTION,
-                UpdatedKeys.MASTER_KEY_ID + " = ?", new String[] { Long.toString(masterKeyId) }, null);
+                Tables.UPDATED_KEYS + "." + UpdatedKeys.MASTER_KEY_ID + " = ?", new String[] { Long.toString(masterKeyId) }, null);
         if (cursor == null) {
             Timber.e("Error loading key items!");
             return null;

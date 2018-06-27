@@ -1,7 +1,8 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <SwitchPreference
         android:key="syncKeyserver"
-        android:persistent="false"
+        android:defaultValue="true"
+        android:persistent="true"
         android:title="@string/label_sync_settings_keyserver_title"/>
     <SwitchPreference
         android:key="enableWifiSyncOnly"

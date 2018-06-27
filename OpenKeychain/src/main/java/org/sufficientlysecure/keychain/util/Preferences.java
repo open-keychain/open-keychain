@@ -18,26 +18,23 @@
 package org.sufficientlysecure.keychain.util;
 
 
-import android.accounts.Account;
+import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.ListIterator;
+
 import android.annotation.SuppressLint;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+
 import com.google.auto.value.AutoValue;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
-import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
-import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
 import timber.log.Timber;
-
-import java.net.Proxy;
-import java.util.ArrayList;
-import java.util.ListIterator;
 
 
 /**
@@ -324,23 +321,6 @@ public class Preferences {
         }
     }
 
-    /**
-     * @return true if a periodic sync exists and is set to run automatically, false otherwise
-     */
-    public static boolean getKeyserverSyncEnabled(Context context) {
-        Account account = KeychainApplication.createAccountIfNecessary(context);
-
-        if (account == null) {
-            // if the account could not be created for some reason, we can't have a sync
-            return false;
-        }
-
-        String authority = Constants.PROVIDER_AUTHORITY;
-
-        return ContentResolver.getSyncAutomatically(account, authority) &&
-                !ContentResolver.getPeriodicSyncs(account, authority).isEmpty();
-    }
-
     // cloud prefs
 
     public CloudSearchPrefs getCloudSearchPrefs() {
@@ -359,6 +339,18 @@ public class Preferences {
         Editor editor = mSharedPreferences.edit();
         editor.putBoolean(Pref.KEY_SIGNATURES_TABLE_INITIALIZED, true);
         editor.commit();
+    }
+
+    public boolean isKeyserverSyncEnabled() {
+        return mSharedPreferences.getBoolean(Pref.SYNC_KEYSERVER, true);
+    }
+
+    public boolean isKeyserverSyncScheduled() {
+        return mSharedPreferences.getBoolean(Pref.SYNC_IS_SCHEDULED, false);
+    }
+
+    public void setKeyserverSyncScheduled(boolean isScheduled) {
+        mSharedPreferences.edit().putBoolean(Pref.SYNC_IS_SCHEDULED, isScheduled).apply();
     }
 
     @AutoValue
@@ -431,7 +423,7 @@ public class Preferences {
         editor.commit();
     }
 
-    public void upgradePreferences(Context context) {
+    public void upgradePreferences() {
         int oldVersion = mSharedPreferences.getInt(Constants.Pref.PREF_VERSION, 0);
         boolean requiresUpgrade = oldVersion < Constants.Defaults.PREF_CURRENT_VERSION;
 
@@ -447,9 +439,7 @@ public class Preferences {
                 case 4: {
                     setTheme(Constants.Pref.Theme.DEFAULT);
                 }
-                case 5: {
-                    KeyserverSyncAdapterService.enableKeyserverSync(context);
-                }
+                case 5:
                 case 6:
                 case 7: {
                     addOnionToSks();

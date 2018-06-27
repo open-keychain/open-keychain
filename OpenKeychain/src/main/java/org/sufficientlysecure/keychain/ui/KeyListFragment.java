@@ -19,7 +19,7 @@ package org.sufficientlysecure.keychain.ui;
 
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
@@ -45,6 +45,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ViewAnimator;
 
+import androidx.work.WorkStatus;
 import com.futuremind.recyclerviewfastscroll.FastScroller;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
@@ -52,24 +53,19 @@ import com.tonicartos.superslim.LayoutManager;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
-import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
-import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.keysync.KeyserverSyncManager;
 import org.sufficientlysecure.keychain.operations.results.BenchmarkResult;
-import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.service.BenchmarkInputParcel;
-import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.adapter.KeySectionedListAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.ui.util.Notify.ActionListener;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -92,11 +88,6 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
     private String mQuery;
 
     private FloatingActionsMenu mFab;
-
-    // for CryptoOperationHelper import
-    private ArrayList<ParcelableKeyRing> mKeyList;
-    private HkpKeyserverAddress mKeyserver;
-    private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mImportOpHelper;
 
     // Callbacks related to listview and menu events
     private final ActionMode.Callback mActionCallback
@@ -370,6 +361,7 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
             menu.findItem(R.id.menu_key_list_debug_read).setVisible(true);
             menu.findItem(R.id.menu_key_list_debug_write).setVisible(true);
             menu.findItem(R.id.menu_key_list_debug_first_time).setVisible(true);
+            menu.findItem(R.id.menu_key_list_debug_bgsync).setVisible(true);
         }
 
         // Get the searchview
@@ -444,6 +436,10 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
                 getActivity().finish();
                 return true;
             }
+            case R.id.menu_key_list_debug_bgsync: {
+                KeyserverSyncManager.runSyncNow(false, false);
+                return true;
+            }
             case R.id.menu_key_list_debug_bench: {
                 benchmark();
                 return true;
@@ -508,70 +504,27 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
     }
 
     private void updateAllKeys() {
-        Activity activity = getActivity();
-        if (activity == null) {
+        KeyserverSyncManager.getSyncWorkerLiveData().observe(this, this::onSyncWorkerUpdate);
+        KeyserverSyncManager.runSyncNow(true, true);
+    }
+
+    private void onSyncWorkerUpdate(List<WorkStatus> workStatuses) {
+        if (workStatuses == null || workStatuses.isEmpty()) {
             return;
         }
 
-        KeyRepository keyRepository =
-                KeyRepository.create(getContext());
-        Cursor cursor = keyRepository.getContentResolver().query(
-                KeyRings.buildUnifiedKeyRingsUri(), new String[]{
-                        KeyRings.FINGERPRINT
-                }, null, null, null
-        );
-
-        if (cursor == null) {
-            Notify.create(activity, R.string.error_loading_keys, Notify.Style.ERROR).show();
-            return;
+        WorkStatus workStatus = workStatuses.get(0);
+        switch (workStatus.getState()) {
+            case RUNNING:
+                Notify.create(getActivity(), R.string.snack_keysync_start, Style.OK).show(this);
+                break;
+            case SUCCEEDED:
+                Notify.create(getActivity(), R.string.snack_keysync_finished, Style.OK).show(this);
+                break;
+            case FAILED:
+                Notify.create(getActivity(), R.string.snack_keysync_error, Style.ERROR).show(this);
+                break;
         }
-
-        ArrayList<ParcelableKeyRing> keyList = new ArrayList<>();
-        try {
-            while (cursor.moveToNext()) {
-                byte[] fingerprint = cursor.getBlob(0); //fingerprint column is 0
-                ParcelableKeyRing keyEntry = ParcelableKeyRing.createFromReference(fingerprint, null, null, null);
-                keyList.add(keyEntry);
-            }
-            mKeyList = keyList;
-        } finally {
-            cursor.close();
-        }
-
-        // search config
-        mKeyserver = Preferences.getPreferences(getActivity()).getPreferredKeyserver();
-
-        CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> callback
-                = new CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult>() {
-
-            @Override
-            public ImportKeyringParcel createOperationInput() {
-                return ImportKeyringParcel.createImportKeyringParcel(mKeyList, mKeyserver);
-            }
-
-            @Override
-            public void onCryptoOperationSuccess(ImportKeyResult result) {
-                result.createNotify(getActivity()).show();
-            }
-
-            @Override
-            public void onCryptoOperationCancelled() {
-            }
-
-            @Override
-            public void onCryptoOperationError(ImportKeyResult result) {
-                result.createNotify(getActivity()).show();
-            }
-
-            @Override
-            public boolean onCryptoSetProgress(String msg, int progress, int max) {
-                return false;
-            }
-        };
-
-        mImportOpHelper = new CryptoOperationHelper<>(1, this, callback, R.string.progress_updating);
-        mImportOpHelper.setProgressCancellable(true);
-        mImportOpHelper.cryptoOperation();
     }
 
     private void benchmark() {
@@ -609,10 +562,6 @@ public class KeyListFragment extends RecyclerFragment<KeySectionedListAdapter>
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mImportOpHelper != null) {
-            mImportOpHelper.handleActivityResult(requestCode, resultCode, data);
-        }
-
         switch (requestCode) {
             case REQUEST_DELETE: {
                 if (mActionMode != null) {

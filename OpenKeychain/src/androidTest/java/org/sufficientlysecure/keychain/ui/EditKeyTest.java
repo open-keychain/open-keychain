@@ -20,37 +20,27 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.test.espresso.ViewAction;
-import android.support.test.espresso.action.ViewActions;
-import android.support.test.espresso.contrib.RecyclerViewActions;
-import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.rule.ActivityTestRule;
 import android.support.v7.widget.RecyclerView;
-import android.widget.AdapterView;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.runners.MethodSorters;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.matcher.CustomMatchers;
 import org.sufficientlysecure.keychain.provider.KeychainDatabase;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
-import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.contrib.RecyclerViewActions.actionOnHolderItem;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
-import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
-import static org.sufficientlysecure.keychain.TestHelpers.checkSnackbar;
-import static org.sufficientlysecure.keychain.TestHelpers.importKeysFromResource;
+import static org.sufficientlysecure.keychain.AndroidTestHelpers.checkSnackbar;
+import static org.sufficientlysecure.keychain.AndroidTestHelpers.importKeysFromResource;
 import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withKeyHolderId;
-import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withKeyItemId;
+
 
 //TODO This test is disabled because it needs to be fixed to work with updated code
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
