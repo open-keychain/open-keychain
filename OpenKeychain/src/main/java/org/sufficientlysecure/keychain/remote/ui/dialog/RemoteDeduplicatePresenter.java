@@ -22,19 +22,15 @@ import java.util.List;
 
 import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.graphics.drawable.Drawable;
+import android.support.v7.widget.RecyclerView.Adapter;
 
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.remote.AutocryptInteractor;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteDeduplicateActivity.DeduplicateViewModel;
-import timber.log.Timber;
+import org.sufficientlysecure.keychain.ui.adapter.KeyChoiceAdapter;
 
 
 class RemoteDeduplicatePresenter {
-    private final PackageManager packageManager;
     private final Context context;
     private final LifecycleOwner lifecycleOwner;
 
@@ -43,15 +39,12 @@ class RemoteDeduplicatePresenter {
 
     private DeduplicateViewModel viewModel;
     private RemoteDeduplicateView view;
-    private Integer selectedItem;
-    private List<UnifiedKeyInfo> keyInfoData;
+    private KeyChoiceAdapter keyChoiceAdapter;
 
 
     RemoteDeduplicatePresenter(Context context, LifecycleOwner lifecycleOwner) {
         this.context = context;
         this.lifecycleOwner = lifecycleOwner;
-
-        packageManager = context.getPackageManager();
     }
 
     public void setView(RemoteDeduplicateView view) {
@@ -62,42 +55,27 @@ class RemoteDeduplicatePresenter {
         this.viewModel = viewModel;
         this.autocryptInteractor = AutocryptInteractor.getInstance(context, viewModel.getPackageName());
 
-        try {
-            setPackageInfo(viewModel.getPackageName());
-        } catch (NameNotFoundException e) {
-            Timber.e("Unable to find info of calling app!");
-            view.finishAsCancelled();
-            return;
-        }
-
         view.setAddressText(viewModel.getDuplicateAddress());
 
         viewModel.getKeyInfoLiveData(context).observe(lifecycleOwner, this::onLoadKeyInfos);
     }
 
-    private void setPackageInfo(String packageName) throws NameNotFoundException {
-        ApplicationInfo applicationInfo = packageManager.getApplicationInfo(packageName, 0);
-        Drawable appIcon = packageManager.getApplicationIcon(applicationInfo);
-
-        view.setTitleClientIcon(appIcon);
-    }
-
     private void onLoadKeyInfos(List<UnifiedKeyInfo> data) {
-        this.keyInfoData = data;
-        view.setKeyListData(data);
+        if (keyChoiceAdapter == null) {
+            keyChoiceAdapter = new KeyChoiceAdapter(false, data);
+            view.setKeyListAdapter(keyChoiceAdapter);
+        } else {
+            keyChoiceAdapter.setUnifiedKeyInfoItems(data);
+        }
     }
 
     void onClickSelect() {
-        if (keyInfoData == null) {
-            Timber.e("got click on select with no data…?");
+        UnifiedKeyInfo activeItem = keyChoiceAdapter.getActiveItem();
+        if (activeItem == null) {
+            view.showNoSelectionError();
             return;
         }
-        if (selectedItem == null) {
-            Timber.e("got click on select with no selection…?");
-            return;
-        }
-
-        long masterKeyId = keyInfoData.get(selectedItem).master_key_id();
+        long masterKeyId = activeItem.master_key_id();
         autocryptInteractor.updateKeyGossipFromDedup(viewModel.getDuplicateAddress(), masterKeyId);
 
         view.finish();
@@ -111,25 +89,13 @@ class RemoteDeduplicatePresenter {
         view.finishAsCancelled();
     }
 
-    void onKeyItemClick(int position) {
-        if (selectedItem != null && position == selectedItem) {
-            selectedItem = null;
-        } else {
-            selectedItem = position;
-        }
-        view.setActiveItem(selectedItem);
-        view.setEnableSelectButton(selectedItem != null);
-    }
-
     interface RemoteDeduplicateView {
+        void showNoSelectionError();
         void finish();
         void finishAsCancelled();
 
         void setAddressText(String text);
-        void setTitleClientIcon(Drawable drawable);
 
-        void setKeyListData(List<UnifiedKeyInfo> data);
-        void setActiveItem(Integer position);
-        void setEnableSelectButton(boolean enabled);
+        void setKeyListAdapter(Adapter adapter);
     }
 }

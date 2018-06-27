@@ -52,9 +52,6 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<SelectSignKeyA
     private ApiAppDao mApiAppDao;
     private String mPackageName;
 
-    /**
-     * Creates new instance of this fragment
-     */
     public static SelectSignKeyIdListFragment newInstance(String packageName, Intent data, String preferredUserId) {
         SelectSignKeyIdListFragment frag = new SelectSignKeyIdListFragment();
         Bundle args = new Bundle();

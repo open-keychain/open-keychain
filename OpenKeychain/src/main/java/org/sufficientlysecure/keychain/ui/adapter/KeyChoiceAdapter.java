@@ -1,81 +1,66 @@
 package org.sufficientlysecure.keychain.ui.adapter;
 
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.Drawable.ConstantState;
-import android.support.annotation.NonNull;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.Adapter;
 import android.text.format.DateUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.CheckBox;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
+import eu.davidea.flexibleadapter.FlexibleAdapter;
+import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
+import eu.davidea.flexibleadapter.items.IFlexible;
+import eu.davidea.viewholders.FlexibleViewHolder;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
-import org.sufficientlysecure.keychain.ui.adapter.KeyChoiceAdapter.KeyChoiceViewHolder;
+import org.sufficientlysecure.keychain.ui.adapter.KeyChoiceAdapter.KeyChoiceItem;
 
 
-public class KeyChoiceAdapter extends Adapter<KeyChoiceViewHolder> {
-    private final LayoutInflater layoutInflater;
-    private final Resources resources;
-    private List<UnifiedKeyInfo> data;
-    private Drawable iconUnselected;
-    private Drawable iconSelected;
+public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
     private Integer activeItem;
 
-    public KeyChoiceAdapter(LayoutInflater layoutInflater, Resources resources) {
-        this.layoutInflater = layoutInflater;
-        this.resources = resources;
+    public KeyChoiceAdapter(boolean isMultiChoice, List<UnifiedKeyInfo> items) {
+        super(getKeyChoiceItems(items));
+        setMode(isMultiChoice ? Mode.MULTI : Mode.SINGLE);
+        addListener((OnItemClickListener) (view, position) -> onClickItem(position));
     }
 
-    @NonNull
-    @Override
-    public KeyChoiceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View keyChoiceItemView = layoutInflater.inflate(R.layout.duplicate_key_item, parent, false);
-        return new KeyChoiceViewHolder(keyChoiceItemView);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull KeyChoiceViewHolder holder, int position) {
-        UnifiedKeyInfo keyInfo = data.get(position);
-        Drawable icon = (activeItem != null && position == activeItem) ? iconSelected : iconUnselected;
-        holder.bind(keyInfo, icon);
-    }
-
-    @Override
-    public int getItemCount() {
-        return data != null ? data.size() : 0;
-    }
-
-    public void setData(List<UnifiedKeyInfo> data) {
-        this.data = data;
-        notifyDataSetChanged();
-    }
-
-    public void setSelectionDrawable(Drawable drawable) {
-        ConstantState constantState = drawable.getConstantState();
-        if (constantState == null) {
-            return;
+    @Nullable
+    private static ArrayList<KeyChoiceItem> getKeyChoiceItems(@Nullable List<UnifiedKeyInfo> items) {
+        if (items == null) {
+            return null;
         }
+        ArrayList<KeyChoiceItem> choiceItems = new ArrayList<>();
+        for (UnifiedKeyInfo keyInfo : items) {
+            KeyChoiceItem keyChoiceItem = new KeyChoiceItem(keyInfo);
+            choiceItems.add(keyChoiceItem);
+        }
+        return choiceItems;
+    }
 
-        iconSelected = constantState.newDrawable(resources);
-
-        iconUnselected = constantState.newDrawable(resources);
-        DrawableCompat.setTint(iconUnselected.mutate(), ResourcesCompat.getColor(resources, R.color.md_grey_300, null));
-
-        notifyDataSetChanged();
+    private boolean onClickItem(int position) {
+        if (getMode() == Mode.MULTI) {
+            toggleSelection(position);
+            notifyItemChanged(position);
+        } else {
+            setActiveItem(position);
+        }
+        return true;
     }
 
     public void setActiveItem(Integer newActiveItem) {
+        if (getMode() != Mode.SINGLE) {
+            throw new IllegalStateException("Cannot get active item in single select mode!");
+        }
+
         Integer prevActiveItem = this.activeItem;
         this.activeItem = newActiveItem;
 
@@ -87,20 +72,117 @@ public class KeyChoiceAdapter extends Adapter<KeyChoiceViewHolder> {
         }
     }
 
-    public static class KeyChoiceViewHolder extends RecyclerView.ViewHolder {
-        private final TextView vName;
-        private final TextView vCreation;
-        private final ImageView vIcon;
-
-        KeyChoiceViewHolder(View itemView) {
-            super(itemView);
-
-            vName = itemView.findViewById(R.id.key_list_item_name);
-            vCreation = itemView.findViewById(R.id.key_list_item_creation);
-            vIcon = itemView.findViewById(R.id.key_list_item_icon);
+    public UnifiedKeyInfo getActiveItem() {
+        if (getMode() != Mode.SINGLE) {
+            throw new IllegalStateException("Cannot get active item in single select mode!");
+        }
+        if (activeItem == null) {
+            return null;
         }
 
-        void bind(UnifiedKeyInfo keyInfo, Drawable selectionIcon) {
+        KeyChoiceItem item = getItem(activeItem);
+        return item == null ? null : item.keyInfo;
+    }
+
+    public void setUnifiedKeyInfoItems(List<UnifiedKeyInfo> keyInfos) {
+        List<KeyChoiceItem> keyChoiceItems = getKeyChoiceItems(keyInfos);
+        updateDataSet(keyChoiceItems);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        KeyChoiceItem item = getItem(position);
+        if (item == null) {
+            return RecyclerView.NO_ID;
+        }
+        return item.getMasterKeyId();
+    }
+
+    public void setSelectionByIds(Set<Long> checkedIds) {
+        if (getMode() != Mode.MULTI) {
+            throw new IllegalStateException("Cannot get active item in single select mode!");
+        }
+
+        clearSelection();
+        for (int position = 0; position < getItemCount(); position++) {
+            long itemId = getItemId(position);
+            if (checkedIds.contains(itemId)) {
+                addSelection(position);
+            }
+        }
+    }
+
+    public Set<Long> getSelectionIds() {
+        if (getMode() != Mode.MULTI) {
+            throw new IllegalStateException("Cannot get active item in single select mode!");
+        }
+
+        Set<Long> result = new HashSet<>();
+        for (int position : getSelectedPositions()) {
+            long itemId = getItemId(position);
+            result.add(itemId);
+        }
+        return result;
+    }
+
+    public static class KeyChoiceItem extends AbstractFlexibleItem<KeyChoiceViewHolder> {
+        private UnifiedKeyInfo keyInfo;
+
+        KeyChoiceItem(UnifiedKeyInfo keyInfo) {
+            this.keyInfo = keyInfo;
+            setSelectable(true);
+        }
+
+        @Override
+        public int getLayoutRes() {
+            return R.layout.key_choice_item;
+        }
+
+        @Override
+        public KeyChoiceViewHolder createViewHolder(View view, FlexibleAdapter<IFlexible> adapter) {
+            return new KeyChoiceViewHolder(view, adapter);
+        }
+
+        @Override
+        public void bindViewHolder(FlexibleAdapter<IFlexible> adapter, KeyChoiceViewHolder holder, int position,
+                List<Object> payloads) {
+            boolean isActive = adapter.isSelected(position);
+            holder.bind(keyInfo, adapter.getMode(), isActive);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return (o instanceof KeyChoiceItem) &&
+                    ((KeyChoiceItem) o).keyInfo.master_key_id() == keyInfo.master_key_id();
+        }
+
+        @Override
+        public int hashCode() {
+            long masterKeyId = keyInfo.master_key_id();
+            return (int) (masterKeyId ^ (masterKeyId >>> 32));
+        }
+
+        public long getMasterKeyId() {
+            return keyInfo.master_key_id();
+        }
+    }
+
+    public static class KeyChoiceViewHolder extends FlexibleViewHolder {
+        private final TextView vName;
+        private final TextView vCreation;
+        private final CheckBox vCheckbox;
+        private final RadioButton vRadio;
+
+        KeyChoiceViewHolder(View itemView, FlexibleAdapter<IFlexible> adapter) {
+            super(itemView, adapter);
+
+            vName = itemView.findViewById(R.id.text_keychoice_name);
+            vCreation = itemView.findViewById(R.id.text_keychoice_creation);
+            vCheckbox = itemView.findViewById(R.id.checkbox_keychoice);
+            vRadio = itemView.findViewById(R.id.radio_keychoice);
+        }
+
+        void bind(UnifiedKeyInfo keyInfo, int choiceMode, boolean isActive) {
             vName.setText(keyInfo.name());
 
             Context context = vCreation.getContext();
@@ -109,7 +191,25 @@ public class KeyChoiceAdapter extends Adapter<KeyChoiceViewHolder> {
                             DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_ABBREV_MONTH);
             vCreation.setText(context.getString(R.string.label_key_created, dateTime));
 
-            vIcon.setImageDrawable(selectionIcon);
+            switch (choiceMode) {
+                case Mode.IDLE: {
+                    vRadio.setVisibility(View.GONE);
+                    vCheckbox.setVisibility(View.GONE);
+                    break;
+                }
+                case Mode.SINGLE: {
+                    vRadio.setVisibility(View.VISIBLE);
+                    vRadio.setChecked(isActive);
+                    vCheckbox.setVisibility(View.GONE);
+                    break;
+                }
+                case Mode.MULTI: {
+                    vCheckbox.setVisibility(View.VISIBLE);
+                    vCheckbox.setChecked(isActive);
+                    vRadio.setVisibility(View.GONE);
+                    break;
+                }
+            }
         }
     }
 }

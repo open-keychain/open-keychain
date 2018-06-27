@@ -18,45 +18,36 @@
 package org.sufficientlysecure.keychain.remote.ui;
 
 
+import java.util.List;
 import java.util.Set;
 
-import android.database.Cursor;
-import android.net.Uri;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
+import android.support.v7.widget.LinearLayoutManager;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.compatibility.ListFragmentWorkaround;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.provider.ApiAppDao;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
-import org.sufficientlysecure.keychain.ui.adapter.KeySelectableAdapter;
-import org.sufficientlysecure.keychain.ui.widget.FixedListView;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.ui.adapter.KeyChoiceAdapter;
+import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
+import org.sufficientlysecure.keychain.ui.keyview.GenericViewModel;
 
 
-public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround implements LoaderManager.LoaderCallbacks<Cursor> {
+public class AppSettingsAllowedKeysListFragment extends RecyclerFragment<KeyChoiceAdapter> {
     private static final String ARG_PACKAGE_NAME = "package_name";
 
-    private KeySelectableAdapter mAdapter;
-    private ApiAppDao mApiAppDao;
+    private KeyChoiceAdapter keyChoiceAdapter;
+    private ApiAppDao apiAppDao;
 
     private String packageName;
 
-    /**
-     * Creates new instance of this fragment
-     */
     public static AppSettingsAllowedKeysListFragment newInstance(String packageName) {
         AppSettingsAllowedKeysListFragment frag = new AppSettingsAllowedKeysListFragment();
+
         Bundle args = new Bundle();
-
         args.putString(ARG_PACKAGE_NAME, packageName);
-
         frag.setArguments(args);
 
         return frag;
@@ -66,34 +57,9 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mApiAppDao = ApiAppDao.getInstance(getActivity());
+        apiAppDao = ApiAppDao.getInstance(getActivity());
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View layout = super.onCreateView(inflater, container, savedInstanceState);
-        ListView lv = layout.findViewById(android.R.id.list);
-        ViewGroup parent = (ViewGroup) lv.getParent();
-
-        /*
-         * http://stackoverflow.com/a/15880684
-         * Remove ListView and add FixedListView in its place.
-         * This is done here programatically to be still able to use the progressBar of ListFragment.
-         *
-         * We want FixedListView to be able to put this ListFragment inside a ScrollView
-         */
-        int lvIndex = parent.indexOfChild(lv);
-        parent.removeViewAt(lvIndex);
-        FixedListView newLv = new FixedListView(getActivity());
-        newLv.setId(android.R.id.list);
-        parent.addView(newLv, lvIndex, lv.getLayoutParams());
-        return layout;
-    }
-
-    /**
-     * Define Adapter and Loader on create of Activity
-     */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -104,70 +70,36 @@ public class AppSettingsAllowedKeysListFragment extends ListFragmentWorkaround i
         // application this would come from a resource.
         setEmptyText(getString(R.string.list_empty));
 
-        Set<Long> checked = mApiAppDao.getAllowedKeyIdsForApp(packageName);
-        mAdapter = new KeySelectableAdapter(getActivity(), null, 0, checked);
-        setListAdapter(mAdapter);
-        getListView().setOnItemClickListener(mAdapter);
+        getRecyclerView().setLayoutManager(new LinearLayoutManager(requireContext()));
 
         // Start out with a progress indicator.
-        setListShown(false);
+        hideList(false);
 
-        // Prepare the loader. Either re-connect with an existing one,
-        // or start a new one.
-        getLoaderManager().initLoader(0, null, this);
-
+        KeyRepository keyRepository = KeyRepository.create(requireContext());
+        GenericViewModel viewModel = ViewModelProviders.of(this).get(GenericViewModel.class);
+        LiveData<List<UnifiedKeyInfo>> liveData =
+                viewModel.getGenericLiveData(requireContext(), keyRepository::getAllUnifiedKeyInfoWithSecret);
+        liveData.observe(this, this::onLoadUnifiedKeyData);
     }
-    /** Returns all selected master key ids. */
-    public Set<Long> getSelectedMasterKeyIds() {
-        return mAdapter.getSelectedMasterKeyIds();
-    }
-
-    /** Returns all selected user ids.
-    public String[] getSelectedUserIds() {
-        Vector<String> userIds = new Vector<>();
-        for (int i = 0; i < getListView().getCount(); ++i) {
-            if (getListView().isItemChecked(i)) {
-                userIds.add(spinnerAdapter.getUserId(i));
-            }
-        }
-
-        // make empty array to not return null
-        String userIdArray[] = new String[0];
-        return userIds.toArray(userIdArray);
-    } */
 
     public void saveAllowedKeys() {
-        mApiAppDao.saveAllowedKeyIdsForApp(packageName, getSelectedMasterKeyIds());
+        Set<Long> longs = keyChoiceAdapter.getSelectionIds();
+        apiAppDao.saveAllowedKeyIdsForApp(packageName, longs);
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int loaderId, Bundle data) {
-        Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingsUri();
-        String where = KeychainContract.KeyRings.HAS_ANY_SECRET + " = 1";
-
-        return new CursorLoader(getActivity(), baseUri, KeyAdapter.PROJECTION, where, null, null);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Swap the new cursor in. (The framework will take care of closing the
-        // old cursor once we return.)
-        mAdapter.swapCursor(data);
-
-        // The list should now be shown.
-        if (isResumed()) {
-            setListShown(true);
+    public void onLoadUnifiedKeyData(List<UnifiedKeyInfo> data) {
+        if (keyChoiceAdapter == null) {
+            keyChoiceAdapter = new KeyChoiceAdapter(true, data);
+            setAdapter(keyChoiceAdapter);
         } else {
-            setListShownNoAnimation(true);
+            keyChoiceAdapter.setUnifiedKeyInfoItems(data);
         }
-    }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        // This is called when the last Cursor provided to onLoadFinished()
-        // above is about to be closed. We need to make sure we are no
-        // longer using it.
-        mAdapter.swapCursor(null);
+        Set<Long> checkedIds = apiAppDao.getAllowedKeyIdsForApp(packageName);
+        keyChoiceAdapter.setSelectionByIds(checkedIds);
+
+        boolean animateShowList = !isResumed();
+        showList(animateShowList);
     }
 
 }

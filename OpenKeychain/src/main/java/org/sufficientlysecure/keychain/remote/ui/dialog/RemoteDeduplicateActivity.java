@@ -29,19 +29,19 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.Adapter;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mikepenz.materialdrawer.util.KeyboardUtil;
 import org.sufficientlysecure.keychain.R;
@@ -50,11 +50,9 @@ import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteDeduplicatePresenter.RemoteDeduplicateView;
-import org.sufficientlysecure.keychain.ui.adapter.KeyChoiceAdapter;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.DividerItemDecoration;
-import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerItemClickListener;
 
 
 public class RemoteDeduplicateActivity extends FragmentActivity {
@@ -157,7 +155,7 @@ public class RemoteDeduplicateActivity extends FragmentActivity {
                     new DividerItemDecoration(activity, DividerItemDecoration.VERTICAL_LIST, true));
 
             setupListenersForPresenter();
-            mvpView = createMvpView(view, layoutInflater);
+            mvpView = createMvpView(view);
 
             return alert.create();
         }
@@ -190,11 +188,8 @@ public class RemoteDeduplicateActivity extends FragmentActivity {
         }
 
         @NonNull
-        private RemoteDeduplicateView createMvpView(View view, LayoutInflater layoutInflater) {
-            final ImageView iconClientApp = view.findViewById(R.id.icon_client_app);
-            final KeyChoiceAdapter keyChoiceAdapter = new KeyChoiceAdapter(layoutInflater, getResources());
+        private RemoteDeduplicateView createMvpView(View view) {
             final TextView addressText = view.findViewById(R.id.select_key_item_name);
-            keyChoiceList.setAdapter(keyChoiceAdapter);
 
             return new RemoteDeduplicateView() {
                 @Override
@@ -222,9 +217,8 @@ public class RemoteDeduplicateActivity extends FragmentActivity {
                 }
 
                 @Override
-                public void setTitleClientIcon(Drawable drawable) {
-                    iconClientApp.setImageDrawable(drawable);
-                    keyChoiceAdapter.setSelectionDrawable(drawable);
+                public void showNoSelectionError() {
+                    Toast.makeText(getContext(), "No key selected!", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -233,18 +227,8 @@ public class RemoteDeduplicateActivity extends FragmentActivity {
                 }
 
                 @Override
-                public void setKeyListData(List<UnifiedKeyInfo> data) {
-                    keyChoiceAdapter.setData(data);
-                }
-
-                @Override
-                public void setActiveItem(Integer position) {
-                    keyChoiceAdapter.setActiveItem(position);
-                }
-
-                @Override
-                public void setEnableSelectButton(boolean enabled) {
-                    buttonSelect.setEnabled(enabled);
+                public void setKeyListAdapter(Adapter adapter) {
+                    keyChoiceList.setAdapter(adapter);
                 }
             };
         }
@@ -252,8 +236,6 @@ public class RemoteDeduplicateActivity extends FragmentActivity {
         private void setupListenersForPresenter() {
             buttonSelect.setOnClickListener(view -> presenter.onClickSelect());
             buttonCancel.setOnClickListener(view -> presenter.onClickCancel());
-            keyChoiceList.addOnItemTouchListener(new RecyclerItemClickListener(getContext(),
-                    (view, position) -> presenter.onKeyItemClick(position)));
         }
     }
 
