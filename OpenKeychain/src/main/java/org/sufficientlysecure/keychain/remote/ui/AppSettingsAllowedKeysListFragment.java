@@ -89,7 +89,7 @@ public class AppSettingsAllowedKeysListFragment extends RecyclerFragment<KeyChoi
 
     public void onLoadUnifiedKeyData(List<UnifiedKeyInfo> data) {
         if (keyChoiceAdapter == null) {
-            keyChoiceAdapter = new KeyChoiceAdapter(true, data);
+            keyChoiceAdapter = KeyChoiceAdapter.createMultiChoiceAdapter(data);
             setAdapter(keyChoiceAdapter);
             Set<Long> checkedIds = apiAppDao.getAllowedKeyIdsForApp(packageName);
             keyChoiceAdapter.setSelectionByIds(checkedIds);

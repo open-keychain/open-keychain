@@ -16,10 +16,10 @@
 
 package org.sufficientlysecure.keychain.ui.base;
 
+
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
@@ -32,7 +32,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
+import org.sufficientlysecure.keychain.R;
 import timber.log.Timber;
 
 
@@ -124,8 +124,15 @@ public class RecyclerFragment<A extends RecyclerView.Adapter> extends Fragment {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
 
-        FrameLayout listContainer = new FrameLayout(context);
+        LinearLayout listContainer = new LinearLayout(context);
+        listContainer.setOrientation(LinearLayout.VERTICAL);
         listContainer.setId(INTERNAL_LIST_CONTAINER_ID);
+
+        LinearLayout headerLayout = new LinearLayout(context);
+        headerLayout.setId(R.id.headerlayout);
+
+        listContainer.addView(headerLayout, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         TextView textView = new TextView(context);
         textView.setId(INTERNAL_EMPTY_VIEW_ID);
