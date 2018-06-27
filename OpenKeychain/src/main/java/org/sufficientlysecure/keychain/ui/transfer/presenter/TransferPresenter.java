@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import android.arch.lifecycle.LifecycleOwner;
+import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
@@ -30,19 +32,16 @@ import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build.VERSION_CODES;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.view.LayoutInflater;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.network.KeyTransferInteractor;
 import org.sufficientlysecure.keychain.network.KeyTransferInteractor.KeyTransferCallback;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
@@ -54,7 +53,7 @@ import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper.Callback;
-import org.sufficientlysecure.keychain.ui.transfer.loader.SecretKeyLoader.SecretKeyItem;
+import org.sufficientlysecure.keychain.ui.keyview.GenericViewModel;
 import org.sufficientlysecure.keychain.ui.transfer.view.ReceivedSecretKeyList.OnClickImportKeyListener;
 import org.sufficientlysecure.keychain.ui.transfer.view.ReceivedSecretKeyList.ReceivedKeyAdapter;
 import org.sufficientlysecure.keychain.ui.transfer.view.ReceivedSecretKeyList.ReceivedKeyItem;
@@ -65,20 +64,19 @@ import timber.log.Timber;
 
 
 @RequiresApi(api = VERSION_CODES.LOLLIPOP)
-public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<List<SecretKeyItem>>,
-        OnClickTransferKeyListener, OnClickImportKeyListener {
+public class TransferPresenter implements KeyTransferCallback, OnClickTransferKeyListener, OnClickImportKeyListener {
     private static final String DELIMITER_START = "-----BEGIN PGP PRIVATE KEY BLOCK-----";
     private static final String DELIMITER_END = "-----END PGP PRIVATE KEY BLOCK-----";
     private static final String BACKSTACK_TAG_TRANSFER = "transfer";
 
     private final Context context;
     private final TransferMvpView view;
-    private final LoaderManager loaderManager;
-    private final int loaderId;
-    private final KeyRepository databaseInteractor;
+    private final KeyRepository keyRepository;
 
     private final TransferKeyAdapter secretKeyAdapter;
     private final ReceivedKeyAdapter receivedKeyAdapter;
+    private final LifecycleOwner lifecycleOwner;
+    private final GenericViewModel viewModel;
 
 
     private KeyTransferInteractor keyTransferClientInteractor;
@@ -90,12 +88,13 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     private Long confirmingMasterKeyId;
 
 
-    public TransferPresenter(Context context, LoaderManager loaderManager, int loaderId, TransferMvpView view) {
+    public TransferPresenter(Context context, LifecycleOwner lifecycleOwner,
+            GenericViewModel viewModel, TransferMvpView view) {
         this.context = context;
         this.view = view;
-        this.loaderManager = loaderManager;
-        this.loaderId = loaderId;
-        this.databaseInteractor = KeyRepository.create(context);
+        this.lifecycleOwner = lifecycleOwner;
+        this.viewModel = viewModel;
+        this.keyRepository = KeyRepository.create(context);
 
         secretKeyAdapter = new TransferKeyAdapter(context, LayoutInflater.from(context), this);
         view.setSecretKeyAdapter(secretKeyAdapter);
@@ -110,11 +109,18 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
     }
 
     public void onUiStart() {
-        loaderManager.restartLoader(loaderId, null, this);
+        LiveData<List<UnifiedKeyInfo>> liveData =
+                viewModel.getGenericLiveData(context, keyRepository::getAllUnifiedKeyInfoWithSecret);
+        liveData.observe(lifecycleOwner, this::onLoadSecretUnifiedKeyInfo);
 
         if (keyTransferServerInteractor == null && keyTransferClientInteractor == null && !wasConnected) {
             checkWifiResetAndStartListen();
         }
+    }
+
+    private void onLoadSecretUnifiedKeyInfo(List<UnifiedKeyInfo> data) {
+        secretKeyAdapter.setData(data);
+        view.setShowSecretKeyEmptyView(data.isEmpty());
     }
 
     public void onUiStop() {
@@ -288,12 +294,9 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
         Timber.d("data sent ok!");
         final long masterKeyId = Long.parseLong(passthrough);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                secretKeyAdapter.focusItem(null);
-                secretKeyAdapter.addToFinishedItems(masterKeyId);
-            }
+        new Handler().postDelayed(() -> {
+            secretKeyAdapter.focusItem(null);
+            secretKeyAdapter.addToFinishedItems(masterKeyId);
         }, 750);
     }
 
@@ -376,6 +379,10 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
 
     private boolean isWifiConnected() {
         ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connManager == null) {
+            return false;
+        }
+
         NetworkInfo wifiNetwork = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
         return wifiNetwork.isConnected();
@@ -411,7 +418,7 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
 
     private void prepareAndSendKey(long masterKeyId) {
         try {
-            byte[] armoredSecretKey = databaseInteractor.getSecretKeyRingAsArmoredData(masterKeyId);
+            byte[] armoredSecretKey = keyRepository.getSecretKeyRingAsArmoredData(masterKeyId);
             secretKeyAdapter.focusItem(masterKeyId);
             connectionSend(armoredSecretKey, Long.toString(masterKeyId));
         } catch (IOException | NotFoundException e) {
@@ -428,24 +435,6 @@ public class TransferPresenter implements KeyTransferCallback, LoaderCallbacks<L
             keyTransferServerInteractor.sendData(armoredSecretKey, passthrough);
         }
     }
-
-
-    @Override
-    public Loader<List<SecretKeyItem>> onCreateLoader(int id, Bundle args) {
-        return secretKeyAdapter.createLoader(context);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<List<SecretKeyItem>> loader, List<SecretKeyItem> data) {
-        secretKeyAdapter.setData(data);
-        view.setShowSecretKeyEmptyView(data.isEmpty());
-    }
-
-    @Override
-    public void onLoaderReset(Loader<List<SecretKeyItem>> loader) {
-        secretKeyAdapter.setData(null);
-    }
-
 
     public interface TransferMvpView {
         void showNotOnWifi();
