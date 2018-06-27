@@ -28,7 +28,7 @@ dependencies {
 
     // UI
     compile 'org.sufficientlysecure:html-textview:3.1'
-    compile 'com.splitwise:tokenautocomplete:2.0.8@aar'
+    compile 'com.github.sikeeoh:MaterialChipsInput:1.1.1'
     compile 'com.jpardogo.materialtabstrip:library:1.1.1'
     compile 'com.getbase:floatingactionbutton:1.10.1'
     compile 'com.nispok:snackbar:2.11.0'
@@ -150,7 +150,6 @@ dependencyVerification {
         'com.squareup.okhttp3:okhttp:a0d01017a42bba26e507fc6d448bb36e536f4b6e612f7c42de30bbdac2b7785e',
         'org.apache.james:apache-mime4j-dom:e18717fe6d36f32e5c5f7cbeea1a9bf04645fdabc84e7e8374d9da10fd52e78d',
         'org.apache.james:apache-mime4j-core:561987f604911e1870b2b4eabf0b0658d666c66cb1e65fba3e9e4bffe63acab9',
-        'com.splitwise:tokenautocomplete:f921f83ee26b5265f719b312c30452ef8e219557826c5ce5bf02e29647967939',
         'com.cocosw:bottomsheet:85bd91fd837b02ebd7a888501cb26035c7cd985a6aa87303fca249da8231a2c3',
         'eu.davidea:flexible-adapter-livedata:c8718b46ff4fbf290ea18f0c5bfe8326badeadf5fd95899a1404c561a24f48a1',
         'com.mikepenz:materialdrawer:8bba1428dcef5ad7c2decf49c612ad980b38e2f1031cbd66c152a8a104793929',

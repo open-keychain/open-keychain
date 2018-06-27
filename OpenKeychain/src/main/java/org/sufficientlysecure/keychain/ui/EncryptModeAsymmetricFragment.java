@@ -23,7 +23,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -31,30 +33,30 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ViewAnimator;
 
-import com.tokenautocomplete.TokenCompleteTextView.TokenListener;
+import com.pchmn.materialchips.ChipsInput;
+import com.pchmn.materialchips.ChipsInput.ChipsListener;
+import com.pchmn.materialchips.model.Chip;
+import com.pchmn.materialchips.model.ChipInterface;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.livedata.GenericLiveData;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
-import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter.KeyItem;
-import org.sufficientlysecure.keychain.ui.keyview.GenericViewModel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
-import org.sufficientlysecure.keychain.ui.widget.EncryptKeyCompletionView;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import timber.log.Timber;
 
 
 public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
-
     KeyRepository mKeyRepository;
 
     private KeySpinner mSignKeySpinner;
-    private EncryptKeyCompletionView mEncryptKeyView;
+    private ChipsInput mEncryptKeyView;
 
     public static final String ARG_SINGATURE_KEY_ID = "signature_key_id";
     public static final String ARG_ENCRYPTION_KEY_IDS = "encryption_key_ids";
@@ -80,7 +82,9 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
 
         mSignKeySpinner = view.findViewById(R.id.sign_key_spinner);
         mEncryptKeyView = view.findViewById(R.id.recipient_list);
-        mEncryptKeyView.setThreshold(1); // Start working from first character
+
+        ViewGroup filterableListAnchor = view.findViewById(R.id.anchor_dropdown_encrypt);
+        mEncryptKeyView.setFilterableListLayout(filterableListAnchor);
 
         final ViewAnimator vSignatureIcon = view.findViewById(R.id.result_signature_icon);
         mSignKeySpinner.setOnKeyChangedListener(masterKeyId -> {
@@ -92,20 +96,30 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
         mSignKeySpinner.setShowNone(R.string.cert_none);
 
         final ViewAnimator vEncryptionIcon = view.findViewById(R.id.result_encryption_icon);
-        mEncryptKeyView.setTokenListener(new TokenListener<KeyItem>() {
+        mEncryptKeyView.addChipsListener(new ChipsListener() {
             @Override
-            public void onTokenAdded(KeyItem o) {
+            public void onChipAdded(ChipInterface chipInterface, int newSize) {
                 if (vEncryptionIcon.getDisplayedChild() != 1) {
                     vEncryptionIcon.setDisplayedChild(1);
                 }
             }
 
             @Override
-            public void onTokenRemoved(KeyItem o) {
-                int child = mEncryptKeyView.getObjects().isEmpty() ? 0 : 1;
+            public void onChipRemoved(ChipInterface chipInterface, int newSize) {
+                int child = newSize == 0 ? 0 : 1;
                 if (vEncryptionIcon.getDisplayedChild() != child) {
                     vEncryptionIcon.setDisplayedChild(child);
                 }
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence) {
+
+            }
+
+            @Override
+            public void onActionDone(CharSequence charSequence) {
+
             }
         });
 
@@ -115,12 +129,10 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mKeyRepository = KeyRepository.create(requireContext());
 
-        GenericViewModel viewModel = ViewModelProviders.of(this).get(GenericViewModel.class);
-        LiveData<List<UnifiedKeyInfo>> liveData = viewModel.getGenericLiveData(requireContext(),
-                mKeyRepository::getAllUnifiedKeyInfoWithSecret);
-        liveData.observe(this, mSignKeySpinner::setData);
+        EncryptModeViewModel viewModel = ViewModelProviders.of(this).get(EncryptModeViewModel.class);
+        viewModel.getSignKeyLiveData(requireContext()).observe(this, mSignKeySpinner::setData);
+        viewModel.getEncryptRecipientLiveData(requireContext()).observe(this, this::onLoadEncryptRecipients);
 
         // preselect keys given, from state or arguments
         if (savedInstanceState == null) {
@@ -131,7 +143,40 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
             long[] encryptionKeyIds = getArguments().getLongArray(ARG_ENCRYPTION_KEY_IDS);
             preselectKeys(signatureKeyId, encryptionKeyIds);
         }
+    }
 
+    private void onLoadEncryptRecipients(List<? extends ChipInterface> keyInfoChips) {
+        mEncryptKeyView.setFilterableList(keyInfoChips);
+    }
+
+    public static class EncryptModeViewModel extends ViewModel {
+        private LiveData<List<UnifiedKeyInfo>> signKeyLiveData;
+        private LiveData<List<Chip>> encryptRecipientLiveData;
+
+        LiveData<List<UnifiedKeyInfo>> getSignKeyLiveData(Context context) {
+            if (signKeyLiveData == null) {
+                signKeyLiveData = new GenericLiveData<>(context, null, () -> {
+                    KeyRepository keyRepository = KeyRepository.create(context);
+                    return keyRepository.getAllUnifiedKeyInfoWithSecret();
+                });
+            }
+            return signKeyLiveData;
+        }
+
+        LiveData<List<Chip>> getEncryptRecipientLiveData(Context context) {
+            if (encryptRecipientLiveData == null) {
+                encryptRecipientLiveData = new GenericLiveData<>(context, null, () -> {
+                    KeyRepository keyRepository = KeyRepository.create(context);
+                    List<UnifiedKeyInfo> keyInfos = keyRepository.getAllUnifiedKeyInfo();
+                    ArrayList<Chip> result = new ArrayList<>();
+                    for (UnifiedKeyInfo keyInfo : keyInfos) {
+                        result.add(new Chip(keyInfo.master_key_id(), keyInfo.name(), keyInfo.email()));
+                    }
+                    return result;
+                });
+            }
+            return encryptRecipientLiveData;
+        }
     }
 
     /**
@@ -153,7 +198,8 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
                 try {
                     CanonicalizedPublicKeyRing ring =
                             mKeyRepository.getCanonicalizedPublicKeyRing(preselectedId);
-                    mEncryptKeyView.addObject(new KeyItem(ring));
+                    Chip infooo = new Chip(ring.getMasterKeyId(), ring.getPrimaryUserIdWithFallback(), "infooo");
+                    mEncryptKeyView.addChip(infooo);
                 } catch (NotFoundException e) {
                     Timber.e(e, "key not found for encryption!");
                     Notify.create(getActivity(), getString(R.string.error_preselect_encrypt_key,
@@ -180,10 +226,8 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
     @Override
     public long[] getAsymmetricEncryptionKeyIds() {
         List<Long> keyIds = new ArrayList<>();
-        for (Object object : mEncryptKeyView.getObjects()) {
-            if (object instanceof KeyItem) {
-                keyIds.add(((KeyItem) object).mKeyId);
-            }
+        for (ChipInterface chip : mEncryptKeyView.getSelectedChipList()) {
+            keyIds.add((long) chip.getId());
         }
 
         long[] keyIdsArr = new long[keyIds.size()];
@@ -197,16 +241,12 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
 
     @Override
     public String[] getAsymmetricEncryptionUserIds() {
-
         List<String> userIds = new ArrayList<>();
-        for (Object object : mEncryptKeyView.getObjects()) {
-            if (object instanceof KeyItem) {
-                userIds.add(((KeyItem) object).mUserIdFull);
-            }
+        for (ChipInterface chip : mEncryptKeyView.getSelectedChipList()) {
+            userIds.add(chip.getInfo());
         }
 
         return userIds.toArray(new String[userIds.size()]);
-
     }
 
     @Override
