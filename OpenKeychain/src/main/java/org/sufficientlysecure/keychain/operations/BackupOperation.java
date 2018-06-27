@@ -52,7 +52,6 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -75,12 +74,6 @@ import timber.log.Timber;
  * either the name of a file or an output uri to write to.
  */
 public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
-
-    private static final String[] PROJECTION = new String[] {
-            KeyRings.MASTER_KEY_ID,
-            KeyRings.HAS_ANY_SECRET
-    };
-
     // this is a very simple matcher, we only need basic sanitization
     private static final Pattern HEADER_PATTERN = Pattern.compile("[a-zA-Z0-9_-]+: [^\\n]+");
 

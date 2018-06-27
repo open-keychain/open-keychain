@@ -28,7 +28,6 @@ import com.tokenautocomplete.TokenCompleteTextView;
 import org.hamcrest.Matcher;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
-import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
 
 import static android.support.test.InstrumentationRegistry.getTargetContext;
 
