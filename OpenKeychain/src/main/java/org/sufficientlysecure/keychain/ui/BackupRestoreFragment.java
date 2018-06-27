@@ -22,12 +22,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -38,9 +37,10 @@ import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.model.SubKey;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.util.FileHelper;
@@ -54,33 +54,16 @@ public class BackupRestoreFragment extends Fragment {
     private static final int REQUEST_CODE_INPUT = 0x00007003;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.backup_restore_fragment, container, false);
 
         View backupAll = view.findViewById(R.id.backup_all);
         View backupPublicKeys = view.findViewById(R.id.backup_public_keys);
         final View restore = view.findViewById(R.id.restore);
 
-        backupAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                exportToFile(true);
-            }
-        });
-
-        backupPublicKeys.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                exportToFile(false);
-            }
-        });
-
-        restore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                restore();
-            }
-        });
+        backupAll.setOnClickListener(v -> exportToFile(true));
+        backupPublicKeys.setOnClickListener(v -> exportToFile(false));
+        restore.setOnClickListener(v -> restore());
 
         return view;
     }
@@ -96,50 +79,46 @@ public class BackupRestoreFragment extends Fragment {
             return;
         }
 
-        new AsyncTask<ContentResolver, Void, ArrayList<Pair<Long, Long>>>() {
+        KeyRepository keyRepository = KeyRepository.create(requireContext());
+
+        // This can probably be optimized quite a bit.
+        // Typically there are only few secret keys though, so it doesn't really matter.
+
+        new AsyncTask<Void, Void, ArrayList<Pair<Long, Long>>>() {
             @Override
-            protected ArrayList<Pair<Long,Long>> doInBackground(ContentResolver... resolver) {
+            protected ArrayList<Pair<Long,Long>> doInBackground(Void... ignored) {
+                KeyRepository keyRepository = KeyRepository.create(requireContext());
                 ArrayList<Pair<Long, Long>> askPassphraseIds = new ArrayList<>();
-                Cursor cursor = resolver[0].query(
-                        KeyRings.buildUnifiedKeyRingsUri(), new String[]{
-                                KeyRings.MASTER_KEY_ID,
-                                KeyRings.HAS_SECRET,
-                        }, KeyRings.HAS_SECRET + " != 0", null, null);
-                try {
-                    if (cursor != null) {
-                        while (cursor.moveToNext()) {
-                            SecretKeyType secretKeyType = SecretKeyType.fromNum(cursor.getInt(1));
-                            switch (secretKeyType) {
-                                // all of these make no sense to ask
-                                case PASSPHRASE_EMPTY:
-                                case DIVERT_TO_CARD:
-                                case UNAVAILABLE:
-                                    continue;
-                                case GNU_DUMMY: {
-                                    Long masterKeyId = cursor.getLong(0);
-                                    Long subKeyId = getFirstSubKeyWithPassphrase(masterKeyId, resolver[0]);
-                                    if(subKeyId != null) {
-                                        askPassphraseIds.add(new Pair<>(masterKeyId, subKeyId));
-                                    }
-                                    continue;
-                                }
-                                default: {
-                                    long masterKeyId = cursor.getLong(0);
-                                    askPassphraseIds.add(new Pair<>(masterKeyId, masterKeyId));
-                                }
-                            }
-                        }
+                for (UnifiedKeyInfo keyInfo : keyRepository.getAllUnifiedKeyInfoWithSecret()) {
+                    long masterKeyId = keyInfo.master_key_id();
+                    SecretKeyType secretKeyType;
+                    try {
+                        secretKeyType = keyRepository.getSecretKeyType(keyInfo.master_key_id());
+                    } catch (NotFoundException e) {
+                        throw new IllegalStateException("Error: no secret key type for secret key!");
                     }
-                } finally {
-                    if (cursor != null) {
-                        cursor.close();
+                    switch (secretKeyType) {
+                        // all of these make no sense to ask
+                        case PASSPHRASE_EMPTY:
+                        case DIVERT_TO_CARD:
+                        case UNAVAILABLE:
+                            continue;
+                        case GNU_DUMMY: {
+                            Long subKeyId = getFirstSubKeyWithPassphrase(masterKeyId);
+                            if(subKeyId != null) {
+                                askPassphraseIds.add(new Pair<>(masterKeyId, subKeyId));
+                            }
+                            continue;
+                        }
+                        default: {
+                            askPassphraseIds.add(new Pair<>(masterKeyId, masterKeyId));
+                        }
                     }
                 }
                 return askPassphraseIds;
             }
 
-            private Long getFirstSubKeyWithPassphrase(long masterKeyId, ContentResolver resolver) {
-                KeyRepository keyRepository = KeyRepository.create(requireContext());
+            private Long getFirstSubKeyWithPassphrase(long masterKeyId) {
                 for (SubKey subKey : keyRepository.getSubKeysByMasterKeyId(masterKeyId)) {
                     switch (subKey.has_secret()) {
                         case PASSPHRASE_EMPTY:
@@ -174,7 +153,7 @@ public class BackupRestoreFragment extends Fragment {
                 startBackup(true);
             }
 
-        }.execute(activity.getContentResolver());
+        }.execute();
     }
 
     private void startPassphraseActivity() {
