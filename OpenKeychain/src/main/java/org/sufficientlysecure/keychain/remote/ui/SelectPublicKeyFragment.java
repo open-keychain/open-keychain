@@ -17,49 +17,33 @@
 
 package org.sufficientlysecure.keychain.remote.ui;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.net.Uri;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
-import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
-import org.sufficientlysecure.keychain.remote.ui.adapter.SelectEncryptKeyAdapter;
-import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.ui.adapter.KeyChoiceAdapter;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
+import org.sufficientlysecure.keychain.ui.keyview.GenericViewModel;
 
-public class SelectPublicKeyFragment extends RecyclerFragment<SelectEncryptKeyAdapter>
-        implements TextWatcher, LoaderManager.LoaderCallbacks<Cursor> {
+public class SelectPublicKeyFragment extends RecyclerFragment<KeyChoiceAdapter> {
     public static final String ARG_PRESELECTED_KEY_IDS = "preselected_key_ids";
 
-//    private EditText mSearchView;
-    private long mSelectedMasterKeyIds[];
-    private String mQuery;
+    private Set<Long> selectedMasterKeyIds;
+    private KeyChoiceAdapter keyChoiceAdapter;
+    private KeyRepository keyRepository;
 
-    /**
-     * Creates new instance of this fragment
-     */
     public static SelectPublicKeyFragment newInstance(long[] preselectedKeyIds) {
         SelectPublicKeyFragment frag = new SelectPublicKeyFragment();
         Bundle args = new Bundle();
@@ -73,203 +57,80 @@ public class SelectPublicKeyFragment extends RecyclerFragment<SelectEncryptKeyAd
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSelectedMasterKeyIds = getArguments().getLongArray(ARG_PRESELECTED_KEY_IDS);
+
+        keyRepository = KeyRepository.create(requireContext());
+
+        selectedMasterKeyIds = new HashSet<>();
+        for (long preselectedKey : getArguments().getLongArray(ARG_PRESELECTED_KEY_IDS)) {
+            selectedMasterKeyIds.add(preselectedKey);
+        }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final Context context = getContext();
-        FrameLayout root = new FrameLayout(context);
-
-        LinearLayout progressContainer = new LinearLayout(context);
-        progressContainer.setId(INTERNAL_PROGRESS_CONTAINER_ID);
-        progressContainer.setOrientation(LinearLayout.VERTICAL);
-        progressContainer.setGravity(Gravity.CENTER);
-        progressContainer.setVisibility(View.GONE);
-
-        ProgressBar progressBar = new ProgressBar(context, null,
-                android.R.attr.progressBarStyleLarge);
-
-        progressContainer.addView(progressBar, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        root.addView(progressContainer, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-        FrameLayout listContainer = new FrameLayout(context);
-        listContainer.setId(INTERNAL_LIST_CONTAINER_ID);
-
-        TextView textView = new TextView(context);
-        textView.setId(INTERNAL_EMPTY_VIEW_ID);
-        textView.setGravity(Gravity.CENTER);
-
-        listContainer.addView(textView, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        LinearLayout innerListContainer = new LinearLayout(context);
-        innerListContainer.setOrientation(LinearLayout.VERTICAL);
-
-        // TODO: search is broken: When searching, previously selected keys are no longer selected
-//        mSearchView = new EditText(context);
-//        mSearchView.setId(android.R.id.input);
-//        mSearchView.setHint(R.string.menu_search);
-//        mSearchView.setCompoundDrawablesWithIntrinsicBounds(
-//                ContextCompat.getDrawable(
-//                        context,
-//                        R.drawable.ic_search_grey_24dp
-//                ), null, null, null);
-//
-//        innerListContainer.addView(mSearchView, new LinearLayout.LayoutParams(
-//                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        RecyclerView listView = new RecyclerView(context);
-        listView.setId(INTERNAL_LIST_VIEW_ID);
-
-        int padding = FormattingUtils.dpToPx(context, 8);
-        listView.setPadding(padding, 0, padding, 0);
-        listView.setClipToPadding(false);
-
-        innerListContainer.addView(listView, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-        listContainer.addView(innerListContainer, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-        root.addView(listContainer, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-
-        root.setLayoutParams(new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-        return root;
-    }
-
-    /**
-     * Define Adapter and Loader on create of Activity
-     */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Give some text to display if there is no data. In a real
-        // application this would come from a resource.
         setEmptyText(getString(R.string.list_empty));
-//        mSearchView.addTextChangedListener(this);
-
-        setAdapter(new SelectEncryptKeyAdapter(getContext(), null));
         setLayoutManager(new LinearLayoutManager(getContext()));
-
-        // Start out with a progress indicator.
         hideList(false);
 
-        // Prepare the loader. Either re-connect with an existing one,
-        // or start a new one.
-        getLoaderManager().initLoader(0, null, this);
+        GenericViewModel viewModel = ViewModelProviders.of(this).get(GenericViewModel.class);
+        LiveData<List<UnifiedKeyInfo>> liveData = viewModel.getGenericLiveData(requireContext(), this::loadSortedUnifiedKeyInfo);
+        liveData.observe(this, this::onLoadUnifiedKeyData);
+    }
+
+    @NonNull
+    private List<UnifiedKeyInfo> loadSortedUnifiedKeyInfo() {
+        List<UnifiedKeyInfo> keyInfos = keyRepository.getAllUnifiedKeyInfoWithSecret();
+        Collections.sort(keyInfos, sortKeysByPreselectionComparator());
+        return keyInfos;
+    }
+
+    @NonNull
+    private Comparator<UnifiedKeyInfo> sortKeysByPreselectionComparator() {
+        return (first, second) -> {
+            if (first == second) {
+                return 0;
+            }
+            boolean firstIsPreselected = selectedMasterKeyIds.contains(first.master_key_id());
+            boolean secondIsPreselected = selectedMasterKeyIds.contains(second.master_key_id());
+            if (firstIsPreselected != secondIsPreselected) {
+                return firstIsPreselected ? -1 : 1;
+            }
+            String firstUid = first.user_id();
+            String secondUid = second.user_id();
+            if (firstUid != null && secondUid != null) {
+                return firstUid.compareTo(secondUid);
+            } else {
+                return firstUid == null ? -1 : -1;
+            }
+        };
     }
 
     public long[] getSelectedMasterKeyIds() {
-        return getAdapter() != null ?
-                getAdapter().getMasterKeyIds() : new long[0];
+        if (keyChoiceAdapter == null) {
+            return null;
+        }
+        // *sigh
+        Set<Long> selectionIds = keyChoiceAdapter.getSelectionIds();
+        long[] result = new long[selectionIds.size()];
+        int i = 0;
+        for (Long selectionId : selectionIds) {
+            result[i++] = selectionId;
+        }
+        return result;
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Uri baseUri = KeyRings.buildUnifiedKeyRingsUri();
-
-        // These are the rows that we will retrieve.
-        String[] projection = new String[]{
-                KeyRings._ID,
-                KeyRings.MASTER_KEY_ID,
-                KeyRings.USER_ID,
-                KeyRings.IS_EXPIRED,
-                KeyRings.IS_REVOKED,
-                KeyRings.HAS_ENCRYPT,
-                KeyRings.VERIFIED,
-                KeyRings.HAS_DUPLICATE_USER_ID,
-                KeyRings.CREATION,
-                KeyRings.NAME,
-                KeyRings.EMAIL,
-                KeyRings.COMMENT
-        };
-
-        String inMasterKeyList = null;
-        if (mSelectedMasterKeyIds != null && mSelectedMasterKeyIds.length > 0) {
-            inMasterKeyList = Tables.KEYS + "." + KeyRings.MASTER_KEY_ID + " IN (";
-            for (int i = 0; i < mSelectedMasterKeyIds.length; ++i) {
-                if (i != 0) {
-                    inMasterKeyList += ", ";
-                }
-                inMasterKeyList += DatabaseUtils.sqlEscapeString("" + mSelectedMasterKeyIds[i]);
-            }
-            inMasterKeyList += ")";
-        }
-
-        String orderBy = KeyRings.USER_ID + " ASC";
-        if (inMasterKeyList != null) {
-            // sort by selected master keys
-            orderBy = inMasterKeyList + " DESC, " + orderBy;
-        }
-        String where = null;
-        String whereArgs[] = null;
-        if (mQuery != null) {
-            String[] words = mQuery.trim().split("\\s+");
-            whereArgs = new String[words.length];
-            for (int i = 0; i < words.length; ++i) {
-                if (where == null) {
-                    where = "";
-                } else {
-                    where += " AND ";
-                }
-                where += KeyRings.USER_ID + " LIKE ?";
-                whereArgs[i] = "%" + words[i] + "%";
-            }
-        }
-
-        // Now create and return a CursorLoader that will take care of
-        // creating a Cursor for the data being displayed.
-        return new CursorLoader(getActivity(), baseUri, projection, where, whereArgs, orderBy);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Swap the new cursor in. (The framework will take care of closing the
-        // old cursor once we return.)
-        getAdapter().setQuery(mQuery);
-        getAdapter().swapCursor(SelectEncryptKeyAdapter.PublicKeyCursor.wrap(data));
-
-        // The list should now be shown.
-        if (isResumed()) {
-            showList(true);
+    public void onLoadUnifiedKeyData(List<UnifiedKeyInfo> data) {
+        if (keyChoiceAdapter == null) {
+            keyChoiceAdapter = new KeyChoiceAdapter(true, data);
+            setAdapter(keyChoiceAdapter);
+            keyChoiceAdapter.setSelectionByIds(selectedMasterKeyIds);
         } else {
-            showList(false);
+            keyChoiceAdapter.setUnifiedKeyInfoItems(data);
         }
 
-        // preselect given master keys
-        getAdapter().preselectMasterKeyIds(mSelectedMasterKeyIds);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        // This is called when the last Cursor provided to onLoadFinished()
-        // above is about to be closed. We need to make sure we are no
-        // longer using it.
-        getAdapter().swapCursor(null);
-    }
-
-    @Override
-    public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-    }
-
-    @Override
-    public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-
-    }
-
-    @Override
-    public void afterTextChanged(Editable editable) {
-        mQuery = !TextUtils.isEmpty(editable.toString()) ? editable.toString() : null;
-        getLoaderManager().restartLoader(0, null, this);
+        boolean animateShowList = !isResumed();
+        showList(animateShowList);
     }
 }

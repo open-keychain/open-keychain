@@ -91,12 +91,11 @@ public class AppSettingsAllowedKeysListFragment extends RecyclerFragment<KeyChoi
         if (keyChoiceAdapter == null) {
             keyChoiceAdapter = new KeyChoiceAdapter(true, data);
             setAdapter(keyChoiceAdapter);
+            Set<Long> checkedIds = apiAppDao.getAllowedKeyIdsForApp(packageName);
+            keyChoiceAdapter.setSelectionByIds(checkedIds);
         } else {
             keyChoiceAdapter.setUnifiedKeyInfoItems(data);
         }
-
-        Set<Long> checkedIds = apiAppDao.getAllowedKeyIdsForApp(packageName);
-        keyChoiceAdapter.setSelectionByIds(checkedIds);
 
         boolean animateShowList = !isResumed();
         showList(animateShowList);
