@@ -119,6 +119,8 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity>
         <!-- singleTop for NFC dispatch, see SecurityTokenOperationActivity -->
         <activity
