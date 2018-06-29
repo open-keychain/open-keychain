@@ -108,6 +108,9 @@
     <string name="btn_saved">"Saved!"</string>
     <string name="btn_not_matching">"Not matching"</string>
 
+    <!-- Shortcut Strings -->
+    <string name="shortcut_debug">Debug Actions</string>
+
     <!-- Content Description -->
     <string name="cd_encrypt_files">"Encrypt files"</string>
     <string name="cd_exchange_keys">"Exchange keys"</string>

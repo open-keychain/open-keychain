@@ -967,6 +967,12 @@
             android:name=".remote.ui.RemoteDisplayTransferCodeActivity"
             android:theme="@style/Theme.Keychain.Transparent"/>
 
+        <activity android:name=".ui.DebugActionsActivity">
+            <intent-filter>
+                <action android:name="org.sufficientlysecure.keychain.debug" />
+            </intent-filter>
+        </activity>
+
         <!-- Usb interceptor activity -->
         <activity
             android:name=".ui.UsbEventReceiverActivity"
