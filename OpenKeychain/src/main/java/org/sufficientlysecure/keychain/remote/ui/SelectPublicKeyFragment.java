@@ -81,7 +81,7 @@ public class SelectPublicKeyFragment extends RecyclerFragment<KeyChoiceAdapter> 
 
     @NonNull
     private List<UnifiedKeyInfo> loadSortedUnifiedKeyInfo() {
-        List<UnifiedKeyInfo> keyInfos = keyRepository.getAllUnifiedKeyInfoWithSecret();
+        List<UnifiedKeyInfo> keyInfos = keyRepository.getAllUnifiedKeyInfo();
         Collections.sort(keyInfos, sortKeysByPreselectionComparator());
         return keyInfos;
     }
