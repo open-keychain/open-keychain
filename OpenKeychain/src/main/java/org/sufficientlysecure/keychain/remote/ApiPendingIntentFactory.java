@@ -92,8 +92,9 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createSelectPublicKeyPendingIntent(Intent data, long[] keyIdsArray, ArrayList<String> missingEmails,
-                                                     ArrayList<String> duplicateEmails, boolean noUserIdsCheck) {
+    public PendingIntent createSelectPublicKeyPendingIntent(Intent data, long[] keyIdsArray,
+            ArrayList<String> missingEmails,
+            ArrayList<String> duplicateEmails, boolean noUserIdsCheck) {
         Intent intent = new Intent(mContext, RemoteSelectPubKeyActivity.class);
         intent.putExtra(RemoteSelectPubKeyActivity.EXTRA_SELECTED_MASTER_KEY_IDS, keyIdsArray);
         intent.putExtra(RemoteSelectPubKeyActivity.EXTRA_NO_USER_IDS_CHECK, noUserIdsCheck);
@@ -121,7 +122,7 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createRequestKeyPermissionPendingIntent(Intent data, String packageName, long... masterKeyIds) {
+    public PendingIntent createRequestKeyPermissionPendingIntent(Intent data, String packageName, long... masterKeyIds) {
         Intent intent = new Intent(mContext, RequestKeyPermissionActivity.class);
         intent.putExtra(RequestKeyPermissionActivity.EXTRA_PACKAGE_NAME, packageName);
         intent.putExtra(RequestKeyPermissionActivity.EXTRA_REQUESTED_KEY_IDS, masterKeyIds);
@@ -135,7 +136,8 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createSelectSignKeyIdLegacyPendingIntent(Intent data, String packageName, String preferredUserId) {
+    public PendingIntent createSelectSignKeyIdLegacyPendingIntent(Intent data, String packageName,
+            String preferredUserId) {
         Intent intent = new Intent(mContext, SelectSignKeyIdActivity.class);
         intent.putExtra(SelectSignKeyIdActivity.EXTRA_PACKAGE_NAME, packageName);
         intent.putExtra(SelectSignKeyIdActivity.EXTRA_USER_ID, preferredUserId);
@@ -143,7 +145,7 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createSelectSignKeyIdPendingIntent(Intent data, String packageName,
+    public PendingIntent createSelectSignKeyIdPendingIntent(Intent data, String packageName,
             byte[] packageSignature, String preferredUserId, boolean showAutocryptHint) {
         Intent intent = new Intent(mContext, RemoteSelectIdKeyActivity.class);
         intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_PACKAGE_NAME, packageName);

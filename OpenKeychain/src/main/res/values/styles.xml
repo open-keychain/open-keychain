@@ -84,4 +84,13 @@
         <item name="android:text">-</item>
     </style>
 
+    <style name="DebugButton" parent="@style/Widget.AppCompat.Button.Borderless">
+        <item name="android:clickable">true</item>
+        <item name="android:drawablePadding">8dp</item>
+        <item name="android:drawableRight">@drawable/ic_folder_grey_24dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:minHeight">?android:attr/listPreferredItemHeight</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
 </resources>

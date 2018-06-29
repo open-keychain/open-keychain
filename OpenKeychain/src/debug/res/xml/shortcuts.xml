@@ -22,4 +22,15 @@
             android:targetClass="org.sufficientlysecure.keychain.ui.EncryptFilesActivity"
             android:targetPackage="org.sufficientlysecure.keychain.debug" />
     </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/status_signature_unverified_cutout_24dp"
+        android:shortcutId="debug_actions"
+        android:shortcutLongLabel="@string/shortcut_debug"
+        android:shortcutShortLabel="@string/shortcut_debug">
+        <intent
+            android:action="org.sufficientlysecure.keychain.debug"
+            android:targetClass="org.sufficientlysecure.keychain.ui.DebugActionsActivity"
+            android:targetPackage="org.sufficientlysecure.keychain.debug" />
+    </shortcut>
 </shortcuts>
