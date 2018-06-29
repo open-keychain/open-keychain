@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.provider;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,9 +67,16 @@ public class ApiAppDao extends AbstractDao {
     }
 
     public void insertApiApp(ApiApp apiApp) {
+        ApiApp existingApiApp = getApiApp(apiApp.package_name());
+        if (existingApiApp != null) {
+            if (!Arrays.equals(existingApiApp.package_signature(), apiApp.package_signature())) {
+                throw new IllegalStateException("Inserting existing api with different signature?!");
+            }
+            return;
+        }
         InsertApiApp statement = new ApiAppsModel.InsertApiApp(getWritableDb());
         statement.bind(apiApp.package_name(), apiApp.package_signature());
-        statement.execute();
+        statement.executeInsert();
     }
 
     public void deleteApiApp(String packageName) {
