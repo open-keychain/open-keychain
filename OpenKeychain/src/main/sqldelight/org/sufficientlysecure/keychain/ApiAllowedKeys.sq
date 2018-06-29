@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS api_allowed_keys (
 );
 
 insertAllowedKey:
-INSERT INTO api_allowed_keys (package_name, key_id) VALUES (?, ?);
+INSERT OR IGNORE INTO api_allowed_keys (package_name, key_id) VALUES (?, ?);
 
 deleteByPackageName:
 DELETE FROM api_allowed_keys
