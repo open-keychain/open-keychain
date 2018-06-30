@@ -116,7 +116,6 @@
             android:layout_height="wrap_content"
             android:text="Select"
             android:id="@+id/button_select"
-            android:enabled="false"
             style="?buttonBarButtonStyle" />
 
     </LinearLayout>

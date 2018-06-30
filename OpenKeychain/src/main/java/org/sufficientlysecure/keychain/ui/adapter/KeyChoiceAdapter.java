@@ -82,6 +82,8 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
             throw new IllegalStateException("Cannot get active item in single select mode!");
         }
 
+        clearSelection();
+
         Integer prevActiveItem = this.activeItem;
         this.activeItem = newActiveItem;
 
@@ -89,6 +91,7 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
             notifyItemChanged(prevActiveItem);
         }
         if (newActiveItem != null) {
+            toggleSelection(newActiveItem);
             notifyItemChanged(newActiveItem);
         }
     }
