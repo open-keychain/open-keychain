@@ -104,7 +104,7 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createDeduplicatePendingIntent(String packageName, Intent data, ArrayList<String> duplicateEmails) {
+    public PendingIntent createDeduplicatePendingIntent(String packageName, Intent data, ArrayList<String> duplicateEmails) {
         Intent intent = new Intent(mContext, RemoteDeduplicateActivity.class);
 
         intent.putExtra(RemoteDeduplicateActivity.EXTRA_PACKAGE_NAME, packageName);
@@ -219,7 +219,7 @@ public class ApiPendingIntentFactory {
         }
     }
 
-    PendingIntent createRegisterPendingIntent(Intent data, String packageName, byte[] packageCertificate) {
+    public PendingIntent createRegisterPendingIntent(Intent data, String packageName, byte[] packageCertificate) {
         Intent intent = new Intent(mContext, RemoteRegisterActivity.class);
         intent.putExtra(RemoteRegisterActivity.EXTRA_PACKAGE_NAME, packageName);
         intent.putExtra(RemoteRegisterActivity.EXTRA_PACKAGE_SIGNATURE, packageCertificate);
