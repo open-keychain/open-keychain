@@ -40,6 +40,7 @@ import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysOperationCallback;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysResultListener;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
@@ -90,7 +91,8 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
                 if (entry.isSecretKey()) {
                     verified = mKeyRepository.getCanonicalizedSecretKeyRing(keyId).getVerified();
                 } else {
-                    verified = mKeyRepository.getUnifiedKeyInfo(keyId).verified();
+                    UnifiedKeyInfo unifiedKeyInfo = mKeyRepository.getUnifiedKeyInfo(keyId);
+                    verified = unifiedKeyInfo != null ? unifiedKeyInfo.verified() : null;
                 }
                 keyState.mAlreadyPresent = true;
                 keyState.mVerified = verified != null && verified != VerificationStatus.UNVERIFIED;
