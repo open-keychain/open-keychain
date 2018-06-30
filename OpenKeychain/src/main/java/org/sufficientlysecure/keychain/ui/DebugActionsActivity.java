@@ -27,9 +27,9 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.database.sqlite.SQLiteConstraintException;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -43,23 +43,34 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.BuildConfig;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.model.ApiApp;
 import org.sufficientlysecure.keychain.provider.ApiAppDao;
 import org.sufficientlysecure.keychain.provider.KeyRepository;
 import org.sufficientlysecure.keychain.remote.ApiPendingIntentFactory;
+import org.sufficientlysecure.keychain.ui.util.Notify;
+import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import timber.log.Timber;
 
 
 @TargetApi(VERSION_CODES.LOLLIPOP)
 public class DebugActionsActivity extends Activity {
-    private byte[] packageSig;
+
+    private ApiPendingIntentFactory pendingIntentFactory;
+    private ApiAppDao apiAppDao;
+    private KeyRepository keyRepository;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        packageSig = registerSelfAsApiApp();
+        if (!Constants.DEBUG) {
+            throw new UnsupportedOperationException();
+        }
+
+        pendingIntentFactory = new ApiPendingIntentFactory(getBaseContext());
+        apiAppDao = ApiAppDao.getInstance(getBaseContext());
+        keyRepository = KeyRepository.create(getBaseContext());
 
         setContentView(createView());
     }
@@ -75,7 +86,15 @@ public class DebugActionsActivity extends Activity {
         toolbar.setTitle("Debug Actions");
         verticalLayout.addView(toolbar, new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
-        ApiPendingIntentFactory pendingIntentFactory = new ApiPendingIntentFactory(context);
+        addButtonToLayout(context, verticalLayout, "Register ApiApp").setOnClickListener((v) -> {
+            PendingIntent pendingIntent = pendingIntentFactory.createRegisterPendingIntent(
+                    new Intent(), BuildConfig.APPLICATION_ID, getPackageSig());
+            startPendingIntent(pendingIntent);
+        });
+        addButtonToLayout(context, verticalLayout, "Unregister ApiApp").setOnClickListener((v) -> {
+            apiAppDao.deleteApiApp(BuildConfig.APPLICATION_ID);
+            Notify.create(DebugActionsActivity.this, "Ok", Style.OK).show();
+        });
         addButtonToLayout(context, verticalLayout, "Select Public Key").setOnClickListener((v) -> {
             PendingIntent pendingIntent = pendingIntentFactory.createSelectPublicKeyPendingIntent(
                     new Intent(), new long[] {}, new ArrayList<>(), new ArrayList<>(), false);
@@ -88,19 +107,25 @@ public class DebugActionsActivity extends Activity {
         });
         addButtonToLayout(context, verticalLayout, "Select Signing Key").setOnClickListener((v) -> {
             PendingIntent pendingIntent = pendingIntentFactory.createSelectSignKeyIdPendingIntent(
-                    new Intent(), BuildConfig.APPLICATION_ID, packageSig, "test@openkeychain.org", false);
+                    new Intent(), BuildConfig.APPLICATION_ID, getPackageSig(), "test@openkeychain.org", false);
             startPendingIntent(pendingIntent);
         });
         addButtonToLayout(context, verticalLayout, "Select Signing Key (Autocrypt)").setOnClickListener((v) -> {
             PendingIntent pendingIntent = pendingIntentFactory.createSelectSignKeyIdPendingIntent(
-                    new Intent(), BuildConfig.APPLICATION_ID, packageSig, "test@openkeychain.org", true);
+                    new Intent(), BuildConfig.APPLICATION_ID, getPackageSig(), "test@openkeychain.org", true);
             startPendingIntent(pendingIntent);
         });
         addButtonToLayout(context, verticalLayout, "Request Permission (first secret key)").setOnClickListener((v) -> {
-            KeyRepository keyRepository = KeyRepository.create(getBaseContext());
             long firstMasterKeyId = keyRepository.getAllUnifiedKeyInfoWithSecret().get(0).master_key_id();
             PendingIntent pendingIntent = pendingIntentFactory.createRequestKeyPermissionPendingIntent(
                     new Intent(), BuildConfig.APPLICATION_ID, firstMasterKeyId);
+            startPendingIntent(pendingIntent);
+        });
+        addButtonToLayout(context, verticalLayout, "Deduplicate (dupl@mugenguild.com)").setOnClickListener((v) -> {
+            ArrayList<String> duplicateEmails = new ArrayList<>();
+            duplicateEmails.add("dupl@mugenguild.com");
+            PendingIntent pendingIntent = pendingIntentFactory.createDeduplicatePendingIntent(
+                    BuildConfig.APPLICATION_ID, new Intent(), duplicateEmails);
             startPendingIntent(pendingIntent);
         });
 
@@ -116,14 +141,13 @@ public class DebugActionsActivity extends Activity {
         return button;
     }
 
-    private byte[] registerSelfAsApiApp() {
+    @SuppressLint("PackageManagerGetSignatures")
+    private byte[] getPackageSig() {
         try {
             PackageManager packageManager = getPackageManager();
-            ApiAppDao apiAppDao = ApiAppDao.getInstance(getBaseContext());
-            @SuppressLint("PackageManagerGetSignatures")
-            byte[] packageSig = packageManager.getPackageInfo(BuildConfig.APPLICATION_ID, PackageManager.GET_SIGNATURES).signatures[0].toByteArray();
-            apiAppDao.insertApiApp(ApiApp.create(BuildConfig.APPLICATION_ID, packageSig));
-            return packageSig;
+            PackageInfo packageInfo =
+                    packageManager.getPackageInfo(BuildConfig.APPLICATION_ID, PackageManager.GET_SIGNATURES);
+            return packageInfo.signatures[0].toByteArray();
         } catch (NameNotFoundException e) {
             throw new AssertionError(e);
         }
@@ -142,12 +166,14 @@ public class DebugActionsActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if (data != null) {
             if (resultCode == RESULT_OK) {
+                Notify.create(DebugActionsActivity.this, "Ok", Style.OK).show();
                 Timber.d("result: ok, intent: %s, extras: %s", data.toString(), data.getExtras());
             } else {
                 Timber.d("result: cancelled, intent: %s, extras: %s", data.toString(), data.getExtras());
             }
         } else {
             if (resultCode == RESULT_OK) {
+                Notify.create(DebugActionsActivity.this, "Ok", Style.OK).show();
                 Timber.d("result: ok, intent: null");
             } else {
                 Timber.d("result: cancelled, intent: null");
