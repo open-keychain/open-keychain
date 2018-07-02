@@ -1,11 +1,10 @@
 package com.pchmn.materialchips.model;
 
 
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
+import com.pchmn.materialchips.adapter.FilterableAdapter.FilterableItem;
 
-public interface ChipInterface {
 
+public interface ChipInterface extends FilterableItem {
     Object getId();
     String getLabel();
     String getInfo();
