@@ -137,7 +137,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements OnPageChangeList
             if (subKeyLiveData == null) {
                 KeyRepository keyRepository = KeyRepository.create(context);
                 subKeyLiveData = Transformations.switchMap(getUnifiedKeyInfoLiveData(context),
-                        (unifiedKeyInfo) -> new GenericLiveData<>(context,
+                        (unifiedKeyInfo) -> unifiedKeyInfo == null ? null : new GenericLiveData<>(context,
                                 () -> keyRepository.getSubKeysByMasterKeyId(unifiedKeyInfo.master_key_id())));
             }
             return subKeyLiveData;
@@ -147,7 +147,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements OnPageChangeList
             if (userIdsLiveData == null) {
                 KeyRepository keyRepository = KeyRepository.create(context);
                 userIdsLiveData = Transformations.switchMap(getUnifiedKeyInfoLiveData(context),
-                        (unifiedKeyInfo) -> new GenericLiveData<>(context,
+                        (unifiedKeyInfo) -> unifiedKeyInfo == null ? null : new GenericLiveData<>(context,
                                 () -> keyRepository.getUserIds(unifiedKeyInfo.master_key_id())));
             }
             return userIdsLiveData;
