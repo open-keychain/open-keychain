@@ -46,11 +46,11 @@ SELECT * FROM unifiedKeyView
 
 selectUnifiedKeyInfoByMasterKeyId:
 SELECT * FROM unifiedKeyView
-   WHERE is_revoked = 0 AND master_key_id = ?;
+   WHERE master_key_id = ?;
 
 selectUnifiedKeyInfoByMasterKeyIds:
 SELECT * FROM unifiedKeyView
-   WHERE is_revoked = 0 AND master_key_id IN ?;
+   WHERE master_key_id IN ?;
 
 selectUnifiedKeyInfoSearchMailAddress:
 SELECT * FROM unifiedKeyView
