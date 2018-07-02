@@ -62,7 +62,7 @@ class SecurityProblemPresenter {
     SecurityProblemPresenter(Context context) {
         this.context = context;
         packageManager = context.getPackageManager();
-        overriddenWarningsDao = OverriddenWarningsDao.createOverriddenWarningsRepository(context);
+        overriddenWarningsDao = OverriddenWarningsDao.create(context);
     }
 
     public void setView(RemoteSecurityProblemView view) {

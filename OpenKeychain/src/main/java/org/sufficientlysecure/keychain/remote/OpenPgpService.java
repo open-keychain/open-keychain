@@ -470,7 +470,7 @@ public class OpenPgpService extends Service {
             SecurityProblem prioritySecurityProblem = securityProblem.getPrioritySecurityProblem();
             if (prioritySecurityProblem.isIdentifiable()) {
                 String identifier = prioritySecurityProblem.getIdentifier();
-                boolean isOverridden = OverriddenWarningsDao.createOverriddenWarningsRepository(this)
+                boolean isOverridden = OverriddenWarningsDao.create(this)
                         .isWarningOverridden(identifier);
                 result.putExtra(OpenPgpApi.RESULT_OVERRIDE_CRYPTO_WARNING, isOverridden);
             }
