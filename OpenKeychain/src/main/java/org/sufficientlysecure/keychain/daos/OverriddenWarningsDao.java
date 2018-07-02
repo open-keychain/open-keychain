@@ -18,64 +18,42 @@
 package org.sufficientlysecure.keychain.daos;
 
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
-import android.arch.persistence.db.SupportSQLiteQuery;
-import android.arch.persistence.db.SupportSQLiteQueryBuilder;
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 
-import org.sufficientlysecure.keychain.provider.KeychainContract.OverriddenWarnings;
+import com.squareup.sqldelight.SqlDelightQuery;
 import org.sufficientlysecure.keychain.KeychainDatabase;
-import org.sufficientlysecure.keychain.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.OverriddenWarningsModel.DeleteByIdentifier;
+import org.sufficientlysecure.keychain.OverriddenWarningsModel.InsertIdentifier;
+import org.sufficientlysecure.keychain.model.OverriddenWarning;
 
 
-public class OverriddenWarningsDao {
-    private final Context context;
-    private KeychainDatabase keychainDatabase;
+public class OverriddenWarningsDao extends AbstractDao {
+    public static OverriddenWarningsDao create(Context context) {
+        KeychainDatabase database = KeychainDatabase.getInstance(context);
+        DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
 
-    public static OverriddenWarningsDao createOverriddenWarningsRepository(Context context) {
-        return new OverriddenWarningsDao(context);
+        return new OverriddenWarningsDao(database, databaseNotifyManager);
     }
 
-    private OverriddenWarningsDao(Context context) {
-        this.context = context;
-    }
-
-    private KeychainDatabase getDb() {
-        if (keychainDatabase == null) {
-            keychainDatabase = KeychainDatabase.getInstance(context);
-        }
-        return keychainDatabase;
+    private OverriddenWarningsDao(KeychainDatabase db, DatabaseNotifyManager databaseNotifyManager) {
+        super(db, databaseNotifyManager);
     }
 
     public boolean isWarningOverridden(String identifier) {
-        SupportSQLiteDatabase db = getDb().getReadableDatabase();
-        SupportSQLiteQuery query = SupportSQLiteQueryBuilder
-                .builder(Tables.OVERRIDDEN_WARNINGS)
-                .columns(new String[] { "COUNT(*) FROM " })
-                .selection(OverriddenWarnings.IDENTIFIER + " = ?", new String[] { identifier })
-                .create();
-        Cursor cursor = db.query(query);
-
-        try {
-            cursor.moveToFirst();
-            return cursor.getInt(0) > 0;
-        } finally {
-            cursor.close();
-        }
+        SqlDelightQuery query = OverriddenWarning.FACTORY.selectCountByIdentifier(identifier);
+        Long result = mapSingleRow(query, OverriddenWarning.FACTORY.selectCountByIdentifierMapper()::map);
+        return result != null && result > 0;
     }
 
     public void putOverride(String identifier) {
-        SupportSQLiteDatabase db = getDb().getWritableDatabase();
-        ContentValues cv = new ContentValues();
-        cv.put(OverriddenWarnings.IDENTIFIER, identifier);
-        db.insert(Tables.OVERRIDDEN_WARNINGS, SQLiteDatabase.CONFLICT_REPLACE, cv);
+        InsertIdentifier statement = new InsertIdentifier(getWritableDb());
+        statement.bind(identifier);
+        statement.executeInsert();
     }
 
     public void deleteOverride(String identifier) {
-        SupportSQLiteDatabase db = getDb().getWritableDatabase();
-        db.delete(Tables.OVERRIDDEN_WARNINGS, OverriddenWarnings.IDENTIFIER + " = ?", new String[] { identifier });
+        DeleteByIdentifier statement = new DeleteByIdentifier(getWritableDb());
+        statement.bind(identifier);
+        statement.executeInsert();
     }
 }
