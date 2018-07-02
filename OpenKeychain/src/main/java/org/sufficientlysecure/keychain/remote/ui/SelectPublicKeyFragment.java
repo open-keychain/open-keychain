@@ -115,7 +115,7 @@ public class SelectPublicKeyFragment extends RecyclerFragment<KeyChoiceAdapter> 
         Set<Long> selectionIds = keyChoiceAdapter.getSelectionIds();
         long[] result = new long[selectionIds.size()];
         int i = 0;
-        for (Long selectionId : result) {
+        for (Long selectionId : selectionIds) {
             result[i++] = selectionId;
         }
         return result;
