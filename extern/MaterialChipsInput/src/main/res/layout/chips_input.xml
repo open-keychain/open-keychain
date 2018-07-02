@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.pchmn.materialchips.views.ScrollViewMaxHeight xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="vertical"
+    app:maxHeight="150dp" >
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/chips_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp" />
+
+</com.pchmn.materialchips.views.ScrollViewMaxHeight>

@@ -28,7 +28,6 @@ dependencies {
 
     // UI
     compile 'org.sufficientlysecure:html-textview:3.1'
-    compile 'com.github.sikeeoh:MaterialChipsInput:1.1.1'
     compile 'com.jpardogo.materialtabstrip:library:1.1.1'
     compile 'com.getbase:floatingactionbutton:1.10.1'
     compile 'com.nispok:snackbar:2.11.0'
@@ -61,6 +60,7 @@ dependencies {
     implementation project(':extern:minidns')
     implementation project(':KeybaseLib')
     implementation project(':safeslinger-exchange')
+    implementation project(':extern:MaterialChipsInput')
 
     implementation "android.arch.work:work-runtime:1.0.0-alpha02"
 
