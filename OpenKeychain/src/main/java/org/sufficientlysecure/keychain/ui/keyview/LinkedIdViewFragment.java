@@ -497,7 +497,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements OnB
 
         LiveData<List<UnifiedKeyInfo>> getCertifyingKeys(Context context) {
             if (certifyingKeysLiveData == null) {
-                certifyingKeysLiveData = new GenericLiveData<>(context, null, () -> {
+                certifyingKeysLiveData = new GenericLiveData<>(context, () -> {
                     KeyRepository keyRepository = KeyRepository.create(context);
                     return keyRepository.getAllUnifiedKeyInfoWithSecret();
                 });
@@ -508,7 +508,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements OnB
         LiveData<CertDetails> getCertDetails(Context context, long masterKeyId, int lidRank) {
             if (certDetailsLiveData == null) {
                 CertificationDao certificationDao = CertificationDao.getInstance(context);
-                certDetailsLiveData = new GenericLiveData<>(context, null,
+                certDetailsLiveData = new GenericLiveData<>(context, masterKeyId,
                         () -> certificationDao.getVerifyingCertDetails(masterKeyId, lidRank));
             }
             return certDetailsLiveData;
@@ -517,7 +517,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements OnB
         public LiveData<LinkedIdInfo> getLinkedIdInfo(Context context, long masterKeyId, int lidRank) {
             if (linkedIfInfoLiveData == null) {
                 IdentityDao identityDao = IdentityDao.getInstance(context);
-                linkedIfInfoLiveData = new GenericLiveData<>(context, null,
+                linkedIfInfoLiveData = new GenericLiveData<>(context, masterKeyId,
                         () -> identityDao.getLinkedIdInfo(masterKeyId, lidRank));
             }
             return linkedIfInfoLiveData;
