@@ -8,9 +8,8 @@ import android.net.Uri;
 
 import org.sufficientlysecure.keychain.livedata.GenericLiveData;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
-import org.sufficientlysecure.keychain.provider.DatabaseNotifyManager;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.daos.DatabaseNotifyManager;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
 
 
 public class UnifiedKeyInfoViewModel extends ViewModel {

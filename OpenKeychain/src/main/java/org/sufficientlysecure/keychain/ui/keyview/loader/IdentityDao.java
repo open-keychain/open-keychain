@@ -42,8 +42,8 @@ import org.sufficientlysecure.keychain.model.UserPacket;
 import org.sufficientlysecure.keychain.model.UserPacket.UserAttribute;
 import org.sufficientlysecure.keychain.model.UserPacket.UserId;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
-import org.sufficientlysecure.keychain.provider.AutocryptPeerDao;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
+import org.sufficientlysecure.keychain.KeychainDatabase;
 import org.sufficientlysecure.keychain.ui.util.PackageIconGetter;
 import timber.log.Timber;
 

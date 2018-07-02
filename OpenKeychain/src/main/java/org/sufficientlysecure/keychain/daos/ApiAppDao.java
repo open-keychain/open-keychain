@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.provider;
+package org.sufficientlysecure.keychain.daos;
 
 
 import java.util.ArrayList;
@@ -32,6 +32,7 @@ import org.sufficientlysecure.keychain.ApiAllowedKeysModel.InsertAllowedKey;
 import org.sufficientlysecure.keychain.ApiAppsModel;
 import org.sufficientlysecure.keychain.ApiAppsModel.DeleteByPackageName;
 import org.sufficientlysecure.keychain.ApiAppsModel.InsertApiApp;
+import org.sufficientlysecure.keychain.KeychainDatabase;
 import org.sufficientlysecure.keychain.model.ApiAllowedKey;
 import org.sufficientlysecure.keychain.model.ApiApp;
 

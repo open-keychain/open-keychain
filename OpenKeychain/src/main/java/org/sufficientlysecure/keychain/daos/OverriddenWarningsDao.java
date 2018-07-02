@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.provider;
+package org.sufficientlysecure.keychain.daos;
 
 
 import android.arch.persistence.db.SupportSQLiteDatabase;
@@ -27,18 +27,19 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import org.sufficientlysecure.keychain.provider.KeychainContract.OverriddenWarnings;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.KeychainDatabase;
+import org.sufficientlysecure.keychain.KeychainDatabase.Tables;
 
 
-public class OverriddenWarningsRepository {
+public class OverriddenWarningsDao {
     private final Context context;
     private KeychainDatabase keychainDatabase;
 
-    public static OverriddenWarningsRepository createOverriddenWarningsRepository(Context context) {
-        return new OverriddenWarningsRepository(context);
+    public static OverriddenWarningsDao createOverriddenWarningsRepository(Context context) {
+        return new OverriddenWarningsDao(context);
     }
 
-    private OverriddenWarningsRepository(Context context) {
+    private OverriddenWarningsDao(Context context) {
         this.context = context;
     }
 

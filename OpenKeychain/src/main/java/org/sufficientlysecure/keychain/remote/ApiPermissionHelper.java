@@ -35,7 +35,7 @@ import android.os.Binder;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.ApiAppDao;
+import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import timber.log.Timber;
 
 

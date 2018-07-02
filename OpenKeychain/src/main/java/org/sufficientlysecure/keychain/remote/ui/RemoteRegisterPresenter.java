@@ -27,7 +27,7 @@ import android.graphics.drawable.Drawable;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.model.ApiApp;
-import org.sufficientlysecure.keychain.provider.ApiAppDao;
+import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import timber.log.Timber;
 
 

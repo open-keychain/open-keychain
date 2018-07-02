@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.provider;
+package org.sufficientlysecure.keychain.daos;
 
 
 import java.util.ArrayList;
@@ -11,6 +11,7 @@ import android.database.Cursor;
 
 import com.squareup.sqldelight.SqlDelightQuery;
 import org.sufficientlysecure.keychain.KeyMetadataModel.ReplaceKeyMetadata;
+import org.sufficientlysecure.keychain.KeychainDatabase;
 import org.sufficientlysecure.keychain.model.KeyMetadata;
 
 

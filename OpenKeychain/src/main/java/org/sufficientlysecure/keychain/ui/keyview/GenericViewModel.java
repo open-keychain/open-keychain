@@ -4,11 +4,10 @@ package org.sufficientlysecure.keychain.ui.keyview;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
-import android.net.Uri;
 
 import org.sufficientlysecure.keychain.livedata.GenericLiveData;
 import org.sufficientlysecure.keychain.livedata.GenericLiveData.GenericDataLoader;
-import org.sufficientlysecure.keychain.provider.DatabaseNotifyManager;
+import org.sufficientlysecure.keychain.daos.DatabaseNotifyManager;
 
 
 /** A simple generic ViewModel that can be used if exactly one field of data needs to be stored. */

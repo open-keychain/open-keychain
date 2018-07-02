@@ -38,23 +38,22 @@ import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.provider.ApiAppDao;
+import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.KeychainDatabase;
+import org.sufficientlysecure.keychain.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
-import org.sufficientlysecure.keychain.provider.SimpleContentResolverInterface;
 import org.sufficientlysecure.keychain.remote.AutocryptInteractor.AutocryptRecommendationResult;
 import org.sufficientlysecure.keychain.remote.AutocryptInteractor.AutocryptState;
 import timber.log.Timber;
 
 
-public class KeychainExternalProvider extends ContentProvider implements SimpleContentResolverInterface {
+public class KeychainExternalProvider extends ContentProvider {
     private static final int EMAIL_STATUS = 101;
 
     private static final int AUTOCRYPT_STATUS = 201;

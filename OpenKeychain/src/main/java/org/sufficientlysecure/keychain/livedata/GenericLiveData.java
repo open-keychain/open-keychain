@@ -4,7 +4,7 @@ package org.sufficientlysecure.keychain.livedata;
 import android.content.Context;
 import android.net.Uri;
 
-import org.sufficientlysecure.keychain.provider.DatabaseNotifyManager;
+import org.sufficientlysecure.keychain.daos.DatabaseNotifyManager;
 import org.sufficientlysecure.keychain.ui.keyview.loader.AsyncTaskLiveData;
 
 

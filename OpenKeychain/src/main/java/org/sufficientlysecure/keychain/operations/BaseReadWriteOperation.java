@@ -23,7 +23,7 @@ import android.os.Parcelable;
 import android.support.v4.os.CancellationSignal;
 
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 
 public abstract class BaseReadWriteOperation<T extends Parcelable> extends BaseOperation<T> {
     protected final KeyWritableRepository mKeyWritableRepository;

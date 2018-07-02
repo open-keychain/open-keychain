@@ -29,17 +29,18 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import org.sufficientlysecure.keychain.KeychainDatabase;
+import org.sufficientlysecure.keychain.daos.DatabaseNotifyManager;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeySignatures;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.KeychainDatabase.Tables;
 import timber.log.Timber;
 
 
-public class KeychainProvider extends ContentProvider implements SimpleContentResolverInterface {
+public class KeychainProvider extends ContentProvider {
     private static final int KEY_RING_KEYS = 201;
     private static final int KEY_RING_USER_IDS = 202;
     private static final int KEY_RING_PUBLIC = 203;
