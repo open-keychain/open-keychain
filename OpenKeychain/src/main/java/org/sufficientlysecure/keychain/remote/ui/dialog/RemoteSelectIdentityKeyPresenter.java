@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.remote.ui.dialog;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
@@ -55,7 +56,7 @@ class RemoteSelectIdentityKeyPresenter {
     private List<UnifiedKeyInfo> keyInfoData;
 
     private UserId userId;
-    private long selectedMasterKeyId;
+    private Long selectedMasterKeyId;
     private byte[] generatedKeyData;
     private ApiAppDao apiAppDao;
     private ApiApp apiApp;
@@ -214,7 +215,7 @@ class RemoteSelectIdentityKeyPresenter {
 
     void onHighlightFinished() {
         apiAppDao.insertApiApp(apiApp);
-        apiAppDao.addAllowedKeyIdForApp(apiApp.package_name(), selectedMasterKeyId);
+        apiAppDao.addAllowedKeyIdForApp(apiApp.package_name(), Objects.requireNonNull(selectedMasterKeyId));
         view.finishAndReturn(selectedMasterKeyId);
     }
 
