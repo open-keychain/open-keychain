@@ -1,7 +1,6 @@
 import java.lang.Integer;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 
--- TODO implement. this is only here for reference in SQLDelight
 CREATE TABLE IF NOT EXISTS certs(
     master_key_id INTEGER NOT NULL,
     rank INTEGER NOT NULL,
