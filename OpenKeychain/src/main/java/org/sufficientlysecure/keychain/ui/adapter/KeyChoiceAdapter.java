@@ -210,10 +210,15 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
             vName.setText(keyInfo.name());
 
             Context context = vCreation.getContext();
-            String dateTime = DateUtils.formatDateTime(context, keyInfo.creation(),
-                    DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME |
-                            DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_ABBREV_MONTH);
-            vCreation.setText(context.getString(R.string.label_key_created, dateTime));
+            if (keyInfo.has_any_secret() || keyInfo.has_duplicate()) {
+                String dateTime = DateUtils.formatDateTime(context, keyInfo.creation() * 1000,
+                        DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME |
+                                DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_ABBREV_MONTH);
+                vCreation.setText(context.getString(R.string.label_key_created, dateTime));
+                vCreation.setVisibility(View.VISIBLE);
+            } else {
+                vCreation.setVisibility(View.GONE);
+            }
 
             switch (choiceMode) {
                 case Mode.IDLE: {
