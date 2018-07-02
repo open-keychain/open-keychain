@@ -15,7 +15,7 @@ import com.pchmn.materialchips.model.ChipInterface;
 import com.pchmn.materialchips.util.ViewUtil;
 import com.pchmn.materialchips.views.ChipsInputEditText;
 import com.pchmn.materialchips.views.DetailedChipView;
-import com.pchmn.materialchips.views.FilterableListView;
+import com.pchmn.materialchips.views.DropdownListView;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -225,9 +225,9 @@ public class ChipsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         detailedChipView.fadeIn();
     }
 
-    public void setFilterableListView(FilterableListView filterableListView) {
+    public void setFilterableListView(DropdownListView dropdownListView) {
         if (mEditText != null) {
-            mEditText.setFilterableListView(filterableListView);
+            mEditText.setFilterableListView(dropdownListView);
         }
     }
 

@@ -36,15 +36,16 @@ import android.widget.ViewAnimator;
 
 import com.pchmn.materialchips.ChipsInput;
 import com.pchmn.materialchips.ChipsInput.ChipsListener;
-import com.pchmn.materialchips.model.Chip;
+import com.pchmn.materialchips.adapter.SimpleChipDropdownAdapter;
 import com.pchmn.materialchips.model.ChipInterface;
+import com.pchmn.materialchips.model.SimpleChip;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.livedata.GenericLiveData;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
-import org.sufficientlysecure.keychain.daos.KeyRepository;
-import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
@@ -153,13 +154,14 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
         }
     }
 
-    private void onLoadEncryptRecipients(List<? extends ChipInterface> keyInfoChips) {
-        mEncryptKeyView.setFilterableList(keyInfoChips);
+    private void onLoadEncryptRecipients(List<SimpleChip> keyInfoChips) {
+        SimpleChipDropdownAdapter chipDropdownAdapter = new SimpleChipDropdownAdapter(requireContext(), keyInfoChips);
+        mEncryptKeyView.setChipDropdownAdapter(chipDropdownAdapter);
     }
 
     public static class EncryptModeViewModel extends ViewModel {
         private LiveData<List<UnifiedKeyInfo>> signKeyLiveData;
-        private LiveData<List<Chip>> encryptRecipientLiveData;
+        private LiveData<List<SimpleChip>> encryptRecipientLiveData;
 
         LiveData<List<UnifiedKeyInfo>> getSignKeyLiveData(Context context) {
             if (signKeyLiveData == null) {
@@ -171,14 +173,14 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
             return signKeyLiveData;
         }
 
-        LiveData<List<Chip>> getEncryptRecipientLiveData(Context context) {
+        LiveData<List<SimpleChip>> getEncryptRecipientLiveData(Context context) {
             if (encryptRecipientLiveData == null) {
                 encryptRecipientLiveData = new GenericLiveData<>(context, () -> {
                     KeyRepository keyRepository = KeyRepository.create(context);
                     List<UnifiedKeyInfo> keyInfos = keyRepository.getAllUnifiedKeyInfo();
-                    ArrayList<Chip> result = new ArrayList<>();
+                    ArrayList<SimpleChip> result = new ArrayList<>();
                     for (UnifiedKeyInfo keyInfo : keyInfos) {
-                        result.add(new Chip(keyInfo.master_key_id(), keyInfo.name(), keyInfo.email()));
+                        result.add(new SimpleChip(keyInfo.master_key_id(), keyInfo.name(), keyInfo.email(), keyInfo.user_id_list()));
                     }
                     return result;
                 });
@@ -206,7 +208,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
                 try {
                     CanonicalizedPublicKeyRing ring =
                             keyRepository.getCanonicalizedPublicKeyRing(preselectedId);
-                    Chip infooo = new Chip(ring.getMasterKeyId(), ring.getPrimaryUserIdWithFallback(), "infooo");
+                    SimpleChip infooo = new SimpleChip(ring.getMasterKeyId(), ring.getPrimaryUserIdWithFallback(), "infooo", null);
                     mEncryptKeyView.addChip(infooo);
                 } catch (NotFoundException e) {
                     Timber.e(e, "key not found for encryption!");

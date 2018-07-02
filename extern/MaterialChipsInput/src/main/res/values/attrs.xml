@@ -24,8 +24,6 @@
         <attr name="chip_detailed_textColor" format="color" />
         <attr name="chip_detailed_backgroundColor" format="color" />
         <attr name="chip_detailed_deleteIconColor" format="color" />
-        <attr name="filterable_list_backgroundColor" format="color" />
-        <attr name="filterable_list_textColor" format="color" />
     </declare-styleable>
 
     <declare-styleable name="ScrollViewMaxHeight">

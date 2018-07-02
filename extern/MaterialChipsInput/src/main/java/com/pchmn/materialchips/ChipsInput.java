@@ -1,14 +1,17 @@
 package com.pchmn.materialchips;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -17,27 +20,25 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Filter.FilterListener;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.beloo.widget.chipslayoutmanager.ChipsLayoutManager;
+import com.pchmn.materialchips.RecyclerItemClickListener.OnItemClickListener;
 import com.pchmn.materialchips.adapter.ChipsAdapter;
-import com.pchmn.materialchips.model.Chip;
+import com.pchmn.materialchips.adapter.FilterableAdapter;
 import com.pchmn.materialchips.model.ChipInterface;
+import com.pchmn.materialchips.model.SimpleChip;
 import com.pchmn.materialchips.util.ActivityUtil;
 import com.pchmn.materialchips.util.MyWindowCallback;
 import com.pchmn.materialchips.util.ViewUtil;
 import com.pchmn.materialchips.views.ChipsInputEditText;
 import com.pchmn.materialchips.views.DetailedChipView;
-import com.pchmn.materialchips.views.FilterableListView;
+import com.pchmn.materialchips.views.DropdownListView;
 import com.pchmn.materialchips.views.ScrollViewMaxHeight;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ChipsInput extends ScrollViewMaxHeight {
-
-    private static final String TAG = ChipsInput.class.toString();
     // context
     private Context mContext;
     // xml element
@@ -59,18 +60,15 @@ public class ChipsInput extends ScrollViewMaxHeight {
     private ColorStateList mChipDetailedTextColor;
     private ColorStateList mChipDetailedDeleteIconColor;
     private ColorStateList mChipDetailedBackgroundColor;
-    private ColorStateList mFilterableListBackgroundColor;
-    private ColorStateList mFilterableListTextColor;
     // chips listener
     private List<ChipsListener> mChipsListenerList = new ArrayList<>();
-    private ChipsListener mChipsListener;
     // chip list
-    private List<? extends ChipInterface> mFilterableChipList;
-    private FilterableListView mFilterableListView;
+    private DropdownListView mDropdownListView;
     // chip validator
     private ChipValidator mChipValidator;
     private ViewGroup filterableListLayout;
     private ChipsInputEditText mEditText;
+    private ChipDropdownAdapter<? extends ChipInterface, ?> filterableAdapter;
 
     public ChipsInput(Context context) {
         super(context);
@@ -93,7 +91,7 @@ public class ChipsInput extends ScrollViewMaxHeight {
         // inflate filterableListLayout
         View rootView = inflate(getContext(), R.layout.chips_input, this);
 
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.chips_recycler);
+        mRecyclerView = rootView.findViewById(R.id.chips_recycler);
 
         initEditText();
 
@@ -128,9 +126,6 @@ public class ChipsInput extends ScrollViewMaxHeight {
                 mChipDetailedTextColor = a.getColorStateList(R.styleable.ChipsInput_chip_detailed_textColor);
                 mChipDetailedBackgroundColor = a.getColorStateList(R.styleable.ChipsInput_chip_detailed_backgroundColor);
                 mChipDetailedDeleteIconColor = a.getColorStateList(R.styleable.ChipsInput_chip_detailed_deleteIconColor);
-                // filterable list
-                mFilterableListBackgroundColor = a.getColorStateList(R.styleable.ChipsInput_filterable_list_backgroundColor);
-                mFilterableListTextColor = a.getColorStateList(R.styleable.ChipsInput_filterable_list_textColor);
             } finally {
                 a.recycle();
             }
@@ -224,13 +219,13 @@ public class ChipsInput extends ScrollViewMaxHeight {
         mChipsAdapter.addChip(chip);
     }
 
-    public void addChip(Object id, String label, String info) {
-        Chip chip = new Chip(id, label, info);
+    public void addChip(Object id, String label, String info, String filterString) {
+        SimpleChip chip = new SimpleChip(id, label, info, filterString);
         mChipsAdapter.addChip(chip);
     }
 
     public void addChip(String label, String info) {
-        Chip chip = new Chip(label, info);
+        SimpleChip chip = new SimpleChip(label, info);
         mChipsAdapter.addChip(chip);
     }
 
@@ -280,7 +275,6 @@ public class ChipsInput extends ScrollViewMaxHeight {
 
     public void addChipsListener(ChipsListener chipsListener) {
         mChipsListenerList.add(chipsListener);
-        mChipsListener = chipsListener;
     }
 
     public void onChipAdded(ChipInterface chip, int size) {
@@ -296,25 +290,35 @@ public class ChipsInput extends ScrollViewMaxHeight {
     }
 
     public void onTextChanged(CharSequence text) {
-        if (mChipsListener != null) {
-            for (ChipsListener chipsListener : mChipsListenerList) {
-                chipsListener.onTextChanged(text);
-            }
-            // show filterable list
-            if (mFilterableListView != null) {
-                if (text.length() > 0)
-                    mFilterableListView.filterList(text);
-                else
-                    mFilterableListView.fadeOut();
+        for (ChipsListener chipsListener : mChipsListenerList) {
+            chipsListener.onTextChanged(text);
+        }
+        // show filterable list
+        if (mDropdownListView != null) {
+            if (text.length() > 0) {
+                filterDropdownList(text);
+            } else {
+                mDropdownListView.fadeOut();
             }
         }
     }
 
-    public void onActionDone(CharSequence text) {
-        if (mChipsListener != null) {
-            for (ChipsListener chipsListener : mChipsListenerList) {
-                chipsListener.onActionDone(text);
+    public void filterDropdownList(CharSequence text) {
+        filterableAdapter.getFilter().filter(text, new FilterListener() {
+            @Override
+            public void onFilterComplete(int count) {
+                // show if there are results
+                if (filterableAdapter.getItemCount() > 0)
+                    mDropdownListView.fadeIn();
+                else
+                    mDropdownListView.fadeOut();
             }
+        });
+    }
+
+    public void onActionDone(CharSequence text) {
+        for (ChipsListener chipsListener : mChipsListenerList) {
+            chipsListener.onActionDone(text);
         }
     }
 
@@ -388,19 +392,51 @@ public class ChipsInput extends ScrollViewMaxHeight {
         this.filterableListLayout = layout;
     }
 
-    public void setFilterableList(List<? extends ChipInterface> list) {
-        mFilterableChipList = list;
-        if (filterableListLayout != null) {
-            mFilterableListView = new FilterableListView(mContext, filterableListLayout);
-        } else {
-            mFilterableListView = new FilterableListView(mContext);
+    public abstract static class ChipDropdownAdapter<T extends ChipInterface, VH extends ViewHolder>
+            extends FilterableAdapter<T, VH> {
+        public ChipDropdownAdapter(List<? extends T> itemList) {
+            super(itemList);
         }
-        mFilterableListView.build(mFilterableChipList, this, mFilterableListBackgroundColor, mFilterableListTextColor);
-        mChipsAdapter.setFilterableListView(mFilterableListView);
     }
 
-    public List<? extends ChipInterface> getFilterableList() {
-        return mFilterableChipList;
+    public <T extends ChipInterface> void setChipDropdownAdapter(final ChipDropdownAdapter<T, ?> filterableAdapter) {
+        this.filterableAdapter = filterableAdapter;
+        if (filterableListLayout != null) {
+            mDropdownListView = new DropdownListView(mContext, filterableListLayout);
+        } else {
+            mDropdownListView = new DropdownListView(mContext, this);
+        }
+        mDropdownListView.build(filterableAdapter);
+        mChipsAdapter.setFilterableListView(mDropdownListView);
+        mDropdownListView.getRecyclerView().addOnItemTouchListener(new RecyclerItemClickListener(getContext(), new OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                ChipInterface item = filterableAdapter.getItem(position);
+                addChip(item);
+            }
+        }));
+
+        addChipsListener(new ChipsInput.ChipsListener() {
+            @Override
+            public void onChipAdded(ChipInterface chip, int newSize) {
+                filterableAdapter.hideItem((T) chip);
+            }
+
+            @Override
+            public void onChipRemoved(ChipInterface chip, int newSize) {
+                filterableAdapter.unhideItem((T) chip);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence text) {
+                mDropdownListView.getRecyclerView().scrollToPosition(0);
+            }
+
+            @Override
+            public void onActionDone(CharSequence text) {
+                mDropdownListView.getRecyclerView().scrollToPosition(0);
+            }
+        });
     }
 
     public ChipValidator getChipValidator() {

@@ -4,10 +4,12 @@ package com.pchmn.materialchips.views;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
+
 
 public class ChipsInputEditText extends android.support.v7.widget.AppCompatEditText {
 
-    private FilterableListView filterableListView;
+    private View filterableListView;
 
     public ChipsInputEditText(Context context) {
         super(context);
@@ -21,11 +23,7 @@ public class ChipsInputEditText extends android.support.v7.widget.AppCompatEditT
         return filterableListView != null && filterableListView.getVisibility() == VISIBLE;
     }
 
-    public FilterableListView getFilterableListView() {
-        return filterableListView;
-    }
-
-    public void setFilterableListView(FilterableListView filterableListView) {
+    public void setFilterableListView(View filterableListView) {
         this.filterableListView = filterableListView;
     }
 }
