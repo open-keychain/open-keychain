@@ -339,7 +339,7 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
             vName.setText(keyInfo.name());
 
             Context context = vCreation.getContext();
-            String dateTime = DateUtils.formatDateTime(context, keyInfo.creation(),
+            String dateTime = DateUtils.formatDateTime(context, keyInfo.creation() * 1000,
                     DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME |
                             DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_ABBREV_MONTH);
             vCreation.setText(context.getString(R.string.label_key_created, dateTime));

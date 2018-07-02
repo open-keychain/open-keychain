@@ -523,7 +523,7 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
                 vName.setText(context.getString(R.string.use_key_no_name));
             }
 
-            String dateTime = DateUtils.formatDateTime(context, keyInfo.creation(),
+            String dateTime = DateUtils.formatDateTime(context, keyInfo.creation() * 1000,
                     DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME |
                             DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_ABBREV_MONTH);
             vCreation.setText(context.getString(R.string.label_key_created, dateTime));
