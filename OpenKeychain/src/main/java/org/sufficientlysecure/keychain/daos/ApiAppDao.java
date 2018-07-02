@@ -78,12 +78,16 @@ public class ApiAppDao extends AbstractDao {
         InsertApiApp statement = new ApiAppsModel.InsertApiApp(getWritableDb());
         statement.bind(apiApp.package_name(), apiApp.package_signature());
         statement.executeInsert();
+
+        getDatabaseNotifyManager().notifyApiAppChange(apiApp.package_name());
     }
 
     public void deleteApiApp(String packageName) {
         DeleteByPackageName deleteByPackageName = new DeleteByPackageName(getWritableDb());
         deleteByPackageName.bind(packageName);
         deleteByPackageName.executeUpdateDelete();
+
+        getDatabaseNotifyManager().notifyApiAppChange(packageName);
     }
 
     public HashSet<Long> getAllowedKeyIdsForApp(String packageName) {
@@ -108,12 +112,16 @@ public class ApiAppDao extends AbstractDao {
             statement.bind(packageName, keyId);
             statement.execute();
         }
+
+        getDatabaseNotifyManager().notifyApiAppChange(packageName);
     }
 
     public void addAllowedKeyIdForApp(String packageName, long allowedKeyId) {
         InsertAllowedKey statement = new InsertAllowedKey(getWritableDb());
         statement.bind(packageName, allowedKeyId);
         statement.execute();
+
+        getDatabaseNotifyManager().notifyApiAppChange(packageName);
     }
 
     public List<ApiApp> getAllApiApps() {
