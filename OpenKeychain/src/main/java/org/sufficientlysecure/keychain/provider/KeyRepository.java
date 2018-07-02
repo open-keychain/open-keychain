@@ -31,6 +31,7 @@ import com.squareup.sqldelight.SqlDelightQuery;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.model.Certification;
 import org.sufficientlysecure.keychain.model.KeyRingPublic;
+import org.sufficientlysecure.keychain.model.KeySignature;
 import org.sufficientlysecure.keychain.model.SubKey;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.model.UserPacket;
@@ -132,8 +133,8 @@ public class KeyRepository extends AbstractDao {
 
     public List<Long> getMasterKeyIdsBySigner(List<Long> signerMasterKeyIds) {
         long[] signerKeyIds = getLongListAsArray(signerMasterKeyIds);
-        SqlDelightQuery query = SubKey.FACTORY.selectMasterKeyIdsBySigner(signerKeyIds);
-        return mapAllRows(query, KeyRingPublic.FACTORY.selectAllMasterKeyIdsMapper()::map);
+        SqlDelightQuery query = KeySignature.FACTORY.selectMasterKeyIdsBySigner(signerKeyIds);
+        return mapAllRows(query, KeySignature.FACTORY.selectMasterKeyIdsBySignerMapper()::map);
     }
 
     public Long getMasterKeyIdBySubkeyId(long subKeyId) {
