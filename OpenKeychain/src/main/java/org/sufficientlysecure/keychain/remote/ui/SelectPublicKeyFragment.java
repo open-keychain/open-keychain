@@ -123,7 +123,9 @@ public class SelectPublicKeyFragment extends RecyclerFragment<KeyChoiceAdapter> 
 
     public void onLoadUnifiedKeyData(List<UnifiedKeyInfo> data) {
         if (keyChoiceAdapter == null) {
-            keyChoiceAdapter = KeyChoiceAdapter.createMultiChoiceAdapter(data);
+            keyChoiceAdapter = KeyChoiceAdapter.createMultiChoiceAdapter(data, (keyInfo -> {
+                return keyInfo.is_revoked() ? R.string.keychoice_cannot_encrypt : null;
+            }));
             setAdapter(keyChoiceAdapter);
             keyChoiceAdapter.setSelectionByIds(selectedMasterKeyIds);
         } else {

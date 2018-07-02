@@ -9,12 +9,14 @@ import java.util.Set;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
@@ -26,43 +28,57 @@ import org.sufficientlysecure.keychain.ui.adapter.KeyChoiceAdapter.KeyChoiceItem
 
 
 public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
+    @Nullable
     private final OnKeyClickListener onKeyClickListener;
+    @Nullable
+    private final KeyDisabledPredicate keyDisabledPredicate;
+    @Nullable
     private Integer activeItem;
 
     public static KeyChoiceAdapter createSingleClickableAdapter(List<UnifiedKeyInfo> items,
             OnKeyClickListener onKeyClickListener) {
-        return new KeyChoiceAdapter(items, Objects.requireNonNull(onKeyClickListener), Mode.IDLE);
+        return new KeyChoiceAdapter(items, Objects.requireNonNull(onKeyClickListener), Mode.IDLE, null);
     }
 
     public static KeyChoiceAdapter createSingleChoiceAdapter(List<UnifiedKeyInfo> items) {
-        return new KeyChoiceAdapter(items, null, Mode.SINGLE);
+        return new KeyChoiceAdapter(items, null, Mode.SINGLE, null);
     }
 
-    public static KeyChoiceAdapter createMultiChoiceAdapter(List<UnifiedKeyInfo> items) {
-        return new KeyChoiceAdapter(items, null, Mode.MULTI);
+    public static KeyChoiceAdapter createMultiChoiceAdapter(List<UnifiedKeyInfo> items, KeyDisabledPredicate keyDisabledPredicate) {
+        return new KeyChoiceAdapter(items, null, Mode.MULTI, keyDisabledPredicate);
     }
 
-    private KeyChoiceAdapter(List<UnifiedKeyInfo> items, OnKeyClickListener onKeyClickListener, int idle) {
-        super(getKeyChoiceItems(items));
+    private KeyChoiceAdapter(List<UnifiedKeyInfo> items, @Nullable OnKeyClickListener onKeyClickListener, int idle,
+            @Nullable KeyDisabledPredicate keyDisabledPredicate) {
+        super(getKeyChoiceItems(items, keyDisabledPredicate));
         setMode(idle);
         addListener((OnItemClickListener) (view, position) -> onClickItem(position));
         this.onKeyClickListener = onKeyClickListener;
+        this.keyDisabledPredicate = keyDisabledPredicate;
     }
 
     @Nullable
-    private static ArrayList<KeyChoiceItem> getKeyChoiceItems(@Nullable List<UnifiedKeyInfo> items) {
+    private static ArrayList<KeyChoiceItem> getKeyChoiceItems(@Nullable List<UnifiedKeyInfo> items,
+            @Nullable KeyDisabledPredicate keyDisabledPredicate) {
         if (items == null) {
             return null;
         }
         ArrayList<KeyChoiceItem> choiceItems = new ArrayList<>();
         for (UnifiedKeyInfo keyInfo : items) {
-            KeyChoiceItem keyChoiceItem = new KeyChoiceItem(keyInfo);
+            Integer disabledString = keyDisabledPredicate != null ? keyDisabledPredicate.getDisabledString(keyInfo) : null;
+            KeyChoiceItem keyChoiceItem = new KeyChoiceItem(keyInfo, disabledString);
             choiceItems.add(keyChoiceItem);
         }
         return choiceItems;
     }
 
     private boolean onClickItem(int position) {
+        KeyChoiceItem item = getItem(position);
+        if (item != null && item.disabledStringRes != null) {
+            Toast.makeText(getRecyclerView().getContext(), item.disabledStringRes, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         if (getMode() == Mode.MULTI) {
             toggleSelection(position);
             notifyItemChanged(position);
@@ -72,8 +88,7 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
             return true;
         }
 
-        KeyChoiceItem item = getItem(position);
-        onKeyClickListener.onKeyClick(item.keyInfo);
+        Objects.requireNonNull(onKeyClickListener).onKeyClick(item.keyInfo);
         return false;
     }
 
@@ -109,7 +124,7 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
     }
 
     public void setUnifiedKeyInfoItems(List<UnifiedKeyInfo> keyInfos) {
-        List<KeyChoiceItem> keyChoiceItems = getKeyChoiceItems(keyInfos);
+        List<KeyChoiceItem> keyChoiceItems = getKeyChoiceItems(keyInfos, keyDisabledPredicate);
         updateDataSet(keyChoiceItems);
     }
 
@@ -151,9 +166,12 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
 
     public static class KeyChoiceItem extends AbstractFlexibleItem<KeyChoiceViewHolder> {
         private UnifiedKeyInfo keyInfo;
+        @StringRes
+        private Integer disabledStringRes;
 
-        KeyChoiceItem(UnifiedKeyInfo keyInfo) {
+        KeyChoiceItem(UnifiedKeyInfo keyInfo, @StringRes Integer disabledStringRes) {
             this.keyInfo = keyInfo;
+            this.disabledStringRes = disabledStringRes;
             setSelectable(true);
         }
 
@@ -171,7 +189,8 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
         public void bindViewHolder(FlexibleAdapter<IFlexible> adapter, KeyChoiceViewHolder holder, int position,
                 List<Object> payloads) {
             boolean isActive = adapter.isSelected(position);
-            holder.bind(keyInfo, adapter.getMode(), isActive);
+            boolean isEnabled = disabledStringRes == null;
+            holder.bind(keyInfo, adapter.getMode(), isActive, isEnabled);
         }
 
         @Override
@@ -206,7 +225,7 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
             vRadio = itemView.findViewById(R.id.radio_keychoice);
         }
 
-        void bind(UnifiedKeyInfo keyInfo, int choiceMode, boolean isActive) {
+        void bind(UnifiedKeyInfo keyInfo, int choiceMode, boolean isActive, boolean isEnabled) {
             vName.setText(keyInfo.name());
 
             Context context = vCreation.getContext();
@@ -239,10 +258,20 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
                     break;
                 }
             }
+
+            vCheckbox.setEnabled(isEnabled);
+            vRadio.setEnabled(isEnabled);
+            vName.setEnabled(isEnabled);
+            vCreation.setEnabled(isEnabled);
         }
     }
 
     public interface OnKeyClickListener {
         void onKeyClick(UnifiedKeyInfo keyInfo);
+    }
+
+    public interface KeyDisabledPredicate {
+        @StringRes
+        Integer getDisabledString(UnifiedKeyInfo keyInfo);
     }
 }

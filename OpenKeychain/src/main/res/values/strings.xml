@@ -2033,4 +2033,6 @@
     <string name="snack_keysync_start">Started updating all keys…</string>
     <string name="snack_keysync_finished">Key update successful</string>
     <string name="snack_keysync_error">An error occurred while updating all keys</string>
+
+    <string name="keychoice_cannot_encrypt">This key cannot be used for encryption!</string>
 </resources>
