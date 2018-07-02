@@ -40,10 +40,6 @@ public abstract class AutocryptPeer implements AutocryptPeersModel {
             return gossip_key_is_verified_int() != 0;
         }
 
-        public boolean hasKey() {
-            return autocryptPeer().master_key_id() != null;
-        }
-
         public boolean isKeyRevoked() {
             Boolean revoked = key_is_revoked_int();
             return revoked != null && revoked;

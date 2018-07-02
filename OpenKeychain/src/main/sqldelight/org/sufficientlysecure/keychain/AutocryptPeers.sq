@@ -48,7 +48,7 @@ updateGossipKey:
 UPDATE autocrypt_peers SET gossip_last_seen_key = ?3, gossip_master_key_id = ?4, gossip_origin = ?5 WHERE package_name = ?1 AND identifier = ?2;
 
 insertPeer:
-INSERT INTO autocrypt_peers (package_name, identifier, last_seen) VALUES (?, ?, ?);
+INSERT OR IGNORE INTO autocrypt_peers (package_name, identifier) VALUES (?, ?);
 
 selectAutocryptKeyStatus:
 SELECT autocryptPeer.*,
