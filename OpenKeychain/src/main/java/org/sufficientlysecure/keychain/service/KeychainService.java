@@ -71,7 +71,7 @@ public class KeychainService extends Service implements Progressable {
     public static final String ACTION_CANCEL = "action_cancel";
 
     // this attribute can possibly merged with the one above? not sure...
-    private CancellationSignal mActionCanceled = new CancellationSignal();
+    private CancellationSignal mActionCanceled;
 
     ThreadLocal<Messenger> mMessenger = new ThreadLocal<>();
 
@@ -90,6 +90,8 @@ public class KeychainService extends Service implements Progressable {
             mActionCanceled.cancel();
             return START_NOT_STICKY;
         }
+
+        mActionCanceled = new CancellationSignal();
 
         Runnable actionRunnable = new Runnable() {
             @Override
