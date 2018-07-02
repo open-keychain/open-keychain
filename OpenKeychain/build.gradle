@@ -35,7 +35,6 @@ dependencies {
     compile 'com.cocosw:bottomsheet:1.3.1@aar'
 
     // RecyclerView
-    compile 'com.tonicartos:superslim:0.4.13'
     compile 'eu.davidea:flexible-adapter:5.0.5'
     compile 'eu.davidea:flexible-adapter-ui:1.0.0-b5'
     compile 'eu.davidea:flexible-adapter-livedata:1.0.0-b2'
