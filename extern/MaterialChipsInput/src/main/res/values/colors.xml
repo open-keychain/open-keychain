@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="colorChipViewBackground">#E0E0E0</color>
+    <color name="chips_opened_bg">#009688</color>
+    <color name="colorCloseChip">#ababab</color>
+    <color name="white_transparency">#b9ffffff</color>
+    <color name="colorAccent">?attr/colorAccent</color>
+
+</resources>
