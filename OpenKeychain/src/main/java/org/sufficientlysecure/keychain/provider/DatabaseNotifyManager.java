@@ -43,6 +43,10 @@ public class DatabaseNotifyManager {
         contentResolver.notifyChange(uri, null);
     }
 
+    public static Uri getNotifyUriAllKeys() {
+        return BASE_URI;
+    }
+
     public static Uri getNotifyUriMasterKeyId(long masterKeyId) {
         return BASE_URI.buildUpon().appendPath(Long.toString(masterKeyId)).build();
     }
