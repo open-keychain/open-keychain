@@ -101,6 +101,10 @@ public class KeySpinner extends AppCompatSpinner {
     }
 
     private void maybeSelectPreselection(List<UnifiedKeyInfo> keyInfos) {
+        if (spinnerAdapter.hasNoneItem() && keyInfos.size() == 1) {
+            setSelection(1);
+            return;
+        }
         if (preSelectedKeyId == null) {
             return;
         }
