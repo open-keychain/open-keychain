@@ -94,37 +94,39 @@ public class AutocryptPeerDao extends AbstractDao {
         return result;
     }
 
+    private void ensureAutocryptPeerExists(String packageName, String autocryptId) {
+        InsertPeer insertStatement = new InsertPeer(getWritableDb());
+        insertStatement.bind(packageName, autocryptId);
+        insertStatement.executeInsert();
+    }
+
     public void insertOrUpdateLastSeen(String packageName, String autocryptId, Date date) {
+        ensureAutocryptPeerExists(packageName, autocryptId);
+
         UpdateLastSeen updateStatement = new UpdateLastSeen(getWritableDb(), AutocryptPeer.FACTORY);
         updateStatement.bind(packageName, autocryptId, date);
-        int updated = updateStatement.executeUpdateDelete();
-
-        if (updated == 0) {
-            InsertPeer insertStatement = new InsertPeer(getWritableDb(), AutocryptPeer.FACTORY);
-            insertStatement.bind(packageName, autocryptId, date);
-            insertStatement.executeInsert();
-        }
+        updateStatement.executeUpdateDelete();
     }
 
     public void updateKey(String packageName, String autocryptId, Date effectiveDate, long masterKeyId,
             boolean isMutual) {
+        ensureAutocryptPeerExists(packageName, autocryptId);
+
         UpdateKey updateStatement = new UpdateKey(getWritableDb(), AutocryptPeer.FACTORY);
         updateStatement.bind(packageName, autocryptId, effectiveDate, masterKeyId, isMutual);
-        int rowsUpdated = updateStatement.executeUpdateDelete();
-        if (rowsUpdated == 0) {
-            throw new IllegalStateException("No rows updated! Was this peer inserted before the update?");
-        }
+        updateStatement.executeUpdateDelete();
+
         getDatabaseNotifyManager().notifyAutocryptUpdate(autocryptId, masterKeyId);
     }
 
     public void updateKeyGossip(String packageName, String autocryptId, Date effectiveDate, long masterKeyId,
             GossipOrigin origin) {
+        ensureAutocryptPeerExists(packageName, autocryptId);
+
         UpdateGossipKey updateStatement = new UpdateGossipKey(getWritableDb(), AutocryptPeer.FACTORY);
         updateStatement.bind(packageName, autocryptId, effectiveDate, masterKeyId, origin);
-        int rowsUpdated = updateStatement.executeUpdateDelete();
-        if (rowsUpdated == 0) {
-            throw new IllegalStateException("No rows updated! Was this peer inserted before the update?");
-        }
+        updateStatement.executeUpdateDelete();
+
         getDatabaseNotifyManager().notifyAutocryptUpdate(autocryptId, masterKeyId);
     }
 
