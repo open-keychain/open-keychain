@@ -292,7 +292,7 @@ public class ViewKeyAdvShareFragment extends Fragment {
         unifiedKeyInfoLiveData.observe(this, this::onLoadUnifiedKeyInfo);
 
         LiveData<Bitmap> qrCodeLiveData = Transformations.switchMap(unifiedKeyInfoLiveData,
-                (unifiedKeyInfo) -> new GenericLiveData<>(getContext(), null,
+                (unifiedKeyInfo) -> new GenericLiveData<>(getContext(),
                         () -> {
                             String fingerprintHex = KeyFormattingUtils.convertFingerprintToHex(unifiedKeyInfo.fingerprint());
                             Uri uri = new Uri.Builder().scheme(Constants.FINGERPRINT_SCHEME).opaquePart(fingerprintHex).build();

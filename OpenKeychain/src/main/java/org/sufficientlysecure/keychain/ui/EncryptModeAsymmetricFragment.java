@@ -155,7 +155,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
 
         LiveData<List<UnifiedKeyInfo>> getSignKeyLiveData(Context context) {
             if (signKeyLiveData == null) {
-                signKeyLiveData = new GenericLiveData<>(context, null, () -> {
+                signKeyLiveData = new GenericLiveData<>(context, () -> {
                     KeyRepository keyRepository = KeyRepository.create(context);
                     return keyRepository.getAllUnifiedKeyInfoWithSecret();
                 });
@@ -165,7 +165,7 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
 
         LiveData<List<Chip>> getEncryptRecipientLiveData(Context context) {
             if (encryptRecipientLiveData == null) {
-                encryptRecipientLiveData = new GenericLiveData<>(context, null, () -> {
+                encryptRecipientLiveData = new GenericLiveData<>(context, () -> {
                     KeyRepository keyRepository = KeyRepository.create(context);
                     List<UnifiedKeyInfo> keyInfos = keyRepository.getAllUnifiedKeyInfo();
                     ArrayList<Chip> result = new ArrayList<>();

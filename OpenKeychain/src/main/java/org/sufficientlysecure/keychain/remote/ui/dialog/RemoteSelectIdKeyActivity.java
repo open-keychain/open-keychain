@@ -135,7 +135,7 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
         public LiveData<List<UnifiedKeyInfo>> getSecretUnifiedKeyInfo(Context context) {
             if (keyInfo == null) {
                 KeyRepository keyRepository = KeyRepository.create(context);
-                keyInfo = new GenericLiveData<>(context, null, keyRepository::getAllUnifiedKeyInfoWithSecret);
+                keyInfo = new GenericLiveData<>(context, keyRepository::getAllUnifiedKeyInfoWithSecret);
             }
             return keyInfo;
         }

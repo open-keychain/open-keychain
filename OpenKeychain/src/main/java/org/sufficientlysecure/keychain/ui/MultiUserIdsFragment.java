@@ -84,7 +84,7 @@ public class MultiUserIdsFragment extends Fragment {
 
         KeyRepository keyRepository = KeyRepository.create(activity);
         LiveData<List<UserId>> userIdLiveData =
-                new GenericLiveData<>(getContext(), null, () -> keyRepository.getUserIds(pubMasterKeyIds));
+                new GenericLiveData<>(getContext(), () -> keyRepository.getUserIds(pubMasterKeyIds));
         userIdLiveData.observe(this, this::onUserIdsLoaded);
 
     }

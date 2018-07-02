@@ -260,7 +260,7 @@ public abstract class DecryptFragment extends Fragment {
             return;
         }
 
-        unifiedKeyInfoLiveData = new GenericLiveData<>(requireContext(), null, () -> {
+        unifiedKeyInfoLiveData = new GenericLiveData<>(requireContext(), () -> {
             KeyRepository keyRepository = KeyRepository.create(requireContext());
             Long masterKeyId = keyRepository.getMasterKeyIdBySubkeyId(mSignatureResult.getKeyId());
             return keyRepository.getUnifiedKeyInfo(masterKeyId);
