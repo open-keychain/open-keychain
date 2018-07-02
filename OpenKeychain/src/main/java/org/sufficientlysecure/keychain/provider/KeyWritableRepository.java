@@ -309,15 +309,17 @@ public class KeyWritableRepository extends KeyRepository {
 
                     }
 
-                    // do we have a trusted key for this?
-                    if (trustedKeys.indexOfKey(certId) < 0) {
-                        if (!signerKeyIds.contains(certId)) {
-                            operations.add(ContentProviderOperation.newInsert(KeySignatures.CONTENT_URI)
-                                    .withValue(KeySignatures.MASTER_KEY_ID, masterKeyId)
-                                    .withValue(KeySignatures.SIGNER_KEY_ID, certId)
-                                    .build());
-                            signerKeyIds.add(certId);
-                        }
+                    // keep a note about the issuer of this key signature
+                    if (!signerKeyIds.contains(certId)) {
+                        operations.add(ContentProviderOperation.newInsert(KeySignatures.CONTENT_URI)
+                                .withValue(KeySignatures.MASTER_KEY_ID, masterKeyId)
+                                .withValue(KeySignatures.SIGNER_KEY_ID, certId)
+                                .build());
+                        signerKeyIds.add(certId);
+                    }
+
+                    boolean isSignatureFromTrustedKey = trustedKeys.indexOfKey(certId) >= 0;
+                    if (!isSignatureFromTrustedKey) {
                         unknownCerts += 1;
                         continue;
                     }
