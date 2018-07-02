@@ -31,7 +31,7 @@ public class KeyFragmentViewModel extends ViewModel {
         if (identityInfo == null) {
             IdentityDao identityDao = IdentityDao.getInstance(context);
             identityInfo = Transformations.switchMap(unifiedKeyInfoLiveData,
-                    (unifiedKeyInfo) -> new GenericLiveData<>(context,
+                    (unifiedKeyInfo) -> unifiedKeyInfo == null ? null : new GenericLiveData<>(context,
                             () -> identityDao.getIdentityInfos(unifiedKeyInfo.master_key_id(), showLinkedIds)));
         }
         return identityInfo;
@@ -41,7 +41,7 @@ public class KeyFragmentViewModel extends ViewModel {
         if (subkeyStatus == null) {
             SubkeyStatusDao subkeyStatusDao = SubkeyStatusDao.getInstance(context);
             subkeyStatus = Transformations.switchMap(unifiedKeyInfoLiveData,
-                    (unifiedKeyInfo) -> new GenericLiveData<>(context,
+                    (unifiedKeyInfo) -> unifiedKeyInfo == null ? null : new GenericLiveData<>(context,
                             () -> subkeyStatusDao.getSubkeyStatus(unifiedKeyInfo.master_key_id())));
         }
         return subkeyStatus;
@@ -51,7 +51,7 @@ public class KeyFragmentViewModel extends ViewModel {
         if (systemContactInfo == null) {
             SystemContactDao systemContactDao = SystemContactDao.getInstance(context);
             systemContactInfo = Transformations.switchMap(unifiedKeyInfoLiveData,
-                    (unifiedKeyInfo) -> new GenericLiveData<>(context,
+                    (unifiedKeyInfo) -> unifiedKeyInfo == null ? null : new GenericLiveData<>(context,
                             () -> systemContactDao.getSystemContactInfo(unifiedKeyInfo.master_key_id(),
                                     unifiedKeyInfo.has_any_secret())));
         }
@@ -62,7 +62,7 @@ public class KeyFragmentViewModel extends ViewModel {
         if (keyserverStatus == null) {
             KeyMetadataDao keyMetadataDao = KeyMetadataDao.create(context);
             keyserverStatus = Transformations.switchMap(unifiedKeyInfoLiveData,
-                    (unifiedKeyInfo) -> new GenericLiveData<>(context,
+                    (unifiedKeyInfo) -> unifiedKeyInfo == null ? null : new GenericLiveData<>(context,
                             () -> keyMetadataDao.getKeyMetadata(unifiedKeyInfo.master_key_id())));
         }
         return keyserverStatus;
