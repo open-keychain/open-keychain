@@ -9,7 +9,8 @@ import org.sufficientlysecure.keychain.Constants;
 
 
 public class DatabaseNotifyManager {
-    private static final Uri BASE_URI = Uri.parse("content://" + Constants.PROVIDER_AUTHORITY);
+    private static final Uri URI_KEYS = Uri.parse("content://" + Constants.PROVIDER_AUTHORITY + "/keys");
+    private static final Uri URI_APPS = Uri.parse("content://" + Constants.PROVIDER_AUTHORITY + "/apps");
 
     private ContentResolver contentResolver;
 
@@ -42,11 +43,24 @@ public class DatabaseNotifyManager {
         contentResolver.notifyChange(uri, null);
     }
 
+    public void notifyApiAppChange(String apiApp) {
+        Uri uri = getNotifyUriPackageName(apiApp);
+        contentResolver.notifyChange(uri, null);
+    }
+
     public static Uri getNotifyUriAllKeys() {
-        return BASE_URI;
+        return URI_KEYS;
     }
 
     public static Uri getNotifyUriMasterKeyId(long masterKeyId) {
-        return BASE_URI.buildUpon().appendPath(Long.toString(masterKeyId)).build();
+        return URI_KEYS.buildUpon().appendPath(Long.toString(masterKeyId)).build();
+    }
+
+    public static Uri getNotifyUriAllApps() {
+        return URI_APPS;
+    }
+
+    public static Uri getNotifyUriPackageName(String packageName) {
+        return URI_APPS.buildUpon().appendPath(packageName).build();
     }
 }
