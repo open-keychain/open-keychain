@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.provider;
+package org.sufficientlysecure.keychain;
 
 
 import java.io.File;
@@ -34,17 +34,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
 import android.support.annotation.VisibleForTesting;
 
-import org.sufficientlysecure.keychain.ApiAllowedKeysModel;
-import org.sufficientlysecure.keychain.ApiAppsModel;
-import org.sufficientlysecure.keychain.AutocryptPeersModel;
-import org.sufficientlysecure.keychain.CertsModel;
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.KeyMetadataModel;
-import org.sufficientlysecure.keychain.KeyRingsPublicModel;
-import org.sufficientlysecure.keychain.KeySignaturesModel;
-import org.sufficientlysecure.keychain.KeysModel;
-import org.sufficientlysecure.keychain.OverriddenWarningsModel;
-import org.sufficientlysecure.keychain.UserPacketsModel;
+import org.sufficientlysecure.keychain.daos.LocalSecretKeyStorage;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;

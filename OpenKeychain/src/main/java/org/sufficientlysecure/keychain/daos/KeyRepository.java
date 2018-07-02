@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.provider;
+package org.sufficientlysecure.keychain.daos;
 
 
 import java.io.ByteArrayOutputStream;
@@ -29,6 +29,7 @@ import android.support.annotation.WorkerThread;
 
 import com.squareup.sqldelight.SqlDelightQuery;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
+import org.sufficientlysecure.keychain.KeychainDatabase;
 import org.sufficientlysecure.keychain.model.Certification;
 import org.sufficientlysecure.keychain.model.KeyRingPublic;
 import org.sufficientlysecure.keychain.model.KeySignature;

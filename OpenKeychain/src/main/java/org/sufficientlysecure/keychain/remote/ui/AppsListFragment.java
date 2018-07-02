@@ -41,7 +41,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.model.ApiApp;
-import org.sufficientlysecure.keychain.provider.ApiAppDao;
+import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import org.sufficientlysecure.keychain.remote.ui.AppsListFragment.ApiAppAdapter;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
 import org.sufficientlysecure.keychain.ui.keyview.loader.AsyncTaskLiveData;

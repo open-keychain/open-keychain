@@ -67,12 +67,12 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem;
-import org.sufficientlysecure.keychain.provider.ApiAppDao;
-import org.sufficientlysecure.keychain.provider.AutocryptPeerDao;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
+import org.sufficientlysecure.keychain.daos.ApiAppDao;
+import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
-import org.sufficientlysecure.keychain.provider.OverriddenWarningsRepository;
+import org.sufficientlysecure.keychain.daos.OverriddenWarningsDao;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResult;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResultStatus;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
@@ -470,7 +470,7 @@ public class OpenPgpService extends Service {
             SecurityProblem prioritySecurityProblem = securityProblem.getPrioritySecurityProblem();
             if (prioritySecurityProblem.isIdentifiable()) {
                 String identifier = prioritySecurityProblem.getIdentifier();
-                boolean isOverridden = OverriddenWarningsRepository.createOverriddenWarningsRepository(this)
+                boolean isOverridden = OverriddenWarningsDao.createOverriddenWarningsRepository(this)
                         .isWarningOverridden(identifier);
                 result.putExtra(OpenPgpApi.RESULT_OVERRIDE_CRYPTO_WARNING, isOverridden);
             }

@@ -28,8 +28,8 @@ import android.support.v7.widget.LinearLayoutManager;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
-import org.sufficientlysecure.keychain.provider.ApiAppDao;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.daos.ApiAppDao;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.ui.adapter.KeyChoiceAdapter;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
 import org.sufficientlysecure.keychain.ui.keyview.GenericViewModel;

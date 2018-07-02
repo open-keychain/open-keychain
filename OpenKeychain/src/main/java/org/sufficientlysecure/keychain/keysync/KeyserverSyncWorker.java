@@ -19,7 +19,7 @@ import org.sufficientlysecure.keychain.operations.KeySyncOperation;
 import org.sufficientlysecure.keychain.operations.KeySyncParcel;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.util.ResourceUtils;

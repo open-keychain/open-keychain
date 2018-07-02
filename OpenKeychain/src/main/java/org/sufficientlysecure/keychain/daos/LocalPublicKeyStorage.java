@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.provider;
+package org.sufficientlysecure.keychain.daos;
 
 
 import java.io.ByteArrayOutputStream;
@@ -30,37 +30,37 @@ import android.content.Context;
 import okhttp3.internal.Util;
 
 
-class LocalSecretKeyStorage {
-    private static final String FORMAT_STR_SECRET_KEY = "0x%016x.sec";
-    private static final String SECRET_KEYS_DIR_NAME = "secret_keys";
+class LocalPublicKeyStorage {
+    private static final String FORMAT_STR_PUBLIC_KEY = "0x%016x.pub";
+    private static final String PUBLIC_KEYS_DIR_NAME = "public_keys";
 
 
-    private final File localSecretKeysDir;
+    private final File localPublicKeysDir;
 
 
-    public static LocalSecretKeyStorage getInstance(Context context) {
-        File localSecretKeysDir = new File(context.getFilesDir(), SECRET_KEYS_DIR_NAME);
-        return new LocalSecretKeyStorage(localSecretKeysDir);
+    public static LocalPublicKeyStorage getInstance(Context context) {
+        File localPublicKeysDir = new File(context.getFilesDir(), PUBLIC_KEYS_DIR_NAME);
+        return new LocalPublicKeyStorage(localPublicKeysDir);
     }
 
-    private LocalSecretKeyStorage(File localSecretKeysDir) {
-        this.localSecretKeysDir = localSecretKeysDir;
+    private LocalPublicKeyStorage(File localPublicKeysDir) {
+        this.localPublicKeysDir = localPublicKeysDir;
     }
 
-    private File getSecretKeyFile(long masterKeyId) throws IOException {
-        if (!localSecretKeysDir.exists()) {
-            localSecretKeysDir.mkdir();
+    private File getPublicKeyFile(long masterKeyId) throws IOException {
+        if (!localPublicKeysDir.exists()) {
+            localPublicKeysDir.mkdir();
         }
-        if (!localSecretKeysDir.isDirectory()) {
+        if (!localPublicKeysDir.isDirectory()) {
             throw new IOException("Failed creating public key directory!");
         }
 
-        String keyFilename = String.format(FORMAT_STR_SECRET_KEY, masterKeyId);
-        return new File(localSecretKeysDir, keyFilename);
+        String keyFilename = String.format(FORMAT_STR_PUBLIC_KEY, masterKeyId);
+        return new File(localPublicKeysDir, keyFilename);
     }
 
-    void writeSecretKey(long masterKeyId, byte[] encoded) throws IOException {
-        File publicKeyFile = getSecretKeyFile(masterKeyId);
+    void writePublicKey(long masterKeyId, byte[] encoded) throws IOException {
+        File publicKeyFile = getPublicKeyFile(masterKeyId);
 
         FileOutputStream fileOutputStream = new FileOutputStream(publicKeyFile);
         try {
@@ -70,8 +70,8 @@ class LocalSecretKeyStorage {
         }
     }
 
-    byte[] readSecretKey(long masterKeyId) throws IOException {
-        File publicKeyFile = getSecretKeyFile(masterKeyId);
+    byte[] readPublicKey(long masterKeyId) throws IOException {
+        File publicKeyFile = getPublicKeyFile(masterKeyId);
 
         try {
             FileInputStream fileInputStream = new FileInputStream(publicKeyFile);
@@ -93,8 +93,8 @@ class LocalSecretKeyStorage {
         return baos.toByteArray();
     }
 
-    void deleteSecretKey(long masterKeyId) throws IOException {
-        File publicKeyFile = getSecretKeyFile(masterKeyId);
+    void deletePublicKey(long masterKeyId) throws IOException {
+        File publicKeyFile = getPublicKeyFile(masterKeyId);
         if (publicKeyFile.exists()) {
             boolean deleteSuccess = publicKeyFile.delete();
             if (!deleteSuccess) {

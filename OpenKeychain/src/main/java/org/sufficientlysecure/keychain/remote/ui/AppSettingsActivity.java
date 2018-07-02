@@ -37,7 +37,7 @@ import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.model.ApiApp;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.provider.ApiAppDao;
+import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.dialog.AdvancedAppSettingsDialogFragment;
 import timber.log.Timber;

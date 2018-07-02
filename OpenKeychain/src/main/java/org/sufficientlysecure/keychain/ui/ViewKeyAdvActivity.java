@@ -48,7 +48,7 @@ import org.sufficientlysecure.keychain.model.SubKey;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.model.UserPacket.UserId;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;

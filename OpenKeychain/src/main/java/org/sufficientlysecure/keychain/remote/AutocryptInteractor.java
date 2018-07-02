@@ -19,8 +19,8 @@ import org.sufficientlysecure.keychain.model.AutocryptPeer.GossipOrigin;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.AutocryptPeerDao;
-import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
+import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import timber.log.Timber;
 
 

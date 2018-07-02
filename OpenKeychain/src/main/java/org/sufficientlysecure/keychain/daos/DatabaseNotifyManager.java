@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.provider;
+package org.sufficientlysecure.keychain.daos;
 
 
 import android.content.ContentResolver;
@@ -6,7 +6,6 @@ import android.content.Context;
 import android.net.Uri;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 
 
 public class DatabaseNotifyManager {

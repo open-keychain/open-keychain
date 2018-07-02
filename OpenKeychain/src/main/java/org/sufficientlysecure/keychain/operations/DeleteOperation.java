@@ -23,14 +23,13 @@ import java.util.Collections;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.UpdateTrustResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.DeleteKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;

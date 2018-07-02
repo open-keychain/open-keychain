@@ -23,7 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
-import org.sufficientlysecure.keychain.provider.ApiAppDao;
+import org.sufficientlysecure.keychain.daos.ApiAppDao;
 
 public class PackageUninstallReceiver extends BroadcastReceiver {
 

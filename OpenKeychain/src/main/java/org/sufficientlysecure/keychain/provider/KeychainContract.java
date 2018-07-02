@@ -24,12 +24,12 @@ import org.sufficientlysecure.keychain.Constants;
 
 public class KeychainContract {
 
-    interface KeyRingsColumns {
+    public interface KeyRingsColumns {
         String MASTER_KEY_ID = "master_key_id"; // not a database id
         String KEY_RING_DATA = "key_ring_data"; // PGPPublicKeyRing / PGPSecretKeyRing blob
     }
 
-    interface KeysColumns {
+    public interface KeysColumns {
         String MASTER_KEY_ID = "master_key_id"; // not a database id
         String RANK = "rank";
 
@@ -51,12 +51,12 @@ public class KeychainContract {
         String EXPIRY = "expiry";
     }
 
-    interface KeySignaturesColumns {
+    public interface KeySignaturesColumns {
         String MASTER_KEY_ID = "master_key_id"; // not a database id
         String SIGNER_KEY_ID = "signer_key_id";
     }
 
-    interface UserPacketsColumns {
+    public interface UserPacketsColumns {
         String MASTER_KEY_ID = "master_key_id"; // foreign key to key_rings._ID
         String TYPE = "type"; // not a database id
         String USER_ID = "user_id"; // not a database id
@@ -69,7 +69,7 @@ public class KeychainContract {
         String IS_REVOKED = "is_revoked";
     }
 
-    interface CertsColumns {
+    public interface CertsColumns {
         String MASTER_KEY_ID = "master_key_id";
         String RANK = "rank";
         String KEY_ID_CERTIFIER = "key_id_certifier";
@@ -79,12 +79,12 @@ public class KeychainContract {
         String DATA = "data";
     }
 
-    interface ApiAppsAllowedKeysColumns {
+    public interface ApiAppsAllowedKeysColumns {
         String KEY_ID = "key_id"; // not a database id
         String PACKAGE_NAME = "package_name"; // foreign key to api_apps.package_name
     }
 
-    interface OverriddenWarnings {
+    public interface OverriddenWarnings {
         String IDENTIFIER = "identifier";
     }
 

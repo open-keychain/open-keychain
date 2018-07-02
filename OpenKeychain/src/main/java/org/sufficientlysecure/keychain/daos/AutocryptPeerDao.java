@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.provider;
+package org.sufficientlysecure.keychain.daos;
 
 
 import java.util.ArrayList;
@@ -33,6 +33,7 @@ import org.sufficientlysecure.keychain.AutocryptPeersModel.InsertPeer;
 import org.sufficientlysecure.keychain.AutocryptPeersModel.UpdateGossipKey;
 import org.sufficientlysecure.keychain.AutocryptPeersModel.UpdateKey;
 import org.sufficientlysecure.keychain.AutocryptPeersModel.UpdateLastSeen;
+import org.sufficientlysecure.keychain.KeychainDatabase;
 import org.sufficientlysecure.keychain.model.AutocryptPeer;
 import org.sufficientlysecure.keychain.model.AutocryptPeer.AutocryptKeyStatus;
 import org.sufficientlysecure.keychain.model.AutocryptPeer.GossipOrigin;

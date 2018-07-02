@@ -27,7 +27,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.runners.MethodSorters;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase;
+import org.sufficientlysecure.keychain.KeychainDatabase;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
 import static android.support.test.espresso.Espresso.onView;

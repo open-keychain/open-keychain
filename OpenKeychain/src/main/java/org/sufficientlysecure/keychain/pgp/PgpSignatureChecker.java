@@ -38,8 +38,8 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.pgp.DecryptVerifySecurityProblem.DecryptVerifySecurityProblemBuilder;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureSigningAlgorithm;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import timber.log.Timber;
 
 

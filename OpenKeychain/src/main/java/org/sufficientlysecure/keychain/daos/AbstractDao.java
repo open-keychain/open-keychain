@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.provider;
+package org.sufficientlysecure.keychain.daos;
 
 
 import java.util.ArrayList;
@@ -8,7 +8,8 @@ import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.db.SupportSQLiteQuery;
 import android.database.Cursor;
 
-import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
+import org.sufficientlysecure.keychain.KeychainDatabase;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 
 
 class AbstractDao {
