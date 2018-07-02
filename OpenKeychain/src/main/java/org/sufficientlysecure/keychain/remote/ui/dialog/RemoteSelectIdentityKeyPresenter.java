@@ -185,7 +185,7 @@ class RemoteSelectIdentityKeyPresenter {
     }
 
     void onKeyItemClick(int position) {
-        selectedMasterKeyId = keyInfoData.get(position).master_key_id();
+        selectedMasterKeyId = getFilteredKeyInfo().get(position).master_key_id();
         view.highlightKey(position);
     }
 
