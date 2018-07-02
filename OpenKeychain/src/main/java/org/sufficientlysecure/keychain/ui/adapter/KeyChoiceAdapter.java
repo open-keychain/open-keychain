@@ -28,8 +28,11 @@ import org.sufficientlysecure.keychain.ui.adapter.KeyChoiceAdapter.KeyChoiceItem
 
 
 public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
+    @Nullable
     private final OnKeyClickListener onKeyClickListener;
+    @Nullable
     private final KeyDisabledPredicate keyDisabledPredicate;
+    @Nullable
     private Integer activeItem;
 
     public static KeyChoiceAdapter createSingleClickableAdapter(List<UnifiedKeyInfo> items,
@@ -45,8 +48,8 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
         return new KeyChoiceAdapter(items, null, Mode.MULTI, keyDisabledPredicate);
     }
 
-    private KeyChoiceAdapter(List<UnifiedKeyInfo> items, OnKeyClickListener onKeyClickListener, int idle,
-            KeyDisabledPredicate keyDisabledPredicate) {
+    private KeyChoiceAdapter(List<UnifiedKeyInfo> items, @Nullable OnKeyClickListener onKeyClickListener, int idle,
+            @Nullable KeyDisabledPredicate keyDisabledPredicate) {
         super(getKeyChoiceItems(items, keyDisabledPredicate));
         setMode(idle);
         addListener((OnItemClickListener) (view, position) -> onClickItem(position));
@@ -56,13 +59,13 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
 
     @Nullable
     private static ArrayList<KeyChoiceItem> getKeyChoiceItems(@Nullable List<UnifiedKeyInfo> items,
-            KeyDisabledPredicate keyDisabledPredicate) {
+            @Nullable KeyDisabledPredicate keyDisabledPredicate) {
         if (items == null) {
             return null;
         }
         ArrayList<KeyChoiceItem> choiceItems = new ArrayList<>();
         for (UnifiedKeyInfo keyInfo : items) {
-            Integer disabledString = keyDisabledPredicate.getDisabledString(keyInfo);
+            Integer disabledString = keyDisabledPredicate != null ? keyDisabledPredicate.getDisabledString(keyInfo) : null;
             KeyChoiceItem keyChoiceItem = new KeyChoiceItem(keyInfo, disabledString);
             choiceItems.add(keyChoiceItem);
         }
@@ -85,7 +88,7 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
             return true;
         }
 
-        onKeyClickListener.onKeyClick(item.keyInfo);
+        Objects.requireNonNull(onKeyClickListener).onKeyClick(item.keyInfo);
         return false;
     }
 
