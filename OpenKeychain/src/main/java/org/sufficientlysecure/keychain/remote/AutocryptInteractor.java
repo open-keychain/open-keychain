@@ -89,7 +89,7 @@ public class AutocryptInteractor {
         // -> This should be taken care of in the mail client that sends us this data!
 
         // 2. If peers[gossip-addr].gossip_timestamp is more recent than the message’s effective date, then the update process terminates.
-        Date lastSeenGossip = currentAutocryptPeer.gossip_last_seen_key();
+        Date lastSeenGossip = currentAutocryptPeer != null ? currentAutocryptPeer.gossip_last_seen_key() : null;
         if (lastSeenGossip != null && lastSeenGossip.after(effectiveDate)) {
             return;
         }
@@ -172,19 +172,22 @@ public class AutocryptInteractor {
 
     @Nullable
     private AutocryptRecommendationResult determineAutocryptKeyRecommendation(AutocryptKeyStatus autocryptKeyStatus) {
-        boolean hasKey = autocryptKeyStatus.hasKey();
+        AutocryptPeer autocryptPeer = autocryptKeyStatus.autocryptPeer();
+
+        Long masterKeyId = autocryptPeer.master_key_id();
+        boolean hasKey = masterKeyId != null;
         boolean isRevoked = autocryptKeyStatus.isKeyRevoked();
         boolean isExpired = autocryptKeyStatus.isKeyExpired();
         if (!hasKey || isRevoked || isExpired) {
             return null;
         }
 
-        AutocryptPeer autocryptPeer = autocryptKeyStatus.autocryptPeer();
-        long masterKeyId = autocryptPeer.master_key_id();
         Date lastSeen = autocryptPeer.last_seen();
         Date lastSeenKey = autocryptPeer.last_seen_key();
         boolean isVerified = autocryptKeyStatus.isKeyVerified();
-        if (lastSeenKey.getTime() < (lastSeen.getTime() - AUTOCRYPT_DISCOURAGE_THRESHOLD_MILLIS)) {
+        boolean isLastSeenOlderThanDiscourageTimespan = lastSeen != null && lastSeenKey != null &&
+                lastSeenKey.getTime() < (lastSeen.getTime() - AUTOCRYPT_DISCOURAGE_THRESHOLD_MILLIS);
+        if (isLastSeenOlderThanDiscourageTimespan) {
             return new AutocryptRecommendationResult(autocryptPeer.identifier(), AutocryptState.DISCOURAGED_OLD, masterKeyId, isVerified);
         }
 
