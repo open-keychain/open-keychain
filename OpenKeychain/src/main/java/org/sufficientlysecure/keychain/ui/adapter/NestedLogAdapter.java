@@ -17,6 +17,10 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
+
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
@@ -29,14 +33,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.tonicartos.superslim.LayoutManager;
-
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class NestedLogAdapter extends RecyclerView.Adapter<NestedLogAdapter.LogEntryViewHolder> {
     private static final int ENTRY_TYPE_REGULAR = 0;
@@ -135,14 +134,7 @@ public class NestedLogAdapter extends RecyclerView.Adapter<NestedLogAdapter.LogE
 
     @Override
     public void onBindViewHolder(LogEntryViewHolder holder, int position) {
-        LayoutManager.LayoutParams layoutParams = LayoutManager.LayoutParams
-                .from(holder.itemView.getLayoutParams());
-
-        layoutParams.isHeader = isSection(position);
-        layoutParams.setFirstPosition(getFirstSectionPosition(position));
-
         holder.bind(getItem(position), mIndentFactor);
-        holder.itemView.setLayoutParams(layoutParams);
     }
 
     class LogEntryViewHolder extends RecyclerView.ViewHolder {
