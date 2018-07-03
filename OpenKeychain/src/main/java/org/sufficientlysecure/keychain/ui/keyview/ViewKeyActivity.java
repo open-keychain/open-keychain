@@ -737,10 +737,10 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             actionEncryptText.setVisibility(View.INVISIBLE);
             hideFab();
             qrCodeLayout.setVisibility(View.GONE);
-        } else if (!unifiedKeyInfo.is_secure()) {
+        } else if (unifiedKeyInfo.is_expired()) {
             statusImage.setVisibility(View.VISIBLE);
             KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
-                    State.INSECURE, R.color.icons, true);
+                    State.EXPIRED, R.color.icons, true);
             // noinspection deprecation, fix requires api level 23
             color = getResources().getColor(R.color.key_flag_red);
 
@@ -748,10 +748,10 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             actionEncryptText.setVisibility(View.INVISIBLE);
             hideFab();
             qrCodeLayout.setVisibility(View.GONE);
-        } else if (unifiedKeyInfo.is_expired()) {
+        } else if (!unifiedKeyInfo.is_secure()) {
             statusImage.setVisibility(View.VISIBLE);
             KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
-                    State.EXPIRED, R.color.icons, true);
+                    State.INSECURE, R.color.icons, true);
             // noinspection deprecation, fix requires api level 23
             color = getResources().getColor(R.color.key_flag_red);
 
