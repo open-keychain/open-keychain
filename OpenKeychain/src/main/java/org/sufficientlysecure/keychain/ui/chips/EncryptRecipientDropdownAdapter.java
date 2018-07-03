@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain.ui.adapter;
+package org.sufficientlysecure.keychain.ui.chips;
 
 
 import java.util.List;
@@ -14,15 +14,15 @@ import android.widget.TextView;
 
 import com.pchmn.materialchips.ChipsInput;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.adapter.EncryptRecipientDropdownAdapter.ItemViewHolder;
 import org.sufficientlysecure.keychain.ui.chips.EncryptRecipientChipsInput.EncryptRecipientChip;
+import org.sufficientlysecure.keychain.ui.chips.EncryptRecipientDropdownAdapter.ItemViewHolder;
 import org.sufficientlysecure.keychain.ui.util.KeyInfoFormatter;
 
 
 public class EncryptRecipientDropdownAdapter extends ChipsInput.ChipDropdownAdapter<EncryptRecipientChip, ItemViewHolder> {
     private final LayoutInflater layoutInflater;
 
-    public EncryptRecipientDropdownAdapter(Context context, List<EncryptRecipientChip> keyInfoChips) {
+    EncryptRecipientDropdownAdapter(Context context, List<EncryptRecipientChip> keyInfoChips) {
         super(keyInfoChips);
 
         layoutInflater = LayoutInflater.from(context);

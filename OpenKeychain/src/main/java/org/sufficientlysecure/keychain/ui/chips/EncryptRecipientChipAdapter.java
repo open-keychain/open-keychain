@@ -19,7 +19,7 @@ import org.sufficientlysecure.keychain.ui.chips.EncryptRecipientChipsInput.Encry
 
 
 public class EncryptRecipientChipAdapter extends ChipsAdapter<EncryptRecipientChip, ItemViewHolder> {
-    public EncryptRecipientChipAdapter(Context context, ChipsInput<EncryptRecipientChip> chipsInput) {
+    EncryptRecipientChipAdapter(Context context, ChipsInput<EncryptRecipientChip> chipsInput) {
         super(context, chipsInput);
     }
 
