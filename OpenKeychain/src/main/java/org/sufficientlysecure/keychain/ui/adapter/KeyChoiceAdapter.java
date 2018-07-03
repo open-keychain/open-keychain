@@ -226,7 +226,7 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
         }
 
         void bind(UnifiedKeyInfo keyInfo, int choiceMode, boolean isActive, boolean isEnabled) {
-            vName.setText(keyInfo.name());
+            vName.setText(keyInfo.user_id());
 
             KeyInfoFormatter keyInfoFormatter = new KeyInfoFormatter(itemView.getContext(), keyInfo, null);
             keyInfoFormatter.formatCreationDate(vCreation);
