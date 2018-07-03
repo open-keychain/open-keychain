@@ -17,13 +17,7 @@
         <attr name="maxRows" format="integer" />
         <attr name="chip_labelColor" format="color" />
         <attr name="chip_deletable" format="boolean" />
-        <attr name="chip_deleteIcon" format="reference" />
-        <attr name="chip_deleteIconColor" format="color" />
-        <attr name="chip_backgroundColor" format="color" />
         <attr name="showChipDetailed" format="boolean" />
-        <attr name="chip_detailed_textColor" format="color" />
-        <attr name="chip_detailed_backgroundColor" format="color" />
-        <attr name="chip_detailed_deleteIconColor" format="color" />
     </declare-styleable>
 
     <declare-styleable name="ScrollViewMaxHeight">

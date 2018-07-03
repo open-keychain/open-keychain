@@ -1,8 +1,14 @@
 package com.pchmn.materialchips.adapter;
 
+
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -11,105 +17,49 @@ import android.widget.RelativeLayout;
 
 import com.pchmn.materialchips.ChipView;
 import com.pchmn.materialchips.ChipsInput;
-import com.pchmn.materialchips.model.ChipInterface;
+import com.pchmn.materialchips.adapter.FilterableAdapter.FilterableItem;
 import com.pchmn.materialchips.util.ViewUtil;
 import com.pchmn.materialchips.views.ChipsInputEditText;
 import com.pchmn.materialchips.views.DetailedChipView;
 import com.pchmn.materialchips.views.DropdownListView;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
-
-public class ChipsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
+public abstract class ChipsAdapter<T extends FilterableItem, VH extends RecyclerView.ViewHolder>
+        extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int TYPE_EDIT_TEXT = 0;
     private static final int TYPE_ITEM = 1;
-    private Context mContext;
-    private ChipsInput mChipsInput;
-    private List<ChipInterface> mChipList = new ArrayList<>();
-    private String mHintLabel;
 
-    private ChipsInputEditText mEditText;
+    protected Context context;
 
-    private RecyclerView mRecycler;
+    private ChipsInput<T> chipsInput;
+    private List<T> chipList = new ArrayList<>();
 
-    public ChipsAdapter(Context context, ChipsInput chipsInput, RecyclerView recycler) {
-        mContext = context;
-        mChipsInput = chipsInput;
-        mRecycler = recycler;
-        mHintLabel = mChipsInput.getHint();
-    }
+    private ChipsInputEditText editText;
+    private String hintLabel;
 
-    public ChipsAdapter(Context mContext, ChipsInput chipsInput, ChipsInputEditText mEditText, RecyclerView mRecyclerView) {
-        this(mContext, chipsInput, mRecyclerView);
-        this.mEditText = mEditText;
-    }
+    private RecyclerView chipsRecycler;
 
-    private class ItemViewHolder extends RecyclerView.ViewHolder {
+    public ChipsAdapter(Context context, ChipsInput<T> chipsInput) {
+        this.chipsInput = chipsInput;
+        this.chipsRecycler = chipsInput.getChipsRecyclerView();
+        this.editText = chipsInput.getEditText();
+        this.context = context;
 
-        private final ChipView chipView;
-
-        ItemViewHolder(View view) {
-            super(view);
-            chipView = (ChipView) view;
-        }
-
-    }
-    private class EditTextViewHolder extends RecyclerView.ViewHolder {
-
-        private final EditText editText;
-
-        EditTextViewHolder(View view) {
-            super(view);
-            editText = (EditText) view;
-        }
-
-    }
-
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == TYPE_EDIT_TEXT) {
-            return new EditTextViewHolder(mEditText);
-        } else {
-            return new ItemViewHolder(mChipsInput.getChipView());
-        }
-
-    }
-
-    @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-        // edit text
-        if (position == mChipList.size()) {
-            if (mChipList.size() == 0) {
-                mEditText.setHint(mHintLabel);
-            }
-
-            // auto fit edit text
-            autofitEditText();
-        }
-        // chip
-        else if (getItemCount() > 1) {
-            ItemViewHolder itemViewHolder = (ItemViewHolder) holder;
-            itemViewHolder.chipView.inflate(getItem(position));
-            // handle click
-            handleClickOnEditText(itemViewHolder.chipView, position);
-        }
+        this.hintLabel = chipsInput.getHint();
     }
 
     @Override
     public int getItemCount() {
-        return mChipList.size() + 1;
+        return chipList.size() + 1;
     }
 
-    private ChipInterface getItem(int position) {
-        return mChipList.get(position);
+    protected T getItem(int position) {
+        return chipList.get(position);
     }
 
     @Override
     public int getItemViewType(int position) {
-        if (position == mChipList.size()) {
+        if (position == chipList.size()) {
             return TYPE_EDIT_TEXT;
         }
 
@@ -118,44 +68,44 @@ public class ChipsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public long getItemId(int position) {
-        return mChipList.get(position).hashCode();
+        return chipList.get(position).hashCode();
     }
 
     private void autofitEditText() {
         // min width of edit text = 50 dp
-        ViewGroup.LayoutParams params = mEditText.getLayoutParams();
+        ViewGroup.LayoutParams params = editText.getLayoutParams();
         params.width = ViewUtil.dpToPx(50);
-        mEditText.setLayoutParams(params);
+        editText.setLayoutParams(params);
 
         // listen to change in the tree
-        mEditText.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        editText.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 
             @Override
             public void onGlobalLayout() {
                 // get right of recycler and left of edit text
-                int right = mRecycler.getRight();
-                int left = mEditText.getLeft();
+                int right = chipsRecycler.getRight();
+                int left = editText.getLeft();
 
                 // edit text will fill the space
-                ViewGroup.LayoutParams params = mEditText.getLayoutParams();
+                ViewGroup.LayoutParams params = editText.getLayoutParams();
                 params.width = right - left - ViewUtil.dpToPx(8);
-                mEditText.setLayoutParams(params);
+                editText.setLayoutParams(params);
 
                 // request focus
-                mEditText.requestFocus();
+                editText.requestFocus();
 
                 // remove the listener:
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                    mEditText.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                    editText.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                 } else {
-                    mEditText.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    editText.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }
             }
 
         });
     }
 
-    private void handleClickOnEditText(ChipView chipView, final int position) {
+    public void handleClickOnEditText(ChipView chipView, final int position) {
         // delete chip
         chipView.setOnDeleteClicked(new View.OnClickListener() {
             @Override
@@ -165,7 +115,7 @@ public class ChipsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         });
 
         // show detailed chip
-        if (mChipsInput.isShowChipDetailed()) {
+        if (chipsInput.isShowChipDetailed()) {
             chipView.setOnChipClicked(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -173,7 +123,7 @@ public class ChipsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                     int[] coord = new int[2];
                     v.getLocationInWindow(coord);
 
-                    final DetailedChipView detailedChipView = mChipsInput.getDetailedChipView(getItem(position));
+                    final DetailedChipView detailedChipView = getDetailedChipView(getItem(position));
                     setDetailedChipViewPosition(detailedChipView, coord);
 
                     // delete button
@@ -189,10 +139,12 @@ public class ChipsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
     }
 
+    public abstract DetailedChipView getDetailedChipView(T chip);
+
     private void setDetailedChipViewPosition(DetailedChipView detailedChipView, int[] coord) {
         // window width
-        ViewGroup rootView = (ViewGroup) mRecycler.getRootView();
-        int windowWidth = ViewUtil.getWindowWidth(mContext);
+        ViewGroup rootView = (ViewGroup) chipsRecycler.getRootView();
+        int windowWidth = ViewUtil.getWindowWidth(context);
 
         // chip size
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
@@ -226,159 +178,128 @@ public class ChipsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     public void setFilterableListView(DropdownListView dropdownListView) {
-        if (mEditText != null) {
-            mEditText.setFilterableListView(dropdownListView);
+        if (editText != null) {
+            editText.setFilterableListView(dropdownListView);
         }
     }
 
-    public void addChipsProgrammatically(List<ChipInterface> chipList) {
+    public void addChipsProgrammatically(List<T> chipList) {
         if (chipList != null) {
             if (chipList.size() > 0) {
                 int chipsBeforeAdding = getItemCount();
-                for (ChipInterface chip : chipList) {
-                    mChipList.add(chip);
-                    mChipsInput.onChipAdded(chip, getItemCount());
+                for (T chip : chipList) {
+                    this.chipList.add(chip);
+                    chipsInput.onChipAdded(chip, getItemCount());
                 }
 
                 // hide hint
-                mEditText.setHint(null);
+                editText.setHint(null);
                 // reset text
-                mEditText.setText(null);
+                editText.setText(null);
 
                 notifyItemRangeChanged(chipsBeforeAdding, chipList.size());
             }
         }
     }
 
-    public void addChip(ChipInterface chip) {
-        if (!listContains(mChipList, chip)) {
-            mChipList.add(chip);
+    public void addChip(T chip) {
+        if (!listContains(chipList, chip)) {
+            chipList.add(chip);
             // notify listener
-            mChipsInput.onChipAdded(chip, mChipList.size());
+            chipsInput.onChipAdded(chip, chipList.size());
             // hide hint
-            mEditText.setHint(null);
+            editText.setHint(null);
             // reset text
-            mEditText.setText(null);
+            editText.setText(null);
             // refresh data
-            notifyItemInserted(mChipList.size());
+            notifyItemInserted(chipList.size());
         }
     }
 
-    public void removeChip(ChipInterface chip) {
-        int position = mChipList.indexOf(chip);
-        mChipList.remove(position);
+    public void removeChip(T chip) {
+        int position = chipList.indexOf(chip);
+        chipList.remove(position);
         // notify listener
         notifyItemRangeChanged(position, getItemCount());
-        mChipsInput.onChipRemoved(chip, mChipList.size());
+        chipsInput.onChipRemoved(chip, chipList.size());
         // if 0 chip
-        if (mChipList.size() == 0) {
-            mEditText.setHint(mHintLabel);
+        if (chipList.size() == 0) {
+            editText.setHint(hintLabel);
         }
         // refresh data
         notifyDataSetChanged();
     }
 
     public void removeChip(int position) {
-        ChipInterface chip = mChipList.get(position);
+        T chip = chipList.get(position);
         // remove contact
-        mChipList.remove(position);
+        chipList.remove(position);
         // notify listener
-        mChipsInput.onChipRemoved(chip, mChipList.size());
+        chipsInput.onChipRemoved(chip, chipList.size());
         // if 0 chip
-        if (mChipList.size() == 0) {
-            mEditText.setHint(mHintLabel);
-        }
-        // refresh data
-        notifyDataSetChanged();
-    }
-
-    public void removeChipById(Object id) {
-        for (Iterator<ChipInterface> iter = mChipList.listIterator(); iter.hasNext(); ) {
-            ChipInterface chip = iter.next();
-            if (chip.getId() != null && chip.getId().equals(id)) {
-                // remove chip
-                iter.remove();
-                // notify listener
-                mChipsInput.onChipRemoved(chip, mChipList.size());
-            }
-        }
-        // if 0 chip
-        if (mChipList.size() == 0) {
-            mEditText.setHint(mHintLabel);
-        }
-        // refresh data
-        notifyDataSetChanged();
-    }
-
-    public void removeChipByLabel(String label) {
-        for (Iterator<ChipInterface> iter = mChipList.listIterator(); iter.hasNext(); ) {
-            ChipInterface chip = iter.next();
-            if (chip.getLabel().equals(label)) {
-                // remove chip
-                iter.remove();
-                // notify listener
-                mChipsInput.onChipRemoved(chip, mChipList.size());
-            }
-        }
-        // if 0 chip
-        if (mChipList.size() == 0) {
-            mEditText.setHint(mHintLabel);
-        }
-        // refresh data
-        notifyDataSetChanged();
-    }
-
-    public void removeChipByInfo(String info) {
-        for (Iterator<ChipInterface> iter = mChipList.listIterator(); iter.hasNext(); ) {
-            ChipInterface chip = iter.next();
-            if (chip.getInfo() != null && chip.getInfo().equals(info)) {
-                // remove chip
-                iter.remove();
-                // notify listener
-                mChipsInput.onChipRemoved(chip, mChipList.size());
-            }
-        }
-        // if 0 chip
-        if (mChipList.size() == 0) {
-            mEditText.setHint(mHintLabel);
+        if (chipList.size() == 0) {
+            editText.setHint(hintLabel);
         }
         // refresh data
         notifyDataSetChanged();
     }
 
     public void removeLastChip() {
-        if (mChipList.size() > 0) {
-            removeChip(mChipList.get(mChipList.size() - 1));
+        if (chipList.size() > 0) {
+            removeChip(chipList.get(chipList.size() - 1));
         }
     }
 
-    public List<ChipInterface> getChipList() {
-        return mChipList;
+    public List<T> getChipList() {
+        return chipList;
     }
 
-    private boolean listContains(List<ChipInterface> contactList, ChipInterface chip) {
 
-        if (mChipsInput.getChipValidator() != null) {
-            for (ChipInterface item : contactList) {
-                if (mChipsInput.getChipValidator().areEquals(item, chip)) {
-                    return true;
-                }
-            }
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == TYPE_EDIT_TEXT) {
+            return new EditTextViewHolder(editText);
         } else {
-            for (ChipInterface item : contactList) {
-                if (chip.getId() != null && chip.getId().equals(item.getId())) {
-                    return true;
-                }
-                if (chip.getLabel().equals(item.getLabel())) {
+            return onCreateChipViewHolder(parent, viewType);
+        }
+    }
+
+    public abstract ViewHolder onCreateChipViewHolder(ViewGroup parent, int viewType);
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        if (position == chipList.size()) {
+            if (chipList.size() == 0) {
+                editText.setHint(hintLabel);
+            }
+
+            autofitEditText();
+        } else if (getItemCount() > 1) {
+            onBindChipViewHolder((VH) holder, position);
+        }
+    }
+
+    public abstract void onBindChipViewHolder(VH holder, int position);
+
+    protected class EditTextViewHolder extends RecyclerView.ViewHolder {
+        private final EditText editText;
+
+        EditTextViewHolder(View view) {
+            super(view);
+            editText = (EditText) view;
+        }
+    }
+
+    private boolean listContains(List<T> contactList, T chip) {
+        if (chipsInput.getChipValidator() != null) {
+            for (T item : contactList) {
+                if (chipsInput.getChipValidator().areEquals(item, chip)) {
                     return true;
                 }
             }
         }
 
         return false;
-    }
-
-    public ChipsInputEditText getmEditText() {
-        return mEditText;
     }
 }

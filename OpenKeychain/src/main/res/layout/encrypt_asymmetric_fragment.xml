@@ -38,7 +38,7 @@
 
         </ViewAnimator>
 
-        <com.pchmn.materialchips.ChipsInput
+        <com.pchmn.materialchips.simple.SimpleChipsInput
             android:id="@+id/recipient_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -47,7 +47,6 @@
             android:paddingRight="8dp"
             app:hint="@string/label_to"
             app:maxRows="2"
-            app:chip_detailed_backgroundColor="@color/colorChipViewBackground"
             />
 
     </LinearLayout>

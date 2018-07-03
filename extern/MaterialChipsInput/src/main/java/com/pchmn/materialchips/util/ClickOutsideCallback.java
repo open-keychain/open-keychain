@@ -11,10 +11,10 @@ import android.view.inputmethod.InputMethodManager;
 import com.pchmn.materialchips.views.ChipsInputEditText;
 import com.pchmn.materialchips.views.DetailedChipView;
 
-public class MyWindowCallback extends DelegateWindowCallback {
+public class ClickOutsideCallback extends DelegateWindowCallback {
     private Activity activity;
 
-    public MyWindowCallback(Window.Callback delegateCallback, Activity activity) {
+    public ClickOutsideCallback(Window.Callback delegateCallback, Activity activity) {
         super(delegateCallback);
         this.activity = activity;
     }

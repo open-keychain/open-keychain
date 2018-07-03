@@ -1,14 +1,14 @@
-package com.pchmn.materialchips.model;
+package com.pchmn.materialchips.simple;
 
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.pchmn.materialchips.adapter.FilterableAdapter.FilterableItem;
+import com.pchmn.materialchips.model.ChipInterface;
 
 
 public class SimpleChip implements ChipInterface {
-
     private Object id;
     private String label;
     private String info;

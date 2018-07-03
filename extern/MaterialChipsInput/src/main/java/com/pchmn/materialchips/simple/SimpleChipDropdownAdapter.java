@@ -1,4 +1,4 @@
-package com.pchmn.materialchips.adapter;
+package com.pchmn.materialchips.simple;
 
 
 import java.util.List;
@@ -13,9 +13,7 @@ import android.widget.TextView;
 
 import com.pchmn.materialchips.ChipsInput.ChipDropdownAdapter;
 import com.pchmn.materialchips.R;
-import com.pchmn.materialchips.adapter.SimpleChipDropdownAdapter.ItemViewHolder;
-import com.pchmn.materialchips.model.ChipInterface;
-import com.pchmn.materialchips.model.SimpleChip;
+import com.pchmn.materialchips.simple.SimpleChipDropdownAdapter.ItemViewHolder;
 
 
 public class SimpleChipDropdownAdapter extends ChipDropdownAdapter<SimpleChip, ItemViewHolder> {
@@ -27,7 +25,7 @@ public class SimpleChipDropdownAdapter extends ChipDropdownAdapter<SimpleChip, I
         layoutInflater = LayoutInflater.from(context);
     }
 
-    class ItemViewHolder extends RecyclerView.ViewHolder {
+    static class ItemViewHolder extends RecyclerView.ViewHolder {
         private TextView mLabel;
         private TextView mInfo;
 
@@ -47,7 +45,7 @@ public class SimpleChipDropdownAdapter extends ChipDropdownAdapter<SimpleChip, I
 
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
-        ChipInterface chip = getItem(position);
+        SimpleChip chip = getItem(position);
 
         holder.mLabel.setText(chip.getLabel());
         if (chip.getInfo() != null) {
@@ -57,4 +55,5 @@ public class SimpleChipDropdownAdapter extends ChipDropdownAdapter<SimpleChip, I
             holder.mInfo.setVisibility(View.GONE);
         }
     }
+
 }
