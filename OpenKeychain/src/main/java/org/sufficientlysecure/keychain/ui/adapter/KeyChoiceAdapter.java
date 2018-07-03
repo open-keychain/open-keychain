@@ -1,30 +1,30 @@
 package org.sufficientlysecure.keychain.ui.adapter;
 
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-
-import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.ui.adapter.KeyChoiceAdapter.KeyChoiceItem;
+import org.sufficientlysecure.keychain.ui.util.KeyInfoFormatter;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 import eu.davidea.flexibleadapter.items.IFlexible;
 import eu.davidea.viewholders.FlexibleViewHolder;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
-import org.sufficientlysecure.keychain.ui.adapter.KeyChoiceAdapter.KeyChoiceItem;
 
 
 public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
@@ -228,16 +228,8 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
         void bind(UnifiedKeyInfo keyInfo, int choiceMode, boolean isActive, boolean isEnabled) {
             vName.setText(keyInfo.name());
 
-            Context context = vCreation.getContext();
-            if (keyInfo.has_any_secret() || keyInfo.has_duplicate()) {
-                String dateTime = DateUtils.formatDateTime(context, keyInfo.creation() * 1000,
-                        DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME |
-                                DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_ABBREV_MONTH);
-                vCreation.setText(context.getString(R.string.label_key_created, dateTime));
-                vCreation.setVisibility(View.VISIBLE);
-            } else {
-                vCreation.setVisibility(View.GONE);
-            }
+            KeyInfoFormatter keyInfoFormatter = new KeyInfoFormatter(itemView.getContext(), keyInfo, null);
+            keyInfoFormatter.formatCreationDate(vCreation);
 
             switch (choiceMode) {
                 case Mode.IDLE: {

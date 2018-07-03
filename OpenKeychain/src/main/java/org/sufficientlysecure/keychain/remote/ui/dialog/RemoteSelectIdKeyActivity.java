@@ -71,6 +71,7 @@ import org.sufficientlysecure.keychain.ui.MainActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper.AbstractCallback;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
+import org.sufficientlysecure.keychain.ui.util.KeyInfoFormatter;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.DividerItemDecoration;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerItemClickListener;
@@ -523,10 +524,8 @@ public class RemoteSelectIdKeyActivity extends FragmentActivity {
                 vName.setText(context.getString(R.string.use_key_no_name));
             }
 
-            String dateTime = DateUtils.formatDateTime(context, keyInfo.creation() * 1000,
-                    DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME |
-                            DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_ABBREV_MONTH);
-            vCreation.setText(context.getString(R.string.label_key_created, dateTime));
+            KeyInfoFormatter keyInfoFormatter = new KeyInfoFormatter(itemView.getContext(), keyInfo, null);
+            keyInfoFormatter.formatCreationDate(vCreation);
 
             vIcon.setImageDrawable(selectionIcon);
         }

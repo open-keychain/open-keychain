@@ -60,6 +60,7 @@ import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectAuthenticationKeyPresenter.RemoteSelectAuthenticationKeyView;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
+import org.sufficientlysecure.keychain.ui.util.KeyInfoFormatter;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.DividerItemDecoration;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerItemClickListener;
@@ -338,11 +339,8 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
         void bind(UnifiedKeyInfo keyInfo, Drawable selectionIcon) {
             vName.setText(keyInfo.name());
 
-            Context context = vCreation.getContext();
-            String dateTime = DateUtils.formatDateTime(context, keyInfo.creation() * 1000,
-                    DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME |
-                            DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_ABBREV_MONTH);
-            vCreation.setText(context.getString(R.string.label_key_created, dateTime));
+            KeyInfoFormatter keyInfoFormatter = new KeyInfoFormatter(itemView.getContext(), keyInfo, null);
+            keyInfoFormatter.formatCreationDate(vCreation);
 
             vIcon.setImageDrawable(selectionIcon);
         }
