@@ -38,7 +38,7 @@
 
         </ViewAnimator>
 
-        <com.pchmn.materialchips.simple.SimpleChipsInput
+        <org.sufficientlysecure.keychain.ui.chips.EncryptRecipientChipsInput
             android:id="@+id/recipient_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

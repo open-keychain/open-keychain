@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import com.pchmn.materialchips.ChipsInput;
 import com.pchmn.materialchips.adapter.FilterableAdapter.FilterableItem;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.ui.adapter.EncryptRecipientDropdownAdapter;
 import org.sufficientlysecure.keychain.ui.chips.EncryptRecipientChipsInput.EncryptRecipientChip;
 
 
@@ -29,8 +30,8 @@ public class EncryptRecipientChipsInput extends ChipsInput<EncryptRecipientChip>
     }
 
     public void setData(List<EncryptRecipientChip> keyInfoChips) {
-//        SimpleChipDropdownAdapter chipDropdownAdapter = new SimpleChipDropdownAdapter(getContext(), simpleChips);
-//        setChipDropdownAdapter(chipDropdownAdapter);
+        EncryptRecipientDropdownAdapter chipDropdownAdapter = new EncryptRecipientDropdownAdapter(getContext(), keyInfoChips);
+        setChipDropdownAdapter(chipDropdownAdapter);
     }
 
     public static class EncryptRecipientChip implements FilterableItem {
