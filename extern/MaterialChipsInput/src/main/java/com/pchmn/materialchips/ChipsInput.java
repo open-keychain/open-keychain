@@ -41,9 +41,6 @@ import com.pchmn.materialchips.views.ScrollViewMaxHeight;
 public class ChipsInput extends ScrollViewMaxHeight {
     // context
     private Context mContext;
-    // xml element
-    private RecyclerView mRecyclerView;
-    // adapter
     private ChipsAdapter mChipsAdapter;
     // attributes
     private static final int NONE = -1;
@@ -91,7 +88,7 @@ public class ChipsInput extends ScrollViewMaxHeight {
         // inflate filterableListLayout
         View rootView = inflate(getContext(), R.layout.chips_input, this);
 
-        mRecyclerView = rootView.findViewById(R.id.chips_recycler);
+        RecyclerView recyclerView = rootView.findViewById(R.id.chips_recycler);
 
         initEditText();
 
@@ -132,13 +129,13 @@ public class ChipsInput extends ScrollViewMaxHeight {
         }
 
         // adapter
-        mChipsAdapter = new ChipsAdapter(mContext, this, mEditText, mRecyclerView);
+        mChipsAdapter = new ChipsAdapter(mContext, this, mEditText, recyclerView);
         ChipsLayoutManager chipsLayoutManager = ChipsLayoutManager.newBuilder(mContext)
                 .setOrientation(ChipsLayoutManager.HORIZONTAL)
                 .build();
-        mRecyclerView.setLayoutManager(chipsLayoutManager);
-        mRecyclerView.setNestedScrollingEnabled(false);
-        mRecyclerView.setAdapter(mChipsAdapter);
+        recyclerView.setLayoutManager(chipsLayoutManager);
+        recyclerView.setNestedScrollingEnabled(false);
+        recyclerView.setAdapter(mChipsAdapter);
 
         // set window callback
         // will hide DetailedOpenView and hide keyboard on touch outside
