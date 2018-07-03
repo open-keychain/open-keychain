@@ -13,7 +13,9 @@ import com.pchmn.materialchips.adapter.ChipsAdapter;
 import com.pchmn.materialchips.simple.SimpleChip;
 import com.pchmn.materialchips.util.ViewUtil;
 import com.pchmn.materialchips.views.DetailedChipView;
+
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.model.SubKey;
 import org.sufficientlysecure.keychain.ui.chips.EncryptRecipientChipAdapter.ItemViewHolder;
 import org.sufficientlysecure.keychain.ui.chips.EncryptRecipientChipsInput.EncryptRecipientChip;
 
@@ -40,14 +42,14 @@ public class EncryptRecipientChipAdapter extends ChipsAdapter<EncryptRecipientCh
     @Override
     public void onBindChipViewHolder(ItemViewHolder holder, int position) {
         EncryptRecipientChip chip = getItem(position);
-        holder.chipView.inflate(new SimpleChip(chip.keyInfo.name(), chip.keyInfo.email()));
+        holder.chipView.inflate(simpleChipFromKeyInfo(chip.keyInfo));
         handleClickOnEditText(holder.chipView, position);
     }
 
     @Override
     public DetailedChipView getDetailedChipView(EncryptRecipientChip chip) {
         return new DetailedChipView.Builder(context)
-                .chip(new SimpleChip(chip.keyInfo.name(), chip.keyInfo.email()))
+                .chip(simpleChipFromKeyInfo(chip.keyInfo))
                 .backgroundColor(ContextCompat.getColorStateList(context, R.color.cardview_light_background))
                 .build();
     }
@@ -59,5 +61,28 @@ public class EncryptRecipientChipAdapter extends ChipsAdapter<EncryptRecipientCh
             super(view);
             chipView = (ChipView) view;
         }
+    }
+
+    private SimpleChip simpleChipFromKeyInfo(SubKey.UnifiedKeyInfo keyInfo) {
+        String name;
+        String email;
+        if (keyInfo.name() == null) {
+            if (keyInfo.email() != null) {
+                name = keyInfo.email();
+                email = null;
+            } else {
+                name = context.getString(R.string.user_id_no_name);
+                email = null;
+            }
+        } else {
+            name = keyInfo.name();
+            if (keyInfo.email() != null) {
+                email = keyInfo.email();
+            } else {
+                email = null;
+            }
+        }
+
+        return new SimpleChip(name, email);
     }
 }
