@@ -58,6 +58,8 @@ public class KeyInfoFormatter {
 
     public void greyInvalidKeys(List<TextView> textviews) {
         int textColor;
+
+        // Note: order is important!
         if (keyInfo.is_revoked()) {
             textColor = ContextCompat.getColor(context, R.color.key_flag_gray);
         } else if (keyInfo.is_expired()) {
@@ -75,6 +77,8 @@ public class KeyInfoFormatter {
     }
 
     public void formatStatusIcon(ImageView statusIcon) {
+
+        // Note: order is important!
         if (keyInfo.is_revoked()) {
             KeyFormattingUtils.setStatusImage(
                     context,

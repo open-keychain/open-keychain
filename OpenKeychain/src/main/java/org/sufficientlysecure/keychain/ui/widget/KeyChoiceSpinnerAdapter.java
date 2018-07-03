@@ -1,11 +1,8 @@
 package org.sufficientlysecure.keychain.ui.widget;
 
 
-import java.util.List;
-
 import android.content.Context;
 import android.support.annotation.StringRes;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +12,10 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
-import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
+import org.sufficientlysecure.keychain.ui.util.KeyInfoFormatter;
+
+import java.util.Arrays;
+import java.util.List;
 
 
 class KeyChoiceSpinnerAdapter extends BaseAdapter {
@@ -137,75 +135,11 @@ class KeyChoiceSpinnerAdapter extends BaseAdapter {
         }
 
         public void bind(Context context, UnifiedKeyInfo keyInfo, boolean enabled) {
-            { // set name and stuff, common to both key types
-                if (keyInfo.name() != null) {
-                    mMainUserId.setText(keyInfo.name());
-                } else {
-                    mMainUserId.setText(R.string.user_id_no_name);
-                }
-                if (keyInfo.email() != null) {
-                    mMainUserIdRest.setText(keyInfo.email());
-                    mMainUserIdRest.setVisibility(View.VISIBLE);
-                } else {
-                    mMainUserIdRest.setVisibility(View.GONE);
-                }
-            }
-
-            // sort of a hack: if this item isn't enabled, we make it clickable
-            // to intercept its click events. either way, no listener!
-            mView.setClickable(!enabled);
-
-            { // set edit button and status, specific by key type
-
-                int textColor;
-
-                // Note: order is important!
-                if (keyInfo.is_revoked()) {
-                    KeyFormattingUtils
-                            .setStatusImage(context, mStatus, null, State.REVOKED, R.color.key_flag_gray);
-                    mStatus.setVisibility(View.VISIBLE);
-                    textColor = context.getResources().getColor(R.color.key_flag_gray);
-                } else if (keyInfo.is_expired()) {
-                    KeyFormattingUtils.setStatusImage(context, mStatus, null, State.EXPIRED, R.color.key_flag_gray);
-                    mStatus.setVisibility(View.VISIBLE);
-                    textColor = context.getResources().getColor(R.color.key_flag_gray);
-                } else if (!keyInfo.is_secure()) {
-                    KeyFormattingUtils.setStatusImage(context, mStatus, null, State.INSECURE, R.color.key_flag_gray);
-                    mStatus.setVisibility(View.VISIBLE);
-                    textColor = context.getResources().getColor(R.color.key_flag_gray);
-                } else if (keyInfo.has_any_secret()) {
-                    mStatus.setVisibility(View.GONE);
-                    textColor = FormattingUtils.getColorFromAttr(context, R.attr.colorText);
-                } else {
-                    // this is a public key - show if it's verified
-                    if (keyInfo.is_verified()) {
-                        KeyFormattingUtils.setStatusImage(context, mStatus, State.VERIFIED);
-                        mStatus.setVisibility(View.VISIBLE);
-                    } else {
-                        KeyFormattingUtils.setStatusImage(context, mStatus, State.UNVERIFIED);
-                        mStatus.setVisibility(View.VISIBLE);
-                    }
-                    textColor = FormattingUtils.getColorFromAttr(context, R.attr.colorText);
-                }
-
-                mMainUserId.setTextColor(textColor);
-                mMainUserIdRest.setTextColor(textColor);
-
-                if (keyInfo.has_duplicate()) {
-                    String dateTime = DateUtils.formatDateTime(context,
-                            keyInfo.creation() * 1000,
-                            DateUtils.FORMAT_SHOW_DATE
-                                    | DateUtils.FORMAT_SHOW_TIME
-                                    | DateUtils.FORMAT_SHOW_YEAR
-                                    | DateUtils.FORMAT_ABBREV_MONTH);
-                    mCreationDate.setText(context.getString(R.string.label_key_created,
-                            dateTime));
-                    mCreationDate.setTextColor(textColor);
-                    mCreationDate.setVisibility(View.VISIBLE);
-                } else {
-                    mCreationDate.setVisibility(View.GONE);
-                }
-            }
+            KeyInfoFormatter keyInfoFormatter = new KeyInfoFormatter(context, keyInfo, null);
+            keyInfoFormatter.formatUserId(mMainUserId, mMainUserIdRest);
+            keyInfoFormatter.formatCreationDate(mCreationDate);
+            keyInfoFormatter.formatStatusIcon(mStatus);
+            keyInfoFormatter.greyInvalidKeys(Arrays.asList(mMainUserId, mMainUserIdRest, mCreationDate));
         }
     }
 }
