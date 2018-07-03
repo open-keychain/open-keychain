@@ -123,11 +123,13 @@ public class ImportKeysListLoader
             }
         } catch (IOException e) {
             Timber.e(e, "IOException on parsing key file! Return NoValidKeysException!");
-            OperationResult.OperationLog log = new OperationResult.OperationLog();
-            log.add(OperationResult.LogType.MSG_GET_NO_VALID_KEYS, 0);
-            GetKeyResult getKeyResult = new GetKeyResult(GetKeyResult.RESULT_ERROR_NO_VALID_KEYS, log);
-            mData.clear();
-            mEntryListWrapper = new AsyncTaskResultWrapper<>(mData, getKeyResult);
+            if (mData.isEmpty()) {
+                OperationResult.OperationLog log = new OperationResult.OperationLog();
+                log.add(OperationResult.LogType.MSG_GET_NO_VALID_KEYS, 0);
+                GetKeyResult getKeyResult = new GetKeyResult(GetKeyResult.RESULT_ERROR_NO_VALID_KEYS, log);
+                mData.clear();
+                mEntryListWrapper = new AsyncTaskResultWrapper<>(mData, getKeyResult);
+            }
         }
     }
 
