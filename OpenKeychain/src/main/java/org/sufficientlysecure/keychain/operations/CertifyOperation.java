@@ -19,11 +19,14 @@ package org.sufficientlysecure.keychain.operations;
 
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v4.os.CancellationSignal;
 
+import org.sufficientlysecure.keychain.daos.KeyMetadataDao;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -38,9 +41,6 @@ import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation.PgpCertifyResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.daos.KeyMetadataDao;
-import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
-import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
@@ -63,8 +63,8 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParcel> {
     private final KeyMetadataDao keyMetadataDao;
 
-    public CertifyOperation(Context context, KeyWritableRepository keyWritableRepository, Progressable progressable, CancellationSignal
-            cancelled) {
+    public CertifyOperation(Context context, KeyWritableRepository keyWritableRepository, Progressable progressable,
+            AtomicBoolean cancelled) {
         super(context, keyWritableRepository, progressable, cancelled);
 
         this.keyMetadataDao = KeyMetadataDao.create(context);

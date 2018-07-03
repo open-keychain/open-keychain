@@ -19,12 +19,15 @@ package org.sufficientlysecure.keychain.operations;
 
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v4.os.CancellationSignal;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.daos.KeyMetadataDao;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -35,9 +38,6 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.daos.KeyMetadataDao;
-import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
-import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
@@ -61,7 +61,7 @@ public class EditKeyOperation extends BaseReadWriteOperation<SaveKeyringParcel> 
 
 
     public EditKeyOperation(Context context, KeyWritableRepository databaseInteractor,
-                            Progressable progressable, CancellationSignal cancelled) {
+                            Progressable progressable, AtomicBoolean cancelled) {
         super(context, databaseInteractor, progressable, cancelled);
 
         this.keyMetadataDao = KeyMetadataDao.create(context);

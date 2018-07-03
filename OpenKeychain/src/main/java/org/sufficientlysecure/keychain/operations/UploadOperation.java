@@ -21,11 +21,11 @@ package org.sufficientlysecure.keychain.operations;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.Proxy;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.os.CancellationSignal;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.R;
@@ -60,7 +60,7 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
     private KeyMetadataDao keyMetadataDao;
 
     public UploadOperation(Context context, KeyRepository keyRepository,
-            Progressable progressable, CancellationSignal cancelled) {
+            Progressable progressable, AtomicBoolean cancelled) {
         super(context, keyRepository, progressable, cancelled);
 
         keyMetadataDao = KeyMetadataDao.create(mContext);

@@ -877,9 +877,6 @@
             android:name=".remote.CryptoInputParcelCacheService"
             android:exported="false"
             android:process=":remote_api" />
-        <service
-            android:name=".service.KeychainService"
-            android:exported="false" />
 
         <provider
             android:name=".provider.KeychainProvider"

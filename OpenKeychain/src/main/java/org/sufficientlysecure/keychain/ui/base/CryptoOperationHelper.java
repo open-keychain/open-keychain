@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui.base;
 
+
 import java.util.Date;
 
 import android.app.Activity;
@@ -27,6 +28,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.Parcelable;
+import android.os.RemoteException;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -34,14 +36,17 @@ import android.support.v4.app.FragmentManager;
 
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
+import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.service.KeychainService;
+import org.sufficientlysecure.keychain.service.KeychainService.OperationCallback;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.ui.SecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.RetryUploadDialogActivity;
+import org.sufficientlysecure.keychain.ui.SecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import timber.log.Timber;
 
@@ -295,12 +300,6 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             return;
         }
 
-        // Send all information needed to service to edit key in other thread
-        Intent intent = new Intent(activity, KeychainService.class);
-
-        intent.putExtra(KeychainService.EXTRA_OPERATION_INPUT, operationInput);
-        intent.putExtra(KeychainService.EXTRA_CRYPTO_INPUT, cryptoInput);
-
         ServiceProgressHandler saveHandler = new ServiceProgressHandler(activity) {
             @Override
             public void handleMessage(Message message) {
@@ -331,9 +330,39 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             }
         };
 
-        // Create a new Messenger for the communication back
         Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
+        Communicator communicator = new Communicator(messenger);
+
+        Progressable progressable = new Progressable() {
+            @Override
+            public void setProgress(String message, int progress, int max) {
+                Timber.d("Send message by setProgress with progress=" + progress + ", max=" + max);
+
+                Bundle data = new Bundle();
+                if (message != null) {
+                    data.putString(ServiceProgressHandler.DATA_MESSAGE, message);
+                }
+                data.putInt(ServiceProgressHandler.DATA_PROGRESS, progress);
+                data.putInt(ServiceProgressHandler.DATA_PROGRESS_MAX, max);
+
+                communicator.sendMessageToHandler(MessageStatus.UPDATE_PROGRESS, data);
+            }
+
+            @Override
+            public void setProgress(int resourceId, int progress, int max) {
+                setProgress(activity.getString(resourceId), progress, max);
+            }
+
+            @Override
+            public void setProgress(int progress, int max) {
+                setProgress(null, progress, max);
+            }
+
+            @Override
+            public void setPreventCancel() {
+                communicator.sendMessageToHandler(MessageStatus.PREVENT_CANCEL, (Bundle) null);
+            }
+        };
 
         if (mProgressMessageResource != null) {
             saveHandler.showProgressDialog(
@@ -341,7 +370,8 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                     ProgressDialog.STYLE_HORIZONTAL, mCancellable);
         }
 
-        activity.startService(intent);
+        KeychainService keychainService = KeychainService.getInstance(activity);
+        keychainService.startOperationInBackground(operationInput, cryptoInput, progressable, communicator);
     }
 
     public void cryptoOperation() {
@@ -391,4 +421,37 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                     + result.getClass().getSimpleName() + "), this is a programming error!");
         }
     }
+
+    public static class Communicator implements OperationCallback {
+        final Messenger messenger;
+
+        Communicator(Messenger messenger) {
+            this.messenger = messenger;
+        }
+
+        public void sendMessageToHandler(MessageStatus status, Bundle data) {
+            Message msg = Message.obtain();
+            assert msg != null;
+            msg.arg1 = status.ordinal();
+            if (data != null) {
+                msg.setData(data);
+            }
+
+            try {
+                messenger.send(msg);
+            } catch (RemoteException e) {
+                Timber.w(e, "Exception sending message, Is handler present?");
+            } catch (NullPointerException e) {
+                Timber.w(e, "Messenger is null!");
+            }
+        }
+
+        @Override
+        public void operationFinished(OperationResult data) {
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(OperationResult.EXTRA_RESULT, data);
+            sendMessageToHandler(MessageStatus.OKAY, bundle);
+        }
+    }
+
 }

@@ -29,7 +29,6 @@ import android.view.inputmethod.InputMethodManager;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 
 /** This is a base class for fragments which implement a cryptoOperation.
@@ -46,8 +45,6 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
  * be called, depending on the success status of the operation. The subclass
  * must override at least onCryptoOperationSuccess to proceed after a
  * successful operation.
- *
- * @see KeychainService
  *
  */
 public abstract class CryptoOperationFragment<T extends Parcelable, S extends OperationResult>

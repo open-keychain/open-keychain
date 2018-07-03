@@ -20,12 +20,13 @@ package org.sufficientlysecure.keychain.operations;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v4.os.CancellationSignal;
 
+import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
@@ -34,7 +35,6 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
-import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequiredInputType;
@@ -52,7 +52,7 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
 public class SignEncryptOperation extends BaseOperation<SignEncryptParcel> {
 
     public SignEncryptOperation(Context context, KeyRepository keyRepository,
-                                Progressable progressable, CancellationSignal cancelled) {
+                                Progressable progressable, AtomicBoolean cancelled) {
         super(context, keyRepository, progressable, cancelled);
     }
 

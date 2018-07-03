@@ -176,13 +176,8 @@ public class ProgressDialogFragment extends DialogFragment {
                 negative.setClickable(false);
                 negative.setTextColor(Color.GRAY);
 
-                // send a cancel message. note that this message will be handled by
-                // KeychainService.onStartCommand, which runs in this thread,
-                // not the service one, and will not queue up a command.
-                Intent serviceIntent = new Intent(getActivity(), KeychainService.class);
-
-                serviceIntent.setAction(KeychainService.ACTION_CANCEL);
-                getActivity().startService(serviceIntent);
+                KeychainService keychainService = KeychainService.getInstance(requireContext());
+                keychainService.cancelRunningTask();
 
                 // Set the progress bar accordingly
                 ProgressDialog dialog = (ProgressDialog) getDialog();

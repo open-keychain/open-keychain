@@ -18,18 +18,15 @@
 package org.sufficientlysecure.keychain.service;
 
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.os.Message;
-import android.os.Messenger;
-import android.os.Parcelable;
-import android.os.RemoteException;
-import android.support.v4.os.CancellationSignal;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.sufficientlysecure.keychain.operations.KeySyncOperation;
-import org.sufficientlysecure.keychain.operations.KeySyncParcel;
+import android.content.Context;
+import android.os.Parcelable;
+
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.operations.BackupOperation;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
 import org.sufficientlysecure.keychain.operations.BenchmarkOperation;
@@ -39,6 +36,8 @@ import org.sufficientlysecure.keychain.operations.DeleteOperation;
 import org.sufficientlysecure.keychain.operations.EditKeyOperation;
 import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.InputDataOperation;
+import org.sufficientlysecure.keychain.operations.KeySyncOperation;
+import org.sufficientlysecure.keychain.operations.KeySyncParcel;
 import org.sufficientlysecure.keychain.operations.KeybaseVerificationOperation;
 import org.sufficientlysecure.keychain.operations.PromoteKeyOperation;
 import org.sufficientlysecure.keychain.operations.RevokeOperation;
@@ -49,180 +48,88 @@ import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
-import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import timber.log.Timber;
 
 
-/**
- * This Service contains all important long lasting operations for OpenKeychain. It receives Intents with
- * data from the activities or other apps, executes them, and stops itself after doing them.
- */
-public class KeychainService extends Service implements Progressable {
+public class KeychainService {
+    private static KeychainService keychainService;
 
-    // messenger for communication (hack)
-    public static final String EXTRA_MESSENGER = "messenger";
+    public static KeychainService getInstance(Context context) {
+        if (keychainService == null) {
+            keychainService = new KeychainService(context.getApplicationContext());
+        }
+        return keychainService;
+    }
 
-    // extras for operation
-    public static final String EXTRA_OPERATION_INPUT = "op_input";
-    public static final String EXTRA_CRYPTO_INPUT = "crypto_input";
+    private KeychainService(Context context) {
+        this.context = context;
+        this.threadPoolExecutor = new ThreadPoolExecutor(0, 4, 1000, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
+        this.keyRepository = KeyWritableRepository.create(context);
+    }
 
-    public static final String ACTION_CANCEL = "action_cancel";
+    private final Context context;
+    private final ThreadPoolExecutor threadPoolExecutor;
+    private final KeyWritableRepository keyRepository;
 
     // this attribute can possibly merged with the one above? not sure...
-    private CancellationSignal mActionCanceled;
+    private AtomicBoolean operationCancelledBoolean = new AtomicBoolean(false);
 
-    ThreadLocal<Messenger> mMessenger = new ThreadLocal<>();
+    public void startOperationInBackground(Parcelable inputParcel, CryptoInputParcel cryptoInput,
+            Progressable progressable, OperationCallback operationCallback) {
+        operationCancelledBoolean.set(false);
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
+        Runnable actionRunnable = () -> {
+            BaseOperation op;
 
-    /**
-     * This is run on the main thread, we need to spawn a runnable which runs on another thread for the actual operation
-     */
-    @Override
-    public int onStartCommand(final Intent intent, int flags, int startId) {
-
-        if (intent.getAction() != null && intent.getAction().equals(ACTION_CANCEL)) {
-            if (mActionCanceled != null) {
-                mActionCanceled.cancel();
+            if (inputParcel instanceof SignEncryptParcel) {
+                op = new SignEncryptOperation(context, keyRepository, progressable, operationCancelledBoolean);
+            } else if (inputParcel instanceof PgpDecryptVerifyInputParcel) {
+                op = new PgpDecryptVerifyOperation(context, keyRepository, progressable);
+            } else if (inputParcel instanceof SaveKeyringParcel) {
+                op = new EditKeyOperation(context, keyRepository, progressable, operationCancelledBoolean);
+            } else if (inputParcel instanceof  ChangeUnlockParcel) {
+                op = new ChangeUnlockOperation(context, keyRepository, progressable);
+            } else if (inputParcel instanceof RevokeKeyringParcel) {
+                op = new RevokeOperation(context, keyRepository, progressable);
+            } else if (inputParcel instanceof CertifyActionsParcel) {
+                op = new CertifyOperation(context, keyRepository, progressable, operationCancelledBoolean);
+            } else if (inputParcel instanceof DeleteKeyringParcel) {
+                op = new DeleteOperation(context, keyRepository, progressable);
+            } else if (inputParcel instanceof PromoteKeyringParcel) {
+                op = new PromoteKeyOperation(context, keyRepository, progressable, operationCancelledBoolean);
+            } else if (inputParcel instanceof ImportKeyringParcel) {
+                op = new ImportOperation(context, keyRepository, progressable, operationCancelledBoolean);
+            } else if (inputParcel instanceof BackupKeyringParcel) {
+                op = new BackupOperation(context, keyRepository, progressable, operationCancelledBoolean);
+            } else if (inputParcel instanceof UploadKeyringParcel) {
+                op = new UploadOperation(context, keyRepository, progressable, operationCancelledBoolean);
+            } else if (inputParcel instanceof KeybaseVerificationParcel) {
+                op = new KeybaseVerificationOperation(context, keyRepository, progressable);
+            } else if (inputParcel instanceof InputDataParcel) {
+                op = new InputDataOperation(context, keyRepository, progressable);
+            } else if (inputParcel instanceof BenchmarkInputParcel) {
+                op = new BenchmarkOperation(context, keyRepository, progressable);
+            } else if (inputParcel instanceof KeySyncParcel) {
+                op = new KeySyncOperation(context, keyRepository, progressable, operationCancelledBoolean);
+            } else {
+                throw new AssertionError("Unrecognized input parcel in KeychainService!");
             }
-            return START_NOT_STICKY;
-        }
 
-        mActionCanceled = new CancellationSignal();
-
-        Runnable actionRunnable = new Runnable() {
-            @Override
-            public void run() {
-                Bundle extras = intent.getExtras();
-
-                // Set messenger for communication (for this particular thread)
-                mMessenger.set(extras.getParcelable(EXTRA_MESSENGER));
-
-                // Input
-                Parcelable inputParcel = extras.getParcelable(EXTRA_OPERATION_INPUT);
-                CryptoInputParcel cryptoInput = extras.getParcelable(EXTRA_CRYPTO_INPUT);
-
-                // Operation
-                BaseOperation op;
-
-                // just for brevity
-                KeychainService outerThis = KeychainService.this;
-                KeyWritableRepository databaseInteractor =
-                        KeyWritableRepository.create(outerThis);
-                if (inputParcel instanceof SignEncryptParcel) {
-                    op = new SignEncryptOperation(outerThis, databaseInteractor, outerThis, mActionCanceled);
-                } else if (inputParcel instanceof PgpDecryptVerifyInputParcel) {
-                    op = new PgpDecryptVerifyOperation(outerThis, databaseInteractor, outerThis);
-                } else if (inputParcel instanceof SaveKeyringParcel) {
-                    op = new EditKeyOperation(outerThis, databaseInteractor, outerThis, mActionCanceled);
-                } else if (inputParcel instanceof  ChangeUnlockParcel) {
-                    op = new ChangeUnlockOperation(outerThis, databaseInteractor, outerThis);
-                } else if (inputParcel instanceof RevokeKeyringParcel) {
-                    op = new RevokeOperation(outerThis, databaseInteractor, outerThis);
-                } else if (inputParcel instanceof CertifyActionsParcel) {
-                    op = new CertifyOperation(outerThis, databaseInteractor, outerThis, mActionCanceled);
-                } else if (inputParcel instanceof DeleteKeyringParcel) {
-                    op = new DeleteOperation(outerThis, databaseInteractor, outerThis);
-                } else if (inputParcel instanceof PromoteKeyringParcel) {
-                    op = new PromoteKeyOperation(outerThis, databaseInteractor, outerThis, mActionCanceled);
-                } else if (inputParcel instanceof ImportKeyringParcel) {
-                    op = new ImportOperation(outerThis, databaseInteractor, outerThis, mActionCanceled);
-                } else if (inputParcel instanceof BackupKeyringParcel) {
-                    op = new BackupOperation(outerThis, databaseInteractor, outerThis, mActionCanceled);
-                } else if (inputParcel instanceof UploadKeyringParcel) {
-                    op = new UploadOperation(outerThis, databaseInteractor, outerThis, mActionCanceled);
-                } else if (inputParcel instanceof KeybaseVerificationParcel) {
-                    op = new KeybaseVerificationOperation(outerThis, databaseInteractor, outerThis);
-                } else if (inputParcel instanceof InputDataParcel) {
-                    op = new InputDataOperation(outerThis, databaseInteractor, outerThis);
-                } else if (inputParcel instanceof BenchmarkInputParcel) {
-                    op = new BenchmarkOperation(outerThis, databaseInteractor, outerThis);
-                } else if (inputParcel instanceof KeySyncParcel) {
-                    op = new KeySyncOperation(outerThis, databaseInteractor, outerThis, mActionCanceled);
-                } else {
-                    throw new AssertionError("Unrecognized input parcel in KeychainService!");
-                }
-
-                @SuppressWarnings("unchecked") // this is unchecked, we make sure it's the correct op above!
-                OperationResult result = op.execute(inputParcel, cryptoInput);
-                sendMessageToHandler(MessageStatus.OKAY, result);
-
-            }
+            @SuppressWarnings("unchecked") // this is unchecked, we make sure it's the correct op above!
+            OperationResult result = op.execute(inputParcel, cryptoInput);
+            operationCallback.operationFinished(result);
         };
 
-        Thread actionThread = new Thread(actionRunnable);
-        actionThread.start();
-
-        return START_NOT_STICKY;
+        threadPoolExecutor.execute(actionRunnable);
     }
 
-    private void sendMessageToHandler(MessageStatus status, Integer arg2, Bundle data) {
-
-        Message msg = Message.obtain();
-        assert msg != null;
-        msg.arg1 = status.ordinal();
-        if (arg2 != null) {
-            msg.arg2 = arg2;
-        }
-        if (data != null) {
-            msg.setData(data);
-        }
-
-        try {
-            mMessenger.get().send(msg);
-        } catch (RemoteException e) {
-            Timber.w(e, "Exception sending message, Is handler present?");
-        } catch (NullPointerException e) {
-            Timber.w(e, "Messenger is null!");
+    public void cancelRunningTask() {
+        if (operationCancelledBoolean != null) {
+            operationCancelledBoolean.set(true);
         }
     }
 
-    private void sendMessageToHandler(MessageStatus status, OperationResult data) {
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(OperationResult.EXTRA_RESULT, data);
-        sendMessageToHandler(status, null, bundle);
+    public interface OperationCallback {
+        void operationFinished(OperationResult data);
     }
-
-    private void sendMessageToHandler(MessageStatus status) {
-        sendMessageToHandler(status, null, null);
-    }
-
-    /**
-     * Set progress of ProgressDialog by sending message to handler on UI thread
-     */
-    @Override
-    public void setProgress(String message, int progress, int max) {
-        Timber.d("Send message by setProgress with progress=" + progress + ", max="
-                + max);
-
-        Bundle data = new Bundle();
-        if (message != null) {
-            data.putString(ServiceProgressHandler.DATA_MESSAGE, message);
-        }
-        data.putInt(ServiceProgressHandler.DATA_PROGRESS, progress);
-        data.putInt(ServiceProgressHandler.DATA_PROGRESS_MAX, max);
-
-        sendMessageToHandler(MessageStatus.UPDATE_PROGRESS, null, data);
-    }
-
-    @Override
-    public void setProgress(int resourceId, int progress, int max) {
-        setProgress(getString(resourceId), progress, max);
-    }
-
-    @Override
-    public void setProgress(int progress, int max) {
-        setProgress(null, progress, max);
-    }
-
-    @Override
-    public void setPreventCancel() {
-        sendMessageToHandler(MessageStatus.PREVENT_CANCEL);
-    }
-
 }

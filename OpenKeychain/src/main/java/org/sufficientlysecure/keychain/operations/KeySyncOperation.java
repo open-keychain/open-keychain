@@ -5,18 +5,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v4.os.CancellationSignal;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.daos.KeyMetadataDao;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.daos.KeyMetadataDao;
-import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -36,7 +36,7 @@ public class KeySyncOperation extends BaseReadWriteOperation<KeySyncParcel> {
     private final Preferences preferences;
 
     public KeySyncOperation(Context context, KeyWritableRepository databaseInteractor,
-            Progressable progressable, CancellationSignal cancellationSignal) {
+            Progressable progressable, AtomicBoolean cancellationSignal) {
         super(context, databaseInteractor, progressable, cancellationSignal);
 
         keyMetadataDao = KeyMetadataDao.create(context);
