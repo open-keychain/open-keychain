@@ -121,6 +121,8 @@ public class KeyInfoFormatter {
                 );
 
                 statusIcon.setVisibility(View.VISIBLE);
+            } else {
+                statusIcon.setVisibility(View.GONE);
             }
         }
     }
