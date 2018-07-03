@@ -307,7 +307,7 @@ public abstract class ChipsInput<T extends FilterableItem> extends ScrollViewMax
             mDropdownListView = new DropdownListView(mContext, this);
         }
         mDropdownListView.build(filterableAdapter);
-        chipsAdapter.setFilterableListView(mDropdownListView);
+        chipsInputEditText.setFilterableListView(mDropdownListView);
         mDropdownListView.getRecyclerView().addOnItemTouchListener(new RecyclerItemClickListener(getContext(), new OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {

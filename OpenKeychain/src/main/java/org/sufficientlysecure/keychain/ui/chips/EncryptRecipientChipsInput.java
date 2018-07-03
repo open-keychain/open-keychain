@@ -25,8 +25,8 @@ public class EncryptRecipientChipsInput extends ChipsInput<EncryptRecipientChip>
     }
 
     private void init() {
-//        ChipsAdapter<EncryptRecipientChip> chipsAdapter = new SimpleChipsAdapter(getContext(), this);
-//        setChipsAdapter(chipsAdapter);
+        EncryptRecipientChipAdapter chipsAdapter = new EncryptRecipientChipAdapter(getContext(), this);
+        setChipsAdapter(chipsAdapter);
     }
 
     public void setData(List<EncryptRecipientChip> keyInfoChips) {

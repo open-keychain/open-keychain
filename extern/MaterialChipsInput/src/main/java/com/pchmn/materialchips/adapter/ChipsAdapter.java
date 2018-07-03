@@ -21,7 +21,6 @@ import com.pchmn.materialchips.adapter.FilterableAdapter.FilterableItem;
 import com.pchmn.materialchips.util.ViewUtil;
 import com.pchmn.materialchips.views.ChipsInputEditText;
 import com.pchmn.materialchips.views.DetailedChipView;
-import com.pchmn.materialchips.views.DropdownListView;
 
 
 public abstract class ChipsAdapter<T extends FilterableItem, VH extends RecyclerView.ViewHolder>
@@ -175,12 +174,6 @@ public abstract class ChipsAdapter<T extends FilterableItem, VH extends Recycler
         // show view
         rootView.addView(detailedChipView, layoutParams);
         detailedChipView.fadeIn();
-    }
-
-    public void setFilterableListView(DropdownListView dropdownListView) {
-        if (editText != null) {
-            editText.setFilterableListView(dropdownListView);
-        }
     }
 
     public void addChipsProgrammatically(List<T> chipList) {
