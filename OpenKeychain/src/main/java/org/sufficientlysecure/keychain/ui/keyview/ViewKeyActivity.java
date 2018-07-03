@@ -352,6 +352,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        if (unifiedKeyInfo == null) {
+            return false;
+        }
         MenuItem backupKey = menu.findItem(R.id.menu_key_view_backup);
         backupKey.setVisible(unifiedKeyInfo.has_any_secret());
         menu.findItem(R.id.menu_key_view_skt).setVisible(unifiedKeyInfo.has_any_secret());
