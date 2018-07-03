@@ -121,14 +121,6 @@ public class KeyInfoFormatter {
                 );
 
                 statusIcon.setVisibility(View.VISIBLE);
-            } else {
-                KeyFormattingUtils.setStatusImage(
-                        context,
-                        statusIcon,
-                        KeyFormattingUtils.State.UNVERIFIED
-                );
-
-                statusIcon.setVisibility(View.VISIBLE);
             }
         }
     }
