@@ -42,7 +42,7 @@ CREATE VIEW unifiedKeyView AS
 
 selectAllUnifiedKeyInfo:
 SELECT * FROM unifiedKeyView
-    ORDER BY has_any_secret_int DESC, name COLLATE NOCASE ASC, creation DESC;
+    ORDER BY has_any_secret_int DESC, IFNULL(name, email) COLLATE NOCASE ASC, creation DESC;
 
 selectUnifiedKeyInfoByMasterKeyId:
 SELECT * FROM unifiedKeyView

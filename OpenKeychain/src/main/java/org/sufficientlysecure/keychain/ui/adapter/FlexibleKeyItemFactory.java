@@ -58,6 +58,15 @@ public class FlexibleKeyItemFactory {
     @NonNull
     private String getHeaderText(UnifiedKeyInfo unifiedKeyInfo) {
         String headerText = unifiedKeyInfo.name();
-        return headerText == null || headerText.isEmpty() ? "" : headerText.substring(0, 1).toUpperCase();
+        if (headerText == null || headerText.isEmpty()) {
+            headerText = unifiedKeyInfo.email();
+        }
+        if (headerText == null || headerText.isEmpty()) {
+            return "";
+        }
+        if (!Character.isLetter(headerText.codePointAt(0))) {
+            return "#";
+        }
+        return headerText.substring(0, 1).toUpperCase();
     }
 }
