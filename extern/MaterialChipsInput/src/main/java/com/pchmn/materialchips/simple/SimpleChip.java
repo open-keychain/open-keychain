@@ -4,17 +4,16 @@ package com.pchmn.materialchips.simple;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.pchmn.materialchips.adapter.FilterableAdapter.FilterableItem;
 import com.pchmn.materialchips.model.ChipInterface;
 
 
 public class SimpleChip implements ChipInterface {
-    private Object id;
+    private long id;
     private String label;
     private String info;
     private String filterString;
 
-    public SimpleChip(@NonNull Object id, @NonNull String label, @Nullable String info, @Nullable String filterString) {
+    public SimpleChip(@NonNull long id, @NonNull String label, @Nullable String info, @Nullable String filterString) {
         this.id = id;
         this.label = label;
         this.info = info;
@@ -24,10 +23,11 @@ public class SimpleChip implements ChipInterface {
     public SimpleChip(@NonNull String label, @Nullable String info) {
         this.label = label;
         this.info = info;
+        this.id = (label + info).hashCode();
     }
 
     @Override
-    public Object getId() {
+    public long getId() {
         return id;
     }
 

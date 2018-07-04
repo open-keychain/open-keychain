@@ -45,6 +45,7 @@ public abstract class ChipsAdapter<T extends FilterableItem, VH extends Recycler
         this.context = context;
 
         this.hintLabel = chipsInput.getHint();
+        setHasStableIds(true);
     }
 
     @Override
@@ -67,7 +68,12 @@ public abstract class ChipsAdapter<T extends FilterableItem, VH extends Recycler
 
     @Override
     public long getItemId(int position) {
-        return chipList.get(position).hashCode();
+        if (position == chipList.size()) {
+            return 0;
+        }
+
+        FilterableItem item = getItem(position);
+        return item != null ? item.getId() : RecyclerView.NO_ID;
     }
 
     private void autofitEditText() {

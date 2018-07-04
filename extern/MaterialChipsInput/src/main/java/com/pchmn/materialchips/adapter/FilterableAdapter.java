@@ -19,6 +19,8 @@ public abstract class FilterableAdapter<T extends FilterableItem, VH extends Rec
     public FilterableAdapter(List<? extends T> itemList) {
         itemFilter = new ItemFilter(itemList);
         displayedList.addAll(itemList);
+
+        setHasStableIds(true);
     }
 
     @Override
@@ -33,6 +35,12 @@ public abstract class FilterableAdapter<T extends FilterableItem, VH extends Rec
     @Override
     public Filter getFilter() {
         return itemFilter;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        FilterableItem item = getItem(position);
+        return item != null ? item.getId() : RecyclerView.NO_ID;
     }
 
     private class ItemFilter extends Filter {
@@ -86,6 +94,7 @@ public abstract class FilterableAdapter<T extends FilterableItem, VH extends Rec
     }
 
     public interface FilterableItem {
+        long getId();
         boolean isKeptForConstraint(CharSequence constraint);
     }
 }

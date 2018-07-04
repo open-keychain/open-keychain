@@ -41,6 +41,11 @@ public class EncryptRecipientChipsInput extends ChipsInput<EncryptRecipientChip>
         }
 
         @Override
+        public long getId() {
+            return keyInfo.master_key_id();
+        }
+
+        @Override
         public boolean isKeptForConstraint(CharSequence constraint) {
             return keyInfo.uidSearchString().contains(constraint);
         }
