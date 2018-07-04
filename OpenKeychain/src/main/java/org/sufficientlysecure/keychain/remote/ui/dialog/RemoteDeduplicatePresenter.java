@@ -63,7 +63,7 @@ class RemoteDeduplicatePresenter {
 
     private void onLoadKeyInfos(List<UnifiedKeyInfo> data) {
         if (keyChoiceAdapter == null) {
-            keyChoiceAdapter = KeyChoiceAdapter.createSingleChoiceAdapter(data, (keyInfo -> {
+            keyChoiceAdapter = KeyChoiceAdapter.createSingleChoiceAdapter(context, data, (keyInfo -> {
                 if (keyInfo.is_revoked()) {
                     return R.string.keychoice_revoked;
                 } else if (keyInfo.is_expired()) {

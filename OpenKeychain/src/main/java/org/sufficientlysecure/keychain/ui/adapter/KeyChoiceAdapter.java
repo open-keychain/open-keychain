@@ -1,6 +1,13 @@
 package org.sufficientlysecure.keychain.ui.adapter;
 
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v7.widget.RecyclerView;
@@ -10,21 +17,14 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
-import org.sufficientlysecure.keychain.ui.adapter.KeyChoiceAdapter.KeyChoiceItem;
-import org.sufficientlysecure.keychain.ui.util.KeyInfoFormatter;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 import eu.davidea.flexibleadapter.items.IFlexible;
 import eu.davidea.viewholders.FlexibleViewHolder;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.ui.adapter.KeyChoiceAdapter.KeyChoiceItem;
+import org.sufficientlysecure.keychain.ui.util.KeyInfoFormatter;
 
 
 public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
@@ -34,41 +34,40 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
     private final KeyDisabledPredicate keyDisabledPredicate;
     @Nullable
     private Integer activeItem;
+    private KeyInfoFormatter keyInfoFormatter;
 
-    public static KeyChoiceAdapter createSingleClickableAdapter(List<UnifiedKeyInfo> items,
-            OnKeyClickListener onKeyClickListener) {
-        return new KeyChoiceAdapter(items, Objects.requireNonNull(onKeyClickListener), Mode.IDLE, null);
+    public static KeyChoiceAdapter createSingleClickableAdapter(Context context, List<UnifiedKeyInfo> items,
+            OnKeyClickListener onKeyClickListener,
+            KeyDisabledPredicate keyDisabledPredicate) {
+        return new KeyChoiceAdapter(context, items, Objects.requireNonNull(onKeyClickListener), Mode.IDLE,
+                keyDisabledPredicate
+        );
     }
 
-    public static KeyChoiceAdapter createSingleClickableAdapter(List<UnifiedKeyInfo> items,
-                                                                OnKeyClickListener onKeyClickListener,
-                                                                KeyDisabledPredicate keyDisabledPredicate) {
-        return new KeyChoiceAdapter(items, Objects.requireNonNull(onKeyClickListener), Mode.IDLE, keyDisabledPredicate);
+    public static KeyChoiceAdapter createSingleChoiceAdapter(Context context, List<UnifiedKeyInfo> items,
+            KeyDisabledPredicate keyDisabledPredicate) {
+        return new KeyChoiceAdapter(context, items, null, Mode.SINGLE, keyDisabledPredicate);
     }
 
-    public static KeyChoiceAdapter createSingleChoiceAdapter(List<UnifiedKeyInfo> items) {
-        return new KeyChoiceAdapter(items, null, Mode.SINGLE, null);
+    public static KeyChoiceAdapter createMultiChoiceAdapter(Context context, List<UnifiedKeyInfo> items,
+            KeyDisabledPredicate keyDisabledPredicate) {
+        return new KeyChoiceAdapter(context, items, null, Mode.MULTI, keyDisabledPredicate);
     }
 
-    public static KeyChoiceAdapter createSingleChoiceAdapter(List<UnifiedKeyInfo> items, KeyDisabledPredicate keyDisabledPredicate) {
-        return new KeyChoiceAdapter(items, null, Mode.SINGLE, keyDisabledPredicate);
-    }
-
-    public static KeyChoiceAdapter createMultiChoiceAdapter(List<UnifiedKeyInfo> items, KeyDisabledPredicate keyDisabledPredicate) {
-        return new KeyChoiceAdapter(items, null, Mode.MULTI, keyDisabledPredicate);
-    }
-
-    private KeyChoiceAdapter(List<UnifiedKeyInfo> items, @Nullable OnKeyClickListener onKeyClickListener, int idle,
+    private KeyChoiceAdapter(Context context, List<UnifiedKeyInfo> items,
+            @Nullable OnKeyClickListener onKeyClickListener, int idle,
             @Nullable KeyDisabledPredicate keyDisabledPredicate) {
-        super(getKeyChoiceItems(items, keyDisabledPredicate));
+        super(null, null, true);
         setMode(idle);
         addListener((OnItemClickListener) (view, position) -> onClickItem(position));
+        updateDataSet(getKeyChoiceItems(items, keyDisabledPredicate), false);
+        this.keyInfoFormatter = new KeyInfoFormatter(context);
         this.onKeyClickListener = onKeyClickListener;
         this.keyDisabledPredicate = keyDisabledPredicate;
     }
 
     @Nullable
-    private static ArrayList<KeyChoiceItem> getKeyChoiceItems(@Nullable List<UnifiedKeyInfo> items,
+    private ArrayList<KeyChoiceItem> getKeyChoiceItems(@Nullable List<UnifiedKeyInfo> items,
             @Nullable KeyDisabledPredicate keyDisabledPredicate) {
         if (items == null) {
             return null;
@@ -174,7 +173,7 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
         return result;
     }
 
-    public static class KeyChoiceItem extends AbstractFlexibleItem<KeyChoiceViewHolder> {
+    public class KeyChoiceItem extends AbstractFlexibleItem<KeyChoiceViewHolder> {
         private UnifiedKeyInfo keyInfo;
         @StringRes
         private Integer disabledStringRes;
@@ -220,7 +219,7 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
         }
     }
 
-    public static class KeyChoiceViewHolder extends FlexibleViewHolder {
+    public class KeyChoiceViewHolder extends FlexibleViewHolder {
         private final TextView vName;
         private final TextView vCreation;
         private final CheckBox vCheckbox;
@@ -236,9 +235,10 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
         }
 
         void bind(UnifiedKeyInfo keyInfo, int choiceMode, boolean isActive, boolean isEnabled) {
+            keyInfoFormatter.setKeyInfo(keyInfo);
+
             vName.setText(keyInfo.user_id());
 
-            KeyInfoFormatter keyInfoFormatter = new KeyInfoFormatter(itemView.getContext(), keyInfo, null);
             keyInfoFormatter.formatCreationDate(vCreation);
 
             switch (choiceMode) {

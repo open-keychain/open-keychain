@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.model.SubKey;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 
 import java.util.List;
 
@@ -19,13 +20,20 @@ public class KeyInfoFormatter {
     private static final long JUST_NOW_THRESHOLD = DateUtils.MINUTE_IN_MILLIS * 5;
 
     private Context context;
-    private SubKey.UnifiedKeyInfo keyInfo;
     private Highlighter highlighter;
+    private UnifiedKeyInfo keyInfo;
 
-    public KeyInfoFormatter(Context context, SubKey.UnifiedKeyInfo keyInfo, String highlightString) {
+    public KeyInfoFormatter(Context context) {
         this.context = context;
+        highlighter = new Highlighter(context);
+    }
+
+    public void setKeyInfo(UnifiedKeyInfo keyInfo) {
         this.keyInfo = keyInfo;
-        highlighter = new Highlighter(context, highlightString);
+    }
+
+    public void setHighlightString(String highlight) {
+        highlighter.setQuery(highlight);
     }
 
     public void formatUserId(TextView name, TextView email) {

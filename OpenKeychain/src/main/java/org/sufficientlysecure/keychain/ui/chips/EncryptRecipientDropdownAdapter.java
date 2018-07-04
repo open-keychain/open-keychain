@@ -21,11 +21,13 @@ import org.sufficientlysecure.keychain.ui.util.KeyInfoFormatter;
 
 public class EncryptRecipientDropdownAdapter extends ChipsInput.ChipDropdownAdapter<EncryptRecipientChip, ItemViewHolder> {
     private final LayoutInflater layoutInflater;
+    private final KeyInfoFormatter keyInfoFormatter;
 
     EncryptRecipientDropdownAdapter(Context context, List<EncryptRecipientChip> keyInfoChips) {
         super(keyInfoChips);
 
         layoutInflater = LayoutInflater.from(context);
+        keyInfoFormatter = new KeyInfoFormatter(context);
     }
 
     class ItemViewHolder extends RecyclerView.ViewHolder {
@@ -42,6 +44,14 @@ public class EncryptRecipientDropdownAdapter extends ChipsInput.ChipDropdownAdap
             vStatusIcon = itemView.findViewById(R.id.key_list_item_status_icon);
             vCreationDate = itemView.findViewById(R.id.key_list_item_creation);
         }
+
+        public void bind(EncryptRecipientChip chip) {
+            keyInfoFormatter.setKeyInfo(chip.keyInfo);
+
+            keyInfoFormatter.formatUserId(vMainUserId, vMainUserIdRest);
+            keyInfoFormatter.formatCreationDate(vCreationDate);
+            keyInfoFormatter.formatStatusIcon(vStatusIcon);
+        }
     }
 
     @NonNull
@@ -54,10 +64,6 @@ public class EncryptRecipientDropdownAdapter extends ChipsInput.ChipDropdownAdap
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
         EncryptRecipientChip chip = getItem(position);
-
-        KeyInfoFormatter keyInfoFormatter = new KeyInfoFormatter(layoutInflater.getContext(), chip.keyInfo, null);
-        keyInfoFormatter.formatUserId(holder.vMainUserId, holder.vMainUserIdRest);
-        keyInfoFormatter.formatCreationDate(holder.vCreationDate);
-        keyInfoFormatter.formatStatusIcon(holder.vStatusIcon);
+        holder.bind(chip);
     }
 }

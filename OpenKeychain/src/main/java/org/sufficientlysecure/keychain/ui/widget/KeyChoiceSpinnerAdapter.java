@@ -19,14 +19,17 @@ import java.util.List;
 
 
 class KeyChoiceSpinnerAdapter extends BaseAdapter {
+    private final LayoutInflater layoutInflater;
+    private final KeyInfoFormatter keyInfoFormatter;
+
     private Integer noneItemString;
     private List<UnifiedKeyInfo> data;
-    private final LayoutInflater layoutInflater;
 
     KeyChoiceSpinnerAdapter(Context context) {
         super();
 
         layoutInflater = LayoutInflater.from(context);
+        keyInfoFormatter = new KeyInfoFormatter(context);
     }
 
     public void setData(List<UnifiedKeyInfo> data) {
@@ -114,28 +117,26 @@ class KeyChoiceSpinnerAdapter extends BaseAdapter {
         }
 
         UnifiedKeyInfo keyInfo = getItem(position);
-        viewHolder.bind(view.getContext(), keyInfo, isEnabled(position));
+        viewHolder.bind(keyInfo, isEnabled(position));
 
         return view;
     }
 
-    public static class KeyChoiceViewHolder {
-        private View mView;
+    public class KeyChoiceViewHolder {
         private TextView mMainUserId;
         private TextView mMainUserIdRest;
         private TextView mCreationDate;
         private ImageView mStatus;
 
         KeyChoiceViewHolder(View view) {
-            mView = view;
             mMainUserId = view.findViewById(R.id.key_list_item_name);
             mMainUserIdRest = view.findViewById(R.id.key_list_item_email);
             mStatus = view.findViewById(R.id.key_list_item_status_icon);
             mCreationDate = view.findViewById(R.id.key_list_item_creation);
         }
 
-        public void bind(Context context, UnifiedKeyInfo keyInfo, boolean enabled) {
-            KeyInfoFormatter keyInfoFormatter = new KeyInfoFormatter(context, keyInfo, null);
+        public void bind(UnifiedKeyInfo keyInfo, boolean enabled) {
+            keyInfoFormatter.setKeyInfo(keyInfo);
             keyInfoFormatter.formatUserId(mMainUserId, mMainUserIdRest);
             keyInfoFormatter.formatCreationDate(mCreationDate);
             keyInfoFormatter.formatStatusIcon(mStatus);

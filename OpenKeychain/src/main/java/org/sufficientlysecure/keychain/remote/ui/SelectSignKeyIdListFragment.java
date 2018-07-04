@@ -116,7 +116,7 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<KeyChoiceAdapt
 
     public void onLoadUnifiedKeyData(List<UnifiedKeyInfo> data) {
         if (keyChoiceAdapter == null) {
-            keyChoiceAdapter = KeyChoiceAdapter.createSingleClickableAdapter(data, this::onSelectKeyItemClicked, (keyInfo -> {
+            keyChoiceAdapter = KeyChoiceAdapter.createSingleClickableAdapter(requireContext(), data, this::onSelectKeyItemClicked, (keyInfo -> {
                 if (keyInfo.is_revoked()) {
                     return R.string.keychoice_revoked;
                 } else if (keyInfo.is_expired()) {

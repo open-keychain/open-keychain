@@ -75,6 +75,7 @@ public class FlexibleKeyDetailsItem extends FlexibleSectionableKeyItem<FlexibleK
         private final TextView vCreationDate;
         private final ImageView vStatusIcon;
         private final ImageView vTrustIdIcon;
+        private final KeyInfoFormatter keyInfoFormatter;
 
         FlexibleKeyItemViewHolder(View itemView, FlexibleAdapter adapter) {
             super(itemView, adapter);
@@ -84,12 +85,15 @@ public class FlexibleKeyDetailsItem extends FlexibleSectionableKeyItem<FlexibleK
             vStatusIcon = itemView.findViewById(R.id.key_list_item_status_icon);
             vCreationDate = itemView.findViewById(R.id.key_list_item_creation);
             vTrustIdIcon = itemView.findViewById(R.id.key_list_item_tid_icon);
+
+            keyInfoFormatter = new KeyInfoFormatter(itemView.getContext());
         }
 
         public void bind(UnifiedKeyInfo keyInfo, String highlightString) {
             setEnabled(true);
 
-            KeyInfoFormatter keyInfoFormatter = new KeyInfoFormatter(itemView.getContext(), keyInfo, highlightString);
+            keyInfoFormatter.setKeyInfo(keyInfo);
+            keyInfoFormatter.setHighlightString(highlightString);
             keyInfoFormatter.formatUserId(vMainUserId, vMainUserIdRest);
             keyInfoFormatter.formatCreationDate(vCreationDate);
             keyInfoFormatter.greyInvalidKeys(Arrays.asList(vMainUserId, vMainUserIdRest, vCreationDate));

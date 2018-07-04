@@ -30,9 +30,12 @@ public class Highlighter {
     private Context mContext;
     private String mQuery;
 
-    public Highlighter(Context context, String query) {
+    public Highlighter(Context context) {
         mContext = context;
-        mQuery = query;
+    }
+
+    public void setQuery(String mQuery) {
+        this.mQuery = mQuery;
     }
 
     public Spannable highlight(CharSequence text) {

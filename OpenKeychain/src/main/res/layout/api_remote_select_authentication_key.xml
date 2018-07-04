@@ -85,7 +85,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/authentication_key_list"
-                    tools:listitem="@layout/authentication_key_item"
+                    tools:listitem="@layout/key_choice_item"
                     tools:layout_height="100dp"
                     />
 

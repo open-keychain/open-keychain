@@ -6,7 +6,9 @@
     android:paddingTop="6dp"
     android:paddingBottom="6dp"
     android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:background="?selectableItemBackground"
+    android:minHeight="?listPreferredItemHeight">
 
     <RadioButton
         android:id="@+id/radio_keychoice"

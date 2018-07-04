@@ -75,6 +75,7 @@ import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
 import org.sufficientlysecure.keychain.ui.keyview.GenericViewModel;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
+import org.sufficientlysecure.keychain.ui.util.KeyInfoFormatter;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FabContainer;
@@ -141,6 +142,7 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
         }
     };
     private FastScroller fastScroller;
+    private KeyInfoFormatter keyInfoFormatter;
 
     private void multiSelectDelete(long[] keyIds, boolean hasSecret) {
         Intent intent = new Intent(getActivity(), DeleteKeyDialogActivity.class);

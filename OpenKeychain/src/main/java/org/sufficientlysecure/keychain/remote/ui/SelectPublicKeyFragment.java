@@ -123,7 +123,7 @@ public class SelectPublicKeyFragment extends RecyclerFragment<KeyChoiceAdapter> 
 
     public void onLoadUnifiedKeyData(List<UnifiedKeyInfo> data) {
         if (keyChoiceAdapter == null) {
-            keyChoiceAdapter = KeyChoiceAdapter.createMultiChoiceAdapter(data, (keyInfo -> {
+            keyChoiceAdapter = KeyChoiceAdapter.createMultiChoiceAdapter(requireContext(), data, (keyInfo -> {
                 if (keyInfo.is_revoked()) {
                     return R.string.keychoice_revoked;
                 } else if (keyInfo.is_expired()) {

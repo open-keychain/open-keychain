@@ -156,7 +156,7 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createSelectAuthenticationKeyIdPendingIntent(Intent data, String packageName) {
+    public PendingIntent createSelectAuthenticationKeyIdPendingIntent(Intent data, String packageName) {
         Intent intent = new Intent(mContext, RemoteSelectAuthenticationKeyActivity.class);
         intent.putExtra(RemoteSelectAuthenticationKeyActivity.EXTRA_PACKAGE_NAME, packageName);
 
