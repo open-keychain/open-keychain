@@ -171,7 +171,7 @@ public class EditKeyOperation extends BaseReadWriteOperation<SaveKeyringParcel> 
         SaveKeyringResult saveResult = mKeyWritableRepository.saveSecretKeyRing(ring);
         log.add(saveResult, 1);
 
-        if (isNewKey) {
+        if (isNewKey || saveParcel.isShouldUpload()) {
             keyMetadataDao.renewKeyLastUpdatedTime(ring.getMasterKeyId(), saveParcel.isShouldUpload());
         }
 

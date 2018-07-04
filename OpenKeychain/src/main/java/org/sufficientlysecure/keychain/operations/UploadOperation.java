@@ -29,6 +29,9 @@ import android.support.v4.os.CancellationSignal;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.daos.KeyMetadataDao;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverClient;
 import org.sufficientlysecure.keychain.keyimport.KeyserverClient.AddKeyException;
@@ -41,8 +44,6 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.daos.KeyRepository;
-import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -56,10 +57,13 @@ import timber.log.Timber;
  * An operation class which implements the upload of a single key to a key server.
  */
 public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
+    private KeyMetadataDao keyMetadataDao;
 
     public UploadOperation(Context context, KeyRepository keyRepository,
             Progressable progressable, CancellationSignal cancelled) {
         super(context, keyRepository, progressable, cancelled);
+
+        keyMetadataDao = KeyMetadataDao.create(mContext);
     }
 
     @NonNull
@@ -150,10 +154,17 @@ public class UploadOperation extends BaseOperation<UploadKeyringParcel> {
             keyring.encode(aos);
             aos.close();
 
+            if (checkCancelled()) {
+                log.add(LogType.MSG_OPERATION_CANCELLED, 0);
+                return new UploadResult(UploadResult.RESULT_CANCELLED, log);
+            }
+
             String armoredKey = bos.toString("UTF-8");
             keyserverInteractor.add(armoredKey, proxy);
 
             updateProgress(R.string.progress_uploading, 1, 1);
+
+            keyMetadataDao.renewKeyLastUpdatedTime(keyring.getMasterKeyId(), true);
 
             log.add(LogType.MSG_UPLOAD_SUCCESS, 1);
             return new UploadResult(UploadResult.RESULT_OK, log);
