@@ -1,6 +1,8 @@
 package org.sufficientlysecure.keychain.ui.chips;
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import android.content.Context;
@@ -13,6 +15,8 @@ import org.sufficientlysecure.keychain.ui.chips.EncryptRecipientChipsInput.Encry
 
 
 public class EncryptRecipientChipsInput extends ChipsInput<EncryptRecipientChip> {
+    private long[] preselectedKeyIds;
+
     public EncryptRecipientChipsInput(Context context) {
         super(context);
         init();
@@ -31,6 +35,22 @@ public class EncryptRecipientChipsInput extends ChipsInput<EncryptRecipientChip>
     public void setData(List<EncryptRecipientChip> keyInfoChips) {
         EncryptRecipientDropdownAdapter chipDropdownAdapter = new EncryptRecipientDropdownAdapter(getContext(), keyInfoChips);
         setChipDropdownAdapter(chipDropdownAdapter);
+
+        if (preselectedKeyIds != null) {
+            Arrays.sort(preselectedKeyIds);
+            ArrayList<EncryptRecipientChip> preselectedChips = new ArrayList<>();
+            for (EncryptRecipientChip keyInfoChip : keyInfoChips) {
+                if (Arrays.binarySearch(preselectedKeyIds, keyInfoChip.keyInfo.master_key_id()) >= 0) {
+                    preselectedChips.add(keyInfoChip);
+                }
+            }
+            addChips(preselectedChips);
+            preselectedKeyIds = null;
+        }
+    }
+
+    public void setPreSelectedKeyIds(long[] preselectedEncryptionKeyIds) {
+        this.preselectedKeyIds = preselectedEncryptionKeyIds;
     }
 
     public static class EncryptRecipientChip implements FilterableItem {

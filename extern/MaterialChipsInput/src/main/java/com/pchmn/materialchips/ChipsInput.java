@@ -45,7 +45,6 @@ public abstract class ChipsInput<T extends FilterableItem> extends ScrollViewMax
     private boolean mShowChipDetailed = true;
 
     private List<ChipsListener<T>> mChipsListenerList = new ArrayList<>();
-    private ChipValidator<T> mChipValidator;
 
     private ChipsAdapter<T, ?> chipsAdapter;
     private RecyclerView chipsRecyclerView;
@@ -187,8 +186,8 @@ public abstract class ChipsInput<T extends FilterableItem> extends ScrollViewMax
         });
     }
 
-    public void addChip(T chip) {
-        chipsAdapter.addChip(chip);
+    public void addChips(List<T> chips) {
+        chipsAdapter.addChipsProgrammatically(chips);
     }
 
     public ChipsInputEditText getEditText() {
@@ -317,14 +316,6 @@ public abstract class ChipsInput<T extends FilterableItem> extends ScrollViewMax
         }));
     }
 
-    public ChipValidator<T> getChipValidator() {
-        return mChipValidator;
-    }
-
-    public void setChipValidator(ChipValidator<T> mChipValidator) {
-        this.mChipValidator = mChipValidator;
-    }
-
     public interface ChipsListener<T extends FilterableItem> {
         void onChipAdded(T chip, int newSize);
         void onChipRemoved(T chip, int newSize);
@@ -337,9 +328,5 @@ public abstract class ChipsInput<T extends FilterableItem> extends ScrollViewMax
         public void onChipRemoved(T chip, int newSize) { }
         public void onTextChanged(CharSequence text) { }
         public void onActionDone(CharSequence text) { }
-    }
-
-    public interface ChipValidator<T extends FilterableItem> {
-        boolean areEquals(T chip1, T chip2);
     }
 }

@@ -51,14 +51,13 @@ import timber.log.Timber;
 
 
 public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
+    public static final String ARG_SINGATURE_KEY_ID = "signature_key_id";
+    public static final String ARG_ENCRYPTION_KEY_IDS = "encryption_key_ids";
+
     KeyRepository keyRepository;
 
     private KeySpinner mSignKeySpinner;
     private EncryptRecipientChipsInput mEncryptKeyView;
-
-    public static final String ARG_SINGATURE_KEY_ID = "signature_key_id";
-    public static final String ARG_ENCRYPTION_KEY_IDS = "encryption_key_ids";
-
 
     public static EncryptModeAsymmetricFragment newInstance(long signatureKey, long[] encryptionKeyIds) {
         EncryptModeAsymmetricFragment frag = new EncryptModeAsymmetricFragment();
@@ -131,12 +130,19 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
 
         // preselect keys given, from state or arguments
         if (savedInstanceState == null) {
-            Long signatureKeyId = getArguments().getLong(ARG_SINGATURE_KEY_ID);
-            if (signatureKeyId == Constants.key.none) {
-                signatureKeyId = null;
-            }
-            long[] encryptionKeyIds = getArguments().getLongArray(ARG_ENCRYPTION_KEY_IDS);
-            preselectKeys(signatureKeyId, encryptionKeyIds);
+            Bundle arguments = getArguments();
+            preselectKeysFromArguments(arguments);
+        }
+    }
+
+    private void preselectKeysFromArguments(Bundle arguments) {
+        long preselectedSignatureKeyId = arguments.getLong(ARG_SINGATURE_KEY_ID);
+        if (preselectedSignatureKeyId != Constants.key.none) {
+            mSignKeySpinner.setPreSelectedKeyId(preselectedSignatureKeyId);
+        }
+        long[] preselectedEncryptionKeyIds = arguments.getLongArray(ARG_ENCRYPTION_KEY_IDS);
+        if (preselectedEncryptionKeyIds != null) {
+            mEncryptKeyView.setPreSelectedKeyIds(preselectedEncryptionKeyIds);
         }
     }
 
@@ -168,38 +174,6 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
                 });
             }
             return encryptRecipientLiveData;
-        }
-    }
-
-    /**
-     * If an Intent gives a signatureMasterKeyId and/or encryptionMasterKeyIds, preselect those!
-     */
-    private void preselectKeys(Long signatureKeyId, long[] encryptionKeyIds) {
-        if (signatureKeyId != null) {
-            UnifiedKeyInfo unifiedKeyInfo = keyRepository.getUnifiedKeyInfo(signatureKeyId);
-            if (unifiedKeyInfo == null) {
-                String beautifyKeyId = KeyFormattingUtils.beautifyKeyId(signatureKeyId);
-                Notify.create(getActivity(), getString(R.string.error_preselect_sign_key, beautifyKeyId), Style.ERROR).show();
-            } else if (unifiedKeyInfo.has_any_secret()) {
-                mSignKeySpinner.setPreSelectedKeyId(signatureKeyId);
-            }
-        }
-
-        if (encryptionKeyIds != null) {
-            for (long preselectedId : encryptionKeyIds) {
-                UnifiedKeyInfo keyInfo = keyRepository.getUnifiedKeyInfo(preselectedId);
-                if (keyInfo == null) {
-                    Timber.e("key not found for encryption!");
-                    Notify.create(getActivity(), getString(R.string.error_preselect_encrypt_key,
-                            KeyFormattingUtils.beautifyKeyId(preselectedId)),
-                            Style.ERROR).show();
-                } else {
-                    mEncryptKeyView.addChip(EncryptRecipientChipsInput.chipFromUnifiedKeyInfo(keyInfo));
-                }
-            }
-
-            // This is to work-around a rendering bug in TokenCompleteTextView
-            mEncryptKeyView.requestFocus();
         }
     }
 

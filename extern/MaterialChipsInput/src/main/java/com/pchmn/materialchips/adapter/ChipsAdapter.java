@@ -202,17 +202,19 @@ public abstract class ChipsAdapter<T extends FilterableItem, VH extends Recycler
     }
 
     public void addChip(T chip) {
-        if (!listContains(chipList, chip)) {
-            chipList.add(chip);
-            // notify listener
-            chipsInput.onChipAdded(chip, chipList.size());
-            // hide hint
-            editText.setHint(null);
-            // reset text
-            editText.setText(null);
-            // refresh data
-            notifyItemInserted(chipList.size());
+        if (chipList.contains(chip)) {
+            return;
         }
+
+        chipList.add(chip);
+        // notify listener
+        chipsInput.onChipAdded(chip, chipList.size());
+        // hide hint
+        editText.setHint(null);
+        // reset text
+        editText.setText(null);
+        // refresh data
+        notifyItemInserted(chipList.size() -1);
     }
 
     public void removeChip(T chip) {
@@ -288,17 +290,5 @@ public abstract class ChipsAdapter<T extends FilterableItem, VH extends Recycler
             super(view);
             editText = (EditText) view;
         }
-    }
-
-    private boolean listContains(List<T> contactList, T chip) {
-        if (chipsInput.getChipValidator() != null) {
-            for (T item : contactList) {
-                if (chipsInput.getChipValidator().areEquals(item, chip)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 }
