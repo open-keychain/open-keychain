@@ -103,6 +103,9 @@ public class KeychainDatabase {
                                         if (!db.isReadOnly()) {
                                             // Enable foreign key constraints
                                             db.execSQL("PRAGMA foreign_keys=ON;");
+                                            if (Constants.DEBUG) {
+                                                recreateUnifiedKeyView(db);
+                                            }
                                         }
                                     }
                                 }).build());

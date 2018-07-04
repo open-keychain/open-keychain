@@ -34,7 +34,7 @@ CREATE VIEW unifiedKeyView AS
         GROUP_CONCAT(DISTINCT aTI.package_name) AS autocrypt_package_names_csv,
         GROUP_CONCAT(user_packets.user_id, '|||') AS user_id_list
     FROM keys
-         INNER JOIN user_packets ON ( keys.master_key_id = user_packets.master_key_id AND user_packets.type IS NULL )
+         INNER JOIN user_packets ON ( keys.master_key_id = user_packets.master_key_id AND user_packets.type IS NULL AND (user_packets.rank = 0 OR user_packets.is_revoked = 0))
          LEFT JOIN certs ON ( keys.master_key_id = certs.master_key_id AND certs.verified = 1 )
          LEFT JOIN autocrypt_peers AS aTI ON ( aTI.master_key_id = keys.master_key_id )
     WHERE keys.rank = 0
