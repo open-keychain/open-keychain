@@ -83,7 +83,7 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<KeyChoiceAdapt
         LinearLayout linearLayout = new LinearLayout(requireContext());
         linearLayout.setOrientation(LinearLayout.VERTICAL);
 
-        View dummyItemView = inflater.inflate(R.layout.key_list_dummy, linearLayout, false);
+        View dummyItemView = inflater.inflate(R.layout.select_dummy_key_item, linearLayout, false);
         linearLayout.addView(dummyItemView, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
