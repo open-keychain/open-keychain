@@ -50,6 +50,10 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
         return new KeyChoiceAdapter(items, null, Mode.SINGLE, null);
     }
 
+    public static KeyChoiceAdapter createSingleChoiceAdapter(List<UnifiedKeyInfo> items, KeyDisabledPredicate keyDisabledPredicate) {
+        return new KeyChoiceAdapter(items, null, Mode.SINGLE, keyDisabledPredicate);
+    }
+
     public static KeyChoiceAdapter createMultiChoiceAdapter(List<UnifiedKeyInfo> items, KeyDisabledPredicate keyDisabledPredicate) {
         return new KeyChoiceAdapter(items, null, Mode.MULTI, keyDisabledPredicate);
     }

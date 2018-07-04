@@ -24,6 +24,7 @@ import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView.Adapter;
 
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.remote.AutocryptInteractor;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteDeduplicateActivity.DeduplicateViewModel;
@@ -62,7 +63,19 @@ class RemoteDeduplicatePresenter {
 
     private void onLoadKeyInfos(List<UnifiedKeyInfo> data) {
         if (keyChoiceAdapter == null) {
-            keyChoiceAdapter = KeyChoiceAdapter.createSingleChoiceAdapter(data);
+            keyChoiceAdapter = KeyChoiceAdapter.createSingleChoiceAdapter(data, (keyInfo -> {
+                if (keyInfo.is_revoked()) {
+                    return R.string.keychoice_revoked;
+                } else if (keyInfo.is_expired()) {
+                    return R.string.keychoice_expired;
+                } else if (!keyInfo.is_secure()) {
+                    return R.string.keychoice_insecure;
+                } else if (!keyInfo.has_encrypt_key()) {
+                    return R.string.keychoice_cannot_encrypt;
+                } else {
+                    return null;
+                }
+            }));
             view.setKeyListAdapter(keyChoiceAdapter);
         } else {
             keyChoiceAdapter.setUnifiedKeyInfoItems(data);
