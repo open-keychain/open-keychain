@@ -29,6 +29,7 @@ public abstract class SubKey implements KeysModel {
     @AutoValue
     public static abstract class UnifiedKeyInfo implements KeysModel.UnifiedKeyViewModel {
         private List<String> autocryptPackageNames;
+        private String cachedUidSearchString;
 
         public boolean is_expired() {
             Long expiry = expiry();
@@ -63,6 +64,17 @@ public abstract class SubKey implements KeysModel {
 
         public boolean has_encrypt_key() {
             return has_encrypt_key_int() != 0;
+        }
+
+        public String uidSearchString() {
+            if (cachedUidSearchString == null) {
+                cachedUidSearchString = user_id_list();
+                if (cachedUidSearchString == null) {
+                    cachedUidSearchString = "";
+                }
+                cachedUidSearchString = cachedUidSearchString.toLowerCase();
+            }
+            return cachedUidSearchString;
         }
     }
 }

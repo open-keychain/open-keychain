@@ -66,8 +66,7 @@ public class FlexibleKeyDetailsItem extends FlexibleSectionableKeyItem<FlexibleK
 
     @Override
     public boolean filter(String constraint) {
-        String uidList = keyInfo.user_id_list();
-        return constraint == null || (uidList != null && uidList.contains(constraint));
+        return constraint == null || keyInfo.uidSearchString().contains(constraint);
     }
 
     class FlexibleKeyItemViewHolder extends FlexibleViewHolder {

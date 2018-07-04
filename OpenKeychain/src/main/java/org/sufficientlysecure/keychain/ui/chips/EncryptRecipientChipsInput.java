@@ -42,8 +42,7 @@ public class EncryptRecipientChipsInput extends ChipsInput<EncryptRecipientChip>
 
         @Override
         public boolean isKeptForConstraint(CharSequence constraint) {
-            String uidList = keyInfo.user_id_list();
-            return uidList == null || uidList.contains(constraint);
+            return keyInfo.uidSearchString().contains(constraint);
         }
     }
 
