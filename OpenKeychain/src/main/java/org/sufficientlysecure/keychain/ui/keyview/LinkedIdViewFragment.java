@@ -18,14 +18,15 @@
 package org.sufficientlysecure.keychain.ui.keyview;
 
 
-import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.PorterDuff;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,10 +37,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
-import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,37 +52,36 @@ import org.sufficientlysecure.keychain.linked.LinkedAttribute;
 import org.sufficientlysecure.keychain.linked.LinkedResource;
 import org.sufficientlysecure.keychain.linked.LinkedTokenResource;
 import org.sufficientlysecure.keychain.linked.UriAttribute;
+import org.sufficientlysecure.keychain.daos.CertificationDao;
+import org.sufficientlysecure.keychain.livedata.GenericLiveData;
+import org.sufficientlysecure.keychain.model.Certification.CertDetails;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.LinkedVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
-import org.sufficientlysecure.keychain.provider.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter;
-import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationFragment;
 import org.sufficientlysecure.keychain.ui.keyview.LinkedIdViewFragment.ViewHolder.VerifyState;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.LinkedIdInfo;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.SubtleAttentionSeeker;
 import org.sufficientlysecure.keychain.ui.widget.CertListWidget;
-import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
+import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import timber.log.Timber;
 
 
-public class LinkedIdViewFragment extends CryptoOperationFragment implements
-        LoaderManager.LoaderCallbacks<Cursor>, OnBackStackChangedListener {
+public class LinkedIdViewFragment extends CryptoOperationFragment implements OnBackStackChangedListener {
 
-    private static final String ARG_DATA_URI = "data_uri";
     private static final String ARG_LID_RANK = "rank";
     private static final String ARG_IS_SECRET = "verified";
     private static final String ARG_MASTER_KEY_ID = "master_key_id";
-    private static final int LOADER_ID_LINKED_ID = 1;
 
     private long masterKeyId;
     private boolean isSecret;
@@ -94,17 +91,14 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
 
     private AsyncTask taskInProgress;
 
-    private Uri dataUri;
     private ViewHolder viewHolder;
     private int lidRank;
     private long certifyKeyId;
 
-    public static LinkedIdViewFragment newInstance(Uri dataUri, int rank,
-            boolean isSecret, long masterKeyId) throws IOException {
+    public static LinkedIdViewFragment newInstance(long masterKeyId, int rank, boolean isSecret) {
         LinkedIdViewFragment frag = new LinkedIdViewFragment();
 
         Bundle args = new Bundle();
-        args.putParcelable(ARG_DATA_URI, dataUri);
         args.putInt(ARG_LID_RANK, rank);
         args.putBoolean(ARG_IS_SECRET, isSecret);
         args.putLong(ARG_MASTER_KEY_ID, masterKeyId);
@@ -124,57 +118,31 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
-        dataUri = args.getParcelable(ARG_DATA_URI);
         lidRank = args.getInt(ARG_LID_RANK);
 
         isSecret = args.getBoolean(ARG_IS_SECRET);
         masterKeyId = args.getLong(ARG_MASTER_KEY_ID);
-
-        getLoaderManager().initLoader(LOADER_ID_LINKED_ID, null, this);
-
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        switch (id) {
-            case LOADER_ID_LINKED_ID:
-                return new CursorLoader(getContext(), dataUri,
-                        UserIdsAdapter.USER_PACKETS_PROJECTION,
-                        Tables.USER_PACKETS + "." + UserPackets.RANK
-                                + " = " + Integer.toString(lidRank), null, null);
-            default:
-                return null;
-        }
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        LinkedIdViewModel viewModel = ViewModelProviders.of(this).get(LinkedIdViewModel.class);
+        viewModel.getLinkedIdInfo(requireContext(), masterKeyId, lidRank).observe(this, this::onLinkedIdInfoLoaded);
+        viewModel.getCertifyingKeys(requireContext()).observe(this, viewHolder.vKeySpinner::setData);
     }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        switch (loader.getId()) {
-            case LOADER_ID_LINKED_ID:
-
-                // Nothing to load means break if we are *expected* to load
-                if (!cursor.moveToFirst()) {
-                    // Or just ignore, this is probably some intermediate state during certify
-                    break;
-                }
-
-                try {
-                    int certStatus = cursor.getInt(UserIdsAdapter.INDEX_VERIFIED);
-
-                    byte[] data = cursor.getBlob(UserIdsAdapter.INDEX_ATTRIBUTE_DATA);
-                    UriAttribute linkedId = LinkedAttribute.fromAttributeData(data);
-
-                    loadIdentity(linkedId, certStatus);
-
-                } catch (IOException e) {
-                    Timber.e(e, "error parsing identity");
-                    Notify.create(getActivity(), "Error parsing identity!",
-                            Notify.LENGTH_LONG, Style.ERROR).show();
-                    finishFragment();
-                }
-
-                break;
+    private void onLinkedIdInfoLoaded(LinkedIdInfo linkedIdInfo) {
+        if (linkedIdInfo == null) {
+            Timber.e("error loading identity");
+            Notify.create(getActivity(), "Error loading linked identity!",
+                    Notify.LENGTH_LONG, Style.ERROR).show();
+            finishFragment();
+            return;
         }
+
+        loadIdentity(linkedIdInfo.getLinkedAttribute(), linkedIdInfo.isVerified());
     }
 
     public void finishFragment() {
@@ -185,28 +153,19 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
         });
     }
 
-    private void loadIdentity(UriAttribute linkedId, int certStatus) {
+    private void loadIdentity(LinkedAttribute linkedId, boolean isVerified) {
         this.linkedId = linkedId;
 
-        if (this.linkedId instanceof LinkedAttribute) {
-            LinkedResource res = ((LinkedAttribute) this.linkedId).mResource;
-            linkedResource = (LinkedTokenResource) res;
-        }
+        LinkedResource res = ((LinkedAttribute) this.linkedId).mResource;
+        linkedResource = (LinkedTokenResource) res;
 
         if (!isSecret) {
-            switch (certStatus) {
-                case Certs.VERIFIED_SECRET:
-                    KeyFormattingUtils.setStatusImage(getContext(), viewHolder.mLinkedIdHolder.vVerified,
-                            null, State.VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
-                    break;
-                case Certs.VERIFIED_SELF:
-                    KeyFormattingUtils.setStatusImage(getContext(), viewHolder.mLinkedIdHolder.vVerified,
-                            null, State.UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
-                    break;
-                default:
-                    KeyFormattingUtils.setStatusImage(getContext(), viewHolder.mLinkedIdHolder.vVerified,
-                            null, State.INVALID, KeyFormattingUtils.DEFAULT_COLOR);
-                    break;
+            if (isVerified) {
+                KeyFormattingUtils.setStatusImage(getContext(), viewHolder.mLinkedIdHolder.vVerified,
+                        null, State.VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
+            } else {
+                KeyFormattingUtils.setStatusImage(getContext(), viewHolder.mLinkedIdHolder.vVerified,
+                        null, State.UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
             }
         } else {
             viewHolder.mLinkedIdHolder.vVerified.setImageResource(R.drawable.octo_link_24dp);
@@ -215,13 +174,6 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
         viewHolder.mLinkedIdHolder.bind(getContext(), this.linkedId);
 
         setShowVerifying(false);
-
-        // no resource, nothing further we can do…
-        if (linkedResource == null) {
-            viewHolder.vButtonView.setVisibility(View.GONE);
-            viewHolder.vButtonVerify.setVisibility(View.GONE);
-            return;
-        }
 
         if (linkedResource.isViewable()) {
             viewHolder.vButtonView.setVisibility(View.VISIBLE);
@@ -238,11 +190,6 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
 
     }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
-    }
-
     static class ViewHolder {
         private final View vButtonView;
         private final ViewAnimator vVerifyingContainer;
@@ -252,7 +199,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
 
         private ViewAnimator vButtonSwitcher;
         private CertListWidget vLinkedCerts;
-        private CertifyKeySpinner vKeySpinner;
+        private KeySpinner vKeySpinner;
         private final View vButtonVerify;
         private final View vButtonRetry;
         private final View vButtonConfirm;
@@ -297,6 +244,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
                     if (!isSecret) {
                         showButton(2);
                         if (!vKeySpinner.isSingleEntry()) {
+                            vKeySpinner.setShowNone(R.string.choice_select_cert);
                             vKeySpinnerContainer.setVisibility(View.VISIBLE);
                         }
                     } else {
@@ -392,31 +340,34 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.linked_id_view_fragment, null);
+        View root = inflater.inflate(R.layout.linked_id_view_fragment, superContainer, false);
+        Context context = getContext();
+        if (context == null) {
+            throw new NullPointerException();
+        }
 
         viewHolder = new ViewHolder(root);
         root.setTag(viewHolder);
 
         ((ImageView) root.findViewById(R.id.status_icon_verified))
-                .setColorFilter(ContextCompat.getColor(getContext(), R.color.android_green_light),
+                .setColorFilter(ContextCompat.getColor(context, R.color.android_green_light),
                         PorterDuff.Mode.SRC_IN);
         ((ImageView) root.findViewById(R.id.status_icon_invalid))
-                .setColorFilter(ContextCompat.getColor(getContext(), R.color.android_red_light),
+                .setColorFilter(ContextCompat.getColor(context, R.color.android_red_light),
                         PorterDuff.Mode.SRC_IN);
 
         viewHolder.vButtonVerify.setOnClickListener(v -> verifyResource());
         viewHolder.vButtonRetry.setOnClickListener(v -> verifyResource());
         viewHolder.vButtonConfirm.setOnClickListener(v -> initiateCertifying());
 
-        {
-            Bundle args = new Bundle();
-            args.putParcelable(CertListWidget.ARG_URI, Certs.buildLinkedIdCertsUri(dataUri, lidRank));
-            args.putBoolean(CertListWidget.ARG_IS_SECRET, isSecret);
-            getLoaderManager().initLoader(CertListWidget.LOADER_ID_LINKED_CERTS,
-                    args, viewHolder.vLinkedCerts);
-        }
+        LinkedIdViewModel viewModel = ViewModelProviders.of(this).get(LinkedIdViewModel.class);
+        viewModel.getCertDetails(context, masterKeyId, lidRank).observe(this, this::onLoadCertDetails);
 
         return root;
+    }
+
+    private void onLoadCertDetails(CertDetails certDetails) {
+        viewHolder.vLinkedCerts.setData(certDetails, isSecret);
     }
 
     void verifyResource() {
@@ -438,9 +389,8 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
 
                 byte[] fingerprint;
                 try {
-                    fingerprint = KeyRepository.create(activity).getCachedPublicKeyRing(
-                            masterKeyId).getFingerprint();
-                } catch (PgpKeyNotFoundException e) {
+                    fingerprint = KeyRepository.create(activity).getFingerprintByKeyId(masterKeyId);
+                } catch (NotFoundException e) {
                     throw new IllegalStateException("Key to verify linked id for must exist in db!");
                 }
 
@@ -538,6 +488,40 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements
     @Override
     public boolean onCryptoSetProgress(String msg, int progress, int max) {
         return true;
+    }
+
+    public static class LinkedIdViewModel extends ViewModel {
+        LiveData<List<UnifiedKeyInfo>> certifyingKeysLiveData;
+        LiveData<CertDetails> certDetailsLiveData;
+        LiveData<LinkedIdInfo> linkedIfInfoLiveData;
+
+        LiveData<List<UnifiedKeyInfo>> getCertifyingKeys(Context context) {
+            if (certifyingKeysLiveData == null) {
+                certifyingKeysLiveData = new GenericLiveData<>(context, () -> {
+                    KeyRepository keyRepository = KeyRepository.create(context);
+                    return keyRepository.getAllUnifiedKeyInfoWithSecret();
+                });
+            }
+            return certifyingKeysLiveData;
+        }
+
+        LiveData<CertDetails> getCertDetails(Context context, long masterKeyId, int lidRank) {
+            if (certDetailsLiveData == null) {
+                CertificationDao certificationDao = CertificationDao.getInstance(context);
+                certDetailsLiveData = new GenericLiveData<>(context, masterKeyId,
+                        () -> certificationDao.getVerifyingCertDetails(masterKeyId, lidRank));
+            }
+            return certDetailsLiveData;
+        }
+
+        public LiveData<LinkedIdInfo> getLinkedIdInfo(Context context, long masterKeyId, int lidRank) {
+            if (linkedIfInfoLiveData == null) {
+                IdentityDao identityDao = IdentityDao.getInstance(context);
+                linkedIfInfoLiveData = new GenericLiveData<>(context, masterKeyId,
+                        () -> identityDao.getLinkedIdInfo(masterKeyId, lidRank));
+            }
+            return linkedIfInfoLiveData;
+        }
     }
 
 }

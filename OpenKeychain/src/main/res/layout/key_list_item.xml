@@ -8,9 +8,9 @@
     android:gravity="center_vertical"
     android:maxLines="1"
     android:orientation="horizontal"
-    android:descendantFocusability="blocksDescendants"
     android:background="@drawable/list_item_ripple"
-    android:focusable="false"
+    android:paddingLeft="12dp"
+    android:paddingRight="12dp"
     tools:layout_marginTop="30dp">
 
     <ImageView
@@ -18,6 +18,7 @@
         android:layout_height="24dp"
         android:layout_margin="4dp"
         android:id="@+id/key_list_item_tid_icon"
+        android:visibility="gone"
         tools:src="@drawable/apps_k9" />
 
     <LinearLayout
@@ -26,7 +27,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
-        android:focusable="true"
         android:orientation="vertical"
         android:paddingLeft="8dp"
         android:paddingRight="4dp"
@@ -58,34 +58,6 @@
             android:visibility="gone"
             tools:visibility="visible"
             tools:text="Created on 10/10/2010 10:00" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/key_list_item_slinger_view"
-        android:layout_width="wrap_content"
-        android:layout_height="?android:attr/listPreferredItemHeight"
-        android:layout_gravity="center_vertical"
-        android:orientation="horizontal"
-        tools:visibility="gone">
-
-        <View
-            android:layout_width="1dip"
-            android:layout_height="match_parent"
-            android:gravity="right"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            android:background="?android:attr/listDivider" />
-
-        <ImageButton
-            android:id="@+id/key_list_item_slinger_button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_repeat_grey_24dp"
-            android:padding="16dp"
-            android:background="?android:selectableItemBackground"
-            android:contentDescription="@string/cd_exchange_keys"/>
 
     </LinearLayout>
 

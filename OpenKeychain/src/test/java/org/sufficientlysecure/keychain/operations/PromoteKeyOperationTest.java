@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLog;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.PromoteKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
@@ -42,8 +43,7 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.PromoteKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -105,8 +105,9 @@ public class PromoteKeyOperationTest {
 
     @Test
     public void testPromote() throws Exception {
+        KeyWritableRepository keyRepository = KeyWritableRepository.create(RuntimeEnvironment.application);
         PromoteKeyOperation op = new PromoteKeyOperation(RuntimeEnvironment.application,
-                KeyWritableRepository.create(RuntimeEnvironment.application), null, null);
+                keyRepository, null, null);
 
         PromoteKeyResult result = op.execute(
                 PromoteKeyringParcel.createPromoteKeyringParcel(mStaticRing.getMasterKeyId(), null, null), null);
@@ -114,15 +115,14 @@ public class PromoteKeyOperationTest {
         Assert.assertTrue("promotion must succeed", result.success());
 
         {
-            CachedPublicKeyRing ring = KeyWritableRepository.create(RuntimeEnvironment.application)
-                    .getCachedPublicKeyRing(mStaticRing.getMasterKeyId());
-            Assert.assertTrue("key must have a secret now", ring.hasAnySecret());
+            UnifiedKeyInfo unifiedKeyInfo = keyRepository.getUnifiedKeyInfo(mStaticRing.getMasterKeyId());
+            Assert.assertTrue("key must have a secret now", unifiedKeyInfo.has_any_secret());
 
             Iterator<UncachedPublicKey> it = mStaticRing.getPublicKeys();
             while (it.hasNext()) {
                 long keyId = it.next().getKeyId();
                 Assert.assertEquals("all subkeys must be gnu dummy",
-                        SecretKeyType.GNU_DUMMY, ring.getSecretKeyType(keyId));
+                        SecretKeyType.GNU_DUMMY, keyRepository.getSecretKeyType(keyId));
             }
         }
 

@@ -18,111 +18,78 @@
 package org.sufficientlysecure.keychain.remote.ui.dialog;
 
 
-import java.util.Date;
 import java.util.List;
 
+import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.Loader;
+import android.support.v7.widget.RecyclerView.Adapter;
 
-import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeyInfo;
-import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeySelector;
-import timber.log.Timber;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.remote.AutocryptInteractor;
+import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteDeduplicateActivity.DeduplicateViewModel;
+import org.sufficientlysecure.keychain.ui.adapter.KeyChoiceAdapter;
 
 
-class RemoteDeduplicatePresenter implements LoaderCallbacks<List<KeyInfo>> {
-    private final PackageManager packageManager;
+class RemoteDeduplicatePresenter {
     private final Context context;
-    private final int loaderId;
+    private final LifecycleOwner lifecycleOwner;
 
 
-    private AutocryptPeerDataAccessObject autocryptPeerDao;
-    private String duplicateAddress;
+    private AutocryptInteractor autocryptInteractor;
 
+    private DeduplicateViewModel viewModel;
     private RemoteDeduplicateView view;
-    private Integer selectedItem;
-    private List<KeyInfo> keyInfoData;
+    private KeyChoiceAdapter keyChoiceAdapter;
 
 
-    RemoteDeduplicatePresenter(Context context, int loaderId) {
+    RemoteDeduplicatePresenter(Context context, LifecycleOwner lifecycleOwner) {
         this.context = context;
-
-        packageManager = context.getPackageManager();
-
-        this.loaderId = loaderId;
+        this.lifecycleOwner = lifecycleOwner;
     }
 
     public void setView(RemoteDeduplicateView view) {
         this.view = view;
     }
 
-    void setupFromIntentData(String packageName, String duplicateAddress) {
-        try {
-            setPackageInfo(packageName);
-        } catch (NameNotFoundException e) {
-            Timber.e("Unable to find info of calling app!");
-            view.finishAsCancelled();
-            return;
-        }
+    void setupFromViewModel(DeduplicateViewModel viewModel) {
+        this.viewModel = viewModel;
+        this.autocryptInteractor = AutocryptInteractor.getInstance(context, viewModel.getPackageName());
 
-        autocryptPeerDao = new AutocryptPeerDataAccessObject(context, packageName);
+        view.setAddressText(viewModel.getDuplicateAddress());
 
-        this.duplicateAddress = duplicateAddress;
-        view.setAddressText(duplicateAddress);
+        viewModel.getKeyInfoLiveData(context).observe(lifecycleOwner, this::onLoadKeyInfos);
     }
 
-    private void setPackageInfo(String packageName) throws NameNotFoundException {
-        ApplicationInfo applicationInfo = packageManager.getApplicationInfo(packageName, 0);
-        Drawable appIcon = packageManager.getApplicationIcon(applicationInfo);
-
-        view.setTitleClientIcon(appIcon);
-    }
-
-    void startLoaders(LoaderManager loaderManager) {
-        loaderManager.restartLoader(loaderId, null, this);
-    }
-
-    @Override
-    public Loader<List<KeyInfo>> onCreateLoader(int id, Bundle args) {
-        KeySelector keySelector = KeySelector.create(
-                KeyRings.buildUnifiedKeyRingsFindByEmailUri(duplicateAddress), null);
-
-        return new KeyInfoLoader(context, context.getContentResolver(), keySelector);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<List<KeyInfo>> loader, List<KeyInfo> data) {
-        this.keyInfoData = data;
-        view.setKeyListData(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader loader) {
-        if (view != null) {
-            view.setKeyListData(null);
+    private void onLoadKeyInfos(List<UnifiedKeyInfo> data) {
+        if (keyChoiceAdapter == null) {
+            keyChoiceAdapter = KeyChoiceAdapter.createSingleChoiceAdapter(context, data, (keyInfo -> {
+                if (keyInfo.is_revoked()) {
+                    return R.string.keychoice_revoked;
+                } else if (keyInfo.is_expired()) {
+                    return R.string.keychoice_expired;
+                } else if (!keyInfo.is_secure()) {
+                    return R.string.keychoice_insecure;
+                } else if (!keyInfo.has_encrypt_key()) {
+                    return R.string.keychoice_cannot_encrypt;
+                } else {
+                    return null;
+                }
+            }));
+            view.setKeyListAdapter(keyChoiceAdapter);
+        } else {
+            keyChoiceAdapter.setUnifiedKeyInfoItems(data);
         }
     }
 
     void onClickSelect() {
-        if (keyInfoData == null) {
-            Timber.e("got click on select with no data…?");
+        UnifiedKeyInfo activeItem = keyChoiceAdapter.getActiveItem();
+        if (activeItem == null) {
+            view.showNoSelectionError();
             return;
         }
-        if (selectedItem == null) {
-            Timber.e("got click on select with no selection…?");
-            return;
-        }
-
-         long masterKeyId = keyInfoData.get(selectedItem).getMasterKeyId();
-         autocryptPeerDao.updateKeyGossipFromDedup(duplicateAddress, new Date(), masterKeyId);
+        long masterKeyId = activeItem.master_key_id();
+        autocryptInteractor.updateKeyGossipFromDedup(viewModel.getDuplicateAddress(), masterKeyId);
 
         view.finish();
     }
@@ -135,25 +102,13 @@ class RemoteDeduplicatePresenter implements LoaderCallbacks<List<KeyInfo>> {
         view.finishAsCancelled();
     }
 
-    void onKeyItemClick(int position) {
-        if (selectedItem != null && position == selectedItem) {
-            selectedItem = null;
-        } else {
-            selectedItem = position;
-        }
-        view.setActiveItem(selectedItem);
-        view.setEnableSelectButton(selectedItem != null);
-    }
-
     interface RemoteDeduplicateView {
+        void showNoSelectionError();
         void finish();
         void finishAsCancelled();
 
         void setAddressText(String text);
-        void setTitleClientIcon(Drawable drawable);
 
-        void setKeyListData(List<KeyInfo> data);
-        void setActiveItem(Integer position);
-        void setEnableSelectButton(boolean enabled);
+        void setKeyListAdapter(Adapter adapter);
     }
 }

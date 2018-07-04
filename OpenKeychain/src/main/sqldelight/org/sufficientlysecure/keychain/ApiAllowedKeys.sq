@@ -1,0 +1,19 @@
+CREATE TABLE IF NOT EXISTS api_allowed_keys (
+    _id INTEGER PRIMARY KEY AUTOINCREMENT,
+    key_id INTEGER,
+    package_name TEXT NOT NULL,
+    UNIQUE (key_id, package_name),
+    FOREIGN KEY (package_name) REFERENCES api_apps (package_name) ON DELETE CASCADE
+);
+
+insertAllowedKey:
+INSERT OR IGNORE INTO api_allowed_keys (package_name, key_id) VALUES (?, ?);
+
+deleteByPackageName:
+DELETE FROM api_allowed_keys
+    WHERE package_name = ?;
+
+getAllowedKeys:
+SELECT key_id
+    FROM api_allowed_keys
+    WHERE package_name = ?;

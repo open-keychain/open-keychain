@@ -1043,8 +1043,7 @@ public class DecryptListFragment
                             if (activity == null) {
                                 return;
                             }
-                            Intent intent = new Intent(activity, ViewKeyActivity.class);
-                            intent.setData(KeyRings.buildUnifiedKeyRingUri(keyId));
+                            Intent intent = ViewKeyActivity.getViewKeyActivityIntent(requireActivity(), keyId);
                             activity.startActivity(intent);
                         }
                     });

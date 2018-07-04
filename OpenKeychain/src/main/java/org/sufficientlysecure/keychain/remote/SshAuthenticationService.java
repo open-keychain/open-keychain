@@ -17,11 +17,19 @@
 
 package org.sufficientlysecure.keychain.remote;
 
+
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
+
 import org.bouncycastle.bcpg.HashAlgorithmTags;
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.openintents.ssh.authentication.ISshAuthenticationService;
@@ -32,15 +40,15 @@ import org.openintents.ssh.authentication.response.PublicKeyResponse;
 import org.openintents.ssh.authentication.response.SigningResponse;
 import org.openintents.ssh.authentication.response.SshPublicKeyResponse;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.SshPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.daos.ApiAppDao;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ssh.AuthenticationData;
@@ -50,20 +58,11 @@ import org.sufficientlysecure.keychain.ssh.AuthenticationResult;
 import org.sufficientlysecure.keychain.ssh.signature.SshSignatureConverter;
 import timber.log.Timber;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-
 
 public class SshAuthenticationService extends Service {
-    private static final String TAG = "SshAuthService";
-
     private ApiPermissionHelper mApiPermissionHelper;
     private KeyRepository mKeyRepository;
-    private ApiDataAccessObject mApiDao;
+    private ApiAppDao mApiAppDao;
     private ApiPendingIntentFactory mApiPendingIntentFactory;
 
     private static final List<Integer> SUPPORTED_VERSIONS = Collections.unmodifiableList(Collections.singletonList(1));
@@ -74,9 +73,9 @@ public class SshAuthenticationService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mApiPermissionHelper = new ApiPermissionHelper(this, new ApiDataAccessObject(this));
+        mApiPermissionHelper = new ApiPermissionHelper(this, ApiAppDao.getInstance(this));
         mKeyRepository = KeyRepository.create(this);
-        mApiDao = new ApiDataAccessObject(this);
+        mApiAppDao = ApiAppDao.getInstance(this);
 
         mApiPendingIntentFactory = new ApiPendingIntentFactory(getBaseContext());
     }
@@ -144,23 +143,18 @@ public class SshAuthenticationService extends Service {
         AuthenticationData.Builder authData = AuthenticationData.builder();
         authData.setAuthenticationMasterKeyId(masterKeyId);
 
-        CachedPublicKeyRing cachedPublicKeyRing = mKeyRepository.getCachedPublicKeyRing(masterKeyId);
-
         long authSubKeyId;
         int authSubKeyAlgorithm;
         String authSubKeyCurveOid = null;
         try {
             // get first usable subkey capable of authentication
-            authSubKeyId = cachedPublicKeyRing.getSecretAuthenticationId();
+            authSubKeyId = mKeyRepository.getSecretAuthenticationId(masterKeyId);
             // needed for encoding the resulting signature
             authSubKeyAlgorithm = getPublicKey(masterKeyId).getAlgorithm();
             if (authSubKeyAlgorithm == PublicKeyAlgorithmTags.ECDSA) {
                 authSubKeyCurveOid = getPublicKey(masterKeyId).getCurveOid();
             }
-        } catch (PgpKeyNotFoundException e) {
-            return createExceptionErrorResult(SshAuthenticationApiError.NO_AUTH_KEY,
-                    "authentication key for master key id not found in keychain", e);
-        } catch (KeyRepository.NotFoundException e) {
+        } catch (NotFoundException e) {
             return createExceptionErrorResult(SshAuthenticationApiError.NO_SUCH_KEY,
                     "Key for master key id not found", e);
         }
@@ -272,7 +266,7 @@ public class SshAuthenticationService extends Service {
 
             try {
                 description = getDescription(masterKeyId);
-            } catch (PgpKeyNotFoundException e) {
+            } catch (NotFoundException e) {
                 return createExceptionErrorResult(SshAuthenticationApiError.NO_SUCH_KEY,
                         "Could not create description", e);
             }
@@ -372,21 +366,21 @@ public class SshAuthenticationService extends Service {
         return new SshPublicKeyResponse(sshPublicKeyBlob).toIntent();
     }
 
-    private CanonicalizedPublicKey getPublicKey(long masterKeyId)
-            throws PgpKeyNotFoundException, KeyRepository.NotFoundException {
+    private CanonicalizedPublicKey getPublicKey(long masterKeyId) throws NotFoundException {
         KeyRepository keyRepository = KeyRepository.create(getApplicationContext());
-        long authSubKeyId = keyRepository.getCachedPublicKeyRing(masterKeyId)
-                .getAuthenticationId();
-        return keyRepository.getCanonicalizedPublicKeyRing(masterKeyId)
-                .getPublicKey(authSubKeyId);
+        UnifiedKeyInfo unifiedKeyInfo = keyRepository.getUnifiedKeyInfo(masterKeyId);
+        if (unifiedKeyInfo == null) {
+            throw new NotFoundException();
+        }
+        return keyRepository.getCanonicalizedPublicKeyRing(masterKeyId).getPublicKey(unifiedKeyInfo.has_auth_key_int());
     }
 
-    private String getDescription(long masterKeyId) throws PgpKeyNotFoundException {
-        CachedPublicKeyRing cachedPublicKeyRing = mKeyRepository.getCachedPublicKeyRing(masterKeyId);
+    private String getDescription(long masterKeyId) throws NotFoundException {
+        UnifiedKeyInfo unifiedKeyInfo = mKeyRepository.getUnifiedKeyInfo(masterKeyId);
 
         String description = "";
-        long authSubKeyId = cachedPublicKeyRing.getSecretAuthenticationId();
-        description += cachedPublicKeyRing.getPrimaryUserId();
+        long authSubKeyId = mKeyRepository.getSecretAuthenticationId(masterKeyId);
+        description += unifiedKeyInfo.user_id();
         description += " (" + Long.toHexString(authSubKeyId) + ")";
 
         return description;
@@ -394,7 +388,7 @@ public class SshAuthenticationService extends Service {
 
     private HashSet<Long> getAllowedKeyIds() {
         String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
-        return mApiDao.getAllowedKeyIdsForApp(KeychainContract.ApiAllowedKeys.buildBaseUri(currentPkg));
+        return mApiAppDao.getAllowedKeyIdsForApp(currentPkg);
     }
 
     /**

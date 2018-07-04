@@ -419,7 +419,6 @@ public abstract class OperationResult implements Parcelable {
         // import secret
         MSG_IS(LogLevel.START, R.string.msg_is),
         MSG_IS_BAD_TYPE_PUBLIC (LogLevel.WARN, R.string.msg_is_bad_type_public),
-        MSG_IS_DB_EXCEPTION (LogLevel.DEBUG, R.string.msg_is_db_exception),
         MSG_IS_ERROR_IO_EXC(LogLevel.DEBUG, R.string.msg_is_error_io_exc),
         MSG_IS_MERGE_PUBLIC (LogLevel.DEBUG, R.string.msg_is_merge_public),
         MSG_IS_MERGE_SECRET (LogLevel.DEBUG, R.string.msg_is_merge_secret),

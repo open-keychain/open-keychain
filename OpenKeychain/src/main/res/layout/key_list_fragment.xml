@@ -34,7 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -43,18 +43,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:clipToPadding="false"
-                    android:paddingBottom="72dp"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="32dp"
-                    android:paddingStart="16dp" />
-
-                <com.futuremind.recyclerviewfastscroll.FastScroller
-                    android:id="@+id/fastscroll"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentRight="true"
-                    android:orientation="vertical"
-                    app:fastscroll__bubbleColor="@color/primary" />
+                    android:paddingBottom="72dp" />
 
             </RelativeLayout>
 
@@ -148,6 +137,21 @@
 
         </com.getbase.floatingactionbutton.FloatingActionsMenu>
     </RelativeLayout>
+
+    <eu.davidea.fastscroller.FastScroller
+        android:id="@+id/fast_scroller"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        app:fastScrollerAutoHideEnabled="true"
+        app:fastScrollerAutoHideDelayInMillis="1000"
+        app:fastScrollerBubblePosition="adjacent"
+        app:fastScrollerBubbleEnabled="true"
+        app:fastScrollerHandleAlwaysVisible="false"
+        app:fastScrollerIgnoreTouchesOutsideHandle="false"
+        tools:visibility="visible" />
 
 </FrameLayout>
 

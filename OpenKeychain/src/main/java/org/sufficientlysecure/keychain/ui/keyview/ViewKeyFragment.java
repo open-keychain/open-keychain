@@ -21,16 +21,18 @@ package org.sufficientlysecure.keychain.ui.keyview;
 import java.util.List;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.PopupMenu;
-import android.support.v7.widget.PopupMenu.OnDismissListener;
 import android.support.v7.widget.PopupMenu.OnMenuItemClickListener;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -39,143 +41,297 @@ import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
+import org.sufficientlysecure.keychain.model.KeyMetadata;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
+import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
+import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter.IdentityClickListener;
+import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.AutocryptPeerInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.IdentityInfo;
-import org.sufficientlysecure.keychain.ui.keyview.loader.KeyserverStatusDao.KeyserverStatus;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.LinkedIdInfo;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.UserIdInfo;
+import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.KeyHealthStatus;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.KeySubkeyStatus;
+import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.SubKeyItem;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SystemContactDao.SystemContactInfo;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.IdentitiesPresenter;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyHealthPresenter;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.KeyserverStatusPresenter;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.SystemContactPresenter;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.ViewKeyMvpView;
 import org.sufficientlysecure.keychain.ui.keyview.view.IdentitiesCardView;
 import org.sufficientlysecure.keychain.ui.keyview.view.KeyHealthView;
+import org.sufficientlysecure.keychain.ui.keyview.view.KeyStatusList.KeyDisplayStatus;
 import org.sufficientlysecure.keychain.ui.keyview.view.KeyserverStatusView;
 import org.sufficientlysecure.keychain.ui.keyview.view.SystemContactCardView;
+import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
+import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
 
 
-public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView, OnMenuItemClickListener {
-    public static final String ARG_MASTER_KEY_ID = "master_key_id";
-    public static final String ARG_IS_SECRET = "is_secret";
-
-    boolean mIsSecret = false;
-
+public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener {
     private IdentitiesCardView identitiesCardView;
-    private IdentitiesPresenter identitiesPresenter;
+    private SystemContactCardView systemContactCard;
+    private KeyHealthView keyStatusHealth;
+    private KeyserverStatusView keyserverStatusView;
+    private View keyStatusCardView;
 
-    SystemContactCardView systemContactCard;
-    SystemContactPresenter systemContactPresenter;
-
-    KeyHealthView keyStatusHealth;
-    KeyserverStatusView keyStatusKeyserver;
-
-    KeyHealthPresenter keyHealthPresenter;
-    KeyserverStatusPresenter keyserverStatusPresenter;
+    IdentityAdapter identitiesAdapter;
 
     private Integer displayedContextMenuPosition;
+    private UnifiedKeyInfo unifiedKeyInfo;
+    private KeySubkeyStatus subkeyStatus;
+    private boolean showingExpandedInfo;
 
-    /**
-     * Creates new instance of this fragment
-     */
-    public static ViewKeyFragment newInstance(long masterKeyId, boolean isSecret) {
-        ViewKeyFragment frag = new ViewKeyFragment();
-        Bundle args = new Bundle();
-        args.putLong(ARG_MASTER_KEY_ID, masterKeyId);
-        args.putBoolean(ARG_IS_SECRET, isSecret);
-
-        frag.setArguments(args);
-
-        return frag;
+    public static ViewKeyFragment newInstance() {
+        return new ViewKeyFragment();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
-        View root = super.onCreateView(inflater, superContainer, savedInstanceState);
-        View view = inflater.inflate(R.layout.view_key_fragment, getContainer());
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.view_key_fragment, viewGroup, false);
 
         identitiesCardView = view.findViewById(R.id.card_identities);
-
         systemContactCard = view.findViewById(R.id.linked_system_contact_card);
+        keyStatusCardView = view.findViewById(R.id.subkey_status_card);
         keyStatusHealth = view.findViewById(R.id.key_status_health);
-        keyStatusKeyserver = view.findViewById(R.id.key_status_keyserver);
+        keyserverStatusView = view.findViewById(R.id.key_status_keyserver);
 
-        return root;
-    }
-
-    public static class KeyFragmentViewModel extends ViewModel {
-        private LiveData<List<IdentityInfo>> identityInfo;
-        private LiveData<KeySubkeyStatus> subkeyStatus;
-        private LiveData<SystemContactInfo> systemContactInfo;
-        private LiveData<KeyserverStatus> keyserverStatus;
-
-        LiveData<List<IdentityInfo>> getIdentityInfo(IdentitiesPresenter identitiesPresenter) {
-            if (identityInfo == null) {
-                identityInfo = identitiesPresenter.getLiveDataInstance();
+        identitiesAdapter = new IdentityAdapter(requireContext(), new IdentityClickListener() {
+            @Override
+            public void onClickIdentity(int position) {
+                showIdentityInfo(position);
             }
-            return identityInfo;
-        }
 
-        LiveData<KeySubkeyStatus> getSubkeyStatus(KeyHealthPresenter keyHealthPresenter) {
-            if (subkeyStatus == null) {
-                subkeyStatus = keyHealthPresenter.getLiveDataInstance();
+            @Override
+            public void onClickIdentityMore(int position, View anchor) {
+                showIdentityContextMenu(position, anchor);
             }
-            return subkeyStatus;
-        }
+        });
+        identitiesCardView.setIdentitiesAdapter(identitiesAdapter);
 
-        LiveData<SystemContactInfo> getSystemContactInfo(SystemContactPresenter systemContactPresenter) {
-            if (systemContactInfo == null) {
-                systemContactInfo = systemContactPresenter.getLiveDataInstance();
-            }
-            return systemContactInfo;
-        }
+        identitiesCardView.setVisibility(View.GONE);
+        keyStatusCardView.setVisibility(View.GONE);
 
-        LiveData<KeyserverStatus> getKeyserverStatus(KeyserverStatusPresenter keyserverStatusPresenter) {
-            if (keyserverStatus == null) {
-                keyserverStatus = keyserverStatusPresenter.getLiveDataInstance();
-            }
-            return keyserverStatus;
-        }
+        keyStatusHealth.setOnHealthClickListener((v) -> onKeyHealthClick());
+
+        return view;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        long masterKeyId = getArguments().getLong(ARG_MASTER_KEY_ID);
-        mIsSecret = getArguments().getBoolean(ARG_IS_SECRET);
+        Context context = requireContext();
+
+        UnifiedKeyInfoViewModel viewKeyViewModel = ViewModelProviders.of(requireActivity()).get(UnifiedKeyInfoViewModel.class);
+        LiveData<UnifiedKeyInfo> unifiedKeyInfoLiveData = viewKeyViewModel.getUnifiedKeyInfoLiveData(requireContext());
+
+        unifiedKeyInfoLiveData.observe(this, this::onLoadUnifiedKeyInfo);
 
         KeyFragmentViewModel model = ViewModelProviders.of(this).get(KeyFragmentViewModel.class);
 
-        identitiesPresenter = new IdentitiesPresenter(
-                getContext(), identitiesCardView, this, masterKeyId, mIsSecret);
-        model.getIdentityInfo(identitiesPresenter).observe(this, identitiesPresenter);
-
-        systemContactPresenter = new SystemContactPresenter(
-                getContext(), systemContactCard, masterKeyId, mIsSecret);
-        model.getSystemContactInfo(systemContactPresenter).observe(this, systemContactPresenter);
-
-        keyHealthPresenter = new KeyHealthPresenter(getContext(), keyStatusHealth, masterKeyId);
-        model.getSubkeyStatus(keyHealthPresenter).observe(this, keyHealthPresenter);
-
-        keyserverStatusPresenter = new KeyserverStatusPresenter(
-                getContext(), keyStatusKeyserver, masterKeyId, mIsSecret);
-        model.getKeyserverStatus(keyserverStatusPresenter).observe(this, keyserverStatusPresenter);
+        boolean showLinkedIds = Preferences.getPreferences(context).getExperimentalEnableLinkedIdentities();
+        model.getIdentityInfo(context, unifiedKeyInfoLiveData, showLinkedIds).observe(this, this::onLoadIdentityInfo);
+        model.getKeyserverStatus(context, unifiedKeyInfoLiveData).observe(this, this::onLoadKeyMetadata);
+        model.getSystemContactInfo(context, unifiedKeyInfoLiveData).observe(this, this::onLoadSystemContact);
+        model.getSubkeyStatus(context, unifiedKeyInfoLiveData).observe(this, this::onLoadSubkeyStatus);
     }
 
-    @Override
-    public void switchToFragment(final Fragment frag, final String backStackName) {
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                getFragmentManager().beginTransaction()
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                        .replace(R.id.view_key_fragment, frag)
-                        .addToBackStack(backStackName)
-                        .commit();
+    private void onLoadSubkeyStatus(KeySubkeyStatus subkeyStatus) {
+        if (subkeyStatus == null) {
+            return;
+        }
+
+        keyStatusCardView.setVisibility(View.VISIBLE);
+
+        this.subkeyStatus = subkeyStatus;
+
+        KeyHealthStatus keyHealthStatus = subkeyStatus.keyHealthStatus;
+
+        boolean isInsecure = keyHealthStatus == KeyHealthStatus.INSECURE;
+        boolean isExpired = keyHealthStatus == KeyHealthStatus.EXPIRED;
+        if (isInsecure) {
+            boolean primaryKeySecurityProblem = subkeyStatus.keyCertify.mSecurityProblem != null;
+            if (primaryKeySecurityProblem) {
+                keyStatusHealth.setKeyStatus(keyHealthStatus);
+                keyStatusHealth.setPrimarySecurityProblem(subkeyStatus.keyCertify.mSecurityProblem);
+                keyStatusHealth.setShowExpander(false);
+            } else {
+                keyStatusHealth.setKeyStatus(keyHealthStatus);
+                keyStatusHealth.setShowExpander(false);
+                displayExpandedInfo(false);
             }
-        });
+        } else if (isExpired) {
+            keyStatusHealth.setKeyStatus(keyHealthStatus);
+            keyStatusHealth.setPrimaryExpiryDate(subkeyStatus.keyCertify.mExpiry);
+            keyStatusHealth.setShowExpander(false);
+            keyStatusHealth.hideExpandedInfo();
+        } else {
+            keyStatusHealth.setKeyStatus(keyHealthStatus);
+            keyStatusHealth.setShowExpander(keyHealthStatus != KeyHealthStatus.REVOKED);
+            keyStatusHealth.hideExpandedInfo();
+        }
+    }
+
+    private void displayExpandedInfo(boolean displayAll) {
+        SubKeyItem keyCertify = subkeyStatus.keyCertify;
+        SubKeyItem keySign = subkeyStatus.keysSign.isEmpty() ? null : subkeyStatus.keysSign.get(0);
+        SubKeyItem keyEncrypt = subkeyStatus.keysEncrypt.isEmpty() ? null : subkeyStatus.keysEncrypt.get(0);
+
+        KeyDisplayStatus certDisplayStatus = getKeyDisplayStatus(keyCertify);
+        KeyDisplayStatus signDisplayStatus = getKeyDisplayStatus(keySign);
+        KeyDisplayStatus encryptDisplayStatus = getKeyDisplayStatus(keyEncrypt);
+
+        if (!displayAll) {
+            if (certDisplayStatus == KeyDisplayStatus.OK) {
+                certDisplayStatus = null;
+            }
+            if (certDisplayStatus == KeyDisplayStatus.INSECURE) {
+                signDisplayStatus = null;
+                encryptDisplayStatus = null;
+            }
+            if (signDisplayStatus == KeyDisplayStatus.OK) {
+                signDisplayStatus = null;
+            }
+            if (encryptDisplayStatus == KeyDisplayStatus.OK) {
+                encryptDisplayStatus = null;
+            }
+        }
+
+        keyStatusHealth.showExpandedState(certDisplayStatus, signDisplayStatus, encryptDisplayStatus);
+    }
+
+    private void onKeyHealthClick() {
+        if (showingExpandedInfo) {
+            showingExpandedInfo = false;
+            keyStatusHealth.hideExpandedInfo();
+        } else {
+            showingExpandedInfo = true;
+            displayExpandedInfo(true);
+        }
+    }
+
+    private KeyDisplayStatus getKeyDisplayStatus(SubKeyItem subKeyItem) {
+        if (subKeyItem == null) {
+            return KeyDisplayStatus.UNAVAILABLE;
+        }
+
+        if (subKeyItem.mIsRevoked) {
+            return KeyDisplayStatus.REVOKED;
+        }
+        if (subKeyItem.mIsExpired) {
+            return KeyDisplayStatus.EXPIRED;
+        }
+        if (subKeyItem.mSecurityProblem != null) {
+            return KeyDisplayStatus.INSECURE;
+        }
+        if (subKeyItem.mSecretKeyType == SecretKeyType.GNU_DUMMY) {
+            return KeyDisplayStatus.STRIPPED;
+        }
+        if (subKeyItem.mSecretKeyType == SecretKeyType.DIVERT_TO_CARD) {
+            return KeyDisplayStatus.DIVERT;
+        }
+
+        return KeyDisplayStatus.OK;
+    }
+
+    private void onLoadUnifiedKeyInfo(UnifiedKeyInfo unifiedKeyInfo) {
+        if (unifiedKeyInfo == null) {
+            return;
+        }
+
+        Context context = requireContext();
+
+        this.unifiedKeyInfo = unifiedKeyInfo;
+
+        boolean showLinkedIds = Preferences.getPreferences(context).getExperimentalEnableLinkedIdentities();
+        boolean isSecret = unifiedKeyInfo.has_any_secret();
+        identitiesCardView.setAddLinkedIdButtonVisible(showLinkedIds && isSecret);
+        identitiesCardView.setIdentitiesCardListener((v) -> addLinkedIdentity());
+    }
+
+    private void showIdentityInfo(final int position) {
+        IdentityInfo info = identitiesAdapter.getInfo(position);
+        if (info instanceof LinkedIdInfo) {
+            showLinkedId((LinkedIdInfo) info);
+        } else if (info instanceof UserIdInfo) {
+            showUserIdInfo((UserIdInfo) info);
+        } else if (info instanceof AutocryptPeerInfo) {
+            Intent autocryptPeerIntent = ((AutocryptPeerInfo) info).getAutocryptPeerIntent();
+            if (autocryptPeerIntent != null) {
+                startActivity(autocryptPeerIntent);
+            }
+        }
+    }
+
+    private void showIdentityContextMenu(int position, View anchor) {
+        showContextMenu(position, anchor);
+    }
+
+    private void showLinkedId(final LinkedIdInfo info) {
+        LinkedIdViewFragment frag = LinkedIdViewFragment.newInstance(info.getMasterKeyId(), info.getRank(), unifiedKeyInfo.has_any_secret());
+
+        switchToFragment(frag, "linked_id");
+    }
+
+    private void showUserIdInfo(UserIdInfo info) {
+        if (!unifiedKeyInfo.has_any_secret()) {
+            UserIdInfoDialogFragment dialogFragment = UserIdInfoDialogFragment.newInstance(false, info.isVerified());
+            showDialogFragment(dialogFragment, "userIdInfoDialog");
+        }
+    }
+
+    private void addLinkedIdentity() {
+        Intent intent = new Intent(requireContext(), LinkedIdWizard.class);
+        intent.putExtra(LinkedIdWizard.EXTRA_MASTER_KEY_ID, unifiedKeyInfo.master_key_id());
+        startActivity(intent);
+    }
+
+    public void onClickForgetIdentity(int position) {
+        AutocryptPeerInfo info = (AutocryptPeerInfo) identitiesAdapter.getInfo(position);
+        if (info == null) {
+            Timber.e("got a 'forget' click on a bad trust id");
+            return;
+        }
+
+        AutocryptPeerDao.getInstance(requireContext()).deleteByIdentifier(info.getPackageName(), info.getIdentity());
+    }
+
+    private void onLoadIdentityInfo(List<IdentityInfo> identityInfos) {
+        identitiesAdapter.setData(identityInfos, unifiedKeyInfo.has_any_secret());
+        identitiesCardView.setVisibility(View.VISIBLE);
+    }
+
+    private void onLoadSystemContact(SystemContactInfo systemContactInfo) {
+        if (systemContactInfo == null) {
+            systemContactCard.hideLinkedSystemContact();
+            return;
+        }
+
+        systemContactCard.showLinkedSystemContact(systemContactInfo.contactName, systemContactInfo.contactPicture);
+        systemContactCard.setSystemContactClickListener((v) -> launchAndroidContactActivity(systemContactInfo.contactId));
+    }
+
+    private void onLoadKeyMetadata(KeyMetadata keyMetadata) {
+        if (keyMetadata == null) {
+            keyserverStatusView.setDisplayStatusUnknown();
+        } else if (keyMetadata.hasBeenUpdated()) {
+            if (keyMetadata.isPublished()) {
+                keyserverStatusView.setDisplayStatusPublished();
+            } else {
+                keyserverStatusView.setDisplayStatusNotPublished();
+            }
+            keyserverStatusView.setLastUpdated(keyMetadata.last_updated());
+        } else {
+            keyserverStatusView.setDisplayStatusUnknown();
+        }
+    }
+
+    public void switchToFragment(final Fragment frag, final String backStackName) {
+        new Handler().post(() -> requireFragmentManager().beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(R.id.view_key_fragment, frag)
+                .addToBackStack(backStackName)
+                .commit());
     }
 
     @Override
@@ -189,37 +345,18 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView, O
         }
     }
 
-    public boolean isValidForData(boolean isSecret) {
-        return isSecret == mIsSecret;
-    }
-
-    @Override
-    public void startActivityAndShowResultSnackbar(Intent intent) {
-        startActivityForResult(intent, 0);
-    }
-
-    @Override
     public void showDialogFragment(final DialogFragment dialogFragment, final String tag) {
-        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
-            public void run() {
-                dialogFragment.show(getActivity().getSupportFragmentManager(), tag);
-            }
-        });
+        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(
+                () -> dialogFragment.show(requireFragmentManager(), tag));
     }
 
-    @Override
     public void showContextMenu(int position, View anchor) {
         displayedContextMenuPosition = position;
 
-        PopupMenu menu = new PopupMenu(getContext(), anchor);
+        PopupMenu menu = new PopupMenu(requireContext(), anchor);
         menu.inflate(R.menu.identity_context_menu);
         menu.setOnMenuItemClickListener(this);
-        menu.setOnDismissListener(new OnDismissListener() {
-            @Override
-            public void onDismiss(PopupMenu popupMenu) {
-                displayedContextMenuPosition = null;
-            }
-        });
+        menu.setOnDismissListener(popupMenu -> displayedContextMenuPosition = null);
         menu.show();
     }
 
@@ -233,10 +370,17 @@ public class ViewKeyFragment extends LoaderFragment implements ViewKeyMvpView, O
             case R.id.autocrypt_forget:
                 int position = displayedContextMenuPosition;
                 displayedContextMenuPosition = null;
-                identitiesPresenter.onClickForgetIdentity(position);
+                onClickForgetIdentity(position);
                 return true;
         }
 
         return false;
+    }
+
+    private void launchAndroidContactActivity(long contactId) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, String.valueOf(contactId));
+        intent.setData(uri);
+        startActivity(intent);
     }
 }

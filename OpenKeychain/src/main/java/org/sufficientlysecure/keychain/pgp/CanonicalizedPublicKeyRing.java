@@ -41,12 +41,12 @@ public class CanonicalizedPublicKeyRing extends CanonicalizedKeyRing {
 
     private PGPPublicKeyRing mRing;
 
-    CanonicalizedPublicKeyRing(PGPPublicKeyRing ring, int verified) {
+    CanonicalizedPublicKeyRing(PGPPublicKeyRing ring, VerificationStatus verified) {
         super(verified);
         mRing = ring;
     }
 
-    public CanonicalizedPublicKeyRing(byte[] blob, int verified) {
+    public CanonicalizedPublicKeyRing(byte[] blob, VerificationStatus verified) {
         super(verified);
         if(mRing == null) {
             // get first object in block
@@ -100,7 +100,7 @@ public class CanonicalizedPublicKeyRing extends CanonicalizedKeyRing {
      * - the user id that matches the userIdToKeep parameter, or the primary user id if none matches
      * each with their most recent binding certificates
      */
-    public CanonicalizedPublicKeyRing minimize(@Nullable String userIdToKeep) throws IOException, PgpKeyNotFoundException {
+    public CanonicalizedPublicKeyRing minimize(@Nullable String userIdToKeep) throws IOException {
         CanonicalizedPublicKey masterKey = getPublicKey();
         PGPPublicKey masterPubKey = masterKey.getPublicKey();
         boolean userIdStrippedOk = false;

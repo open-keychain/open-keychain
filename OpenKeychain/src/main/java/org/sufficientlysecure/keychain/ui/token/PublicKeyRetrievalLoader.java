@@ -29,14 +29,12 @@ import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.content.AsyncTaskLoader;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.auto.value.AutoValue;
 import okhttp3.Call;
 import okhttp3.HttpUrl;
 import okhttp3.Request.Builder;
 import okhttp3.Response;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverClient;
 import org.sufficientlysecure.keychain.keyimport.KeyserverClient.QueryFailedException;
@@ -48,11 +46,8 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.KeyRetrievalResult;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
@@ -115,11 +110,12 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
 
                 log.add(LogType.MSG_RET_LOCAL_SEARCH, 1, KeyFormattingUtils.convertKeyIdToHex(keyId));
                 try {
-                    CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(
-                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(keyId)
-                    );
+                    Long masterKeyId = keyRepository.getMasterKeyIdBySubkeyId(keyId);
+                    if (masterKeyId == null) {
+                        log.add(LogType.MSG_RET_LOCAL_NOT_FOUND, 2);
+                        continue;
+                    }
 
-                    long masterKeyId = cachedPublicKeyRing.getMasterKeyId();
                     // TODO check fingerprint
                     // if (!Arrays.equals(fingerprints, cachedPublicKeyRing.getFingerprint())) {
                     //     log.add(LogType.MSG_RET_LOCAL_FP_MISMATCH, 1);
@@ -128,7 +124,7 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
                     //     log.add(LogType.MSG_RET_LOCAL_FP_MATCH, 1);
                     // }
 
-                    switch (cachedPublicKeyRing.getSecretKeyType(keyId)) {
+                    switch (keyRepository.getSecretKeyType(keyId)) {
                         case PASSPHRASE:
                         case PASSPHRASE_EMPTY: {
                             log.add(LogType.MSG_RET_LOCAL_SECRET, 1);
@@ -147,7 +143,7 @@ public abstract class PublicKeyRetrievalLoader extends AsyncTaskLoader<KeyRetrie
                             throw new IllegalStateException("Unhandled SecretKeyType!");
                         }
                     }
-                } catch (PgpKeyNotFoundException | NotFoundException e) {
+                } catch (NotFoundException e) {
                     log.add(LogType.MSG_RET_LOCAL_NOT_FOUND, 2);
                 }
             }

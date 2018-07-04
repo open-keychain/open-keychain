@@ -33,7 +33,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
-import java.util.concurrent.atomic.AtomicBoolean;
+
+import android.support.v4.os.CancellationSignal;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.nist.NISTNamedCurves;
@@ -108,7 +109,7 @@ import timber.log.Timber;
 public class PgpKeyOperation {
 
     private Stack<Progressable> mProgress;
-    private AtomicBoolean mCancelled;
+    private CancellationSignal mCancelled;
 
     public PgpKeyOperation(Progressable progress) {
         super();
@@ -118,13 +119,13 @@ public class PgpKeyOperation {
         }
     }
 
-    public PgpKeyOperation(Progressable progress, AtomicBoolean cancelled) {
+    public PgpKeyOperation(Progressable progress, CancellationSignal cancelled) {
         this(progress);
         mCancelled = cancelled;
     }
 
     private boolean checkCancelled() {
-        return mCancelled != null && mCancelled.get();
+        return mCancelled != null && mCancelled.isCanceled();
     }
 
     private void subProgressPush(int from, int to) {

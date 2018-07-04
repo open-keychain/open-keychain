@@ -17,40 +17,41 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
+import org.sufficientlysecure.keychain.ui.keyview.UnifiedKeyInfoViewModel;
 import timber.log.Timber;
 
 
 public class CertifyFingerprintActivity extends BaseActivity {
-
-    protected Uri mDataUri;
+    public static final String EXTRA_MASTER_KEY_ID = "master_key_id";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDataUri = getIntent().getData();
-        if (mDataUri == null) {
-            Timber.e("Data missing. Should be uri of key!");
+        Bundle extras = getIntent().getExtras();
+        if (extras == null || !extras.containsKey(EXTRA_MASTER_KEY_ID)) {
+            Timber.e("Missing required extra master_key_id!");
             finish();
             return;
         }
 
-        setFullScreenDialogClose(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        setFullScreenDialogClose(v -> finish());
 
-        Timber.i("dataUri: " + mDataUri.toString());
+        long masterKeyId = extras.getLong(EXTRA_MASTER_KEY_ID);
+        UnifiedKeyInfoViewModel viewModel = ViewModelProviders.of(this).get(UnifiedKeyInfoViewModel.class);
+        viewModel.setMasterKeyId(masterKeyId);
 
-        startFragment(savedInstanceState, mDataUri);
+        if (savedInstanceState == null) {
+            startFragment();
+        }
     }
 
     @Override
@@ -58,24 +59,9 @@ public class CertifyFingerprintActivity extends BaseActivity {
         setContentView(R.layout.certify_fingerprint_activity);
     }
 
-    private void startFragment(Bundle savedInstanceState, Uri dataUri) {
-        // However, if we're being restored from a previous state,
-        // then we don't need to do anything and should return or else
-        // we could end up with overlapping fragments.
-        if (savedInstanceState != null) {
-            return;
-        }
-
-        // Create an instance of the fragment
-        CertifyFingerprintFragment frag = CertifyFingerprintFragment.newInstance(dataUri);
-
-        // Add the fragment to the 'fragment_container' FrameLayout
-        // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.certify_fingerprint_fragment, frag)
-                .commitAllowingStateLoss();
-        // do it immediately!
-        getSupportFragmentManager().executePendingTransactions();
+    private void startFragment() {
+        CertifyFingerprintFragment frag = CertifyFingerprintFragment.newInstance();
+        getSupportFragmentManager().beginTransaction().replace(R.id.certify_fingerprint_fragment, frag).commit();
     }
 
 }

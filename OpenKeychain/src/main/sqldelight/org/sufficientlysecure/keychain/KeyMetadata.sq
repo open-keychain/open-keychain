@@ -1,0 +1,28 @@
+import java.lang.Boolean;
+import java.util.Date;
+
+CREATE TABLE IF NOT EXISTS key_metadata (
+    master_key_id INTEGER PRIMARY KEY,
+    last_updated INTEGER AS Date,
+    seen_on_keyservers INTEGER AS Boolean,
+    FOREIGN KEY(master_key_id) REFERENCES keyrings_public(master_key_id) ON DELETE CASCADE
+);
+
+selectByMasterKeyId:
+SELECT *
+    FROM key_metadata
+    WHERE master_key_id = ?;
+
+deleteAllLastUpdatedTimes:
+UPDATE key_metadata
+    SET last_updated = null, seen_on_keyservers = null;
+
+replaceKeyMetadata:
+REPLACE INTO key_metadata
+    (master_key_id, last_updated, seen_on_keyservers) VALUES (?, ?, ?);
+
+selectFingerprintsForKeysOlderThan:
+SELECT fingerprint
+    FROM key_metadata
+        LEFT JOIN keys ON (key_metadata.master_key_id = keys.master_key_id AND keys.rank = 0)
+    WHERE last_updated < ?;

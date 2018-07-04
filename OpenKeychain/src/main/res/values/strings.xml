@@ -108,6 +108,9 @@
     <string name="btn_saved">"Saved!"</string>
     <string name="btn_not_matching">"Not matching"</string>
 
+    <!-- Shortcut Strings -->
+    <string name="shortcut_debug">Debug Actions</string>
+
     <!-- Content Description -->
     <string name="cd_encrypt_files">"Encrypt files"</string>
     <string name="cd_exchange_keys">"Exchange keys"</string>
@@ -727,8 +730,6 @@
     <string name="user_id_info_certified_text">"This identity has been confirmed by you."</string>
     <string name="user_id_info_uncertified_title">"Not confirmed"</string>
     <string name="user_id_info_uncertified_text">"This identity has not been confirmed yet. You cannot be sure if the identity really corresponds to a specific person."</string>
-    <string name="user_id_info_invalid_title">"Invalid"</string>
-    <string name="user_id_info_invalid_text">"Something is wrong with this identity!"</string>
 
     <!-- Key trust -->
     <string name="key_trust_no_cloud_evidence">"No proof from the Internet on this key’s trustworthiness."</string>
@@ -2024,4 +2025,19 @@
 
     <string name="snack_keylist_clipboard_title">Found key data in clipboard!</string>
     <string name="snack_keylist_clipboard_action">View</string>
+
+    <string name="notify_channel_keysync">Keyserver update</string>
+    <string name="notify_title_keysync">Updating keys…</string>
+    <string name="notify_title_keysync_finished">Finished updating %d keys</string>
+    <string name="notify_content_keysync">Key %d / %d</string>
+    <string name="snack_keysync_start">Started updating all keys…</string>
+    <string name="snack_keysync_finished">Key update successful</string>
+    <string name="snack_keysync_error">An error occurred while updating all keys</string>
+
+    <string name="keychoice_cannot_encrypt">This key cannot be used for encryption!</string>
+    <string name="keychoice_cannot_sign">This key cannot be used for signing!</string>
+    <string name="keychoice_insecure">This key cannot be used because it is insecure!</string>
+    <string name="keychoice_revoked">This key cannot be used because it is revoked!</string>
+    <string name="keychoice_expired">This key cannot be used because it is expired!</string>
+
 </resources>

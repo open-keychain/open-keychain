@@ -9,7 +9,6 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ServiceTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
-import android.widget.AdapterView;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -23,17 +22,14 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import static android.support.test.espresso.Espresso.closeSoftKeyboard;
-import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.sufficientlysecure.keychain.TestHelpers.cleanupForTests;
-import static org.sufficientlysecure.keychain.matcher.CustomMatchers.withKeyItemId;
+import static org.sufficientlysecure.keychain.AndroidTestHelpers.cleanupForTests;
 
 
 @RunWith(AndroidJUnit4.class)

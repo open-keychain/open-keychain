@@ -6,7 +6,7 @@
     android:gravity="center_vertical"
     android:singleLine="true"
     android:orientation="horizontal"
-    android:minHeight="44dip"
+    android:minHeight="?listPreferredItemHeight"
     android:paddingLeft="8dp"
     android:paddingRight="4dp">
 

@@ -24,13 +24,8 @@ import java.util.HashMap;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Application;
-import android.app.job.JobScheduler;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
@@ -38,8 +33,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.network.TlsCertificatePinning;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
-import org.sufficientlysecure.keychain.service.KeyserverSyncAdapterService;
-import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
+import org.sufficientlysecure.keychain.keysync.KeyserverSyncManager;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
@@ -95,26 +89,22 @@ public class KeychainApplication extends Application {
         if (preferences.isAppExecutedFirstTime()) {
             preferences.setAppExecutedFirstTime(false);
 
-            KeyserverSyncAdapterService.enableKeyserverSync(this);
             ContactSyncAdapterService.enableContactsSync(this);
 
             preferences.setPrefVersionToCurrentVersion();
         }
 
-        if (Preferences.getKeyserverSyncEnabled(this)) {
-            // will update a keyserver sync if the interval has changed
-            KeyserverSyncAdapterService.updateInterval(this);
-        }
-
         // Upgrade preferences as needed
-        preferences.upgradePreferences(this);
+        preferences.upgradePreferences();
 
         TlsCertificatePinning.addPinnedCertificate("hkps.pool.sks-keyservers.net", getAssets(), "hkps.pool.sks-keyservers.net.CA.cer");
         TlsCertificatePinning.addPinnedCertificate("pgp.mit.edu", getAssets(), "pgp.mit.edu.cer");
         TlsCertificatePinning.addPinnedCertificate("api.keybase.io", getAssets(), "api.keybase.io.CA.cer");
         TlsCertificatePinning.addPinnedCertificate("keyserver.ubuntu.com", getAssets(), "DigiCertGlobalRootCA.cer");
 
-        new Handler().postDelayed(() -> TemporaryFileProvider.cleanUp(getApplicationContext()), 1000);
+        KeyserverSyncManager.updateKeyserverSyncSchedule(this, Constants.DEBUG_KEYSERVER_SYNC);
+
+        TemporaryFileProvider.scheduleCleanupImmediately();
     }
 
     /**

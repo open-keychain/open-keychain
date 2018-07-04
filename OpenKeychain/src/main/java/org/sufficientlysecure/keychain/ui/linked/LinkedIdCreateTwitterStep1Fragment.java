@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui.linked;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,30 +31,14 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 
 public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
-
-    LinkedIdWizard mLinkedIdWizard;
-
     EditText mEditHandle;
 
     public static LinkedIdCreateTwitterStep1Fragment newInstance() {
-        LinkedIdCreateTwitterStep1Fragment frag = new LinkedIdCreateTwitterStep1Fragment();
-
-        Bundle args = new Bundle();
-        frag.setArguments(args);
-
-        return frag;
+        return new LinkedIdCreateTwitterStep1Fragment();
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        mLinkedIdWizard = (LinkedIdWizard) getActivity();
-
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.linked_create_twitter_fragment_step1, container, false);
 
         view.findViewById(R.id.next_button).setOnClickListener(new OnClickListener() {
@@ -96,19 +81,15 @@ public class LinkedIdCreateTwitterStep1Fragment extends Fragment {
                         LinkedIdCreateTwitterStep2Fragment frag =
                                 LinkedIdCreateTwitterStep2Fragment.newInstance(handle);
 
-                        mLinkedIdWizard.loadFragment(null, frag, LinkedIdWizard.FRAG_ACTION_TO_RIGHT);
+                        ((LinkedIdWizard) requireActivity()).loadFragment(frag, LinkedIdWizard.FRAG_ACTION_TO_RIGHT);
                     }
                 }.execute();
 
             }
         });
 
-        view.findViewById(R.id.back_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mLinkedIdWizard.loadFragment(null, null, LinkedIdWizard.FRAG_ACTION_TO_LEFT);
-            }
-        });
+        view.findViewById(R.id.back_button).setOnClickListener(
+                v -> ((LinkedIdWizard) requireActivity()).loadFragment(null, LinkedIdWizard.FRAG_ACTION_TO_LEFT));
 
         mEditHandle = view.findViewById(R.id.linked_create_twitter_handle);
 

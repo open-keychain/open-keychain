@@ -53,8 +53,7 @@ import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureBitStrength;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureEncryptionAlgorithm;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.MissingMdc;
-import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -831,9 +830,7 @@ public class PgpEncryptDecryptTest {
         { // decryption with passphrase cached should succeed for the other key if first is gone
 
             // delete first key from database
-            KeyWritableRepository.create(RuntimeEnvironment.application).getContentResolver().delete(
-                    KeyRingData.buildPublicKeyRingUri(mStaticRing1.getMasterKeyId()), null, null
-            );
+            KeyWritableRepository.create(RuntimeEnvironment.application).deleteKeyRing(mStaticRing1.getMasterKeyId());
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);
@@ -912,9 +909,7 @@ public class PgpEncryptDecryptTest {
         { // decryption with passphrase cached should succeed for the other key if first is gone
 
             // delete first key from database
-            KeyWritableRepository.create(RuntimeEnvironment.application).getContentResolver().delete(
-                    KeyRingData.buildPublicKeyRingUri(mStaticRing1.getMasterKeyId()), null, null
-            );
+            KeyWritableRepository.create(RuntimeEnvironment.application).deleteKeyRing(mStaticRing1.getMasterKeyId());
 
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(ciphertext);

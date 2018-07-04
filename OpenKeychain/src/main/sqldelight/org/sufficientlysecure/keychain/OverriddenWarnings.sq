@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS overridden_warnings (
+    _id INTEGER PRIMARY KEY AUTOINCREMENT,
+    identifier TEXT NOT NULL UNIQUE
+);
+
+selectCountByIdentifier:
+SELECT COUNT(*)
+    FROM overridden_warnings
+    WHERE identifier = ?;
+
+insertIdentifier:
+INSERT OR IGNORE INTO overridden_warnings (identifier) VALUES (?);
+
+deleteByIdentifier:
+DELETE FROM overridden_warnings
+    WHERE identifier = ?;

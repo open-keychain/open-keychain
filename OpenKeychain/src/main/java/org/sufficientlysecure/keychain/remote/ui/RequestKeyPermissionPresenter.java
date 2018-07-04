@@ -25,15 +25,13 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 
-import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.daos.ApiAppDao;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.remote.ApiPermissionHelper;
 import org.sufficientlysecure.keychain.remote.ApiPermissionHelper.WrongPackageCertificateException;
 import timber.log.Timber;
@@ -42,7 +40,7 @@ import timber.log.Timber;
 class RequestKeyPermissionPresenter {
     private final Context context;
     private final PackageManager packageManager;
-    private final ApiDataAccessObject apiDataAccessObject;
+    private final ApiAppDao apiAppDao;
     private final ApiPermissionHelper apiPermissionHelper;
 
     private RequestKeyPermissionMvpView view;
@@ -54,19 +52,19 @@ class RequestKeyPermissionPresenter {
 
     static RequestKeyPermissionPresenter createRequestKeyPermissionPresenter(Context context) {
         PackageManager packageManager = context.getPackageManager();
-        ApiDataAccessObject apiDataAccessObject = new ApiDataAccessObject(context);
-        ApiPermissionHelper apiPermissionHelper = new ApiPermissionHelper(context, apiDataAccessObject);
+        ApiAppDao apiAppDao = ApiAppDao.getInstance(context);
+        ApiPermissionHelper apiPermissionHelper = new ApiPermissionHelper(context, apiAppDao);
         KeyRepository keyRepository =
                 KeyRepository.create(context);
 
-        return new RequestKeyPermissionPresenter(context, apiDataAccessObject, apiPermissionHelper, packageManager,
+        return new RequestKeyPermissionPresenter(context, apiAppDao, apiPermissionHelper, packageManager,
                 keyRepository);
     }
 
-    private RequestKeyPermissionPresenter(Context context, ApiDataAccessObject apiDataAccessObject,
+    private RequestKeyPermissionPresenter(Context context, ApiAppDao apiAppDao,
             ApiPermissionHelper apiPermissionHelper, PackageManager packageManager, KeyRepository keyRepository) {
         this.context = context;
-        this.apiDataAccessObject = apiDataAccessObject;
+        this.apiAppDao = apiAppDao;
         this.apiPermissionHelper = apiPermissionHelper;
         this.packageManager = packageManager;
         this.keyRepository = keyRepository;
@@ -95,18 +93,16 @@ class RequestKeyPermissionPresenter {
     }
 
     private void setRequestedMasterKeyId(long[] subKeyIds) throws PgpKeyNotFoundException {
-        CachedPublicKeyRing secretKeyRingOrPublicFallback = findSecretKeyRingOrPublicFallback(subKeyIds);
+        UnifiedKeyInfo secretKeyRingOrPublicFallback = findSecretKeyRingOrPublicFallback(subKeyIds);
 
         if (secretKeyRingOrPublicFallback == null) {
             throw new PgpKeyNotFoundException("No key found among requested!");
         }
 
-        this.masterKeyId = secretKeyRingOrPublicFallback.getMasterKeyId();
+        masterKeyId = secretKeyRingOrPublicFallback.master_key_id();
+        view.displayKeyInfo(secretKeyRingOrPublicFallback.name());
 
-        UserId userId = secretKeyRingOrPublicFallback.getSplitPrimaryUserIdWithFallback();
-        view.displayKeyInfo(userId);
-
-        if (secretKeyRingOrPublicFallback.hasAnySecret()) {
+        if (secretKeyRingOrPublicFallback.has_any_secret()) {
             view.switchToLayoutRequestKeyChoice();
         } else {
             view.switchToLayoutNoSecret();
@@ -114,22 +110,24 @@ class RequestKeyPermissionPresenter {
     }
 
     @Nullable
-    private CachedPublicKeyRing findSecretKeyRingOrPublicFallback(long[] subKeyIds) {
-        CachedPublicKeyRing publicFallbackRing = null;
+    private UnifiedKeyInfo findSecretKeyRingOrPublicFallback(long[] subKeyIds) {
+        UnifiedKeyInfo publicFallbackRing = null;
         for (long candidateSubKeyId : subKeyIds) {
             try {
-                CachedPublicKeyRing cachedPublicKeyRing = keyRepository.getCachedPublicKeyRing(
-                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(candidateSubKeyId)
-                );
+                Long masterKeyId = keyRepository.getMasterKeyIdBySubkeyId(candidateSubKeyId);
+                if (masterKeyId == null) {
+                    continue;
+                }
+                UnifiedKeyInfo unifiedKeyInfo = keyRepository.getUnifiedKeyInfo(masterKeyId);
 
-                SecretKeyType secretKeyType = cachedPublicKeyRing.getSecretKeyType(candidateSubKeyId);
+                SecretKeyType secretKeyType = keyRepository.getSecretKeyType(candidateSubKeyId);
                 if (secretKeyType.isUsable()) {
-                    return cachedPublicKeyRing;
+                    return unifiedKeyInfo;
                 }
                 if (publicFallbackRing == null) {
-                    publicFallbackRing = cachedPublicKeyRing;
+                    publicFallbackRing = unifiedKeyInfo;
                 }
-            } catch (PgpKeyNotFoundException | NotFoundException e) {
+            } catch (NotFoundException e) {
                 // no matter
             }
         }
@@ -160,7 +158,7 @@ class RequestKeyPermissionPresenter {
     }
 
     void onClickAllow() {
-        apiDataAccessObject.addAllowedKeyIdForApp(packageName, masterKeyId);
+        apiAppDao.addAllowedKeyIdForApp(packageName, masterKeyId);
         view.finish();
     }
 
@@ -179,7 +177,7 @@ class RequestKeyPermissionPresenter {
         void setTitleText(String text);
         void setTitleClientIcon(Drawable drawable);
 
-        void displayKeyInfo(UserId userId);
+        void displayKeyInfo(String userIdName);
 
         void finish();
         void finishAsCancelled();

@@ -25,22 +25,21 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.linked.UriAttribute;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter.ViewHolder;
+import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.AutocryptPeerInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.IdentityInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.LinkedIdInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.UserIdInfo;
-import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.AutocryptPeerInfo;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.SubtleAttentionSeeker;
@@ -53,28 +52,28 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
 
     private final Context context;
     private final LayoutInflater layoutInflater;
-    private final boolean isSecret;
     private final IdentityClickListener identityClickListener;
 
     private List<IdentityInfo> data;
+    private boolean isSecret;
 
 
-    public IdentityAdapter(Context context, boolean isSecret, IdentityClickListener identityClickListener) {
+    public IdentityAdapter(Context context, IdentityClickListener identityClickListener) {
         super();
         this.layoutInflater = LayoutInflater.from(context);
         this.context = context;
-        this.isSecret = isSecret;
         this.identityClickListener = identityClickListener;
     }
 
-    public void setData(List<IdentityInfo> data) {
+    public void setData(List<IdentityInfo> data, boolean isSecret) {
         this.data = data;
+        this.isSecret = isSecret;
 
         notifyDataSetChanged();
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         IdentityInfo info = data.get(position);
 
         int viewType = getItemViewType(position);
@@ -91,8 +90,9 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
         }
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_USER_ID) {
             return new UserIdViewHolder(
                     layoutInflater.inflate(R.layout.view_key_identity_user_id, parent, false), identityClickListener);
@@ -145,12 +145,9 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
             vTitle = view.findViewById(R.id.linked_id_title);
             vComment = view.findViewById(R.id.linked_id_comment);
 
-            view.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (identityClickListener != null) {
-                        identityClickListener.onClickIdentity(getAdapterPosition());
-                    }
+            view.setOnClickListener(v -> {
+                if (identityClickListener != null) {
+                    identityClickListener.onClickIdentity(getAdapterPosition());
                 }
             });
         }
@@ -158,7 +155,7 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
         public void bind(Context context, LinkedIdInfo info, boolean isSecret) {
             bindVerified(context, info, isSecret);
 
-            UriAttribute uriAttribute = info.getUriAttribute();
+            UriAttribute uriAttribute = info.getLinkedAttribute();
             bind(context, uriAttribute);
         }
 
@@ -178,19 +175,12 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
 
         private void bindVerified(Context context, IdentityInfo info, boolean isSecret) {
             if (!isSecret) {
-                switch (info.getVerified()) {
-                    case Certs.VERIFIED_SECRET:
-                        KeyFormattingUtils.setStatusImage(context, vVerified,
-                                null, State.VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
-                        break;
-                    case Certs.VERIFIED_SELF:
-                        KeyFormattingUtils.setStatusImage(context, vVerified,
-                                null, State.UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
-                        break;
-                    default:
-                        KeyFormattingUtils.setStatusImage(context, vVerified,
-                                null, State.INVALID, KeyFormattingUtils.DEFAULT_COLOR);
-                        break;
+                if (info.isVerified()) {
+                    KeyFormattingUtils.setStatusImage(context, vVerified,
+                            null, State.VERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
+                } else {
+                    KeyFormattingUtils.setStatusImage(context, vVerified,
+                            null, State.UNVERIFIED, KeyFormattingUtils.DEFAULT_COLOR);
                 }
             }
         }
@@ -221,19 +211,8 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
             vIcon = view.findViewById(R.id.trust_id_app_icon);
             vMore = view.findViewById(R.id.user_id_item_more);
 
-            view.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    identityClickListener.onClickIdentity(getAdapterPosition());
-                }
-            });
-
-            vMore.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    identityClickListener.onClickIdentityMore(getAdapterPosition(), v);
-                }
-            });
+            view.setOnClickListener(v -> identityClickListener.onClickIdentity(getAdapterPosition()));
+            vMore.setOnClickListener(v -> identityClickListener.onClickIdentityMore(getAdapterPosition(), v));
         }
 
         public void bind(AutocryptPeerInfo info) {
@@ -248,6 +227,8 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
             }
 
             vIcon.setImageDrawable(info.getAppIcon());
+
+            vIcon.setVisibility(View.VISIBLE);
             vMore.setVisibility(View.VISIBLE);
 
             itemView.setClickable(info.getAutocryptPeerIntent() != null);

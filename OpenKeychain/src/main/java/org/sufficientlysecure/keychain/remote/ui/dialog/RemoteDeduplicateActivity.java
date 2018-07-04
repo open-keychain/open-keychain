@@ -23,47 +23,41 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.Drawable.ConstantState;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
-import android.text.format.DateUtils;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mikepenz.materialdrawer.util.KeyboardUtil;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.livedata.GenericLiveData;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationActivity;
-import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeyInfo;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteDeduplicatePresenter.RemoteDeduplicateView;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.DividerItemDecoration;
-import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerItemClickListener;
 
 
 public class RemoteDeduplicateActivity extends FragmentActivity {
     public static final String EXTRA_PACKAGE_NAME = "package_name";
     public static final String EXTRA_DUPLICATE_EMAILS = "duplicate_emails";
-
-    public static final int LOADER_ID_KEYS = 0;
 
 
     private RemoteDeduplicatePresenter presenter;
@@ -73,7 +67,7 @@ public class RemoteDeduplicateActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        presenter = new RemoteDeduplicatePresenter(getBaseContext(), LOADER_ID_KEYS);
+        presenter = new RemoteDeduplicatePresenter(getBaseContext(), this);
 
         KeyboardUtil.hideKeyboard(this);
 
@@ -92,8 +86,43 @@ public class RemoteDeduplicateActivity extends FragmentActivity {
         String duplicateAddress = dupAddresses.get(0);
         String packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
 
-        presenter.setupFromIntentData(packageName, duplicateAddress);
-        presenter.startLoaders(getSupportLoaderManager());
+        DeduplicateViewModel viewModel = ViewModelProviders.of(this).get(DeduplicateViewModel.class);
+        viewModel.setDuplicateAddress(duplicateAddress);
+        viewModel.setPackageName(packageName);
+
+        presenter.setupFromViewModel(viewModel);
+    }
+
+    public static class DeduplicateViewModel extends ViewModel {
+        private String duplicateAddress;
+        private LiveData<List<UnifiedKeyInfo>> keyInfoLiveData;
+        private String packageName;
+
+        public LiveData<List<UnifiedKeyInfo>> getKeyInfoLiveData(Context context) {
+            if (keyInfoLiveData == null) {
+                keyInfoLiveData = new GenericLiveData<>(context, () -> {
+                    KeyRepository keyRepository = KeyRepository.create(context);
+                    return keyRepository.getUnifiedKeyInfosByMailAddress(duplicateAddress);
+                });
+            }
+            return keyInfoLiveData;
+        }
+
+        public void setDuplicateAddress(String duplicateAddress) {
+            this.duplicateAddress = duplicateAddress;
+        }
+
+        public void setPackageName(String packageName) {
+            this.packageName = packageName;
+        }
+
+        public String getPackageName() {
+            return packageName;
+        }
+
+        public String getDuplicateAddress() {
+            return duplicateAddress;
+        }
     }
 
     public static class RemoteDeduplicateDialogFragment extends DialogFragment {
@@ -107,7 +136,7 @@ public class RemoteDeduplicateActivity extends FragmentActivity {
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final Activity activity = getActivity();
+            Activity activity = requireActivity();
 
             ContextThemeWrapper theme = ThemeChanger.getDialogThemeWrapper(activity);
             CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(theme);
@@ -126,7 +155,7 @@ public class RemoteDeduplicateActivity extends FragmentActivity {
                     new DividerItemDecoration(activity, DividerItemDecoration.VERTICAL_LIST, true));
 
             setupListenersForPresenter();
-            mvpView = createMvpView(view, layoutInflater);
+            mvpView = createMvpView(view);
 
             return alert.create();
         }
@@ -135,7 +164,7 @@ public class RemoteDeduplicateActivity extends FragmentActivity {
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
 
-            presenter = ((RemoteDeduplicateActivity) getActivity()).presenter;
+            presenter = ((RemoteDeduplicateActivity) requireActivity()).presenter;
             presenter.setView(mvpView);
         }
 
@@ -159,11 +188,8 @@ public class RemoteDeduplicateActivity extends FragmentActivity {
         }
 
         @NonNull
-        private RemoteDeduplicateView createMvpView(View view, LayoutInflater layoutInflater) {
-            final ImageView iconClientApp = view.findViewById(R.id.icon_client_app);
-            final KeyChoiceAdapter keyChoiceAdapter = new KeyChoiceAdapter(layoutInflater, getResources());
+        private RemoteDeduplicateView createMvpView(View view) {
             final TextView addressText = view.findViewById(R.id.select_key_item_name);
-            keyChoiceList.setAdapter(keyChoiceAdapter);
 
             return new RemoteDeduplicateView() {
                 @Override
@@ -191,9 +217,8 @@ public class RemoteDeduplicateActivity extends FragmentActivity {
                 }
 
                 @Override
-                public void setTitleClientIcon(Drawable drawable) {
-                    iconClientApp.setImageDrawable(drawable);
-                    keyChoiceAdapter.setSelectionDrawable(drawable);
+                public void showNoSelectionError() {
+                    Toast.makeText(getContext(), "No key selected!", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -202,133 +227,15 @@ public class RemoteDeduplicateActivity extends FragmentActivity {
                 }
 
                 @Override
-                public void setKeyListData(List<KeyInfo> data) {
-                    keyChoiceAdapter.setData(data);
-                }
-
-                @Override
-                public void setActiveItem(Integer position) {
-                    keyChoiceAdapter.setActiveItem(position);
-                }
-
-                @Override
-                public void setEnableSelectButton(boolean enabled) {
-                    buttonSelect.setEnabled(enabled);
+                public void setKeyListAdapter(Adapter adapter) {
+                    keyChoiceList.setAdapter(adapter);
                 }
             };
         }
 
         private void setupListenersForPresenter() {
-            buttonSelect.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    presenter.onClickSelect();
-                }
-            });
-
-            buttonCancel.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    presenter.onClickCancel();
-                }
-            });
-
-            keyChoiceList.addOnItemTouchListener(new RecyclerItemClickListener(getContext(),
-                    new RecyclerItemClickListener.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(View view, int position) {
-                            presenter.onKeyItemClick(position);
-                        }
-                    }));
-        }
-    }
-
-    private static class KeyChoiceAdapter extends Adapter<KeyChoiceViewHolder> {
-        private final LayoutInflater layoutInflater;
-        private final Resources resources;
-        private List<KeyInfo> data;
-        private Drawable iconUnselected;
-        private Drawable iconSelected;
-        private Integer activeItem;
-
-        KeyChoiceAdapter(LayoutInflater layoutInflater, Resources resources) {
-            this.layoutInflater = layoutInflater;
-            this.resources = resources;
-        }
-
-        @Override
-        public KeyChoiceViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View keyChoiceItemView = layoutInflater.inflate(R.layout.duplicate_key_item, parent, false);
-            return new KeyChoiceViewHolder(keyChoiceItemView);
-        }
-
-        @Override
-        public void onBindViewHolder(KeyChoiceViewHolder holder, int position) {
-            KeyInfo keyInfo = data.get(position);
-            Drawable icon = (activeItem != null && position == activeItem) ? iconSelected : iconUnselected;
-            holder.bind(keyInfo, icon);
-        }
-
-        @Override
-        public int getItemCount() {
-            return data != null ? data.size() : 0;
-        }
-
-        public void setData(List<KeyInfo> data) {
-            this.data = data;
-            notifyDataSetChanged();
-        }
-
-        void setSelectionDrawable(Drawable drawable) {
-            ConstantState constantState = drawable.getConstantState();
-            if (constantState == null) {
-                return;
-            }
-
-            iconSelected = constantState.newDrawable(resources);
-
-            iconUnselected = constantState.newDrawable(resources);
-            DrawableCompat.setTint(iconUnselected.mutate(), ResourcesCompat.getColor(resources, R.color.md_grey_300, null));
-
-            notifyDataSetChanged();
-        }
-
-        void setActiveItem(Integer newActiveItem) {
-            Integer prevActiveItem = this.activeItem;
-            this.activeItem = newActiveItem;
-
-            if (prevActiveItem != null) {
-                notifyItemChanged(prevActiveItem);
-            }
-            if (newActiveItem != null) {
-                notifyItemChanged(newActiveItem);
-            }
-        }
-    }
-
-    private static class KeyChoiceViewHolder extends RecyclerView.ViewHolder {
-        private final TextView vName;
-        private final TextView vCreation;
-        private final ImageView vIcon;
-
-        KeyChoiceViewHolder(View itemView) {
-            super(itemView);
-
-            vName = itemView.findViewById(R.id.key_list_item_name);
-            vCreation = itemView.findViewById(R.id.key_list_item_creation);
-            vIcon = itemView.findViewById(R.id.key_list_item_icon);
-        }
-
-        void bind(KeyInfo keyInfo, Drawable selectionIcon) {
-            vName.setText(keyInfo.getName());
-
-            Context context = vCreation.getContext();
-            String dateTime = DateUtils.formatDateTime(context, keyInfo.getCreationDate(),
-                    DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME |
-                            DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_ABBREV_MONTH);
-            vCreation.setText(context.getString(R.string.label_key_created, dateTime));
-
-            vIcon.setImageDrawable(selectionIcon);
+            buttonSelect.setOnClickListener(view -> presenter.onClickSelect());
+            buttonCancel.setOnClickListener(view -> presenter.onClickCancel());
         }
     }
 

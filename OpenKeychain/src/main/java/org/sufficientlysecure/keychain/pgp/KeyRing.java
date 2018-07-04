@@ -17,15 +17,11 @@
 
 package org.sufficientlysecure.keychain.pgp;
 
-import android.text.TextUtils;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-
-import java.io.Serializable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * An abstract KeyRing.
@@ -36,29 +32,18 @@ import java.util.regex.Pattern;
  * here.
  *
  * @see CanonicalizedKeyRing
- * @see org.sufficientlysecure.keychain.provider.CachedPublicKeyRing
  */
 public abstract class KeyRing {
 
     abstract public long getMasterKeyId() throws PgpKeyNotFoundException;
 
-    abstract public String getPrimaryUserId() throws PgpKeyNotFoundException;
-
     abstract public String getPrimaryUserIdWithFallback() throws PgpKeyNotFoundException;
-
-    public UserId getSplitPrimaryUserIdWithFallback() throws PgpKeyNotFoundException {
-        return splitUserId(getPrimaryUserIdWithFallback());
-    }
 
     abstract public boolean isRevoked() throws PgpKeyNotFoundException;
 
-    abstract public boolean canCertify() throws PgpKeyNotFoundException;
-
     abstract public long getEncryptId() throws PgpKeyNotFoundException;
 
-    abstract public boolean hasEncrypt() throws PgpKeyNotFoundException;
-
-    abstract public int getVerified() throws PgpKeyNotFoundException;
+    abstract public VerificationStatus getVerified() throws PgpKeyNotFoundException;
 
     /**
      * Splits userId string into naming part, email part, and comment part

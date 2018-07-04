@@ -17,7 +17,11 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,14 +29,17 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.NotificationCompat;
 import android.view.ContextThemeWrapper;
 
+import org.sufficientlysecure.keychain.Constants.NotificationIds;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
+import org.sufficientlysecure.keychain.util.ResourceUtils;
 import timber.log.Timber;
 
 
@@ -169,4 +176,36 @@ public class OrbotRequiredDialogActivity extends FragmentActivity
             }
         }
     }
+
+    public static void showOrbotRequiredNotification(Context context) {
+        NotificationManager manager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        if (manager != null) {
+            manager.notify(NotificationIds.KEYSERVER_SYNC_FAIL_ORBOT, createOrbotNotification(context));
+        }
+    }
+
+    private static Notification createOrbotNotification(Context context) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        builder.setSmallIcon(R.drawable.ic_stat_notify_24dp)
+                .setLargeIcon(ResourceUtils.getDrawableAsNotificationBitmap(context, R.mipmap.ic_launcher))
+                .setContentTitle(context.getString(R.string.keyserver_sync_orbot_notif_title))
+                .setContentText(context.getString(R.string.keyserver_sync_orbot_notif_msg))
+                .setAutoCancel(true);
+
+        Intent startOrbotIntent = new Intent(context, OrbotRequiredDialogActivity.class);
+        startOrbotIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startOrbotIntent.putExtra(OrbotRequiredDialogActivity.EXTRA_START_ORBOT, true);
+        PendingIntent startOrbotPi = PendingIntent.getActivity(
+                context, 0, startOrbotIntent, PendingIntent.FLAG_CANCEL_CURRENT
+        );
+
+        builder.addAction(R.drawable.ic_stat_tor,
+                context.getString(R.string.keyserver_sync_orbot_notif_start),
+                startOrbotPi
+        );
+        builder.setContentIntent(startOrbotPi);
+
+        return builder.build();
+    }
+
 }

@@ -34,6 +34,7 @@ import timber.log.Timber;
 
 public class SelectSignKeyIdActivity extends BaseActivity {
 
+    public static final String EXTRA_PACKAGE_NAME = "package_name";
     public static final String EXTRA_USER_ID = OpenPgpApi.EXTRA_USER_ID;
     public static final String EXTRA_DATA = "data";
 
@@ -68,19 +69,18 @@ public class SelectSignKeyIdActivity extends BaseActivity {
         });
 
         Intent intent = getIntent();
-        Uri appUri = intent.getData();
+        String packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
         mPreferredUserId = intent.getStringExtra(EXTRA_USER_ID);
         mData = intent.getParcelableExtra(EXTRA_DATA);
-        if (appUri == null) {
+        if (packageName == null) {
             Timber.e("Intent data missing. Should be Uri of app!");
             finish();
         } else {
-            Timber.d("uri: " + appUri);
-            startListFragments(savedInstanceState, appUri, mData, mPreferredUserId);
+            startListFragments(savedInstanceState, packageName, mData, mPreferredUserId);
         }
     }
 
-    private void startListFragments(Bundle savedInstanceState, Uri dataUri, Intent data, String preferredUserId) {
+    private void startListFragments(Bundle savedInstanceState, String packageName, Intent data, String preferredUserId) {
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
         // we could end up with overlapping fragments.
@@ -90,7 +90,7 @@ public class SelectSignKeyIdActivity extends BaseActivity {
 
         // Create an instance of the fragments
         SelectSignKeyIdListFragment listFragment = SelectSignKeyIdListFragment
-                .newInstance(dataUri, data, preferredUserId);
+                .newInstance(packageName, data, preferredUserId);
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
         getSupportFragmentManager().beginTransaction()

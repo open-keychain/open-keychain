@@ -38,9 +38,8 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.pgp.DecryptVerifySecurityProblem.DecryptVerifySecurityProblemBuilder;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureSigningAlgorithm;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import timber.log.Timber;
 
 
@@ -160,9 +159,11 @@ class PgpSignatureChecker {
         for (int i = 0; i < sigList.size(); ++i) {
             try {
                 long sigKeyId = sigList.get(i).getKeyID();
-                CanonicalizedPublicKeyRing signingRing = mKeyRepository.getCanonicalizedPublicKeyRing(
-                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
-                );
+                Long masterKeyId = mKeyRepository.getMasterKeyIdBySubkeyId(sigKeyId);
+                if (masterKeyId == null) {
+                    continue;
+                }
+                CanonicalizedPublicKeyRing signingRing = mKeyRepository.getCanonicalizedPublicKeyRing(masterKeyId);
                 CanonicalizedPublicKey keyCandidate = signingRing.getPublicKey(sigKeyId);
                 if ( ! keyCandidate.canSign()) {
                     continue;
@@ -183,9 +184,11 @@ class PgpSignatureChecker {
         for (int i = 0; i < sigList.size(); ++i) {
             try {
                 long sigKeyId = sigList.get(i).getKeyID();
-                CanonicalizedPublicKeyRing signingRing = mKeyRepository.getCanonicalizedPublicKeyRing(
-                        KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(sigKeyId)
-                );
+                Long masterKeyId = mKeyRepository.getMasterKeyIdBySubkeyId(sigKeyId);
+                if (masterKeyId == null) {
+                    continue;
+                }
+                CanonicalizedPublicKeyRing signingRing = mKeyRepository.getCanonicalizedPublicKeyRing(masterKeyId);
                 CanonicalizedPublicKey keyCandidate = signingRing.getPublicKey(sigKeyId);
                 if ( ! keyCandidate.canSign()) {
                     continue;

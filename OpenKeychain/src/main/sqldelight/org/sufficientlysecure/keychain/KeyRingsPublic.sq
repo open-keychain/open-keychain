@@ -1,0 +1,17 @@
+CREATE TABLE IF NOT EXISTS keyrings_public (
+    master_key_id INTEGER NOT NULL PRIMARY KEY,
+    key_ring_data BLOB NULL
+);
+
+selectAllMasterKeyIds:
+SELECT master_key_id
+    FROM keyrings_public;
+
+selectByMasterKeyId:
+SELECT *
+    FROM keyrings_public
+    WHERE master_key_id = ?;
+
+deleteByMasterKeyId:
+DELETE FROM keyrings_public
+    WHERE master_key_id = ?;

@@ -101,7 +101,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/duplicate_key_list"
-                    tools:listitem="@layout/duplicate_key_item"
+                    tools:listitem="@layout/key_choice_item"
                     tools:layout_height="100dp"
                     />
 
@@ -132,7 +132,6 @@
             android:layout_height="wrap_content"
             android:text="Select"
             android:id="@+id/button_select"
-            android:enabled="false"
             style="?buttonBarButtonStyle" />
 
     </LinearLayout>

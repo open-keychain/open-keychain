@@ -47,8 +47,7 @@ import org.bouncycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
 import org.bouncycastle.openpgp.operator.jcajce.SessionKeySecretKeyDecryptorBuilder;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import timber.log.Timber;
@@ -326,7 +325,7 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             spGen.setSignatureCreationTime(false, creationTimestamp);
             signatureGenerator.setHashedSubpackets(spGen.generate());
             return signatureGenerator;
-        } catch (PgpKeyNotFoundException | PGPException e) {
+        } catch (PGPException e) {
             // TODO: simply throw PGPException!
             throw new PgpGeneralException("Error initializing signature!", e);
         }

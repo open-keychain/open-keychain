@@ -17,52 +17,46 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.List;
+
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UserPacket.UserId;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.ui.ViewKeyAdvActivity.ViewKeyAdvViewModel;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.UserIdsAddedAdapter;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
 import org.sufficientlysecure.keychain.ui.dialog.AddUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditUserIdDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
-import timber.log.Timber;
 
 
-public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
-        LoaderManager.LoaderCallbacks<Cursor> {
-
-    public static final String ARG_DATA_URI = "uri";
-
-    private static final int LOADER_ID_UNIFIED = 0;
-    private static final int LOADER_ID_USER_IDS = 1;
-
+public class ViewKeyAdvUserIdsFragment extends Fragment {
     private ListView mUserIds;
     private ListView mUserIdsAddedList;
     private View mUserIdsAddedLayout;
@@ -73,28 +67,18 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
 
     private CryptoOperationHelper<SaveKeyringParcel, EditKeyResult> mEditKeyHelper;
 
-    private Uri mDataUri;
-
-    private long mMasterKeyId;
-    private byte[] mFingerprint;
-    private boolean mHasSecret;
     private SaveKeyringParcel.Builder mSkpBuilder;
+    private UnifiedKeyInfo unifiedKeyInfo;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
-        View root = super.onCreateView(inflater, superContainer, savedInstanceState);
-        View view = inflater.inflate(R.layout.view_key_adv_user_ids_fragment, getContainer());
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.view_key_adv_user_ids_fragment, viewGroup, false);
 
         mUserIds = view.findViewById(R.id.view_key_user_ids);
         mUserIdsAddedList = view.findViewById(R.id.view_key_user_ids_added);
         mUserIdsAddedLayout = view.findViewById(R.id.view_key_user_ids_add_layout);
 
-        mUserIds.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                showOrEditUserIdInfo(position);
-            }
-        });
+        mUserIds.setOnItemClickListener((parent, view1, position, id) -> showOrEditUserIdInfo(position));
 
         View footer = new View(getActivity());
         int spacing = (int) android.util.TypedValue.applyDimension(
@@ -108,16 +92,11 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         mUserIdsAddedList.addFooterView(footer, null, false);
 
         mUserIdAddFabLayout = view.findViewById(R.id.view_key_subkey_fab_layout);
-        view.findViewById(R.id.view_key_subkey_fab).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addUserId();
-            }
-        });
+        view.findViewById(R.id.view_key_subkey_fab).setOnClickListener(v -> addUserId());
 
         setHasOptionsMenu(true);
 
-        return root;
+        return view;
     }
 
     private void showOrEditUserIdInfo(final int position) {
@@ -160,34 +139,30 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
                         }
                         break;
                 }
-                getLoaderManager().getLoader(LOADER_ID_USER_IDS).forceLoad();
+                mUserIdsAdapter.notifyDataSetChanged();
             }
         };
 
         // Create a new Messenger for the communication back
         final Messenger messenger = new Messenger(returnHandler);
 
-        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
-            public void run() {
-                EditUserIdDialogFragment dialogFragment =
-                        EditUserIdDialogFragment.newInstance(messenger, isRevoked, isRevokedPending);
-                dialogFragment.show(getActivity().getSupportFragmentManager(), "editUserIdDialog");
-            }
+        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(() -> {
+            EditUserIdDialogFragment dialogFragment =
+                    EditUserIdDialogFragment.newInstance(messenger, isRevoked, isRevokedPending);
+            dialogFragment.show(requireFragmentManager(), "editUserIdDialog");
         });
     }
 
     private void showUserIdInfo(final int position) {
 
         final boolean isRevoked = mUserIdsAdapter.getIsRevoked(position);
-        final int isVerified = mUserIdsAdapter.getIsVerified(position);
+        final boolean isVerified = mUserIdsAdapter.getVerificationStatus(position) == VerificationStatus.VERIFIED_SECRET;
 
-        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(new Runnable() {
-            public void run() {
-                UserIdInfoDialogFragment dialogFragment =
-                        UserIdInfoDialogFragment.newInstance(isRevoked, isVerified);
+        DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(() -> {
+            UserIdInfoDialogFragment dialogFragment =
+                    UserIdInfoDialogFragment.newInstance(isRevoked, isVerified);
 
-                dialogFragment.show(getActivity().getSupportFragmentManager(), "userIdInfoDialog");
-            }
+            dialogFragment.show(requireFragmentManager(), "userIdInfoDialog");
         });
     }
 
@@ -211,21 +186,30 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         // pre-fill out primary name
         AddUserIdDialogFragment addUserIdDialog = AddUserIdDialogFragment.newInstance(messenger, "");
 
-        addUserIdDialog.show(getActivity().getSupportFragmentManager(), "addUserIdDialog");
+        addUserIdDialog.show(requireFragmentManager(), "addUserIdDialog");
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
-        if (dataUri == null) {
-            Timber.e("Data missing. Should be Uri of key!");
-            getActivity().finish();
+        mUserIdsAdapter = new UserIdsAdapter(getActivity(), false);
+        mUserIds.setAdapter(mUserIdsAdapter);
+
+        ViewKeyAdvViewModel viewModel = ViewModelProviders.of(requireActivity()).get(ViewKeyAdvViewModel.class);
+        viewModel.getUnifiedKeyInfoLiveData(requireContext()).observe(this, this::onLoadUnifiedKeyInfo);
+        viewModel.getUserIdLiveData(requireContext()).observe(this, this::onLoadUserIds);
+    }
+
+    public void onLoadUnifiedKeyInfo(UnifiedKeyInfo unifiedKeyInfo) {
+        if (unifiedKeyInfo == null) {
             return;
         }
+        this.unifiedKeyInfo = unifiedKeyInfo;
+    }
 
-        loadData(dataUri);
+    private void onLoadUserIds(List<UserId> userIds) {
+        mUserIdsAdapter.setData(userIds);
     }
 
     @Override
@@ -235,90 +219,6 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         }
 
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    private void loadData(Uri dataUri) {
-        mDataUri = dataUri;
-
-        Timber.i("dataUri: " + mDataUri);
-
-        mUserIdsAdapter = new UserIdsAdapter(getActivity(), null, 0);
-        mUserIds.setAdapter(mUserIdsAdapter);
-
-        // Prepare the loaders. Either re-connect with an existing ones,
-        // or start new ones.
-        getLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
-        getLoaderManager().initLoader(LOADER_ID_USER_IDS, null, this);
-    }
-
-    // These are the rows that we will retrieve.
-    static final String[] PROJECTION = new String[]{
-            KeychainContract.KeyRings._ID,
-            KeychainContract.KeyRings.MASTER_KEY_ID,
-            KeychainContract.KeyRings.HAS_ANY_SECRET,
-            KeychainContract.KeyRings.FINGERPRINT,
-    };
-
-    static final int INDEX_MASTER_KEY_ID = 1;
-    static final int INDEX_HAS_ANY_SECRET = 2;
-    static final int INDEX_FINGERPRINT = 3;
-
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        switch (id) {
-            case LOADER_ID_UNIFIED: {
-                Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
-                return new CursorLoader(getActivity(), baseUri,
-                        PROJECTION, null, null, null);
-            }
-
-            case LOADER_ID_USER_IDS: {
-                setContentShown(false);
-
-                Uri userIdUri = UserPackets.buildUserIdsUri(mDataUri);
-                return new CursorLoader(getActivity(), userIdUri,
-                        UserIdsAdapter.USER_PACKETS_PROJECTION, null, null, null);
-            }
-
-            default:
-                return null;
-        }
-    }
-
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Avoid NullPointerExceptions, if we get an empty result set.
-        if (data.getCount() == 0) {
-            return;
-        }
-
-        switch (loader.getId()) {
-            case LOADER_ID_UNIFIED: {
-                data.moveToFirst();
-
-                mMasterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
-                mHasSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
-                mFingerprint = data.getBlob(INDEX_FINGERPRINT);
-                break;
-            }
-            case LOADER_ID_USER_IDS: {
-                // Swap the new cursor in. (The framework will take care of closing the
-                // old cursor once we return.)
-                mUserIdsAdapter.swapCursor(data);
-
-                setContentShown(true);
-                break;
-            }
-        }
-    }
-
-    /**
-     * This is called when the last Cursor provided to onLoadFinished() above is about to be closed.
-     * We need to make sure we are no longer using it.
-     */
-    public void onLoaderReset(Loader<Cursor> loader) {
-        if (loader.getId() != LOADER_ID_USER_IDS) {
-            return;
-        }
-        mUserIdsAdapter.swapCursor(null);
     }
 
     @Override
@@ -340,8 +240,8 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
         activity.startActionMode(new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-
-                mSkpBuilder = SaveKeyringParcel.buildChangeKeyringParcel(mMasterKeyId, mFingerprint);
+                mSkpBuilder = SaveKeyringParcel.buildChangeKeyringParcel(
+                        unifiedKeyInfo.master_key_id(), unifiedKeyInfo.fingerprint());
 
                 mUserIdsAddedAdapter =
                         new UserIdsAddedAdapter(getActivity(), mSkpBuilder.getMutableAddUserIds(), false);
@@ -350,7 +250,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
                 mUserIdAddFabLayout.setDisplayedChild(1);
 
                 mUserIdsAdapter.setEditMode(mSkpBuilder);
-                getLoaderManager().restartLoader(LOADER_ID_USER_IDS, null, ViewKeyAdvUserIdsFragment.this);
+                mUserIdsAdapter.notifyDataSetChanged();
 
                 mode.setTitle(R.string.title_edit_identities);
                 mode.getMenuInflater().inflate(R.menu.action_edit_uids, menu);
@@ -375,7 +275,7 @@ public class ViewKeyAdvUserIdsFragment extends LoaderFragment implements
                 mUserIdsAdapter.setEditMode(null);
                 mUserIdsAddedLayout.setVisibility(View.GONE);
                 mUserIdAddFabLayout.setDisplayedChild(0);
-                getLoaderManager().restartLoader(LOADER_ID_USER_IDS, null, ViewKeyAdvUserIdsFragment.this);
+                mUserIdsAdapter.notifyDataSetChanged();
             }
         });
     }

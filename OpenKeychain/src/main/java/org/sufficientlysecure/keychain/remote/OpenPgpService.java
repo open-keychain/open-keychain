@@ -52,6 +52,7 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.OpenPgpSignatureResult.AutocryptPeerResult;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.BackupOperation;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
@@ -66,15 +67,12 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
-import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.daos.ApiAppDao;
+import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
-import org.sufficientlysecure.keychain.provider.OverriddenWarningsRepository;
+import org.sufficientlysecure.keychain.daos.OverriddenWarningsDao;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResult;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResultStatus;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
@@ -98,7 +96,7 @@ public class OpenPgpService extends Service {
 
     private ApiPermissionHelper mApiPermissionHelper;
     private KeyRepository mKeyRepository;
-    private ApiDataAccessObject mApiDao;
+    private ApiAppDao mApiAppDao;
     private OpenPgpServiceKeyIdExtractor mKeyIdExtractor;
     private ApiPendingIntentFactory mApiPendingIntentFactory;
 
@@ -106,8 +104,8 @@ public class OpenPgpService extends Service {
     public void onCreate() {
         super.onCreate();
         mKeyRepository = KeyRepository.create(this);
-        mApiDao = new ApiDataAccessObject(this);
-        mApiPermissionHelper = new ApiPermissionHelper(this, mApiDao);
+        mApiAppDao = ApiAppDao.getInstance(this);
+        mApiPermissionHelper = new ApiPermissionHelper(this, mApiAppDao);
         mApiPendingIntentFactory = new ApiPendingIntentFactory(getBaseContext());
         mKeyIdExtractor = OpenPgpServiceKeyIdExtractor.getInstance(getContentResolver(), mApiPendingIntentFactory);
     }
@@ -140,9 +138,9 @@ public class OpenPgpService extends Service {
 
                 // get first usable subkey capable of signing
                 try {
-                    long signSubKeyId = mKeyRepository.getCachedPublicKeyRing(signKeyId).getSecretSignId();
+                    long signSubKeyId = mKeyRepository.getSecretSignId(signKeyId);
                     pgpData.setSignatureSubKeyId(signSubKeyId);
-                } catch (PgpKeyNotFoundException e) {
+                } catch (NotFoundException e) {
                     throw new Exception("signing subkey not found!", e);
                 }
             }
@@ -231,7 +229,7 @@ public class OpenPgpService extends Service {
                 if (signKeyId == Constants.key.none) {
                     throw new Exception("No signing key given");
                 }
-                long signSubKeyId = mKeyRepository.getCachedPublicKeyRing(signKeyId).getSecretSignId();
+                long signSubKeyId = mKeyRepository.getSecretSignId(signKeyId);
 
                 pgpData.setSignatureMasterKeyId(signKeyId)
                         .setSignatureSubKeyId(signSubKeyId)
@@ -472,7 +470,7 @@ public class OpenPgpService extends Service {
             SecurityProblem prioritySecurityProblem = securityProblem.getPrioritySecurityProblem();
             if (prioritySecurityProblem.isIdentifiable()) {
                 String identifier = prioritySecurityProblem.getIdentifier();
-                boolean isOverridden = OverriddenWarningsRepository.createOverriddenWarningsRepository(this)
+                boolean isOverridden = OverriddenWarningsDao.create(this)
                         .isWarningOverridden(identifier);
                 result.putExtra(OpenPgpApi.RESULT_OVERRIDE_CRYPTO_WARNING, isOverridden);
             }
@@ -585,8 +583,8 @@ public class OpenPgpService extends Service {
             return signatureResult;
         }
 
-        AutocryptPeerDataAccessObject autocryptPeerentityDao = new AutocryptPeerDataAccessObject(getBaseContext(),
-                mApiPermissionHelper.getCurrentCallingPackage());
+        AutocryptPeerDao autocryptPeerentityDao =
+                AutocryptPeerDao.getInstance(getBaseContext());
         Long autocryptPeerMasterKeyId = autocryptPeerentityDao.getMasterKeyIdForAutocryptPeer(autocryptPeerId);
 
         long masterKeyId = signatureResult.getKeyId();
@@ -596,7 +594,9 @@ public class OpenPgpService extends Service {
             if (effectiveTime.after(now)) {
                 effectiveTime = now;
             }
-            autocryptPeerentityDao.updateKeyGossipFromSignature(autocryptPeerId, effectiveTime, masterKeyId);
+            AutocryptInteractor autocryptInteractor =
+                    AutocryptInteractor.getInstance(this, mApiPermissionHelper.getCurrentCallingPackage());
+            autocryptInteractor.updateKeyGossipFromSignature(autocryptPeerId, effectiveTime, masterKeyId);
             return signatureResult.withAutocryptPeerResult(AutocryptPeerResult.NEW);
         } else  if (masterKeyId == autocryptPeerMasterKeyId) {
             return signatureResult.withAutocryptPeerResult(AutocryptPeerResult.OK);
@@ -626,10 +626,8 @@ public class OpenPgpService extends Service {
             }
 
             try {
-                // try to find key, throws NotFoundException if not in db!
                 CanonicalizedPublicKeyRing keyRing =
-                        mKeyRepository.getCanonicalizedPublicKeyRing(
-                                KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(masterKeyId));
+                        mKeyRepository.getCanonicalizedPublicKeyRing(masterKeyId);
 
                 Intent result = new Intent();
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
@@ -744,17 +742,16 @@ public class OpenPgpService extends Service {
         result.putExtra(OpenPgpApi.RESULT_SIGN_KEY_ID, signKeyId);
 
         if (signKeyId != Constants.key.none) {
-            try {
-                CachedPublicKeyRing cachedPublicKeyRing = mKeyRepository.getCachedPublicKeyRing(signKeyId);
-                String userId = cachedPublicKeyRing.getPrimaryUserId();
-                long creationTime = cachedPublicKeyRing.getCreationTime() * 1000;
-
-                result.putExtra(OpenPgpApi.RESULT_PRIMARY_USER_ID, userId);
-                result.putExtra(OpenPgpApi.RESULT_KEY_CREATION_TIME, creationTime);
-            } catch (PgpKeyNotFoundException e) {
-                Timber.e(e, "Error loading key info");
-                return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, e.getMessage());
+            UnifiedKeyInfo unifiedKeyInfo = mKeyRepository.getUnifiedKeyInfo(signKeyId);
+            if (unifiedKeyInfo == null) {
+                Timber.e("Error loading key info");
+                return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, "Signing key not found!");
             }
+            String userId = unifiedKeyInfo.user_id();
+            long creationTime = unifiedKeyInfo.creation() * 1000;
+
+            result.putExtra(OpenPgpApi.RESULT_PRIMARY_USER_ID, userId);
+            result.putExtra(OpenPgpApi.RESULT_KEY_CREATION_TIME, creationTime);
         }
 
         return result;
@@ -860,9 +857,8 @@ public class OpenPgpService extends Service {
 
     private Intent updateAutocryptPeerImpl(Intent data) {
         try {
-            AutocryptPeerDataAccessObject autocryptPeerDao = new AutocryptPeerDataAccessObject(getBaseContext(),
-                    mApiPermissionHelper.getCurrentCallingPackage());
-            AutocryptInteractor autocryptInteractor = AutocryptInteractor.getInstance(getBaseContext(), autocryptPeerDao);
+            AutocryptInteractor autocryptInteractor = AutocryptInteractor.getInstance(
+                    getBaseContext(), mApiPermissionHelper.getCurrentCallingPackage());
 
             if (data.hasExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_ID) &&
                     data.hasExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_UPDATE)) {
@@ -915,8 +911,7 @@ public class OpenPgpService extends Service {
 
     private HashSet<Long> getAllowedKeyIds() {
         String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
-        return mApiDao.getAllowedKeyIdsForApp(
-                KeychainContract.ApiAllowedKeys.buildBaseUri(currentPkg));
+        return mApiAppDao.getAllowedKeyIdsForApp(currentPkg);
     }
 
     /**

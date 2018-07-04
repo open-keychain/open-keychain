@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -35,8 +35,7 @@ import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.transfer.loader.SecretKeyLoader;
-import org.sufficientlysecure.keychain.ui.transfer.loader.SecretKeyLoader.SecretKeyItem;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.DividerItemDecoration;
 
 
@@ -75,7 +74,7 @@ public class TransferSecretKeyList extends RecyclerView {
         private final OnClickTransferKeyListener onClickTransferKeyListener;
 
         private Long focusedMasterKeyId;
-        private List<SecretKeyItem> data;
+        private List<UnifiedKeyInfo> data;
         private ArrayList<Long> finishedItems = new ArrayList<>();
         private boolean allItemsDisabled;
 
@@ -87,15 +86,16 @@ public class TransferSecretKeyList extends RecyclerView {
             this.onClickTransferKeyListener = onClickTransferKeyListener;
         }
 
+        @NonNull
         @Override
-        public TransferKeyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public TransferKeyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             return new TransferKeyViewHolder(layoutInflater.inflate(R.layout.key_transfer_item, parent, false));
         }
 
         @Override
-        public void onBindViewHolder(TransferKeyViewHolder holder, int position) {
-            SecretKeyItem item = data.get(position);
-            boolean isFinished = finishedItems.contains(item.masterKeyId);
+        public void onBindViewHolder(@NonNull TransferKeyViewHolder holder, int position) {
+            UnifiedKeyInfo item = data.get(position);
+            boolean isFinished = finishedItems.contains(item.master_key_id());
             holder.bind(context, item, onClickTransferKeyListener, focusedMasterKeyId, isFinished, allItemsDisabled);
         }
 
@@ -106,10 +106,10 @@ public class TransferSecretKeyList extends RecyclerView {
 
         @Override
         public long getItemId(int position) {
-            return data.get(position).masterKeyId;
+            return data.get(position).master_key_id();
         }
 
-        public void setData(List<SecretKeyItem> data) {
+        public void setData(List<UnifiedKeyInfo> data) {
             this.data = data;
             notifyDataSetChanged();
         }
@@ -127,10 +127,6 @@ public class TransferSecretKeyList extends RecyclerView {
         public void focusItem(Long masterKeyId) {
             focusedMasterKeyId = masterKeyId;
             notifyItemRangeChanged(0, getItemCount());
-        }
-
-        public Loader<List<SecretKeyItem>> createLoader(Context context) {
-            return new SecretKeyLoader(context, context.getContentResolver());
         }
 
         public void setAllDisabled(boolean allItemsdisablde) {
@@ -157,23 +153,23 @@ public class TransferSecretKeyList extends RecyclerView {
             vState = itemView.findViewById(R.id.transfer_state);
         }
 
-        private void bind(Context context, final SecretKeyItem item,
+        private void bind(Context context, UnifiedKeyInfo item,
                 final OnClickTransferKeyListener onClickTransferKeyListener, Long focusedMasterKeyId,
                 boolean isFinished, boolean disableAll) {
-            if (item.name != null) {
-                vName.setText(item.name);
+            if (item.name() != null) {
+                vName.setText(item.name());
                 vName.setVisibility(View.VISIBLE);
             } else {
                 vName.setVisibility(View.GONE);
             }
-            if (item.email != null) {
-                vEmail.setText(item.email);
+            if (item.email() != null) {
+                vEmail.setText(item.email());
                 vEmail.setVisibility(View.VISIBLE);
             } else {
                 vEmail.setVisibility(View.GONE);
             }
 
-            String dateTime = DateUtils.formatDateTime(context, item.creationMillis,
+            String dateTime = DateUtils.formatDateTime(context, item.creation() * 1000,
                     DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME |
                             DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_ABBREV_MONTH);
             vCreation.setText(context.getString(R.string.label_key_created, dateTime));
@@ -186,7 +182,7 @@ public class TransferSecretKeyList extends RecyclerView {
             }
 
             if (focusedMasterKeyId != null) {
-                if (focusedMasterKeyId != item.masterKeyId) {
+                if (focusedMasterKeyId != item.master_key_id()) {
                     itemView.animate().alpha(0.2f).start();
                     vState.setDisplayedChild(isFinished ? STATE_TRANSFERRED : STATE_INVISIBLE);
                 } else {
@@ -199,12 +195,8 @@ public class TransferSecretKeyList extends RecyclerView {
             }
 
             if (focusedMasterKeyId == null && onClickTransferKeyListener != null) {
-                vSendButton.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        onClickTransferKeyListener.onUiClickTransferKey(item.masterKeyId);
-                    }
-                });
+                vSendButton.setOnClickListener(
+                        v -> onClickTransferKeyListener.onUiClickTransferKey(item.master_key_id()));
             } else {
                 vSendButton.setOnClickListener(null);
             }

@@ -18,16 +18,19 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.util.List;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Transformations;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.support.annotation.StringRes;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.ActionMode;
@@ -37,83 +40,154 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
 import android.view.animation.OvershootInterpolator;
-import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.livedata.GenericLiveData;
+import org.sufficientlysecure.keychain.model.SubKey;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UserPacket.UserId;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.util.ContactHelper;
-import timber.log.Timber;
 
 
-public class ViewKeyAdvActivity extends BaseActivity implements
-        LoaderCallbacks<Cursor>, OnPageChangeListener {
-
-    KeyRepository mKeyRepository;
-
-    protected Uri mDataUri;
-
+public class ViewKeyAdvActivity extends BaseActivity implements OnPageChangeListener {
+    public static final String EXTRA_MASTER_KEY_ID = "master_key_id";
     public static final String EXTRA_SELECTED_TAB = "selected_tab";
-    public static final int TAB_START = 0;
-    public static final int TAB_SHARE = 1;
-    public static final int TAB_IDENTITIES = 2;
-    public static final int TAB_SUBKEYS = 3;
-    public static final int TAB_CERTS = 4;
+
+    KeyRepository keyRepository;
 
     // view
     private ViewPager mViewPager;
     private PagerSlidingTabStrip mSlidingTabLayout;
 
-    private static final int LOADER_ID_UNIFIED = 0;
     private ActionMode mActionMode;
-    private boolean mHasSecret;
-    private PagerTabStripAdapter mTabAdapter;
+    private boolean hasSecret;
     private boolean mActionIconShown;
-    private boolean[] mTabsWithActionMode;
+
+    enum ViewKeyAdvTab {
+        START(ViewKeyAdvStartFragment.class, R.string.key_view_tab_start, false),
+        SHARE(ViewKeyAdvShareFragment.class, R.string.key_view_tab_share, false),
+        IDENTITIES(ViewKeyAdvUserIdsFragment.class, R.string.section_user_ids, true),
+        SUBKEYS(ViewKeyAdvSubkeysFragment.class, R.string.key_view_tab_keys, true);
+
+        public final Class<? extends Fragment> fragmentClass;
+        public final int titleRes;
+        public final boolean hasActionMode;
+
+        ViewKeyAdvTab(Class<? extends Fragment> fragmentClass, @StringRes int titleRes, boolean hasActionMode) {
+            this.titleRes = titleRes;
+            this.fragmentClass = fragmentClass;
+            this.hasActionMode = hasActionMode;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setFullScreenDialogClose(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        setFullScreenDialogClose(v -> finish());
 
-        mKeyRepository = KeyRepository.create(this);
+        keyRepository = KeyRepository.create(this);
 
         mViewPager = findViewById(R.id.pager);
         mSlidingTabLayout = findViewById(R.id.sliding_tab_layout);
 
-        mDataUri = getIntent().getData();
-        if (mDataUri == null) {
-            Timber.e("Data missing. Should be uri of key!");
-            finish();
+        if (!getIntent().hasExtra(EXTRA_MASTER_KEY_ID)) {
+            throw new IllegalArgumentException("Missing required extra master_key_id");
+        }
+
+        ViewKeyAdvViewModel viewModel = ViewModelProviders.of(this).get(ViewKeyAdvViewModel.class);
+        viewModel.setMasterKeyId(getIntent().getLongExtra(EXTRA_MASTER_KEY_ID, 0L));
+        viewModel.getUnifiedKeyInfoLiveData(getApplicationContext()).observe(this, this::onLoadUnifiedKeyInfo);
+
+        initTabs();
+    }
+
+    public static class ViewKeyAdvViewModel extends ViewModel {
+        private Long masterKeyId;
+        private LiveData<UnifiedKeyInfo> unifiedKeyInfoLiveData;
+        private LiveData<List<SubKey>> subKeyLiveData;
+        private LiveData<List<UserId>> userIdsLiveData;
+
+        void setMasterKeyId(long masterKeyId) {
+            if (this.masterKeyId != null) {
+                throw new IllegalStateException("cannot change masterKeyId once set!");
+            }
+            this.masterKeyId = masterKeyId;
+        }
+
+        LiveData<UnifiedKeyInfo> getUnifiedKeyInfoLiveData(Context context) {
+            if (masterKeyId == null) {
+                throw new IllegalStateException("masterKeyId must be set to retrieve this!");
+            }
+            if (unifiedKeyInfoLiveData == null) {
+                KeyRepository keyRepository = KeyRepository.create(context);
+                unifiedKeyInfoLiveData = new GenericLiveData<>(context, masterKeyId,
+                        () -> keyRepository.getUnifiedKeyInfo(masterKeyId));
+            }
+            return unifiedKeyInfoLiveData;
+        }
+
+        LiveData<List<SubKey>> getSubkeyLiveData(Context context) {
+            if (subKeyLiveData == null) {
+                KeyRepository keyRepository = KeyRepository.create(context);
+                subKeyLiveData = Transformations.switchMap(getUnifiedKeyInfoLiveData(context),
+                        (unifiedKeyInfo) -> unifiedKeyInfo == null ? null : new GenericLiveData<>(context,
+                                () -> keyRepository.getSubKeysByMasterKeyId(unifiedKeyInfo.master_key_id())));
+            }
+            return subKeyLiveData;
+        }
+
+        LiveData<List<UserId>> getUserIdLiveData(Context context) {
+            if (userIdsLiveData == null) {
+                KeyRepository keyRepository = KeyRepository.create(context);
+                userIdsLiveData = Transformations.switchMap(getUnifiedKeyInfoLiveData(context),
+                        (unifiedKeyInfo) -> unifiedKeyInfo == null ? null : new GenericLiveData<>(context,
+                                () -> keyRepository.getUserIds(unifiedKeyInfo.master_key_id())));
+            }
+            return userIdsLiveData;
+        }
+    }
+
+    public void onLoadUnifiedKeyInfo(UnifiedKeyInfo unifiedKeyInfo) {
+        if (unifiedKeyInfo == null) {
             return;
         }
-        if (mDataUri.getHost().equals(ContactsContract.AUTHORITY)) {
-            mDataUri = new ContactHelper(this).dataUriFromContactUri(mDataUri);
-            if (mDataUri == null) {
-                Timber.e("Contact Data missing. Should be uri of key!");
-                Toast.makeText(this, R.string.error_contacts_key_id_missing, Toast.LENGTH_LONG).show();
-                finish();
-                return;
-            }
+
+        if (unifiedKeyInfo.name() != null) {
+            setTitle(unifiedKeyInfo.name());
+        } else {
+            setTitle(R.string.user_id_no_name);
         }
 
-        // Prepare the loaders. Either re-connect with an existing ones,
-        // or start new ones.
-        getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
+        String formattedKeyId = KeyFormattingUtils.beautifyKeyIdWithPrefix(unifiedKeyInfo.master_key_id());
+        mToolbar.setSubtitle(formattedKeyId);
 
-        initTabs(mDataUri);
+        hasSecret = unifiedKeyInfo.has_any_secret();
+
+        // Note: order is important
+        int color;
+        if (unifiedKeyInfo.is_revoked() || unifiedKeyInfo.is_expired()) {
+            color = getResources().getColor(R.color.key_flag_red);
+        } else if (unifiedKeyInfo.has_any_secret()) {
+            color = getResources().getColor(R.color.android_green_light);
+        } else {
+            if (unifiedKeyInfo.is_verified()) {
+                color = getResources().getColor(R.color.android_green_light);
+            } else {
+                color = getResources().getColor(R.color.key_flag_orange);
+            }
+        }
+        mToolbar.setBackgroundColor(color);
+        mStatusBar.setBackgroundColor(ViewKeyActivity.getStatusBarBackgroundColor(color));
+        mSlidingTabLayout.setBackgroundColor(color);
+
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -121,40 +195,13 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         setContentView(R.layout.view_key_adv_activity);
     }
 
-    private void initTabs(Uri dataUri) {
-        mTabAdapter = new PagerTabStripAdapter(this);
-        mViewPager.setAdapter(mTabAdapter);
+    private void initTabs() {
+        PagerTabStripAdapter tabAdapter = new PagerTabStripAdapter(this);
+        mViewPager.setAdapter(tabAdapter);
 
-        // keep track which of these are action mode enabled!
-        mTabsWithActionMode = new boolean[5];
-
-        mTabAdapter.addTab(ViewKeyAdvStartFragment.class,
-                null, getString(R.string.key_view_tab_start));
-        mTabsWithActionMode[0] = false;
-
-        Bundle shareBundle = new Bundle();
-        shareBundle.putParcelable(ViewKeyAdvShareFragment.ARG_DATA_URI, dataUri);
-        mTabAdapter.addTab(ViewKeyAdvShareFragment.class,
-                shareBundle, getString(R.string.key_view_tab_share));
-        mTabsWithActionMode[1] = false;
-
-        Bundle userIdsBundle = new Bundle();
-        userIdsBundle.putParcelable(ViewKeyAdvUserIdsFragment.ARG_DATA_URI, dataUri);
-        mTabAdapter.addTab(ViewKeyAdvUserIdsFragment.class,
-                userIdsBundle, getString(R.string.section_user_ids));
-        mTabsWithActionMode[2] = true;
-
-        Bundle keysBundle = new Bundle();
-        keysBundle.putParcelable(ViewKeyAdvSubkeysFragment.ARG_DATA_URI, dataUri);
-        mTabAdapter.addTab(ViewKeyAdvSubkeysFragment.class,
-                keysBundle, getString(R.string.key_view_tab_keys));
-        mTabsWithActionMode[3] = true;
-
-        Bundle certsBundle = new Bundle();
-        certsBundle.putParcelable(ViewKeyAdvCertsFragment.ARG_DATA_URI, dataUri);
-        mTabAdapter.addTab(ViewKeyAdvCertsFragment.class,
-                certsBundle, getString(R.string.key_view_tab_certs));
-        mTabsWithActionMode[4] = false;
+        for (ViewKeyAdvTab tab : ViewKeyAdvTab.values()) {
+            tabAdapter.addTab(tab.fragmentClass, null, getString(tab.titleRes));
+        }
 
         // update layout after operations
         mSlidingTabLayout.setViewPager(mViewPager);
@@ -162,108 +209,8 @@ public class ViewKeyAdvActivity extends BaseActivity implements
 
         // switch to tab selected by extra
         Intent intent = getIntent();
-        int switchToTab = intent.getIntExtra(EXTRA_SELECTED_TAB, TAB_START);
+        int switchToTab = intent.getIntExtra(EXTRA_SELECTED_TAB, 0);
         mViewPager.setCurrentItem(switchToTab);
-
-    }
-
-    // These are the rows that we will retrieve.
-    static final String[] PROJECTION = new String[]{
-            KeychainContract.KeyRings._ID,
-            KeychainContract.KeyRings.MASTER_KEY_ID,
-            KeychainContract.KeyRings.USER_ID,
-            KeychainContract.KeyRings.IS_REVOKED,
-            KeychainContract.KeyRings.IS_EXPIRED,
-            KeychainContract.KeyRings.VERIFIED,
-            KeychainContract.KeyRings.HAS_ANY_SECRET,
-            KeychainContract.KeyRings.FINGERPRINT,
-            KeychainContract.KeyRings.NAME,
-            KeychainContract.KeyRings.EMAIL,
-            KeychainContract.KeyRings.COMMENT,
-    };
-
-    static final int INDEX_MASTER_KEY_ID = 1;
-    static final int INDEX_USER_ID = 2;
-    static final int INDEX_IS_REVOKED = 3;
-    static final int INDEX_IS_EXPIRED = 4;
-    static final int INDEX_VERIFIED = 5;
-    static final int INDEX_HAS_ANY_SECRET = 6;
-    static final int INDEX_FINGERPRINT = 7;
-    static final int INDEX_NAME = 8;
-    static final int INDEX_EMAIL = 9;
-    static final int INDEX_COMMENT = 10;
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        switch (id) {
-            case LOADER_ID_UNIFIED: {
-                Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(mDataUri);
-                return new CursorLoader(this, baseUri, PROJECTION, null, null, null);
-            }
-
-            default:
-                return null;
-        }
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Avoid NullPointerExceptions...
-        if (data == null || data.getCount() == 0) {
-            return;
-        }
-        // Swap the new cursor in. (The framework will take care of closing the
-        // old cursor once we return.)
-        switch (loader.getId()) {
-            case LOADER_ID_UNIFIED: {
-                if (data.moveToFirst()) {
-                    // get name, email, and comment from USER_ID
-                    String name = data.getString(INDEX_NAME);
-
-                    if (name != null) {
-                        setTitle(name);
-                    } else {
-                        setTitle(R.string.user_id_no_name);
-                    }
-
-                    byte[] fingerprint = data.getBlob(INDEX_FINGERPRINT);
-
-                    // get key id from MASTER_KEY_ID
-                    long masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
-                    String formattedKeyId = KeyFormattingUtils.beautifyKeyIdWithPrefix(masterKeyId);
-                    getSupportActionBar().setSubtitle(formattedKeyId);
-
-                    mHasSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
-                    boolean isRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
-                    boolean isExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
-                    boolean isVerified = data.getInt(INDEX_VERIFIED) > 0;
-
-                    // Note: order is important
-                    int color;
-                    if (isRevoked || isExpired) {
-                        color = getResources().getColor(R.color.key_flag_red);
-                    } else if (mHasSecret) {
-                        color = getResources().getColor(R.color.android_green_light);
-                    } else {
-                        if (isVerified) {
-                            color = getResources().getColor(R.color.android_green_light);
-                        } else {
-                            color = getResources().getColor(R.color.key_flag_orange);
-                        }
-                    }
-                    mToolbar.setBackgroundColor(color);
-                    mStatusBar.setBackgroundColor(ViewKeyActivity.getStatusBarBackgroundColor(color));
-                    mSlidingTabLayout.setBackgroundColor(color);
-
-                    break;
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 
     @Override
@@ -279,8 +226,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
-        if (!mHasSecret) {
+        if (!hasSecret) {
             return false;
         }
 
@@ -288,7 +234,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements
         getMenuInflater().inflate(R.menu.action_mode_edit, menu);
         final MenuItem vActionModeItem = menu.findItem(R.id.menu_action_mode_edit);
 
-        boolean isCurrentActionFragment = mTabsWithActionMode[mViewPager.getCurrentItem()];
+        boolean isCurrentActionFragment = ViewKeyAdvTab.values()[mViewPager.getCurrentItem()].hasActionMode;
 
         // if the state is as it should be, never mind
         if (isCurrentActionFragment == mActionIconShown) {
@@ -304,7 +250,6 @@ public class ViewKeyAdvActivity extends BaseActivity implements
     }
 
     private void animateMenuItem(final MenuItem vEditSubkeys, final boolean animateShow) {
-
         View actionView = LayoutInflater.from(this).inflate(R.layout.edit_icon, null);
         vEditSubkeys.setActionView(actionView);
         actionView.setTranslationX(animateShow ? 150 : 0);
@@ -323,7 +268,6 @@ public class ViewKeyAdvActivity extends BaseActivity implements
             }
         });
         animator.start();
-
     }
 
     @Override

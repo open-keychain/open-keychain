@@ -17,8 +17,10 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.Date;
+
 import android.app.Activity;
-import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,6 +28,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AlertDialog;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,12 +37,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.RevokeResult;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.service.DeleteKeyringParcel;
 import org.sufficientlysecure.keychain.service.RevokeKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -47,9 +49,6 @@ import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import timber.log.Timber;
-
-import java.util.Date;
-import java.util.HashMap;
 
 public class DeleteKeyDialogActivity extends FragmentActivity {
     public static final String EXTRA_DELETE_MASTER_KEY_IDS = "extra_delete_master_key_ids";
@@ -81,38 +80,28 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
             log.add(OperationResult.LogType.MSG_DEL_ERROR_MULTI_SECRET, 0);
             returnResult(new DeleteResult(OperationResult.RESULT_ERROR, log, 0,
                     mMasterKeyIds.length));
+            return;
         }
 
         if (mMasterKeyIds.length == 1 && mHasSecret) {
             // if mMasterKeyIds.length == 0 we let the DeleteOperation respond
-            try {
-                HashMap<String, Object> data = KeyRepository.create(this).getUnifiedData(
-                        mMasterKeyIds[0], new String[]{
-                                KeychainContract.KeyRings.NAME,
-                                KeychainContract.KeyRings.IS_REVOKED
-                        }, new int[]{
-                                KeyRepository.FIELD_TYPE_STRING,
-                                KeyRepository.FIELD_TYPE_INTEGER
-                        }
-                );
-
-                String name;
-
-                name = (String) data.get(KeychainContract.KeyRings.NAME);
-
-                if (name == null) {
-                    name = getString(R.string.user_id_no_name);
-                }
-
-                if ((long) data.get(KeychainContract.KeyRings.IS_REVOKED) > 0) {
-                    showNormalDeleteDialog();
-                } else {
-                    showRevokeDeleteDialog(name);
-                }
-            } catch (KeyRepository.NotFoundException e) {
-                Timber.e(e, "Secret key to delete not found at DeleteKeyDialogActivity for "
-                        + mMasterKeyIds[0]);
+            KeyRepository keyRepository = KeyRepository.create(this);
+            UnifiedKeyInfo keyInfo = keyRepository.getUnifiedKeyInfo(mMasterKeyIds[0]);
+            if (keyInfo == null) {
+                Timber.e("Secret key to delete not found at DeleteKeyDialogActivity for " + mMasterKeyIds[0]);
                 finish();
+                return;
+            }
+
+            String name = keyInfo.name();
+            if (name == null) {
+                name = getString(R.string.user_id_no_name);
+            }
+
+            if (keyInfo.is_revoked()) {
+                showNormalDeleteDialog();
+            } else {
+                showRevokeDeleteDialog(name);
             }
         } else {
             showNormalDeleteDialog();
@@ -267,35 +256,25 @@ public class DeleteKeyDialogActivity extends FragmentActivity {
             if (masterKeyIds.length == 1) {
                 long masterKeyId = masterKeyIds[0];
 
-                try {
-                    HashMap<String, Object> data = KeyRepository.create(getContext())
-                            .getUnifiedData(
-                            masterKeyId, new String[]{
-                                    KeychainContract.KeyRings.NAME,
-                                    KeychainContract.KeyRings.HAS_ANY_SECRET
-                            }, new int[]{
-                                    KeyRepository.FIELD_TYPE_STRING,
-                                    KeyRepository.FIELD_TYPE_INTEGER
-                            }
-                    );
-                    String name;
-
-                    name = (String) data.get(KeychainContract.KeyRings.NAME);
-                    if (name == null) {
-                        name = getString(R.string.user_id_no_name);
-                    }
-
-                    if (hasSecret) {
-                        // show title only for secret key deletions,
-                        // see http://www.google.com/design/spec/components/dialogs.html#dialogs-behavior
-                        builder.setTitle(getString(R.string.title_delete_secret_key, name));
-                        mMainMessage.setText(getString(R.string.secret_key_deletion_confirmation, name));
-                    } else {
-                        mMainMessage.setText(getString(R.string.public_key_deletetion_confirmation, name));
-                    }
-                } catch (KeyRepository.NotFoundException e) {
+                KeyRepository keyRepository = KeyRepository.create(getContext());
+                UnifiedKeyInfo keyInfo = keyRepository.getUnifiedKeyInfo(masterKeyId);
+                if (keyInfo == null) {
                     dismiss();
                     return null;
+                }
+                String name = keyInfo.name();
+
+                if (name == null) {
+                    name = getString(R.string.user_id_no_name);
+                }
+
+                if (keyInfo.has_any_secret()) {
+                    // show title only for secret key deletions,
+                    // see http://www.google.com/design/spec/components/dialogs.html#dialogs-behavior
+                    builder.setTitle(getString(R.string.title_delete_secret_key, name));
+                    mMainMessage.setText(getString(R.string.secret_key_deletion_confirmation, name));
+                } else {
+                    mMainMessage.setText(getString(R.string.public_key_deletetion_confirmation, name));
                 }
             } else {
                 mMainMessage.setText(R.string.key_deletion_confirmation_multi);

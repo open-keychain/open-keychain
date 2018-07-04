@@ -24,22 +24,17 @@ import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.SystemContactPresenter.SystemContactClickListener;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.SystemContactPresenter.SystemContactMvpView;
 
 
-public class SystemContactCardView extends CardView implements SystemContactMvpView, OnClickListener {
+public class SystemContactCardView extends CardView {
     private LinearLayout vSystemContactLayout;
     private ImageView vSystemContactPicture;
     private TextView vSystemContactName;
-
-    private SystemContactClickListener systemContactClickListener;
 
     public SystemContactCardView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -49,28 +44,16 @@ public class SystemContactCardView extends CardView implements SystemContactMvpV
         vSystemContactLayout = view.findViewById(R.id.system_contact_layout);
         vSystemContactName = view.findViewById(R.id.system_contact_name);
         vSystemContactPicture = view.findViewById(R.id.system_contact_picture);
-
-        vSystemContactLayout.setOnClickListener(this);
     }
 
-    @Override
-    public void onClick(View view) {
-        if (systemContactClickListener != null) {
-            systemContactClickListener.onSystemContactClick();
-        }
-    }
-
-    @Override
-    public void setSystemContactClickListener(SystemContactClickListener systemContactClickListener) {
-        this.systemContactClickListener = systemContactClickListener;
-        vSystemContactLayout.setClickable(systemContactClickListener != null);
+    public void setSystemContactClickListener(OnClickListener onClickListener) {
+        vSystemContactLayout.setOnClickListener(onClickListener);
     }
 
     public void hideLinkedSystemContact() {
         setVisibility(View.GONE);
     }
 
-    @Override
     public void showLinkedSystemContact(String contactName, Bitmap picture) {
         vSystemContactName.setText(contactName);
         if (picture != null) {

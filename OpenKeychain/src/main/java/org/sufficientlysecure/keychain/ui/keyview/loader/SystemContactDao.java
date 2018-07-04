@@ -60,7 +60,7 @@ public class SystemContactDao {
         this.contentResolver = contentResolver;
     }
 
-    SystemContactInfo getSystemContactInfo(long masterKeyId, boolean isSecret) {
+    public SystemContactInfo getSystemContactInfo(long masterKeyId, boolean isSecret) {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)
                 == PackageManager.PERMISSION_DENIED) {
             Timber.w(Constants.TAG, "loading linked system contact not possible READ_CONTACTS permission denied!");

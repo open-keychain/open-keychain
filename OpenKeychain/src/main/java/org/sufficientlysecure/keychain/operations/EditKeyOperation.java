@@ -19,10 +19,10 @@ package org.sufficientlysecure.keychain.operations;
 
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.os.CancellationSignal;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
@@ -35,9 +35,9 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
-import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
-import org.sufficientlysecure.keychain.provider.LastUpdateInteractor;
+import org.sufficientlysecure.keychain.daos.KeyMetadataDao;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
@@ -57,14 +57,14 @@ import org.sufficientlysecure.keychain.util.ProgressScaler;
  *
  */
 public class EditKeyOperation extends BaseReadWriteOperation<SaveKeyringParcel> {
-    private final LastUpdateInteractor lastUpdateInteractor;
+    private final KeyMetadataDao keyMetadataDao;
 
 
     public EditKeyOperation(Context context, KeyWritableRepository databaseInteractor,
-                            Progressable progressable, AtomicBoolean cancelled) {
+                            Progressable progressable, CancellationSignal cancelled) {
         super(context, databaseInteractor, progressable, cancelled);
 
-        this.lastUpdateInteractor = LastUpdateInteractor.create(context);
+        this.keyMetadataDao = KeyMetadataDao.create(context);
     }
 
     /**
@@ -171,8 +171,8 @@ public class EditKeyOperation extends BaseReadWriteOperation<SaveKeyringParcel> 
         SaveKeyringResult saveResult = mKeyWritableRepository.saveSecretKeyRing(ring);
         log.add(saveResult, 1);
 
-        if (isNewKey) {
-            lastUpdateInteractor.renewKeyLastUpdatedTime(ring.getMasterKeyId(), saveParcel.isShouldUpload());
+        if (isNewKey || saveParcel.isShouldUpload()) {
+            keyMetadataDao.renewKeyLastUpdatedTime(ring.getMasterKeyId(), saveParcel.isShouldUpload());
         }
 
         // If the save operation didn't succeed, exit here

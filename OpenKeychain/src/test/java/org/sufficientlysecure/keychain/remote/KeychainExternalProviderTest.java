@@ -18,14 +18,16 @@ import org.robolectric.shadows.ShadowBinder;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowPackageManager;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
+import org.sufficientlysecure.keychain.model.ApiApp;
+import org.sufficientlysecure.keychain.model.AutocryptPeer.GossipOrigin;
 import org.sufficientlysecure.keychain.operations.CertifyOperation;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
-import org.sufficientlysecure.keychain.provider.AutocryptPeerDataAccessObject;
+import org.sufficientlysecure.keychain.daos.ApiAppDao;
+import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
 import org.sufficientlysecure.keychain.provider.KeyRepositorySaveTest;
-import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
@@ -61,8 +63,8 @@ public class KeychainExternalProviderTest {
             KeyWritableRepository.create(RuntimeEnvironment.application);
     ContentResolver contentResolver = RuntimeEnvironment.application.getContentResolver();
     ApiPermissionHelper apiPermissionHelper;
-    ApiDataAccessObject apiDao;
-    AutocryptPeerDataAccessObject autocryptPeerDao;
+    ApiAppDao apiAppDao;
+    AutocryptPeerDao autocryptPeerDao;
 
 
     @Before
@@ -78,16 +80,16 @@ public class KeychainExternalProviderTest {
 
         ShadowBinder.setCallingUid(PACKAGE_UID);
 
-        apiDao = new ApiDataAccessObject(RuntimeEnvironment.application);
-        apiPermissionHelper = new ApiPermissionHelper(RuntimeEnvironment.application, apiDao);
-        autocryptPeerDao = new AutocryptPeerDataAccessObject(RuntimeEnvironment.application, PACKAGE_NAME);
+        apiAppDao = ApiAppDao.getInstance(RuntimeEnvironment.application);
+        apiPermissionHelper = new ApiPermissionHelper(RuntimeEnvironment.application, apiAppDao);
+        autocryptPeerDao = AutocryptPeerDao.getInstance(RuntimeEnvironment.application);
 
-        apiDao.insertApiApp(new AppSettings(PACKAGE_NAME, PACKAGE_SIGNATURE));
+        apiAppDao.insertApiApp(ApiApp.create(PACKAGE_NAME, PACKAGE_SIGNATURE));
     }
 
     @Test(expected = AccessControlException.class)
     public void testPermission__withMissingPackage() throws Exception {
-        apiDao.deleteApiApp(PACKAGE_NAME);
+        apiAppDao.deleteApiApp(PACKAGE_NAME);
 
         contentResolver.query(
                 EmailStatus.CONTENT_URI,
@@ -98,8 +100,8 @@ public class KeychainExternalProviderTest {
 
     @Test(expected = AccessControlException.class)
     public void testPermission__withWrongPackageCert() throws Exception {
-        apiDao.deleteApiApp(PACKAGE_NAME);
-        apiDao.insertApiApp(new AppSettings(PACKAGE_NAME, new byte[] { 1, 2, 4 }));
+        apiAppDao.deleteApiApp(PACKAGE_NAME);
+        apiAppDao.insertApiApp(ApiApp.create(PACKAGE_NAME, new byte[] { 1, 2, 4 }));
 
         contentResolver.query(
                 EmailStatus.CONTENT_URI,
@@ -207,7 +209,8 @@ public class KeychainExternalProviderTest {
         insertSecretKeyringFrom("/test-keys/testring.sec");
         insertPublicKeyringFrom("/test-keys/testring.pub");
 
-        autocryptPeerDao.updateKey(AUTOCRYPT_PEER, new Date(), KEY_ID_PUBLIC, false);
+        autocryptPeerDao.insertOrUpdateLastSeen(PACKAGE_NAME, "tid", new Date());
+        autocryptPeerDao.updateKey(PACKAGE_NAME, AUTOCRYPT_PEER, new Date(), KEY_ID_PUBLIC, false);
 
         Cursor cursor = contentResolver.query(
                 AutocryptStatus.CONTENT_URI, new String[] {
@@ -234,7 +237,8 @@ public class KeychainExternalProviderTest {
         insertSecretKeyringFrom("/test-keys/testring.sec");
         insertPublicKeyringFrom("/test-keys/testring.pub");
 
-        autocryptPeerDao.updateKey(AUTOCRYPT_PEER, new Date(), KEY_ID_PUBLIC, true);
+        autocryptPeerDao.insertOrUpdateLastSeen(PACKAGE_NAME, "tid", new Date());
+        autocryptPeerDao.updateKey(PACKAGE_NAME, AUTOCRYPT_PEER, new Date(), KEY_ID_PUBLIC, true);
 
         Cursor cursor = contentResolver.query(
                 AutocryptStatus.CONTENT_URI, new String[] {
@@ -261,7 +265,8 @@ public class KeychainExternalProviderTest {
         insertSecretKeyringFrom("/test-keys/testring.sec");
         insertPublicKeyringFrom("/test-keys/testring.pub");
 
-        autocryptPeerDao.updateKey("tid", new Date(), KEY_ID_PUBLIC, false);
+        autocryptPeerDao.insertOrUpdateLastSeen(PACKAGE_NAME, "tid", new Date());
+        autocryptPeerDao.updateKey(PACKAGE_NAME, AUTOCRYPT_PEER, new Date(), KEY_ID_PUBLIC, false);
         certifyKey(KEY_ID_SECRET, KEY_ID_PUBLIC, USER_ID_1);
 
         Cursor cursor = contentResolver.query(
@@ -305,8 +310,9 @@ public class KeychainExternalProviderTest {
         insertSecretKeyringFrom("/test-keys/testring.sec");
         insertPublicKeyringFrom("/test-keys/testring.pub");
 
-        autocryptPeerDao.updateKeyGossipFromAutocrypt("tid", new Date(), KEY_ID_PUBLIC);
-        autocryptPeerDao.delete("tid");
+        autocryptPeerDao.insertOrUpdateLastSeen(PACKAGE_NAME, "tid", new Date());
+        autocryptPeerDao.updateKeyGossip(PACKAGE_NAME, "tid", new Date(), KEY_ID_PUBLIC, GossipOrigin.GOSSIP_HEADER);
+        autocryptPeerDao.deleteByIdentifier(PACKAGE_NAME, "tid");
 
         Cursor cursor = contentResolver.query(
                 AutocryptStatus.CONTENT_URI, new String[] {
@@ -330,7 +336,8 @@ public class KeychainExternalProviderTest {
         insertSecretKeyringFrom("/test-keys/testring.sec");
         insertPublicKeyringFrom("/test-keys/testring.pub");
 
-        autocryptPeerDao.updateKeyGossipFromAutocrypt(AUTOCRYPT_PEER, new Date(), KEY_ID_PUBLIC);
+        autocryptPeerDao.insertOrUpdateLastSeen(PACKAGE_NAME, "tid", new Date());
+        autocryptPeerDao.updateKeyGossip(PACKAGE_NAME, AUTOCRYPT_PEER, new Date(), KEY_ID_PUBLIC, GossipOrigin.GOSSIP_HEADER);
         certifyKey(KEY_ID_SECRET, KEY_ID_PUBLIC, USER_ID_1);
 
         Cursor cursor = contentResolver.query(

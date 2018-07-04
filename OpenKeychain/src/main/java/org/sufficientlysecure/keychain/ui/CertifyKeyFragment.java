@@ -20,101 +20,105 @@ package org.sufficientlysecure.keychain.ui;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import android.app.Activity;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.base.CachingCryptoOperationFragment;
+import org.sufficientlysecure.keychain.ui.keyview.GenericViewModel;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
-import org.sufficientlysecure.keychain.ui.widget.CertifyKeySpinner;
+import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
 import org.sufficientlysecure.keychain.util.Preferences;
-import timber.log.Timber;
 
 
-public class CertifyKeyFragment
-        extends CachingCryptoOperationFragment<CertifyActionsParcel, CertifyResult> {
+public class CertifyKeyFragment extends CachingCryptoOperationFragment<CertifyActionsParcel, CertifyResult> {
+    private KeyRepository keyRepository;
 
-    private CheckBox mUploadKeyCheckbox;
+    private CheckBox uploadKeyCheckbox;
+    private KeySpinner certifyKeySpinner;
+    private MultiUserIdsFragment multiUserIdsFragment;
 
-    private CertifyKeySpinner mCertifyKeySpinner;
-
-    private MultiUserIdsFragment mMultiUserIdsFragment;
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        keyRepository = KeyRepository.create(requireContext());
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Activity activity = requireActivity();
+
+        GenericViewModel viewModel = ViewModelProviders.of(this).get(GenericViewModel.class);
+        LiveData<List<UnifiedKeyInfo>> liveData = viewModel.getGenericLiveData(
+                requireContext(), keyRepository::getAllUnifiedKeyInfoWithSecret);
+        liveData.observe(this, certifyKeySpinner::setData);
 
         if (savedInstanceState == null) {
             // preselect certify key id if given
-            long certifyKeyId = getActivity().getIntent()
+            long certifyKeyId = activity.getIntent()
                     .getLongExtra(CertifyKeyActivity.EXTRA_CERTIFY_KEY_ID, Constants.key.none);
             if (certifyKeyId != Constants.key.none) {
-                try {
-                    CachedPublicKeyRing key = (KeyRepository
-                            .create(getContext()))
-                            .getCachedPublicKeyRing(certifyKeyId);
-                    if (key.canCertify()) {
-                        mCertifyKeySpinner.setPreSelectedKeyId(certifyKeyId);
-                    }
-                } catch (PgpKeyNotFoundException e) {
-                    Timber.e(e, "certify certify check failed");
+                UnifiedKeyInfo unifiedKeyInfo = keyRepository.getUnifiedKeyInfo(certifyKeyId);
+                if (unifiedKeyInfo != null && unifiedKeyInfo.can_certify()) {
+                    certifyKeySpinner.setPreSelectedKeyId(certifyKeyId);
                 }
             }
         }
 
-        OperationResult result = getActivity().getIntent().getParcelableExtra(CertifyKeyActivity.EXTRA_RESULT);
+        OperationResult result = activity.getIntent().getParcelableExtra(CertifyKeyActivity.EXTRA_RESULT);
         if (result != null) {
             // display result from import
-            result.createNotify(getActivity()).show();
+            result.createNotify(activity).show();
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.certify_key_fragment, null);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.certify_key_fragment, superContainer, false);
 
-        mCertifyKeySpinner = view.findViewById(R.id.certify_key_spinner);
-        mUploadKeyCheckbox = view.findViewById(R.id.sign_key_upload_checkbox);
-        mMultiUserIdsFragment = (MultiUserIdsFragment)
+        certifyKeySpinner = view.findViewById(R.id.certify_key_spinner);
+        uploadKeyCheckbox = view.findViewById(R.id.sign_key_upload_checkbox);
+        multiUserIdsFragment = (MultiUserIdsFragment)
                 getChildFragmentManager().findFragmentById(R.id.multi_user_ids_fragment);
+
+        certifyKeySpinner.setShowNone(R.string.choice_select_cert);
 
         // make certify image gray, like action icons
         ImageView vActionCertifyImage =
                 view.findViewById(R.id.certify_key_action_certify_image);
-        vActionCertifyImage.setColorFilter(FormattingUtils.getColorFromAttr(getActivity(), R.attr.colorTertiaryText),
+        vActionCertifyImage.setColorFilter(FormattingUtils.getColorFromAttr(requireActivity(), R.attr.colorTertiaryText),
                 PorterDuff.Mode.SRC_IN);
 
         View vCertifyButton = view.findViewById(R.id.certify_key_certify_button);
-        vCertifyButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                long selectedKeyId = mCertifyKeySpinner.getSelectedKeyId();
-                if (selectedKeyId == Constants.key.none) {
-                    Notify.create(getActivity(), getString(R.string.select_key_to_certify),
-                            Notify.Style.ERROR).show();
-                } else {
-                    cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
-                }
+        vCertifyButton.setOnClickListener(v -> {
+            long selectedKeyId = certifyKeySpinner.getSelectedKeyId();
+            if (selectedKeyId == Constants.key.none) {
+                Notify.create(getActivity(), getString(R.string.select_key_to_certify),
+                        Notify.Style.ERROR).show();
+            } else {
+                cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
             }
         });
 
@@ -123,22 +127,20 @@ public class CertifyKeyFragment
 
     @Override
     public CertifyActionsParcel createOperationInput() {
-
         // Bail out if there is not at least one user id selected
-        ArrayList<CertifyAction> certifyActions = mMultiUserIdsFragment.getSelectedCertifyActions();
+        ArrayList<CertifyAction> certifyActions = multiUserIdsFragment.getSelectedCertifyActions();
         if (certifyActions.isEmpty()) {
-            Notify.create(getActivity(), "No identities selected!",
-                    Notify.Style.ERROR).show();
+            Notify.create(getActivity(), "No identities selected!", Notify.Style.ERROR).show();
             return null;
         }
 
-        long selectedKeyId = mCertifyKeySpinner.getSelectedKeyId();
+        long selectedKeyId = certifyKeySpinner.getSelectedKeyId();
 
         // fill values for this action
         CertifyActionsParcel.Builder actionsParcel = CertifyActionsParcel.builder(selectedKeyId);
         actionsParcel.addActions(certifyActions);
 
-        if (mUploadKeyCheckbox.isChecked()) {
+        if (uploadKeyCheckbox.isChecked()) {
             actionsParcel.setParcelableKeyServer(Preferences.getPreferences(getActivity()).getPreferredKeyserver());
         }
 
@@ -151,7 +153,7 @@ public class CertifyKeyFragment
     @Override
     public void onQueuedOperationSuccess(CertifyResult result) {
         // protected by Queueing*Fragment
-        Activity activity = getActivity();
+        Activity activity = requireActivity();
 
         Intent intent = new Intent();
         intent.putExtra(CertifyResult.EXTRA_RESULT, result);

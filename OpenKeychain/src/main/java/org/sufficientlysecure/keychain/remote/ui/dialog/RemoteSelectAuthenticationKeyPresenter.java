@@ -20,52 +20,49 @@ package org.sufficientlysecure.keychain.remote.ui.dialog;
 
 import java.util.List;
 
+import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.Loader;
 
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeyInfo;
-import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeySelector;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectAuthenticationKeyActivity.SelectAuthKeyViewModel;
 import timber.log.Timber;
 
 
-class RemoteSelectAuthenticationKeyPresenter implements LoaderCallbacks<List<KeyInfo>> {
+class RemoteSelectAuthenticationKeyPresenter {
     private final PackageManager packageManager;
+    private final LifecycleOwner lifecycleOwner;
     private final Context context;
-    private final int loaderId;
 
 
     private RemoteSelectAuthenticationKeyView view;
     private Integer selectedItem;
-    private List<KeyInfo> keyInfoData;
+    private List<UnifiedKeyInfo> keyInfoData;
 
 
-    RemoteSelectAuthenticationKeyPresenter(Context context, int loaderId) {
+    RemoteSelectAuthenticationKeyPresenter(Context context, LifecycleOwner lifecycleOwner) {
         this.context = context;
+        this.lifecycleOwner = lifecycleOwner;
 
         packageManager = context.getPackageManager();
-
-        this.loaderId = loaderId;
     }
 
     public void setView(RemoteSelectAuthenticationKeyView view) {
         this.view = view;
     }
 
-    void setupFromIntentData(String packageName) {
+    void setupFromViewModel(SelectAuthKeyViewModel viewModel) {
         try {
-            setPackageInfo(packageName);
+            setPackageInfo(viewModel.getPackageName());
         } catch (NameNotFoundException e) {
             Timber.e("Unable to find info of calling app!");
             view.finishAsCancelled();
         }
+
+        viewModel.getKeyInfoLiveData(context).observe(lifecycleOwner, this::onLoadKeyInfos);
     }
 
     private void setPackageInfo(String packageName) throws NameNotFoundException {
@@ -75,29 +72,9 @@ class RemoteSelectAuthenticationKeyPresenter implements LoaderCallbacks<List<Key
         view.setTitleClientIcon(appIcon);
     }
 
-    void startLoaders(LoaderManager loaderManager) {
-        loaderManager.restartLoader(loaderId, null, this);
-    }
-
-    @Override
-    public Loader<List<KeyInfo>> onCreateLoader(int id, Bundle args) {
-        String selection = KeyRings.HAS_AUTHENTICATE_SECRET + " != 0";
-        KeySelector keySelector = KeySelector.create(
-                KeyRings.buildUnifiedKeyRingsUri(), selection);
-        return new KeyInfoLoader(context, context.getContentResolver(), keySelector);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<List<KeyInfo>> loader, List<KeyInfo> data) {
+    private void onLoadKeyInfos(List<UnifiedKeyInfo> data) {
         this.keyInfoData = data;
         view.setKeyListData(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader loader) {
-        if (view != null) {
-            view.setKeyListData(null);
-        }
     }
 
     void onClickSelect() {
@@ -110,7 +87,7 @@ class RemoteSelectAuthenticationKeyPresenter implements LoaderCallbacks<List<Key
             return;
         }
 
-        long masterKeyId = keyInfoData.get(selectedItem).getMasterKeyId();
+        long masterKeyId = keyInfoData.get(selectedItem).master_key_id();
         view.finish(masterKeyId);
     }
 
@@ -138,7 +115,7 @@ class RemoteSelectAuthenticationKeyPresenter implements LoaderCallbacks<List<Key
 
         void setTitleClientIcon(Drawable drawable);
 
-        void setKeyListData(List<KeyInfo> data);
+        void setKeyListData(List<UnifiedKeyInfo> data);
         void setActiveItem(Integer position);
         void setEnableSelectButton(boolean enabled);
     }

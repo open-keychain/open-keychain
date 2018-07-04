@@ -19,10 +19,10 @@ package org.sufficientlysecure.keychain.operations;
 
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.os.CancellationSignal;
 
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -38,10 +38,9 @@ import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation.PgpCertifyResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
-import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
-import org.sufficientlysecure.keychain.provider.LastUpdateInteractor;
+import org.sufficientlysecure.keychain.daos.KeyMetadataDao;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
@@ -62,13 +61,13 @@ import org.sufficientlysecure.keychain.util.Passphrase;
  * @see CertifyActionsParcel
  */
 public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParcel> {
-    private final LastUpdateInteractor lastUpdateInteractor;
+    private final KeyMetadataDao keyMetadataDao;
 
-    public CertifyOperation(Context context, KeyWritableRepository databaseInteractor, Progressable progressable, AtomicBoolean
+    public CertifyOperation(Context context, KeyWritableRepository keyWritableRepository, Progressable progressable, CancellationSignal
             cancelled) {
-        super(context, databaseInteractor, progressable, cancelled);
+        super(context, keyWritableRepository, progressable, cancelled);
 
-        this.lastUpdateInteractor = LastUpdateInteractor.create(context);
+        this.keyMetadataDao = KeyMetadataDao.create(context);
     }
 
     @NonNull
@@ -85,10 +84,8 @@ public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParce
 
             log.add(LogType.MSG_CRT_MASTER_FETCH, 1);
 
-            CachedPublicKeyRing cachedPublicKeyRing = mKeyRepository.getCachedPublicKeyRing(masterKeyId);
             Passphrase passphrase;
-
-            switch (cachedPublicKeyRing.getSecretKeyType(masterKeyId)) {
+            switch (mKeyRepository.getSecretKeyType(masterKeyId)) {
                 case PASSPHRASE:
                     passphrase = cryptoInput.getPassphrase();
                     if (passphrase == null) {
@@ -234,7 +231,7 @@ public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParce
                 log.add(uploadResult, 2);
 
                 if (uploadResult.success()) {
-                    lastUpdateInteractor.renewKeyLastUpdatedTime(certifiedKey.getMasterKeyId(), true);
+                    keyMetadataDao.renewKeyLastUpdatedTime(certifiedKey.getMasterKeyId(), true);
 
                     uploadOk += 1;
                 } else {

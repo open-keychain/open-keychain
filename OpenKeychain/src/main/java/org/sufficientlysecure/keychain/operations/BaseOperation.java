@@ -18,19 +18,17 @@
 package org.sufficientlysecure.keychain.operations;
 
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import android.content.Context;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.v4.os.CancellationSignal;
 
 import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -39,7 +37,7 @@ public abstract class BaseOperation<T extends Parcelable> implements PassphraseC
 
     final public Context mContext;
     final public Progressable mProgressable;
-    final public AtomicBoolean mCancelled;
+    final public CancellationSignal mCancelled;
 
     final public KeyRepository mKeyRepository;
 
@@ -73,7 +71,7 @@ public abstract class BaseOperation<T extends Parcelable> implements PassphraseC
     }
 
     public BaseOperation(Context context, KeyRepository keyRepository,
-            Progressable progressable, AtomicBoolean cancelled) {
+            Progressable progressable, CancellationSignal cancelled) {
         mContext = context;
         mProgressable = progressable;
         mKeyRepository = keyRepository;
@@ -102,7 +100,7 @@ public abstract class BaseOperation<T extends Parcelable> implements PassphraseC
     }
 
     protected boolean checkCancelled() {
-        return mCancelled != null && mCancelled.get();
+        return mCancelled != null && mCancelled.isCanceled();
     }
 
     protected void setPreventCancel () {
@@ -113,15 +111,14 @@ public abstract class BaseOperation<T extends Parcelable> implements PassphraseC
 
     @Override
     public Passphrase getCachedPassphrase(long subKeyId) throws NoSecretKeyException {
-        try {
-            if (subKeyId != key.symmetric) {
-                long masterKeyId = mKeyRepository.getMasterKeyId(subKeyId);
-                return getCachedPassphrase(masterKeyId, subKeyId);
+        if (subKeyId != key.symmetric) {
+            Long masterKeyId = mKeyRepository.getMasterKeyIdBySubkeyId(subKeyId);
+            if (masterKeyId == null) {
+                throw new PassphraseCacheInterface.NoSecretKeyException();
             }
-            return getCachedPassphrase(key.symmetric, key.symmetric);
-        } catch (NotFoundException e) {
-            throw new PassphraseCacheInterface.NoSecretKeyException();
+            return getCachedPassphrase(masterKeyId, subKeyId);
         }
+        return getCachedPassphrase(key.symmetric, key.symmetric);
     }
 
     @Override

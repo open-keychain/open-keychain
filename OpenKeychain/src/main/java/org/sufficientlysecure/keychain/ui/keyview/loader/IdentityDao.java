@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import android.content.ContentResolver;
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -33,71 +33,45 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
+import com.squareup.sqldelight.SqlDelightQuery;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.linked.LinkedAttribute;
 import org.sufficientlysecure.keychain.linked.UriAttribute;
-import org.sufficientlysecure.keychain.provider.KeychainContract.ApiAutocryptPeer;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
+import org.sufficientlysecure.keychain.model.AutocryptPeer;
+import org.sufficientlysecure.keychain.model.UserPacket;
+import org.sufficientlysecure.keychain.model.UserPacket.UserAttribute;
+import org.sufficientlysecure.keychain.model.UserPacket.UserId;
+import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
+import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
+import org.sufficientlysecure.keychain.KeychainDatabase;
 import org.sufficientlysecure.keychain.ui.util.PackageIconGetter;
 import timber.log.Timber;
 
 
 public class IdentityDao {
-    private static final String[] USER_PACKETS_PROJECTION = new String[]{
-            UserPackets._ID,
-            UserPackets.TYPE,
-            UserPackets.USER_ID,
-            UserPackets.ATTRIBUTE_DATA,
-            UserPackets.RANK,
-            UserPackets.VERIFIED,
-            UserPackets.IS_PRIMARY,
-            UserPackets.IS_REVOKED,
-            UserPackets.NAME,
-            UserPackets.EMAIL,
-            UserPackets.COMMENT,
-    };
-    private static final int INDEX_ID = 0;
-    private static final int INDEX_TYPE = 1;
-    private static final int INDEX_USER_ID = 2;
-    private static final int INDEX_ATTRIBUTE_DATA = 3;
-    private static final int INDEX_RANK = 4;
-    private static final int INDEX_VERIFIED = 5;
-    private static final int INDEX_IS_PRIMARY = 6;
-    private static final int INDEX_IS_REVOKED = 7;
-    private static final int INDEX_NAME = 8;
-    private static final int INDEX_EMAIL = 9;
-    private static final int INDEX_COMMENT = 10;
-
-    private static final String USER_IDS_WHERE = UserPackets.IS_REVOKED + " = 0";
-
-    private static final String[] AUTOCRYPT_PEER_PROJECTION = new String[] {
-            ApiAutocryptPeer._ID,
-            ApiAutocryptPeer.PACKAGE_NAME,
-            ApiAutocryptPeer.IDENTIFIER,
-    };
-    private static final int INDEX_PACKAGE_NAME = 1;
-    private static final int INDEX_IDENTIFIER = 2;
-
-
-    private final ContentResolver contentResolver;
+    private final SupportSQLiteDatabase db;
     private final PackageIconGetter packageIconGetter;
     private final PackageManager packageManager;
+    private final AutocryptPeerDao autocryptPeerDao;
 
-    static IdentityDao getInstance(Context context) {
-        ContentResolver contentResolver = context.getContentResolver();
+    public static IdentityDao getInstance(Context context) {
+        SupportSQLiteDatabase db = KeychainDatabase.getInstance(context).getWritableDatabase();
         PackageManager packageManager = context.getPackageManager();
         PackageIconGetter iconGetter = PackageIconGetter.getInstance(context);
-        return new IdentityDao(contentResolver, packageManager, iconGetter);
+        AutocryptPeerDao autocryptPeerDao = AutocryptPeerDao.getInstance(context);
+        return new IdentityDao(db, packageManager, iconGetter, autocryptPeerDao);
     }
 
-    private IdentityDao(ContentResolver contentResolver, PackageManager packageManager, PackageIconGetter iconGetter) {
+    private IdentityDao(SupportSQLiteDatabase db,
+            PackageManager packageManager, PackageIconGetter iconGetter,
+            AutocryptPeerDao autocryptPeerDao) {
+        this.db = db;
         this.packageManager = packageManager;
-        this.contentResolver = contentResolver;
         this.packageIconGetter = iconGetter;
+        this.autocryptPeerDao = autocryptPeerDao;
     }
 
-    List<IdentityInfo> getIdentityInfos(long masterKeyId, boolean showLinkedIds) {
+    public List<IdentityInfo> getIdentityInfos(long masterKeyId, boolean showLinkedIds) {
         ArrayList<IdentityInfo> identities = new ArrayList<>();
 
         if (showLinkedIds) {
@@ -110,35 +84,24 @@ public class IdentityDao {
     }
 
     private void correlateOrAddAutocryptPeers(ArrayList<IdentityInfo> identities, long masterKeyId) {
-        Cursor cursor = contentResolver.query(ApiAutocryptPeer.buildByMasterKeyId(masterKeyId),
-                AUTOCRYPT_PEER_PROJECTION, null, null, null);
-        if (cursor == null) {
-            Timber.e("Error loading Autocrypt peers");
-            return;
-        }
+        for (AutocryptPeer autocryptPeer : autocryptPeerDao.getAutocryptPeersForKey(masterKeyId)) {
+            String packageName = autocryptPeer.package_name();
+            String autocryptId = autocryptPeer.identifier();
 
-        try {
-            while (cursor.moveToNext()) {
-                String packageName = cursor.getString(INDEX_PACKAGE_NAME);
-                String autocryptPeer = cursor.getString(INDEX_IDENTIFIER);
+            Drawable drawable = packageIconGetter.getDrawableForPackageName(packageName);
+            Intent autocryptPeerIntent = getAutocryptPeerActivityIntentIfResolvable(packageName, autocryptId);
 
-                Drawable drawable = packageIconGetter.getDrawableForPackageName(packageName);
-                Intent autocryptPeerIntent = getAutocryptPeerActivityIntentIfResolvable(packageName, autocryptPeer);
-
-                UserIdInfo associatedUserIdInfo = findUserIdMatchingAutocryptPeer(identities, autocryptPeer);
-                if (associatedUserIdInfo != null) {
-                    int position = identities.indexOf(associatedUserIdInfo);
-                    AutocryptPeerInfo autocryptPeerInfo = AutocryptPeerInfo
-                            .create(associatedUserIdInfo, autocryptPeer, packageName, drawable, autocryptPeerIntent);
-                    identities.set(position, autocryptPeerInfo);
-                } else {
-                    AutocryptPeerInfo autocryptPeerInfo = AutocryptPeerInfo
-                            .create(autocryptPeer, packageName, drawable, autocryptPeerIntent);
-                    identities.add(autocryptPeerInfo);
-                }
+            UserIdInfo associatedUserIdInfo = findUserIdMatchingAutocryptPeer(identities, autocryptId);
+            if (associatedUserIdInfo != null) {
+                int position = identities.indexOf(associatedUserIdInfo);
+                AutocryptPeerInfo autocryptPeerInfo = AutocryptPeerInfo
+                        .create(masterKeyId, associatedUserIdInfo, autocryptId, packageName, drawable, autocryptPeerIntent);
+                identities.set(position, autocryptPeerInfo);
+            } else {
+                AutocryptPeerInfo autocryptPeerInfo = AutocryptPeerInfo
+                        .create(masterKeyId, autocryptId, packageName, drawable, autocryptPeerIntent);
+                identities.add(autocryptPeerInfo);
             }
-        } finally {
-            cursor.close();
         }
     }
 
@@ -170,73 +133,72 @@ public class IdentityDao {
     }
 
     private void loadLinkedIds(ArrayList<IdentityInfo> identities, long masterKeyId) {
-        Cursor cursor = contentResolver.query(UserPackets.buildLinkedIdsUri(masterKeyId),
-                USER_PACKETS_PROJECTION, USER_IDS_WHERE, null, null);
-        if (cursor == null) {
-            Timber.e("Error loading key items!");
-            return;
-        }
-
-        try {
+        SqlDelightQuery query = UserPacket.FACTORY.selectUserAttributesByTypeAndMasterKeyId(
+                (long) WrappedUserAttribute.UAT_URI_ATTRIBUTE, masterKeyId);
+        try (Cursor cursor = db.query(query)) {
             while (cursor.moveToNext()) {
-                int rank = cursor.getInt(INDEX_RANK);
-                int verified = cursor.getInt(INDEX_VERIFIED);
-                boolean isPrimary = cursor.getInt(INDEX_IS_PRIMARY) != 0;
+                UserAttribute userAttribute = UserPacket.USER_ATTRIBUTE_MAPPER.map(cursor);
 
-                byte[] data = cursor.getBlob(INDEX_ATTRIBUTE_DATA);
-                try {
-                    UriAttribute uriAttribute = LinkedAttribute.fromAttributeData(data);
-                    if (uriAttribute instanceof LinkedAttribute) {
-                        LinkedIdInfo identityInfo = LinkedIdInfo.create(rank, verified, isPrimary, uriAttribute);
-                        identities.add(identityInfo);
-                    }
-                } catch (IOException e) {
-                    Timber.e(e, "Failed parsing uri attribute");
-                }
+                LinkedIdInfo linkedIdInfo = parseLinkedIdInfo(userAttribute);
+                identities.add(linkedIdInfo);
             }
-        } finally {
-            cursor.close();
         }
     }
 
-    private void loadUserIds(ArrayList<IdentityInfo> identities, long masterKeyId) {
-        Cursor cursor = contentResolver.query(UserPackets.buildUserIdsUri(masterKeyId),
-                USER_PACKETS_PROJECTION, USER_IDS_WHERE, null, null);
-        if (cursor == null) {
-            Timber.e("Error loading key items!");
-            return;
+    public LinkedIdInfo getLinkedIdInfo(long masterKeyId, int rank) {
+        SqlDelightQuery query = UserPacket.FACTORY.selectSpecificUserAttribute(
+                (long) WrappedUserAttribute.UAT_URI_ATTRIBUTE, masterKeyId, rank);
+        try (Cursor cursor = db.query(query)) {
+            if (cursor.moveToFirst()) {
+                UserAttribute userAttribute = UserPacket.USER_ATTRIBUTE_MAPPER.map(cursor);
+
+                return parseLinkedIdInfo(userAttribute);
+            }
         }
+        return null;
+    }
 
+    @Nullable
+    private LinkedIdInfo parseLinkedIdInfo(UserAttribute userAttribute) {
         try {
+            UriAttribute uriAttribute = LinkedAttribute.fromAttributeData(userAttribute.attribute_data());
+            if (uriAttribute instanceof LinkedAttribute) {
+                return LinkedIdInfo.create(userAttribute.master_key_id(), userAttribute.rank(),
+                        userAttribute.isVerified(), userAttribute.is_primary(), (LinkedAttribute) uriAttribute);
+            }
+        } catch (IOException e) {
+            Timber.e(e, "Failed parsing uri attribute");
+        }
+        return null;
+    }
+
+    private void loadUserIds(ArrayList<IdentityInfo> identities, long... masterKeyId) {
+        SqlDelightQuery query = UserPacket.FACTORY.selectUserIdsByMasterKeyId(masterKeyId);
+        try (Cursor cursor = db.query(query)) {
             while (cursor.moveToNext()) {
-                int rank = cursor.getInt(INDEX_RANK);
-                int verified = cursor.getInt(INDEX_VERIFIED);
-                boolean isPrimary = cursor.getInt(INDEX_IS_PRIMARY) != 0;
+                UserId userId = UserPacket.USER_ID_MAPPER.map(cursor);
 
-                if (!cursor.isNull(INDEX_NAME) || !cursor.isNull(INDEX_EMAIL)) {
-                    String name = cursor.getString(INDEX_NAME);
-                    String email = cursor.getString(INDEX_EMAIL);
-                    String comment = cursor.getString(INDEX_COMMENT);
-
-                    IdentityInfo identityInfo = UserIdInfo.create(rank, verified, isPrimary, name, email, comment);
+                if (userId.name() != null || userId.email() != null) {
+                    IdentityInfo identityInfo = UserIdInfo.create(
+                            userId.master_key_id(), userId.rank(), userId.isVerified(), userId.is_primary(), userId.name(), userId.email(), userId.comment());
                     identities.add(identityInfo);
                 }
             }
-        } finally {
-            cursor.close();
         }
     }
 
     public interface IdentityInfo {
+        long getMasterKeyId();
         int getRank();
-        int getVerified();
+        boolean isVerified();
         boolean isPrimary();
     }
 
     @AutoValue
     public abstract static class UserIdInfo implements IdentityInfo {
+        public abstract long getMasterKeyId();
         public abstract int getRank();
-        public abstract int getVerified();
+        public abstract boolean isVerified();
         public abstract boolean isPrimary();
 
         @Nullable
@@ -246,29 +208,31 @@ public class IdentityDao {
         @Nullable
         public abstract String getComment();
 
-        static UserIdInfo create(int rank, int verified, boolean isPrimary, String name, String email,
+        static UserIdInfo create(long masterKeyId, int rank, boolean isVerified, boolean isPrimary, String name, String email,
                 String comment) {
-            return new AutoValue_IdentityDao_UserIdInfo(rank, verified, isPrimary, name, email, comment);
+            return new AutoValue_IdentityDao_UserIdInfo(masterKeyId, rank, isVerified, isPrimary, name, email, comment);
         }
     }
 
     @AutoValue
     public abstract static class LinkedIdInfo implements IdentityInfo {
+        public abstract long getMasterKeyId();
         public abstract int getRank();
-        public abstract int getVerified();
+        public abstract boolean isVerified();
         public abstract boolean isPrimary();
 
-        public abstract UriAttribute getUriAttribute();
+        public abstract LinkedAttribute getLinkedAttribute();
 
-        static LinkedIdInfo create(int rank, int verified, boolean isPrimary, UriAttribute uriAttribute) {
-            return new AutoValue_IdentityDao_LinkedIdInfo(rank, verified, isPrimary, uriAttribute);
+        static LinkedIdInfo create(long masterKeyId, int rank, boolean isVerified, boolean isPrimary, LinkedAttribute linkedAttribute) {
+            return new AutoValue_IdentityDao_LinkedIdInfo(masterKeyId, rank, isVerified, isPrimary, linkedAttribute);
         }
     }
 
     @AutoValue
     public abstract static class AutocryptPeerInfo implements IdentityInfo {
+        public abstract long getMasterKeyId();
         public abstract int getRank();
-        public abstract int getVerified();
+        public abstract boolean isVerified();
         public abstract boolean isPrimary();
 
         public abstract String getIdentity();
@@ -280,15 +244,14 @@ public class IdentityDao {
         @Nullable
         public abstract Intent getAutocryptPeerIntent();
 
-        static AutocryptPeerInfo create(UserIdInfo userIdInfo, String autocryptPeer, String packageName,
+        static AutocryptPeerInfo create(long masterKeyId, UserIdInfo userIdInfo, String autocryptPeer, String packageName,
                 Drawable appIcon, Intent autocryptPeerIntent) {
-            return new AutoValue_IdentityDao_AutocryptPeerInfo(userIdInfo.getRank(), userIdInfo.getVerified(),
+            return new AutoValue_IdentityDao_AutocryptPeerInfo(masterKeyId, userIdInfo.getRank(), userIdInfo.isVerified(),
                     userIdInfo.isPrimary(), autocryptPeer, packageName, appIcon, userIdInfo, autocryptPeerIntent);
         }
 
-        static AutocryptPeerInfo create(String autocryptPeer, String packageName, Drawable appIcon, Intent autocryptPeerIntent) {
-            return new AutoValue_IdentityDao_AutocryptPeerInfo(
-                    0, Certs.VERIFIED_SELF, false, autocryptPeer, packageName, appIcon, null, autocryptPeerIntent);
+        static AutocryptPeerInfo create(long masterKeyId, String autocryptPeer, String packageName, Drawable appIcon, Intent autocryptPeerIntent) {
+            return new AutoValue_IdentityDao_AutocryptPeerInfo(masterKeyId,0, false, false, autocryptPeer, packageName, appIcon, null, autocryptPeerIntent);
         }
     }
 

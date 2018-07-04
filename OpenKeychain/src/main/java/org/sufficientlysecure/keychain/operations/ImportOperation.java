@@ -29,11 +29,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.os.CancellationSignal;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.FacebookKeyserverClient;
@@ -54,8 +54,8 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
-import org.sufficientlysecure.keychain.provider.LastUpdateInteractor;
+import org.sufficientlysecure.keychain.daos.KeyMetadataDao;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -90,7 +90,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
 
     public static final String CACHE_FILE_NAME = "key_import.pcl";
 
-    private final LastUpdateInteractor lastUpdateInteractor;
+    private final KeyMetadataDao keyMetadataDao;
 
     private FacebookKeyserverClient facebookServer;
     private KeybaseKeyserverClient keybaseServer;
@@ -98,14 +98,14 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
     public ImportOperation(Context context, KeyWritableRepository databaseInteractor, Progressable progressable) {
         super(context, databaseInteractor, progressable);
 
-        this.lastUpdateInteractor = LastUpdateInteractor.create(context);
+        this.keyMetadataDao = KeyMetadataDao.create(context);
     }
 
     public ImportOperation(Context context, KeyWritableRepository databaseInteractor,
-                           Progressable progressable, AtomicBoolean cancelled) {
+                           Progressable progressable, CancellationSignal cancelled) {
         super(context, databaseInteractor, progressable, cancelled);
 
-        this.lastUpdateInteractor = LastUpdateInteractor.create(context);
+        this.keyMetadataDao = KeyMetadataDao.create(context);
     }
 
     // Overloaded functions for using progressable supplied in constructor during import
@@ -200,7 +200,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
 
                         byte[] fingerprintHex = entry.getExpectedFingerprint();
                         if (fingerprintHex != null) {
-                            lastUpdateInteractor.renewKeyLastUpdatedTime(
+                            keyMetadataDao.renewKeyLastUpdatedTime(
                                     KeyFormattingUtils.getKeyIdFromFingerprint(fingerprintHex), false);
                         }
                         continue;
@@ -249,8 +249,8 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
                         importedMasterKeyIds.add(key.getMasterKeyId());
                     }
 
-                    if (!skipSave) {
-                        lastUpdateInteractor.renewKeyLastUpdatedTime(key.getMasterKeyId(), keyWasDownloaded);
+                    if (!skipSave && keyWasDownloaded) {
+                        keyMetadataDao.renewKeyLastUpdatedTime(key.getMasterKeyId(), true);
                     }
                 }
 

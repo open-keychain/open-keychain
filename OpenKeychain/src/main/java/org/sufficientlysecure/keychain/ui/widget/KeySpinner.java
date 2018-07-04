@@ -18,39 +18,22 @@
 package org.sufficientlysecure.keychain.ui.widget;
 
 
+import java.util.List;
+
 import android.content.Context;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.AppCompatSpinner;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.SpinnerAdapter;
-import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter;
-import org.sufficientlysecure.keychain.ui.adapter.KeyAdapter.KeyItem;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 
-
-/**
- * Use AppCompatSpinner from AppCompat lib instead of Spinner. Fixes white dropdown icon.
- * Related: http://stackoverflow.com/a/27713090
- */
-public abstract class KeySpinner extends AppCompatSpinner implements
-        LoaderManager.LoaderCallbacks<Cursor> {
-
+public class KeySpinner extends AppCompatSpinner {
     public static final String ARG_SUPER_STATE = "super_state";
     public static final String ARG_KEY_ID = "key_id";
 
@@ -58,12 +41,9 @@ public abstract class KeySpinner extends AppCompatSpinner implements
         void onKeyChanged(long masterKeyId);
     }
 
-    protected long mPreSelectedKeyId = Constants.key.none;
-    protected SelectKeyAdapter mAdapter = new SelectKeyAdapter();
+    protected Long preSelectedKeyId;
+    protected KeyChoiceSpinnerAdapter spinnerAdapter;
     protected OnKeyChangedListener mListener;
-
-    // this shall note collide with other loaders inside the activity
-    protected int LOADER_ID = 2343;
 
     public KeySpinner(Context context) {
         super(context);
@@ -81,7 +61,9 @@ public abstract class KeySpinner extends AppCompatSpinner implements
     }
 
     private void initView() {
-        setAdapter(mAdapter);
+        spinnerAdapter = new KeyChoiceSpinnerAdapter(getContext());
+
+        setAdapter(spinnerAdapter);
         super.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -100,6 +82,10 @@ public abstract class KeySpinner extends AppCompatSpinner implements
         });
     }
 
+    public void setShowNone(@StringRes Integer noneStringRes) {
+        spinnerAdapter.setNoneItemString(noneStringRes);
+    }
+
     @Override
     public void setOnItemSelectedListener(OnItemSelectedListener listener) {
         throw new UnsupportedOperationException();
@@ -109,32 +95,32 @@ public abstract class KeySpinner extends AppCompatSpinner implements
         mListener = listener;
     }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        reload();
+    public void setData(List<UnifiedKeyInfo> keyInfos) {
+        spinnerAdapter.setData(keyInfos);
+        maybeSelectPreselection(keyInfos);
     }
 
-    public void reload() {
-        if (getContext() instanceof FragmentActivity) {
-            ((FragmentActivity) getContext()).getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
-        } else {
-            // ignore, this happens during preview! we use fragmentactivities everywhere either way
+    private void maybeSelectPreselection(List<UnifiedKeyInfo> keyInfos) {
+        if (spinnerAdapter.hasNoneItem() && keyInfos.size() == 1) {
+            setSelection(1);
+            return;
+        }
+        if (preSelectedKeyId == null) {
+            return;
+        }
+        for (UnifiedKeyInfo keyInfo : keyInfos) {
+            if (keyInfo.master_key_id() == preSelectedKeyId) {
+                int position = keyInfos.indexOf(keyInfo);
+                if (spinnerAdapter.hasNoneItem()) {
+                    position += 1;
+                }
+                setSelection(position);
+            }
         }
     }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (loader.getId() == LOADER_ID) {
-            mAdapter.swapCursor(data);
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        if (loader.getId() == LOADER_ID) {
-            mAdapter.swapCursor(null);
-        }
+    public boolean isSingleEntry() {
+        return spinnerAdapter.isSingleEntry();
     }
 
     public long getSelectedKeyId() {
@@ -143,108 +129,21 @@ public abstract class KeySpinner extends AppCompatSpinner implements
     }
 
     public long getSelectedKeyId(Object item) {
-        if (item instanceof KeyItem) {
-            return ((KeyItem) item).mKeyId;
+        if (item instanceof UnifiedKeyInfo) {
+            return ((UnifiedKeyInfo) item).master_key_id();
         }
         return Constants.key.none;
     }
 
     public void setPreSelectedKeyId(long selectedKeyId) {
-        mPreSelectedKeyId = selectedKeyId;
-    }
-
-    protected class SelectKeyAdapter extends BaseAdapter implements SpinnerAdapter {
-        private KeyAdapter inner;
-        private int mIndexMasterKeyId;
-
-        public SelectKeyAdapter() {
-            inner = new KeyAdapter(getContext(), null, 0) {
-
-                @Override
-                public boolean isEnabled(Cursor cursor) {
-                    return KeySpinner.this.isItemEnabled(cursor);
-                }
-
-            };
-        }
-
-        public Cursor swapCursor(Cursor newCursor) {
-            if (newCursor == null) return inner.swapCursor(null);
-
-            mIndexMasterKeyId = newCursor.getColumnIndex(KeychainContract.KeyRings.MASTER_KEY_ID);
-
-            Cursor oldCursor = inner.swapCursor(newCursor);
-
-            // pre-select key if mPreSelectedKeyId is given
-            if (mPreSelectedKeyId != Constants.key.none && newCursor.moveToFirst()) {
-                do {
-                    if (newCursor.getLong(mIndexMasterKeyId) == mPreSelectedKeyId) {
-                        setSelection(newCursor.getPosition() +1);
-                    }
-                } while (newCursor.moveToNext());
-            }
-            return oldCursor;
-        }
-
-        @Override
-        public int getCount() {
-            return inner.getCount() +1;
-        }
-
-        @Override
-        public KeyItem getItem(int position) {
-            if (position == 0) {
-                return null;
-            }
-            return inner.getItem(position -1);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            if (position == 0) {
-                return Constants.key.none;
-            }
-            return inner.getItemId(position -1);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            // Unfortunately, SpinnerAdapter does not support multiple view
-            // types. For this reason, we throw away convertViews of a bad
-            // type.  This is sort of a hack, but since the number of elements
-            // we deal with in KeySpinners is usually very small (number of
-            // secret keys), this is the easiest solution. (I'm sorry.)
-            if (convertView != null) {
-                // This assumes that the inner view has non-null tags on its views!
-                boolean isWrongType = (convertView.getTag() == null) != (position == 0);
-                if (isWrongType) {
-                    convertView = null;
-                }
-            }
-
-            if (position > 0) {
-                return inner.getView(position -1, convertView, parent);
-            }
-
-            View view = convertView != null ? convertView :
-                    LayoutInflater.from(getContext()).inflate(
-                            R.layout.keyspinner_item_none, parent, false);
-            ((TextView) view.findViewById(R.id.keyspinner_key_name)).setText(getNoneString());
-            return view;
-        }
-
-    }
-
-    boolean isItemEnabled(Cursor cursor) {
-        return true;
+        preSelectedKeyId = selectedKeyId;
     }
 
     @Override
     public void onRestoreInstanceState(Parcelable state) {
         Bundle bundle = (Bundle) state;
 
-        mPreSelectedKeyId = bundle.getLong(ARG_KEY_ID);
+        preSelectedKeyId = bundle.getLong(ARG_KEY_ID);
 
         // restore super state
         super.onRestoreInstanceState(bundle.getParcelable(ARG_SUPER_STATE));
@@ -262,9 +161,4 @@ public abstract class KeySpinner extends AppCompatSpinner implements
         bundle.putLong(ARG_KEY_ID, getSelectedKeyId());
         return bundle;
     }
-
-    public @StringRes int getNoneString() {
-        return R.string.cert_none;
-    }
-
 }

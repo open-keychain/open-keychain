@@ -1,0 +1,64 @@
+import java.util.Date;
+import org.sufficientlysecure.keychain.model.AutocryptPeer.GossipOrigin;
+
+CREATE TABLE IF NOT EXISTS autocrypt_peers (
+    package_name TEXT NOT NULL,
+    identifier TEXT NOT NULL,
+    last_seen INTEGER AS Date NULL,
+    last_seen_key INTEGER AS Date NULL,
+    is_mutual INTEGER AS Boolean NOT NULL DEFAULT 0,
+    master_key_id INTEGER NULL,
+    gossip_master_key_id INTEGER NULL,
+    gossip_last_seen_key INTEGER AS Date NULL,
+    gossip_origin INTEGER AS GossipOrigin NULL,
+    PRIMARY KEY(package_name, identifier),
+    FOREIGN KEY(package_name) REFERENCES api_apps (package_name) ON DELETE CASCADE
+);
+
+selectByIdentifiers:
+SELECT *
+    FROM  autocrypt_peers
+    WHERE package_name = ? AND identifier IN ?;
+
+selectByMasterKeyId:
+SELECT *
+    FROM  autocrypt_peers
+    WHERE master_key_id = ?;
+
+selectMasterKeyIdByIdentifier:
+SELECT master_key_id
+    FROM autocrypt_peers
+    WHERE identifier = ?;
+
+deleteByIdentifier:
+DELETE FROM autocrypt_peers
+    WHERE package_name = ? AND identifier = ?;
+
+deleteByMasterKeyId:
+DELETE FROM autocrypt_peers
+    WHERE master_key_id = ?;
+
+updateLastSeen:
+UPDATE autocrypt_peers SET last_seen = ?3 WHERE package_name = ?1 AND identifier = ?2;
+
+updateKey:
+UPDATE autocrypt_peers SET last_seen_key = ?3, master_key_id = ?4, is_mutual = ?5 WHERE package_name = ?1 AND identifier = ?2;
+
+updateGossipKey:
+UPDATE autocrypt_peers SET gossip_last_seen_key = ?3, gossip_master_key_id = ?4, gossip_origin = ?5 WHERE package_name = ?1 AND identifier = ?2;
+
+insertPeer:
+INSERT OR IGNORE INTO autocrypt_peers (package_name, identifier) VALUES (?, ?);
+
+selectAutocryptKeyStatus:
+SELECT autocryptPeer.*,
+        (CASE WHEN ac_key.expiry IS NULL THEN 0 WHEN ac_key.expiry > ?3 THEN 0 ELSE 1 END) AS key_is_expired_int,
+        (CASE WHEN gossip_key.expiry IS NULL THEN 0 WHEN gossip_key.expiry > ?3 THEN 0 ELSE 1 END) AS gossip_key_is_expired_int,
+        ac_key.is_revoked AS key_is_revoked_int,
+        gossip_key.is_revoked AS gossip_key_is_revoked_int,
+        EXISTS (SELECT * FROM certs WHERE certs.master_key_id = autocryptPeer.master_key_id AND verified = 1 ) AS key_is_verified_int,
+        EXISTS (SELECT * FROM certs WHERE certs.master_key_id = autocryptPeer.gossip_master_key_id AND verified = 1 ) AS gossip_key_is_verified_int
+    FROM autocrypt_peers AS autocryptPeer
+        LEFT JOIN keys AS ac_key ON (ac_key.master_key_id = autocryptPeer.master_key_id AND ac_key.rank = 0)
+        LEFT JOIN keys AS gossip_key ON (gossip_key.master_key_id = gossip_master_key_id AND gossip_key.rank = 0)
+    WHERE package_name = ?1 AND identifier IN ?2;

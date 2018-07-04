@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui.transfer.view;
 
 
 import android.app.Activity;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -62,6 +63,7 @@ import org.sufficientlysecure.keychain.ui.MainActivity;
 import org.sufficientlysecure.keychain.ui.QrCodeCaptureActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper.Callback;
+import org.sufficientlysecure.keychain.ui.keyview.GenericViewModel;
 import org.sufficientlysecure.keychain.ui.transfer.presenter.TransferPresenter;
 import org.sufficientlysecure.keychain.ui.transfer.presenter.TransferPresenter.TransferMvpView;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -140,7 +142,8 @@ public class TransferFragment extends Fragment implements TransferMvpView {
             }
         });
 
-        presenter = new TransferPresenter(getContext(), getLoaderManager(), LOADER_ID, this);
+        GenericViewModel genericViewModel = ViewModelProviders.of(this).get(GenericViewModel.class);
+        presenter = new TransferPresenter(getContext(), this, genericViewModel, this);
 
         setHasOptionsMenu(true);
 

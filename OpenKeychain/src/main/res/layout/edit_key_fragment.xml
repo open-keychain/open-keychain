@@ -41,16 +41,6 @@
             android:layout_weight="1" />
 
         <org.sufficientlysecure.keychain.ui.widget.FixedListView
-            android:id="@+id/edit_key_user_ids"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dip"
-            android:background="?android:attr/listDivider" />
-
-        <org.sufficientlysecure.keychain.ui.widget.FixedListView
             android:id="@+id/edit_key_user_ids_added"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -81,16 +71,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="@string/section_keys" />
-
-        <org.sufficientlysecure.keychain.ui.widget.FixedListView
-            android:id="@+id/edit_key_keys"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dip"
-            android:background="?android:attr/listDivider" />
 
         <org.sufficientlysecure.keychain.ui.widget.FixedListView
             android:id="@+id/edit_key_subkeys_added"

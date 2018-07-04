@@ -21,17 +21,12 @@ package org.sufficientlysecure.keychain.ui;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.arch.lifecycle.LiveData;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -41,17 +36,16 @@ import android.widget.ViewAnimator;
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.util.OpenPgpUtils;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.livedata.GenericLiveData;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
@@ -63,9 +57,7 @@ import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
 
 
-public abstract class DecryptFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-
-    public static final int LOADER_ID_UNIFIED = 0;
+public abstract class DecryptFragment extends Fragment {
     public static final String ARG_DECRYPT_VERIFY_RESULT = "decrypt_verify_result";
 
     protected LinearLayout mResultLayout;
@@ -83,32 +75,29 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
     private ViewAnimator mOverlayAnimator;
 
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> mImportOpHelper;
+    private LiveData<UnifiedKeyInfo> unifiedKeyInfoLiveData;
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        Activity activity = requireActivity();
         // NOTE: These views are inside the activity!
-        mResultLayout = getActivity().findViewById(R.id.result_main_layout);
+        mResultLayout = activity.findViewById(R.id.result_main_layout);
+        mEncryptionIcon = activity.findViewById(R.id.result_encryption_icon);
+        mEncryptionText = activity.findViewById(R.id.result_encryption_text);
+        mSignatureIcon = activity.findViewById(R.id.result_signature_icon);
+        mSignatureText = activity.findViewById(R.id.result_signature_text);
+        mSignatureLayout = activity.findViewById(R.id.result_signature_layout);
+        mSignatureName = activity.findViewById(R.id.result_signature_name);
+        mSignatureEmail = activity.findViewById(R.id.result_signature_email);
+        mSignatureAction = activity.findViewById(R.id.result_signature_action);
         mResultLayout.setVisibility(View.GONE);
-        mEncryptionIcon = getActivity().findViewById(R.id.result_encryption_icon);
-        mEncryptionText = getActivity().findViewById(R.id.result_encryption_text);
-        mSignatureIcon = getActivity().findViewById(R.id.result_signature_icon);
-        mSignatureText = getActivity().findViewById(R.id.result_signature_text);
-        mSignatureLayout = getActivity().findViewById(R.id.result_signature_layout);
-        mSignatureName = getActivity().findViewById(R.id.result_signature_name);
-        mSignatureEmail = getActivity().findViewById(R.id.result_signature_email);
-        mSignatureAction = getActivity().findViewById(R.id.result_signature_action);
 
         // Overlay
         mOverlayAnimator = (ViewAnimator) view;
         Button vErrorOverlayButton = view.findViewById(R.id.decrypt_error_overlay_button);
-        vErrorOverlayButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mOverlayAnimator.setDisplayedChild(0);
-            }
-        });
+        vErrorOverlayButton.setOnClickListener(v -> mOverlayAnimator.setDisplayedChild(0));
     }
 
     private void showErrorOverlay(boolean overlay) {
@@ -119,7 +108,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putParcelable(ARG_DECRYPT_VERIFY_RESULT, mDecryptVerifyResult);
@@ -168,7 +157,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
             public void onCryptoOperationSuccess(ImportKeyResult result) {
                 result.createNotify(getActivity()).show();
 
-                getLoaderManager().restartLoader(LOADER_ID_UNIFIED, null, DecryptFragment.this);
+                loadSignerKeyData();
             }
 
             @Override
@@ -193,18 +182,14 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
     }
 
     private void showKey(long keyId) {
-        try {
-
-            Intent viewKeyIntent = new Intent(getActivity(), ViewKeyActivity.class);
-            long masterKeyId = KeyRepository.create(getContext()).getCachedPublicKeyRing(
-                    KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(keyId)
-            ).getMasterKeyId();
-            viewKeyIntent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-            startActivity(viewKeyIntent);
-
-        } catch (PgpKeyNotFoundException e) {
+        KeyRepository keyRepository = KeyRepository.create(requireContext());
+        Long masterKeyId = keyRepository.getMasterKeyIdBySubkeyId(keyId);
+        if (masterKeyId == null) {
             Notify.create(getActivity(), R.string.error_key_not_found, Style.ERROR).show();
+            return;
         }
+        Intent viewKeyIntent = ViewKeyActivity.getViewKeyActivityIntent(requireActivity(), masterKeyId);
+        startActivity(viewKeyIntent);
     }
 
     protected void loadVerifyResult(DecryptVerifyResult decryptVerifyResult) {
@@ -244,16 +229,13 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
             mSignatureText.setText(R.string.decrypt_result_no_signature);
             KeyFormattingUtils.setStatusImage(getActivity(), mSignatureIcon, mSignatureText, State.NOT_SIGNED);
 
-            getLoaderManager().destroyLoader(LOADER_ID_UNIFIED);
-
+            loadSignerKeyData();
             showErrorOverlay(false);
 
             onVerifyLoaded(true);
         } else {
             // signature present
-
-            // after loader is restarted signature results are checked
-            getLoaderManager().restartLoader(LOADER_ID_UNIFIED, null, this);
+            loadSignerKeyData();
         }
     }
 
@@ -264,70 +246,43 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
     private void setShowAction(final long signatureKeyId) {
         mSignatureAction.setText(R.string.decrypt_result_action_show);
         mSignatureAction.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_vpn_key_grey_24dp, 0);
-        mSignatureLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showKey(signatureKeyId);
-            }
-        });
+        mSignatureLayout.setOnClickListener(v -> showKey(signatureKeyId));
     }
 
-    // These are the rows that we will retrieve.
-    static final String[] UNIFIED_PROJECTION = new String[]{
-            KeychainContract.KeyRings._ID,
-            KeychainContract.KeyRings.MASTER_KEY_ID,
-            KeychainContract.KeyRings.USER_ID,
-            KeychainContract.KeyRings.VERIFIED,
-            KeychainContract.KeyRings.HAS_ANY_SECRET,
-            KeyRings.NAME,
-            KeyRings.EMAIL,
-            KeyRings.COMMENT,
-    };
-
-    @SuppressWarnings("unused")
-    static final int INDEX_MASTER_KEY_ID = 1;
-    static final int INDEX_USER_ID = 2;
-    static final int INDEX_VERIFIED = 3;
-    static final int INDEX_HAS_ANY_SECRET = 4;
-    static final int INDEX_NAME = 5;
-    static final int INDEX_EMAIL = 6;
-    static final int INDEX_COMMENT = 7;
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if (id != LOADER_ID_UNIFIED) {
-            return null;
+    public void loadSignerKeyData() {
+        if (unifiedKeyInfoLiveData != null) {
+            unifiedKeyInfoLiveData.removeObservers(this);
+            unifiedKeyInfoLiveData = null;
         }
 
-        Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(
-                mSignatureResult.getKeyId());
-        return new CursorLoader(getActivity(), baseUri, UNIFIED_PROJECTION, null, null, null);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-        if (loader.getId() != LOADER_ID_UNIFIED) {
+        if (mSignatureResult == null || mSignatureResult.getResult() == OpenPgpSignatureResult.RESULT_NO_SIGNATURE) {
+            setSignatureLayoutVisibility(View.GONE);
             return;
         }
 
-        // If the key is unknown, show it as such
-        if (data.getCount() == 0 || !data.moveToFirst()) {
+        unifiedKeyInfoLiveData = new GenericLiveData<>(requireContext(), () -> {
+            KeyRepository keyRepository = KeyRepository.create(requireContext());
+            Long masterKeyId = keyRepository.getMasterKeyIdBySubkeyId(mSignatureResult.getKeyId());
+            return keyRepository.getUnifiedKeyInfo(masterKeyId);
+        });
+        unifiedKeyInfoLiveData.observe(this, this::onLoadSignerKeyData);
+    }
+
+    public void onLoadSignerKeyData(UnifiedKeyInfo unifiedKeyInfo) {
+        if (unifiedKeyInfo == null) {
             showUnknownKeyStatus();
             return;
         }
 
         long signatureKeyId = mSignatureResult.getKeyId();
 
-        String name = data.getString(INDEX_NAME);
-        String email = data.getString(INDEX_EMAIL);
-        if (name != null) {
-            mSignatureName.setText(name);
+        if (unifiedKeyInfo.name() != null) {
+            mSignatureName.setText(unifiedKeyInfo.name());
         } else {
             mSignatureName.setText(R.string.user_id_no_name);
         }
-        if (email != null) {
-            mSignatureEmail.setText(email);
+        if (unifiedKeyInfo.email() != null) {
+            mSignatureEmail.setText(unifiedKeyInfo.email());
         } else {
             mSignatureEmail.setText(KeyFormattingUtils.beautifyKeyIdWithPrefix(
                     mSignatureResult.getKeyId()));
@@ -338,8 +293,8 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
         boolean isRevoked = mSignatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_KEY_REVOKED;
         boolean isExpired = mSignatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_KEY_EXPIRED;
         boolean isInsecure = mSignatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_KEY_INSECURE;
-        boolean isVerified = data.getInt(INDEX_VERIFIED) > 0;
-        boolean isYours = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
+        boolean isVerified = unifiedKeyInfo.verified() == VerificationStatus.VERIFIED_SECRET;
+        boolean isYours = unifiedKeyInfo.has_any_secret();
 
         if (isRevoked) {
             mSignatureText.setText(R.string.decrypt_result_signature_revoked_key);
@@ -409,16 +364,6 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
 
     }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
-        if (loader.getId() != LOADER_ID_UNIFIED) {
-            return;
-        }
-
-        setSignatureLayoutVisibility(View.GONE);
-    }
-
     private void showUnknownKeyStatus() {
 
         final long signatureKeyId = mSignatureResult.getKeyId();
@@ -453,12 +398,7 @@ public abstract class DecryptFragment extends Fragment implements LoaderManager.
                 mSignatureAction.setText(R.string.decrypt_result_action_Lookup);
                 mSignatureAction
                         .setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_file_download_grey_24dp, 0);
-                mSignatureLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        lookupUnknownKey(signatureKeyId);
-                    }
-                });
+                mSignatureLayout.setOnClickListener(v -> lookupUnknownKey(signatureKeyId));
 
                 showErrorOverlay(false);
 

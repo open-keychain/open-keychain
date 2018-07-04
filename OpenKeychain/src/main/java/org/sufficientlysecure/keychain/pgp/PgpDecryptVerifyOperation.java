@@ -71,11 +71,8 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem.EncryptionAlgorithmPr
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.MissingMdc;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.CachedPublicKeyRing;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequireAnyDecryptPassphraseBuilder;
@@ -635,13 +632,13 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     break;
                 }
 
-                CachedPublicKeyRing cachedPublicKeyRing;
                 try {
                     // get actual keyring object based on master key id
-                    cachedPublicKeyRing = mKeyRepository.getCachedPublicKeyRing(
-                            KeyRings.buildUnifiedKeyRingsFindBySubkeyUri(subKeyId)
-                    );
-                    long masterKeyId = cachedPublicKeyRing.getMasterKeyId();
+                    Long masterKeyId = mKeyRepository.getMasterKeyIdBySubkeyId(subKeyId);
+                    if (masterKeyId == null) {
+                        log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
+                        continue;
+                    }
 
                     // allow only specific keys for decryption?
                     if (input.getAllowedKeyIds() != null) {
@@ -658,7 +655,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                         }
                     }
 
-                    SecretKeyType secretKeyType = cachedPublicKeyRing.getSecretKeyType(subKeyId);
+                    SecretKeyType secretKeyType = mKeyRepository.getSecretKeyType(subKeyId);
                     if (!secretKeyType.isUsable()) {
                         decryptionKey = null;
                         log.add(LogType.MSG_DC_ASKIP_UNAVAILABLE, indent + 1);
@@ -713,7 +710,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     encryptedDataAsymmetric = encData;
                     decryptionKey = candidateDecryptionKey;
 
-                } catch (PgpKeyNotFoundException | KeyWritableRepository.NotFoundException e) {
+                } catch (KeyWritableRepository.NotFoundException e) {
                     // continue with the next packet in the while loop
                     log.add(LogType.MSG_DC_ASKIP_NO_KEY, indent + 1);
                     continue;

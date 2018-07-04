@@ -183,11 +183,7 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
     public void finishAndShowKey(long masterKeyId) {
         Activity activity = getActivity();
 
-        Intent viewKeyIntent = new Intent(activity, ViewKeyActivity.class);
-        // use the imported masterKeyId, not the one from the token, because
-        // that one might* just have been a subkey of the imported key
-        viewKeyIntent.setData(KeyRings.buildGenericKeyRingUri(masterKeyId));
-
+        Intent viewKeyIntent = ViewKeyActivity.getViewKeyActivityIntent(requireActivity(), masterKeyId);
         if (activity instanceof CreateKeyActivity) {
             ((CreateKeyActivity) activity).finishWithFirstTimeHandling(viewKeyIntent);
         } else {

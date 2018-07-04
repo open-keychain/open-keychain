@@ -5,7 +5,8 @@
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:focusable="true"
+    android:paddingLeft="12dp"
+    android:paddingRight="12dp"
     android:background="?android:selectableItemBackground">
 
         <LinearLayout

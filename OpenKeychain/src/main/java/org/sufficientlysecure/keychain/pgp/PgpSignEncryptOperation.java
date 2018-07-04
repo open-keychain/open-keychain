@@ -33,11 +33,11 @@ import java.security.SignatureException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.os.CancellationSignal;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.bcpg.BCPGOutputStream;
@@ -63,10 +63,9 @@ import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainComp
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainHashAlgorithmTags;
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants.OpenKeychainSymmetricKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -105,7 +104,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
         }
     }
 
-    public PgpSignEncryptOperation(Context context, KeyRepository keyRepository, Progressable progressable, AtomicBoolean cancelled) {
+    public PgpSignEncryptOperation(Context context, KeyRepository keyRepository, Progressable progressable, CancellationSignal cancelled) {
         super(context, keyRepository, progressable, cancelled);
     }
 
@@ -226,8 +225,8 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                 Long signingSubKeyId = data.getSignatureSubKeyId();
                 if (signingSubKeyId == null) {
                     try {
-                        signingSubKeyId = mKeyRepository.getCachedPublicKeyRing(signingMasterKeyId).getSecretSignId();
-                    } catch (PgpKeyNotFoundException e) {
+                        signingSubKeyId = mKeyRepository.getSecretSignId(signingMasterKeyId);
+                    } catch (NotFoundException e) {
                         log.add(LogType.MSG_PSE_ERROR_KEY_SIGN, indent);
                         return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                     }
@@ -257,7 +256,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                     return new PgpSignEncryptResult(PgpSignEncryptResult.RESULT_ERROR, log);
                 }
 
-                switch (mKeyRepository.getCachedPublicKeyRing(signingMasterKeyId).getSecretKeyType(signingSubKeyId)) {
+                switch (mKeyRepository.getSecretKeyType(signingSubKeyId)) {
                     case DIVERT_TO_CARD:
                     case PASSPHRASE_EMPTY: {
                         if (!signingKey.unlock(new Passphrase())) {
@@ -651,8 +650,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
     private boolean processEncryptionMasterKeyId(int indent, OperationLog log, PgpSignEncryptData data,
             PGPEncryptedDataGenerator cPk, long encryptMasterKeyId) {
         try {
-            CanonicalizedPublicKeyRing keyRing = mKeyRepository.getCanonicalizedPublicKeyRing(
-                    KeyRings.buildUnifiedKeyRingUri(encryptMasterKeyId));
+            CanonicalizedPublicKeyRing keyRing = mKeyRepository.getCanonicalizedPublicKeyRing(encryptMasterKeyId);
             Set<Long> encryptSubKeyIds = keyRing.getEncryptIds();
             for (Long subKeyId : encryptSubKeyIds) {
                 CanonicalizedPublicKey key = keyRing.getPublicKey(subKeyId);

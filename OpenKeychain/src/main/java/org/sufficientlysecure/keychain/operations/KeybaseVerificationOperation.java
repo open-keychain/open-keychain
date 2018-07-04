@@ -18,16 +18,29 @@
 package org.sufficientlysecure.keychain.operations;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.textuality.keybase.lib.KeybaseQuery;
 import com.textuality.keybase.lib.Proof;
 import com.textuality.keybase.lib.prover.Prover;
-
-import org.json.JSONObject;
+import de.measite.minidns.Client;
+import de.measite.minidns.DNSMessage;
+import de.measite.minidns.Question;
+import de.measite.minidns.Record;
+import de.measite.minidns.record.Data;
+import de.measite.minidns.record.TXT;
 import org.bouncycastle.openpgp.PGPUtil;
+import org.json.JSONObject;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.network.OkHttpKeybaseClient;
+import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.KeybaseVerificationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -35,28 +48,12 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.LogTyp
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.KeybaseVerificationParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.network.OkHttpKeybaseClient;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.net.Proxy;
-import java.util.ArrayList;
-import java.util.List;
-
-import de.measite.minidns.Client;
-import de.measite.minidns.DNSMessage;
-import de.measite.minidns.Question;
-import de.measite.minidns.Record;
-import de.measite.minidns.record.Data;
-import de.measite.minidns.record.TXT;
 
 public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificationParcel> {
 
@@ -162,7 +159,7 @@ public class KeybaseVerificationOperation extends BaseOperation<KeybaseVerificat
             }
 
             long verifyingKeyId = decryptVerifyResult.getSignatureResult().getKeyId();
-            byte[] verifyingFingerprint = mKeyRepository.getCachedPublicKeyRing(verifyingKeyId).getFingerprint();
+            byte[] verifyingFingerprint = mKeyRepository.getFingerprintByKeyId(verifyingKeyId);
             if (!requiredFingerprint.equals(KeyFormattingUtils.convertFingerprintToHex(verifyingFingerprint))) {
                 log.add(LogType.MSG_KEYBASE_ERROR_FINGERPRINT_MISMATCH, 1);
                 return new KeybaseVerificationResult(OperationResult.RESULT_ERROR, log);

@@ -20,14 +20,14 @@ package org.sufficientlysecure.keychain.pgp;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.OpenPgpSignatureResult.SenderStatusResult;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
 import timber.log.Timber;
 
 
@@ -41,8 +41,8 @@ public class OpenPgpSignatureResultBuilder {
 
     // OpenPgpSignatureResult
     private String mPrimaryUserId;
-    private ArrayList<String> mUserIds = new ArrayList<>();
-    private ArrayList<String> mConfirmedUserIds;
+    private List<String> mUserIds = new ArrayList<>();
+    private List<String> mConfirmedUserIds;
     private long mKeyId;
     private SenderStatusResult mSenderStatusResult;
 
@@ -101,7 +101,7 @@ public class OpenPgpSignatureResultBuilder {
         this.mIsKeyExpired = keyExpired;
     }
 
-    public void setUserIds(ArrayList<String> userIds, ArrayList<String> confirmedUserIds) {
+    public void setUserIds(List<String> userIds, List<String> confirmedUserIds) {
         this.mUserIds = userIds;
         this.mConfirmedUserIds = confirmedUserIds;
     }
@@ -118,20 +118,11 @@ public class OpenPgpSignatureResultBuilder {
 
         // from RING
         setKeyId(signingRing.getMasterKeyId());
-        try {
-            setPrimaryUserId(signingRing.getPrimaryUserIdWithFallback());
-        } catch (PgpKeyNotFoundException e) {
-            Timber.d("No primary user id in keyring with master key id " + signingRing.getMasterKeyId());
-        }
-        setSignatureKeyCertified(signingRing.getVerified() > 0);
+        setPrimaryUserId(signingRing.getPrimaryUserIdWithFallback());
+        setSignatureKeyCertified(signingRing.getVerified() == VerificationStatus.VERIFIED_SECRET);
 
-        ArrayList<String> allUserIds = signingRing.getUnorderedUserIds();
-        ArrayList<String> confirmedUserIds;
-        try {
-            confirmedUserIds = mKeyRepository.getConfirmedUserIds(signingRing.getMasterKeyId());
-        } catch (NotFoundException e) {
-            throw new IllegalStateException("Key didn't exist anymore for user id query!", e);
-        }
+        List<String> allUserIds = signingRing.getUnorderedUserIds();
+        List<String> confirmedUserIds = mKeyRepository.getConfirmedUserIds(signingRing.getMasterKeyId());
         setUserIds(allUserIds, confirmedUserIds);
 
         mSenderStatusResult = processSenderStatusResult(allUserIds, confirmedUserIds);
@@ -142,7 +133,7 @@ public class OpenPgpSignatureResultBuilder {
     }
 
     private SenderStatusResult processSenderStatusResult(
-            ArrayList<String> allUserIds, ArrayList<String> confirmedUserIds) {
+            List<String> allUserIds, List<String> confirmedUserIds) {
         if (mSenderAddress == null) {
             return SenderStatusResult.UNKNOWN;
         }
@@ -156,7 +147,7 @@ public class OpenPgpSignatureResultBuilder {
         }
     }
 
-    private static boolean userIdListContainsAddress(String senderAddress, ArrayList<String> confirmedUserIds) {
+    private static boolean userIdListContainsAddress(String senderAddress, List<String> confirmedUserIds) {
         for (String rawUserId : confirmedUserIds) {
             UserId userId = OpenPgpUtils.splitUserId(rawUserId);
             if (senderAddress.equalsIgnoreCase(userId.email)) {

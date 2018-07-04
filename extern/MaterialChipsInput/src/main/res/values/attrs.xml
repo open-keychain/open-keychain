@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="ChipView">
+        <attr name="label" format="string" />
+        <attr name="labelColor" format="color" />
+        <attr name="deletable" format="boolean" />
+        <attr name="deleteIcon" format="reference" />
+        <attr name="deleteIconColor" format="color" />
+        <attr name="backgroundColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="ChipsInput">
+        <attr name="hint" format="string" />
+        <attr name="hintColor" format="color" />
+        <attr name="textColor" format="color" />
+        <attr name="maxRows" format="integer" />
+        <attr name="chip_labelColor" format="color" />
+        <attr name="chip_deletable" format="boolean" />
+        <attr name="showChipDetailed" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="ScrollViewMaxHeight">
+        <attr name="maxHeight" format="dimension" />
+    </declare-styleable>
+</resources>

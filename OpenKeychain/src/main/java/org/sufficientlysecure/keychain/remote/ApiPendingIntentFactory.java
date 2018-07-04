@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.remote;
 
+
 import java.util.ArrayList;
 
 import android.app.PendingIntent;
@@ -25,7 +26,6 @@ import android.content.Intent;
 import android.os.Build;
 
 import org.sufficientlysecure.keychain.pgp.DecryptVerifySecurityProblem;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.remote.ui.RemoteBackupActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteDisplayTransferCodeActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteErrorActivity;
@@ -92,8 +92,9 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createSelectPublicKeyPendingIntent(Intent data, long[] keyIdsArray, ArrayList<String> missingEmails,
-                                                     ArrayList<String> duplicateEmails, boolean noUserIdsCheck) {
+    public PendingIntent createSelectPublicKeyPendingIntent(Intent data, long[] keyIdsArray,
+            ArrayList<String> missingEmails,
+            ArrayList<String> duplicateEmails, boolean noUserIdsCheck) {
         Intent intent = new Intent(mContext, RemoteSelectPubKeyActivity.class);
         intent.putExtra(RemoteSelectPubKeyActivity.EXTRA_SELECTED_MASTER_KEY_IDS, keyIdsArray);
         intent.putExtra(RemoteSelectPubKeyActivity.EXTRA_NO_USER_IDS_CHECK, noUserIdsCheck);
@@ -103,7 +104,7 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createDeduplicatePendingIntent(String packageName, Intent data, ArrayList<String> duplicateEmails) {
+    public PendingIntent createDeduplicatePendingIntent(String packageName, Intent data, ArrayList<String> duplicateEmails) {
         Intent intent = new Intent(mContext, RemoteDeduplicateActivity.class);
 
         intent.putExtra(RemoteDeduplicateActivity.EXTRA_PACKAGE_NAME, packageName);
@@ -121,7 +122,7 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createRequestKeyPermissionPendingIntent(Intent data, String packageName, long... masterKeyIds) {
+    public PendingIntent createRequestKeyPermissionPendingIntent(Intent data, String packageName, long... masterKeyIds) {
         Intent intent = new Intent(mContext, RequestKeyPermissionActivity.class);
         intent.putExtra(RequestKeyPermissionActivity.EXTRA_PACKAGE_NAME, packageName);
         intent.putExtra(RequestKeyPermissionActivity.EXTRA_REQUESTED_KEY_IDS, masterKeyIds);
@@ -130,24 +131,23 @@ public class ApiPendingIntentFactory {
     }
 
     PendingIntent createShowKeyPendingIntent(Intent data, long masterKeyId) {
-        Intent intent = new Intent(mContext, ViewKeyActivity.class);
-        intent.setData(KeychainContract.KeyRings.buildGenericKeyRingUri(masterKeyId));
+        Intent intent = ViewKeyActivity.getViewKeyActivityIntent(mContext, masterKeyId);
 
         return createInternal(data, intent);
     }
 
-    PendingIntent createSelectSignKeyIdLegacyPendingIntent(Intent data, String packageName, String preferredUserId) {
+    public PendingIntent createSelectSignKeyIdLegacyPendingIntent(Intent data, String packageName,
+            String preferredUserId) {
         Intent intent = new Intent(mContext, SelectSignKeyIdActivity.class);
-        intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(packageName));
+        intent.putExtra(SelectSignKeyIdActivity.EXTRA_PACKAGE_NAME, packageName);
         intent.putExtra(SelectSignKeyIdActivity.EXTRA_USER_ID, preferredUserId);
 
         return createInternal(data, intent);
     }
 
-    PendingIntent createSelectSignKeyIdPendingIntent(Intent data, String packageName,
+    public PendingIntent createSelectSignKeyIdPendingIntent(Intent data, String packageName,
             byte[] packageSignature, String preferredUserId, boolean showAutocryptHint) {
         Intent intent = new Intent(mContext, RemoteSelectIdKeyActivity.class);
-        intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(packageName));
         intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_PACKAGE_NAME, packageName);
         intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_PACKAGE_SIGNATURE, packageSignature);
         intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_USER_ID, preferredUserId);
@@ -156,9 +156,8 @@ public class ApiPendingIntentFactory {
         return createInternal(data, intent);
     }
 
-    PendingIntent createSelectAuthenticationKeyIdPendingIntent(Intent data, String packageName) {
+    public PendingIntent createSelectAuthenticationKeyIdPendingIntent(Intent data, String packageName) {
         Intent intent = new Intent(mContext, RemoteSelectAuthenticationKeyActivity.class);
-        intent.setData(KeychainContract.ApiApps.buildByPackageNameUri(packageName));
         intent.putExtra(RemoteSelectAuthenticationKeyActivity.EXTRA_PACKAGE_NAME, packageName);
 
         return createInternal(data, intent);
@@ -220,7 +219,7 @@ public class ApiPendingIntentFactory {
         }
     }
 
-    PendingIntent createRegisterPendingIntent(Intent data, String packageName, byte[] packageCertificate) {
+    public PendingIntent createRegisterPendingIntent(Intent data, String packageName, byte[] packageCertificate) {
         Intent intent = new Intent(mContext, RemoteRegisterActivity.class);
         intent.putExtra(RemoteRegisterActivity.EXTRA_PACKAGE_NAME, packageName);
         intent.putExtra(RemoteRegisterActivity.EXTRA_PACKAGE_SIGNATURE, packageCertificate);

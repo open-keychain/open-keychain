@@ -17,15 +17,18 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -43,66 +46,43 @@ import com.textuality.keybase.lib.KeybaseException;
 import com.textuality.keybase.lib.KeybaseQuery;
 import com.textuality.keybase.lib.Proof;
 import com.textuality.keybase.lib.User;
-
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.network.OkHttpKeybaseClient;
+import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 import org.sufficientlysecure.keychain.operations.results.KeybaseVerificationResult;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.KeybaseVerificationParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.ui.base.LoaderFragment;
+import org.sufficientlysecure.keychain.ui.keyview.UnifiedKeyInfoViewModel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-import org.sufficientlysecure.keychain.network.OkHttpKeybaseClient;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
-import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
-import timber.log.Timber;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-
-public class ViewKeyKeybaseFragment extends LoaderFragment implements
-        LoaderManager.LoaderCallbacks<Cursor>,
+public class ViewKeyKeybaseFragment extends Fragment implements
         CryptoOperationHelper.Callback<KeybaseVerificationParcel, KeybaseVerificationResult> {
-
-    public static final String ARG_DATA_URI = "uri";
-
     private TextView mReportHeader;
     private TableLayout mProofListing;
     private LayoutInflater mInflater;
     private View mProofVerifyHeader;
     private TextView mProofVerifyDetail;
 
-    private static final int LOADER_ID_DATABASE = 1;
-
-    // for retrieving the key we’re working on
-    private Uri mDataUri;
-
     private Proof mProof;
 
     // for CryptoOperationHelper,Callback
     private String mKeybaseProof;
     private String mKeybaseFingerprint;
-    private CryptoOperationHelper<KeybaseVerificationParcel, KeybaseVerificationResult>
-            mKeybaseOpHelper;
+    private CryptoOperationHelper<KeybaseVerificationParcel, KeybaseVerificationResult> mKeybaseOpHelper;
 
     /**
      * Creates new instance of this fragment
      */
-    public static ViewKeyKeybaseFragment newInstance(Uri dataUri) {
-        ViewKeyKeybaseFragment frag = new ViewKeyKeybaseFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_DATA_URI, dataUri);
-
-        frag.setArguments(args);
-
-        return frag;
+    public static ViewKeyKeybaseFragment newInstance() {
+        return new ViewKeyKeybaseFragment();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup superContainer, Bundle savedInstanceState) {
-        View root = super.onCreateView(inflater, superContainer, savedInstanceState);
-        View view = inflater.inflate(R.layout.view_key_adv_keybase_fragment, getContainer());
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.view_key_adv_keybase_fragment, viewGroup, false);
         mInflater = inflater;
 
         mReportHeader = view.findViewById(R.id.view_key_trust_cloud_narrative);
@@ -114,71 +94,23 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
         mProofVerifyHeader.setVisibility(View.GONE);
         mProofVerifyDetail.setVisibility(View.GONE);
 
-        return root;
+        return view;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Uri dataUri = getArguments().getParcelable(ARG_DATA_URI);
-        if (dataUri == null) {
-            Timber.e("Data missing. Should be Uri of key!");
-            getActivity().finish();
-            return;
-        }
-        mDataUri = dataUri;
-
-        // retrieve the key from the database
-        getLoaderManager().initLoader(LOADER_ID_DATABASE, null, this);
+        UnifiedKeyInfoViewModel viewKeyViewModel = ViewModelProviders.of(requireActivity()).get(UnifiedKeyInfoViewModel.class);
+        viewKeyViewModel.getUnifiedKeyInfoLiveData(requireContext()).observe(this, this::onLoadUnifiedKeyInfo);
     }
 
-    static final String[] TRUST_PROJECTION = new String[]{
-            KeyRings._ID, KeyRings.FINGERPRINT, KeyRings.IS_REVOKED, KeyRings.IS_EXPIRED,
-            KeyRings.HAS_ANY_SECRET, KeyRings.VERIFIED
-    };
-    static final int INDEX_TRUST_FINGERPRINT = 1;
-    static final int INDEX_TRUST_IS_REVOKED = 2;
-    static final int INDEX_TRUST_IS_EXPIRED = 3;
-    static final int INDEX_UNIFIED_HAS_ANY_SECRET = 4;
-    static final int INDEX_VERIFIED = 5;
-
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        setContentShown(false);
-
-        switch (id) {
-            case LOADER_ID_DATABASE: {
-                Uri baseUri = KeyRings.buildUnifiedKeyRingUri(mDataUri);
-                return new CursorLoader(getActivity(), baseUri, TRUST_PROJECTION, null, null, null);
-            }
-            // decided to just use an AsyncTask for keybase, but maybe later
-            default:
-                return null;
-        }
-    }
-
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        /* TODO better error handling? May cause problems when a key is deleted,
-         * because the notification triggers faster than the activity closes.
-         */
-        // Avoid NullPointerExceptions...
-        if (data.getCount() == 0) {
+    private void onLoadUnifiedKeyInfo(UnifiedKeyInfo unifiedKeyInfo) {
+        if (unifiedKeyInfo == null) {
             return;
         }
-
-        boolean nothingSpecial = true;
-
-        // Swap the new cursor in. (The framework will take care of closing the
-        // old cursor once we return.)
-        if (data.moveToFirst()) {
-
-            final byte[] fp = data.getBlob(INDEX_TRUST_FINGERPRINT);
-            final String fingerprint = KeyFormattingUtils.convertFingerprintToHex(fp);
-
-            startSearch(fingerprint);
-        }
-
-        setContentShown(true);
+        String fingerprint = KeyFormattingUtils.convertFingerprintToHex(unifiedKeyInfo.fingerprint());
+        startSearch(fingerprint);
     }
 
     private void startSearch(final String fingerprint) {
@@ -208,19 +140,11 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
         }
     }
 
-    /**
-     * This is called when the last Cursor provided to onLoadFinished() above is about to be closed.
-     * We need to make sure we are no longer using it.
-     */
-    public void onLoaderReset(Loader<Cursor> loader) {
-        // no-op in this case I think
-    }
-
     class ResultPage {
         String mHeader;
         final List<CharSequence> mProofs;
 
-        public ResultPage(String header, List<CharSequence> proofs) {
+        ResultPage(String header, List<CharSequence> proofs) {
             mHeader = header;
             mProofs = proofs;
         }
@@ -232,7 +156,7 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
     private class DescribeKey extends AsyncTask<String, Void, ResultPage> {
         ParcelableProxy mParcelableProxy;
 
-        public DescribeKey(ParcelableProxy parcelableProxy) {
+        DescribeKey(ParcelableProxy parcelableProxy) {
             mParcelableProxy = parcelableProxy;
         }
 
@@ -240,8 +164,8 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
         protected ResultPage doInBackground(String... args) {
             String fingerprint = args[0];
 
-            final ArrayList<CharSequence> proofList = new ArrayList<CharSequence>();
-            final Hashtable<Integer, ArrayList<Proof>> proofs = new Hashtable<Integer, ArrayList<Proof>>();
+            final ArrayList<CharSequence> proofList = new ArrayList<>();
+            final Hashtable<Integer, ArrayList<Proof>> proofs = new Hashtable<>();
             try {
                 KeybaseQuery keybaseQuery = new KeybaseQuery(new OkHttpKeybaseClient());
                 keybaseQuery.setProxy(mParcelableProxy.getProxy());
@@ -293,7 +217,7 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
             return ssb;
         }
 
-        private SpannableStringBuilder appendProofLinks(SpannableStringBuilder ssb, final String fingerprint, final Proof proof) throws KeybaseException {
+        private void appendProofLinks(SpannableStringBuilder ssb, final String fingerprint, final Proof proof) throws KeybaseException {
             int startAt = ssb.length();
             String handle = proof.getHandle();
             ssb.append(handle);
@@ -315,7 +239,6 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
                 ssb.setSpan(clicker, startAt, startAt + verify.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 ssb.append("]");
             }
-            return ssb;
         }
 
         @Override
@@ -327,7 +250,7 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
             }
 
             if (result.mProofs.isEmpty()) {
-                result.mHeader = getActivity().getString(R.string.key_trust_no_cloud_evidence);
+                result.mHeader = requireActivity().getString(R.string.key_trust_no_cloud_evidence);
             }
 
             mReportHeader.setVisibility(View.VISIBLE);
@@ -382,10 +305,10 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
         }
     }
 
-    private void appendIfOK(Hashtable<Integer, ArrayList<Proof>> table, Integer proofType, Proof proof) throws KeybaseException {
+    private void appendIfOK(Hashtable<Integer, ArrayList<Proof>> table, Integer proofType, Proof proof) {
         ArrayList<Proof> list = table.get(proofType);
         if (list == null) {
-            list = new ArrayList<Proof>();
+            list = new ArrayList<>();
             table.put(proofType, list);
         }
         list.add(proof);
@@ -512,7 +435,6 @@ public class ViewKeyKeybaseFragment extends LoaderFragment implements
 
     @Override
     public void onCryptoOperationError(KeybaseVerificationResult result) {
-
         result.createNotify(getActivity()).show();
 
         SpannableStringBuilder ssb = new SpannableStringBuilder();

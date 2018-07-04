@@ -28,8 +28,9 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.net.Uri;
@@ -41,15 +42,13 @@ import android.os.Message;
 import android.os.Messenger;
 import android.provider.ContactsContract;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.CardView;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -69,15 +68,13 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeyRepository.NotFoundException;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
@@ -112,7 +109,6 @@ import timber.log.Timber;
 
 
 public class ViewKeyActivity extends BaseSecurityTokenActivity implements
-        LoaderManager.LoaderCallbacks<Cursor>,
         CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({REQUEST_QR_FINGERPRINT, REQUEST_BACKUP, REQUEST_CERTIFY, REQUEST_DELETE})
@@ -124,12 +120,11 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     static final int REQUEST_CERTIFY = 3;
     static final int REQUEST_DELETE = 4;
 
+    public static final String EXTRA_MASTER_KEY_ID = "master_key_id";
     public static final String EXTRA_DISPLAY_RESULT = "display_result";
     public static final String EXTRA_LINKED_TRANSITION = "linked_transition";
 
     KeyRepository keyRepository;
-
-    protected Uri dataUri;
 
     // For CryptoOperationHelper.Callback
     private CryptoOperationHelper<ImportKeyringParcel, ImportKeyResult> importOpHelper;
@@ -151,22 +146,18 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     private byte[] qrCodeLoaded;
 
-    private static final int LOADER_ID_UNIFIED = 0;
-
-    private boolean isSecret = false;
-    private boolean hasEncrypt = false;
-    private boolean isVerified = false;
-    private boolean isRevoked = false;
-    private boolean isSecure = true;
-    private boolean isExpired = false;
+    private UnifiedKeyInfo unifiedKeyInfo;
 
     private MenuItem refreshItem;
     private boolean isRefreshing;
     private Animation rotate, rotateSpin;
     private View refreshView;
 
-    private long masterKeyId;
-    private byte[] fingerprint;
+    public static Intent getViewKeyActivityIntent(@NonNull Context context, long masterKeyId) {
+        Intent viewIntent = new Intent(context, ViewKeyActivity.class);
+        viewIntent.putExtra(ViewKeyActivity.EXTRA_MASTER_KEY_ID, masterKeyId);
+        return viewIntent;
+    }
 
     @SuppressLint("InflateParams")
     @Override
@@ -244,30 +235,30 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         });
         refreshView = getLayoutInflater().inflate(R.layout.indeterminate_progress, null);
 
-        dataUri = getIntent().getData();
-        if (dataUri == null) {
-            Timber.e("Data missing. Should be uri of key!");
-            finish();
-            return;
-        }
-        if (dataUri.getHost().equals(ContactsContract.AUTHORITY)) {
-            dataUri = new ContactHelper(this).dataUriFromContactUri(dataUri);
-            if (dataUri == null) {
+        long masterKeyId;
+        Intent intent = getIntent();
+        Uri dataUri = intent.getData();
+        if (intent.hasExtra(EXTRA_MASTER_KEY_ID)) {
+            masterKeyId = intent.getLongExtra(EXTRA_MASTER_KEY_ID, 0L);
+        } else if (dataUri != null && dataUri.getHost().equals(ContactsContract.AUTHORITY)) {
+            Long contactMasterKeyId = new ContactHelper(this).masterKeyIdFromContactsDataUri(dataUri);
+            if (contactMasterKeyId == null) {
                 Timber.e("Contact Data missing. Should be uri of key!");
                 Toast.makeText(this, R.string.error_contacts_key_id_missing, Toast.LENGTH_LONG).show();
                 finish();
                 return;
             }
+            masterKeyId = contactMasterKeyId;
+        } else {
+            throw new IllegalArgumentException("Missing required extra master_key_id or contact uri");
         }
 
-        Timber.i("dataUri: " + dataUri);
-
-        actionEncryptFile.setOnClickListener(v -> encrypt(dataUri, false));
-        actionEncryptText.setOnClickListener(v -> encrypt(dataUri, true));
+        actionEncryptFile.setOnClickListener(v -> encrypt(false));
+        actionEncryptText.setOnClickListener(v -> encrypt(true));
 
         floatingActionButton.setOnClickListener(v -> {
-            if (isSecret) {
-                startSafeSlinger(dataUri);
+            if (unifiedKeyInfo.has_any_secret()) {
+                startSafeSlinger();
             } else {
                 scanQrCode();
             }
@@ -275,12 +266,12 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
         qrCodeLayout.setOnClickListener(v -> showQrCodeDialog());
 
-        // Prepare the loaders. Either re-connect with an existing ones,
-        // or start new ones.
-        getSupportLoaderManager().initLoader(LOADER_ID_UNIFIED, null, this);
+        UnifiedKeyInfoViewModel viewModel = ViewModelProviders.of(this).get(UnifiedKeyInfoViewModel.class);
+        viewModel.setMasterKeyId(getIntent().getLongExtra(EXTRA_MASTER_KEY_ID, 0L));
+        viewModel.getUnifiedKeyInfoLiveData(getApplicationContext()).observe(this, this::onLoadUnifiedKeyInfo);
 
-        if (savedInstanceState == null && getIntent().hasExtra(EXTRA_DISPLAY_RESULT)) {
-            OperationResult result = getIntent().getParcelableExtra(EXTRA_DISPLAY_RESULT);
+        if (savedInstanceState == null && intent.hasExtra(EXTRA_DISPLAY_RESULT)) {
+            OperationResult result = intent.getParcelableExtra(EXTRA_DISPLAY_RESULT);
             result.createNotify(this).show();
         }
 
@@ -289,12 +280,14 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             return;
         }
 
+        FragmentManager manager = getSupportFragmentManager();
+
+        ViewKeyFragment frag = ViewKeyFragment.newInstance();
+        manager.beginTransaction().replace(R.id.view_key_fragment, frag, "view_key_fragment").commit();
+
         if (Preferences.getPreferences(this).getExperimentalEnableKeybase()) {
-            FragmentManager manager = getSupportFragmentManager();
-            final ViewKeyKeybaseFragment keybaseFrag = ViewKeyKeybaseFragment.newInstance(dataUri);
-            manager.beginTransaction()
-                    .replace(R.id.view_key_keybase_fragment, keybaseFrag)
-                    .commit();
+            final ViewKeyKeybaseFragment keybaseFrag = ViewKeyKeybaseFragment.newInstance();
+            manager.beginTransaction().replace(R.id.view_key_keybase_fragment, keybaseFrag).commit();
         }
     }
 
@@ -341,7 +334,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             }
             case R.id.menu_key_view_advanced: {
                 Intent advancedIntent = new Intent(this, ViewKeyAdvActivity.class);
-                advancedIntent.setData(dataUri);
+                advancedIntent.putExtra(ViewKeyAdvActivity.EXTRA_MASTER_KEY_ID, unifiedKeyInfo.master_key_id());
                 startActivity(advancedIntent);
                 return true;
             }
@@ -350,7 +343,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                 return true;
             }
             case R.id.menu_key_view_certify_fingerprint: {
-                certifyFingerprint(dataUri);
+                certifyFingerprint();
                 return true;
             }
         }
@@ -359,14 +352,19 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        if (unifiedKeyInfo == null) {
+            return false;
+        }
         MenuItem backupKey = menu.findItem(R.id.menu_key_view_backup);
-        backupKey.setVisible(isSecret);
-        menu.findItem(R.id.menu_key_view_skt).setVisible(isSecret);
+        backupKey.setVisible(unifiedKeyInfo.has_any_secret());
+        menu.findItem(R.id.menu_key_view_skt).setVisible(unifiedKeyInfo.has_any_secret());
         MenuItem changePassword = menu.findItem(R.id.menu_key_change_password);
-        changePassword.setVisible(isSecret);
+        changePassword.setVisible(unifiedKeyInfo.has_any_secret());
 
         MenuItem certifyFingerprint = menu.findItem(R.id.menu_key_view_certify_fingerprint);
-        certifyFingerprint.setVisible(!isSecret && !isVerified && !isExpired && !isRevoked);
+        certifyFingerprint.setVisible(
+                !unifiedKeyInfo.has_any_secret() && !unifiedKeyInfo.is_verified() && !unifiedKeyInfo.is_expired() &&
+                        !unifiedKeyInfo.is_revoked());
 
         return true;
     }
@@ -382,6 +380,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             @Override
             public void onCryptoOperationSuccess(EditKeyResult result) {
                 displayResult(result);
+                long masterKeyId = unifiedKeyInfo.master_key_id();
                 PassphraseCacheService.clearCachedPassphrase(getApplicationContext(), masterKeyId, masterKeyId);
             }
 
@@ -412,7 +411,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
                     // use new passphrase!
                     changeUnlockParcel = ChangeUnlockParcel.createChangeUnlockParcel(
-                            masterKeyId, fingerprint,
+                            unifiedKeyInfo.master_key_id(), unifiedKeyInfo.fingerprint(),
                             data.getParcelable(SetPassphraseDialogFragment.MESSAGE_NEW_PASSPHRASE)
                     );
 
@@ -440,16 +439,16 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         startActivityForResult(scanQrCode, REQUEST_QR_FINGERPRINT);
     }
 
-    private void certifyFingerprint(Uri dataUri) {
+    private void certifyFingerprint() {
         Intent intent = new Intent(this, CertifyFingerprintActivity.class);
-        intent.setData(dataUri);
+        intent.putExtra(CertifyFingerprintActivity.EXTRA_MASTER_KEY_ID, unifiedKeyInfo.master_key_id());
 
         startActivityForResult(intent, REQUEST_CERTIFY);
     }
 
     private void certifyImmediate() {
         Intent intent = new Intent(this, CertifyKeyActivity.class);
-        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[] { masterKeyId });
+        intent.putExtra(CertifyKeyActivity.EXTRA_KEY_IDS, new long[] { unifiedKeyInfo.master_key_id() });
 
         startActivityForResult(intent, REQUEST_CERTIFY);
     }
@@ -466,7 +465,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             opts = options.toBundle();
         }
 
-        qrCodeIntent.setData(dataUri);
+        qrCodeIntent.putExtra(QrCodeViewActivity.EXTRA_MASTER_KEY_ID, unifiedKeyInfo.master_key_id());
         ActivityCompat.startActivity(this, qrCodeIntent, opts);
     }
 
@@ -474,6 +473,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
         if (keyHasPassphrase()) {
             Intent intent = new Intent(this, PassphraseDialogActivity.class);
+            long masterKeyId = unifiedKeyInfo.master_key_id();
             RequiredInputParcel requiredInput =
                     RequiredInputParcel.createRequiredDecryptPassphrase(masterKeyId, masterKeyId);
             requiredInput.mSkipCaching = true;
@@ -486,8 +486,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     private boolean keyHasPassphrase() {
         try {
-            SecretKeyType secretKeyType =
-                    keyRepository.getCachedPublicKeyRing(masterKeyId).getSecretKeyType(masterKeyId);
+            long masterKeyId = unifiedKeyInfo.master_key_id();
+            SecretKeyType secretKeyType = keyRepository.getSecretKeyType(masterKeyId);
             switch (secretKeyType) {
                 // all of these make no sense to ask
                 case PASSPHRASE_EMPTY:
@@ -505,7 +505,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     private void startBackupActivity() {
         Intent intent = new Intent(this, BackupActivity.class);
-        intent.putExtra(BackupActivity.EXTRA_MASTER_KEY_IDS, new long[]{ masterKeyId });
+        intent.putExtra(BackupActivity.EXTRA_MASTER_KEY_IDS, new long[] { unifiedKeyInfo.master_key_id() });
         intent.putExtra(BackupActivity.EXTRA_SECRET, true);
         startActivity(intent);
     }
@@ -514,9 +514,9 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         Intent deleteIntent = new Intent(this, DeleteKeyDialogActivity.class);
 
         deleteIntent.putExtra(DeleteKeyDialogActivity.EXTRA_DELETE_MASTER_KEY_IDS,
-                new long[]{ masterKeyId });
-        deleteIntent.putExtra(DeleteKeyDialogActivity.EXTRA_HAS_SECRET, isSecret);
-        if (isSecret) {
+                new long[]{ unifiedKeyInfo.master_key_id() });
+        deleteIntent.putExtra(DeleteKeyDialogActivity.EXTRA_HAS_SECRET, unifiedKeyInfo.has_any_secret());
+        if (unifiedKeyInfo.has_any_secret()) {
             // for upload in case key is secret
             deleteIntent.putExtra(DeleteKeyDialogActivity.EXTRA_KEYSERVER,
                     Preferences.getPreferences(this).getPreferredKeyserver());
@@ -554,7 +554,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                     Notify.create(this, R.string.error_scan_fp, Notify.LENGTH_LONG, Style.ERROR).show();
                     return;
                 }
-                if (Arrays.equals(this.fingerprint, fingerprint)) {
+                if (Arrays.equals(unifiedKeyInfo.fingerprint(), fingerprint)) {
                     certifyImmediate();
                 } else {
                     Notify.create(this, R.string.error_scan_match, Notify.LENGTH_LONG, Style.ERROR).show();
@@ -593,67 +593,30 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         finish();
     }
 
-    public void showMainFragment() {
-        new Handler().post(() -> {
-            FragmentManager manager = getSupportFragmentManager();
-
-            // unless we must refresh
-            ViewKeyFragment frag = (ViewKeyFragment) manager.findFragmentByTag("view_key_fragment");
-            // if everything is valid, just drop it
-            if (frag != null && frag.isValidForData(isSecret)) {
-                return;
-            }
-
-            // if the main fragment doesn't exist, or is not of the correct type, (re)create it
-            frag = ViewKeyFragment.newInstance(masterKeyId, isSecret);
-            // get rid of possible backstack, this fragment is always at the bottom
-            manager.popBackStack("security_token", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            manager.beginTransaction()
-                    .replace(R.id.view_key_fragment, frag, "view_key_fragment")
-                    // if this gets lost, it doesn't really matter since the loader will reinstate it onResume
-                    .commitAllowingStateLoss();
-        });
-    }
-
-    private void encrypt(Uri dataUri, boolean text) {
+    private void encrypt(boolean text) {
         // If there is no encryption key, don't bother.
-        if (!hasEncrypt) {
+        if (!unifiedKeyInfo.has_encrypt_key()) {
             Notify.create(this, R.string.error_no_encrypt_subkey, Notify.Style.ERROR).show();
             return;
         }
-        try {
-            long keyId = KeyRepository.create(this)
-                    .getCachedPublicKeyRing(dataUri)
-                    .extractOrGetMasterKeyId();
-            long[] encryptionKeyIds = new long[]{keyId};
-            Intent intent;
-            if (text) {
-                intent = new Intent(this, EncryptTextActivity.class);
-                intent.setAction(EncryptTextActivity.ACTION_ENCRYPT_TEXT);
-                intent.putExtra(EncryptTextActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
-            } else {
-                intent = new Intent(this, EncryptFilesActivity.class);
-                intent.setAction(EncryptFilesActivity.ACTION_ENCRYPT_DATA);
-                intent.putExtra(EncryptFilesActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
-            }
-            // used instead of startActivity set actionbar based on callingPackage
-            startActivityForResult(intent, 0);
-        } catch (PgpKeyNotFoundException e) {
-            Timber.e(e, "key not found!");
+        long[] encryptionKeyIds = new long[] { unifiedKeyInfo.master_key_id() };
+        Intent intent;
+        if (text) {
+            intent = new Intent(this, EncryptTextActivity.class);
+            intent.setAction(EncryptTextActivity.ACTION_ENCRYPT_TEXT);
+            intent.putExtra(EncryptTextActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
+        } else {
+            intent = new Intent(this, EncryptFilesActivity.class);
+            intent.setAction(EncryptFilesActivity.ACTION_ENCRYPT_DATA);
+            intent.putExtra(EncryptFilesActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
         }
+        // used instead of startActivity set actionbar based on callingPackage
+        startActivityForResult(intent, 0);
     }
 
-    private void startSafeSlinger(Uri dataUri) {
-        long keyId = 0;
-        try {
-            keyId = KeyRepository.create(this)
-                    .getCachedPublicKeyRing(dataUri)
-                    .extractOrGetMasterKeyId();
-        } catch (PgpKeyNotFoundException e) {
-            Timber.e(e, "key not found!");
-        }
+    private void startSafeSlinger() {
         Intent safeSlingerIntent = new Intent(this, SafeSlingerActivity.class);
-        safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, keyId);
+        safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, unifiedKeyInfo.master_key_id());
         startActivityForResult(safeSlingerIntent, 0);
     }
 
@@ -692,50 +655,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         loadTask.execute();
     }
 
-
-    // These are the rows that we will retrieve.
-    static final String[] PROJECTION = new String[]{
-            KeychainContract.KeyRings._ID,
-            KeychainContract.KeyRings.MASTER_KEY_ID,
-            KeychainContract.KeyRings.USER_ID,
-            KeychainContract.KeyRings.IS_REVOKED,
-            KeychainContract.KeyRings.IS_EXPIRED,
-            KeychainContract.KeyRings.IS_SECURE,
-            KeychainContract.KeyRings.VERIFIED,
-            KeychainContract.KeyRings.HAS_ANY_SECRET,
-            KeychainContract.KeyRings.FINGERPRINT,
-            KeychainContract.KeyRings.HAS_ENCRYPT,
-            KeyRings.NAME,
-            KeyRings.EMAIL,
-            KeyRings.COMMENT
-    };
-
-    static final int INDEX_MASTER_KEY_ID = 1;
-    static final int INDEX_USER_ID = 2;
-    static final int INDEX_IS_REVOKED = 3;
-    static final int INDEX_IS_EXPIRED = 4;
-    static final int INDEX_IS_SECURE = 5;
-    static final int INDEX_VERIFIED = 6;
-    static final int INDEX_HAS_ANY_SECRET = 7;
-    static final int INDEX_FINGERPRINT = 8;
-    static final int INDEX_HAS_ENCRYPT = 9;
-    static final int INDEX_NAME = 10;
-    static final int INDEX_EMAIL = 11;
-    static final int INDEX_COMMENT = 12;
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        switch (id) {
-            case LOADER_ID_UNIFIED: {
-                Uri baseUri = KeychainContract.KeyRings.buildUnifiedKeyRingUri(dataUri);
-                return new CursorLoader(this, baseUri, PROJECTION, null, null, null);
-            }
-
-            default:
-                return null;
-        }
-    }
-
     int mPreviousColor = 0;
 
     /**
@@ -757,127 +676,104 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         return (0xff << 24) | (r << 16) | (g << 8) | b;
     }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        /* TODO better error handling? May cause problems when a key is deleted,
-         * because the notification triggers faster than the activity closes.
-         */
+    private void onLoadUnifiedKeyInfo(UnifiedKeyInfo unifiedKeyInfo) {
+        if (unifiedKeyInfo == null) {
+            return;
+        }
 
-        // Swap the new cursor in. (The framework will take care of closing the
-        // old cursor once we return.)
-        switch (loader.getId()) {
-            case LOADER_ID_UNIFIED: {
-                // Avoid NullPointerExceptions...
-                if (data.getCount() == 0) {
-                    return;
-                }
+        this.unifiedKeyInfo = unifiedKeyInfo;
 
-                if (data.moveToFirst()) {
-                    // get name, email, and comment from USER_ID
+        String name = unifiedKeyInfo.name();
+        collapsingToolbarLayout.setTitle(name != null ? name : getString(R.string.user_id_no_name));
 
-                    String name = data.getString(INDEX_NAME);
+        // if the refresh animation isn't playing
+        if (!rotate.hasStarted() && !rotateSpin.hasStarted()) {
+            // re-create options menu based on isSecret, isVerified
+            supportInvalidateOptionsMenu();
+            // this is done at the end of the animation otherwise
+        }
 
-                    collapsingToolbarLayout.setTitle(name != null ? name : getString(R.string.user_id_no_name));
-
-                    masterKeyId = data.getLong(INDEX_MASTER_KEY_ID);
-                    fingerprint = data.getBlob(INDEX_FINGERPRINT);
-                    isSecret = data.getInt(INDEX_HAS_ANY_SECRET) != 0;
-                    hasEncrypt = data.getInt(INDEX_HAS_ENCRYPT) != 0;
-                    isRevoked = data.getInt(INDEX_IS_REVOKED) > 0;
-                    isExpired = data.getInt(INDEX_IS_EXPIRED) != 0;
-                    isSecure = data.getInt(INDEX_IS_SECURE) == 1;
-                    isVerified = data.getInt(INDEX_VERIFIED) > 0;
-
-                    // queue showing of the main fragment
-                    showMainFragment();
-
-                    // if the refresh animation isn't playing
-                    if (!rotate.hasStarted() && !rotateSpin.hasStarted()) {
-                        // re-create options menu based on isSecret, isVerified
-                        supportInvalidateOptionsMenu();
-                        // this is done at the end of the animation otherwise
+        AsyncTask<Long, Void, Bitmap> photoTask =
+                new AsyncTask<Long, Void, Bitmap>() {
+                    protected Bitmap doInBackground(Long... mMasterKeyId) {
+                        return new ContactHelper(ViewKeyActivity.this)
+                                .loadPhotoByMasterKeyId(mMasterKeyId[0], true);
                     }
 
-                    AsyncTask<Long, Void, Bitmap> photoTask =
-                            new AsyncTask<Long, Void, Bitmap>() {
-                                protected Bitmap doInBackground(Long... mMasterKeyId) {
-                                    return new ContactHelper(ViewKeyActivity.this)
-                                            .loadPhotoByMasterKeyId(mMasterKeyId[0], true);
-                                }
-
-                                protected void onPostExecute(Bitmap photo) {
-                                    if (photo == null) {
-                                        return;
-                                    }
-
-                                    photoView.setImageBitmap(photo);
-                                    photoView.setColorFilter(getResources().getColor(R.color.toolbar_photo_tint), PorterDuff.Mode.SRC_ATOP);
-                                    photoLayout.setVisibility(View.VISIBLE);
-                                }
-                            };
-
-                    boolean showStatusText = isSecure && !isExpired && !isRevoked;
-                    if (showStatusText) {
-                        statusText.setVisibility(View.VISIBLE);
-
-                        if (isSecret) {
-                            statusText.setText(R.string.view_key_my_key);
-                        } else if (isVerified) {
-                            statusText.setText(R.string.view_key_verified);
-                        } else {
-                            statusText.setText(R.string.view_key_unverified);
+                    protected void onPostExecute(Bitmap photo) {
+                        if (photo == null) {
+                            return;
                         }
-                    } else {
-                        statusText.setVisibility(View.GONE);
+
+                        photoView.setImageBitmap(photo);
+                        photoView.setColorFilter(getResources().getColor(R.color.toolbar_photo_tint),
+                                PorterDuff.Mode.SRC_ATOP);
+                        photoLayout.setVisibility(View.VISIBLE);
                     }
+                };
 
-                    // Note: order is important
-                    int color;
-                    if (isRevoked) {
-                        statusImage.setVisibility(View.VISIBLE);
-                        KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
-                                State.REVOKED, R.color.icons, true);
-                        // noinspection deprecation, fix requires api level 23
-                        color = getResources().getColor(R.color.key_flag_red);
+        boolean showStatusText = unifiedKeyInfo.is_secure() && !unifiedKeyInfo.is_expired() && !unifiedKeyInfo.is_revoked();
+        if (showStatusText) {
+            statusText.setVisibility(View.VISIBLE);
 
-                        actionEncryptFile.setVisibility(View.INVISIBLE);
-                        actionEncryptText.setVisibility(View.INVISIBLE);
-                        hideFab();
-                        qrCodeLayout.setVisibility(View.GONE);
-                    } else if (!isSecure) {
-                        statusImage.setVisibility(View.VISIBLE);
-                        KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
-                                State.INSECURE, R.color.icons, true);
-                        // noinspection deprecation, fix requires api level 23
-                        color = getResources().getColor(R.color.key_flag_red);
+            if (unifiedKeyInfo.has_any_secret()) {
+                statusText.setText(R.string.view_key_my_key);
+            } else if (unifiedKeyInfo.is_verified()) {
+                statusText.setText(R.string.view_key_verified);
+            } else {
+                statusText.setText(R.string.view_key_unverified);
+            }
+        } else {
+            statusText.setVisibility(View.GONE);
+        }
 
-                        actionEncryptFile.setVisibility(View.INVISIBLE);
-                        actionEncryptText.setVisibility(View.INVISIBLE);
-                        hideFab();
-                        qrCodeLayout.setVisibility(View.GONE);
-                    } else if (isExpired) {
-                        statusImage.setVisibility(View.VISIBLE);
-                        KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
-                                State.EXPIRED, R.color.icons, true);
-                        // noinspection deprecation, fix requires api level 23
-                        color = getResources().getColor(R.color.key_flag_red);
+        // Note: order is important
+        int color;
+        if (unifiedKeyInfo.is_revoked()) {
+            statusImage.setVisibility(View.VISIBLE);
+            KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
+                    State.REVOKED, R.color.icons, true);
+            // noinspection deprecation, fix requires api level 23
+            color = getResources().getColor(R.color.key_flag_red);
 
-                        actionEncryptFile.setVisibility(View.INVISIBLE);
-                        actionEncryptText.setVisibility(View.INVISIBLE);
-                        hideFab();
-                        qrCodeLayout.setVisibility(View.GONE);
-                    } else if (isSecret) {
-                        statusImage.setVisibility(View.GONE);
-                        // noinspection deprecation, fix requires api level 23
-                        color = getResources().getColor(R.color.key_flag_green);
-                        // reload qr code only if the fingerprint changed
-                        if (!Arrays.equals(fingerprint, qrCodeLoaded)) {
-                            loadQrCode(fingerprint);
-                        }
-                        photoTask.execute(masterKeyId);
-                        qrCodeLayout.setVisibility(View.VISIBLE);
+            actionEncryptFile.setVisibility(View.INVISIBLE);
+            actionEncryptText.setVisibility(View.INVISIBLE);
+            hideFab();
+            qrCodeLayout.setVisibility(View.GONE);
+        } else if (unifiedKeyInfo.is_expired()) {
+            statusImage.setVisibility(View.VISIBLE);
+            KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
+                    State.EXPIRED, R.color.icons, true);
+            // noinspection deprecation, fix requires api level 23
+            color = getResources().getColor(R.color.key_flag_red);
 
-                        // and place leftOf qr code
+            actionEncryptFile.setVisibility(View.INVISIBLE);
+            actionEncryptText.setVisibility(View.INVISIBLE);
+            hideFab();
+            qrCodeLayout.setVisibility(View.GONE);
+        } else if (!unifiedKeyInfo.is_secure()) {
+            statusImage.setVisibility(View.VISIBLE);
+            KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
+                    State.INSECURE, R.color.icons, true);
+            // noinspection deprecation, fix requires api level 23
+            color = getResources().getColor(R.color.key_flag_red);
+
+            actionEncryptFile.setVisibility(View.INVISIBLE);
+            actionEncryptText.setVisibility(View.INVISIBLE);
+            hideFab();
+            qrCodeLayout.setVisibility(View.GONE);
+        } else if (unifiedKeyInfo.has_any_secret()) {
+            statusImage.setVisibility(View.GONE);
+            // noinspection deprecation, fix requires api level 23
+            color = getResources().getColor(R.color.key_flag_green);
+            // reload qr code only if the fingerprint changed
+            if (!Arrays.equals(unifiedKeyInfo.fingerprint(), qrCodeLoaded)) {
+                loadQrCode(unifiedKeyInfo.fingerprint());
+            }
+            photoTask.execute(unifiedKeyInfo.master_key_id());
+            qrCodeLayout.setVisibility(View.VISIBLE);
+
+            // and place leftOf qr code
 //                        RelativeLayout.LayoutParams nameParams = (RelativeLayout.LayoutParams)
 //                                mName.getLayoutParams();
 //                        // remove right margin
@@ -888,72 +784,67 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 //                        nameParams.addRule(RelativeLayout.LEFT_OF, R.id.view_key_qr_code_layout);
 //                        mName.setLayoutParams(nameParams);
 
-                        RelativeLayout.LayoutParams statusParams = (RelativeLayout.LayoutParams)
-                                statusText.getLayoutParams();
-                        statusParams.setMargins(FormattingUtils.dpToPx(this, 48), 0, 0, 0);
-                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                            statusParams.setMarginEnd(0);
-                        }
-                        statusParams.addRule(RelativeLayout.LEFT_OF, R.id.view_key_qr_code_layout);
-                        statusText.setLayoutParams(statusParams);
+            RelativeLayout.LayoutParams statusParams = (RelativeLayout.LayoutParams)
+                    statusText.getLayoutParams();
+            statusParams.setMargins(FormattingUtils.dpToPx(this, 48), 0, 0, 0);
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                statusParams.setMarginEnd(0);
+            }
+            statusParams.addRule(RelativeLayout.LEFT_OF, R.id.view_key_qr_code_layout);
+            statusText.setLayoutParams(statusParams);
 
-                        actionEncryptFile.setVisibility(View.VISIBLE);
-                        actionEncryptText.setVisibility(View.VISIBLE);
+            actionEncryptFile.setVisibility(View.VISIBLE);
+            actionEncryptText.setVisibility(View.VISIBLE);
 
-                        showFab();
-                        // noinspection deprecation (no getDrawable with theme at current minApi level 15!)
-                        floatingActionButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat_white_24dp));
-                    } else {
-                        actionEncryptFile.setVisibility(View.VISIBLE);
-                        actionEncryptText.setVisibility(View.VISIBLE);
-                        qrCodeLayout.setVisibility(View.GONE);
+            showFab();
+            // noinspection deprecation (no getDrawable with theme at current minApi level 15!)
+            floatingActionButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat_white_24dp));
+        } else {
+            actionEncryptFile.setVisibility(View.VISIBLE);
+            actionEncryptText.setVisibility(View.VISIBLE);
+            qrCodeLayout.setVisibility(View.GONE);
 
-                        if (isVerified) {
-                            statusText.setText(R.string.view_key_verified);
-                            statusImage.setVisibility(View.VISIBLE);
-                            KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
-                                    State.VERIFIED, R.color.icons, true);
-                            // noinspection deprecation, fix requires api level 23
-                            color = getResources().getColor(R.color.key_flag_green);
-                            photoTask.execute(masterKeyId);
+            if (unifiedKeyInfo.is_verified()) {
+                statusText.setText(R.string.view_key_verified);
+                statusImage.setVisibility(View.VISIBLE);
+                KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
+                        State.VERIFIED, R.color.icons, true);
+                // noinspection deprecation, fix requires api level 23
+                color = getResources().getColor(R.color.key_flag_green);
+                photoTask.execute(unifiedKeyInfo.master_key_id());
 
-                            hideFab();
-                        } else {
-                            statusText.setText(R.string.view_key_unverified);
-                            statusImage.setVisibility(View.VISIBLE);
-                            KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
-                                    State.UNVERIFIED, R.color.icons, true);
-                            // noinspection deprecation, fix requires api level 23
-                            color = getResources().getColor(R.color.key_flag_orange);
+                hideFab();
+            } else {
+                statusText.setText(R.string.view_key_unverified);
+                statusImage.setVisibility(View.VISIBLE);
+                KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
+                        State.UNVERIFIED, R.color.icons, true);
+                // noinspection deprecation, fix requires api level 23
+                color = getResources().getColor(R.color.key_flag_orange);
 
-                            showFab();
-                        }
-                    }
-
-                    if (mPreviousColor == 0 || mPreviousColor == color) {
-                        appBarLayout.setBackgroundColor(color);
-                        collapsingToolbarLayout.setContentScrimColor(color);
-                        collapsingToolbarLayout.setStatusBarScrimColor(getStatusBarBackgroundColor(color));
-                        mPreviousColor = color;
-                    } else {
-                        ObjectAnimator colorFade =
-                                ObjectAnimator.ofObject(appBarLayout, "backgroundColor",
-                                        new ArgbEvaluator(), mPreviousColor, color);
-                        collapsingToolbarLayout.setContentScrimColor(color);
-                        collapsingToolbarLayout.setStatusBarScrimColor(getStatusBarBackgroundColor(color));
-
-                        colorFade.setDuration(1200);
-                        colorFade.start();
-                        mPreviousColor = color;
-                    }
-
-                    //noinspection deprecation
-                    statusImage.setAlpha(80);
-
-                    break;
-                }
+                showFab();
             }
         }
+
+        if (mPreviousColor == 0 || mPreviousColor == color) {
+            appBarLayout.setBackgroundColor(color);
+            collapsingToolbarLayout.setContentScrimColor(color);
+            collapsingToolbarLayout.setStatusBarScrimColor(getStatusBarBackgroundColor(color));
+            mPreviousColor = color;
+        } else {
+            ObjectAnimator colorFade =
+                    ObjectAnimator.ofObject(appBarLayout, "backgroundColor",
+                            new ArgbEvaluator(), mPreviousColor, color);
+            collapsingToolbarLayout.setContentScrimColor(color);
+            collapsingToolbarLayout.setStatusBarScrimColor(getStatusBarBackgroundColor(color));
+
+            colorFade.setDuration(1200);
+            colorFade.start();
+            mPreviousColor = color;
+        }
+
+        //noinspection deprecation
+        statusImage.setAlpha(80);
     }
 
     /**
@@ -978,16 +869,11 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         floatingActionButton.setVisibility(View.GONE);
     }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
-    }
-
     // CryptoOperationHelper.Callback functions
 
 
     private void updateFromKeyserver() {
-        if (fingerprint == null) {
+        if (unifiedKeyInfo == null) {
             return;
         }
 
@@ -1003,7 +889,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     public ImportKeyringParcel createOperationInput() {
         HkpKeyserverAddress preferredKeyserver = Preferences.getPreferences(this).getPreferredKeyserver();
 
-        ParcelableKeyRing keyEntry = ParcelableKeyRing.createFromReference(fingerprint, null, null, null);
+        ParcelableKeyRing keyEntry = ParcelableKeyRing.createFromReference(unifiedKeyInfo.fingerprint(), null, null, null);
 
         return ImportKeyringParcel.createImportKeyringParcel(Collections.singletonList(keyEntry), preferredKeyserver);
     }

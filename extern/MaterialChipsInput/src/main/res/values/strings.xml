@@ -1,0 +1,20 @@
+<resources>
+    <!-- LetterTileProvider -->
+    <!-- All of the possible tile background colors -->
+    <array name="letter_tile_colors">
+        <item>#f16364</item>
+        <item>#f58559</item>
+        <item>#f9a43e</item>
+        <item>#e4c62e</item>
+        <item>#67bf74</item>
+        <item>#59a2be</item>
+        <item>#2093cd</item>
+        <item>#ad62a7</item>
+    </array>
+
+    <!-- The default letter tile text size -->
+    <dimen name="tile_letter_font_size">17sp</dimen>
+    <!-- The deafult tile size -->
+    <dimen name="letter_tile_size">32dp</dimen>
+    <!-- /LetterTileProvider -->
+</resources>

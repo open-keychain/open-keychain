@@ -19,7 +19,9 @@ package org.sufficientlysecure.keychain.remote.ui.dialog;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
@@ -27,19 +29,18 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
+import android.text.TextUtils;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeyInfo;
-import org.sufficientlysecure.keychain.livedata.KeyInfoInteractor.KeySelector;
+import org.sufficientlysecure.keychain.model.ApiApp;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.provider.ApiDataAccessObject;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.remote.AppSettings;
+import org.sufficientlysecure.keychain.daos.ApiAppDao;
+import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectIdKeyActivity.RemoteSelectIdViewModel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import timber.log.Timber;
@@ -47,55 +48,49 @@ import timber.log.Timber;
 
 class RemoteSelectIdentityKeyPresenter {
     private final PackageManager packageManager;
+    private LifecycleOwner lifecycleOwner;
     private final Context context;
-    private final RemoteSelectIdViewModel viewModel;
-
 
     private RemoteSelectIdentityKeyView view;
-    private List<KeyInfo> keyInfoData;
+    private RemoteSelectIdViewModel viewModel;
+    private List<UnifiedKeyInfo> keyInfoData;
 
     private UserId userId;
-    private long selectedMasterKeyId;
+    private Long selectedMasterKeyId;
     private byte[] generatedKeyData;
-    private ApiDataAccessObject apiDao;
-    private AppSettings appSettings;
+    private ApiAppDao apiAppDao;
+    private ApiApp apiApp;
 
 
-    RemoteSelectIdentityKeyPresenter(Context context, RemoteSelectIdViewModel viewModel, LifecycleOwner lifecycleOwner) {
+    RemoteSelectIdentityKeyPresenter(Context context, LifecycleOwner lifecycleOwner) {
         this.context = context;
-        this.viewModel = viewModel;
-        this.apiDao = new ApiDataAccessObject(context);
+        this.lifecycleOwner = lifecycleOwner;
+        this.apiAppDao = ApiAppDao.getInstance(context);
 
         packageManager = context.getPackageManager();
-
-        viewModel.getKeyGenerationLiveData(context).observe(lifecycleOwner, this::onChangeKeyGeneration);
-        viewModel.getKeyInfo(context).observe(lifecycleOwner, this::onChangeKeyInfoData);
     }
 
     public void setView(RemoteSelectIdentityKeyView view) {
         this.view = view;
     }
 
-    void setupFromIntentData(String packageName, byte[] packageSignature, String rawUserId, boolean clientHasAutocryptSetupMsg) {
+    void setupFromViewModel(RemoteSelectIdViewModel viewModel) {
+        this.viewModel = viewModel;
+
         try {
-            setPackageInfo(packageName, packageSignature);
+            setPackageInfo(viewModel.packageName, viewModel.packageSignature);
         } catch (NameNotFoundException e) {
             Timber.e(e, "Unable to find info of calling app!");
             view.finishAsCancelled();
             return;
         }
 
-        this.userId = OpenPgpUtils.splitUserId(rawUserId);
+        this.userId = OpenPgpUtils.splitUserId(viewModel.rawUserId);
         view.setAddressText(userId.email);
-        view.setShowAutocryptHint(clientHasAutocryptSetupMsg);
+        view.setShowAutocryptHint(viewModel.clientHasAutocryptSetupMsg);
 
-        loadKeyInfo();
-    }
-
-    private void loadKeyInfo() {
-        Uri listedKeyRingUri = viewModel.isListAllKeys() ?
-                KeyRings.buildUnifiedKeyRingsUri() : KeyRings.buildUnifiedKeyRingsFindByUserIdUri(userId.email);
-        viewModel.getKeyInfo(context).setKeySelector(KeySelector.createOnlySecret(listedKeyRingUri, null));
+        viewModel.getKeyGenerationLiveData(context).observe(lifecycleOwner, this::onChangeKeyGeneration);
+        viewModel.getSecretUnifiedKeyInfo(context).observe(lifecycleOwner, this::onChangeKeyInfoData);
     }
 
     private void setPackageInfo(String packageName, byte[] packageSignature) throws NameNotFoundException {
@@ -103,25 +98,43 @@ class RemoteSelectIdentityKeyPresenter {
         Drawable appIcon = packageManager.getApplicationIcon(applicationInfo);
         CharSequence appLabel = packageManager.getApplicationLabel(applicationInfo);
 
-        appSettings = new AppSettings(packageName, packageSignature);
+        apiApp = ApiApp.create(packageName, packageSignature);
 
         view.setTitleClientIconAndName(appIcon, appLabel);
     }
 
-    private void onChangeKeyInfoData(List<KeyInfo> data) {
+    private void onChangeKeyInfoData(List<UnifiedKeyInfo> data) {
+        if (data == null) {
+            return;
+        }
         keyInfoData = data;
         goToSelectLayout();
     }
 
     private void goToSelectLayout() {
-        if (keyInfoData == null) {
+        List<UnifiedKeyInfo> filteredKeyInfoData = viewModel.isListAllKeys() || TextUtils.isEmpty(userId.email) ?
+                        keyInfoData : getFilteredKeyInfo(userId.email.toLowerCase().trim());
+
+        if (filteredKeyInfoData == null) {
             view.showLayoutEmpty();
-        } else if (keyInfoData.isEmpty()) {
+        } else if (filteredKeyInfoData.isEmpty()) {
             view.showLayoutSelectNoKeys();
         } else {
-            view.setKeyListData(keyInfoData);
+            view.setKeyListData(filteredKeyInfoData);
             view.showLayoutSelectKeyList();
         }
+    }
+
+    private List<UnifiedKeyInfo> getFilteredKeyInfo(String filterString) {
+        if (viewModel.filteredKeyInfo == null) {
+            viewModel.filteredKeyInfo = new ArrayList<>();
+            for (UnifiedKeyInfo unifiedKeyInfo : keyInfoData) {
+                if (unifiedKeyInfo.uidSearchString().contains(filterString)) {
+                    viewModel.filteredKeyInfo.add(unifiedKeyInfo);
+                }
+            }
+        }
+        return viewModel.filteredKeyInfo;
     }
 
     private void onChangeKeyGeneration(PgpEditKeyResult pgpEditKeyResult) {
@@ -171,7 +184,7 @@ class RemoteSelectIdentityKeyPresenter {
     }
 
     void onKeyItemClick(int position) {
-        selectedMasterKeyId = keyInfoData.get(position).getMasterKeyId();
+        selectedMasterKeyId = getFilteredKeyInfo(userId.email.toLowerCase()).get(position).master_key_id();
         view.highlightKey(position);
     }
 
@@ -200,15 +213,15 @@ class RemoteSelectIdentityKeyPresenter {
     }
 
     void onHighlightFinished() {
-        apiDao.insertApiApp(appSettings);
-        apiDao.addAllowedKeyIdForApp(appSettings.getPackageName(), selectedMasterKeyId);
+        apiAppDao.insertApiApp(apiApp);
+        apiAppDao.addAllowedKeyIdForApp(apiApp.package_name(), Objects.requireNonNull(selectedMasterKeyId));
         view.finishAndReturn(selectedMasterKeyId);
     }
 
     void onImportOpSuccess(ImportKeyResult result) {
         long importedMasterKeyId = result.getImportedMasterKeyIds()[0];
-        apiDao.insertApiApp(appSettings);
-        apiDao.addAllowedKeyIdForApp(appSettings.getPackageName(), selectedMasterKeyId);
+        apiAppDao.insertApiApp(apiApp);
+        apiAppDao.addAllowedKeyIdForApp(apiApp.package_name(), importedMasterKeyId);
         view.finishAndReturn(importedMasterKeyId);
     }
 
@@ -222,8 +235,7 @@ class RemoteSelectIdentityKeyPresenter {
 
     public void onClickMenuListAllKeys() {
         viewModel.setListAllKeys(!viewModel.isListAllKeys());
-        loadKeyInfo();
-        view.showLayoutSelectKeyList();
+        goToSelectLayout();
     }
 
     public void onClickGoToOpenKeychain() {
@@ -246,7 +258,7 @@ class RemoteSelectIdentityKeyPresenter {
         void showLayoutGenerateOk();
         void showLayoutGenerateSave();
 
-        void setKeyListData(List<KeyInfo> data);
+        void setKeyListData(List<UnifiedKeyInfo> data);
 
         void highlightKey(int position);
 

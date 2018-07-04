@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_chip_view">
+
+    <!-- content -->
+    <LinearLayout
+        android:id="@+id/content"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:clickable="true"
+        android:background="@drawable/ripple_chip_view">
+
+        <!-- label -->
+        <TextView
+            android:id="@+id/label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:paddingLeft="8dp"
+            android:textSize="14sp"
+            android:text="Paulcito"/>
+
+        <!-- remove button -->
+        <ImageButton
+            android:id="@+id/delete_button"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_cancel_grey_24dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp" />
+
+    </LinearLayout>
+
+</RelativeLayout>

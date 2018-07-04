@@ -18,8 +18,6 @@
 package org.sufficientlysecure.keychain.service;
 
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,7 +26,10 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.Parcelable;
 import android.os.RemoteException;
+import android.support.v4.os.CancellationSignal;
 
+import org.sufficientlysecure.keychain.operations.KeySyncOperation;
+import org.sufficientlysecure.keychain.operations.KeySyncParcel;
 import org.sufficientlysecure.keychain.operations.BackupOperation;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
 import org.sufficientlysecure.keychain.operations.BenchmarkOperation;
@@ -48,7 +49,7 @@ import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SignEncryptParcel;
-import org.sufficientlysecure.keychain.provider.KeyWritableRepository;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import timber.log.Timber;
@@ -70,7 +71,7 @@ public class KeychainService extends Service implements Progressable {
     public static final String ACTION_CANCEL = "action_cancel";
 
     // this attribute can possibly merged with the one above? not sure...
-    private AtomicBoolean mActionCanceled = new AtomicBoolean(false);
+    private CancellationSignal mActionCanceled;
 
     ThreadLocal<Messenger> mMessenger = new ThreadLocal<>();
 
@@ -86,16 +87,15 @@ public class KeychainService extends Service implements Progressable {
     public int onStartCommand(final Intent intent, int flags, int startId) {
 
         if (intent.getAction() != null && intent.getAction().equals(ACTION_CANCEL)) {
-            mActionCanceled.set(true);
+            mActionCanceled.cancel();
             return START_NOT_STICKY;
         }
+
+        mActionCanceled = new CancellationSignal();
 
         Runnable actionRunnable = new Runnable() {
             @Override
             public void run() {
-                // We have not been cancelled! (yet)
-                mActionCanceled.set(false);
-
                 Bundle extras = intent.getExtras();
 
                 // Set messenger for communication (for this particular thread)
@@ -140,6 +140,8 @@ public class KeychainService extends Service implements Progressable {
                     op = new InputDataOperation(outerThis, databaseInteractor, outerThis);
                 } else if (inputParcel instanceof BenchmarkInputParcel) {
                     op = new BenchmarkOperation(outerThis, databaseInteractor, outerThis);
+                } else if (inputParcel instanceof KeySyncParcel) {
+                    op = new KeySyncOperation(outerThis, databaseInteractor, outerThis, mActionCanceled);
                 } else {
                     throw new AssertionError("Unrecognized input parcel in KeychainService!");
                 }

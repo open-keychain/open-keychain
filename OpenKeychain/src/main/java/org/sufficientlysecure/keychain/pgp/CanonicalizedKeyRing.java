@@ -43,9 +43,9 @@ import org.sufficientlysecure.keychain.util.IterableIterator;
  */
 public abstract class CanonicalizedKeyRing extends KeyRing {
 
-    private final int mVerified;
+    private final VerificationStatus mVerified;
 
-    CanonicalizedKeyRing(int verified) {
+    CanonicalizedKeyRing(VerificationStatus verified) {
         mVerified = verified;
     }
 
@@ -53,7 +53,7 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
         return getRing().getPublicKey().getKeyID();
     }
 
-    public int getVerified() {
+    public VerificationStatus getVerified() {
         return mVerified;
     }
 
@@ -61,15 +61,11 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
         return getRing().getPublicKey().getFingerprint();
     }
 
-    public byte[] getRawPrimaryUserId() throws PgpKeyNotFoundException {
+    public byte[] getRawPrimaryUserId() {
         return getPublicKey().getRawPrimaryUserId();
     }
 
-    public String getPrimaryUserId() throws PgpKeyNotFoundException {
-        return getPublicKey().getPrimaryUserId();
-    }
-
-    public String getPrimaryUserIdWithFallback() throws PgpKeyNotFoundException {
+    public String getPrimaryUserIdWithFallback() {
         return getPublicKey().getPrimaryUserIdWithFallback();
     }
 
@@ -107,10 +103,6 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
         return creationDate.after(now) || (expirationDate != null && expirationDate.before(now));
     }
 
-    public boolean canCertify() throws PgpKeyNotFoundException {
-        return getRing().getPublicKey().isEncryptionKey();
-    }
-
     public Set<Long> getEncryptIds() {
         HashSet<Long> result = new HashSet<>();
         for (CanonicalizedPublicKey key : publicKeyIterator()) {
@@ -128,15 +120,6 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
             }
         }
         throw new PgpKeyNotFoundException("No valid encryption key found!");
-    }
-
-    public boolean hasEncrypt() throws PgpKeyNotFoundException {
-        try {
-            getEncryptId();
-            return true;
-        } catch (PgpKeyNotFoundException e) {
-            return false;
-        }
     }
 
     public long getSigningId() throws PgpKeyNotFoundException {
@@ -192,6 +175,10 @@ public abstract class CanonicalizedKeyRing extends KeyRing {
             }
         }
         return false;
+    }
+
+    public enum VerificationStatus {
+        UNVERIFIED, VERIFIED_SELF, VERIFIED_SECRET
     }
 
 }

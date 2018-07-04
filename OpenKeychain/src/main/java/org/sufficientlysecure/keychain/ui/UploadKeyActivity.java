@@ -18,37 +18,30 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.util.ArrayList;
+
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.operations.results.UploadResult;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
-import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.util.Preferences;
-import timber.log.Timber;
-
-import java.util.ArrayList;
 
 /**
  * Sends the selected public key to a keyserver
  */
 public class UploadKeyActivity extends BaseActivity
         implements CryptoOperationHelper.Callback<UploadKeyringParcel, UploadResult> {
-    private View mUploadButton;
-    private Spinner mKeyServerSpinner;
+    public static final String EXTRA_KEY_IDS = "extra_key_ids";
 
-    private Uri mDataUri;
+    private Spinner mKeyServerSpinner;
 
     // CryptoOperationHelper.Callback vars
     private HkpKeyserverAddress mKeyserver;
@@ -58,7 +51,7 @@ public class UploadKeyActivity extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mUploadButton = findViewById(R.id.upload_key_action_upload);
+        View uploadButton = findViewById(R.id.upload_key_action_upload);
         mKeyServerSpinner = findViewById(R.id.upload_key_keyserver);
 
         MultiUserIdsFragment mMultiUserIdsFragment = (MultiUserIdsFragment)
@@ -73,23 +66,10 @@ public class UploadKeyActivity extends BaseActivity
         if (adapter.getCount() > 0) {
             mKeyServerSpinner.setSelection(0);
         } else {
-            mUploadButton.setEnabled(false);
+            uploadButton.setEnabled(false);
         }
 
-        mUploadButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                uploadKey();
-            }
-        });
-
-        mDataUri = getIntent().getData();
-        if (mDataUri == null) {
-            Timber.e("Intent data missing. Should be Uri of key!");
-            finish();
-            return;
-        }
-
+        uploadButton.setOnClickListener(v -> uploadKey());
     }
 
     private String[] getKeyserversArray() {
@@ -127,22 +107,8 @@ public class UploadKeyActivity extends BaseActivity
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home: {
-                Intent viewIntent = NavUtils.getParentActivityIntent(this);
-                viewIntent.setData(KeychainContract.KeyRings.buildGenericKeyRingUri(mDataUri));
-                NavUtils.navigateUpTo(this, viewIntent);
-                return true;
-            }
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public UploadKeyringParcel createOperationInput() {
-        long[] masterKeyIds = getIntent().getLongArrayExtra(MultiUserIdsFragment.EXTRA_KEY_IDS);
-
+        long[] masterKeyIds = getIntent().getLongArrayExtra(EXTRA_KEY_IDS);
         return UploadKeyringParcel.createWithKeyId(mKeyserver, masterKeyIds[0]);
     }
 

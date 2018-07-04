@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_comment_text_grey600_24dp"
+        android:shortcutId="encrypt_text"
+        android:shortcutLongLabel="@string/btn_encrypt_text"
+        android:shortcutShortLabel="@string/btn_encrypt_text">
+        <intent
+            android:action="org.sufficientlysecure.keychain.action.ENCRYPT_TEXT"
+            android:targetClass="org.sufficientlysecure.keychain.ui.EncryptTextActivity"
+            android:targetPackage="org.sufficientlysecure.keychain" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_folder_grey_24dp"
+        android:shortcutId="encrypt_files"
+        android:shortcutLongLabel="@string/btn_encrypt_files"
+        android:shortcutShortLabel="@string/btn_encrypt_files">
+        <intent
+            android:action="org.sufficientlysecure.keychain.action.ENCRYPT_FILES"
+            android:targetClass="org.sufficientlysecure.keychain.ui.EncryptFilesActivity"
+            android:targetPackage="org.sufficientlysecure.keychain" />
+    </shortcut>
+</shortcuts>

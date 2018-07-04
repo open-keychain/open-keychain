@@ -29,15 +29,12 @@ import android.widget.Button;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.IdentitiesPresenter.IdentitiesCardListener;
-import org.sufficientlysecure.keychain.ui.keyview.presenter.IdentitiesPresenter.IdentitiesMvpView;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.DividerItemDecoration;
 
 
-public class IdentitiesCardView extends CardView implements IdentitiesMvpView {
+public class IdentitiesCardView extends CardView {
     private final RecyclerView vIdentities;
 
-    private IdentitiesCardListener identitiesCardListener;
     private final Button linkedIdsAddButton;
 
     public IdentitiesCardView(Context context, AttributeSet attrs) {
@@ -50,24 +47,16 @@ public class IdentitiesCardView extends CardView implements IdentitiesMvpView {
         vIdentities.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL_LIST, false));
 
         linkedIdsAddButton = view.findViewById(R.id.view_key_card_linked_ids_add);
-        linkedIdsAddButton.setOnClickListener(v -> {
-            if (identitiesCardListener != null) {
-                identitiesCardListener.onClickAddIdentity();
-            }
-        });
     }
 
-    @Override
     public void setIdentitiesAdapter(IdentityAdapter identityAdapter) {
         vIdentities.setAdapter(identityAdapter);
     }
 
-    @Override
-    public void setIdentitiesCardListener(IdentitiesCardListener identitiesCardListener) {
-        this.identitiesCardListener = identitiesCardListener;
+    public void setIdentitiesCardListener(OnClickListener identitiesCardListener) {
+        linkedIdsAddButton.setOnClickListener(identitiesCardListener);
     }
 
-    @Override
     public void setAddLinkedIdButtonVisible(boolean show) {
         linkedIdsAddButton.setVisibility(show ? View.VISIBLE : View.GONE);
     }

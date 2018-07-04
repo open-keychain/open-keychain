@@ -95,15 +95,6 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.Keychain.Light">
-        <!-- broadcast receiver for Wi-Fi Connection -->
-        <receiver
-            android:name=".network.NetworkReceiver"
-            android:enabled="false"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
-            </intent-filter>
-        </receiver>
         <!-- broadcast receiver for Orbots status -->
         <receiver android:name=".network.orbot.OrbotStatusReceiver">
             <intent-filter>
@@ -128,6 +119,8 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity>
         <!-- singleTop for NFC dispatch, see SecurityTokenOperationActivity -->
         <activity
@@ -176,15 +169,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.key" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".ui.ViewCertActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_view_cert"
-            android:parentActivityName=".ui.keyview.ViewKeyActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.keyview.ViewKeyActivity" />
         </activity>
         <activity
             android:name=".ui.SafeSlingerActivity"
@@ -983,6 +967,12 @@
             android:name=".remote.ui.RemoteDisplayTransferCodeActivity"
             android:theme="@style/Theme.Keychain.Transparent"/>
 
+        <activity android:name=".ui.DebugActionsActivity">
+            <intent-filter>
+                <action android:name="org.sufficientlysecure.keychain.debug" />
+            </intent-filter>
+        </activity>
+
         <!-- Usb interceptor activity -->
         <activity
             android:name=".ui.UsbEventReceiverActivity"
@@ -1068,21 +1058,6 @@
             <meta-data
                 android:name="android.provider.CONTACTS_STRUCTURE"
                 android:resource="@xml/sync_adapter_contacts_structure" />
-        </service>
-
-        <!-- keyserver sync service -->
-        <service
-            android:name=".service.KeyserverSyncAdapterService"
-            android:exported="true"
-            android:process=":sync"
-            tools:ignore="ExportedService">
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_adapter_keys" />
         </service>
 
         <!-- Storage Provider for temporary decrypted files.

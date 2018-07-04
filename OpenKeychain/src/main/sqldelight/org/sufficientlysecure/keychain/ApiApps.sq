@@ -1,0 +1,26 @@
+CREATE TABLE IF NOT EXISTS api_apps (
+    _id INTEGER PRIMARY KEY AUTOINCREMENT,
+    package_name TEXT NOT NULL UNIQUE,
+    package_signature BLOB
+);
+
+insertApiApp:
+INSERT INTO api_apps (package_name, package_signature) VALUES (?, ?);
+
+selectAll:
+SELECT *
+    FROM api_apps;
+
+selectByPackageName:
+SELECT *
+    FROM api_apps
+    WHERE package_name = ?;
+
+deleteByPackageName:
+DELETE FROM api_apps
+    WHERE package_name = ?;
+
+getCertificate:
+SELECT package_signature
+    FROM api_apps
+    WHERE package_name = ?;

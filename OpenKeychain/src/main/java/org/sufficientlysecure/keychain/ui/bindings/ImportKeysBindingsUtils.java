@@ -31,7 +31,8 @@ public class ImportKeysBindingsUtils {
     public static Highlighter getHighlighter(Context context, String query) {
         Highlighter highlighter = highlighterCache.get(query);
         if (highlighter == null) {
-            highlighter = new Highlighter(context, query);
+            highlighter = new Highlighter(context);
+            highlighter.setQuery(query);
             highlighterCache.put(query, highlighter);
         }
 

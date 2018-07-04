@@ -1,0 +1,96 @@
+import java.lang.Boolean;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
+
+CREATE TABLE IF NOT EXISTS keys (
+    master_key_id INTEGER NOT NULL,
+    rank INTEGER NOT NULL,
+    key_id INTEGER NOT NULL,
+    key_size INTEGER AS Integer,
+    key_curve_oid TEXT,
+    algorithm INTEGER AS Integer NOT NULL,
+    fingerprint BLOB NOT NULL,
+    can_certify INTEGER AS Boolean NOT NULL,
+    can_sign INTEGER AS Boolean NOT NULL,
+    can_encrypt INTEGER AS Boolean NOT NULL,
+    can_authenticate INTEGER AS Boolean NOT NULL,
+    is_revoked INTEGER AS Boolean NOT NULL,
+    has_secret INTEGER AS SecretKeyType NOT NULL DEFAULT 0,
+    is_secure INTEGER AS Boolean NOT NULL,
+    creation INTEGER NOT NULL,
+    expiry INTEGER,
+    PRIMARY KEY(master_key_id, rank),
+    FOREIGN KEY(master_key_id) REFERENCES
+    keyrings_public(master_key_id) ON DELETE CASCADE
+);
+
+unifiedKeyView:
+CREATE VIEW unifiedKeyView AS
+    SELECT keys.master_key_id, keys.fingerprint, MIN(user_packets.rank), user_packets.user_id, user_packets.name, user_packets.email, user_packets.comment, keys.creation, keys.expiry, keys.is_revoked, keys.is_secure, keys.can_certify, certs.verified,
+        (EXISTS (SELECT * FROM user_packets AS dups WHERE dups.master_key_id != keys.master_key_id AND dups.rank = 0 AND dups.name = user_packets.name COLLATE NOCASE AND dups.email = user_packets.email COLLATE NOCASE )) AS has_duplicate_int,
+        (EXISTS (SELECT * FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.has_secret != 0 )) AS has_any_secret_int,
+        (SELECT key_id FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_encrypt != 0 LIMIT 1) AS has_encrypt_key_int,
+        (SELECT key_id FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_sign != 0 LIMIT 1) AS has_sign_key_int,
+        (SELECT key_id FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_authenticate != 0 LIMIT 1) AS has_auth_key_int,
+        GROUP_CONCAT(DISTINCT aTI.package_name) AS autocrypt_package_names_csv,
+        GROUP_CONCAT(user_packets.user_id, '|||') AS user_id_list
+    FROM keys
+         INNER JOIN user_packets ON ( keys.master_key_id = user_packets.master_key_id AND user_packets.type IS NULL AND (user_packets.rank = 0 OR user_packets.is_revoked = 0))
+         LEFT JOIN certs ON ( keys.master_key_id = certs.master_key_id AND certs.verified = 1 )
+         LEFT JOIN autocrypt_peers AS aTI ON ( aTI.master_key_id = keys.master_key_id )
+    WHERE keys.rank = 0
+    GROUP BY keys.master_key_id;
+
+selectAllUnifiedKeyInfo:
+SELECT * FROM unifiedKeyView
+    ORDER BY has_any_secret_int DESC, IFNULL(name, email) COLLATE NOCASE ASC, creation DESC;
+
+selectUnifiedKeyInfoByMasterKeyId:
+SELECT * FROM unifiedKeyView
+   WHERE master_key_id = ?;
+
+selectUnifiedKeyInfoByMasterKeyIds:
+SELECT * FROM unifiedKeyView
+   WHERE master_key_id IN ?;
+
+selectUnifiedKeyInfoSearchMailAddress:
+SELECT * FROM unifiedKeyView
+   WHERE email LIKE ?
+   ORDER BY creation DESC;
+
+selectAllUnifiedKeyInfoWithSecret:
+SELECT * FROM unifiedKeyView
+    WHERE has_any_secret_int = 1
+   ORDER BY creation DESC;
+
+selectMasterKeyIdBySubkey:
+SELECT master_key_id
+    FROM keys
+    WHERE key_id = ?;
+
+selectSubkeysByMasterKeyId:
+SELECT *
+    FROM keys
+    WHERE master_key_id = ?
+    ORDER BY rank ASC;
+
+selectSecretKeyType:
+SELECT has_secret
+    FROM keys
+    WHERE key_id = ?;
+
+selectFingerprintByKeyId:
+SELECT fingerprint
+    FROM keys
+    WHERE key_id = ?;
+
+selectEffectiveSignKeyIdByMasterKeyId:
+SELECT key_id
+    FROM keys
+    WHERE is_revoked = 0 AND is_secure = 1 AND has_secret > 1 AND ( expiry IS NULL OR expiry >= date('now') )
+        AND can_sign = 1 AND master_key_id = ?;
+
+selectEffectiveAuthKeyIdByMasterKeyId:
+SELECT key_id
+    FROM keys
+    WHERE is_revoked = 0 AND is_secure = 1 AND has_secret > 1 AND ( expiry IS NULL OR expiry >= date('now') )
+        AND can_authenticate = 1 AND master_key_id = ?;

@@ -17,8 +17,12 @@
 
 package org.sufficientlysecure.keychain.ssh;
 
+
+import java.util.Collection;
+
 import android.content.Context;
 import android.support.annotation.NonNull;
+
 import org.bouncycastle.openpgp.AuthenticationSignatureGenerator;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
@@ -29,14 +33,12 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.provider.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import timber.log.Timber;
-
-import java.util.Collection;
 
 import static java.lang.String.format;
 
@@ -101,8 +103,8 @@ public class AuthenticationOperation extends BaseOperation<AuthenticationParcel>
         Long authSubKeyId = data.getAuthenticationSubKeyId();
         if (authSubKeyId == null) {
             try { // Get the key id of the authentication key belonging to the master key id
-                authSubKeyId = mKeyRepository.getCachedPublicKeyRing(authMasterKeyId).getSecretAuthenticationId();
-            } catch (PgpKeyNotFoundException e) {
+                authSubKeyId = mKeyRepository.getSecretAuthenticationId(authMasterKeyId);
+            } catch (NotFoundException e) {
                 log.add(LogType.MSG_AUTH_ERROR_KEY_AUTH, indent);
                 return new AuthenticationResult(AuthenticationResult.RESULT_ERROR, log);
             }
@@ -142,9 +144,7 @@ public class AuthenticationOperation extends BaseOperation<AuthenticationParcel>
 
         CanonicalizedSecretKey.SecretKeyType secretKeyType;
         try {
-            secretKeyType = mKeyRepository
-                    .getCachedPublicKeyRing(authMasterKeyId)
-                    .getSecretKeyType(authSubKeyId);
+            secretKeyType = mKeyRepository.getSecretKeyType(authSubKeyId);
         } catch (KeyRepository.NotFoundException e) {
             log.add(LogType.MSG_AUTH_ERROR_KEY_AUTH, indent);
             return new AuthenticationResult(AuthenticationResult.RESULT_ERROR, log);

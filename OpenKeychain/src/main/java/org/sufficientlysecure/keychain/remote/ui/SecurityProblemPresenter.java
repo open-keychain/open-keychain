@@ -36,8 +36,7 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem.MissingMdc;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.NotWhitelistedCurve;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.EncryptionAlgorithmProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.UnidentifiedKeyProblem;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.OverriddenWarningsRepository;
+import org.sufficientlysecure.keychain.daos.OverriddenWarningsDao;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 
 
@@ -47,7 +46,7 @@ class SecurityProblemPresenter {
 
     private final Context context;
     private final PackageManager packageManager;
-    private final OverriddenWarningsRepository overriddenWarningsRepository;
+    private final OverriddenWarningsDao overriddenWarningsDao;
 
 
     private RemoteSecurityProblemView view;
@@ -63,7 +62,7 @@ class SecurityProblemPresenter {
     SecurityProblemPresenter(Context context) {
         this.context = context;
         packageManager = context.getPackageManager();
-        overriddenWarningsRepository = OverriddenWarningsRepository.createOverriddenWarningsRepository(context);
+        overriddenWarningsDao = OverriddenWarningsDao.create(context);
     }
 
     public void setView(RemoteSecurityProblemView view) {
@@ -161,7 +160,7 @@ class SecurityProblemPresenter {
 
     private void refreshOverrideStatusView() {
         if (supportOverride) {
-            if (overriddenWarningsRepository.isWarningOverridden(securityProblemIdentifier)) {
+            if (overriddenWarningsDao.isWarningOverridden(securityProblemIdentifier)) {
                 view.showOverrideUndoButton();
             } else {
                 view.showOverrideButton();
@@ -192,14 +191,14 @@ class SecurityProblemPresenter {
             overrideCounter++;
             view.showOverrideMessage(overrideCountLeft);
         } else {
-            overriddenWarningsRepository.putOverride(securityProblemIdentifier);
+            overriddenWarningsDao.putOverride(securityProblemIdentifier);
             view.finishAsSuppressed();
         }
     }
 
     private void resetOverrideStatus() {
         overrideCounter = 0;
-        overriddenWarningsRepository.deleteOverride(securityProblemIdentifier);
+        overriddenWarningsDao.deleteOverride(securityProblemIdentifier);
     }
 
     void onClickGotIt() {
@@ -207,9 +206,9 @@ class SecurityProblemPresenter {
     }
 
     void onClickViewKey() {
-        Intent viewKeyIntent = new Intent(context, ViewKeyActivity.class);
-        viewKeyIntent.setData(KeyRings.buildGenericKeyRingUri(viewKeyMasterKeyId));
-        context.startActivity(viewKeyIntent);
+        Intent intent = new Intent(context, ViewKeyActivity.class);
+        intent.putExtra(ViewKeyActivity.EXTRA_MASTER_KEY_ID, viewKeyMasterKeyId);
+        context.startActivity(intent);
     }
 
     void onClickOverride() {
