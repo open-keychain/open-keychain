@@ -8,8 +8,8 @@ import java.util.List;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.pchmn.materialchips.ChipsInput;
-import com.pchmn.materialchips.adapter.FilterableAdapter.FilterableItem;
+import org.sufficientlysecure.materialchips.ChipsInput;
+import org.sufficientlysecure.materialchips.adapter.FilterableAdapter.FilterableItem;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.ui.chips.EncryptRecipientChipsInput.EncryptRecipientChip;
 

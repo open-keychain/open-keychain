@@ -7,12 +7,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.pchmn.materialchips.ChipView;
-import com.pchmn.materialchips.ChipsInput;
-import com.pchmn.materialchips.adapter.ChipsAdapter;
-import com.pchmn.materialchips.simple.SimpleChip;
-import com.pchmn.materialchips.util.ViewUtil;
-import com.pchmn.materialchips.views.DetailedChipView;
+import org.sufficientlysecure.materialchips.ChipView;
+import org.sufficientlysecure.materialchips.ChipsInput;
+import org.sufficientlysecure.materialchips.adapter.ChipsAdapter;
+import org.sufficientlysecure.materialchips.simple.SimpleChip;
+import org.sufficientlysecure.materialchips.util.ViewUtil;
+import org.sufficientlysecure.materialchips.views.DetailedChipView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.model.SubKey;

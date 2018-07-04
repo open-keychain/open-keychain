@@ -34,7 +34,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ViewAnimator;
 
-import com.pchmn.materialchips.ChipsInput.SimpleChipsListener;
+import org.sufficientlysecure.materialchips.ChipsInput.SimpleChipsListener;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.daos.KeyRepository;

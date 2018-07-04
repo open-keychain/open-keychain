@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.pchmn.materialchips.ChipsInput;
+import org.sufficientlysecure.materialchips.ChipsInput;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.chips.EncryptRecipientChipsInput.EncryptRecipientChip;
 import org.sufficientlysecure.keychain.ui.chips.EncryptRecipientDropdownAdapter.ItemViewHolder;
