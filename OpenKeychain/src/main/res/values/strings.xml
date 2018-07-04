@@ -2035,4 +2035,9 @@
     <string name="snack_keysync_error">An error occurred while updating all keys</string>
 
     <string name="keychoice_cannot_encrypt">This key cannot be used for encryption!</string>
+    <string name="keychoice_cannot_sign">This key cannot be used for signing!</string>
+    <string name="keychoice_insecure">This key cannot be used because it is insecure!</string>
+    <string name="keychoice_revoked">This key cannot be used because it is revoked!</string>
+    <string name="keychoice_expired">This key cannot be used because it is expired!</string>
+
 </resources>

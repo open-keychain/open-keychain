@@ -40,6 +40,12 @@ public class KeyChoiceAdapter extends FlexibleAdapter<KeyChoiceItem> {
         return new KeyChoiceAdapter(items, Objects.requireNonNull(onKeyClickListener), Mode.IDLE, null);
     }
 
+    public static KeyChoiceAdapter createSingleClickableAdapter(List<UnifiedKeyInfo> items,
+                                                                OnKeyClickListener onKeyClickListener,
+                                                                KeyDisabledPredicate keyDisabledPredicate) {
+        return new KeyChoiceAdapter(items, Objects.requireNonNull(onKeyClickListener), Mode.IDLE, keyDisabledPredicate);
+    }
+
     public static KeyChoiceAdapter createSingleChoiceAdapter(List<UnifiedKeyInfo> items) {
         return new KeyChoiceAdapter(items, null, Mode.SINGLE, null);
     }

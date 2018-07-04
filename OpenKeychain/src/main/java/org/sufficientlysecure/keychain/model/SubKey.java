@@ -66,6 +66,10 @@ public abstract class SubKey implements KeysModel {
             return has_encrypt_key_int() != 0;
         }
 
+        public boolean has_sign_key() {
+            return has_sign_key_int() != 0;
+        }
+
         public String uidSearchString() {
             if (cachedUidSearchString == null) {
                 cachedUidSearchString = user_id_list();
