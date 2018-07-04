@@ -249,8 +249,8 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
                         importedMasterKeyIds.add(key.getMasterKeyId());
                     }
 
-                    if (!skipSave) {
-                        keyMetadataDao.renewKeyLastUpdatedTime(key.getMasterKeyId(), keyWasDownloaded);
+                    if (!skipSave && keyWasDownloaded) {
+                        keyMetadataDao.renewKeyLastUpdatedTime(key.getMasterKeyId(), true);
                     }
                 }
 
