@@ -58,13 +58,10 @@ public class KeychainDatabase {
     private static KeychainDatabase sInstance;
 
     public static KeychainDatabase getInstance(Context context) {
+        if (sInstance == null || Constants.IS_RUNNING_UNITTEST) {
             sInstance = new KeychainDatabase(context.getApplicationContext());
+        }
         return sInstance;
-    }
-
-    @VisibleForTesting
-    public static void resetSingleton() {
-        sInstance = null;
     }
 
     public interface Tables {

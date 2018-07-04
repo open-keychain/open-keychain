@@ -37,6 +37,8 @@ public final class Constants {
     public static final boolean DEBUG_SYNC_REMOVE_CONTACTS = false;
     public static final boolean DEBUG_KEYSERVER_SYNC = false;
 
+    public static final boolean IS_RUNNING_UNITTEST = isRunningUnitTest();
+
     public static final String TAG = DEBUG ? "Keychain D" : "Keychain";
 
     public static final String PACKAGE_NAME = "org.sufficientlysecure.keychain";
@@ -211,4 +213,12 @@ public final class Constants {
     public static final KeyFormat SECURITY_TOKEN_V2_DEC = new RSAKeyFormat(2048, ELEN, RSAKeyFormat.RSAAlgorithmFormat.CRT_WITH_MODULUS);
     public static final KeyFormat SECURITY_TOKEN_V2_AUTH = new RSAKeyFormat(2048, ELEN, RSAKeyFormat.RSAAlgorithmFormat.CRT_WITH_MODULUS);
 
+    private static boolean isRunningUnitTest() {
+        try {
+            Class.forName("org.sufficientlysecure.keychain.KeychainTestRunner");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
 }
