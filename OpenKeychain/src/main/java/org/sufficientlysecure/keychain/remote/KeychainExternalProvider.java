@@ -134,7 +134,7 @@ public class KeychainExternalProvider extends ContentProvider {
 
         String groupBy = null;
 
-        SupportSQLiteDatabase db = KeychainDatabase.getInstance(getContext()).getReadableDatabase();
+        SupportSQLiteDatabase db = KeychainDatabase.getTemporaryInstance(getContext()).getReadableDatabase();
 
         String callingPackageName = apiPermissionHelper.getCurrentCallingPackage();
 

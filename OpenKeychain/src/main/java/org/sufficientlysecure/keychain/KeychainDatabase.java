@@ -32,7 +32,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
-import android.support.annotation.VisibleForTesting;
 
 import org.sufficientlysecure.keychain.daos.LocalSecretKeyStorage;
 import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
@@ -62,6 +61,10 @@ public class KeychainDatabase {
             sInstance = new KeychainDatabase(context.getApplicationContext());
         }
         return sInstance;
+    }
+
+    public static KeychainDatabase getTemporaryInstance(Context context) {
+        return new KeychainDatabase(context.getApplicationContext());
     }
 
     public interface Tables {
