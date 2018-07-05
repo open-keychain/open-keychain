@@ -225,6 +225,8 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements OnB
 
             vProgress = root.findViewById(R.id.linked_cert_progress);
             vText = root.findViewById(R.id.linked_cert_text);
+
+            vKeySpinner.setShowNone(R.string.choice_select_cert);
         }
 
         enum VerifyState {
@@ -244,7 +246,6 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements OnB
                     if (!isSecret) {
                         showButton(2);
                         if (!vKeySpinner.isSingleEntry()) {
-                            vKeySpinner.setShowNone(R.string.choice_select_cert);
                             vKeySpinnerContainer.setVisibility(View.VISIBLE);
                         }
                     } else {
@@ -264,6 +265,7 @@ public class LinkedIdViewFragment extends CryptoOperationFragment implements OnB
                     vProgress.setDisplayedChild(0);
                     vText.setText(context.getString(R.string.linked_text_confirming));
                     vKeySpinnerContainer.setVisibility(View.GONE);
+                    vButtonConfirm.setEnabled(false);
                     break;
             }
         }
