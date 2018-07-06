@@ -7,4 +7,6 @@
     android:minHeight="56dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
-    android:textAppearance="?textAppearanceListItemSmall" />
+    android:textAppearance="?textAppearanceListItemSmall"
+    android:background="?colorCardViewBackground"
+    />
