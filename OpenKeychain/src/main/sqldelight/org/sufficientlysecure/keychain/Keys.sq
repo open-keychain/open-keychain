@@ -99,11 +99,11 @@ SELECT fingerprint
 selectEffectiveSignKeyIdByMasterKeyId:
 SELECT key_id
     FROM keys
-    WHERE is_revoked = 0 AND is_secure = 1 AND has_secret > 1 AND ( expiry IS NULL OR expiry >= date('now') )
+    WHERE is_revoked = 0 AND is_secure = 1 AND has_secret > 1 AND ( expiry IS NULL OR expiry >= strftime('%s', 'now') )
         AND can_sign = 1 AND master_key_id = ?;
 
 selectEffectiveAuthKeyIdByMasterKeyId:
 SELECT key_id
     FROM keys
-    WHERE is_revoked = 0 AND is_secure = 1 AND has_secret > 1 AND ( expiry IS NULL OR expiry >= date('now') )
+    WHERE is_revoked = 0 AND is_secure = 1 AND has_secret > 1 AND ( expiry IS NULL OR expiry >= strftime('%s', 'now') )
         AND can_authenticate = 1 AND master_key_id = ?;
