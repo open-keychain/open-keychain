@@ -51,7 +51,7 @@ import timber.log.Timber;
  */
 public class KeychainDatabase {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 29;
+    private static final int DATABASE_VERSION = 30;
     private final SupportSQLiteOpenHelper supportSQLiteOpenHelper;
 
     private static KeychainDatabase sInstance;
@@ -133,6 +133,8 @@ public class KeychainDatabase {
         db.execSQL(AutocryptPeersModel.CREATE_TABLE);
         db.execSQL(ApiAllowedKeysModel.CREATE_TABLE);
         db.execSQL(KeysModel.UNIFIEDKEYVIEW);
+        db.execSQL(KeysModel.VALIDKEYSVIEW);
+        db.execSQL(UserPacketsModel.UIDSTATUS);
 
         db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysColumns.RANK + ", " + KeysColumns.MASTER_KEY_ID + ");");
         db.execSQL("CREATE INDEX uids_by_rank ON user_packets (" + UserPacketsColumns.RANK + ", "
@@ -356,18 +358,28 @@ public class KeychainDatabase {
                 renameApiAutocryptPeersTable(db);
 
             case 28:
-                recreateUnifiedKeyView(db);
                 // drop old table from version 20
                 db.execSQL("DROP TABLE IF EXISTS api_accounts");
+
+            case 29:
+                recreateUnifiedKeyView(db);
         }
     }
 
     private void recreateUnifiedKeyView(SupportSQLiteDatabase db) {
         try {
             db.beginTransaction();
+
             // noinspection deprecation
             db.execSQL("DROP VIEW IF EXISTS " + KeysModel.UNIFIEDKEYVIEW_VIEW_NAME);
             db.execSQL(KeysModel.UNIFIEDKEYVIEW);
+            // noinspection deprecation
+            db.execSQL("DROP VIEW IF EXISTS " + KeysModel.VALIDMASTERKEYS_VIEW_NAME);
+            db.execSQL(KeysModel.VALIDKEYSVIEW);
+            // noinspection deprecation
+            db.execSQL("DROP VIEW IF EXISTS " + UserPacketsModel.UIDSTATUS_VIEW_NAME);
+            db.execSQL(UserPacketsModel.UIDSTATUS);
+
             db.setTransactionSuccessful();
         } finally {
             db.endTransaction();

@@ -49,3 +49,23 @@ SELECT user_packets.master_key_id, user_packets.rank, attribute_data, is_primary
         LEFT JOIN certs ON ( user_packets.master_key_id = certs.master_key_id AND user_packets.rank = certs.rank AND certs.verified > 0 )
     WHERE user_packets.type = ? AND user_packets.master_key_id = ? AND user_packets.rank = ?
     GROUP BY user_packets.master_key_id, user_packets.rank;
+
+
+uidStatus:
+CREATE VIEW uidStatus AS
+    SELECT user_packets.email, MIN(certs.verified) AS key_status_int, user_packets.user_id, user_packets.master_key_id, COUNT(DISTINCT user_packets.master_key_id) AS candidates
+    FROM user_packets
+        JOIN validMasterKeys USING (master_key_id)
+        LEFT JOIN certs ON (certs.master_key_id = user_packets.master_key_id AND certs.rank = user_packets.rank AND certs.verified > 0)
+    WHERE user_packets.email IS NOT NULL
+    GROUP BY user_packets.email;
+
+selectUserIdStatusByEmail:
+SELECT *
+FROM uidStatus
+    WHERE email IN ?;
+
+selectUserIdStatusByEmailLike:
+SELECT *
+FROM uidStatus
+    WHERE email LIKE ?;

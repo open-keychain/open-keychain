@@ -36,6 +36,12 @@ UPDATE keys
     SET has_secret = ?2
     WHERE key_id = ?1;
 
+validKeysView:
+CREATE VIEW validMasterKeys AS
+SELECT *
+    FROM keys
+    WHERE rank = 0 AND is_revoked = 0 AND is_secure = 1 AND (expiry IS NULL OR expiry >= strftime('%s', 'now'));
+
 unifiedKeyView:
 CREATE VIEW unifiedKeyView AS
     SELECT keys.master_key_id, keys.fingerprint, MIN(user_packets.rank), user_packets.user_id, user_packets.name, user_packets.email, user_packets.comment, keys.creation, keys.expiry, keys.is_revoked, keys.is_secure, keys.can_certify, certs.verified,

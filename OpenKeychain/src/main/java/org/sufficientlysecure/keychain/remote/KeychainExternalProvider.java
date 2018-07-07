@@ -36,12 +36,16 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.squareup.sqldelight.SqlDelightQuery;
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.KeychainDatabase;
 import org.sufficientlysecure.keychain.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import org.sufficientlysecure.keychain.daos.DatabaseNotifyManager;
+import org.sufficientlysecure.keychain.model.UserPacket;
+import org.sufficientlysecure.keychain.model.UserPacket.UidStatus;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
@@ -248,7 +252,7 @@ public class KeychainExternalProvider extends ContentProvider {
                         plist.contains(AutocryptStatus.UID_MASTER_KEY_ID) ||
                         plist.contains(AutocryptStatus.UID_CANDIDATES);
                 if (queriesUidResult) {
-                    fillTempTableWithUidResult(db, isWildcardSelector);
+                    fillTempTableWithUidResult(db, isWildcardSelector, selectionArgs);
                 }
 
                 boolean queriesAutocryptResult = plist.contains(AutocryptStatus.AUTOCRYPT_PEER_STATE) ||
@@ -343,44 +347,32 @@ public class KeychainExternalProvider extends ContentProvider {
         }
     }
 
-    private void fillTempTableWithUidResult(SupportSQLiteDatabase db, boolean isWildcardSelector) {
-        String cmpOperator = isWildcardSelector ? " LIKE " : " = ";
-        long unixSeconds = System.currentTimeMillis() / 1000;
-        db.execSQL("REPLACE INTO " + TEMP_TABLE_QUERIED_ADDRESSES +
-                "(" + TEMP_TABLE_COLUMN_ADDRES + ", " + AutocryptStatus.UID_KEY_STATUS + ", " +
-                AutocryptStatus.UID_ADDRESS + ", " + AutocryptStatus.UID_MASTER_KEY_ID
-                + ", " + AutocryptStatus.UID_CANDIDATES + ")" +
-                " SELECT " + TEMP_TABLE_COLUMN_ADDRES + ", " +
-                "CASE ( MIN (" + Tables.CERTS + "." + Certs.VERIFIED + " ) ) "
-                // remap to keep this provider contract independent from our internal representation
-                + " WHEN " + Certs.VERIFIED_SELF + " THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
-                + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + KeychainExternalContract.KEY_STATUS_VERIFIED
-                + " END AS " + AutocryptStatus.UID_KEY_STATUS
-                + ", " + Tables.USER_PACKETS + "." + UserPackets.USER_ID
-                + ", " + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID
-                + ", COUNT(DISTINCT " + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + ")"
-                + " FROM " + TEMP_TABLE_QUERIED_ADDRESSES
-                + " LEFT JOIN " + Tables.USER_PACKETS + " ON ("
-                + Tables.USER_PACKETS + "." + UserPackets.EMAIL + cmpOperator +
-                TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES
-                + ")"
-                + " LEFT JOIN " + Tables.CERTS + " ON ("
-                + Tables.CERTS + "." + Certs.MASTER_KEY_ID + " = " + Tables.USER_PACKETS + "." +
-                UserPackets.MASTER_KEY_ID
-                + " AND " + Tables.CERTS + "." + Certs.RANK + " = " + Tables.USER_PACKETS + "." +
-                UserPackets.RANK
-                + " AND " + Tables.CERTS + "." + Certs.VERIFIED + " > 0"
-                + ")"
-                + " WHERE (EXISTS (SELECT 1 FROM " + Tables.KEYS + " WHERE "
-                + Tables.KEYS + "." + Keys.KEY_ID + " = " + Tables.USER_PACKETS + "." +
-                UserPackets.MASTER_KEY_ID
-                + " AND " + Tables.KEYS + "." + Keys.RANK + " = 0"
-                + " AND " + Tables.KEYS + "." + Keys.IS_REVOKED + " = 0"
-                + " AND NOT " + "(" + Tables.KEYS + "." + Keys.EXPIRY + " IS NOT NULL AND " + Tables.KEYS +
-                "." + Keys.EXPIRY
-                + " < " + unixSeconds + ")"
-                + ")) OR " + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " IS NULL"
-                + " GROUP BY " + TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES);
+    private void fillTempTableWithUidResult(SupportSQLiteDatabase db,
+            boolean isWildcardSelector, String[] selectionArgs) {
+        SqlDelightQuery query;
+        if (isWildcardSelector) {
+            query = UserPacket.FACTORY.selectUserIdStatusByEmailLike(selectionArgs[0]);
+        } else {
+            query = UserPacket.FACTORY.selectUserIdStatusByEmail(selectionArgs);
+        }
+
+        try (Cursor cursor = db.query(query)) {
+            ContentValues cv = new ContentValues();
+            while (cursor.moveToNext()) {
+                UidStatus uidStatus = UserPacket.UID_STATUS_MAPPER.map(cursor);
+                int keyStatus = uidStatus.keyStatus() == VerificationStatus.VERIFIED_SECRET ?
+                        KeychainExternalContract.KEY_STATUS_VERIFIED : KeychainExternalContract.KEY_STATUS_UNVERIFIED;
+
+                cv.put(AutocryptStatus.UID_ADDRESS, uidStatus.user_id());
+                cv.put(AutocryptStatus.UID_MASTER_KEY_ID, uidStatus.master_key_id());
+                cv.put(AutocryptStatus.UID_KEY_STATUS, keyStatus);
+                cv.put(AutocryptStatus.UID_CANDIDATES, uidStatus.candidates());
+
+                db.update(TEMP_TABLE_QUERIED_ADDRESSES, SQLiteDatabase.CONFLICT_IGNORE, cv,
+                        TEMP_TABLE_COLUMN_ADDRES + "= ?",
+                        new String[] { isWildcardSelector ? selectionArgs[0] : uidStatus.email() });
+            }
+        }
     }
 
     private int getPeerStateValue(AutocryptState autocryptState) {

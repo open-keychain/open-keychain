@@ -16,6 +16,8 @@ public abstract class UserPacket implements UserPacketsModel {
             FACTORY.selectUserIdsByMasterKeyIdMapper(AutoValue_UserPacket_UserId::new);
     public static final SelectUserAttributesByTypeAndMasterKeyIdMapper<UserAttribute> USER_ATTRIBUTE_MAPPER =
             FACTORY.selectUserAttributesByTypeAndMasterKeyIdMapper(AutoValue_UserPacket_UserAttribute::new);
+    public static final UidStatusMapper<UidStatus> UID_STATUS_MAPPER =
+            FACTORY.selectUserIdStatusByEmailMapper(AutoValue_UserPacket_UidStatus::new);
 
     public static UserPacket create(long masterKeyId, int rank, Long type, String userId, String name, String email,
             String comment, byte[] attribute_data, boolean isPrimary, boolean isRevoked) {
@@ -53,6 +55,13 @@ public abstract class UserPacket implements UserPacketsModel {
         @NonNull
         public VerificationStatus verified() {
             return CustomColumnAdapters.VERIFICATON_STATUS_ADAPTER.decode(verified_int());
+        }
+    }
+
+    @AutoValue
+    public static abstract class UidStatus implements UidStatusModel {
+        public VerificationStatus keyStatus() {
+            return CustomColumnAdapters.VERIFICATON_STATUS_ADAPTER.decode(key_status_int());
         }
     }
 }
