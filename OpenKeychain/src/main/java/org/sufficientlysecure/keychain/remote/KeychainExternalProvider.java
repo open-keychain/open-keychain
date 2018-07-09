@@ -36,18 +36,16 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import com.squareup.sqldelight.SqlDelightQuery;
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.KeychainDatabase;
 import org.sufficientlysecure.keychain.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import org.sufficientlysecure.keychain.daos.DatabaseNotifyManager;
-import org.sufficientlysecure.keychain.model.UserPacket;
+import org.sufficientlysecure.keychain.daos.UserIdDao;
 import org.sufficientlysecure.keychain.model.UserPacket.UidStatus;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
 import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
@@ -71,24 +69,12 @@ public class KeychainExternalProvider extends ContentProvider {
     private ApiPermissionHelper apiPermissionHelper;
 
 
-    /**
-     * Build and return a {@link UriMatcher} that catches all {@link Uri} variations supported by
-     * this {@link ContentProvider}.
-     */
     protected UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
 
         String authority = KeychainExternalContract.CONTENT_AUTHORITY_EXTERNAL;
 
-        /*
-         * list email_status
-         *
-         * <pre>
-         * email_status/
-         * </pre>
-         */
         matcher.addURI(authority, KeychainExternalContract.BASE_EMAIL_STATUS, EMAIL_STATUS);
-
         matcher.addURI(authority, KeychainExternalContract.BASE_AUTOCRYPT_STATUS, AUTOCRYPT_STATUS);
         matcher.addURI(authority, KeychainExternalContract.BASE_AUTOCRYPT_STATUS + "/*", AUTOCRYPT_STATUS_INTERNAL);
 
@@ -138,7 +124,8 @@ public class KeychainExternalProvider extends ContentProvider {
 
         String groupBy = null;
 
-        SupportSQLiteDatabase db = KeychainDatabase.getTemporaryInstance(getContext()).getReadableDatabase();
+        KeychainDatabase temporaryDb = KeychainDatabase.getTemporaryInstance(getContext());
+        SupportSQLiteDatabase db = temporaryDb.getReadableDatabase();
 
         String callingPackageName = apiPermissionHelper.getCurrentCallingPackage();
 
@@ -243,28 +230,38 @@ public class KeychainExternalProvider extends ContentProvider {
                     db.insert(TEMP_TABLE_QUERIED_ADDRESSES, SQLiteDatabase.CONFLICT_FAIL, cv);
                 }
 
-                boolean isWildcardSelector = selectionArgs.length == 1 && selectionArgs[0].contains("%");
-
                 List<String> plist = Arrays.asList(projection);
-
+                boolean isWildcardSelector = selectionArgs.length == 1 && selectionArgs[0].contains("%");
                 boolean queriesUidResult = plist.contains(AutocryptStatus.UID_KEY_STATUS) ||
                         plist.contains(AutocryptStatus.UID_ADDRESS) ||
                         plist.contains(AutocryptStatus.UID_MASTER_KEY_ID) ||
                         plist.contains(AutocryptStatus.UID_CANDIDATES);
-                if (queriesUidResult) {
-                    fillTempTableWithUidResult(db, isWildcardSelector, selectionArgs);
-                }
-
                 boolean queriesAutocryptResult = plist.contains(AutocryptStatus.AUTOCRYPT_PEER_STATE) ||
                         plist.contains(AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID) ||
                         plist.contains(AutocryptStatus.AUTOCRYPT_KEY_STATUS);
                 if (isWildcardSelector && queriesAutocryptResult) {
                     throw new UnsupportedOperationException("Cannot wildcard-query autocrypt results!");
                 }
-                if (!isWildcardSelector && queriesAutocryptResult) {
+
+                UserIdDao userIdDao = new UserIdDao(temporaryDb, DatabaseNotifyManager.create(getContext()));
+
+                if (queriesUidResult) {
+                    List<UidStatus> uidStatuses;
+                    if (isWildcardSelector) {
+                        uidStatuses = userIdDao.getUidStatusByEmailLike(selectionArgs[0]);
+                    } else {
+                        uidStatuses = userIdDao.getUidStatusByEmail(selectionArgs);
+                    }
+                    fillTempTableWithUidResult(db, uidStatuses, isWildcardSelector ? selectionArgs[0] : null);
+                }
+
+                if (queriesAutocryptResult) {
                     AutocryptInteractor autocryptInteractor =
                             AutocryptInteractor.getInstance(getContext(), callingPackageName);
-                    fillTempTableWithAutocryptRecommendations(db, autocryptInteractor, selectionArgs);
+                    List<AutocryptRecommendationResult> autocryptStates =
+                            autocryptInteractor.determineAutocryptRecommendations(selectionArgs);
+
+                    fillTempTableWithAutocryptRecommendations(db, autocryptStates);
                 }
 
                 HashMap<String, String> projectionMap = new HashMap<>();
@@ -321,14 +318,6 @@ public class KeychainExternalProvider extends ContentProvider {
     }
 
     private void fillTempTableWithAutocryptRecommendations(SupportSQLiteDatabase db,
-            AutocryptInteractor autocryptInteractor, String[] peerIds) {
-        List<AutocryptRecommendationResult> autocryptStates =
-                autocryptInteractor.determineAutocryptRecommendations(peerIds);
-
-        fillTempTableWithAutocryptRecommendations(db, autocryptStates);
-    }
-
-    private void fillTempTableWithAutocryptRecommendations(SupportSQLiteDatabase db,
             List<AutocryptRecommendationResult> autocryptRecommendations) {
         ContentValues cv = new ContentValues();
         for (AutocryptRecommendationResult peerResult : autocryptRecommendations) {
@@ -347,31 +336,20 @@ public class KeychainExternalProvider extends ContentProvider {
         }
     }
 
-    private void fillTempTableWithUidResult(SupportSQLiteDatabase db,
-            boolean isWildcardSelector, String[] selectionArgs) {
-        SqlDelightQuery query;
-        if (isWildcardSelector) {
-            query = UserPacket.FACTORY.selectUserIdStatusByEmailLike(selectionArgs[0]);
-        } else {
-            query = UserPacket.FACTORY.selectUserIdStatusByEmail(selectionArgs);
-        }
+    private void fillTempTableWithUidResult(SupportSQLiteDatabase db, List<UidStatus> uidStatuses, String key) {
+        ContentValues cv = new ContentValues();
+        for (UidStatus uidStatus : uidStatuses) {
+            int keyStatus = uidStatus.keyStatus() == VerificationStatus.VERIFIED_SECRET ?
+                    KeychainExternalContract.KEY_STATUS_VERIFIED : KeychainExternalContract.KEY_STATUS_UNVERIFIED;
 
-        try (Cursor cursor = db.query(query)) {
-            ContentValues cv = new ContentValues();
-            while (cursor.moveToNext()) {
-                UidStatus uidStatus = UserPacket.UID_STATUS_MAPPER.map(cursor);
-                int keyStatus = uidStatus.keyStatus() == VerificationStatus.VERIFIED_SECRET ?
-                        KeychainExternalContract.KEY_STATUS_VERIFIED : KeychainExternalContract.KEY_STATUS_UNVERIFIED;
+            cv.put(AutocryptStatus.UID_ADDRESS, uidStatus.user_id());
+            cv.put(AutocryptStatus.UID_MASTER_KEY_ID, uidStatus.master_key_id());
+            cv.put(AutocryptStatus.UID_KEY_STATUS, keyStatus);
+            cv.put(AutocryptStatus.UID_CANDIDATES, uidStatus.candidates());
 
-                cv.put(AutocryptStatus.UID_ADDRESS, uidStatus.user_id());
-                cv.put(AutocryptStatus.UID_MASTER_KEY_ID, uidStatus.master_key_id());
-                cv.put(AutocryptStatus.UID_KEY_STATUS, keyStatus);
-                cv.put(AutocryptStatus.UID_CANDIDATES, uidStatus.candidates());
-
-                db.update(TEMP_TABLE_QUERIED_ADDRESSES, SQLiteDatabase.CONFLICT_IGNORE, cv,
-                        TEMP_TABLE_COLUMN_ADDRES + "= ?",
-                        new String[] { isWildcardSelector ? selectionArgs[0] : uidStatus.email() });
-            }
+            db.update(TEMP_TABLE_QUERIED_ADDRESSES, SQLiteDatabase.CONFLICT_IGNORE, cv,
+                    TEMP_TABLE_COLUMN_ADDRES + "= ?",
+                    new String[] { key != null ? key : uidStatus.email() });
         }
     }
 

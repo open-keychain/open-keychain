@@ -129,48 +129,48 @@ public class KeyRepository extends AbstractDao {
 
     public List<Long> getAllMasterKeyIds() {
         SqlDelightQuery query = KeyRingPublic.FACTORY.selectAllMasterKeyIds();
-        return mapAllRows(query, KeyRingPublic.FACTORY.selectAllMasterKeyIdsMapper()::map);
+        return mapAllRows(query, KeyRingPublic.FACTORY.selectAllMasterKeyIdsMapper());
     }
 
     public List<Long> getMasterKeyIdsBySigner(List<Long> signerMasterKeyIds) {
         long[] signerKeyIds = getLongListAsArray(signerMasterKeyIds);
         SqlDelightQuery query = KeySignature.FACTORY.selectMasterKeyIdsBySigner(signerKeyIds);
-        return mapAllRows(query, KeySignature.FACTORY.selectMasterKeyIdsBySignerMapper()::map);
+        return mapAllRows(query, KeySignature.FACTORY.selectMasterKeyIdsBySignerMapper());
     }
 
     public Long getMasterKeyIdBySubkeyId(long subKeyId) {
         SqlDelightQuery query = SubKey.FACTORY.selectMasterKeyIdBySubkey(subKeyId);
-        return mapSingleRow(query, SubKey.FACTORY.selectMasterKeyIdBySubkeyMapper()::map);
+        return mapSingleRow(query, SubKey.FACTORY.selectMasterKeyIdBySubkeyMapper());
     }
 
     public UnifiedKeyInfo getUnifiedKeyInfo(long masterKeyId) {
         SqlDelightQuery query = SubKey.FACTORY.selectUnifiedKeyInfoByMasterKeyId(masterKeyId);
-        return mapSingleRow(query, SubKey.UNIFIED_KEY_INFO_MAPPER::map);
+        return mapSingleRow(query, SubKey.UNIFIED_KEY_INFO_MAPPER);
     }
 
     public List<UnifiedKeyInfo> getUnifiedKeyInfo(long... masterKeyIds) {
         SqlDelightQuery query = SubKey.FACTORY.selectUnifiedKeyInfoByMasterKeyIds(masterKeyIds);
-        return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER::map);
+        return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER);
     }
 
     public List<UnifiedKeyInfo> getUnifiedKeyInfosByMailAddress(String mailAddress) {
         SqlDelightQuery query = SubKey.FACTORY.selectUnifiedKeyInfoSearchMailAddress('%' + mailAddress + '%');
-        return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER::map);
+        return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER);
     }
 
     public List<UnifiedKeyInfo> getAllUnifiedKeyInfo() {
         SqlDelightQuery query = SubKey.FACTORY.selectAllUnifiedKeyInfo();
-        return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER::map);
+        return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER);
     }
 
     public List<UnifiedKeyInfo> getAllUnifiedKeyInfoWithSecret() {
         SqlDelightQuery query = SubKey.FACTORY.selectAllUnifiedKeyInfoWithSecret();
-        return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER::map);
+        return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER);
     }
 
     public List<UserId> getUserIds(long... masterKeyIds) {
         SqlDelightQuery query = UserPacket.FACTORY.selectUserIdsByMasterKeyId(masterKeyIds);
-        return mapAllRows(query, UserPacket.USER_ID_MAPPER::map);
+        return mapAllRows(query, UserPacket.USER_ID_MAPPER);
     }
 
     public List<String> getConfirmedUserIds(long masterKeyId) {
@@ -181,17 +181,17 @@ public class KeyRepository extends AbstractDao {
 
     public List<SubKey> getSubKeysByMasterKeyId(long masterKeyId) {
         SqlDelightQuery query = SubKey.FACTORY.selectSubkeysByMasterKeyId(masterKeyId);
-        return mapAllRows(query, SubKey.SUBKEY_MAPPER::map);
+        return mapAllRows(query, SubKey.SUBKEY_MAPPER);
     }
 
     public SecretKeyType getSecretKeyType(long keyId) throws NotFoundException {
         SqlDelightQuery query = SubKey.FACTORY.selectSecretKeyType(keyId);
-        return mapSingleRowOrThrow(query, SubKey.SKT_MAPPER::map);
+        return mapSingleRowOrThrow(query, SubKey.SKT_MAPPER);
     }
 
     public byte[] getFingerprintByKeyId(long keyId) throws NotFoundException {
         SqlDelightQuery query = SubKey.FACTORY.selectFingerprintByKeyId(keyId);
-        return mapSingleRowOrThrow(query, SubKey.FACTORY.selectFingerprintByKeyIdMapper()::map);
+        return mapSingleRowOrThrow(query, SubKey.FACTORY.selectFingerprintByKeyIdMapper());
     }
 
     private byte[] getKeyRingAsArmoredData(byte[] data) throws IOException {
@@ -247,12 +247,12 @@ public class KeyRepository extends AbstractDao {
 
     public long getSecretSignId(long masterKeyId) throws NotFoundException {
         SqlDelightQuery query = SubKey.FACTORY.selectEffectiveSignKeyIdByMasterKeyId(masterKeyId);
-        return mapSingleRowOrThrow(query, SubKey.FACTORY.selectEffectiveSignKeyIdByMasterKeyIdMapper()::map);
+        return mapSingleRowOrThrow(query, SubKey.FACTORY.selectEffectiveSignKeyIdByMasterKeyIdMapper());
     }
 
     public long getSecretAuthenticationId(long masterKeyId) throws NotFoundException {
         SqlDelightQuery query = SubKey.FACTORY.selectEffectiveAuthKeyIdByMasterKeyId(masterKeyId);
-        return mapSingleRowOrThrow(query, SubKey.FACTORY.selectEffectiveAuthKeyIdByMasterKeyIdMapper()::map);
+        return mapSingleRowOrThrow(query, SubKey.FACTORY.selectEffectiveAuthKeyIdByMasterKeyIdMapper());
     }
 
     public static class NotFoundException extends Exception {

@@ -8,6 +8,7 @@ import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.db.SupportSQLiteQuery;
 import android.database.Cursor;
 
+import com.squareup.sqldelight.RowMapper;
 import org.sufficientlysecure.keychain.KeychainDatabase;
 import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 
@@ -33,7 +34,7 @@ class AbstractDao {
         return databaseNotifyManager;
     }
 
-    <T> List<T> mapAllRows(SupportSQLiteQuery query, Mapper<T> mapper) {
+    <T> List<T> mapAllRows(SupportSQLiteQuery query, RowMapper<T> mapper) {
         ArrayList<T> result = new ArrayList<>();
         try (Cursor cursor = getReadableDb().query(query)) {
             while (cursor.moveToNext()) {
@@ -44,7 +45,7 @@ class AbstractDao {
         return result;
     }
 
-    <T> T mapSingleRowOrThrow(SupportSQLiteQuery query, Mapper<T> mapper) throws NotFoundException {
+    <T> T mapSingleRowOrThrow(SupportSQLiteQuery query, RowMapper<T> mapper) throws NotFoundException {
         T result = mapSingleRow(query, mapper);
         if (result == null) {
             throw new NotFoundException();
@@ -52,16 +53,12 @@ class AbstractDao {
         return result;
     }
 
-    <T> T mapSingleRow(SupportSQLiteQuery query, Mapper<T> mapper) {
+    <T> T mapSingleRow(SupportSQLiteQuery query, RowMapper<T> mapper) {
         try (Cursor cursor = getReadableDb().query(query)) {
             if (cursor.moveToNext()) {
                 return mapper.map(cursor);
             }
         }
         return null;
-    }
-
-    interface Mapper<T> {
-        T map(Cursor cursor);
     }
 }
