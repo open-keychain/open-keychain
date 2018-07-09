@@ -1002,9 +1002,7 @@ public class KeyWritableRepository extends KeyRepository {
             }
         }
 
-        if (!isTrustDbInitialized) {
-            preferences.setKeySignaturesTableInitialized();
-        }
+        preferences.setKeySignaturesTableInitialized();
 
         log.add(LogType.MSG_TRUST_OK, 1);
         return new UpdateTrustResult(UpdateTrustResult.RESULT_OK, log);
