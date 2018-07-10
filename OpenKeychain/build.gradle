@@ -226,7 +226,7 @@ android {
             minifyEnabled false
             //proguardFiles = buildTypes.release.proguardFiles
             //testProguardFiles 'proguard-rules-test.pro'
-            
+
             multiDexEnabled true
 
             applicationIdSuffix ".debug"
