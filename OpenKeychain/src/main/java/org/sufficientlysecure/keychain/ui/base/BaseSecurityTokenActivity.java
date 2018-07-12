@@ -29,7 +29,6 @@ import android.nfc.TagLostException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
-import nordpol.android.OnDiscoveredTagListener;
 import nordpol.android.TagDispatcher;
 import nordpol.android.TagDispatcherBuilder;
 import org.sufficientlysecure.keychain.R;
@@ -56,8 +55,7 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 import timber.log.Timber;
 
 
-public abstract class BaseSecurityTokenActivity extends BaseActivity
-        implements OnDiscoveredTagListener, UsbConnectionDispatcher.OnDiscoveredUsbDeviceListener {
+public abstract class BaseSecurityTokenActivity extends BaseActivity {
     public static final int REQUEST_CODE_PIN = 1;
 
     public static final String EXTRA_TAG_HANDLING_ENABLED = "tag_handling_enabled";
@@ -108,8 +106,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         onSecurityTokenError(error);
     }
 
-    @Override
-    public void tagDiscovered(Tag tag) {
+    private void nfcTagDiscovered(Tag tag) {
         // Actual NFC operations are executed in doInBackground to not block the UI thread
         if (!mTagHandlingEnabled) {
             return;
@@ -119,8 +116,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
         securityTokenDiscovered(nfcTransport);
     }
 
-    @Override
-    public void usbTransportDiscovered(UsbTransport usbTransport) {
+    private void usbTransportDiscovered(UsbTransport usbTransport) {
         // Actual USB operations are executed in doInBackground to not block the UI thread
         if (!mTagHandlingEnabled) {
             return;
@@ -184,14 +180,14 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mNfcTagDispatcher = new TagDispatcherBuilder(this, this)
+        mNfcTagDispatcher = new TagDispatcherBuilder(this, this::nfcTagDiscovered)
                 .enableUnavailableNfcUserPrompt(false)
                 .enableSounds(true)
                 .enableDispatchingOnUiThread(true)
                 .enableBroadcomWorkaround(false)
                 .build();
 
-        mUsbDispatcher = new UsbConnectionDispatcher(this, this);
+        mUsbDispatcher = new UsbConnectionDispatcher(this, this::usbTransportDiscovered);
 
         // Check whether we're recreating a previously destroyed instance
         if (savedInstanceState != null) {
