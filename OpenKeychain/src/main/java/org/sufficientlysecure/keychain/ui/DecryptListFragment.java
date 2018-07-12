@@ -1005,12 +1005,11 @@ public class DecryptListFragment
                 // save index closure-style :)
                 final int idx = i;
 
-                fileHolder.vFile.setOnLongClickListener(view -> {
+                fileHolder.vOverflowMenu.setVisibility(model.mResult.success() ? View.VISIBLE : View.GONE);
+                fileHolder.vOverflowMenu.setOnClickListener(view -> {
                     if (model.mResult.success()) {
                         displayBottomSheet(model.mResult, idx);
-                        return true;
                     }
-                    return false;
                 });
 
                 fileHolder.vFile.setOnClickListener(view -> {
@@ -1172,12 +1171,14 @@ public class DecryptListFragment
             public TextView vFilename;
             public TextView vFilesize;
             public ImageView vThumbnail;
+            public ImageView vOverflowMenu;
 
             public SubViewHolder(View itemView) {
                 vFile = itemView.findViewById(R.id.file);
                 vFilename = itemView.findViewById(R.id.filename);
                 vFilesize = itemView.findViewById(R.id.filesize);
                 vThumbnail = itemView.findViewById(R.id.thumbnail);
+                vOverflowMenu = itemView.findViewById(R.id.button_decryptfile_overflow);
             }
         }
 
