@@ -367,6 +367,9 @@ public class TransferFragment extends Fragment implements TransferMvpView {
             @Override
             public void onBackStackChanged() {
                 FragmentManager fragMan = getFragmentManager();
+                if (fragMan == null) {
+                    return;
+                }
                 fragMan.popBackStack(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                 fragMan.removeOnBackStackChangedListener(this);
 
