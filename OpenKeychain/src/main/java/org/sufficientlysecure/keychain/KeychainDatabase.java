@@ -363,9 +363,15 @@ public class KeychainDatabase {
     }
 
     private void recreateUnifiedKeyView(SupportSQLiteDatabase db) {
-        // noinspection deprecation
-        db.execSQL("DROP VIEW IF EXISTS " + KeysModel.UNIFIEDKEYVIEW_VIEW_NAME);
-        db.execSQL(KeysModel.UNIFIEDKEYVIEW);
+        try {
+            db.beginTransaction();
+            // noinspection deprecation
+            db.execSQL("DROP VIEW IF EXISTS " + KeysModel.UNIFIEDKEYVIEW_VIEW_NAME);
+            db.execSQL(KeysModel.UNIFIEDKEYVIEW);
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
     }
 
     private void migrateSecretKeysFromDbToLocalStorage(SupportSQLiteDatabase db, Context context) throws IOException {
