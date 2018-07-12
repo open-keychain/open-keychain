@@ -108,7 +108,6 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
         });
         identitiesCardView.setIdentitiesAdapter(identitiesAdapter);
 
-        identitiesCardView.setVisibility(View.GONE);
         keyStatusCardView.setVisibility(View.GONE);
 
         keyStatusHealth.setOnHealthClickListener((v) -> onKeyHealthClick());
@@ -298,7 +297,6 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
 
     private void onLoadIdentityInfo(List<IdentityInfo> identityInfos) {
         identitiesAdapter.setData(identityInfos, unifiedKeyInfo.has_any_secret());
-        identitiesCardView.setVisibility(View.VISIBLE);
     }
 
     private void onLoadSystemContact(SystemContactInfo systemContactInfo) {

@@ -22,6 +22,7 @@ import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.AdapterDataObserver;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +51,12 @@ public class IdentitiesCardView extends CardView {
     }
 
     public void setIdentitiesAdapter(IdentityAdapter identityAdapter) {
+        identityAdapter.registerAdapterDataObserver(new AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                setVisibility(identityAdapter.getItemCount() > 0 ? View.VISIBLE : View.GONE);
+            }
+        });
         vIdentities.setAdapter(identityAdapter);
     }
 
