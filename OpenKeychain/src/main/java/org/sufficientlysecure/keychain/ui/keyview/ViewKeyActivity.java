@@ -49,6 +49,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -712,7 +713,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                         }
 
                         photoView.setImageBitmap(photo);
-                        photoView.setColorFilter(getResources().getColor(R.color.toolbar_photo_tint),
+                        photoView.setColorFilter(ContextCompat.getColor(ViewKeyActivity.this, R.color.toolbar_photo_tint),
                                 PorterDuff.Mode.SRC_ATOP);
                         photoLayout.setVisibility(View.VISIBLE);
                     }
@@ -739,8 +740,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             statusImage.setVisibility(View.VISIBLE);
             KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
                     State.REVOKED, R.color.icons, true);
-            // noinspection deprecation, fix requires api level 23
-            color = getResources().getColor(R.color.key_flag_red);
+            color = ContextCompat.getColor(this, R.color.key_flag_red);
 
             actionEncryptFile.setVisibility(View.INVISIBLE);
             actionEncryptText.setVisibility(View.INVISIBLE);
@@ -750,8 +750,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             statusImage.setVisibility(View.VISIBLE);
             KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
                     State.EXPIRED, R.color.icons, true);
-            // noinspection deprecation, fix requires api level 23
-            color = getResources().getColor(R.color.key_flag_red);
+            color = ContextCompat.getColor(this, R.color.key_flag_red);
 
             actionEncryptFile.setVisibility(View.INVISIBLE);
             actionEncryptText.setVisibility(View.INVISIBLE);
@@ -761,8 +760,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             statusImage.setVisibility(View.VISIBLE);
             KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
                     State.INSECURE, R.color.icons, true);
-            // noinspection deprecation, fix requires api level 23
-            color = getResources().getColor(R.color.key_flag_red);
+            color = ContextCompat.getColor(this, R.color.key_flag_red);
 
             actionEncryptFile.setVisibility(View.INVISIBLE);
             actionEncryptText.setVisibility(View.INVISIBLE);
@@ -770,8 +768,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             qrCodeLayout.setVisibility(View.GONE);
         } else if (unifiedKeyInfo.has_any_secret()) {
             statusImage.setVisibility(View.GONE);
-            // noinspection deprecation, fix requires api level 23
-            color = getResources().getColor(R.color.key_flag_green);
+            color = ContextCompat.getColor(this, R.color.key_flag_green);
             // reload qr code only if the fingerprint changed
             if (!Arrays.equals(unifiedKeyInfo.fingerprint(), qrCodeLoaded)) {
                 loadQrCode(unifiedKeyInfo.fingerprint());
@@ -803,8 +800,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             actionEncryptText.setVisibility(View.VISIBLE);
 
             showFab();
-            // noinspection deprecation (no getDrawable with theme at current minApi level 15!)
-            floatingActionButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_repeat_white_24dp));
+            floatingActionButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_white_24dp));
         } else {
             actionEncryptFile.setVisibility(View.VISIBLE);
             actionEncryptText.setVisibility(View.VISIBLE);
@@ -815,8 +811,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                 statusImage.setVisibility(View.VISIBLE);
                 KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
                         State.VERIFIED, R.color.icons, true);
-                // noinspection deprecation, fix requires api level 23
-                color = getResources().getColor(R.color.key_flag_green);
+                color = ContextCompat.getColor(this, R.color.key_flag_green);
                 photoTask.execute(unifiedKeyInfo.master_key_id());
 
                 hideFab();
@@ -825,8 +820,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
                 statusImage.setVisibility(View.VISIBLE);
                 KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
                         State.UNVERIFIED, R.color.icons, true);
-                // noinspection deprecation, fix requires api level 23
-                color = getResources().getColor(R.color.key_flag_orange);
+                color = ContextCompat.getColor(this, R.color.key_flag_orange);
 
                 showFab();
             }
@@ -849,7 +843,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
             mPreviousColor = color;
         }
 
-        //noinspection deprecation
         statusImage.setAlpha(80);
     }
 
