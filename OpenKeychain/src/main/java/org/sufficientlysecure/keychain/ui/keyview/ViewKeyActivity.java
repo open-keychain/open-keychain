@@ -267,7 +267,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         qrCodeLayout.setOnClickListener(v -> showQrCodeDialog());
 
         UnifiedKeyInfoViewModel viewModel = ViewModelProviders.of(this).get(UnifiedKeyInfoViewModel.class);
-        viewModel.setMasterKeyId(getIntent().getLongExtra(EXTRA_MASTER_KEY_ID, 0L));
+        viewModel.setMasterKeyId(masterKeyId);
         viewModel.getUnifiedKeyInfoLiveData(getApplicationContext()).observe(this, this::onLoadUnifiedKeyInfo);
 
         if (savedInstanceState == null && intent.hasExtra(EXTRA_DISPLAY_RESULT)) {
