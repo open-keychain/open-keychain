@@ -2040,4 +2040,8 @@
     <string name="keychoice_revoked">This key cannot be used because it is revoked!</string>
     <string name="keychoice_expired">This key cannot be used because it is expired!</string>
 
+    <string name="keylist_item_key_id">Key ID: %s</string>
+    <string name="keylist_header_anonymous">Anonymous</string>
+    <string name="keylist_header_special">#</string>
+
 </resources>

@@ -14,10 +14,12 @@ import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 
 
 public class FlexibleKeyItemFactory {
+    private final Resources resources;
     private Map<String, FlexibleKeyHeader> initialsHeaderMap = new HashMap<>();
     private FlexibleKeyHeader myKeysHeader;
 
     public FlexibleKeyItemFactory(Resources resources) {
+        this.resources = resources;
         String myKeysHeaderText = resources.getString(R.string.my_keys);
         myKeysHeader = new FlexibleKeyHeader(myKeysHeaderText);
     }
@@ -62,10 +64,10 @@ public class FlexibleKeyItemFactory {
             headerText = unifiedKeyInfo.email();
         }
         if (headerText == null || headerText.isEmpty()) {
-            return "";
+            return resources.getString(R.string.keylist_header_anonymous);
         }
         if (!Character.isLetter(headerText.codePointAt(0))) {
-            return "#";
+            return resources.getString(R.string.keylist_header_special);
         }
         return headerText.substring(0, 1).toUpperCase();
     }
