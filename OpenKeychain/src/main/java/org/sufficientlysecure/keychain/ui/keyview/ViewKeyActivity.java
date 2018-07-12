@@ -684,7 +684,13 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         this.unifiedKeyInfo = unifiedKeyInfo;
 
         String name = unifiedKeyInfo.name();
-        collapsingToolbarLayout.setTitle(name != null ? name : getString(R.string.user_id_no_name));
+        boolean isAnonymousKey = name == null && unifiedKeyInfo.email() == null;
+        if (isAnonymousKey) {
+            String readableKeyId = KeyFormattingUtils.beautifyKeyId(unifiedKeyInfo.master_key_id());
+            collapsingToolbarLayout.setTitle(readableKeyId);
+        } else {
+            collapsingToolbarLayout.setTitle(name != null ? name : getString(R.string.user_id_no_name));
+        }
 
         // if the refresh animation isn't playing
         if (!rotate.hasStarted() && !rotateSpin.hasStarted()) {
