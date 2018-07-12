@@ -38,13 +38,13 @@ import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.daos.ApiAppDao;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.KeychainDatabase;
 import org.sufficientlysecure.keychain.KeychainDatabase.Tables;
+import org.sufficientlysecure.keychain.daos.ApiAppDao;
+import org.sufficientlysecure.keychain.daos.DatabaseNotifyManager;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
+import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
+import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
@@ -200,7 +200,7 @@ public class KeychainExternalProvider extends ContentProvider {
                 }
 
                 // uri to watch is all /key_rings/
-                uri = KeyRings.CONTENT_URI;
+                uri = DatabaseNotifyManager.getNotifyUriAllKeys();
 
                 break;
             }
@@ -281,7 +281,7 @@ public class KeychainExternalProvider extends ContentProvider {
                 }
 
                 // uri to watch is all /key_rings/
-                uri = KeyRings.CONTENT_URI;
+                uri = DatabaseNotifyManager.getNotifyUriAllKeys();
                 break;
             }
 

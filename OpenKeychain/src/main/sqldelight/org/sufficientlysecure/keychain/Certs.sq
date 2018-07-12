@@ -14,6 +14,9 @@ CREATE TABLE IF NOT EXISTS certs(
     FOREIGN KEY(master_key_id, rank) REFERENCES user_packets(master_key_id, rank) ON DELETE CASCADE
 );
 
+insertCert:
+INSERT INTO certs VALUES (?, ?, ?, ?, ?, ?, ?);
+
 selectVerifyingCertDetails:
 SELECT master_key_id AS masterKeyId, key_id_certifier AS signerMasterKeyId, creation * 1000 AS creation
     FROM certs

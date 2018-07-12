@@ -3,7 +3,10 @@ package org.sufficientlysecure.keychain.model;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+
+import android.arch.persistence.db.SupportSQLiteDatabase;
 
 import com.google.auto.value.AutoValue;
 import com.squareup.sqldelight.RowMapper;
@@ -24,6 +27,33 @@ public abstract class SubKey implements KeysModel {
 
     public boolean expires() {
         return expiry() != null;
+    }
+
+    public static SubKey create(long masterKeyId, long rank, long keyId, Integer keySize, String keyCurveOid,
+            int algorithm, byte[] fingerprint, boolean canCertify, boolean canSign, boolean canEncrypt, boolean canAuth,
+            boolean isRevoked, SecretKeyType hasSecret, boolean isSecure, Date creation, Date expiry) {
+        long creationUnixTime = creation.getTime() / 1000;
+        Long expiryUnixTime = expiry != null ? expiry.getTime() / 1000 : null;
+        return new AutoValue_SubKey(masterKeyId, rank, keyId, keySize, keyCurveOid, algorithm, fingerprint, canCertify,
+                canSign, canEncrypt, canAuth, isRevoked, hasSecret, isSecure, creationUnixTime, expiryUnixTime);
+    }
+
+    public static InsertKey createInsertStatement(SupportSQLiteDatabase db) {
+        return new InsertKey(db, FACTORY);
+    }
+
+    public static UpdateHasSecretByMasterKeyId createUpdateHasSecretByMasterKeyIdStatement(SupportSQLiteDatabase db) {
+        return new UpdateHasSecretByMasterKeyId(db, FACTORY);
+    }
+
+    public static UpdateHasSecretByKeyId createUpdateHasSecretByKeyId(SupportSQLiteDatabase db) {
+        return new UpdateHasSecretByKeyId(db, FACTORY);
+    }
+
+    public void bindTo(InsertKey statement) {
+        statement.bind(master_key_id(), rank(), key_id(), key_size(), key_curve_oid(), algorithm(), fingerprint(),
+                can_certify(), can_sign(), can_encrypt(), can_authenticate(), is_revoked(), has_secret(), is_secure(),
+                creation(), expiry());
     }
 
     @AutoValue

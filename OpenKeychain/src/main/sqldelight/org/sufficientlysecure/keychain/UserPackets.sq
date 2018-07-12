@@ -16,6 +16,9 @@ CREATE TABLE IF NOT EXISTS user_packets(
     keyrings_public(master_key_id) ON DELETE CASCADE
 );
 
+insertUserPacket:
+INSERT INTO user_packets VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
 selectUserIdsByMasterKeyId:
 SELECT user_packets.master_key_id, user_packets.rank, user_id, name, email, comment, is_primary, is_revoked, MIN(certs.verified) AS verified_int
     FROM user_packets

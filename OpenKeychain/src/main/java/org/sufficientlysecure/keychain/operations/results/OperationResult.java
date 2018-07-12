@@ -339,7 +339,6 @@ public abstract class OperationResult implements Parcelable {
         MSG_IP_ENCODE_FAIL (LogLevel.DEBUG, R.string.msg_ip_encode_fail),
         MSG_IP_ERROR_IO_EXC (LogLevel.ERROR, R.string.msg_ip_error_io_exc),
         MSG_IP_ERROR_OP_EXC (LogLevel.ERROR, R.string.msg_ip_error_op_exc),
-        MSG_IP_ERROR_REMOTE_EX (LogLevel.ERROR, R.string.msg_ip_error_remote_ex),
         MSG_IP_FINGERPRINT_ERROR (LogLevel.ERROR, R.string.msg_ip_fingerprint_error),
         MSG_IP_FINGERPRINT_OK (LogLevel.INFO, R.string.msg_ip_fingerprint_ok),
         MSG_IP_INSERT_KEYRING (LogLevel.DEBUG, R.string.msg_ip_insert_keyring),

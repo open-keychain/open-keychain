@@ -880,13 +880,10 @@
             android:name=".service.KeychainService"
             android:exported="false" />
 
-        <!-- label is made to be "Keyserver Sync" since that is the only context in which
-        the user will see it-->
         <provider
             android:name=".provider.KeychainProvider"
             android:authorities="${applicationId}.provider"
-            android:exported="false"
-            android:label="@string/keyserver_sync_settings_title" />
+            android:exported="false" />
 
         <provider
             android:name=".remote.KeychainExternalProvider"

@@ -23,6 +23,19 @@ CREATE TABLE IF NOT EXISTS keys (
     keyrings_public(master_key_id) ON DELETE CASCADE
 );
 
+insertKey:
+INSERT INTO keys VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateHasSecretByMasterKeyId:
+UPDATE keys
+    SET has_secret = ?2
+    WHERE master_key_id = ?1;
+
+updateHasSecretByKeyId:
+UPDATE keys
+    SET has_secret = ?2
+    WHERE key_id = ?1;
+
 unifiedKeyView:
 CREATE VIEW unifiedKeyView AS
     SELECT keys.master_key_id, keys.fingerprint, MIN(user_packets.rank), user_packets.user_id, user_packets.name, user_packets.email, user_packets.comment, keys.creation, keys.expiry, keys.is_revoked, keys.is_secure, keys.can_certify, certs.verified,

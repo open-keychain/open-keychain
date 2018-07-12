@@ -25,21 +25,24 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import android.content.ContentProviderOperation;
-import android.content.ContentValues;
+import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.Context;
-import android.content.OperationApplicationException;
-import android.net.Uri;
-import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.v4.util.LongSparseArray;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.KeyRingsPublicModel.DeleteByMasterKeyId;
 import org.sufficientlysecure.keychain.KeychainDatabase;
+import org.sufficientlysecure.keychain.KeysModel.UpdateHasSecretByKeyId;
+import org.sufficientlysecure.keychain.KeysModel.UpdateHasSecretByMasterKeyId;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.model.CustomColumnAdapters;
+import org.sufficientlysecure.keychain.daos.DatabaseBatchInteractor.BatchOp;
+import org.sufficientlysecure.keychain.model.Certification;
+import org.sufficientlysecure.keychain.model.KeyRingPublic;
+import org.sufficientlysecure.keychain.model.KeySignature;
+import org.sufficientlysecure.keychain.model.SubKey;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UserPacket;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
@@ -58,12 +61,6 @@ import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.pgp.WrappedSignature;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRingData;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeySignatures;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Keys;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -87,6 +84,7 @@ public class KeyWritableRepository extends KeyRepository {
     private final Context context;
     private final DatabaseNotifyManager databaseNotifyManager;
     private AutocryptPeerDao autocryptPeerDao;
+    private DatabaseBatchInteractor databaseBatchInteractor;
 
     public static KeyWritableRepository create(Context context) {
         LocalPublicKeyStorage localPublicKeyStorage = LocalPublicKeyStorage.getInstance(context);
@@ -116,6 +114,7 @@ public class KeyWritableRepository extends KeyRepository {
         this.context = context;
         this.databaseNotifyManager = databaseNotifyManager;
         this.autocryptPeerDao = autocryptPeerDao;
+        this.databaseBatchInteractor = new DatabaseBatchInteractor(getWritableDb());
     }
 
     private LongSparseArray<CanonicalizedPublicKey> getTrustedMasterKeys() {
@@ -177,27 +176,29 @@ public class KeyWritableRepository extends KeyRepository {
         long masterKeyId = keyRing.getMasterKeyId();
         UncachedPublicKey masterKey = keyRing.getPublicKey();
 
-        ArrayList<ContentProviderOperation> operations;
+        log(LogType.MSG_IP_PREPARE);
+        mIndent += 1;
+
+        byte[] encodedKeyRing;
         try {
+            encodedKeyRing = keyRing.getEncoded();
+        } catch (IOException e) {
+            log(LogType.MSG_IP_ENCODE_FAIL);
+            return SaveKeyringResult.RESULT_ERROR;
+        }
 
-            log(LogType.MSG_IP_PREPARE);
-            mIndent += 1;
+        ArrayList<BatchOp> operations = new ArrayList<>();
 
-            // save all keys and userIds included in keyRing object in database
-            operations = new ArrayList<>();
-
+        try {
             log(LogType.MSG_IP_INSERT_KEYRING);
-            try {
-                writePublicKeyRing(keyRing, masterKeyId, operations);
-            } catch (IOException e) {
-                log(LogType.MSG_IP_ENCODE_FAIL);
-                return SaveKeyringResult.RESULT_ERROR;
-            }
+
+            byte[] encodedRingIfDbCachable = encodedKeyRing.length < MAX_CACHED_KEY_SIZE ? encodedKeyRing : null;
+            KeyRingPublic keyRingPublic = KeyRingPublic.create(masterKeyId, encodedRingIfDbCachable);
+            operations.add(DatabaseBatchInteractor.createInsertKeyRingPublic(keyRingPublic));
 
             log(LogType.MSG_IP_INSERT_SUBKEYS);
             mIndent += 1;
             { // insert subkeys
-                Uri uri = Keys.buildKeysUri(masterKeyId);
                 int rank = 0;
                 for (CanonicalizedPublicKey key : keyRing.publicKeyIterator()) {
                     long keyId = key.getKeyId();
@@ -206,23 +207,7 @@ public class KeyWritableRepository extends KeyRepository {
                     );
                     mIndent += 1;
 
-                    ContentValues values = new ContentValues();
-                    values.put(Keys.MASTER_KEY_ID, masterKeyId);
-                    values.put(Keys.RANK, rank);
-
-                    values.put(Keys.KEY_ID, key.getKeyId());
-                    values.put(Keys.KEY_SIZE, key.getBitStrength());
-                    values.put(Keys.KEY_CURVE_OID, key.getCurveOid());
-                    values.put(Keys.ALGORITHM, key.getAlgorithm());
-                    values.put(Keys.FINGERPRINT, key.getFingerprint());
-
                     boolean c = key.canCertify(), e = key.canEncrypt(), s = key.canSign(), a = key.canAuthenticate();
-                    values.put(Keys.CAN_CERTIFY, c);
-                    values.put(Keys.CAN_ENCRYPT, e);
-                    values.put(Keys.CAN_SIGN, s);
-                    values.put(Keys.CAN_AUTHENTICATE, a);
-                    values.put(Keys.IS_REVOKED, key.isRevoked());
-                    values.put(Keys.IS_SECURE, key.isSecure());
 
                     // see above
                     if (masterKeyId == keyId) {
@@ -240,22 +225,24 @@ public class KeyWritableRepository extends KeyRepository {
                     }
 
                     Date creation = key.getCreationTime();
-                    values.put(Keys.CREATION, creation.getTime() / 1000);
-                    Date expiryDate = key.getExpiryTime();
-                    if (expiryDate != null) {
-                        values.put(Keys.EXPIRY, expiryDate.getTime() / 1000);
+                    Date expiry = key.getExpiryTime();
+                    if (expiry != null) {
                         if (key.isExpired()) {
                             log(keyId == masterKeyId ?
                                             LogType.MSG_IP_MASTER_EXPIRED : LogType.MSG_IP_SUBKEY_EXPIRED,
-                                    expiryDate.toString());
+                                    expiry.toString());
                         } else {
                             log(keyId == masterKeyId ?
                                             LogType.MSG_IP_MASTER_EXPIRES : LogType.MSG_IP_SUBKEY_EXPIRES,
-                                    expiryDate.toString());
+                                    expiry.toString());
                         }
                     }
 
-                    operations.add(ContentProviderOperation.newInsert(uri).withValues(values).build());
+                    SubKey subKey = SubKey.create(masterKeyId, rank, key.getKeyId(),
+                            key.getBitStrength(), key.getCurveOid(), key.getAlgorithm(), key.getFingerprint(),
+                            c, s, e, a, key.isRevoked(), SecretKeyType.UNAVAILABLE, key.isSecure(), creation, expiry);
+                    operations.add(DatabaseBatchInteractor.createInsertSubKey(subKey));
+
                     ++rank;
                     mIndent -= 1;
                 }
@@ -312,10 +299,8 @@ public class KeyWritableRepository extends KeyRepository {
 
                     // keep a note about the issuer of this key signature
                     if (!signerKeyIds.contains(certId)) {
-                        operations.add(ContentProviderOperation.newInsert(KeySignatures.CONTENT_URI)
-                                .withValue(KeySignatures.MASTER_KEY_ID, masterKeyId)
-                                .withValue(KeySignatures.SIGNER_KEY_ID, certId)
-                                .build());
+                        KeySignature keySignature = KeySignature.create(masterKeyId, certId);
+                        operations.add(DatabaseBatchInteractor.createInsertSignerKey(keySignature));
                         signerKeyIds.add(certId);
                     }
 
@@ -481,7 +466,10 @@ public class KeyWritableRepository extends KeyRepository {
             // iterate and put into db
             for (int userIdRank = 0; userIdRank < uids.size(); userIdRank++) {
                 UserPacketItem item = uids.get(userIdRank);
-                operations.add(buildUserIdOperations(masterKeyId, item, userIdRank));
+                Long type = item.type != null ? item.type.longValue() : null;
+                UserPacket userPacket = UserPacket.create(masterKeyId, userIdRank, type, item.userId, item.name, item.email,
+                        item.comment, item.attributeData, item.isPrimary, item.selfRevocation != null);
+                operations.add(DatabaseBatchInteractor.createInsertUserPacket(userPacket));
 
                 if (item.selfRevocation != null) {
                     operations.add(buildCertOperations(masterKeyId, userIdRank, item.selfRevocation,
@@ -519,9 +507,12 @@ public class KeyWritableRepository extends KeyRepository {
             mIndent -= 1;
         }
 
+        SupportSQLiteDatabase db = databaseBatchInteractor.getDb();
         try {
+            db.beginTransaction();
+
             // delete old version of this keyRing (from database only!), which also deletes all keys and userIds on cascade
-            DeleteByMasterKeyId deleteStatement = new DeleteByMasterKeyId(getWritableDb());
+            DeleteByMasterKeyId deleteStatement = new DeleteByMasterKeyId(db);
             deleteStatement.bind(masterKeyId);
             int deletedRows = deleteStatement.executeUpdateDelete();
 
@@ -533,39 +524,23 @@ public class KeyWritableRepository extends KeyRepository {
             }
 
             log(LogType.MSG_IP_APPLY_BATCH);
-            contentResolver.applyBatch(KeychainContract.CONTENT_AUTHORITY, operations);
+            databaseBatchInteractor.applyBatch(operations);
+            if (encodedKeyRing.length >= MAX_CACHED_KEY_SIZE) {
+                mLocalPublicKeyStorage.writePublicKey(masterKeyId, encodedKeyRing);
+            }
             databaseNotifyManager.notifyKeyChange(masterKeyId);
 
+            db.setTransactionSuccessful();
             log(LogType.MSG_IP_SUCCESS);
             return result;
-
-        } catch (RemoteException e) {
-            log(LogType.MSG_IP_ERROR_REMOTE_EX);
-            Timber.e(e, "RemoteException during import");
-            return SaveKeyringResult.RESULT_ERROR;
-        } catch (OperationApplicationException e) {
+        } catch (IOException e) {
             log(LogType.MSG_IP_ERROR_OP_EXC);
             Timber.e(e, "OperationApplicationException during import");
             return SaveKeyringResult.RESULT_ERROR;
+        } finally {
+            db.endTransaction();
         }
 
-    }
-
-    private void writePublicKeyRing(CanonicalizedPublicKeyRing keyRing, long masterKeyId,
-            ArrayList<ContentProviderOperation> operations) throws IOException {
-        byte[] encodedKey = keyRing.getEncoded();
-        mLocalPublicKeyStorage.writePublicKey(masterKeyId, encodedKey);
-
-        ContentValues values = new ContentValues();
-        values.put(KeyRingData.MASTER_KEY_ID, masterKeyId);
-        if (encodedKey.length < MAX_CACHED_KEY_SIZE) {
-            values.put(KeyRingData.KEY_RING_DATA, encodedKey);
-        } else {
-            values.put(KeyRingData.KEY_RING_DATA, (byte[]) null);
-        }
-
-        Uri uri = KeyRingData.buildPublicKeyRingUri(masterKeyId);
-        operations.add(ContentProviderOperation.newInsert(uri).withValues(values).build());
     }
 
     private void writeSecretKeyRing(CanonicalizedSecretKeyRing keyRing, long masterKeyId) throws IOException {
@@ -655,12 +630,12 @@ public class KeyWritableRepository extends KeyRepository {
             }
 
             {
-                Uri uri = Keys.buildKeysUri(masterKeyId);
+                UpdateHasSecretByMasterKeyId resetStatement =
+                        SubKey.createUpdateHasSecretByMasterKeyIdStatement(getWritableDb());
+                resetStatement.bind(masterKeyId, SecretKeyType.GNU_DUMMY);
+                resetStatement.executeUpdateDelete();
 
-                // first, mark all keys as not available
-                ContentValues values = new ContentValues();
-                values.put(Keys.HAS_SECRET, SecretKeyType.GNU_DUMMY.getNum());
-                contentResolver.update(uri, values, null, null);
+                UpdateHasSecretByKeyId updateStatement = SubKey.createUpdateHasSecretByKeyId(getWritableDb());
 
                 // then, mark exactly the keys we have available
                 log(LogType.MSG_IS_IMPORTING_SUBKEYS);
@@ -668,36 +643,25 @@ public class KeyWritableRepository extends KeyRepository {
                 for (CanonicalizedSecretKey sub : keyRing.secretKeyIterator()) {
                     long id = sub.getKeyId();
                     SecretKeyType mode = sub.getSecretKeyTypeSuperExpensive();
-                    values.put(Keys.HAS_SECRET, mode.getNum());
-                    int upd = contentResolver.update(uri, values, Keys.KEY_ID + " = ?",
-                            new String[]{Long.toString(id)});
+                    updateStatement.bind(id, mode);
+                    int upd = updateStatement.executeUpdateDelete();
                     if (upd == 1) {
                         switch (mode) {
                             case PASSPHRASE:
-                                log(LogType.MSG_IS_SUBKEY_OK,
-                                        KeyFormattingUtils.convertKeyIdToHex(id)
-                                );
+                                log(LogType.MSG_IS_SUBKEY_OK, KeyFormattingUtils.convertKeyIdToHex(id));
                                 break;
                             case PASSPHRASE_EMPTY:
-                                log(LogType.MSG_IS_SUBKEY_EMPTY,
-                                        KeyFormattingUtils.convertKeyIdToHex(id)
-                                );
+                                log(LogType.MSG_IS_SUBKEY_EMPTY, KeyFormattingUtils.convertKeyIdToHex(id));
                                 break;
                             case GNU_DUMMY:
-                                log(LogType.MSG_IS_SUBKEY_STRIPPED,
-                                        KeyFormattingUtils.convertKeyIdToHex(id)
-                                );
+                                log(LogType.MSG_IS_SUBKEY_STRIPPED, KeyFormattingUtils.convertKeyIdToHex(id));
                                 break;
                             case DIVERT_TO_CARD:
-                                log(LogType.MSG_IS_SUBKEY_DIVERT,
-                                        KeyFormattingUtils.convertKeyIdToHex(id)
-                                );
+                                log(LogType.MSG_IS_SUBKEY_DIVERT, KeyFormattingUtils.convertKeyIdToHex(id));
                                 break;
                         }
                     } else {
-                        log(LogType.MSG_IS_SUBKEY_NONEXISTENT,
-                                KeyFormattingUtils.convertKeyIdToHex(id)
-                        );
+                        log(LogType.MSG_IS_SUBKEY_NONEXISTENT, KeyFormattingUtils.convertKeyIdToHex(id));
                     }
                 }
                 mIndent -= 1;
@@ -744,7 +708,7 @@ public class KeyWritableRepository extends KeyRepository {
 
             // If there is an old keyring, merge it
             try {
-                UncachedKeyRing oldPublicRing = getCanonicalizedPublicKeyRing(masterKeyId).getUncachedKeyRing();
+                UncachedKeyRing oldPublicRing = UncachedKeyRing.decodeFromData(loadPublicKeyRingData(masterKeyId));
                 alreadyExists = true;
 
                 // Merge data from new public ring into the old one
@@ -769,7 +733,7 @@ public class KeyWritableRepository extends KeyRepository {
                     log(LogType.MSG_IP_SUCCESS_IDENTICAL);
                     return new SaveKeyringResult(SaveKeyringResult.UPDATED, mLog, canPublicRing);
                 }
-            } catch (NotFoundException e) {
+            } catch (PgpGeneralException | NotFoundException e) {
                 // Not an issue, just means we are dealing with a new keyring.
 
                 // Canonicalize this keyring, to assert a number of assumptions made about it.
@@ -1046,46 +1010,14 @@ public class KeyWritableRepository extends KeyRepository {
         return new UpdateTrustResult(UpdateTrustResult.RESULT_OK, log);
     }
 
-    /**
-     * Build ContentProviderOperation to add PGPPublicKey to database corresponding to a keyRing
-     */
-    private ContentProviderOperation
-    buildCertOperations(long masterKeyId, int rank, WrappedSignature cert, VerificationStatus verificationStatus)
-            throws IOException {
-        ContentValues values = new ContentValues();
-        values.put(Certs.MASTER_KEY_ID, masterKeyId);
-        values.put(Certs.RANK, rank);
-        values.put(Certs.KEY_ID_CERTIFIER, cert.getKeyId());
-        values.put(Certs.TYPE, cert.getSignatureType());
-        values.put(Certs.CREATION, cert.getCreationTime().getTime() / 1000);
-        values.put(Certs.VERIFIED, CustomColumnAdapters.VERIFICATON_STATUS_ADAPTER.encode(verificationStatus));
-        values.put(Certs.DATA, cert.getEncoded());
-
-        Uri uri = Certs.buildCertsUri(masterKeyId);
-
-        return ContentProviderOperation.newInsert(uri).withValues(values).build();
-    }
-
-    /**
-     * Build ContentProviderOperation to add PublicUserIds to database corresponding to a keyRing
-     */
-    private ContentProviderOperation
-    buildUserIdOperations(long masterKeyId, UserPacketItem item, int rank) {
-        ContentValues values = new ContentValues();
-        values.put(UserPackets.MASTER_KEY_ID, masterKeyId);
-        values.put(UserPackets.TYPE, item.type);
-        values.put(UserPackets.USER_ID, item.userId);
-        values.put(UserPackets.NAME, item.name);
-        values.put(UserPackets.EMAIL, item.email);
-        values.put(UserPackets.COMMENT, item.comment);
-        values.put(UserPackets.ATTRIBUTE_DATA, item.attributeData);
-        values.put(UserPackets.IS_PRIMARY, item.isPrimary);
-        values.put(UserPackets.IS_REVOKED, item.selfRevocation != null);
-        values.put(UserPackets.RANK, rank);
-
-        Uri uri = UserPackets.buildUserIdsUri(masterKeyId);
-
-        return ContentProviderOperation.newInsert(uri).withValues(values).build();
+    private BatchOp buildCertOperations(long masterKeyId, int rank, WrappedSignature cert, VerificationStatus verificationStatus) {
+        try {
+            Certification certification = Certification.create(masterKeyId, rank, cert.getKeyId(),
+                    cert.getSignatureType(), verificationStatus, cert.getCreationTime(), cert.getEncoded());
+            return DatabaseBatchInteractor.createInsertCertification(certification);
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
     }
 
 }
