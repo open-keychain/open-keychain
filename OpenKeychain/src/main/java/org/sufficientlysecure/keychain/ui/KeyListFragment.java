@@ -100,6 +100,8 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
     private KeyRepository keyRepository;
     private FlexibleKeyItemFactory flexibleKeyItemFactory;
 
+    private Long queuedHighlightMasterKeyId;
+
     private final ActionMode.Callback mActionCallback = new ActionMode.Callback() {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
@@ -247,6 +249,15 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
         keyRepository = KeyRepository.create(requireContext());
         flexibleKeyItemFactory = new FlexibleKeyItemFactory(requireContext().getResources());
 
+        Intent intent = getActivity().getIntent();
+        if (intent != null && intent.hasExtra(ImportKeyResult.EXTRA_RESULT)) {
+            ImportKeyResult importKeyResult = intent.getParcelableExtra(ImportKeyResult.EXTRA_RESULT);
+            long[] importedMasterKeyIds = importKeyResult.getImportedMasterKeyIds();
+            if (importedMasterKeyIds != null && importedMasterKeyIds.length > 0) {
+                queuedHighlightMasterKeyId = importedMasterKeyIds[0];
+            }
+        }
+
         GenericViewModel viewModel = ViewModelProviders.of(this).get(GenericViewModel.class);
         LiveData<List<FlexibleKeyItem>> liveData = viewModel.getGenericLiveData(requireContext(), this::loadFlexibleKeyItems);
         liveData.observe(this, this::onLoadKeyItems);
@@ -261,7 +272,16 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
     private void onLoadKeyItems(List<FlexibleKeyItem> flexibleKeyItems) {
         FlexibleAdapter<FlexibleKeyItem> adapter = getAdapter();
         if (adapter == null) {
-            adapter = new FlexibleAdapter<>(flexibleKeyItems, this, true);
+            adapter = new FlexibleAdapter<FlexibleKeyItem>(flexibleKeyItems, this, true) {
+                @Override
+                public long getItemId(int position) {
+                    FlexibleKeyItem item = getItem(position);
+                    if (item instanceof FlexibleKeyDetailsItem) {
+                        return ((FlexibleKeyDetailsItem) item).keyInfo.master_key_id();
+                    }
+                    return super.getItemId(position);
+                }
+            };
             adapter.setDisplayHeadersAtStartUp(true);
             adapter.setStickyHeaders(true);
             adapter.setMode(Mode.MULTI);
@@ -271,6 +291,20 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
         } else {
             adapter.updateDataSet(flexibleKeyItems, true);
         }
+        maybeHighlightKey(adapter);
+    }
+
+    private void maybeHighlightKey(FlexibleAdapter<FlexibleKeyItem> adapter) {
+        if (queuedHighlightMasterKeyId == null) {
+            return;
+        }
+        for (int position = 0; position < adapter.getItemCount(); position++) {
+            if (adapter.getItemId(position) == queuedHighlightMasterKeyId) {
+                adapter.smoothScrollToPosition(position);
+            }
+        }
+
+        queuedHighlightMasterKeyId = null;
     }
 
     private String getBubbleText(int position) {
