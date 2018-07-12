@@ -20,36 +20,28 @@ package org.sufficientlysecure.keychain.remote;
 
 import java.security.AccessControlException;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
+import android.database.MatrixCursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
+import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.BuildConfig;
-import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.KeychainDatabase;
-import org.sufficientlysecure.keychain.KeychainDatabase.Tables;
 import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import org.sufficientlysecure.keychain.daos.DatabaseNotifyManager;
 import org.sufficientlysecure.keychain.daos.UserIdDao;
 import org.sufficientlysecure.keychain.model.UserPacket.UidStatus;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserPackets;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
-import org.sufficientlysecure.keychain.provider.KeychainExternalContract.EmailStatus;
 import org.sufficientlysecure.keychain.remote.AutocryptInteractor.AutocryptRecommendationResult;
 import org.sufficientlysecure.keychain.remote.AutocryptInteractor.AutocryptState;
 import timber.log.Timber;
@@ -60,9 +52,6 @@ public class KeychainExternalProvider extends ContentProvider {
 
     private static final int AUTOCRYPT_STATUS = 201;
     private static final int AUTOCRYPT_STATUS_INTERNAL = 202;
-
-    public static final String TEMP_TABLE_QUERIED_ADDRESSES = "queried_addresses";
-    public static final String TEMP_TABLE_COLUMN_ADDRES = "address";
 
 
     private UriMatcher uriMatcher;
@@ -81,7 +70,6 @@ public class KeychainExternalProvider extends ContentProvider {
         return matcher;
     }
 
-    /** {@inheritDoc} */
     @Override
     public boolean onCreate() {
         uriMatcher = buildUriMatcher();
@@ -95,105 +83,22 @@ public class KeychainExternalProvider extends ContentProvider {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getType(@NonNull Uri uri) {
-        final int match = uriMatcher.match(uri);
-        switch (match) {
-            case EMAIL_STATUS:
-                return EmailStatus.CONTENT_TYPE;
-            default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs,
                         String sortOrder) {
         Timber.v("query(uri=" + uri + ", proj=" + Arrays.toString(projection) + ")");
-        long startTime = System.currentTimeMillis();
-
-        SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
-
-        int match = uriMatcher.match(uri);
-
-        String groupBy = null;
-
-        KeychainDatabase temporaryDb = KeychainDatabase.getTemporaryInstance(getContext());
-        SupportSQLiteDatabase db = temporaryDb.getReadableDatabase();
+        Context context = getContext();
+        if (context == null) {
+            throw new IllegalStateException();
+        }
 
         String callingPackageName = apiPermissionHelper.getCurrentCallingPackage();
 
+        int match = uriMatcher.match(uri);
         switch (match) {
             case EMAIL_STATUS: {
-                boolean callerIsAllowed = apiPermissionHelper.isAllowedIgnoreErrors();
-                if (!callerIsAllowed) {
-                    throw new AccessControlException("An application must register before use of KeychainExternalProvider!");
-                }
-
-                db.execSQL("CREATE TEMPORARY TABLE " + TEMP_TABLE_QUERIED_ADDRESSES + " (" + TEMP_TABLE_COLUMN_ADDRES + " TEXT);");
-                ContentValues cv = new ContentValues();
-                for (String address : selectionArgs) {
-                    cv.put(TEMP_TABLE_COLUMN_ADDRES, address);
-                    db.insert(TEMP_TABLE_QUERIED_ADDRESSES, SQLiteDatabase.CONFLICT_FAIL, cv);
-                }
-
-                HashMap<String, String> projectionMap = new HashMap<>();
-                projectionMap.put(EmailStatus._ID, "email AS _id");
-                projectionMap.put(EmailStatus.EMAIL_ADDRESS, // this is actually the queried address
-                        TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES + " AS " + EmailStatus.EMAIL_ADDRESS);
-                projectionMap.put(EmailStatus.USER_ID,
-                        Tables.USER_PACKETS + "." + UserPackets.USER_ID + " AS " + EmailStatus.USER_ID);
-                // we take the minimum (>0) here, where "1" is "verified by known secret key", "2" is "self-certified"
-                projectionMap.put(EmailStatus.USER_ID_STATUS, "CASE ( MIN (" + Certs.VERIFIED + " ) ) "
-                        // remap to keep this provider contract independent from our internal representation
-                        + " WHEN " + Certs.VERIFIED_SELF + " THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
-                        + " WHEN " + Certs.VERIFIED_SECRET + " THEN " + KeychainExternalContract.KEY_STATUS_VERIFIED
-                        + " WHEN NULL THEN " + KeychainExternalContract.KEY_STATUS_UNVERIFIED
-                        + " END AS " + EmailStatus.USER_ID_STATUS);
-                projectionMap.put(EmailStatus.MASTER_KEY_ID,
-                        Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " AS " + EmailStatus.MASTER_KEY_ID);
-                qb.setProjectionMap(projectionMap);
-
-                if (projection == null) {
-                    throw new IllegalArgumentException("Please provide a projection!");
-                }
-
-                qb.setTables(
-                        TEMP_TABLE_QUERIED_ADDRESSES
-                                + " LEFT JOIN " + Tables.USER_PACKETS + " ON ("
-                                + Tables.USER_PACKETS + "." + UserPackets.USER_ID + " IS NOT NULL"
-                                + " AND " + Tables.USER_PACKETS + "." + UserPackets.EMAIL + " LIKE " + TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES
-                                + ")"
-                                + " LEFT JOIN " + Tables.CERTS + " ON ("
-                                + Tables.USER_PACKETS + "." + UserPackets.MASTER_KEY_ID + " = " + Tables.CERTS + "." + Certs.MASTER_KEY_ID
-                                + " AND " + Tables.USER_PACKETS + "." + UserPackets.RANK + " = " + Tables.CERTS + "." + Certs.RANK
-                                + ")"
-                );
-                // in case there are multiple verifying certificates
-                groupBy = TEMP_TABLE_QUERIED_ADDRESSES + "." + TEMP_TABLE_COLUMN_ADDRES;
-                List<String> plist = Arrays.asList(projection);
-                if (plist.contains(EmailStatus.USER_ID)) {
-                    groupBy += ", " + Tables.USER_PACKETS + "." + UserPackets.USER_ID;
-                }
-
-                // verified == 0 has no self-cert, which is basically an error case. never return that!
-                // verified == null is fine, because it means there was no join partner
-                qb.appendWhere(Tables.CERTS + "." + Certs.VERIFIED + " IS NULL OR " + Tables.CERTS + "." + Certs.VERIFIED + " > 0");
-
-                if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = EmailStatus.EMAIL_ADDRESS;
-                }
-
-                // uri to watch is all /key_rings/
-                uri = DatabaseNotifyManager.getNotifyUriAllKeys();
-
-                break;
+                Toast.makeText(context, "This API is no longer supported by OpenKeychain!", Toast.LENGTH_SHORT).show();
+                return new MatrixCursor(projection);
             }
 
             case AUTOCRYPT_STATUS_INTERNAL:
@@ -214,22 +119,6 @@ public class KeychainExternalProvider extends ContentProvider {
                     throw new IllegalArgumentException("Please provide a projection!");
                 }
 
-                db.execSQL("CREATE TEMPORARY TABLE " + TEMP_TABLE_QUERIED_ADDRESSES + " (" +
-                        TEMP_TABLE_COLUMN_ADDRES + " TEXT NOT NULL PRIMARY KEY, " +
-                        AutocryptStatus.UID_KEY_STATUS + " INT, " +
-                        AutocryptStatus.UID_ADDRESS + " TEXT, " +
-                        AutocryptStatus.UID_MASTER_KEY_ID + " INT, " +
-                        AutocryptStatus.UID_CANDIDATES + " INT, " +
-                        AutocryptStatus.AUTOCRYPT_PEER_STATE + " INT DEFAULT " + AutocryptStatus.AUTOCRYPT_PEER_DISABLED + ", " +
-                        AutocryptStatus.AUTOCRYPT_KEY_STATUS + " INT, " +
-                        AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID + " INT" +
-                        ");");
-                ContentValues cv = new ContentValues();
-                for (String address : selectionArgs) {
-                    cv.put(TEMP_TABLE_COLUMN_ADDRES, address);
-                    db.insert(TEMP_TABLE_QUERIED_ADDRESSES, SQLiteDatabase.CONFLICT_FAIL, cv);
-                }
-
                 List<String> plist = Arrays.asList(projection);
                 boolean isWildcardSelector = selectionArgs.length == 1 && selectionArgs[0].contains("%");
                 boolean queriesUidResult = plist.contains(AutocryptStatus.UID_KEY_STATUS) ||
@@ -243,114 +132,114 @@ public class KeychainExternalProvider extends ContentProvider {
                     throw new UnsupportedOperationException("Cannot wildcard-query autocrypt results!");
                 }
 
-                UserIdDao userIdDao = new UserIdDao(temporaryDb, DatabaseNotifyManager.create(getContext()));
+                Map<String, UidStatus> uidStatuses = queriesUidResult ?
+                        loadUidStatusMap(selectionArgs, isWildcardSelector) : Collections.emptyMap();
+                Map<String, AutocryptRecommendationResult> autocryptStates = queriesAutocryptResult ?
+                        loadAutocryptRecommendationMap(selectionArgs, callingPackageName) : Collections.emptyMap();
 
-                if (queriesUidResult) {
-                    List<UidStatus> uidStatuses;
-                    if (isWildcardSelector) {
-                        uidStatuses = userIdDao.getUidStatusByEmailLike(selectionArgs[0]);
-                    } else {
-                        uidStatuses = userIdDao.getUidStatusByEmail(selectionArgs);
-                    }
-                    fillTempTableWithUidResult(db, uidStatuses, isWildcardSelector ? selectionArgs[0] : null);
-                }
+                MatrixCursor cursor =
+                        mapResultsToProjectedMatrixCursor(projection, selectionArgs, uidStatuses, autocryptStates);
 
-                if (queriesAutocryptResult) {
-                    AutocryptInteractor autocryptInteractor =
-                            AutocryptInteractor.getInstance(getContext(), callingPackageName);
-                    List<AutocryptRecommendationResult> autocryptStates =
-                            autocryptInteractor.determineAutocryptRecommendations(selectionArgs);
-
-                    fillTempTableWithAutocryptRecommendations(db, autocryptStates);
-                }
-
-                HashMap<String, String> projectionMap = new HashMap<>();
-                projectionMap.put(AutocryptStatus._ID, AutocryptStatus._ID);
-                projectionMap.put(AutocryptStatus.ADDRESS, AutocryptStatus.ADDRESS);
-                projectionMap.put(AutocryptStatus.UID_KEY_STATUS, AutocryptStatus.UID_KEY_STATUS);
-                projectionMap.put(AutocryptStatus.UID_ADDRESS, AutocryptStatus.UID_ADDRESS);
-                projectionMap.put(AutocryptStatus.UID_MASTER_KEY_ID, AutocryptStatus.UID_MASTER_KEY_ID);
-                projectionMap.put(AutocryptStatus.UID_CANDIDATES, AutocryptStatus.UID_CANDIDATES);
-                projectionMap.put(AutocryptStatus.AUTOCRYPT_PEER_STATE, AutocryptStatus.AUTOCRYPT_PEER_STATE);
-                projectionMap.put(AutocryptStatus.AUTOCRYPT_KEY_STATUS, AutocryptStatus.AUTOCRYPT_KEY_STATUS);
-                projectionMap.put(AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID, AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID);
-                qb.setProjectionMap(projectionMap);
-                qb.setTables(TEMP_TABLE_QUERIED_ADDRESSES);
-
-                if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = AutocryptStatus.ADDRESS;
-                }
-
-                // uri to watch is all /key_rings/
                 uri = DatabaseNotifyManager.getNotifyUriAllKeys();
-                break;
+                cursor.setNotificationUri(context.getContentResolver(), uri);
+
+                return cursor;
             }
 
             default: {
                 throw new IllegalArgumentException("Unknown URI " + uri + " (" + match + ")");
             }
-
         }
+    }
 
-        // If no sort order is specified use the default
-        String orderBy;
-        if (TextUtils.isEmpty(sortOrder)) {
-            orderBy = null;
-        } else {
-            orderBy = sortOrder;
-        }
+    @NonNull
+    private MatrixCursor mapResultsToProjectedMatrixCursor(String[] projection, String[] selectionArgs,
+            Map<String, UidStatus> uidStatuses, Map<String, AutocryptRecommendationResult> autocryptStates) {
+        MatrixCursor cursor = new MatrixCursor(projection);
+        for (String selectionArg : selectionArgs) {
+            AutocryptRecommendationResult autocryptResult = autocryptStates.get(selectionArg);
+            UidStatus uidStatus = uidStatuses.get(selectionArg);
 
-        qb.setStrict(true);
-        String query = qb.buildQuery(projection, null, groupBy, null, orderBy, null);
-        Cursor cursor = db.query(query);
-        if (cursor != null) {
-            // Tell the cursor what uri to watch, so it knows when its source data changes
-            cursor.setNotificationUri(getContext().getContentResolver(), uri);
-            if (Constants.DEBUG_LOG_DB_QUERIES) {
-                DatabaseUtils.dumpCursor(cursor);
+            Object[] row = new Object[projection.length];
+            for (int i = 0; i < projection.length; i++) {
+                if (AutocryptStatus.ADDRESS.equals(projection[i]) || AutocryptStatus._ID.equals(projection[i])) {
+                    row[i] = selectionArg;
+                } else {
+                    row[i] = columnNameToRowContent(projection[i], autocryptResult, uidStatus);
+                }
             }
+            cursor.addRow(row);
         }
-
-        Timber.d("Query: " + qb.buildQuery(projection, selection, groupBy, null, orderBy, null));
-        Timber.d(Constants.TAG, "Query took %s ms", (System.currentTimeMillis() - startTime));
-
         return cursor;
     }
 
-    private void fillTempTableWithAutocryptRecommendations(SupportSQLiteDatabase db,
-            List<AutocryptRecommendationResult> autocryptRecommendations) {
-        ContentValues cv = new ContentValues();
-        for (AutocryptRecommendationResult peerResult : autocryptRecommendations) {
-            cv.clear();
-
-            cv.put(AutocryptStatus.AUTOCRYPT_PEER_STATE, getPeerStateValue(peerResult.autocryptState));
-            if (peerResult.masterKeyId != null) {
-                cv.put(AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID, peerResult.masterKeyId);
-                cv.put(AutocryptStatus.AUTOCRYPT_KEY_STATUS, peerResult.isVerified ?
+    private Object columnNameToRowContent(
+            String columnName, AutocryptRecommendationResult autocryptResult, UidStatus uidStatus) {
+        switch (columnName) {
+            case AutocryptStatus.UID_KEY_STATUS: {
+                if (uidStatus == null) {
+                    return null;
+                }
+                return uidStatus.keyStatus() == VerificationStatus.VERIFIED_SECRET ?
                         KeychainExternalContract.KEY_STATUS_VERIFIED :
-                        KeychainExternalContract.KEY_STATUS_UNVERIFIED);
+                        KeychainExternalContract.KEY_STATUS_UNVERIFIED;
             }
+            case AutocryptStatus.UID_ADDRESS:
+                if (uidStatus == null) {
+                    return null;
+                }
+                return uidStatus.user_id();
 
-            db.update(TEMP_TABLE_QUERIED_ADDRESSES, SQLiteDatabase.CONFLICT_IGNORE, cv,TEMP_TABLE_COLUMN_ADDRES + "=?",
-                    new String[] { peerResult.peerId });
+            case AutocryptStatus.UID_MASTER_KEY_ID:
+                if (uidStatus == null) {
+                    return null;
+                }
+                return uidStatus.master_key_id();
+
+            case AutocryptStatus.UID_CANDIDATES:
+                if (uidStatus == null) {
+                    return null;
+                }
+                return uidStatus.candidates();
+
+            case AutocryptStatus.AUTOCRYPT_PEER_STATE:
+                if (autocryptResult == null) {
+                    return null;
+                }
+                return getPeerStateValue(autocryptResult.autocryptState);
+
+            case AutocryptStatus.AUTOCRYPT_KEY_STATUS:
+                if (autocryptResult == null) {
+                    return null;
+                }
+                return autocryptResult.isVerified ?
+                        KeychainExternalContract.KEY_STATUS_VERIFIED : KeychainExternalContract.KEY_STATUS_UNVERIFIED;
+
+            case AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID:
+                if (autocryptResult == null) {
+                    return null;
+                }
+                return autocryptResult.masterKeyId;
+
+            default:
+                throw new IllegalArgumentException("Unhandled case " + columnName);
         }
     }
 
-    private void fillTempTableWithUidResult(SupportSQLiteDatabase db, List<UidStatus> uidStatuses, String key) {
-        ContentValues cv = new ContentValues();
-        for (UidStatus uidStatus : uidStatuses) {
-            int keyStatus = uidStatus.keyStatus() == VerificationStatus.VERIFIED_SECRET ?
-                    KeychainExternalContract.KEY_STATUS_VERIFIED : KeychainExternalContract.KEY_STATUS_UNVERIFIED;
-
-            cv.put(AutocryptStatus.UID_ADDRESS, uidStatus.user_id());
-            cv.put(AutocryptStatus.UID_MASTER_KEY_ID, uidStatus.master_key_id());
-            cv.put(AutocryptStatus.UID_KEY_STATUS, keyStatus);
-            cv.put(AutocryptStatus.UID_CANDIDATES, uidStatus.candidates());
-
-            db.update(TEMP_TABLE_QUERIED_ADDRESSES, SQLiteDatabase.CONFLICT_IGNORE, cv,
-                    TEMP_TABLE_COLUMN_ADDRES + "= ?",
-                    new String[] { key != null ? key : uidStatus.email() });
+    private Map<String, UidStatus> loadUidStatusMap(String[] selectionArgs, boolean isWildcardSelector) {
+        UserIdDao userIdDao = UserIdDao.getInstance(getContext());
+        if (isWildcardSelector) {
+            UidStatus uidStatus = userIdDao.getUidStatusByEmailLike(selectionArgs[0]);
+            return Collections.singletonMap(selectionArgs[0], uidStatus);
+        } else {
+            return userIdDao.getUidStatusByEmail(selectionArgs);
         }
+    }
+
+    private Map<String, AutocryptRecommendationResult> loadAutocryptRecommendationMap(
+            String[] selectionArgs, String callingPackageName) {
+        AutocryptInteractor autocryptInteractor = AutocryptInteractor.getInstance(getContext(), callingPackageName);
+        return autocryptInteractor.determineAutocryptRecommendations(selectionArgs);
     }
 
     private int getPeerStateValue(AutocryptState autocryptState) {
@@ -362,6 +251,11 @@ public class KeychainExternalProvider extends ContentProvider {
             case MUTUAL: return AutocryptStatus.AUTOCRYPT_PEER_MUTUAL;
         }
         throw new IllegalStateException("Unhandled case!");
+    }
+
+    @Override
+    public String getType(@NonNull Uri uri) {
+        throw new UnsupportedOperationException("Unknown uri: " + uri);
     }
 
     @Override

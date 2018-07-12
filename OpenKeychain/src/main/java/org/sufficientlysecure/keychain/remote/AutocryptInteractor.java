@@ -3,8 +3,11 @@ package org.sufficientlysecure.keychain.remote;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -146,15 +149,15 @@ public class AutocryptInteractor {
         return uncachedKeyRing;
     }
 
-    public List<AutocryptRecommendationResult> determineAutocryptRecommendations(String... autocryptIds) {
-        List<AutocryptRecommendationResult> result = new ArrayList<>(autocryptIds.length);
+    public Map<String,AutocryptRecommendationResult> determineAutocryptRecommendations(String... autocryptIds) {
+        Map<String,AutocryptRecommendationResult> result = new HashMap<>(autocryptIds.length);
 
         for (AutocryptKeyStatus autocryptKeyStatus : autocryptPeerDao.getAutocryptKeyStatus(packageName, autocryptIds)) {
             AutocryptRecommendationResult peerResult = determineAutocryptRecommendation(autocryptKeyStatus);
-            result.add(peerResult);
+            result.put(peerResult.peerId, peerResult);
         }
 
-        return result;
+        return Collections.unmodifiableMap(result);
     }
 
     /** Determines Autocrypt "ui-recommendation", according to spec.

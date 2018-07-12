@@ -38,19 +38,6 @@ public class KeychainExternalContract {
     public static final int KEY_STATUS_UNVERIFIED = 1;
     public static final int KEY_STATUS_VERIFIED = 2;
 
-    public static class EmailStatus implements BaseColumns {
-        public static final String EMAIL_ADDRESS = "email_address";
-        public static final String USER_ID = "user_id";
-        public static final String USER_ID_STATUS = "email_status";
-        public static final String MASTER_KEY_ID = "master_key_id";
-
-        public static final Uri CONTENT_URI = BASE_CONTENT_URI_EXTERNAL.buildUpon()
-                .appendPath(BASE_EMAIL_STATUS).build();
-
-        public static final String CONTENT_TYPE
-                = "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.email_status";
-    }
-
     public static class AutocryptStatus implements BaseColumns {
         public static final String ADDRESS = "address";
 
@@ -72,9 +59,6 @@ public class KeychainExternalContract {
 
         public static final Uri CONTENT_URI = BASE_CONTENT_URI_EXTERNAL.buildUpon()
                 .appendPath(BASE_AUTOCRYPT_STATUS).build();
-
-        public static final String CONTENT_TYPE =
-                "vnd.android.cursor.dir/vnd.org.sufficientlysecure.keychain.provider.email_status";
     }
 
     private KeychainExternalContract() {
