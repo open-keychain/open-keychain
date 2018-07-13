@@ -38,8 +38,10 @@ import android.widget.TextView;
 
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.remote.ui.RequestKeyPermissionPresenter.RequestKeyPermissionMvpView;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
+import org.sufficientlysecure.keychain.ui.util.KeyInfoFormatter;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 
 
@@ -131,29 +133,29 @@ public class RequestKeyPermissionActivity extends FragmentActivity {
         @NonNull
         private RequestKeyPermissionMvpView createMvpView(View view) {
             final TextView titleText = view.findViewById(R.id.select_identity_key_title);
-            final TextView keyUserIdView = view.findViewById(R.id.select_key_item_name);
+            final TextView keyNameView = view.findViewById(R.id.key_list_item_name);
+            final TextView keyEmailView = view.findViewById(R.id.key_list_item_email);
+            final TextView keyCreationDateView = view.findViewById(R.id.key_list_item_creation);
             final ImageView iconClientApp = view.findViewById(R.id.icon_client_app);
             final View keyUnavailableWarning = view.findViewById(R.id.requested_key_unavailable_warning);
-            final View keyInfoLayout = view.findViewById(R.id.key_info_layout);
 
             return new RequestKeyPermissionMvpView() {
                 @Override
                 public void switchToLayoutRequestKeyChoice() {
-                    keyInfoLayout.setVisibility(View.VISIBLE);
                     keyUnavailableWarning.setVisibility(View.GONE);
                     buttonAllow.setEnabled(true);
                 }
 
                 @Override
                 public void switchToLayoutNoSecret() {
-                    keyInfoLayout.setVisibility(View.VISIBLE);
                     keyUnavailableWarning.setVisibility(View.VISIBLE);
                     buttonAllow.setEnabled(false);
                 }
 
                 @Override
-                public void displayKeyInfo(String userIdName) {
-                    keyUserIdView.setText(userIdName);
+                public void displayKeyInfo(KeyInfoFormatter keyInfoFormatter) {
+                    keyInfoFormatter.formatUserId(keyNameView, keyEmailView);
+                    keyInfoFormatter.formatCreationDate(keyCreationDateView);
                 }
 
                 @Override

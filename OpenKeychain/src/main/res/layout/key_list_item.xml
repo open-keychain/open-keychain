@@ -10,8 +10,7 @@
     android:orientation="horizontal"
     android:background="@drawable/list_item_ripple"
     android:paddingLeft="12dp"
-    android:paddingRight="12dp"
-    tools:layout_marginTop="30dp">
+    android:paddingRight="12dp">
 
     <ImageView
         android:layout_width="24dp"
@@ -67,6 +66,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:padding="16dp"
+        android:visibility="gone"
+        tools:visibility="visible"
         tools:src="@drawable/status_signature_revoked_cutout_24dp" />
 
 </LinearLayout>

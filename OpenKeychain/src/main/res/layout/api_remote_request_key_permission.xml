@@ -80,44 +80,14 @@
                     tools:text="@string/request_permission_msg"
                     />
 
-                <LinearLayout
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:orientation="horizontal"
-                    android:background="?selectableItemBackground"
-                    android:id="@+id/key_info_layout"
-                    >
+                    android:text="@string/requested_key_label"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:padding="8dp"
-                        android:paddingRight="8dp"
-                        android:src="@drawable/ic_vpn_key_grey_24dp"
-                        />
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/requested_key_label"
-                            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-                        <TextView
-                            android:id="@+id/select_key_item_name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            tools:text="Alice Skywalker"
-                            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-                    </LinearLayout>
-                </LinearLayout>
+                <include layout="@layout/key_list_item" />
 
                 <TextView
                     android:layout_width="wrap_content"

@@ -34,6 +34,7 @@ import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.remote.ApiPermissionHelper;
 import org.sufficientlysecure.keychain.remote.ApiPermissionHelper.WrongPackageCertificateException;
+import org.sufficientlysecure.keychain.ui.util.KeyInfoFormatter;
 import timber.log.Timber;
 
 
@@ -100,7 +101,9 @@ class RequestKeyPermissionPresenter {
         }
 
         masterKeyId = secretKeyRingOrPublicFallback.master_key_id();
-        view.displayKeyInfo(secretKeyRingOrPublicFallback.name());
+        KeyInfoFormatter keyInfoFormatter = new KeyInfoFormatter(context);
+        keyInfoFormatter.setKeyInfo(secretKeyRingOrPublicFallback);
+        view.displayKeyInfo(keyInfoFormatter);
 
         if (secretKeyRingOrPublicFallback.has_any_secret()) {
             view.switchToLayoutRequestKeyChoice();
@@ -177,7 +180,7 @@ class RequestKeyPermissionPresenter {
         void setTitleText(String text);
         void setTitleClientIcon(Drawable drawable);
 
-        void displayKeyInfo(String userIdName);
+        void displayKeyInfo(KeyInfoFormatter keyInfoFormatter);
 
         void finish();
         void finishAsCancelled();
