@@ -22,6 +22,8 @@ import java.util.Date;
 
 import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -29,6 +31,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -37,9 +40,12 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat.Builder;
+import android.support.v4.app.NotificationCompat.InboxStyle;
 import android.support.v4.util.LongSparseArray;
 
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Constants.NotificationChannels;
 import org.sufficientlysecure.keychain.Constants.NotificationIds;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
@@ -488,6 +494,7 @@ public class PassphraseCacheService extends Service {
 
     private void updateService() {
         if (mPassphraseCache.size() > 0) {
+            createNotificationChannelsIfNecessary();
             startForeground(NotificationIds.PASSPHRASE_CACHE, getNotification());
         } else {
             // stop whole service if no cached passphrases remaining
@@ -498,15 +505,15 @@ public class PassphraseCacheService extends Service {
     }
 
     private Notification getNotification() {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        Builder builder = new Builder(this, NotificationChannels.PASSPHRASE_CACHE);
         builder.setSmallIcon(R.drawable.ic_stat_notify_24dp)
                 .setColor(getResources().getColor(R.color.primary))
                 .setContentTitle(getResources().getQuantityString(R.plurals.passp_cache_notif_n_keys,
                         mPassphraseCache.size(), mPassphraseCache.size()))
                 .setContentText(getString(R.string.passp_cache_notif_touch_to_clear))
-                .setPriority(NotificationCompat.PRIORITY_MIN);
+                .setPriority(NotificationCompat.PRIORITY_LOW);
 
-        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+        InboxStyle inboxStyle = new InboxStyle();
 
         inboxStyle.setBigContentTitle(getString(R.string.passp_cache_notif_keys));
 
@@ -538,6 +545,22 @@ public class PassphraseCacheService extends Service {
         );
 
         return builder.build();
+    }
+
+    private void createNotificationChannelsIfNecessary() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return;
+        }
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager == null) {
+            return;
+        }
+
+        CharSequence name = getString(R.string.notify_channel_passcache);
+        NotificationChannel channel = new NotificationChannel(
+                NotificationChannels.PASSPHRASE_CACHE, name, NotificationManager.IMPORTANCE_LOW);
+        notificationManager.createNotificationChannel(channel);
     }
 
     @Override
