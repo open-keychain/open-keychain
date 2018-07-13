@@ -59,12 +59,13 @@ public class KeyserverSyncManager {
     private static void updateKeyserverSyncSchedule(Context context, boolean forceReschedule) {
         Preferences prefs = Preferences.getPreferences(context);
         // for some reason, the task is not actually scheduled sometimes unless we  use the synchronous interface.
-        SynchronousWorkManager workManager = WorkManager.getInstance().synchronous();
+        WorkManager workManager = WorkManager.getInstance();
         if (workManager == null) {
             Timber.e("WorkManager unavailable!");
             return;
         }
-        workManager.cancelAllWorkByTagSync(PERIODIC_WORK_TAG);
+        SynchronousWorkManager synchronousWorkManager = workManager.synchronous();
+        synchronousWorkManager.cancelAllWorkByTagSync(PERIODIC_WORK_TAG);
 
         if (!prefs.isKeyserverSyncEnabled()) {
             return;
@@ -82,7 +83,7 @@ public class KeyserverSyncManager {
                         .setConstraints(constraints.build())
                         .addTag(PERIODIC_WORK_TAG)
                         .build();
-        workManager.enqueueSync(workRequest);
+        synchronousWorkManager.enqueueSync(workRequest);
 
         prefs.setKeyserverSyncScheduled(true);
     }
