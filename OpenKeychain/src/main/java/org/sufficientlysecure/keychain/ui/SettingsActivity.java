@@ -399,8 +399,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * This fragment shows the keyserver/wifi-only-sync/contacts sync preferences
      */
     public static class SyncPrefsFragment extends PresetPreferenceFragment {
-        boolean syncPrefChanged = false;
-
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -410,19 +408,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
             findPreference(Constants.Pref.SYNC_KEYSERVER).setOnPreferenceChangeListener(
                     (preference, newValue) -> {
-                        syncPrefChanged = true;
                         return true;
                     });
         }
 
         @Override
-        public void onPause() {
-            super.onPause();
-
-            if (syncPrefChanged) {
-                KeyserverSyncManager.updateKeyserverSyncSchedule(getActivity(), true);
-                syncPrefChanged = false;
-            }
+        public void onStop() {
+            super.onStop();
+            KeyserverSyncManager.updateKeyserverSyncSchedule(getActivity(), true);
         }
 
         @Override

@@ -55,8 +55,6 @@ public class KeyserverSyncManager {
             return;
         }
 
-        /* Periodic syncs can't be unique, so we just use this to launch a uniquely queued worker */
-
         Builder constraints = new Builder()
                 .setRequiredNetworkType(prefs.getWifiOnlySync() ? NetworkType.UNMETERED : NetworkType.CONNECTED)
                 .setRequiresBatteryNotLow(true);
