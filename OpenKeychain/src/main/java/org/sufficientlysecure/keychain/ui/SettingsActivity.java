@@ -415,7 +415,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         @Override
         public void onStop() {
             super.onStop();
-            KeyserverSyncManager.updateKeyserverSyncSchedule(getActivity(), true);
+            KeyserverSyncManager.updateKeyserverSyncScheduleAsync(getActivity(), true);
         }
 
         @Override

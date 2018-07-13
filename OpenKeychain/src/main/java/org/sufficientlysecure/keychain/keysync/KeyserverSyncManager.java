@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.keysync;
 import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 
@@ -28,6 +29,7 @@ import androidx.work.Constraints.Builder;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
+import androidx.work.SynchronousWorkManager;
 import androidx.work.WorkManager;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
@@ -39,17 +41,30 @@ public class KeyserverSyncManager {
 
     private static final String PERIODIC_WORK_TAG = "keyserverSync";
 
-    public static void updateKeyserverSyncSchedule(Context context, boolean forceReschedule) {
+    public static void updateKeyserverSyncScheduleAsync(Context context, boolean forceReschedule) {
         Preferences prefs = Preferences.getPreferences(context);
         if (!forceReschedule && prefs.isKeyserverSyncScheduled() != prefs.isKeyserverSyncEnabled()) {
             return;
         }
-        WorkManager workManager = WorkManager.getInstance();
+
+        new AsyncTask<Void,Void,Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                updateKeyserverSyncSchedule(context, forceReschedule);
+                return null;
+            }
+        }.execute();
+    }
+
+    private static void updateKeyserverSyncSchedule(Context context, boolean forceReschedule) {
+        Preferences prefs = Preferences.getPreferences(context);
+        // for some reason, the task is not actually scheduled sometimes unless we  use the synchronous interface.
+        SynchronousWorkManager workManager = WorkManager.getInstance().synchronous();
         if (workManager == null) {
             Timber.e("WorkManager unavailable!");
             return;
         }
-        workManager.cancelAllWorkByTag(PERIODIC_WORK_TAG);
+        workManager.cancelAllWorkByTagSync(PERIODIC_WORK_TAG);
 
         if (!prefs.isKeyserverSyncEnabled()) {
             return;
@@ -67,7 +82,7 @@ public class KeyserverSyncManager {
                         .setConstraints(constraints.build())
                         .addTag(PERIODIC_WORK_TAG)
                         .build();
-        workManager.enqueue(workRequest);
+        workManager.enqueueSync(workRequest);
 
         prefs.setKeyserverSyncScheduled(true);
     }
