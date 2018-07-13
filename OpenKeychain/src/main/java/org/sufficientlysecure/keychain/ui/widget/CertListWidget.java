@@ -19,12 +19,6 @@ package org.sufficientlysecure.keychain.ui.widget;
 
 
 import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -34,8 +28,6 @@ import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.model.Certification.CertDetails;
-import org.sufficientlysecure.keychain.provider.KeychainContract;
-import org.sufficientlysecure.keychain.provider.KeychainContract.Certs;
 
 public class CertListWidget extends ViewAnimator {
     private TextView vCollapsed;

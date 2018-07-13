@@ -23,6 +23,25 @@ CREATE TABLE IF NOT EXISTS keys (
     keyrings_public(master_key_id) ON DELETE CASCADE
 );
 
+insertKey:
+INSERT INTO keys VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+updateHasSecretByMasterKeyId:
+UPDATE keys
+    SET has_secret = ?2
+    WHERE master_key_id = ?1;
+
+updateHasSecretByKeyId:
+UPDATE keys
+    SET has_secret = ?2
+    WHERE key_id = ?1;
+
+validKeysView:
+CREATE VIEW validMasterKeys AS
+SELECT *
+    FROM keys
+    WHERE rank = 0 AND is_revoked = 0 AND is_secure = 1 AND (expiry IS NULL OR expiry >= strftime('%s', 'now'));
+
 unifiedKeyView:
 CREATE VIEW unifiedKeyView AS
     SELECT keys.master_key_id, keys.fingerprint, MIN(user_packets.rank), user_packets.user_id, user_packets.name, user_packets.email, user_packets.comment, keys.creation, keys.expiry, keys.is_revoked, keys.is_secure, keys.can_certify, certs.verified,
@@ -86,11 +105,11 @@ SELECT fingerprint
 selectEffectiveSignKeyIdByMasterKeyId:
 SELECT key_id
     FROM keys
-    WHERE is_revoked = 0 AND is_secure = 1 AND has_secret > 1 AND ( expiry IS NULL OR expiry >= date('now') )
+    WHERE is_revoked = 0 AND is_secure = 1 AND has_secret > 1 AND ( expiry IS NULL OR expiry >= strftime('%s', 'now') )
         AND can_sign = 1 AND master_key_id = ?;
 
 selectEffectiveAuthKeyIdByMasterKeyId:
 SELECT key_id
     FROM keys
-    WHERE is_revoked = 0 AND is_secure = 1 AND has_secret > 1 AND ( expiry IS NULL OR expiry >= date('now') )
+    WHERE is_revoked = 0 AND is_secure = 1 AND has_secret > 1 AND ( expiry IS NULL OR expiry >= strftime('%s', 'now') )
         AND can_authenticate = 1 AND master_key_id = ?;

@@ -3,6 +3,9 @@ CREATE TABLE IF NOT EXISTS keyrings_public (
     key_ring_data BLOB NULL
 );
 
+insertKeyRingPublic:
+INSERT INTO keyrings_public VALUES (?, ?);
+
 selectAllMasterKeyIds:
 SELECT master_key_id
     FROM keyrings_public;

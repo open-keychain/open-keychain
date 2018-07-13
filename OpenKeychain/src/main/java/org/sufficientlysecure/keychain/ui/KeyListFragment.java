@@ -52,8 +52,11 @@ import eu.davidea.flexibleadapter.FlexibleAdapter.OnItemClickListener;
 import eu.davidea.flexibleadapter.FlexibleAdapter.OnItemLongClickListener;
 import eu.davidea.flexibleadapter.SelectableAdapter.Mode;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.KeychainDatabase;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
+import org.sufficientlysecure.keychain.daos.DatabaseNotifyManager;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.keysync.KeyserverSyncManager;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.KeySyncParcel;
@@ -61,9 +64,6 @@ import org.sufficientlysecure.keychain.operations.results.BenchmarkResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
-import org.sufficientlysecure.keychain.daos.KeyRepository;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
-import org.sufficientlysecure.keychain.KeychainDatabase;
 import org.sufficientlysecure.keychain.service.BenchmarkInputParcel;
 import org.sufficientlysecure.keychain.ui.adapter.FlexibleKeyDetailsItem;
 import org.sufficientlysecure.keychain.ui.adapter.FlexibleKeyDummyItem;
@@ -492,7 +492,7 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
                 try {
                     KeychainDatabase.debugBackup(getActivity(), true);
                     Notify.create(getActivity(), "Restored debug_backup.db", Notify.Style.OK).show();
-                    getActivity().getContentResolver().notifyChange(KeyRings.CONTENT_URI, null);
+                    DatabaseNotifyManager.create(requireContext()).notifyAllKeysChange();
                 } catch (IOException e) {
                     Timber.e(e, "IO Error");
                     Notify.create(getActivity(), "IO Error " + e.getMessage(), Notify.Style.ERROR).show();

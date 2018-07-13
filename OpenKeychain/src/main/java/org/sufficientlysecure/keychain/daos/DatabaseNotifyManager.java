@@ -23,6 +23,11 @@ public class DatabaseNotifyManager {
         this.contentResolver = contentResolver;
     }
 
+    public void notifyAllKeysChange() {
+        Uri uri = getNotifyUriAllKeys();
+        contentResolver.notifyChange(uri, null);
+    }
+
     public void notifyKeyChange(long masterKeyId) {
         Uri uri = getNotifyUriMasterKeyId(masterKeyId);
         contentResolver.notifyChange(uri, null);

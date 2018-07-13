@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.daos;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.ContentResolver;
@@ -27,6 +28,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.WorkerThread;
 
+import com.squareup.sqldelight.RowMapper;
 import com.squareup.sqldelight.SqlDelightQuery;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.KeychainDatabase;
@@ -129,69 +131,133 @@ public class KeyRepository extends AbstractDao {
 
     public List<Long> getAllMasterKeyIds() {
         SqlDelightQuery query = KeyRingPublic.FACTORY.selectAllMasterKeyIds();
-        return mapAllRows(query, KeyRingPublic.FACTORY.selectAllMasterKeyIdsMapper()::map);
+        ArrayList<Long> result = new ArrayList<>();
+        try (Cursor cursor = getReadableDb().query(query)) {
+            while (cursor.moveToNext()) {
+                Long item = KeyRingPublic.FACTORY.selectAllMasterKeyIdsMapper().map(cursor);
+                result.add(item);
+            }
+        }
+        return result;
     }
 
     public List<Long> getMasterKeyIdsBySigner(List<Long> signerMasterKeyIds) {
         long[] signerKeyIds = getLongListAsArray(signerMasterKeyIds);
         SqlDelightQuery query = KeySignature.FACTORY.selectMasterKeyIdsBySigner(signerKeyIds);
-        return mapAllRows(query, KeySignature.FACTORY.selectMasterKeyIdsBySignerMapper()::map);
+        ArrayList<Long> result = new ArrayList<>();
+        try (Cursor cursor = getReadableDb().query(query)) {
+            while (cursor.moveToNext()) {
+                Long item = KeySignature.FACTORY.selectMasterKeyIdsBySignerMapper().map(cursor);
+                result.add(item);
+            }
+        }
+        return result;
     }
 
     public Long getMasterKeyIdBySubkeyId(long subKeyId) {
         SqlDelightQuery query = SubKey.FACTORY.selectMasterKeyIdBySubkey(subKeyId);
-        return mapSingleRow(query, SubKey.FACTORY.selectMasterKeyIdBySubkeyMapper()::map);
+        return mapSingleRow(query, SubKey.FACTORY.selectMasterKeyIdBySubkeyMapper());
     }
 
     public UnifiedKeyInfo getUnifiedKeyInfo(long masterKeyId) {
         SqlDelightQuery query = SubKey.FACTORY.selectUnifiedKeyInfoByMasterKeyId(masterKeyId);
-        return mapSingleRow(query, SubKey.UNIFIED_KEY_INFO_MAPPER::map);
+        return mapSingleRow(query, SubKey.UNIFIED_KEY_INFO_MAPPER);
     }
 
     public List<UnifiedKeyInfo> getUnifiedKeyInfo(long... masterKeyIds) {
         SqlDelightQuery query = SubKey.FACTORY.selectUnifiedKeyInfoByMasterKeyIds(masterKeyIds);
-        return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER::map);
+        ArrayList<UnifiedKeyInfo> result = new ArrayList<>();
+        try (Cursor cursor = getReadableDb().query(query)) {
+            while (cursor.moveToNext()) {
+                UnifiedKeyInfo item = SubKey.UNIFIED_KEY_INFO_MAPPER.map(cursor);
+                result.add(item);
+            }
+        }
+        return result;
     }
 
     public List<UnifiedKeyInfo> getUnifiedKeyInfosByMailAddress(String mailAddress) {
         SqlDelightQuery query = SubKey.FACTORY.selectUnifiedKeyInfoSearchMailAddress('%' + mailAddress + '%');
-        return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER::map);
+        ArrayList<UnifiedKeyInfo> result = new ArrayList<>();
+        try (Cursor cursor = getReadableDb().query(query)) {
+            while (cursor.moveToNext()) {
+                UnifiedKeyInfo item = SubKey.UNIFIED_KEY_INFO_MAPPER.map(cursor);
+                result.add(item);
+            }
+        }
+        return result;
     }
 
     public List<UnifiedKeyInfo> getAllUnifiedKeyInfo() {
         SqlDelightQuery query = SubKey.FACTORY.selectAllUnifiedKeyInfo();
-        return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER::map);
+        ArrayList<UnifiedKeyInfo> result = new ArrayList<>();
+        try (Cursor cursor = getReadableDb().query(query)) {
+            while (cursor.moveToNext()) {
+                UnifiedKeyInfo item = SubKey.UNIFIED_KEY_INFO_MAPPER.map(cursor);
+                result.add(item);
+            }
+        }
+        return result;
     }
 
     public List<UnifiedKeyInfo> getAllUnifiedKeyInfoWithSecret() {
         SqlDelightQuery query = SubKey.FACTORY.selectAllUnifiedKeyInfoWithSecret();
-        return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER::map);
+        ArrayList<UnifiedKeyInfo> result = new ArrayList<>();
+        try (Cursor cursor = getReadableDb().query(query)) {
+            while (cursor.moveToNext()) {
+                UnifiedKeyInfo item = SubKey.UNIFIED_KEY_INFO_MAPPER.map(cursor);
+                result.add(item);
+            }
+        }
+        return result;
     }
 
     public List<UserId> getUserIds(long... masterKeyIds) {
         SqlDelightQuery query = UserPacket.FACTORY.selectUserIdsByMasterKeyId(masterKeyIds);
-        return mapAllRows(query, UserPacket.USER_ID_MAPPER::map);
+        ArrayList<UserId> result = new ArrayList<>();
+        try (Cursor cursor = getReadableDb().query(query)) {
+            while (cursor.moveToNext()) {
+                UserId item = UserPacket.USER_ID_MAPPER.map(cursor);
+                result.add(item);
+            }
+        }
+        return result;
     }
 
     public List<String> getConfirmedUserIds(long masterKeyId) {
         SqlDelightQuery query = UserPacket.FACTORY.selectUserIdsByMasterKeyIdAndVerification(
                 Certification.FACTORY, masterKeyId, VerificationStatus.VERIFIED_SECRET);
-        return mapAllRows(query, (cursor) -> UserPacket.USER_ID_MAPPER.map(cursor).user_id());
+        ArrayList<String> result = new ArrayList<>();
+        try (Cursor cursor1 = getReadableDb().query(query)) {
+            while (cursor1.moveToNext()) {
+                String item = ((RowMapper<String>) (cursor) -> UserPacket.USER_ID_MAPPER.map(cursor).user_id())
+                        .map(cursor1);
+                result.add(item);
+            }
+        }
+        return result;
     }
 
     public List<SubKey> getSubKeysByMasterKeyId(long masterKeyId) {
         SqlDelightQuery query = SubKey.FACTORY.selectSubkeysByMasterKeyId(masterKeyId);
-        return mapAllRows(query, SubKey.SUBKEY_MAPPER::map);
+        ArrayList<SubKey> result = new ArrayList<>();
+        try (Cursor cursor = getReadableDb().query(query)) {
+            while (cursor.moveToNext()) {
+                SubKey item = SubKey.SUBKEY_MAPPER.map(cursor);
+                result.add(item);
+            }
+        }
+        return result;
     }
 
     public SecretKeyType getSecretKeyType(long keyId) throws NotFoundException {
         SqlDelightQuery query = SubKey.FACTORY.selectSecretKeyType(keyId);
-        return mapSingleRowOrThrow(query, SubKey.SKT_MAPPER::map);
+        return mapSingleRowOrThrow(query, SubKey.SKT_MAPPER);
     }
 
     public byte[] getFingerprintByKeyId(long keyId) throws NotFoundException {
         SqlDelightQuery query = SubKey.FACTORY.selectFingerprintByKeyId(keyId);
-        return mapSingleRowOrThrow(query, SubKey.FACTORY.selectFingerprintByKeyIdMapper()::map);
+        return mapSingleRowOrThrow(query, SubKey.FACTORY.selectFingerprintByKeyIdMapper());
     }
 
     private byte[] getKeyRingAsArmoredData(byte[] data) throws IOException {
@@ -247,12 +313,12 @@ public class KeyRepository extends AbstractDao {
 
     public long getSecretSignId(long masterKeyId) throws NotFoundException {
         SqlDelightQuery query = SubKey.FACTORY.selectEffectiveSignKeyIdByMasterKeyId(masterKeyId);
-        return mapSingleRowOrThrow(query, SubKey.FACTORY.selectEffectiveSignKeyIdByMasterKeyIdMapper()::map);
+        return mapSingleRowOrThrow(query, SubKey.FACTORY.selectEffectiveSignKeyIdByMasterKeyIdMapper());
     }
 
     public long getSecretAuthenticationId(long masterKeyId) throws NotFoundException {
         SqlDelightQuery query = SubKey.FACTORY.selectEffectiveAuthKeyIdByMasterKeyId(masterKeyId);
-        return mapSingleRowOrThrow(query, SubKey.FACTORY.selectEffectiveAuthKeyIdByMasterKeyIdMapper()::map);
+        return mapSingleRowOrThrow(query, SubKey.FACTORY.selectEffectiveAuthKeyIdByMasterKeyIdMapper());
     }
 
     public static class NotFoundException extends Exception {
