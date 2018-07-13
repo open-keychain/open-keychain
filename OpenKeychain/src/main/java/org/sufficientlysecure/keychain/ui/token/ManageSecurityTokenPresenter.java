@@ -18,13 +18,10 @@
 package org.sufficientlysecure.keychain.ui.token;
 
 
+import android.arch.lifecycle.LifecycleOwner;
 import android.content.Context;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.Loader;
 
 import org.sufficientlysecure.keychain.operations.results.GenericOperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -34,26 +31,15 @@ import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType
 import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenContract.ManageSecurityTokenMvpPresenter;
 import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenContract.ManageSecurityTokenMvpView;
 import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenFragment.StatusLine;
-import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.ContentUriRetrievalLoader;
-import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.KeyRetrievalResult;
-import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.KeyserverRetrievalLoader;
-import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.LocalKeyLookupLoader;
-import org.sufficientlysecure.keychain.ui.token.PublicKeyRetrievalLoader.UriKeyRetrievalLoader;
+import org.sufficientlysecure.keychain.ui.token.PublicKeyRetriever.KeyRetrievalResult;
 import org.sufficientlysecure.keychain.ui.util.PermissionsUtil;
 
 
 class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
-    private static final int LOADER_LOCAL = 0;
-    private static final int LOADER_URI = 1;
-    private static final int LOADER_KEYSERVER = 2;
-    private static final int LOADER_CONTENT_URI = 3;
-    private static final String ARG_CONTENT_URI = "content_uri";
-
-
     private final Context context;
-    private final LoaderManager loaderManager;
 
-    private SecurityTokenInfo tokenInfo;
+    private final ManageSecurityTokenViewModel viewModel;
+    private final LifecycleOwner lifecycleOwner;
 
 
     private ManageSecurityTokenMvpView view;
@@ -69,12 +55,13 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
     private OperationLog log;
     private Uri selectedContentUri;
 
-    ManageSecurityTokenPresenter(Context context, LoaderManager loaderManager, SecurityTokenInfo tokenInfo) {
+    ManageSecurityTokenPresenter(Context context, LifecycleOwner lifecycleOwner, ManageSecurityTokenViewModel viewModel) {
         this.context = context.getApplicationContext();
-        this.loaderManager = loaderManager;
-        this.tokenInfo = tokenInfo;
+        this.lifecycleOwner = lifecycleOwner;
+        this.viewModel = viewModel;
 
         this.log = new OperationLog();
+        viewModel.resetLiveData(lifecycleOwner);
     }
 
     @Override
@@ -86,10 +73,7 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
     public void detach() {
         this.view = null;
 
-        loaderManager.destroyLoader(LOADER_LOCAL);
-        loaderManager.destroyLoader(LOADER_URI);
-        loaderManager.destroyLoader(LOADER_KEYSERVER);
-        loaderManager.destroyLoader(LOADER_CONTENT_URI);
+        viewModel.resetLiveData(lifecycleOwner);
     }
 
     @Override
@@ -110,6 +94,8 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
         searchedAtUri = false;
         searchedKeyservers = false;
 
+        viewModel.resetLiveData(lifecycleOwner);
+
         view.hideAction();
         view.resetStatusLines();
         continueSearch();
@@ -117,8 +103,8 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
 
     private void continueSearch() {
         if (!checkedKeyStatus) {
-            boolean keyIsLocked = tokenInfo.getVerifyRetries() == 0;
-            boolean keyIsEmpty = tokenInfo.isEmpty();
+            boolean keyIsLocked = viewModel.tokenInfo.getVerifyRetries() == 0;
+            boolean keyIsEmpty = viewModel.tokenInfo.isEmpty();
             if (keyIsLocked || keyIsEmpty) {
                 // the "checking key status" is fake: we only do it if we already know the key is locked
                 view.statusLineAdd(StatusLine.CHECK_KEY);
@@ -131,19 +117,19 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
 
         if (!searchedLocally) {
             view.statusLineAdd(StatusLine.SEARCH_LOCAL);
-            loaderManager.restartLoader(LOADER_LOCAL, null, loaderCallbacks);
+            viewModel.getKeyRetrievalLocal(context).observe(lifecycleOwner, this::processLocalResult);
             return;
         }
 
         if (!searchedAtUri) {
             view.statusLineAdd(StatusLine.SEARCH_URI);
-            loaderManager.restartLoader(LOADER_URI, null, loaderCallbacks);
+            viewModel.getKeyRetrievalUri(context).observe(lifecycleOwner, this::processUriResult);
             return;
         }
 
         if (!searchedKeyservers) {
             view.statusLineAdd(StatusLine.SEARCH_KEYSERVER);
-            loaderManager.restartLoader(LOADER_KEYSERVER, null, loaderCallbacks);
+            viewModel.getKeyRetrievalKeyserver(context).observe(lifecycleOwner, this::processKeyserverResult);
             return;
         }
 
@@ -151,21 +137,18 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
     }
 
     private void delayPerformKeyCheck() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (view == null) {
-                    return;
-                }
-
-                performKeyCheck();
+        new Handler().postDelayed(() -> {
+            if (view == null) {
+                return;
             }
+
+            performKeyCheck();
         }, 1000);
     }
 
     private void performKeyCheck() {
-        boolean keyIsEmpty = tokenInfo.isEmpty();
-        boolean putKeyIsSupported = tokenInfo.isPutKeySupported();
+        boolean keyIsEmpty = viewModel.tokenInfo.isEmpty();
+        boolean putKeyIsSupported = viewModel.tokenInfo.isPutKeySupported();
 
         if (keyIsEmpty && !putKeyIsSupported) {
             view.statusLineOk();
@@ -174,7 +157,7 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
         }
 
         if (keyIsEmpty) {
-            boolean tokenIsAdminLocked = tokenInfo.getVerifyAdminRetries() == 0;
+            boolean tokenIsAdminLocked = viewModel.tokenInfo.getVerifyAdminRetries() == 0;
             if (tokenIsAdminLocked) {
                 view.statusLineError();
                 view.showActionLocked(0);
@@ -186,11 +169,11 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
             return;
         }
 
-        boolean keyIsLocked = tokenInfo.getVerifyRetries() == 0;
+        boolean keyIsLocked = viewModel.tokenInfo.getVerifyRetries() == 0;
         if (keyIsLocked) {
             view.statusLineError();
 
-            int unlockAttemptsLeft = tokenInfo.getVerifyAdminRetries();
+            int unlockAttemptsLeft = viewModel.tokenInfo.getVerifyAdminRetries();
             view.showActionLocked(unlockAttemptsLeft);
             return;
         }
@@ -212,7 +195,7 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
             return;
         }
 
-        if (tokenInfo.getVerifyAdminRetries() == 0) {
+        if (viewModel.tokenInfo.getVerifyAdminRetries() == 0) {
             view.showErrorCannotUnlock();
             return;
         }
@@ -230,63 +213,37 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
         view.showErrorCannotUnlock();
     }
 
-    private LoaderCallbacks<KeyRetrievalResult> loaderCallbacks = new LoaderCallbacks<KeyRetrievalResult>() {
-        @Override
-        public Loader<KeyRetrievalResult> onCreateLoader(int id, Bundle args) {
-            switch (id) {
-                case LOADER_LOCAL:
-                    return new LocalKeyLookupLoader(context, tokenInfo.getFingerprints());
-                case LOADER_URI:
-                    return new UriKeyRetrievalLoader(context, tokenInfo.getUrl(), tokenInfo.getFingerprints());
-                case LOADER_KEYSERVER:
-                    return new KeyserverRetrievalLoader(context, tokenInfo.getFingerprints());
-                case LOADER_CONTENT_URI:
-                    return new ContentUriRetrievalLoader(context, tokenInfo.getFingerprints(),
-                            args.getParcelable(ARG_CONTENT_URI));
-            }
-            throw new IllegalArgumentException("called with unknown loader id!");
-        }
+    private void processLocalResult(KeyRetrievalResult result) {
+        searchedLocally = true;
+        processResult(result);
+    }
 
-        @Override
-        public void onLoadFinished(Loader<KeyRetrievalResult> loader, KeyRetrievalResult data) {
-            switch (loader.getId()) {
-                case LOADER_LOCAL: {
-                    searchedLocally = true;
-                    break;
-                }
-                case LOADER_URI: {
-                    searchedAtUri = true;
-                    break;
-                }
-                case LOADER_KEYSERVER: {
-                    searchedKeyservers = true;
-                    break;
-                }
-                case LOADER_CONTENT_URI: {
-                    // nothing to do here
-                    break;
-                }
-                default: {
-                    throw new IllegalArgumentException("called with unknown loader id!");
-                }
-            }
 
-            log.add(data.getOperationResult(), 0);
+    private void processUriResult(KeyRetrievalResult result) {
+        searchedAtUri = true;
+        processResult(result);
+    }
 
-            if (data.isSuccess()) {
-                processResult(data);
-            } else {
-                continueSearchAfterError();
-            }
-        }
+    private void processKeyserverResult(KeyRetrievalResult result) {
+        searchedKeyservers = true;
+        processResult(result);
+    }
 
-        @Override
-        public void onLoaderReset(Loader<KeyRetrievalResult> loader) {
-
-        }
-    };
+    private void processContentUriResult(KeyRetrievalResult result) {
+        processResult(result);
+    }
 
     private void processResult(KeyRetrievalResult result) {
+        log.add(result.getOperationResult(), 0);
+
+        if (result.isSuccess()) {
+            processResultSuccess(result);
+        } else {
+            continueSearchAfterError();
+        }
+    }
+
+    private void processResultSuccess(KeyRetrievalResult result) {
         view.statusLineOk();
 
         byte[] importKeyData = result.getKeyData();
@@ -310,7 +267,7 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
     }
 
     private void promoteKeyWithTokenInfo(Long masterKeyId) {
-        view.operationPromote(masterKeyId, tokenInfo.getAid(), tokenInfo.getFingerprints());
+        view.operationPromote(masterKeyId, viewModel.tokenInfo.getAid(), viewModel.tokenInfo.getFingerprints());
     }
 
     @Override
@@ -363,8 +320,8 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
 
     @Override
     public void onClickResetToken() {
-        if (!tokenInfo.isResetSupported()) {
-            TokenType tokenType = tokenInfo.getTokenType();
+        if (!viewModel.tokenInfo.isResetSupported()) {
+            TokenType tokenType = viewModel.tokenInfo.getTokenType();
             boolean isGnukOrNitrokeyStart = tokenType == TokenType.GNUK_OLD || tokenType == TokenType.NITROKEY_START_OLD;
 
             view.showErrorCannotReset(isGnukOrNitrokeyStart);
@@ -381,33 +338,33 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
 
     @Override
     public void onSecurityTokenResetSuccess(SecurityTokenInfo tokenInfo) {
-        this.tokenInfo = tokenInfo;
+        viewModel.setTokenInfo(context, tokenInfo);
         resetAndContinueSearch();
     }
 
     @Override
     public void onSecurityTokenResetCanceled(SecurityTokenInfo tokenInfo) {
         if (tokenInfo != null) {
-            this.tokenInfo = tokenInfo;
+            viewModel.setTokenInfo(context, tokenInfo);
             resetAndContinueSearch();
         }
     }
 
     @Override
     public void onClickSetupToken() {
-        view.startCreateKeyForToken(tokenInfo);
+        view.startCreateKeyForToken(viewModel.tokenInfo);
     }
 
     @Override
     public void onSecurityTokenChangePinSuccess(SecurityTokenInfo tokenInfo) {
-        this.tokenInfo = tokenInfo;
+        viewModel.setTokenInfo(context, tokenInfo);
         resetAndContinueSearch();
     }
 
     @Override
     public void onSecurityTokenChangePinCanceled(SecurityTokenInfo tokenInfo) {
         if (tokenInfo != null) {
-            this.tokenInfo = tokenInfo;
+            viewModel.setTokenInfo(context, tokenInfo);
             resetAndContinueSearch();
         }
     }
@@ -433,9 +390,7 @@ class ManageSecurityTokenPresenter implements ManageSecurityTokenMvpPresenter {
         view.resetStatusLines();
         view.statusLineAdd(StatusLine.SEARCH_CONTENT_URI);
 
-        Bundle args = new Bundle();
-        args.putParcelable(ARG_CONTENT_URI, contentUri);
-        loaderManager.restartLoader(LOADER_CONTENT_URI, args, loaderCallbacks);
+        viewModel.getKeyRetrievalContentUri(context, contentUri).observe(lifecycleOwner, this::processContentUriResult);
     }
 
     @Override
