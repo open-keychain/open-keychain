@@ -54,13 +54,11 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.PopupMenu.OnDismissListener;
 import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -79,7 +77,6 @@ import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.InputDataResult;
 import org.sufficientlysecure.keychain.pgp.PgpDecryptVerifyInputParcel;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeyRings;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.InputDataParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
@@ -165,7 +162,7 @@ public class DecryptListFragment
      * Inflate the layout for this fragment
      */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.decrypt_files_list_fragment, container, false);
 
         RecyclerView vFilesList = view.findViewById(R.id.decrypted_files_list);
@@ -240,8 +237,8 @@ public class DecryptListFragment
 
         mInputUris = inputUris;
         mCurrentInputUri = null;
-        mInputDataResults = results != null ? results : new HashMap<Uri, InputDataResult>(inputUris.size());
-        mCancelledInputUris = cancelledUris != null ? cancelledUris : new ArrayList<Uri>();
+        mInputDataResults = results != null ? results : new HashMap<>(inputUris.size());
+        mCancelledInputUris = cancelledUris != null ? cancelledUris : new ArrayList<>();
 
         mPendingInputUris = new ArrayList<>();
 
@@ -499,23 +496,20 @@ public class DecryptListFragment
             return;
         }
 
-        new BottomSheet.Builder(activity).sheet(R.menu.decrypt_bottom_sheet).listener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.decrypt_open:
-                        displayWithViewIntent(result, index, false, true);
-                        break;
-                    case R.id.decrypt_share:
-                        displayWithViewIntent(result, index, true, true);
-                        break;
-                    case R.id.decrypt_save:
-                        // only inside the menu xml for Android >= 4.4
-                        saveFileDialog(result, index);
-                        break;
-                }
-                return false;
+        new BottomSheet.Builder(activity).sheet(R.menu.decrypt_bottom_sheet).listener(item -> {
+            switch (item.getItemId()) {
+                case R.id.decrypt_open:
+                    displayWithViewIntent(result, index, false, true);
+                    break;
+                case R.id.decrypt_share:
+                    displayWithViewIntent(result, index, true, true);
+                    break;
+                case R.id.decrypt_save:
+                    // only inside the menu xml for Android >= 4.4
+                    saveFileDialog(result, index);
+                    break;
             }
+            return false;
         }).grid().show();
 
     }
@@ -912,13 +906,14 @@ public class DecryptListFragment
         }
 
         // Provide a suitable constructor (depends on the kind of dataset)
-        public DecryptFilesAdapter() {
+        DecryptFilesAdapter() {
             mDataset = new ArrayList<>();
         }
 
         // Create new views (invoked by the layout manager)
+        @NonNull
         @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             //inflate your layout and pass it to view holder
             View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.decrypt_list_entry, parent, false);
@@ -927,7 +922,7 @@ public class DecryptListFragment
 
         // Replace the contents of a view (invoked by the layout manager)
         @Override
-        public void onBindViewHolder(ViewHolder holder, final int position) {
+        public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
             // - get element from your dataset at this position
             // - replace the contents of the view with that element
             final ViewModel model = mDataset.get(position);
@@ -1010,23 +1005,16 @@ public class DecryptListFragment
                 // save index closure-style :)
                 final int idx = i;
 
-                fileHolder.vFile.setOnLongClickListener(new OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View view) {
-                        if (model.mResult.success()) {
-                            displayBottomSheet(model.mResult, idx);
-                            return true;
-                        }
-                        return false;
+                fileHolder.vOverflowMenu.setVisibility(model.mResult.success() ? View.VISIBLE : View.GONE);
+                fileHolder.vOverflowMenu.setOnClickListener(view -> {
+                    if (model.mResult.success()) {
+                        displayBottomSheet(model.mResult, idx);
                     }
                 });
 
-                fileHolder.vFile.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (model.mResult.success()) {
-                            displayWithViewIntent(model.mResult, idx, false, false);
-                        }
+                fileHolder.vFile.setOnClickListener(view -> {
+                    if (model.mResult.success()) {
+                        displayWithViewIntent(model.mResult, idx, false, false);
                     }
                 });
 
@@ -1036,48 +1024,32 @@ public class DecryptListFragment
             if (sigResult != null) {
                 final long keyId = sigResult.getKeyId();
                 if (sigResult.getResult() != OpenPgpSignatureResult.RESULT_KEY_MISSING) {
-                    holder.vSignatureLayout.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Activity activity = getActivity();
-                            if (activity == null) {
-                                return;
-                            }
-                            Intent intent = ViewKeyActivity.getViewKeyActivityIntent(requireActivity(), keyId);
-                            activity.startActivity(intent);
+                    holder.vSignatureLayout.setOnClickListener(view -> {
+                        Activity activity = getActivity();
+                        if (activity == null) {
+                            return;
                         }
+                        Intent intent = ViewKeyActivity.getViewKeyActivityIntent(requireActivity(), keyId);
+                        activity.startActivity(intent);
                     });
                 } else {
-                    holder.vSignatureLayout.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            lookupUnknownKey(model.mInputUri, keyId);
-                        }
-                    });
+                    holder.vSignatureLayout.setOnClickListener(view -> lookupUnknownKey(model.mInputUri, keyId));
                 }
             }
 
             holder.vContextMenu.setTag(model);
-            holder.vContextMenu.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Activity activity = getActivity();
-                    if (activity == null) {
-                        return;
-                    }
-                    mMenuClickedModel = model;
-                    PopupMenu menu = new PopupMenu(activity, view);
-                    menu.inflate(R.menu.decrypt_item_context_menu);
-                    menu.setOnMenuItemClickListener(DecryptListFragment.this);
-                    menu.setOnDismissListener(new OnDismissListener() {
-                        @Override
-                        public void onDismiss(PopupMenu popupMenu) {
-                            mMenuClickedModel = null;
-                        }
-                    });
-                    menu.getMenu().findItem(R.id.decrypt_delete).setEnabled(mCanDelete);
-                    menu.show();
+            holder.vContextMenu.setOnClickListener(view -> {
+                Activity activity = getActivity();
+                if (activity == null) {
+                    return;
                 }
+                mMenuClickedModel = model;
+                PopupMenu menu = new PopupMenu(activity, view);
+                menu.inflate(R.menu.decrypt_item_context_menu);
+                menu.setOnMenuItemClickListener(DecryptListFragment.this);
+                menu.setOnDismissListener(popupMenu -> mMenuClickedModel = null);
+                menu.getMenu().findItem(R.id.decrypt_delete).setEnabled(mCanDelete);
+                menu.show();
             });
         }
 
@@ -1086,17 +1058,14 @@ public class DecryptListFragment
 
             holder.vErrorMsg.setText(model.mResult.getLog().getLast().mType.getMsgId());
 
-            holder.vErrorViewLog.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Activity activity = getActivity();
-                    if (activity == null) {
-                        return;
-                    }
-                    Intent intent = new Intent(activity, LogDisplayActivity.class);
-                    intent.putExtra(LogDisplayFragment.EXTRA_RESULT, model.mResult);
-                    activity.startActivity(intent);
+            holder.vErrorViewLog.setOnClickListener(v -> {
+                Activity activity = getActivity();
+                if (activity == null) {
+                    return;
                 }
+                Intent intent = new Intent(activity, LogDisplayActivity.class);
+                intent.putExtra(LogDisplayFragment.EXTRA_RESULT, model.mResult);
+                activity.startActivity(intent);
             });
 
         }
@@ -1107,7 +1076,7 @@ public class DecryptListFragment
             return mDataset.size();
         }
 
-        public InputDataResult getItemResult(Uri uri) {
+        InputDataResult getItemResult(Uri uri) {
             ViewModel model = new ViewModel(uri);
             int pos = mDataset.indexOf(model);
             if (pos == -1) {
@@ -1131,16 +1100,11 @@ public class DecryptListFragment
             notifyItemChanged(pos);
         }
 
-        public void setCancelled(final Uri uri, boolean isCancelled) {
+        void setCancelled(final Uri uri, boolean isCancelled) {
             ViewModel newModel = new ViewModel(uri);
             int pos = mDataset.indexOf(newModel);
             if (isCancelled) {
-                mDataset.get(pos).setCancelled(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        retryUri(uri);
-                    }
-                });
+                mDataset.get(pos).setCancelled(v -> retryUri(uri));
             } else {
                 mDataset.get(pos).setCancelled(null);
             }
@@ -1162,7 +1126,7 @@ public class DecryptListFragment
             notifyItemChanged(pos);
         }
 
-        public void resetItemData(Uri uri) {
+        void resetItemData(Uri uri) {
             ViewModel model = new ViewModel(uri);
             int pos = mDataset.indexOf(model);
             model = mDataset.get(pos);
@@ -1207,12 +1171,14 @@ public class DecryptListFragment
             public TextView vFilename;
             public TextView vFilesize;
             public ImageView vThumbnail;
+            public ImageView vOverflowMenu;
 
             public SubViewHolder(View itemView) {
                 vFile = itemView.findViewById(R.id.file);
                 vFilename = itemView.findViewById(R.id.filename);
                 vFilesize = itemView.findViewById(R.id.filesize);
                 vThumbnail = itemView.findViewById(R.id.thumbnail);
+                vOverflowMenu = itemView.findViewById(R.id.button_decryptfile_overflow);
             }
         }
 
@@ -1320,3 +1286,4 @@ public class DecryptListFragment
     }
 
 }
+
