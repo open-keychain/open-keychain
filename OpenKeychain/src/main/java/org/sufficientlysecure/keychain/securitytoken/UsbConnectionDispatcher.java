@@ -17,7 +17,7 @@
 
 package org.sufficientlysecure.keychain.securitytoken;
 
-import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -25,30 +25,37 @@ import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 
+import org.sufficientlysecure.keychain.BuildConfig;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransport;
-import org.sufficientlysecure.keychain.ui.UsbEventReceiverActivity;
 import timber.log.Timber;
 
 
 public class UsbConnectionDispatcher {
-    private Activity mActivity;
+    private static final String ACTION_USB_PERMISSION = "org.sufficientlysecure.keychain.ui.USB_PERMISSION";
 
-    private OnDiscoveredUsbDeviceListener mListener;
-    private UsbManager mUsbManager;
+    private Context context;
+    private OnDiscoveredUsbDeviceListener onDiscoveredUsbDeviceListener;
+    private UsbManager usbManager;
 
-    /**
-     * Receives broadcast when a supported USB device get permission.
-     */
-    private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
+    public UsbConnectionDispatcher(Context context, OnDiscoveredUsbDeviceListener listener) {
+        this.context = context.getApplicationContext();
+        this.onDiscoveredUsbDeviceListener = listener;
+        this.usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
+    }
+
+    private final BroadcastReceiver usbBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+            if (action == null) {
+                return;
+            }
 
             switch (action) {
-                case UsbEventReceiverActivity.ACTION_USB_PERMISSION: {
+                case ACTION_USB_PERMISSION: {
                     UsbDevice usbDevice = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                    boolean permission = intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED,
-                            false);
+                    boolean permission = intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false);
                     if (permission) {
                         Timber.d("Got permission for " + usbDevice.getDeviceName());
                         sendUsbTransportDiscovered(usbDevice);
@@ -59,21 +66,15 @@ public class UsbConnectionDispatcher {
         }
     };
 
-    public UsbConnectionDispatcher(final Activity activity, final OnDiscoveredUsbDeviceListener listener) {
-        this.mActivity = activity;
-        this.mListener = listener;
-        this.mUsbManager = (UsbManager) activity.getSystemService(Context.USB_SERVICE);
-    }
-
     public void onStart() {
         final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(UsbEventReceiverActivity.ACTION_USB_PERMISSION);
+        intentFilter.addAction(ACTION_USB_PERMISSION);
 
-        mActivity.registerReceiver(mUsbReceiver, intentFilter);
+        context.registerReceiver(usbBroadcastReceiver, intentFilter);
     }
 
     public void onStop() {
-        mActivity.unregisterReceiver(mUsbReceiver);
+        context.unregisterReceiver(usbBroadcastReceiver);
     }
 
     /**
@@ -83,24 +84,48 @@ public class UsbConnectionDispatcher {
         // Note: we don't check devices VID/PID because
         // we check for permission instead.
         // We should have permission only for matching devices
-        for (UsbDevice usbDevice : mUsbManager.getDeviceList().values()) {
-            if (mUsbManager.hasPermission(usbDevice)) {
+        for (UsbDevice usbDevice : usbManager.getDeviceList().values()) {
+            Timber.d("Device: %s", usbDevice.toString());
+            if (usbManager.hasPermission(usbDevice)) {
+                Timber.d("Got permission!");
                 sendUsbTransportDiscovered(usbDevice);
                 break;
             }
+            TokenType tokenType = UsbTransport.getTokenTypeFromUsbDeviceInfo(
+                    usbDevice.getVendorId(), usbDevice.getProductId(), null);
+            if (tokenType != null) {
+                Timber.d("Token type: %s", tokenType);
+                requestPermissionForUsbDevice(context, usbDevice);
+                break;
+            }
+            Timber.d("Unknown device type, doing nothing…");
         }
     }
 
     private void sendUsbTransportDiscovered(UsbDevice usbDevice) {
-        if (mListener == null) {
+        if (onDiscoveredUsbDeviceListener == null) {
             return;
         }
 
-        UsbTransport usbTransport = UsbTransport.createUsbTransport(mActivity.getBaseContext(), usbDevice);
-        mListener.usbTransportDiscovered(usbTransport);
+        UsbTransport usbTransport = UsbTransport.createUsbTransport(context, usbDevice);
+        onDiscoveredUsbDeviceListener.usbTransportDiscovered(usbTransport);
     }
 
     public interface OnDiscoveredUsbDeviceListener {
         void usbTransportDiscovered(UsbTransport usbTransport);
+    }
+
+    public static void requestPermissionForUsbDevice(Context context, UsbDevice usbDevice) {
+        UsbManager usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
+        if (usbManager == null) {
+            return;
+        }
+
+        Intent answerBroadcastIntent = new Intent(ACTION_USB_PERMISSION);
+        answerBroadcastIntent.setPackage(BuildConfig.APPLICATION_ID);
+        PendingIntent answerPendingIntent = PendingIntent.getBroadcast(context, 0, answerBroadcastIntent, 0);
+
+        Timber.d("Requesting permission for " + usbDevice.getDeviceName());
+        usbManager.requestPermission(usbDevice, answerPendingIntent);
     }
 }

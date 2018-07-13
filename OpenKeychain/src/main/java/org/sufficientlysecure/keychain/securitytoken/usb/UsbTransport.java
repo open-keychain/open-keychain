@@ -210,9 +210,14 @@ public class UsbTransport implements Transport {
     @Nullable
     @Override
     public TokenType getTokenTypeIfAvailable() {
-        switch (usbDevice.getVendorId()) {
+        return getTokenTypeFromUsbDeviceInfo(usbDevice.getVendorId(), usbDevice.getProductId(), usbConnection.getSerial());
+    }
+
+    @Nullable
+    public static TokenType getTokenTypeFromUsbDeviceInfo(int vendorId, int productId, String serialNo) {
+        switch (vendorId) {
             case VENDOR_YUBICO: {
-                switch (usbDevice.getProductId()) {
+                switch (productId) {
                     case PRODUCT_YUBIKEY_NEO_OTP_CCID:
                     case PRODUCT_YUBIKEY_NEO_CCID:
                     case PRODUCT_YUBIKEY_NEO_U2F_CCID:
@@ -227,11 +232,10 @@ public class UsbTransport implements Transport {
                 break;
             }
             case VENDOR_NITROKEY: {
-                switch (usbDevice.getProductId()) {
+                switch (productId) {
                     case PRODUCT_NITROKEY_PRO:
                         return TokenType.NITROKEY_PRO;
                     case PRODUCT_NITROKEY_START:
-                        String serialNo = usbConnection.getSerial();
                         SecurityTokenInfo.Version gnukVersion = SecurityTokenInfo.parseGnukVersionString(serialNo);
                         boolean versionGreaterEquals125 = gnukVersion != null
                                 && SecurityTokenInfo.Version.create("1.2.5").compareTo(gnukVersion) <= 0;
@@ -242,7 +246,6 @@ public class UsbTransport implements Transport {
                 break;
             }
             case VENDOR_FSIJ: {
-                String serialNo = usbConnection.getSerial();
                 SecurityTokenInfo.Version gnukVersion = SecurityTokenInfo.parseGnukVersionString(serialNo);
                 boolean versionGreaterEquals125 = gnukVersion != null
                         && SecurityTokenInfo.Version.create("1.2.5").compareTo(gnukVersion) <= 0;
@@ -253,8 +256,7 @@ public class UsbTransport implements Transport {
             }
         }
 
-        Timber.d("Unknown USB token. Vendor ID: " + usbDevice.getVendorId() + ", Product ID: " +
-                usbDevice.getProductId());
+        Timber.d("Unknown USB token. Vendor ID: %s, Product ID: %s", vendorId, productId);
         return null;
     }
 
