@@ -17,6 +17,7 @@ public class FlexibleKeyItemFactory {
     private final Resources resources;
     private Map<String, FlexibleKeyHeader> initialsHeaderMap = new HashMap<>();
     private FlexibleKeyHeader myKeysHeader;
+    private FlexibleKeyItem dummyItem;
 
     public FlexibleKeyItemFactory(Resources resources) {
         this.resources = resources;
@@ -30,7 +31,7 @@ public class FlexibleKeyItemFactory {
             return result;
         }
         if (unifiedKeyInfos.isEmpty() || !unifiedKeyInfos.get(0).has_any_secret()) {
-            result.add(new FlexibleKeyDummyItem(myKeysHeader));
+            result.add(getDummyItem());
         }
         for (UnifiedKeyInfo unifiedKeyInfo : unifiedKeyInfos) {
             FlexibleKeyHeader header = getFlexibleKeyHeader(unifiedKeyInfo);
@@ -70,5 +71,12 @@ public class FlexibleKeyItemFactory {
             return resources.getString(R.string.keylist_header_special);
         }
         return headerText.substring(0, 1).toUpperCase();
+    }
+
+    private FlexibleKeyItem getDummyItem() {
+        if (dummyItem == null) {
+            dummyItem = new FlexibleKeyDummyItem(myKeysHeader);
+        }
+        return dummyItem;
     }
 }
