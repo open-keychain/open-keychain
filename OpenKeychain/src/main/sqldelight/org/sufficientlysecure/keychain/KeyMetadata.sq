@@ -23,6 +23,6 @@ REPLACE INTO key_metadata
 
 selectFingerprintsForKeysOlderThan:
 SELECT fingerprint
-    FROM key_metadata
-        LEFT JOIN keys ON (key_metadata.master_key_id = keys.master_key_id AND keys.rank = 0)
-    WHERE last_updated < ?;
+    FROM keys
+        LEFT JOIN key_metadata USING (master_key_id)
+    WHERE rank = 0 AND (last_updated IS NULL OR last_updated < ?);
