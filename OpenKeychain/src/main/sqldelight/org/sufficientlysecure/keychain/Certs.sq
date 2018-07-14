@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS certs(
 );
 
 insertCert:
-INSERT INTO certs VALUES (?, ?, ?, ?, ?, ?, ?);
+INSERT INTO certs (master_key_id, rank, key_id_certifier, type, verified, creation, data) VALUES (?, ?, ?, ?, ?, ?, ?);
 
 selectVerifyingCertDetails:
 SELECT master_key_id AS masterKeyId, key_id_certifier AS signerMasterKeyId, creation * 1000 AS creation

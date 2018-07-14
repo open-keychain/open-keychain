@@ -18,8 +18,7 @@ UPDATE key_metadata
     SET last_updated = null, seen_on_keyservers = null;
 
 replaceKeyMetadata:
-REPLACE INTO key_metadata
-    (master_key_id, last_updated, seen_on_keyservers) VALUES (?, ?, ?);
+REPLACE INTO key_metadata (master_key_id, last_updated, seen_on_keyservers) VALUES (?, ?, ?);
 
 selectFingerprintsForKeysOlderThan:
 SELECT fingerprint

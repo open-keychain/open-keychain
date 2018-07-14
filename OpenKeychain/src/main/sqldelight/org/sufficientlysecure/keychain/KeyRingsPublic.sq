@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS keyrings_public (
 );
 
 insertKeyRingPublic:
-INSERT INTO keyrings_public VALUES (?, ?);
+INSERT INTO keyrings_public (master_key_id, key_ring_data) VALUES (?, ?);
 
 selectAllMasterKeyIds:
 SELECT master_key_id
