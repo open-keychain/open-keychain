@@ -22,6 +22,6 @@ public abstract class KeySignature implements KeySignaturesModel {
     }
 
     public static KeySignature create(long masterKeyId, long certId) {
-        return null;
+        return new AutoValue_KeySignature(masterKeyId, certId);
     }
 }

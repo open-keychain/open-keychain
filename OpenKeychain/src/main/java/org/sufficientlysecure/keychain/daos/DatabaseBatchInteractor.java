@@ -57,6 +57,8 @@ public class DatabaseBatchInteractor {
             } else if (op.keySignature != null) {
                 op.keySignature.bindTo(insertKeySignerStatement);
                 insertKeySignerStatement.executeInsert();
+            } else {
+                throw new IllegalStateException();
             }
         }
     }

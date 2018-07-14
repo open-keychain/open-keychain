@@ -12,8 +12,7 @@ CREATE TABLE IF NOT EXISTS user_packets(
     is_primary INTEGER AS Boolean NOT NULL,
     is_revoked INTEGER AS Boolean NOT NULL,
     PRIMARY KEY(master_key_id, rank),
-    FOREIGN KEY(master_key_id) REFERENCES
-    keyrings_public(master_key_id) ON DELETE CASCADE
+    FOREIGN KEY(master_key_id) REFERENCES keyrings_public(master_key_id) ON DELETE CASCADE
 );
 
 insertUserPacket:
