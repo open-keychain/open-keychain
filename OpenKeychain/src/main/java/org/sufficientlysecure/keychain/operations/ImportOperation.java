@@ -110,20 +110,20 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
 
     // Overloaded functions for using progressable supplied in constructor during import
     public ImportKeyResult serialKeyRingImport(Iterator<ParcelableKeyRing> entries, int num,
-                                               HkpKeyserverAddress keyserver, ParcelableProxy proxy, boolean skipSave) {
-        return serialKeyRingImport(entries, num, keyserver, mProgressable, proxy, skipSave);
+            HkpKeyserverAddress keyserver, ParcelableProxy proxy, boolean skipSave, boolean forceReinsert) {
+        return serialKeyRingImport(entries, num, keyserver, mProgressable, proxy, skipSave, forceReinsert);
     }
 
     @NonNull
     private ImportKeyResult serialKeyRingImport(ParcelableFileCache<ParcelableKeyRing> cache,
-                                                HkpKeyserverAddress keyserver, ParcelableProxy proxy, boolean skipSave) {
+            HkpKeyserverAddress keyserver, ParcelableProxy proxy, boolean skipSave, boolean forceReinsert) {
 
         // get entries from cached file
         try {
             IteratorWithSize<ParcelableKeyRing> it = cache.readCache();
             int numEntries = it.getSize();
 
-            return serialKeyRingImport(it, numEntries, keyserver, mProgressable, proxy, skipSave);
+            return serialKeyRingImport(it, numEntries, keyserver, mProgressable, proxy, skipSave, forceReinsert);
         } catch (IOException e) {
 
             // Special treatment here, we need a lot
@@ -148,8 +148,8 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
      */
     @NonNull
     private ImportKeyResult serialKeyRingImport(Iterator<ParcelableKeyRing> entries, int numTotalKeys,
-                                                HkpKeyserverAddress hkpKeyserver, Progressable progressable,
-                                                @NonNull ParcelableProxy proxy, boolean skipSave) {
+            HkpKeyserverAddress hkpKeyserver, Progressable progressable, @NonNull ParcelableProxy proxy,
+            boolean skipSave, boolean forceReinsert) {
         if (progressable != null) {
             progressable.setProgress(R.string.progress_importing, 0, 100);
         }
@@ -232,7 +232,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
                         result = mKeyWritableRepository.saveSecretKeyRing(key, canKeyRings, skipSave);
                     } else {
                         result = mKeyWritableRepository.savePublicKeyRing(key, entry.getExpectedFingerprint(), canKeyRings,
-                                false, skipSave);
+                                forceReinsert, skipSave);
                     }
                 }
                 if (!result.success()) {
@@ -490,12 +490,13 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
         List<ParcelableKeyRing> keyList = importInput.getKeyList();
         HkpKeyserverAddress keyServer = importInput.getKeyserver();
         boolean skipSave = importInput.isSkipSave();
+        boolean forceReinsert = importInput.isForceReinsert();
 
         ImportKeyResult result;
         if (keyList == null) {// import from file, do serially
             ParcelableFileCache<ParcelableKeyRing> cache =
                     new ParcelableFileCache<>(mContext, CACHE_FILE_NAME);
-            result = serialKeyRingImport(cache, null, null, skipSave);
+            result = serialKeyRingImport(cache, null, null, skipSave, forceReinsert);
         } else {
             ParcelableProxy proxy;
             if (cryptoInput.getParcelableProxy() == null) {
@@ -510,7 +511,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
                 proxy = cryptoInput.getParcelableProxy();
             }
 
-            result = multiThreadedKeyImport(keyList, keyServer, proxy, skipSave);
+            result = multiThreadedKeyImport(keyList, keyServer, proxy, skipSave, forceReinsert);
         }
 
         if (!skipSave) {
@@ -520,9 +521,8 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
     }
 
     @NonNull
-    private ImportKeyResult multiThreadedKeyImport(List<ParcelableKeyRing> keyList,
-                                                   final HkpKeyserverAddress keyServer, final ParcelableProxy proxy,
-                                                   final boolean skipSave) {
+    private ImportKeyResult multiThreadedKeyImport(List<ParcelableKeyRing> keyList, HkpKeyserverAddress keyServer,
+            ParcelableProxy proxy, boolean skipSave, boolean forceReinsert) {
         Timber.d("Multi-threaded key import starting");
 
         final Iterator<ParcelableKeyRing> keyListIterator = keyList.iterator();
@@ -551,7 +551,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
                     ProgressScaler ignoreProgressable = new ProgressScaler();
 
                     return serialKeyRingImport(list.iterator(), 1, keyServer, ignoreProgressable,
-                            proxy, skipSave);
+                            proxy, skipSave, forceReinsert);
                 }
             };
 

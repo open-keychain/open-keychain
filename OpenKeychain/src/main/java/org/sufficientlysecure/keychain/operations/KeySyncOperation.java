@@ -57,13 +57,13 @@ public class KeySyncOperation extends BaseReadWriteOperation<KeySyncParcel> {
 
         // no explicit proxy, retrieve from preferences. Check if we should do a staggered sync
         CryptoInputParcel cryptoInputParcel = CryptoInputParcel.createCryptoInputParcel();
+        boolean reinsertAll = input.getRefreshAll();
 
         ImportKeyResult importKeyResult;
-        if (preferences.getParcelableProxy().isTorEnabled()) {
+        if (!reinsertAll && preferences.getParcelableProxy().isTorEnabled()) {
             importKeyResult = staggeredUpdate(staleKeyParcelableKeyRings, cryptoInputParcel);
         } else {
-            importKeyResult =
-                    directUpdate(staleKeyParcelableKeyRings, cryptoInputParcel);
+            importKeyResult = directUpdate(staleKeyParcelableKeyRings, cryptoInputParcel, reinsertAll);
         }
         return importKeyResult;
     }
@@ -77,12 +77,12 @@ public class KeySyncOperation extends BaseReadWriteOperation<KeySyncParcel> {
         return result;
     }
 
-    private ImportKeyResult directUpdate(List<ParcelableKeyRing> keyList,
-            CryptoInputParcel cryptoInputParcel) {
+    private ImportKeyResult directUpdate(List<ParcelableKeyRing> keyList, CryptoInputParcel cryptoInputParcel,
+            boolean reinsertAll) {
         Timber.d("Starting normal update");
         ImportOperation importOp = new ImportOperation(mContext, mKeyWritableRepository, mProgressable, mCancelled);
         return importOp.execute(
-                ImportKeyringParcel.createImportKeyringParcel(keyList, preferences.getPreferredKeyserver()),
+                ImportKeyringParcel.createImportKeyringParcel(keyList, preferences.getPreferredKeyserver(), reinsertAll),
                 cryptoInputParcel
         );
     }

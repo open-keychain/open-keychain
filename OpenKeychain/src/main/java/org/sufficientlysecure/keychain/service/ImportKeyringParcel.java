@@ -35,31 +35,37 @@ public abstract class ImportKeyringParcel implements Parcelable {
     @Nullable // must be set if keys are to be imported from a keyserver
     public abstract HkpKeyserverAddress getKeyserver();
     public abstract boolean isSkipSave();
+    public abstract boolean isForceReinsert();
 
     public static ImportKeyringParcel createImportKeyringParcel(List<ParcelableKeyRing> keyList,
             HkpKeyserverAddress keyserver) {
-        return new AutoValue_ImportKeyringParcel(keyList, keyserver, false);
+        return new AutoValue_ImportKeyringParcel(keyList, keyserver, false, false);
+    }
+
+    public static ImportKeyringParcel createImportKeyringParcel(List<ParcelableKeyRing> keyList,
+            HkpKeyserverAddress keyserver, boolean forceReinsert) {
+        return new AutoValue_ImportKeyringParcel(keyList, keyserver, false, forceReinsert);
     }
 
     public static ImportKeyringParcel createWithSkipSave(List<ParcelableKeyRing> keyList,
             HkpKeyserverAddress keyserver) {
-        return new AutoValue_ImportKeyringParcel(keyList, keyserver, true);
+        return new AutoValue_ImportKeyringParcel(keyList, keyserver, true, false);
     }
 
     public static ImportKeyringParcel createImportKeyringParcel(ParcelableKeyRing key) {
-        return new AutoValue_ImportKeyringParcel(Collections.singletonList(key), null, false);
+        return new AutoValue_ImportKeyringParcel(Collections.singletonList(key), null, false, false);
     }
 
     public static ImportKeyringParcel createFromBytes(byte[] keyData) {
         ParcelableKeyRing keyRing = ParcelableKeyRing.createFromEncodedBytes(keyData);
-        return new AutoValue_ImportKeyringParcel(Collections.singletonList(keyRing), null, false);
+        return new AutoValue_ImportKeyringParcel(Collections.singletonList(keyRing), null, false, false);
     }
 
     public static ImportKeyringParcel createFromFileCacheWithSkipSave() {
-        return new AutoValue_ImportKeyringParcel(null, null, true);
+        return new AutoValue_ImportKeyringParcel(null, null, true, false);
     }
 
     public static ImportKeyringParcel createFromFileCache() {
-        return new AutoValue_ImportKeyringParcel(null, null, false);
+        return new AutoValue_ImportKeyringParcel(null, null, false, false);
     }
 }
