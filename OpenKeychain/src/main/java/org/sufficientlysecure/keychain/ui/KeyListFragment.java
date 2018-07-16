@@ -20,20 +20,14 @@ package org.sufficientlysecure.keychain.ui;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceActivity;
 import android.support.annotation.WorkerThread;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.MenuItemCompat;
@@ -57,12 +51,10 @@ import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.FlexibleAdapter.OnItemClickListener;
 import eu.davidea.flexibleadapter.FlexibleAdapter.OnItemLongClickListener;
 import eu.davidea.flexibleadapter.SelectableAdapter.Mode;
-import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.KeychainDatabase;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.TrackingManager;
+import org.sufficientlysecure.keychain.TrackingConsentRequester;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.daos.DatabaseNotifyManager;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
@@ -74,7 +66,6 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.service.BenchmarkInputParcel;
-import org.sufficientlysecure.keychain.ui.SettingsActivity.ExperimentalPrefsFragment;
 import org.sufficientlysecure.keychain.ui.adapter.FlexibleKeyDetailsItem;
 import org.sufficientlysecure.keychain.ui.adapter.FlexibleKeyDummyItem;
 import org.sufficientlysecure.keychain.ui.adapter.FlexibleKeyHeader;
@@ -270,81 +261,13 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
         LiveData<List<FlexibleKeyItem>> liveData = viewModel.getGenericLiveData(requireContext(), this::loadFlexibleKeyItems);
         liveData.observe(this, this::onLoadKeyItems);
 
-        maybeAskForAnalytics();
+        TrackingConsentRequester.getInstance(activity).maybeAskForAnalytics();
     }
 
     @WorkerThread
     private List<FlexibleKeyItem> loadFlexibleKeyItems() {
         List<UnifiedKeyInfo> unifiedKeyInfo = keyRepository.getAllUnifiedKeyInfo();
         return flexibleKeyItemFactory.mapUnifiedKeyInfoToFlexibleKeyItems(unifiedKeyInfo);
-    }
-
-    private void maybeAskForAnalytics() {
-        Context context = getContext();
-        if (context == null) {
-            return;
-        }
-
-        Preferences preferences = Preferences.getPreferences(context);
-        if (preferences.isAnalyticsHasConsent()) {
-            return;
-        }
-
-        boolean askedBeforeAndWasRejected = preferences.isAnalyticsAskedPolitely() && !preferences.isAnalyticsHasConsent();
-        if (!Constants.DEBUG && askedBeforeAndWasRejected) {
-            return;
-        }
-
-        try {
-            long firstInstallTime = context.getPackageManager().getPackageInfo(BuildConfig.APPLICATION_ID, 0).firstInstallTime;
-            long threeDaysAgo = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(3);
-            boolean installedLessThanThreeDaysAgo = firstInstallTime > threeDaysAgo;
-            if (!Constants.DEBUG && installedLessThanThreeDaysAgo) {
-                return;
-            }
-        } catch (NameNotFoundException e) {
-            return;
-        }
-
-        long twentyFourHoursAgo = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1);
-        boolean askedLessThan24HoursAgo = preferences.getAnalyticsLastAsked() > twentyFourHoursAgo;
-        if (!Constants.DEBUG && askedLessThan24HoursAgo) {
-            return;
-        }
-
-        preferences.setAnalyticsLastAskedNow();
-
-        TrackingManager trackingManager = ((KeychainApplication) requireActivity().getApplication()).getTrackingManager();
-        AlertDialog show = new Builder(context)
-                .setMessage(R.string.dialog_analytics_text)
-                .setPositiveButton(R.string.button_analytics_yes, (dialog, which) -> {
-                    preferences.setAnalyticsAskedPolitely();
-                    preferences.setAnalyticsGotUserConsent(true);
-                    trackingManager.refreshSettings(context);
-                    Notify.create(requireActivity(), R.string.snack_analytics_accept, Style.OK,
-                            this::startExperimentalSettingsActivity, R.string.snackbutton_analytics_settings).show();
-                })
-                .setNegativeButton(R.string.button_analytics_no, (dialog, which) -> {
-                    preferences.setAnalyticsAskedPolitely();
-                    preferences.setAnalyticsGotUserConsent(false);
-                    trackingManager.refreshSettings(context);
-                    Notify.create(requireActivity(), R.string.snack_analytics_reject, Style.OK,
-                            this::startExperimentalSettingsActivity, R.string.snackbutton_analytics_settings).show();
-                })
-                .show();
-        show.setCanceledOnTouchOutside(false);
-    }
-
-    private void startExperimentalSettingsActivity() {
-        Activity activity = getActivity();
-        if (activity == null) {
-            return;
-        }
-
-        Intent resultIntent = new Intent(activity, SettingsActivity.class);
-        String experimentalPrefsName = ExperimentalPrefsFragment.class.getName();
-        resultIntent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, experimentalPrefsName);
-        startActivity(resultIntent);
     }
 
     private void onLoadKeyItems(List<FlexibleKeyItem> flexibleKeyItems) {

@@ -6,7 +6,6 @@ import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 
 import org.piwik.sdk.Piwik;
 import org.piwik.sdk.Tracker;
