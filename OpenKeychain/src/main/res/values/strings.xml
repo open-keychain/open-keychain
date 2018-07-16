@@ -2048,9 +2048,9 @@
     <string name="keylist_header_anonymous">Anonymous</string>
     <string name="keylist_header_special">#</string>
 
-    <string name="dialog_analytics_text">Allow OpenKeychain to collect anonymous usage statistics to help improve the app?</string>
-    <string name="button_analytics_yes">Yes, I want to help!</string>
-    <string name="button_analytics_no">No, thanks</string>
+    <string name="dialog_analytics_consent">"To improve the experience for all users, may OpenKeychain collect anonymous usage statistics?\n\nTo find out more, see our <a href="https://openkeychain.org/help/privacy-policy">Privacy Policy</a>."</string>
+    <string name="button_analytics_yes">"Yes, I want to help!"</string>
+    <string name="button_analytics_no">"No, thanks"</string>
 
     <string name="snack_analytics_accept">"Thanks for helping out! You can change this preference in the settings."</string>
     <string name="snack_analytics_reject">"That's alright, we won't ask again. You can change your mind in the settings."</string>

@@ -9,6 +9,8 @@ import android.app.AlertDialog.Builder;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.preference.PreferenceActivity;
+import android.text.method.LinkMovementMethod;
+import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
@@ -65,8 +67,8 @@ public class AnalyticsConsentRequester {
         preferences.setAnalyticsLastAskedNow();
 
         AnalyticsManager analyticsManager = ((KeychainApplication) activity.getApplication()).getAnalyticsManager();
-        AlertDialog show = new Builder(activity)
-                .setMessage(R.string.dialog_analytics_text)
+        AlertDialog alertDialog = new Builder(activity)
+                .setMessage(R.string.dialog_analytics_consent)
                 .setPositiveButton(R.string.button_analytics_yes, (dialog, which) -> {
                     preferences.setAnalyticsAskedPolitely();
                     preferences.setAnalyticsGotUserConsent(true);
@@ -82,7 +84,8 @@ public class AnalyticsConsentRequester {
                             this::startExperimentalSettingsActivity, R.string.snackbutton_analytics_settings).show();
                 })
                 .show();
-        show.setCanceledOnTouchOutside(false);
+        alertDialog.<TextView>findViewById(android.R.id.message).setMovementMethod(LinkMovementMethod.getInstance());
+        alertDialog.setCanceledOnTouchOutside(false);
     }
 
     private void startExperimentalSettingsActivity() {
