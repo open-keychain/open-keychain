@@ -104,7 +104,7 @@ public class AnalyticsManager {
         boolean analyticsEnabled = piwikTracker != null;
         if (analyticsHasConsent != analyticsEnabled) {
             if (analyticsHasConsent) {
-                TrackerConfig trackerConfig = new TrackerConfig("https://piwik.openkeychain.org/", 1, "OpenKeychain");
+                TrackerConfig trackerConfig = new TrackerConfig("https://piwik.openkeychain.org/", 2, "OpenKeychain");
                 piwikTracker = Piwik.getInstance(context).newTracker(trackerConfig);
                 piwikTracker.setDispatchInterval(60000);
                 piwikTracker.setOptOut(false);
