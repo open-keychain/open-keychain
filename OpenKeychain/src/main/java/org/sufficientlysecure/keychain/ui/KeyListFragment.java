@@ -33,6 +33,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 import android.support.annotation.WorkerThread;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.MenuItemCompat;
@@ -73,6 +74,7 @@ import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.service.BenchmarkInputParcel;
+import org.sufficientlysecure.keychain.ui.SettingsActivity.ExperimentalPrefsFragment;
 import org.sufficientlysecure.keychain.ui.adapter.FlexibleKeyDetailsItem;
 import org.sufficientlysecure.keychain.ui.adapter.FlexibleKeyDummyItem;
 import org.sufficientlysecure.keychain.ui.adapter.FlexibleKeyHeader;
@@ -284,6 +286,10 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
         }
 
         Preferences preferences = Preferences.getPreferences(context);
+        if (preferences.isAnalyticsHasConsent()) {
+            return;
+        }
+
         boolean askedBeforeAndWasRejected = preferences.isAnalyticsAskedPolitely() && !preferences.isAnalyticsHasConsent();
         if (!Constants.DEBUG && askedBeforeAndWasRejected) {
             return;
@@ -293,7 +299,7 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
             long firstInstallTime = context.getPackageManager().getPackageInfo(BuildConfig.APPLICATION_ID, 0).firstInstallTime;
             long threeDaysAgo = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(3);
             boolean installedLessThanThreeDaysAgo = firstInstallTime > threeDaysAgo;
-            if (installedLessThanThreeDaysAgo) {
+            if (!Constants.DEBUG && installedLessThanThreeDaysAgo) {
                 return;
             }
         } catch (NameNotFoundException e) {
@@ -302,7 +308,7 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
 
         long twentyFourHoursAgo = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1);
         boolean askedLessThan24HoursAgo = preferences.getAnalyticsLastAsked() > twentyFourHoursAgo;
-        if (askedLessThan24HoursAgo) {
+        if (!Constants.DEBUG && askedLessThan24HoursAgo) {
             return;
         }
 
@@ -315,14 +321,30 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
                     preferences.setAnalyticsAskedPolitely();
                     preferences.setAnalyticsGotUserConsent(true);
                     trackingManager.refreshSettings(context);
+                    Notify.create(requireActivity(), R.string.snack_analytics_accept, Style.OK,
+                            this::startExperimentalSettingsActivity, R.string.snackbutton_analytics_settings).show();
                 })
                 .setNegativeButton(R.string.button_analytics_no, (dialog, which) -> {
                     preferences.setAnalyticsAskedPolitely();
                     preferences.setAnalyticsGotUserConsent(false);
                     trackingManager.refreshSettings(context);
+                    Notify.create(requireActivity(), R.string.snack_analytics_reject, Style.OK,
+                            this::startExperimentalSettingsActivity, R.string.snackbutton_analytics_settings).show();
                 })
                 .show();
         show.setCanceledOnTouchOutside(false);
+    }
+
+    private void startExperimentalSettingsActivity() {
+        Activity activity = getActivity();
+        if (activity == null) {
+            return;
+        }
+
+        Intent resultIntent = new Intent(activity, SettingsActivity.class);
+        String experimentalPrefsName = ExperimentalPrefsFragment.class.getName();
+        resultIntent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT, experimentalPrefsName);
+        startActivity(resultIntent);
     }
 
     private void onLoadKeyItems(List<FlexibleKeyItem> flexibleKeyItems) {

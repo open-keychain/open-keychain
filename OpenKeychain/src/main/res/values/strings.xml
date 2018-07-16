@@ -2051,4 +2051,8 @@
     <string name="dialog_analytics_text">Allow OpenKeychain to collect anonymous usage statistics to help improve the app?</string>
     <string name="button_analytics_yes">Yes, I want to help!</string>
     <string name="button_analytics_no">No, thanks</string>
+
+    <string name="snack_analytics_accept">"Thanks for helping out! You can change this preference in the settings."</string>
+    <string name="snack_analytics_reject">"That's alright, we won't ask again. You can change your mind in the settings."</string>
+    <string name="snackbutton_analytics_settings">"Settings"</string>
 </resources>
