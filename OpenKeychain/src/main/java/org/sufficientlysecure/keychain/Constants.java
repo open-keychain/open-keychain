@@ -160,6 +160,7 @@ public final class Constants {
 
         public static final String KEY_ANALYTICS_ASKED_POLITELY = "analytics_asked";
         public static final String KEY_ANALYTICS_CONSENT = "analytics_consent";
+        public static final String KEY_ANALYTICS_LAST_ASKED = "analytics_last_asked";
 
         public static final class Theme {
             public static final String LIGHT = "light";

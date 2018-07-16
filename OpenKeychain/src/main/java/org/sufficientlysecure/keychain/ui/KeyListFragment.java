@@ -284,7 +284,8 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
         }
 
         Preferences preferences = Preferences.getPreferences(context);
-        if (!Constants.DEBUG && !preferences.isAnalyticsHasConsent() && preferences.isAnalyticsAskedPolitely()) {
+        boolean askedBeforeAndWasRejected = preferences.isAnalyticsAskedPolitely() && !preferences.isAnalyticsHasConsent();
+        if (!Constants.DEBUG && askedBeforeAndWasRejected) {
             return;
         }
 
@@ -298,6 +299,14 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
         } catch (NameNotFoundException e) {
             return;
         }
+
+        long twentyFourHoursAgo = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1);
+        boolean askedLessThan24HoursAgo = preferences.getAnalyticsLastAsked() > twentyFourHoursAgo;
+        if (askedLessThan24HoursAgo) {
+            return;
+        }
+
+        preferences.setAnalyticsLastAskedNow();
 
         TrackingManager trackingManager = ((KeychainApplication) requireActivity().getApplication()).getTrackingManager();
         AlertDialog show = new Builder(context)

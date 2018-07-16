@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.util;
 
 import java.net.Proxy;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.ListIterator;
 
 import android.annotation.SuppressLint;
@@ -367,6 +368,14 @@ public class Preferences {
 
     public void setAnalyticsGotUserConsent(boolean hasUserConsent) {
         mSharedPreferences.edit().putBoolean(Pref.KEY_ANALYTICS_CONSENT, hasUserConsent).apply();
+    }
+
+    public void setAnalyticsLastAskedNow() {
+        mSharedPreferences.edit().putLong(Pref.KEY_ANALYTICS_LAST_ASKED, System.currentTimeMillis()).apply();
+    }
+
+    public long getAnalyticsLastAsked() {
+        return mSharedPreferences.getLong(Pref.KEY_ANALYTICS_LAST_ASKED, 0);
     }
 
     @AutoValue
