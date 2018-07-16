@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.service;
 
+
 import android.Manifest;
 import android.accounts.Account;
 import android.app.PendingIntent;
@@ -38,6 +39,7 @@ import android.support.v4.content.ContextCompat;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.KeychainApplication;
+import org.sufficientlysecure.keychain.NotificationChannelManager;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.SettingsActivity;
 import org.sufficientlysecure.keychain.util.ContactHelper;
@@ -73,6 +75,8 @@ public class ContactSyncAdapterService extends Service {
             // deactivate sync
             ContentResolver.setSyncAutomatically(account, authority, false);
 
+            NotificationChannelManager.getInstance(getContext()).createNotificationChannelsIfNecessary();
+
             // show notification linking to sync settings
             Intent resultIntent = new Intent(ContactSyncAdapterService.this, SettingsActivity.class);
             resultIntent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT,
@@ -85,7 +89,7 @@ public class ContactSyncAdapterService extends Service {
                             PendingIntent.FLAG_UPDATE_CURRENT
                     );
             NotificationCompat.Builder mBuilder =
-                    new NotificationCompat.Builder(ContactSyncAdapterService.this)
+                    new NotificationCompat.Builder(ContactSyncAdapterService.this, NotificationChannelManager.PERMISSION_REQUESTS)
                             .setAutoCancel(true)
                             .setSmallIcon(R.drawable.ic_stat_notify_24dp)
                             .setColor(getResources().getColor(R.color.primary))

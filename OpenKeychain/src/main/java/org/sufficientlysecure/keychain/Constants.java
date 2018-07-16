@@ -116,11 +116,6 @@ public final class Constants {
         public static final int KEYSERVER_SYNC = 3;
     }
 
-    public static final class NotificationChannels {
-        public static final String KEYSERVER_SYNC = "keyserverSync";
-        public static final String PASSPHRASE_CACHE = "passphraseCache";
-    }
-
     public static final class Pref {
         public static final String PASSPHRASE_CACHE_SUBS = "passphraseCacheSubs";
         public static final String PASSPHRASE_CACHE_LAST_TTL = "passphraseCacheLastTtl";

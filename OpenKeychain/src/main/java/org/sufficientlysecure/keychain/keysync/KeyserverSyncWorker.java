@@ -1,25 +1,23 @@
 package org.sufficientlysecure.keychain.keysync;
 
 
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
 import android.support.v4.os.CancellationSignal;
 
 import androidx.work.Worker;
-import org.sufficientlysecure.keychain.Constants.NotificationChannels;
 import org.sufficientlysecure.keychain.Constants.NotificationIds;
+import org.sufficientlysecure.keychain.NotificationChannelManager;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 import org.sufficientlysecure.keychain.operations.KeySyncOperation;
 import org.sufficientlysecure.keychain.operations.KeySyncParcel;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.util.ResourceUtils;
@@ -81,9 +79,9 @@ public class KeyserverSyncWorker extends Worker {
             return null;
         }
 
-        createNotificationChannelsIfNecessary(context, notificationManager);
+        NotificationChannelManager.getInstance(context).createNotificationChannelsIfNecessary();
 
-        NotificationCompat.Builder builder = new Builder(context, NotificationChannels.KEYSERVER_SYNC)
+        NotificationCompat.Builder builder = new Builder(context, NotificationChannelManager.KEYSERVER_SYNC)
                 .setSmallIcon(R.drawable.ic_stat_notify_24dp)
                 .setLargeIcon(ResourceUtils.getDrawableAsNotificationBitmap(context, R.mipmap.ic_launcher))
                 .setContentTitle(context.getString(R.string.notify_title_keysync))
@@ -125,16 +123,6 @@ public class KeyserverSyncWorker extends Worker {
             public void setPreventCancel() {
             }
         };
-    }
-
-    private void createNotificationChannelsIfNecessary(Context context,
-            NotificationManager notificationManager) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = context.getString(R.string.notify_channel_keysync);
-            NotificationChannel channel = new NotificationChannel(
-                    NotificationChannels.KEYSERVER_SYNC, name, NotificationManager.IMPORTANCE_MIN);
-            notificationManager.createNotificationChannel(channel);
-        }
     }
 
     @Override

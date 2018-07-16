@@ -17,6 +17,9 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
+import java.io.IOException;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -42,8 +45,6 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.PermissionsUtil;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import timber.log.Timber;
-
-import java.io.IOException;
 
 public class ImportKeysFileFragment extends Fragment {
 

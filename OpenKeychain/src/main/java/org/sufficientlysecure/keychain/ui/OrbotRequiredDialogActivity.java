@@ -33,6 +33,7 @@ import android.support.v4.app.NotificationCompat;
 import android.view.ContextThemeWrapper;
 
 import org.sufficientlysecure.keychain.Constants.NotificationIds;
+import org.sufficientlysecure.keychain.NotificationChannelManager;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -185,7 +186,9 @@ public class OrbotRequiredDialogActivity extends FragmentActivity
     }
 
     private static Notification createOrbotNotification(Context context) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        NotificationChannelManager.getInstance(context).createNotificationChannelsIfNecessary();
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NotificationChannelManager.ORBOT);
         builder.setSmallIcon(R.drawable.ic_stat_notify_24dp)
                 .setLargeIcon(ResourceUtils.getDrawableAsNotificationBitmap(context, R.mipmap.ic_launcher))
                 .setContentTitle(context.getString(R.string.keyserver_sync_orbot_notif_title))

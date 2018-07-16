@@ -2027,7 +2027,9 @@
     <string name="snack_keylist_clipboard_action">View</string>
 
     <string name="notify_channel_keysync">Keyserver update</string>
+    <string name="notify_channel_permission">Permission requests</string>
     <string name="notify_channel_passcache">Passphrase cache</string>
+    <string name="notify_channel_orbot">Orbot status</string>
     <string name="notify_title_keysync">Updating keys…</string>
     <string name="notify_title_keysync_finished">Finished updating %d keys</string>
     <string name="notify_content_keysync">Key %d / %d</string>

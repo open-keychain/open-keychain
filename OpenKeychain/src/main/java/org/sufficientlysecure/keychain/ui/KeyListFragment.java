@@ -75,7 +75,6 @@ import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
 import org.sufficientlysecure.keychain.ui.keyview.GenericViewModel;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
-import org.sufficientlysecure.keychain.ui.util.KeyInfoFormatter;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FabContainer;
