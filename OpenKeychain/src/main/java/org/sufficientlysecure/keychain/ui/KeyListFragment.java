@@ -143,7 +143,6 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
         }
     };
     private FastScroller fastScroller;
-    private KeyInfoFormatter keyInfoFormatter;
 
     private void multiSelectDelete(long[] keyIds, boolean hasSecret) {
         Intent intent = new Intent(getActivity(), DeleteKeyDialogActivity.class);
