@@ -87,7 +87,9 @@ public class KeychainService extends Service implements Progressable {
     public int onStartCommand(final Intent intent, int flags, int startId) {
 
         if (intent.getAction() != null && intent.getAction().equals(ACTION_CANCEL)) {
-            mActionCanceled.cancel();
+            if (mActionCanceled != null) {
+                mActionCanceled.cancel();
+            }
             return START_NOT_STICKY;
         }
 
