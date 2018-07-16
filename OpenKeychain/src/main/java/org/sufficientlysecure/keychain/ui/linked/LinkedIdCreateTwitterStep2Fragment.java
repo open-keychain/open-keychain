@@ -40,7 +40,6 @@ public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragm
     public static final String ARG_HANDLE = "handle";
 
     String mResourceHandle;
-    String mResourceString;
 
     public static LinkedIdCreateTwitterStep2Fragment newInstance(String handle) {
         LinkedIdCreateTwitterStep2Fragment frag = new LinkedIdCreateTwitterStep2Fragment();
@@ -56,8 +55,11 @@ public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragm
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mResourceString = TwitterResource.generate(fingerprint);
         mResourceHandle = getArguments().getString(ARG_HANDLE);
+    }
+
+    private String getResourceString() {
+        return TwitterResource.generate(fingerprint);
     }
 
     @NonNull
@@ -76,8 +78,7 @@ public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragm
 
     @Override
     LinkedTokenResource getResource(OperationLog log) {
-        return TwitterResource.searchInTwitterStream(getActivity(),
-                mResourceHandle, mResourceString, log);
+        return TwitterResource.searchInTwitterStream(getActivity(), mResourceHandle, getResourceString(), log);
     }
 
     @Override
@@ -88,14 +89,14 @@ public class LinkedIdCreateTwitterStep2Fragment extends LinkedIdCreateFinalFragm
     private void proofShare() {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, mResourceString);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, getResourceString());
         sendIntent.setType("text/plain");
         startActivity(sendIntent);
     }
 
     private void proofSend() {
         Uri.Builder builder = Uri.parse("https://twitter.com/intent/tweet").buildUpon();
-        builder.appendQueryParameter("text", mResourceString);
+        builder.appendQueryParameter("text", getResourceString());
         Uri uri = builder.build();
 
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);

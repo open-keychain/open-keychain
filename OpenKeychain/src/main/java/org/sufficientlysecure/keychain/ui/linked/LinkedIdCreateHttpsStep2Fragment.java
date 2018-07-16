@@ -49,7 +49,6 @@ public class LinkedIdCreateHttpsStep2Fragment extends LinkedIdCreateFinalFragmen
     EditText mEditUri;
 
     URI mResourceUri;
-    String mResourceString;
 
     public static LinkedIdCreateHttpsStep2Fragment newInstance(String uri) {
 
@@ -77,8 +76,6 @@ public class LinkedIdCreateHttpsStep2Fragment extends LinkedIdCreateFinalFragmen
             Timber.e(e);
             requireActivity().finish();
         }
-
-        mResourceString = GenericHttpsResource.generateText(requireActivity(), fingerprint);
     }
 
     @Override
@@ -100,10 +97,14 @@ public class LinkedIdCreateHttpsStep2Fragment extends LinkedIdCreateFinalFragmen
         return view;
     }
 
+    private String getResourceString() {
+        return GenericHttpsResource.generateText(requireActivity(), fingerprint);
+    }
+
     private void proofSend() {
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, mResourceString);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, getResourceString());
         sendIntent.setType("text/plain");
         startActivity(sendIntent);
     }
@@ -124,7 +125,7 @@ public class LinkedIdCreateHttpsStep2Fragment extends LinkedIdCreateFinalFragmen
     private void saveFile(Uri uri) {
         try {
             PrintWriter out = new PrintWriter(requireActivity().getContentResolver().openOutputStream(uri));
-            out.print(mResourceString);
+            out.print(getResourceString());
             if (out.checkError()) {
                 Notify.create(getActivity(), "Error writing file!", Style.ERROR).show();
             }
