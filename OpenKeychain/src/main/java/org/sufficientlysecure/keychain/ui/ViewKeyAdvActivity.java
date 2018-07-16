@@ -48,7 +48,7 @@ import org.sufficientlysecure.keychain.livedata.GenericLiveData;
 import org.sufficientlysecure.keychain.model.SubKey;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.model.UserPacket.UserId;
-import org.sufficientlysecure.keychain.TrackingManager;
+import org.sufficientlysecure.keychain.analytics.AnalyticsManager;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
@@ -89,7 +89,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements OnPageChangeList
         }
     }
 
-    private TrackingManager trackingManager;
+    private AnalyticsManager analyticsManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +98,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements OnPageChangeList
         setFullScreenDialogClose(v -> finish());
 
         keyRepository = KeyRepository.create(this);
-        trackingManager = ((KeychainApplication) getApplication()).getTrackingManager();
+        analyticsManager = ((KeychainApplication) getApplication()).getAnalyticsManager();
 
         viewPager = findViewById(R.id.pager);
         slidingTabLayout = findViewById(R.id.sliding_tab_layout);
@@ -302,7 +302,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements OnPageChangeList
         invalidateOptionsMenu();
 
         String fragmentName = tabAdapter.getItem(position).getClass().getSimpleName();
-        trackingManager.trackFragmentImpression(getClass().getSimpleName(), fragmentName);
+        analyticsManager.trackFragmentImpression(getClass().getSimpleName(), fragmentName);
     }
 
     @Override

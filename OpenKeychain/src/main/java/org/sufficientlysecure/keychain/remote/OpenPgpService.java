@@ -54,7 +54,7 @@ import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.KeychainApplication;
-import org.sufficientlysecure.keychain.TrackingManager;
+import org.sufficientlysecure.keychain.analytics.AnalyticsManager;
 import org.sufficientlysecure.keychain.operations.BackupOperation;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
@@ -101,7 +101,7 @@ public class OpenPgpService extends Service {
     private ApiAppDao mApiAppDao;
     private OpenPgpServiceKeyIdExtractor mKeyIdExtractor;
     private ApiPendingIntentFactory mApiPendingIntentFactory;
-    private TrackingManager trackingManager;
+    private AnalyticsManager analyticsManager;
 
     @Override
     public void onCreate() {
@@ -112,7 +112,7 @@ public class OpenPgpService extends Service {
         mApiPendingIntentFactory = new ApiPendingIntentFactory(getBaseContext());
         mKeyIdExtractor = OpenPgpServiceKeyIdExtractor.getInstance(getContentResolver(), mApiPendingIntentFactory);
 
-        trackingManager = ((KeychainApplication) getApplication()).getTrackingManager();
+        analyticsManager = ((KeychainApplication) getApplication()).getAnalyticsManager();
     }
 
     private Intent signImpl(Intent data, InputStream inputStream,
@@ -1030,7 +1030,7 @@ public class OpenPgpService extends Service {
             return errorResult;
         }
 
-        trackingManager.trackApiServiceCall(data.getAction(), mApiPermissionHelper.getCurrentCallingPackage());
+        analyticsManager.trackApiServiceCall(data.getAction(), mApiPermissionHelper.getCurrentCallingPackage());
 
         Progressable progressable = null;
         if (data.hasExtra(OpenPgpApi.EXTRA_PROGRESS_MESSENGER)) {

@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain;
+package org.sufficientlysecure.keychain.analytics;
 
 
 import android.app.Activity;
@@ -15,14 +15,14 @@ import org.piwik.sdk.extra.TrackHelper;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 
-public class TrackingManager {
+public class AnalyticsManager {
     private Tracker piwikTracker;
 
-    public static TrackingManager getInstance(Context context) {
-        return new TrackingManager(context);
+    public static AnalyticsManager getInstance(Context context) {
+        return new AnalyticsManager(context);
     }
 
-    private TrackingManager(Context context) {
+    private AnalyticsManager(Context context) {
         refreshSettings(context);
     }
 

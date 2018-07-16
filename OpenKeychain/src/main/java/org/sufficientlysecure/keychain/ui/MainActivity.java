@@ -23,7 +23,6 @@ import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -39,7 +38,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.TrackingManager;
+import org.sufficientlysecure.keychain.analytics.AnalyticsManager;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.remote.ui.AppsListFragment;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
@@ -64,7 +63,7 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
 
     public Drawer mDrawer;
     private Toolbar mToolbar;
-    private TrackingManager trackingManager;
+    private AnalyticsManager analyticsManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,7 +74,7 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
         mToolbar.setTitle(R.string.app_name);
         setSupportActionBar(mToolbar);
 
-        trackingManager = ((KeychainApplication) getApplication()).getTrackingManager();
+        analyticsManager = ((KeychainApplication) getApplication()).getAnalyticsManager();
 
         mDrawer = new DrawerBuilder()
                 .withActivity(this)
@@ -205,7 +204,7 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
     private void setFragment(Fragment frag) {
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        trackingManager.trackFragmentImpression(getClass().getSimpleName(), frag.getClass().getSimpleName());
+        analyticsManager.trackFragmentImpression(getClass().getSimpleName(), frag.getClass().getSimpleName());
 
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.replace(R.id.main_fragment_container, frag);

@@ -26,11 +26,11 @@ import android.accounts.AccountManager;
 import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.sufficientlysecure.keychain.analytics.AnalyticsManager;
 import org.sufficientlysecure.keychain.network.TlsCertificatePinning;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
@@ -42,7 +42,7 @@ import timber.log.Timber.DebugTree;
 
 
 public class KeychainApplication extends Application {
-    TrackingManager trackingManager;
+    AnalyticsManager analyticsManager;
 
     /**
      * Called when the application is starting, before any activity, service, or receiver objects
@@ -108,8 +108,8 @@ public class KeychainApplication extends Application {
 
         TemporaryFileProvider.scheduleCleanupImmediately();
 
-        trackingManager = TrackingManager.getInstance(getApplicationContext());
-        trackingManager.initialize(this);
+        analyticsManager = AnalyticsManager.getInstance(getApplicationContext());
+        analyticsManager.initialize(this);
     }
 
     /**
@@ -158,7 +158,7 @@ public class KeychainApplication extends Application {
         }
     }
 
-    public TrackingManager getTrackingManager() {
-        return trackingManager;
+    public AnalyticsManager getAnalyticsManager() {
+        return analyticsManager;
     }
 }

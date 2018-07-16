@@ -37,7 +37,6 @@ import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
@@ -51,7 +50,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.Constants.Pref;
 import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.AppCompatPreferenceActivity;
@@ -591,7 +589,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onPause();
 
             Activity activity = getActivity();
-            ((KeychainApplication) activity.getApplication()).getTrackingManager().refreshSettings(activity);
+            ((KeychainApplication) activity.getApplication()).getAnalyticsManager().refreshSettings(activity);
         }
 
         @Override

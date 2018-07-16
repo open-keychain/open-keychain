@@ -1,4 +1,4 @@
-package org.sufficientlysecure.keychain;
+package org.sufficientlysecure.keychain.analytics;
 
 
 import java.util.concurrent.TimeUnit;
@@ -6,11 +6,14 @@ import java.util.concurrent.TimeUnit;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.preference.PreferenceActivity;
 
+import org.sufficientlysecure.keychain.BuildConfig;
+import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.KeychainApplication;
+import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.SettingsActivity;
 import org.sufficientlysecure.keychain.ui.SettingsActivity.ExperimentalPrefsFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -18,14 +21,14 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.Preferences;
 
 
-public class TrackingConsentRequester {
+public class AnalyticsConsentRequester {
     private final Activity activity;
 
-    public static TrackingConsentRequester getInstance(Activity activity) {
-        return new TrackingConsentRequester(activity);
+    public static AnalyticsConsentRequester getInstance(Activity activity) {
+        return new AnalyticsConsentRequester(activity);
     }
 
-    private TrackingConsentRequester(Activity activity) {
+    private AnalyticsConsentRequester(Activity activity) {
         this.activity = activity;
     }
 
@@ -61,20 +64,20 @@ public class TrackingConsentRequester {
 
         preferences.setAnalyticsLastAskedNow();
 
-        TrackingManager trackingManager = ((KeychainApplication) activity.getApplication()).getTrackingManager();
+        AnalyticsManager analyticsManager = ((KeychainApplication) activity.getApplication()).getAnalyticsManager();
         AlertDialog show = new Builder(activity)
                 .setMessage(R.string.dialog_analytics_text)
                 .setPositiveButton(R.string.button_analytics_yes, (dialog, which) -> {
                     preferences.setAnalyticsAskedPolitely();
                     preferences.setAnalyticsGotUserConsent(true);
-                    trackingManager.refreshSettings(activity);
+                    analyticsManager.refreshSettings(activity);
                     Notify.create(activity, R.string.snack_analytics_accept, Style.OK,
                             this::startExperimentalSettingsActivity, R.string.snackbutton_analytics_settings).show();
                 })
                 .setNegativeButton(R.string.button_analytics_no, (dialog, which) -> {
                     preferences.setAnalyticsAskedPolitely();
                     preferences.setAnalyticsGotUserConsent(false);
-                    trackingManager.refreshSettings(activity);
+                    analyticsManager.refreshSettings(activity);
                     Notify.create(activity, R.string.snack_analytics_reject, Style.OK,
                             this::startExperimentalSettingsActivity, R.string.snackbutton_analytics_settings).show();
                 })
