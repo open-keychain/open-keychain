@@ -21,11 +21,14 @@ package org.sufficientlysecure.keychain.service;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Parcelable;
 import android.support.v4.os.CancellationSignal;
 
+import org.sufficientlysecure.keychain.KeychainApplication;
+import org.sufficientlysecure.keychain.analytics.AnalyticsManager;
 import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.operations.BackupOperation;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
@@ -52,13 +55,20 @@ import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 
 
 public class KeychainServiceTask {
-    public static KeychainServiceTask create(Context context) {
-        return new KeychainServiceTask(context.getApplicationContext());
+    private final AnalyticsManager analyticsManager;
+
+    public static KeychainServiceTask create(Activity activity) {
+        Context context = activity.getApplicationContext();
+        KeyWritableRepository keyRepository = KeyWritableRepository.create(context);
+        AnalyticsManager analyticsManager = ((KeychainApplication) activity.getApplication()).getAnalyticsManager();
+
+        return new KeychainServiceTask(context, keyRepository, analyticsManager);
     }
 
-    private KeychainServiceTask(Context context) {
+    private KeychainServiceTask(Context context, KeyWritableRepository keyRepository, AnalyticsManager analyticsManager) {
         this.context = context;
-        this.keyRepository = KeyWritableRepository.create(context);
+        this.keyRepository = keyRepository;
+        this.analyticsManager = analyticsManager;
     }
 
     private final Context context;
@@ -120,6 +130,8 @@ public class KeychainServiceTask {
                         if (isCancelled()) {
                             return null;
                         }
+
+                        analyticsManager.trackInternalServiceCall(op.getClass().getSimpleName());
 
                         // noinspection unchecked, we make sure it's the correct op above
                         return op.execute(inputParcel, cryptoInput);

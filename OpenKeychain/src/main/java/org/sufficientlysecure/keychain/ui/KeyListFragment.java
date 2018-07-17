@@ -54,6 +54,7 @@ import eu.davidea.flexibleadapter.SelectableAdapter.Mode;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.KeychainDatabase;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.analytics.AnalyticsConsentRequester;
 import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.daos.DatabaseNotifyManager;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
@@ -259,6 +260,8 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
         GenericViewModel viewModel = ViewModelProviders.of(this).get(GenericViewModel.class);
         LiveData<List<FlexibleKeyItem>> liveData = viewModel.getGenericLiveData(requireContext(), this::loadFlexibleKeyItems);
         liveData.observe(this, this::onLoadKeyItems);
+
+        AnalyticsConsentRequester.getInstance(activity).maybeAskForAnalytics();
     }
 
     @WorkerThread

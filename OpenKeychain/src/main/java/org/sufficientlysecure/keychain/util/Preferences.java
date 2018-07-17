@@ -33,6 +33,7 @@ import android.support.annotation.Nullable;
 import com.google.auto.value.AutoValue;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
+import org.sufficientlysecure.keychain.analytics.AnalyticsManager;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import timber.log.Timber;
 
@@ -79,6 +80,10 @@ public class Preferences {
     public void updateSharedPreferences(Context context) {
         // multi-process safe preferences
         mSharedPreferences = context.getSharedPreferences(PREF_FILE_NAME, PREF_FILE_MODE);
+    }
+
+    public SharedPreferences getSharedPreferences() {
+        return mSharedPreferences;
     }
 
     public String getLanguage() {
@@ -351,6 +356,30 @@ public class Preferences {
 
     public void setKeyserverSyncScheduled(boolean isScheduled) {
         mSharedPreferences.edit().putBoolean(Pref.SYNC_IS_SCHEDULED, isScheduled).apply();
+    }
+
+    public boolean isAnalyticsAskedPolitely() {
+        return mSharedPreferences.getBoolean(Pref.KEY_ANALYTICS_ASKED_POLITELY, false);
+    }
+
+    public void setAnalyticsAskedPolitely() {
+        mSharedPreferences.edit().putBoolean(Pref.KEY_ANALYTICS_ASKED_POLITELY, true).apply();
+    }
+
+    public boolean isAnalyticsHasConsent() {
+        return mSharedPreferences.getBoolean(Pref.KEY_ANALYTICS_CONSENT, false);
+    }
+
+    public void setAnalyticsGotUserConsent(boolean hasUserConsent) {
+        mSharedPreferences.edit().putBoolean(Pref.KEY_ANALYTICS_CONSENT, hasUserConsent).apply();
+    }
+
+    public void setAnalyticsLastAskedNow() {
+        mSharedPreferences.edit().putLong(Pref.KEY_ANALYTICS_LAST_ASKED, System.currentTimeMillis()).apply();
+    }
+
+    public long getAnalyticsLastAsked() {
+        return mSharedPreferences.getLong(Pref.KEY_ANALYTICS_LAST_ASKED, 0);
     }
 
     @AutoValue

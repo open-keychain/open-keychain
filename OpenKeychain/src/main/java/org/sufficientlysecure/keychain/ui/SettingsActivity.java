@@ -585,6 +585,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
 
         @Override
+        public void onPause() {
+            super.onPause();
+
+            Activity activity = getActivity();
+            ((KeychainApplication) activity.getApplication()).getAnalyticsManager().refreshSettings(activity);
+        }
+
+        @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
             switch (requestCode) {
                 case REQUEST_CODE_SMARTPGP_AUTHORITIES_PREF: {
