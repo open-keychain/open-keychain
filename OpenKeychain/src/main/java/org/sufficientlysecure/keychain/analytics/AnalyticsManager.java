@@ -82,6 +82,10 @@ public class AnalyticsManager implements OnSharedPreferenceChangeListener {
     // we generally only track booleans. never snoop around in the user's string settings!!
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (piwikTracker == null) {
+            return;
+        }
+
         // small exception: check if the user uses a custom keyserver, or one of the well-known ones
         if (Pref.KEY_SERVERS.equals(key)) {
             Timber.d("Tracking pref %s", key);
@@ -103,8 +107,8 @@ public class AnalyticsManager implements OnSharedPreferenceChangeListener {
         }
         // unpack an enum
         if (Pref.THEME.equals(key)) {
-            String value = sharedPreferences.getString(key, "empty");
-            TrackHelper.track().interaction("pref_" + key, value).with(piwikTracker);
+            String value = sharedPreferences.getString(Pref.THEME, "empty");
+            TrackHelper.track().interaction("pref_" + Pref.THEME, value).with(piwikTracker);
             return;
         }
         // all other values we track are individual booleans
