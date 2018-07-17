@@ -177,7 +177,7 @@ public final class Constants {
         }
 
         // we generally only track booleans. never snoop around in the user's string settings!!
-        public static final List<String> ANALYTICS_PREFS = Arrays.asList(USE_NORMAL_PROXY, USE_TOR_PROXY, THEME,
+        public static final List<String> ANALYTICS_PREFS = Arrays.asList(USE_NORMAL_PROXY, USE_TOR_PROXY,
                 SYNC_CONTACTS, SYNC_KEYSERVER, ENABLE_WIFI_SYNC_ONLY, EXPERIMENTAL_ENABLE_KEYBASE,
                 EXPERIMENTAL_ENABLE_LINKED_IDENTITIES, EXPERIMENTAL_USB_ALLOW_UNTESTED,
                 PASSPHRASE_CACHE_SUBS, SEARCH_KEYSERVER, SEARCH_KEYBASE, SEARCH_WEB_KEY_DIRECTORY,

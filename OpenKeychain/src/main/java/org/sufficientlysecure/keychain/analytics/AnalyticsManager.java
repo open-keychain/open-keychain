@@ -101,6 +101,13 @@ public class AnalyticsManager implements OnSharedPreferenceChangeListener {
             TrackHelper.track().interaction("pref_" + Pref.KEY_SERVERS, coarseGranularityKeyserver).with(piwikTracker);
             return;
         }
+        // unpack an enum
+        if (Pref.THEME.equals(key)) {
+            String value = sharedPreferences.getString(key, "empty");
+            TrackHelper.track().interaction("pref_" + key, value).with(piwikTracker);
+            return;
+        }
+        // all other values we track are individual booleans
         if (Pref.ANALYTICS_PREFS.contains(key)) {
             Timber.d("Tracking pref %s", key);
             if (!sharedPreferences.contains(key)) {
