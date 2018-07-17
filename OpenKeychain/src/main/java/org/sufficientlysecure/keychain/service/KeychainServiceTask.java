@@ -24,6 +24,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Parcelable;
+import android.support.v4.os.CancellationSignal;
 
 import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.operations.BackupOperation;
@@ -64,90 +65,101 @@ public class KeychainServiceTask {
     private final KeyWritableRepository keyRepository;
 
     @SuppressLint("StaticFieldLeak")
-    public void startOperationInBackground(
+    public CancellationSignal startOperationInBackground(
             Parcelable inputParcel, CryptoInputParcel cryptoInput, OperationCallback operationCallback) {
-        new AsyncTask<Void,ProgressUpdate,OperationResult>()  {
-            private AtomicBoolean operationCancelledBoolean = new AtomicBoolean(false);
+        AtomicBoolean operationCancelledBoolean = new AtomicBoolean(false);
 
-            @Override
-            protected OperationResult doInBackground(Void... voids) {
-                BaseOperation op;
+        AsyncTask<Void, ProgressUpdate, OperationResult> asyncTask =
+                new AsyncTask<Void, ProgressUpdate, OperationResult>() {
+                    @Override
+                    protected OperationResult doInBackground(Void... voids) {
+                        BaseOperation op;
 
-                if (inputParcel instanceof SignEncryptParcel) {
-                    op = new SignEncryptOperation(context, keyRepository, asyncProgressable, operationCancelledBoolean);
-                } else if (inputParcel instanceof PgpDecryptVerifyInputParcel) {
-                    op = new PgpDecryptVerifyOperation(context, keyRepository, asyncProgressable);
-                } else if (inputParcel instanceof SaveKeyringParcel) {
-                    op = new EditKeyOperation(context, keyRepository, asyncProgressable, operationCancelledBoolean);
-                } else if (inputParcel instanceof ChangeUnlockParcel) {
-                    op = new ChangeUnlockOperation(context, keyRepository, asyncProgressable);
-                } else if (inputParcel instanceof RevokeKeyringParcel) {
-                    op = new RevokeOperation(context, keyRepository, asyncProgressable);
-                } else if (inputParcel instanceof CertifyActionsParcel) {
-                    op = new CertifyOperation(context, keyRepository, asyncProgressable, operationCancelledBoolean);
-                } else if (inputParcel instanceof DeleteKeyringParcel) {
-                    op = new DeleteOperation(context, keyRepository, asyncProgressable);
-                } else if (inputParcel instanceof PromoteKeyringParcel) {
-                    op = new PromoteKeyOperation(context, keyRepository, asyncProgressable, operationCancelledBoolean);
-                } else if (inputParcel instanceof ImportKeyringParcel) {
-                    op = new ImportOperation(context, keyRepository, asyncProgressable, operationCancelledBoolean);
-                } else if (inputParcel instanceof BackupKeyringParcel) {
-                    op = new BackupOperation(context, keyRepository, asyncProgressable, operationCancelledBoolean);
-                } else if (inputParcel instanceof UploadKeyringParcel) {
-                    op = new UploadOperation(context, keyRepository, asyncProgressable, operationCancelledBoolean);
-                } else if (inputParcel instanceof KeybaseVerificationParcel) {
-                    op = new KeybaseVerificationOperation(context, keyRepository, asyncProgressable);
-                } else if (inputParcel instanceof InputDataParcel) {
-                    op = new InputDataOperation(context, keyRepository, asyncProgressable);
-                } else if (inputParcel instanceof BenchmarkInputParcel) {
-                    op = new BenchmarkOperation(context, keyRepository, asyncProgressable);
-                } else if (inputParcel instanceof KeySyncParcel) {
-                    op = new KeySyncOperation(context, keyRepository, asyncProgressable, operationCancelledBoolean);
-                } else {
-                    throw new AssertionError("Unrecognized input parcel in KeychainService!");
-                }
+                        if (inputParcel instanceof SignEncryptParcel) {
+                            op = new SignEncryptOperation(context, keyRepository, asyncProgressable,
+                                    operationCancelledBoolean);
+                        } else if (inputParcel instanceof PgpDecryptVerifyInputParcel) {
+                            op = new PgpDecryptVerifyOperation(context, keyRepository, asyncProgressable);
+                        } else if (inputParcel instanceof SaveKeyringParcel) {
+                            op = new EditKeyOperation(context, keyRepository, asyncProgressable,
+                                    operationCancelledBoolean);
+                        } else if (inputParcel instanceof ChangeUnlockParcel) {
+                            op = new ChangeUnlockOperation(context, keyRepository, asyncProgressable);
+                        } else if (inputParcel instanceof RevokeKeyringParcel) {
+                            op = new RevokeOperation(context, keyRepository, asyncProgressable);
+                        } else if (inputParcel instanceof CertifyActionsParcel) {
+                            op = new CertifyOperation(context, keyRepository, asyncProgressable,
+                                    operationCancelledBoolean);
+                        } else if (inputParcel instanceof DeleteKeyringParcel) {
+                            op = new DeleteOperation(context, keyRepository, asyncProgressable);
+                        } else if (inputParcel instanceof PromoteKeyringParcel) {
+                            op = new PromoteKeyOperation(context, keyRepository, asyncProgressable,
+                                    operationCancelledBoolean);
+                        } else if (inputParcel instanceof ImportKeyringParcel) {
+                            op = new ImportOperation(context, keyRepository, asyncProgressable,
+                                    operationCancelledBoolean);
+                        } else if (inputParcel instanceof BackupKeyringParcel) {
+                            op = new BackupOperation(context, keyRepository, asyncProgressable,
+                                    operationCancelledBoolean);
+                        } else if (inputParcel instanceof UploadKeyringParcel) {
+                            op = new UploadOperation(context, keyRepository, asyncProgressable,
+                                    operationCancelledBoolean);
+                        } else if (inputParcel instanceof KeybaseVerificationParcel) {
+                            op = new KeybaseVerificationOperation(context, keyRepository, asyncProgressable);
+                        } else if (inputParcel instanceof InputDataParcel) {
+                            op = new InputDataOperation(context, keyRepository, asyncProgressable);
+                        } else if (inputParcel instanceof BenchmarkInputParcel) {
+                            op = new BenchmarkOperation(context, keyRepository, asyncProgressable);
+                        } else if (inputParcel instanceof KeySyncParcel) {
+                            op = new KeySyncOperation(context, keyRepository, asyncProgressable,
+                                    operationCancelledBoolean);
+                        } else {
+                            throw new AssertionError("Unrecognized input parcel in KeychainService!");
+                        }
 
-                if (isCancelled()) {
-                    return null;
-                }
+                        if (isCancelled()) {
+                            return null;
+                        }
 
-                // noinspection unchecked, we make sure it's the correct op above
-                return op.execute(inputParcel, cryptoInput);
-            }
+                        // noinspection unchecked, we make sure it's the correct op above
+                        return op.execute(inputParcel, cryptoInput);
+                    }
 
-            Progressable asyncProgressable = new Progressable() {
-                @Override
-                public void setPreventCancel() {
-                    publishProgress((ProgressUpdate) null);
-                }
+                    Progressable asyncProgressable = new Progressable() {
+                        @Override
+                        public void setPreventCancel() {
+                            publishProgress((ProgressUpdate) null);
+                        }
 
-                @Override
-                public void setProgress(Integer resourceId, int current, int total) {
-                    publishProgress(new ProgressUpdate(resourceId, current, total));
-                }
-            };
+                        @Override
+                        public void setProgress(Integer resourceId, int current, int total) {
+                            publishProgress(new ProgressUpdate(resourceId, current, total));
+                        }
+                    };
 
-            @Override
-            protected void onProgressUpdate(ProgressUpdate... values) {
-                ProgressUpdate progressUpdate = values[0];
-                if (progressUpdate == null) {
-                    operationCallback.setPreventCancel();
-                } else {
-                    operationCallback.setProgress(progressUpdate.resourceId, progressUpdate.current, progressUpdate.total);
-                }
-            }
+                    @Override
+                    protected void onProgressUpdate(ProgressUpdate... values) {
+                        ProgressUpdate progressUpdate = values[0];
+                        if (progressUpdate == null) {
+                            operationCallback.setPreventCancel();
+                        } else {
+                            operationCallback.setProgress(progressUpdate.resourceId, progressUpdate.current,
+                                    progressUpdate.total);
+                        }
+                    }
 
-            @Override
-            protected void onCancelled() {
-                super.onCancelled();
-                operationCancelledBoolean.set(true);
-            }
+                    @Override
+                    protected void onPostExecute(OperationResult result) {
+                        operationCallback.operationFinished(result);
+                    }
+                };
+        asyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-            @Override
-            protected void onPostExecute(OperationResult result) {
-                operationCallback.operationFinished(result);
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        CancellationSignal cancellationSignal = new CancellationSignal();
+        cancellationSignal.setOnCancelListener(() -> {
+            operationCancelledBoolean.set(true);
+        });
+        return cancellationSignal;
     }
 
     public interface OperationCallback {

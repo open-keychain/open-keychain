@@ -22,6 +22,7 @@ import android.app.ProgressDialog;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.os.CancellationSignal;
 
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 
@@ -36,16 +37,16 @@ public class ProgressDialogManager {
     }
 
     public void showProgressDialog() {
-        showProgressDialog("", ProgressDialog.STYLE_SPINNER, false);
+        showProgressDialog("", ProgressDialog.STYLE_SPINNER, null);
     }
 
     public void showProgressDialog(
-            String progressDialogMessage, int progressDialogStyle, boolean cancelable) {
+            String progressDialogMessage, int progressDialogStyle, CancellationSignal cancellationSignal) {
 
         final ProgressDialogFragment frag = ProgressDialogFragment.newInstance(
-                progressDialogMessage,
-                progressDialogStyle,
-                cancelable);
+                progressDialogMessage, progressDialogStyle, cancellationSignal != null);
+
+        frag.setCancellationSignal(cancellationSignal);
 
         // TODO: This is a hack!, see
         // http://stackoverflow.com/questions/10114324/show-dialogfragment-from-onactivityresult
@@ -79,9 +80,7 @@ public class ProgressDialogManager {
         progressDialogFragment.dismissAllowingStateLoss();
     }
 
-
     public void onSetProgress(Integer resourceInt, int progress, int max) {
-
         ProgressDialogFragment progressDialogFragment =
                 (ProgressDialogFragment) activity.getSupportFragmentManager()
                         .findFragmentByTag(TAG_PROGRESS_DIALOG);
@@ -95,7 +94,5 @@ public class ProgressDialogManager {
         } else {
             progressDialogFragment.setProgress(progress, max);
         }
-
     }
-
 }

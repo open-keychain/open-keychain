@@ -29,7 +29,7 @@ import android.os.SystemClock;
 import android.support.annotation.UiThread;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.os.CancellationSignal;
 
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
@@ -42,7 +42,6 @@ import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.RetryUploadDialogActivity;
 import org.sufficientlysecure.keychain.ui.SecurityTokenOperationActivity;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 import timber.log.Timber;
 
 
@@ -264,28 +263,6 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         return true;
     }
 
-    protected void dismissProgress() {
-        FragmentManager fragmentManager =
-                mUseFragment ? mFragment.getFragmentManager() :
-                        mActivity.getSupportFragmentManager();
-
-        if (fragmentManager == null) { // the fragment holding us has died
-            // fragmentManager was null when used with DialogFragments. (they close on click?)
-            return;
-        }
-
-        ProgressDialogFragment progressDialogFragment =
-                (ProgressDialogFragment) fragmentManager.findFragmentByTag(
-                        ProgressDialogManager.TAG_PROGRESS_DIALOG);
-
-        if (progressDialogFragment == null) {
-            return;
-        }
-
-        progressDialogFragment.dismissAllowingStateLoss();
-
-    }
-
     public void cryptoOperation(final CryptoInputParcel cryptoInput) {
 
         FragmentActivity activity = mUseFragment ? mFragment.getActivity() : mActivity;
@@ -298,14 +275,12 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         ProgressDialogManager progressDialogManager;
         if (mProgressMessageResource != null) {
             progressDialogManager = new ProgressDialogManager(activity);
-            progressDialogManager.showProgressDialog(
-                    activity.getString(mProgressMessageResource), ProgressDialog.STYLE_HORIZONTAL, mCancellable);
         } else {
             progressDialogManager = null;
         }
 
         KeychainServiceTask keychainServiceTask = KeychainServiceTask.create(activity);
-        keychainServiceTask.startOperationInBackground(operationInput, cryptoInput, new OperationCallback() {
+        OperationCallback operationCallback = new OperationCallback() {
             @Override
             public void operationFinished(OperationResult result) {
                 if (progressDialogManager != null) {
@@ -331,7 +306,15 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                     progressDialogManager.setPreventCancel();
                 }
             }
-        });
+        };
+
+        CancellationSignal cancellationSignal =
+                keychainServiceTask.startOperationInBackground(operationInput, cryptoInput, operationCallback);
+
+        if (progressDialogManager != null) {
+            progressDialogManager.showProgressDialog(activity.getString(mProgressMessageResource),
+                    ProgressDialog.STYLE_HORIZONTAL, mCancellable ? cancellationSignal : null);
+        }
     }
 
     public void cryptoOperation() {
