@@ -42,7 +42,7 @@ public class AnalyticsConsentRequester {
 
         boolean askedBeforeAndWasRejected =
                 preferences.isAnalyticsAskedPolitely() && !preferences.isAnalyticsHasConsent();
-        if (!Constants.DEBUG && askedBeforeAndWasRejected) {
+        if (askedBeforeAndWasRejected) {
             return;
         }
 
