@@ -19,11 +19,12 @@ package org.sufficientlysecure.keychain.ui.token;
 
 
 import java.util.List;
+import java.util.Objects;
 
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.DialogInterface;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -58,8 +59,8 @@ import org.sufficientlysecure.keychain.service.input.SecurityTokenChangePinParce
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
-import org.sufficientlysecure.keychain.ui.SecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.ui.SecurityTokenChangePinOperationActivity;
+import org.sufficientlysecure.keychain.ui.SecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper.AbstractCallback;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
@@ -106,13 +107,16 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
         super.onCreate(savedInstanceState);
 
         Bundle args = getArguments();
-        SecurityTokenInfo tokenInfo = args.getParcelable(ARG_TOKEN_INFO);
+        SecurityTokenInfo tokenInfo = Objects.requireNonNull(args).getParcelable(ARG_TOKEN_INFO);
 
-        presenter = new ManageSecurityTokenPresenter(getContext(), getLoaderManager(), tokenInfo);
+        ManageSecurityTokenViewModel viewModel = ViewModelProviders.of(this).get(ManageSecurityTokenViewModel.class);
+        viewModel.setTokenInfo(requireContext(), tokenInfo);
+
+        presenter = new ManageSecurityTokenPresenter(requireContext(), this, viewModel);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         this.layoutInflater = inflater;
         View view = inflater.inflate(R.layout.create_security_token_import_fragment, container, false);
 
@@ -180,7 +184,7 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
 
     @Override
     public void finishAndShowKey(long masterKeyId) {
-        Activity activity = getActivity();
+        Activity activity = requireActivity();
 
         Intent viewKeyIntent = ViewKeyActivity.getViewKeyActivityIntent(requireActivity(), masterKeyId);
         if (activity instanceof CreateKeyActivity) {
@@ -321,12 +325,7 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
                 .setTitle(R.string.token_reset_confirm_title)
                 .setMessage(R.string.token_reset_confirm_message)
                 .setNegativeButton(R.string.button_cancel, null)
-                .setPositiveButton(R.string.token_reset_confirm_ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        presenter.onClickConfirmReset();
-                    }
-                }).show();
+                .setPositiveButton(R.string.token_reset_confirm_ok, (dialog, which) -> presenter.onClickConfirmReset()).show();
     }
 
     @Override
@@ -338,7 +337,7 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
 
     @Override
     public void startCreateKeyForToken(SecurityTokenInfo tokenInfo) {
-        CreateKeyActivity activity = (CreateKeyActivity) getActivity();
+        CreateKeyActivity activity = (CreateKeyActivity) requireActivity();
         activity.startCreateKeyForSecurityToken(tokenInfo);
     }
 
