@@ -23,24 +23,19 @@ import java.util.Date;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
 import android.os.Parcelable;
-import android.os.RemoteException;
 import android.os.SystemClock;
+import android.support.annotation.UiThread;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.service.KeychainService;
-import org.sufficientlysecure.keychain.service.KeychainService.OperationCallback;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler.MessageStatus;
+import org.sufficientlysecure.keychain.service.KeychainServiceTask;
+import org.sufficientlysecure.keychain.service.KeychainServiceTask.OperationCallback;
+import org.sufficientlysecure.keychain.service.ProgressDialogManager;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
@@ -281,7 +276,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
 
         ProgressDialogFragment progressDialogFragment =
                 (ProgressDialogFragment) fragmentManager.findFragmentByTag(
-                        ServiceProgressHandler.TAG_PROGRESS_DIALOG);
+                        ProgressDialogManager.TAG_PROGRESS_DIALOG);
 
         if (progressDialogFragment == null) {
             return;
@@ -300,78 +295,43 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             return;
         }
 
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(activity) {
+        ProgressDialogManager progressDialogManager;
+        if (mProgressMessageResource != null) {
+            progressDialogManager = new ProgressDialogManager(activity);
+            progressDialogManager.showProgressDialog(
+                    activity.getString(mProgressMessageResource), ProgressDialog.STYLE_HORIZONTAL, mCancellable);
+        } else {
+            progressDialogManager = null;
+        }
+
+        KeychainServiceTask keychainServiceTask = KeychainServiceTask.create(activity);
+        keychainServiceTask.startOperationInBackground(operationInput, cryptoInput, new OperationCallback() {
             @Override
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
-
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-
-                    // get returned data bundle
-                    Bundle returnData = message.getData();
-                    if (returnData == null) {
-                        return;
-                    }
-
-                    final OperationResult result =
-                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
-
-                    onHandleResult(result);
+            public void operationFinished(OperationResult result) {
+                if (progressDialogManager != null) {
+                    progressDialogManager.dismissAllowingStateLoss();
                 }
+                onHandleResult(result);
             }
 
             @Override
-            protected void onSetProgress(String msg, int progress, int max) {
-                // allow handling of progress in fragment, or delegate upwards
-                if (!mCallback.onCryptoSetProgress(msg, progress, max)) {
-                    super.onSetProgress(msg, progress, max);
+            public void setProgress(Integer resourceId, int current, int total) {
+                String msgString = resourceId != null ? activity.getString(resourceId) : null;
+                if (mCallback.onCryptoSetProgress(msgString, current, total)) {
+                    return;
                 }
-            }
-        };
-
-        Messenger messenger = new Messenger(saveHandler);
-        Communicator communicator = new Communicator(messenger);
-
-        Progressable progressable = new Progressable() {
-            @Override
-            public void setProgress(String message, int progress, int max) {
-                Timber.d("Send message by setProgress with progress=" + progress + ", max=" + max);
-
-                Bundle data = new Bundle();
-                if (message != null) {
-                    data.putString(ServiceProgressHandler.DATA_MESSAGE, message);
+                if (progressDialogManager != null) {
+                    progressDialogManager.onSetProgress(resourceId, current, total);
                 }
-                data.putInt(ServiceProgressHandler.DATA_PROGRESS, progress);
-                data.putInt(ServiceProgressHandler.DATA_PROGRESS_MAX, max);
-
-                communicator.sendMessageToHandler(MessageStatus.UPDATE_PROGRESS, data);
-            }
-
-            @Override
-            public void setProgress(int resourceId, int progress, int max) {
-                setProgress(activity.getString(resourceId), progress, max);
-            }
-
-            @Override
-            public void setProgress(int progress, int max) {
-                setProgress(null, progress, max);
             }
 
             @Override
             public void setPreventCancel() {
-                communicator.sendMessageToHandler(MessageStatus.PREVENT_CANCEL, (Bundle) null);
+                if (progressDialogManager != null) {
+                    progressDialogManager.setPreventCancel();
+                }
             }
-        };
-
-        if (mProgressMessageResource != null) {
-            saveHandler.showProgressDialog(
-                    activity.getString(mProgressMessageResource),
-                    ProgressDialog.STYLE_HORIZONTAL, mCancellable);
-        }
-
-        KeychainService keychainService = KeychainService.getInstance(activity);
-        keychainService.startOperationInBackground(operationInput, cryptoInput, progressable, communicator);
+        });
     }
 
     public void cryptoOperation() {
@@ -379,6 +339,7 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
     }
 
+    @UiThread
     private void onHandleResult(final OperationResult result) {
         Timber.d("Handling result in OperationHelper success: " + result.success());
 
@@ -391,20 +352,14 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             }
         }
 
-        dismissProgress();
-
         long elapsedTime = SystemClock.elapsedRealtime() - operationStartTime;
         if (minimumOperationDelay == null || elapsedTime > minimumOperationDelay) {
             returnResultToCallback(result);
             return;
         }
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                returnResultToCallback(result);
-            }
-        }, minimumOperationDelay - elapsedTime);
+        long artificialDelay = minimumOperationDelay - elapsedTime;
+        new Handler().postDelayed(() -> returnResultToCallback(result), artificialDelay);
     }
 
     private void returnResultToCallback(OperationResult result) {
@@ -421,37 +376,4 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
                     + result.getClass().getSimpleName() + "), this is a programming error!");
         }
     }
-
-    public static class Communicator implements OperationCallback {
-        final Messenger messenger;
-
-        Communicator(Messenger messenger) {
-            this.messenger = messenger;
-        }
-
-        public void sendMessageToHandler(MessageStatus status, Bundle data) {
-            Message msg = Message.obtain();
-            assert msg != null;
-            msg.arg1 = status.ordinal();
-            if (data != null) {
-                msg.setData(data);
-            }
-
-            try {
-                messenger.send(msg);
-            } catch (RemoteException e) {
-                Timber.w(e, "Exception sending message, Is handler present?");
-            } catch (NullPointerException e) {
-                Timber.w(e, "Messenger is null!");
-            }
-        }
-
-        @Override
-        public void operationFinished(OperationResult data) {
-            Bundle bundle = new Bundle();
-            bundle.putParcelable(OperationResult.EXTRA_RESULT, data);
-            sendMessageToHandler(MessageStatus.OKAY, bundle);
-        }
-    }
-
 }

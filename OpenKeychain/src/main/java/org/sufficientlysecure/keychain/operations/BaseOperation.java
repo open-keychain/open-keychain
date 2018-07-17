@@ -88,12 +88,6 @@ public abstract class BaseOperation<T extends Parcelable> implements PassphraseC
         }
     }
 
-    public void updateProgress(String message, int current, int total) {
-        if (mProgressable != null) {
-            mProgressable.setProgress(message, current, total);
-        }
-    }
-
     public void updateProgress(int current, int total) {
         if (mProgressable != null) {
             mProgressable.setProgress(current, total);

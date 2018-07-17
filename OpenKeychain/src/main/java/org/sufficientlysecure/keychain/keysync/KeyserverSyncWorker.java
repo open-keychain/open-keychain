@@ -94,17 +94,7 @@ public class KeyserverSyncWorker extends Worker {
 
         return new Progressable() {
             @Override
-            public void setProgress(String message, int current, int total) {
-                setProgress(current, total);
-            }
-
-            @Override
-            public void setProgress(int resourceId, int current, int total) {
-                setProgress(current, total);
-            }
-
-            @Override
-            public void setProgress(int current, int total) {
+            public void setProgress(Integer ignored, int current, int total) {
                 if (total == 0) {
                     notificationManager.cancel(NotificationIds.KEYSERVER_SYNC);
                     return;

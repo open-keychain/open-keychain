@@ -18,11 +18,9 @@
 package org.sufficientlysecure.keychain.pgp;
 
 public interface Progressable {
-    void setProgress(String message, int current, int total);
-
-    void setProgress(int resourceId, int current, int total);
-
-    void setProgress(int current, int total);
-
+    void setProgress(Integer resourceId, int current, int total);
+    default void setProgress(int current, int total) {
+        setProgress(null, current, total);
+    }
     void setPreventCancel();
 }

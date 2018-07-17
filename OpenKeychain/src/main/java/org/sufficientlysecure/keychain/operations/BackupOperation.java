@@ -222,8 +222,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             }
             int numKeys = unifiedKeyInfos.size();
 
-            updateProgress(mContext.getResources().getQuantityString(R.plurals.progress_exporting_key, numKeys),
-                    0, numKeys);
+            updateProgress(numKeys == 1 ? R.string.progress_exporting_key : R.string.progress_exporting_key, 0, numKeys);
 
             // For each public masterKey id
             for (UnifiedKeyInfo keyInfo : unifiedKeyInfos) {

@@ -22,7 +22,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -34,7 +33,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.service.KeychainService;
+import org.sufficientlysecure.keychain.service.KeychainServiceTask;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 
 /**
@@ -141,20 +140,20 @@ public class ProgressDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    public void setPreventCancel(boolean preventCancel) {
+    public void setPreventCancel() {
         // Don't care if we can't cancel anymore either way!
         if (mIsCancelled || ! mCanCancel) {
             return;
         }
 
-        mPreventCancel = preventCancel;
+        mPreventCancel = true;
         ProgressDialog dialog = (ProgressDialog) getDialog();
         if (dialog == null) {
             return;
         }
 
         final Button negative = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-        negative.setEnabled(mIsCancelled && !preventCancel);
+        negative.setEnabled(false);
     }
 
     @Override
@@ -176,8 +175,8 @@ public class ProgressDialogFragment extends DialogFragment {
                 negative.setClickable(false);
                 negative.setTextColor(Color.GRAY);
 
-                KeychainService keychainService = KeychainService.getInstance(requireContext());
-                keychainService.cancelRunningTask();
+                // TODO
+                // KeychainServiceTask.cancelRunningTask();
 
                 // Set the progress bar accordingly
                 ProgressDialog dialog = (ProgressDialog) getDialog();
