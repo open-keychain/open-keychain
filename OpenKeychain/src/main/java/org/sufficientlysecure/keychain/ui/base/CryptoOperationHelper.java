@@ -90,12 +90,12 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     // summands are stored in the mHelperId for easy operation.
     private final int mHelperId;
     // bitmask for helperId is everything except the least 8 bits
-    public static final int HELPER_ID_BITMASK = ~0xff;
+    private static final int HELPER_ID_BITMASK = ~0xff;
 
-    public static final int REQUEST_CODE_PASSPHRASE = 1;
-    public static final int REQUEST_CODE_NFC = 2;
-    public static final int REQUEST_CODE_ENABLE_ORBOT = 3;
-    public static final int REQUEST_CODE_RETRY_UPLOAD = 4;
+    private static final int REQUEST_CODE_PASSPHRASE = 1;
+    private static final int REQUEST_CODE_NFC = 2;
+    private static final int REQUEST_CODE_ENABLE_ORBOT = 3;
+    private static final int REQUEST_CODE_RETRY_UPLOAD = 4;
 
     private Integer mProgressMessageResource;
     private boolean mCancellable = false;
@@ -264,12 +264,14 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     }
 
     public void cryptoOperation(final CryptoInputParcel cryptoInput) {
-
-        FragmentActivity activity = mUseFragment ? mFragment.getActivity() : mActivity;
-
         T operationInput = mCallback.createOperationInput();
         if (operationInput == null) {
             return;
+        }
+
+        FragmentActivity activity = mUseFragment ? mFragment.getActivity() : mActivity;
+        if (activity == null) {
+            throw new NullPointerException();
         }
 
         ProgressDialogManager progressDialogManager;
@@ -323,8 +325,8 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     }
 
     @UiThread
-    private void onHandleResult(final OperationResult result) {
-        Timber.d("Handling result in OperationHelper success: " + result.success());
+    private void onHandleResult(OperationResult result) {
+        Timber.d("Handling result in OperationHelper success: %s", result.success());
 
         if (result instanceof InputPendingResult) {
             InputPendingResult pendingResult = (InputPendingResult) result;
