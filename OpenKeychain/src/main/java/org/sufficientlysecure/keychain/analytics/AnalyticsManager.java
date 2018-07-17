@@ -14,6 +14,7 @@ import org.piwik.sdk.Tracker;
 import org.piwik.sdk.TrackerConfig;
 import org.piwik.sdk.extra.DownloadTracker.Extra.ApkChecksum;
 import org.piwik.sdk.extra.TrackHelper;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Defaults;
 import org.sufficientlysecure.keychain.Constants.Pref;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -156,7 +157,12 @@ public class AnalyticsManager implements OnSharedPreferenceChangeListener {
         boolean analyticsEnabled = piwikTracker != null;
         if (analyticsHasConsent != analyticsEnabled) {
             if (analyticsHasConsent) {
-                TrackerConfig trackerConfig = new TrackerConfig("https://piwik.openkeychain.org/", 2, "OpenKeychain");
+                TrackerConfig trackerConfig;
+                if (Constants.DEBUG) {
+                    trackerConfig = new TrackerConfig("https://piwik.openkeychain.org/", 3, "OpenKeychainDebug");
+                } else {
+                    trackerConfig = new TrackerConfig("https://piwik.openkeychain.org/", 2, "OpenKeychain");
+                }
                 piwikTracker = Piwik.getInstance(context).newTracker(trackerConfig);
                 piwikTracker.setDispatchInterval(60000);
                 piwikTracker.setOptOut(false);
