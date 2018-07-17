@@ -28,6 +28,9 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 
 import java.io.File;
 import java.net.Proxy;
+import java.util.Arrays;
+import java.util.List;
+
 
 public final class Constants {
 
@@ -172,6 +175,14 @@ public final class Constants {
             public static final String TYPE_HTTP = "proxyHttp";
             public static final String TYPE_SOCKS = "proxySocks";
         }
+
+        // we generally only track booleans. never snoop around in the user's string settings!!
+        public static final List<String> ANALYTICS_PREFS = Arrays.asList(USE_NORMAL_PROXY, USE_TOR_PROXY, THEME,
+                SYNC_CONTACTS, SYNC_KEYSERVER, ENABLE_WIFI_SYNC_ONLY, EXPERIMENTAL_ENABLE_KEYBASE,
+                EXPERIMENTAL_ENABLE_LINKED_IDENTITIES, EXPERIMENTAL_USB_ALLOW_UNTESTED,
+                PASSPHRASE_CACHE_SUBS, SEARCH_KEYSERVER, SEARCH_KEYBASE, SEARCH_WEB_KEY_DIRECTORY,
+                TEXT_USE_COMPRESSION, TEXT_SELF_ENCRYPT, FILE_USE_COMPRESSION, FILE_SELF_ENCRYPT, USE_ARMOR,
+                USE_NUMKEYPAD_FOR_SECURITY_TOKEN_PIN, ENCRYPT_FILENAMES);
     }
 
     /**

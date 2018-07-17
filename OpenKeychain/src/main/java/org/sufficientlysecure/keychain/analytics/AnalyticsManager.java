@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.Application.ActivityLifecycleCallbacks;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 
 import org.piwik.sdk.Piwik;
@@ -12,10 +14,13 @@ import org.piwik.sdk.Tracker;
 import org.piwik.sdk.TrackerConfig;
 import org.piwik.sdk.extra.DownloadTracker.Extra.ApkChecksum;
 import org.piwik.sdk.extra.TrackHelper;
+import org.sufficientlysecure.keychain.Constants.Defaults;
+import org.sufficientlysecure.keychain.Constants.Pref;
 import org.sufficientlysecure.keychain.util.Preferences;
+import timber.log.Timber;
 
 
-public class AnalyticsManager {
+public class AnalyticsManager implements OnSharedPreferenceChangeListener {
     private Tracker piwikTracker;
 
     public static AnalyticsManager getInstance(Context context) {
@@ -69,6 +74,42 @@ public class AnalyticsManager {
 
             }
         });
+
+        Preferences preferences = Preferences.getPreferences(application);
+        preferences.getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+
+    // we generally only track booleans. never snoop around in the user's string settings!!
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        // small exception: check if the user uses a custom keyserver, or one of the well-known ones
+        if (Pref.KEY_SERVERS.equals(key)) {
+            Timber.d("Tracking pref %s", key);
+            String keyServers = sharedPreferences.getString(Pref.KEY_SERVERS, Defaults.KEY_SERVERS);
+            String current = keyServers.substring(keyServers.indexOf(','));
+
+            String coarseGranularityKeyserver;
+            if (current.contains("keyserver.ubuntu.com")) {
+                coarseGranularityKeyserver = "ubuntu";
+            } else if (current.contains("pgp.mit.edu")) {
+                coarseGranularityKeyserver = "mit";
+            } else if (current.contains("pool.sks-keyservers.net")) {
+                coarseGranularityKeyserver = "pool";
+            } else {
+                coarseGranularityKeyserver = "custom";
+            }
+            TrackHelper.track().interaction("pref_" + Pref.KEY_SERVERS, coarseGranularityKeyserver).with(piwikTracker);
+            return;
+        }
+        if (Pref.ANALYTICS_PREFS.contains(key)) {
+            Timber.d("Tracking pref %s", key);
+            if (!sharedPreferences.contains(key)) {
+                TrackHelper.track().interaction("pref_" + key, "empty").with(piwikTracker);
+                return;
+            }
+            boolean value = sharedPreferences.getBoolean(key, false);
+            TrackHelper.track().interaction("pref_" + key, value ? "true" : "false").with(piwikTracker);
+        }
     }
 
     public void trackFragmentImpression(String opClassName, String fragmentName) {

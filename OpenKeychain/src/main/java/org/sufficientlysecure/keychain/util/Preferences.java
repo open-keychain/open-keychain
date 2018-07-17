@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.util;
 
 import java.net.Proxy;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.ListIterator;
 
 import android.annotation.SuppressLint;
@@ -34,6 +33,7 @@ import android.support.annotation.Nullable;
 import com.google.auto.value.AutoValue;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
+import org.sufficientlysecure.keychain.analytics.AnalyticsManager;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import timber.log.Timber;
 
@@ -80,6 +80,10 @@ public class Preferences {
     public void updateSharedPreferences(Context context) {
         // multi-process safe preferences
         mSharedPreferences = context.getSharedPreferences(PREF_FILE_NAME, PREF_FILE_MODE);
+    }
+
+    public SharedPreferences getSharedPreferences() {
+        return mSharedPreferences;
     }
 
     public String getLanguage() {
