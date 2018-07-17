@@ -1095,17 +1095,7 @@ public class OpenPgpService extends Service {
         return new Progressable() {
             boolean errorState = false;
             @Override
-            public void setProgress(String message, int current, int total) {
-                setProgress(current, total);
-            }
-
-            @Override
-            public void setProgress(int resourceId, int current, int total) {
-                setProgress(current, total);
-            }
-
-            @Override
-            public void setProgress(int current, int total) {
+            public void setProgress(Integer ignored, int current, int total) {
                 if (errorState) {
                     return;
                 }

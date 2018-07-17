@@ -17,16 +17,17 @@
 
 package org.sufficientlysecure.keychain.ui.dialog;
 
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnKeyListener;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.os.CancellationSignal;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.View;
@@ -34,7 +35,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.service.KeychainService;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 
 /**
@@ -44,15 +44,18 @@ public class ProgressDialogFragment extends DialogFragment {
     private static final String ARG_MESSAGE = "message";
     private static final String ARG_STYLE = "style";
     private static final String ARG_CANCELABLE = "cancelable";
-    private static final String ARG_SERVICE_TYPE = "service_class";
 
     boolean mCanCancel = false, mPreventCancel = false, mIsCancelled = false;
+    private CancellationSignal cancellationSignal;
 
     /**
      * creates a new instance of this fragment
-     * @param message the message to be displayed initially above the progress bar
-     * @param style the progress bar style, as defined in ProgressDialog (horizontal or spinner)
-     * @param cancelable should we let the user cancel this operation
+     *
+     * @param message
+     *         the message to be displayed initially above the progress bar
+     * @param style
+     *         the progress bar style, as defined in ProgressDialog (horizontal or spinner)
+     *
      * @return
      */
     public static ProgressDialogFragment newInstance(String message, int style, boolean cancelable) {
@@ -141,20 +144,24 @@ public class ProgressDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    public void setPreventCancel(boolean preventCancel) {
+    public void setPreventCancel() {
         // Don't care if we can't cancel anymore either way!
         if (mIsCancelled || ! mCanCancel) {
             return;
         }
 
-        mPreventCancel = preventCancel;
+        mPreventCancel = true;
         ProgressDialog dialog = (ProgressDialog) getDialog();
         if (dialog == null) {
             return;
         }
 
         final Button negative = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-        negative.setEnabled(mIsCancelled && !preventCancel);
+        negative.setEnabled(false);
+    }
+
+    public void setCancellationSignal(CancellationSignal cancellationSignal) {
+        this.cancellationSignal = cancellationSignal;
     }
 
     @Override
@@ -167,7 +174,7 @@ public class ProgressDialogFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 // nvm if we are already cancelled, or weren't able to begin with
-                if (mIsCancelled || ! mCanCancel) {
+                if (mIsCancelled || !mCanCancel || cancellationSignal == null) {
                     return;
                 }
 
@@ -176,13 +183,7 @@ public class ProgressDialogFragment extends DialogFragment {
                 negative.setClickable(false);
                 negative.setTextColor(Color.GRAY);
 
-                // send a cancel message. note that this message will be handled by
-                // KeychainService.onStartCommand, which runs in this thread,
-                // not the service one, and will not queue up a command.
-                Intent serviceIntent = new Intent(getActivity(), KeychainService.class);
-
-                serviceIntent.setAction(KeychainService.ACTION_CANCEL);
-                getActivity().startService(serviceIntent);
+                cancellationSignal.cancel();
 
                 // Set the progress bar accordingly
                 ProgressDialog dialog = (ProgressDialog) getDialog();
@@ -192,11 +193,8 @@ public class ProgressDialogFragment extends DialogFragment {
 
                 dialog.setIndeterminate(true);
                 dialog.setMessage(getString(R.string.progress_cancelling));
-
-
             }
         });
 
     }
-
 }

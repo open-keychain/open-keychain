@@ -17,32 +17,31 @@
 
 package org.sufficientlysecure.keychain.ui.base;
 
+
 import java.util.Date;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.os.Messenger;
 import android.os.Parcelable;
 import android.os.SystemClock;
+import android.support.annotation.UiThread;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.os.CancellationSignal;
 
 import org.sufficientlysecure.keychain.operations.results.InputPendingResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.service.KeychainService;
-import org.sufficientlysecure.keychain.service.ServiceProgressHandler;
+import org.sufficientlysecure.keychain.service.KeychainServiceTask;
+import org.sufficientlysecure.keychain.service.KeychainServiceTask.OperationCallback;
+import org.sufficientlysecure.keychain.service.ProgressDialogManager;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
-import org.sufficientlysecure.keychain.ui.SecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.ui.OrbotRequiredDialogActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.RetryUploadDialogActivity;
-import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
+import org.sufficientlysecure.keychain.ui.SecurityTokenOperationActivity;
 import timber.log.Timber;
 
 
@@ -91,12 +90,12 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
     // summands are stored in the mHelperId for easy operation.
     private final int mHelperId;
     // bitmask for helperId is everything except the least 8 bits
-    public static final int HELPER_ID_BITMASK = ~0xff;
+    private static final int HELPER_ID_BITMASK = ~0xff;
 
-    public static final int REQUEST_CODE_PASSPHRASE = 1;
-    public static final int REQUEST_CODE_NFC = 2;
-    public static final int REQUEST_CODE_ENABLE_ORBOT = 3;
-    public static final int REQUEST_CODE_RETRY_UPLOAD = 4;
+    private static final int REQUEST_CODE_PASSPHRASE = 1;
+    private static final int REQUEST_CODE_NFC = 2;
+    private static final int REQUEST_CODE_ENABLE_ORBOT = 3;
+    private static final int REQUEST_CODE_RETRY_UPLOAD = 4;
 
     private Integer mProgressMessageResource;
     private boolean mCancellable = false;
@@ -264,84 +263,60 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         return true;
     }
 
-    protected void dismissProgress() {
-        FragmentManager fragmentManager =
-                mUseFragment ? mFragment.getFragmentManager() :
-                        mActivity.getSupportFragmentManager();
-
-        if (fragmentManager == null) { // the fragment holding us has died
-            // fragmentManager was null when used with DialogFragments. (they close on click?)
-            return;
-        }
-
-        ProgressDialogFragment progressDialogFragment =
-                (ProgressDialogFragment) fragmentManager.findFragmentByTag(
-                        ServiceProgressHandler.TAG_PROGRESS_DIALOG);
-
-        if (progressDialogFragment == null) {
-            return;
-        }
-
-        progressDialogFragment.dismissAllowingStateLoss();
-
-    }
-
     public void cryptoOperation(final CryptoInputParcel cryptoInput) {
-
-        FragmentActivity activity = mUseFragment ? mFragment.getActivity() : mActivity;
-
         T operationInput = mCallback.createOperationInput();
         if (operationInput == null) {
             return;
         }
 
-        // Send all information needed to service to edit key in other thread
-        Intent intent = new Intent(activity, KeychainService.class);
+        FragmentActivity activity = mUseFragment ? mFragment.getActivity() : mActivity;
+        if (activity == null) {
+            throw new NullPointerException();
+        }
 
-        intent.putExtra(KeychainService.EXTRA_OPERATION_INPUT, operationInput);
-        intent.putExtra(KeychainService.EXTRA_CRYPTO_INPUT, cryptoInput);
+        ProgressDialogManager progressDialogManager;
+        if (mProgressMessageResource != null) {
+            progressDialogManager = new ProgressDialogManager(activity);
+        } else {
+            progressDialogManager = null;
+        }
 
-        ServiceProgressHandler saveHandler = new ServiceProgressHandler(activity) {
+        KeychainServiceTask keychainServiceTask = KeychainServiceTask.create(activity);
+        OperationCallback operationCallback = new OperationCallback() {
             @Override
-            public void handleMessage(Message message) {
-                // handle messages by standard KeychainIntentServiceHandler first
-                super.handleMessage(message);
+            public void operationFinished(OperationResult result) {
+                if (progressDialogManager != null) {
+                    progressDialogManager.dismissAllowingStateLoss();
+                }
+                onHandleResult(result);
+            }
 
-                if (message.arg1 == MessageStatus.OKAY.ordinal()) {
-
-                    // get returned data bundle
-                    Bundle returnData = message.getData();
-                    if (returnData == null) {
-                        return;
-                    }
-
-                    final OperationResult result =
-                            returnData.getParcelable(OperationResult.EXTRA_RESULT);
-
-                    onHandleResult(result);
+            @Override
+            public void setProgress(Integer resourceId, int current, int total) {
+                String msgString = resourceId != null ? activity.getString(resourceId) : null;
+                if (mCallback.onCryptoSetProgress(msgString, current, total)) {
+                    return;
+                }
+                if (progressDialogManager != null) {
+                    progressDialogManager.onSetProgress(resourceId, current, total);
                 }
             }
 
             @Override
-            protected void onSetProgress(String msg, int progress, int max) {
-                // allow handling of progress in fragment, or delegate upwards
-                if (!mCallback.onCryptoSetProgress(msg, progress, max)) {
-                    super.onSetProgress(msg, progress, max);
+            public void setPreventCancel() {
+                if (progressDialogManager != null) {
+                    progressDialogManager.setPreventCancel();
                 }
             }
         };
 
-        // Create a new Messenger for the communication back
-        Messenger messenger = new Messenger(saveHandler);
-        intent.putExtra(KeychainService.EXTRA_MESSENGER, messenger);
+        CancellationSignal cancellationSignal =
+                keychainServiceTask.startOperationInBackground(operationInput, cryptoInput, operationCallback);
 
-        if (mProgressMessageResource != null) {
-            saveHandler.showProgressDialog(
-                    activity.getString(mProgressMessageResource),
-                    ProgressDialog.STYLE_HORIZONTAL, mCancellable);
+        if (progressDialogManager != null) {
+            progressDialogManager.showProgressDialog(activity.getString(mProgressMessageResource),
+                    ProgressDialog.STYLE_HORIZONTAL, mCancellable ? cancellationSignal : null);
         }
-
-        activity.startService(intent);
     }
 
     public void cryptoOperation() {
@@ -349,8 +324,9 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
     }
 
-    private void onHandleResult(final OperationResult result) {
-        Timber.d("Handling result in OperationHelper success: " + result.success());
+    @UiThread
+    private void onHandleResult(OperationResult result) {
+        Timber.d("Handling result in OperationHelper success: %s", result.success());
 
         if (result instanceof InputPendingResult) {
             InputPendingResult pendingResult = (InputPendingResult) result;
@@ -361,20 +337,14 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
             }
         }
 
-        dismissProgress();
-
         long elapsedTime = SystemClock.elapsedRealtime() - operationStartTime;
         if (minimumOperationDelay == null || elapsedTime > minimumOperationDelay) {
             returnResultToCallback(result);
             return;
         }
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                returnResultToCallback(result);
-            }
-        }, minimumOperationDelay - elapsedTime);
+        long artificialDelay = minimumOperationDelay - elapsedTime;
+        new Handler().postDelayed(() -> returnResultToCallback(result), artificialDelay);
     }
 
     private void returnResultToCallback(OperationResult result) {

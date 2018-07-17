@@ -477,10 +477,8 @@
     <string name="progress_modify_pin">"changing PIN…"</string>
     <string name="progress_modify_admin_pin">"changing Admin PIN…"</string>
 
-    <plurals name="progress_exporting_key">
-        <item quantity="one">"exporting key…"</item>
-        <item quantity="other">"exporting keys…"</item>
-    </plurals>
+    <string name="progress_exporting_key">"exporting key…"</string>
+    <string name="progress_exporting_keys">"exporting keys…"</string>
 
     <string name="progress_start">"preparing operation…"</string>
     <string name="progress_extracting_signature_key">"extracting signature key…"</string>

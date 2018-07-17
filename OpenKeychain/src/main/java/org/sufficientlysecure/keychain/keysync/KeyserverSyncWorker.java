@@ -1,12 +1,13 @@
 package org.sufficientlysecure.keychain.keysync;
 
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import android.app.NotificationManager;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
-import android.support.v4.os.CancellationSignal;
 
 import androidx.work.Worker;
 import org.sufficientlysecure.keychain.Constants.NotificationIds;
@@ -25,7 +26,7 @@ import timber.log.Timber;
 
 
 public class KeyserverSyncWorker extends Worker {
-    private CancellationSignal cancellationSignal = new CancellationSignal();
+    private AtomicBoolean cancellationSignal = new AtomicBoolean(false);
 
     @NonNull
     @Override
@@ -93,17 +94,7 @@ public class KeyserverSyncWorker extends Worker {
 
         return new Progressable() {
             @Override
-            public void setProgress(String message, int current, int total) {
-                setProgress(current, total);
-            }
-
-            @Override
-            public void setProgress(int resourceId, int current, int total) {
-                setProgress(current, total);
-            }
-
-            @Override
-            public void setProgress(int current, int total) {
+            public void setProgress(Integer ignored, int current, int total) {
                 if (total == 0) {
                     notificationManager.cancel(NotificationIds.KEYSERVER_SYNC);
                     return;
@@ -128,6 +119,6 @@ public class KeyserverSyncWorker extends Worker {
     @Override
     public void onStopped() {
         super.onStopped();
-        cancellationSignal.cancel();
+        cancellationSignal.set(true);
     }
 }

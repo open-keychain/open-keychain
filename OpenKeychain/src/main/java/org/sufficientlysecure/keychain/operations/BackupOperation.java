@@ -27,17 +27,19 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.os.CancellationSignal;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -50,8 +52,6 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.daos.KeyRepository;
-import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -83,7 +83,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
     }
 
     public BackupOperation(Context context, KeyRepository keyRepository,
-                           Progressable progressable, CancellationSignal cancelled) {
+                           Progressable progressable, AtomicBoolean cancelled) {
         super(context, keyRepository, progressable, cancelled);
     }
 
@@ -222,8 +222,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             }
             int numKeys = unifiedKeyInfos.size();
 
-            updateProgress(mContext.getResources().getQuantityString(R.plurals.progress_exporting_key, numKeys),
-                    0, numKeys);
+            updateProgress(numKeys == 1 ? R.string.progress_exporting_key : R.string.progress_exporting_key, 0, numKeys);
 
             // For each public masterKey id
             for (UnifiedKeyInfo keyInfo : unifiedKeyInfos) {

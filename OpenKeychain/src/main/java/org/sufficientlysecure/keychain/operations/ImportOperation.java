@@ -29,13 +29,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.os.CancellationSignal;
 
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.daos.KeyMetadataDao;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.keyimport.FacebookKeyserverClient;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverClient;
@@ -54,8 +56,6 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.daos.KeyMetadataDao;
-import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -102,7 +102,7 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
     }
 
     public ImportOperation(Context context, KeyWritableRepository databaseInteractor,
-                           Progressable progressable, CancellationSignal cancelled) {
+                           Progressable progressable, AtomicBoolean cancelled) {
         super(context, databaseInteractor, progressable, cancelled);
 
         this.keyMetadataDao = KeyMetadataDao.create(context);
