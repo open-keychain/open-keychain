@@ -535,6 +535,9 @@ public class Preferences {
 
     private void replaceDefaultKeyserverWithUbuntu() {
         ArrayList<HkpKeyserverAddress> servers = getKeyServers();
+        if (servers.isEmpty()) {
+            return;
+        }
         boolean oldDefaults = "hkps://hkps.pool.sks-keyservers.net".equalsIgnoreCase(servers.get(0).getUrl()) ||
                 "hkps://pgp.mit.edu".equalsIgnoreCase(servers.get(0).getUrl());
 
