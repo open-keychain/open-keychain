@@ -17,7 +17,7 @@ public class UnifiedKeyInfoViewModel extends ViewModel {
     private LiveData<UnifiedKeyInfo> unifiedKeyInfoLiveData;
 
     public void setMasterKeyId(long masterKeyId) {
-        if (this.masterKeyId != null) {
+        if (this.masterKeyId != null && this.masterKeyId != masterKeyId) {
             throw new IllegalStateException("cannot change masterKeyId once set!");
         }
         this.masterKeyId = masterKeyId;
