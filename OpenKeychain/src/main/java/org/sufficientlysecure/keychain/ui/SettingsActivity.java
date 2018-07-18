@@ -56,8 +56,6 @@ import org.sufficientlysecure.keychain.compatibility.AppCompatPreferenceActivity
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keysync.KeyserverSyncManager;
 import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
-import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
-import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -86,7 +84,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        BaseActivity.onResumeChecks(this);
 
         if (mThemeChanger.changeTheme()) {
             Intent intent = getIntent();
@@ -468,8 +465,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         }
                         // disable syncs
                         ContentResolver.setSyncAutomatically(account, authority, false);
-                        // immediately delete any linked contacts
-                        ContactSyncAdapterService.deleteIfSyncDisabled(getActivity());
                         // cancel any ongoing/pending syncs
                         ContentResolver.cancelSync(account, authority);
                         setSummary(syncCheckBox, authority, false);

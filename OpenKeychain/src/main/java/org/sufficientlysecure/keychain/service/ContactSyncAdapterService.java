@@ -135,23 +135,6 @@ public class ContactSyncAdapterService extends Service {
         ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
     }
 
-    public static void deleteIfSyncDisabled(Context context) {
-        if (!(ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)
-                == PackageManager.PERMISSION_GRANTED)) {
-            return;
-        }
-
-        Account account = KeychainApplication.createAccountIfNecessary(context);
-        if (account == null) {
-            return;
-        }
-
-        // if user has disabled automatic sync, delete linked OpenKeychain contacts
-        if (!ContentResolver.getSyncAutomatically(account, ContactsContract.AUTHORITY)) {
-            new ContactHelper(context).deleteAllContacts();
-        }
-    }
-
 // TODO: Import is currently disabled, until we implement proper origin management
 //    private static void importKeys() {
 //            importDone.set(false);

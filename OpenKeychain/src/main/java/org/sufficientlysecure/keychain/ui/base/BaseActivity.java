@@ -17,8 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui.base;
 
+
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -32,7 +32,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 
 /**
@@ -54,7 +53,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        onResumeChecks(this);
 
         if (mThemeChanger != null && mThemeChanger.changeTheme()) {
             Intent intent = getIntent();
@@ -73,11 +71,6 @@ public abstract class BaseActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public static void onResumeChecks(Context context) {
-        // in case user has disabled sync from Android account settings
-        ContactSyncAdapterService.deleteIfSyncDisabled(context);
     }
 
     protected void initLayout() {
@@ -191,5 +184,4 @@ public abstract class BaseActivity extends AppCompatActivity {
         getSupportActionBar().setCustomView(customActionBarView, new ActionBar.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     }
-
 }
