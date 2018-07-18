@@ -17,39 +17,27 @@
 
 package org.sufficientlysecure.keychain.util;
 
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
 
-/**
- * Static methods related to device orientation.
- */
 public class OrientationUtils {
-
-    /**
-     * Locks the device window in landscape mode.
-     */
-    public static void lockOrientationLandscape(Activity activity) {
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-    }
-
-    /**
-     * Locks the device window in portrait mode.
-     */
-    public static void lockOrientationPortrait(Activity activity) {
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-    }
-
-    /**
-     * Locks the device window in actual screen mode.
-     */
-    public static void lockOrientation(Activity activity) {
-        Display display = ((WindowManager) activity.getSystemService(Context.WINDOW_SERVICE))
-                .getDefaultDisplay();
+    public static void lockCurrentOrientation(Activity activity) {
+        // locking orientation for non-fullscreen activities is restricted in *exactly* Android 8.0.
+        // see https://github.com/aosp-mirror/platform_frameworks_base/commit/39791594560b2326625b663ed6796882900c220f#diff-960c6fdd4a4b336d98b785268b2a78ff
+        // But apparently, they changed their mind in 8.1 again
+        // and https://github.com/aosp-mirror/platform_frameworks_base/commit/d4ecffae67fa0dea03c581ca26f76b87a14be763#diff-960c6fdd4a4b336d98b785268b2a78ff
+        if (VERSION.SDK_INT == VERSION_CODES.O) {
+            return;
+        }
+        Display display = ((WindowManager) activity.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         int rotation = display.getRotation();
         int tempOrientation = activity.getResources().getConfiguration().orientation;
         int orientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
@@ -74,12 +62,4 @@ public class OrientationUtils {
         }
         activity.setRequestedOrientation(orientation);
     }
-
-    /**
-     * Unlocks the device window in user defined screen mode.
-     */
-    public static void unlockOrientation(Activity activity) {
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
-    }
-
 }

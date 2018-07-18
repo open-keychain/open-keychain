@@ -96,7 +96,7 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
         nfcGuideView = findViewById(R.id.nfc_guide_view);
 
         // prevent annoying orientation changes while fumbling with the device
-        OrientationUtils.lockOrientation(this);
+        OrientationUtils.lockCurrentOrientation(this);
         // prevent close when touching outside of the dialog (happens easily when fumbling with the device)
         setFinishOnTouchOutside(false);
         // keep screen on
