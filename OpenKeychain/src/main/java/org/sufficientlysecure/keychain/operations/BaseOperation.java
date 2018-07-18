@@ -25,22 +25,20 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 
-import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
 import org.sufficientlysecure.keychain.pgp.Progressable;
-import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
-import org.sufficientlysecure.keychain.util.Passphrase;
 
-public abstract class BaseOperation<T extends Parcelable> implements PassphraseCacheInterface {
+
+public abstract class BaseOperation<T extends Parcelable> {
 
     final public Context mContext;
     final public Progressable mProgressable;
     final public AtomicBoolean mCancelled;
 
     final public KeyRepository mKeyRepository;
+    final public AndroidPassphraseCacheInterface passphraseCacheInterface;
 
     /** An abstract base class for all *Operation classes. It provides a number
      * of common methods for progress, cancellation and passphrase cache handling.
@@ -68,6 +66,7 @@ public abstract class BaseOperation<T extends Parcelable> implements PassphraseC
         this.mContext = context;
         this.mProgressable = progressable;
         this.mKeyRepository = keyRepository;
+        this.passphraseCacheInterface = AndroidPassphraseCacheInterface.getInstance(context);
         mCancelled = null;
     }
 
@@ -76,6 +75,7 @@ public abstract class BaseOperation<T extends Parcelable> implements PassphraseC
         mContext = context;
         mProgressable = progressable;
         mKeyRepository = keyRepository;
+        passphraseCacheInterface = AndroidPassphraseCacheInterface.getInstance(context);
         mCancelled = cancelled;
     }
 
@@ -103,27 +103,4 @@ public abstract class BaseOperation<T extends Parcelable> implements PassphraseC
             mProgressable.setPreventCancel();
         }
     }
-
-    @Override
-    public Passphrase getCachedPassphrase(long subKeyId) throws NoSecretKeyException {
-        if (subKeyId != key.symmetric) {
-            Long masterKeyId = mKeyRepository.getMasterKeyIdBySubkeyId(subKeyId);
-            if (masterKeyId == null) {
-                throw new PassphraseCacheInterface.NoSecretKeyException();
-            }
-            return getCachedPassphrase(masterKeyId, subKeyId);
-        }
-        return getCachedPassphrase(key.symmetric, key.symmetric);
-    }
-
-    @Override
-    public Passphrase getCachedPassphrase(long masterKeyId, long subKeyId) throws NoSecretKeyException {
-        try {
-            return PassphraseCacheService.getCachedPassphrase(
-                    mContext, masterKeyId, subKeyId);
-        } catch (PassphraseCacheService.KeyNotFoundException e) {
-            throw new PassphraseCacheInterface.NoSecretKeyException();
-        }
-    }
-
 }

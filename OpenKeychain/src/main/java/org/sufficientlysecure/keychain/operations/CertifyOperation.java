@@ -35,7 +35,6 @@ import org.sufficientlysecure.keychain.operations.results.UploadResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
-import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
 import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation;
 import org.sufficientlysecure.keychain.pgp.PgpCertifyOperation.PgpCertifyResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
@@ -89,11 +88,7 @@ public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParce
                 case PASSPHRASE:
                     passphrase = cryptoInput.getPassphrase();
                     if (passphrase == null) {
-                        try {
-                            passphrase = getCachedPassphrase(masterKeyId, masterKeyId);
-                        } catch (PassphraseCacheInterface.NoSecretKeyException ignored) {
-                            // treat as a cache miss for error handling purposes
-                        }
+                        passphrase = passphraseCacheInterface.getCachedPassphrase(masterKeyId, masterKeyId);
                     }
 
                     if (passphrase == null) {

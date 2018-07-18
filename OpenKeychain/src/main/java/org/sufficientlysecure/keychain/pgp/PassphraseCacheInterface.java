@@ -20,13 +20,6 @@ package org.sufficientlysecure.keychain.pgp;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 public interface PassphraseCacheInterface {
-    class NoSecretKeyException extends Exception {
-        public NoSecretKeyException() {
-        }
-    }
-
-    Passphrase getCachedPassphrase(long subKeyId) throws NoSecretKeyException;
-
-    Passphrase getCachedPassphrase(long masterKeyId, long subKeyId) throws NoSecretKeyException;
-
+    Passphrase getCachedPassphrase(long subKeyId);
+    Passphrase getCachedPassphrase(long masterKeyId, long subKeyId);
 }

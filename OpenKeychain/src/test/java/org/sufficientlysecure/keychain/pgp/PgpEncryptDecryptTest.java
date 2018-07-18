@@ -1084,9 +1084,7 @@ public class PgpEncryptDecryptTest {
 
         return new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
                 KeyWritableRepository.create(RuntimeEnvironment.application), null) {
-            @Override
-            public Passphrase getCachedPassphrase(long masterKeyId, long subKeyId)
-                    throws NoSecretKeyException {
+            public Passphrase getCachedPassphrase(long masterKeyId, long subKeyId) {
                 if (checkMasterKeyId != null) {
                     Assert.assertEquals("requested passphrase should be for expected master key id",
                             (long) checkMasterKeyId, masterKeyId);
