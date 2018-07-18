@@ -112,8 +112,7 @@ class RemoteSelectIdentityKeyPresenter {
     }
 
     private void goToSelectLayout() {
-        List<UnifiedKeyInfo> filteredKeyInfoData = viewModel.isListAllKeys() || TextUtils.isEmpty(userId.email) ?
-                        keyInfoData : getFilteredKeyInfo(userId.email.toLowerCase().trim());
+        List<UnifiedKeyInfo> filteredKeyInfoData = getFilteredKeyInfo(userId.email);
 
         if (filteredKeyInfoData == null) {
             view.showLayoutEmpty();
@@ -126,6 +125,10 @@ class RemoteSelectIdentityKeyPresenter {
     }
 
     private List<UnifiedKeyInfo> getFilteredKeyInfo(String filterString) {
+        if (viewModel.isListAllKeys() || TextUtils.isEmpty(filterString)) {
+            return keyInfoData;
+        }
+        filterString = filterString.toLowerCase().trim();
         if (viewModel.filteredKeyInfo == null) {
             viewModel.filteredKeyInfo = new ArrayList<>();
             for (UnifiedKeyInfo unifiedKeyInfo : keyInfoData) {
