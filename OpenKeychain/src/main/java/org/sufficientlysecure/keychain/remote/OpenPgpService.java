@@ -702,10 +702,11 @@ public class OpenPgpService extends Service {
             return result;
         } else {
             String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
+            byte[] packageSignature = mApiPermissionHelper.getPackageCertificateOrError(currentPkg);
             String preferredUserId = data.getStringExtra(OpenPgpApi.EXTRA_USER_ID);
 
             PendingIntent pi = mApiPendingIntentFactory.createSelectSignKeyIdLegacyPendingIntent(
-                    data, currentPkg, preferredUserId);
+                    data, currentPkg, packageSignature, preferredUserId);
 
             // return PendingIntent to be executed by client
             Intent result = new Intent();
@@ -722,13 +723,14 @@ public class OpenPgpService extends Service {
 
         { // return PendingIntent to be executed by client
             String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
+            byte[] packageSignature = mApiPermissionHelper.getPackageCertificateOrError(currentPkg);
             String preferredUserId = data.getStringExtra(OpenPgpApi.EXTRA_USER_ID);
             PendingIntent pi;
             // the new dialog doesn't really work if we don't have a user id to work with. just show the old...
             if (TextUtils.isEmpty(preferredUserId)) {
-                pi = mApiPendingIntentFactory.createSelectSignKeyIdLegacyPendingIntent(data, currentPkg, null);
+                pi = mApiPendingIntentFactory.createSelectSignKeyIdLegacyPendingIntent(
+                        data, currentPkg, packageSignature, null);
             } else {
-                byte[] packageSignature = mApiPermissionHelper.getPackageCertificateOrError(currentPkg);
                 boolean showAutocryptHint = data.getBooleanExtra(OpenPgpApi.EXTRA_SHOW_AUTOCRYPT_HINT, false);
                 pi = mApiPendingIntentFactory.createSelectSignKeyIdPendingIntent(
                         data, currentPkg, packageSignature, preferredUserId, showAutocryptHint);

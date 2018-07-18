@@ -102,7 +102,7 @@ public class DebugActionsActivity extends Activity {
         });
         addButtonToLayout(context, verticalLayout, "Select Signing Key (legacy)").setOnClickListener((v) -> {
             PendingIntent pendingIntent = pendingIntentFactory.createSelectSignKeyIdLegacyPendingIntent(
-                    new Intent(), BuildConfig.APPLICATION_ID, "test@openkeychain.org");
+                    new Intent(), BuildConfig.APPLICATION_ID, getPackageSig(), "test@openkeychain.org");
             startPendingIntent(pendingIntent);
         });
         addButtonToLayout(context, verticalLayout, "Select Signing Key").setOnClickListener((v) -> {

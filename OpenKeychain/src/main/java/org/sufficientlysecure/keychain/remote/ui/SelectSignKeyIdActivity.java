@@ -17,9 +17,9 @@
 
 package org.sufficientlysecure.keychain.remote.ui;
 
+
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -35,6 +35,7 @@ import timber.log.Timber;
 public class SelectSignKeyIdActivity extends BaseActivity {
 
     public static final String EXTRA_PACKAGE_NAME = "package_name";
+    public static final String EXTRA_PACKAGE_SIGNATURE = "package_signature";
     public static final String EXTRA_USER_ID = OpenPgpApi.EXTRA_USER_ID;
     public static final String EXTRA_DATA = "data";
 
@@ -70,17 +71,19 @@ public class SelectSignKeyIdActivity extends BaseActivity {
 
         Intent intent = getIntent();
         String packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
+        byte[] packageSignature = intent.getByteArrayExtra(EXTRA_PACKAGE_SIGNATURE);
         mPreferredUserId = intent.getStringExtra(EXTRA_USER_ID);
         mData = intent.getParcelableExtra(EXTRA_DATA);
         if (packageName == null) {
             Timber.e("Intent data missing. Should be Uri of app!");
             finish();
         } else {
-            startListFragments(savedInstanceState, packageName, mData, mPreferredUserId);
+            startListFragments(savedInstanceState, packageName, packageSignature, mData, mPreferredUserId);
         }
     }
 
-    private void startListFragments(Bundle savedInstanceState, String packageName, Intent data, String preferredUserId) {
+    private void startListFragments(Bundle savedInstanceState, String packageName, byte[] packageSignature, Intent data,
+            String preferredUserId) {
         // However, if we're being restored from a previous state,
         // then we don't need to do anything and should return or else
         // we could end up with overlapping fragments.
@@ -90,7 +93,7 @@ public class SelectSignKeyIdActivity extends BaseActivity {
 
         // Create an instance of the fragments
         SelectSignKeyIdListFragment listFragment = SelectSignKeyIdListFragment
-                .newInstance(packageName, data, preferredUserId);
+                .newInstance(packageName, packageSignature, data, preferredUserId);
         // Add the fragment to the 'fragment_container' FrameLayout
         // NOTE: We use commitAllowingStateLoss() to prevent weird crashes!
         getSupportFragmentManager().beginTransaction()

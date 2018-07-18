@@ -119,7 +119,7 @@ public class ApiAppDao extends AbstractDao {
     public void addAllowedKeyIdForApp(String packageName, long allowedKeyId) {
         InsertAllowedKey statement = new InsertAllowedKey(getWritableDb());
         statement.bind(packageName, allowedKeyId);
-        statement.execute();
+        statement.executeInsert();
 
         getDatabaseNotifyManager().notifyApiAppChange(packageName);
     }

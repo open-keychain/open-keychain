@@ -137,9 +137,10 @@ public class ApiPendingIntentFactory {
     }
 
     public PendingIntent createSelectSignKeyIdLegacyPendingIntent(Intent data, String packageName,
-            String preferredUserId) {
+            byte[] packageSignature, String preferredUserId) {
         Intent intent = new Intent(mContext, SelectSignKeyIdActivity.class);
         intent.putExtra(SelectSignKeyIdActivity.EXTRA_PACKAGE_NAME, packageName);
+        intent.putExtra(SelectSignKeyIdActivity.EXTRA_PACKAGE_SIGNATURE, packageSignature);
         intent.putExtra(SelectSignKeyIdActivity.EXTRA_USER_ID, preferredUserId);
 
         return createInternal(data, intent);

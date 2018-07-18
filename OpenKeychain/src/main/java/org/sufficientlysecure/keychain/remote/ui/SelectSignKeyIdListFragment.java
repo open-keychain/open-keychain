@@ -34,6 +34,7 @@ import android.widget.LinearLayout;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.model.ApiApp;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.daos.ApiAppDao;
@@ -46,6 +47,7 @@ import org.sufficientlysecure.keychain.ui.keyview.GenericViewModel;
 
 public class SelectSignKeyIdListFragment extends RecyclerFragment<KeyChoiceAdapter> {
     private static final String ARG_PACKAGE_NAME = "package_name";
+    private static final String ARG_PACKAGE_SIGNATURE = "package_signature";
     private static final String ARG_PREF_UID = "pref_uid";
     public static final String ARG_DATA = "data";
 
@@ -57,12 +59,15 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<KeyChoiceAdapt
     private Intent resultIntent;
     private String prefUid;
     private String packageName;
+    private byte[] packageSignature;
 
-    public static SelectSignKeyIdListFragment newInstance(String packageName, Intent data, String preferredUserId) {
+    public static SelectSignKeyIdListFragment newInstance(String packageName, byte[] packageSignature,
+            Intent data, String preferredUserId) {
         SelectSignKeyIdListFragment frag = new SelectSignKeyIdListFragment();
         Bundle args = new Bundle();
 
         args.putString(ARG_PACKAGE_NAME, packageName);
+        args.putByteArray(ARG_PACKAGE_SIGNATURE, packageSignature);
         args.putParcelable(ARG_DATA, data);
         args.putString(ARG_PREF_UID, preferredUserId);
 
@@ -103,6 +108,7 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<KeyChoiceAdapt
         resultIntent = getArguments().getParcelable(ARG_DATA);
         prefUid = getArguments().getString(ARG_PREF_UID);
         packageName = getArguments().getString(ARG_PACKAGE_NAME);
+        packageSignature = getArguments().getByteArray(ARG_PACKAGE_SIGNATURE);
 
         setEmptyText(getString(R.string.list_empty));
         setLayoutManager(new LinearLayoutManager(getContext()));
@@ -149,6 +155,8 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<KeyChoiceAdapt
     }
 
     private void onSelectKeyItemClicked(UnifiedKeyInfo keyInfo) {
+        ApiApp apiApp = ApiApp.create(packageName, packageSignature);
+        apiAppDao.insertApiApp(apiApp);
         apiAppDao.addAllowedKeyIdForApp(packageName, keyInfo.master_key_id());
         resultIntent.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, keyInfo.master_key_id());
 
