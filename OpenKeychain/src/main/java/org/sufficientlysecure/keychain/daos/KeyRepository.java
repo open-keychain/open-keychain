@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.WorkerThread;
@@ -50,7 +49,6 @@ import timber.log.Timber;
 
 @WorkerThread
 public class KeyRepository extends AbstractDao {
-    final ContentResolver contentResolver;
     final LocalPublicKeyStorage mLocalPublicKeyStorage;
     final LocalSecretKeyStorage localSecretKeyStorage;
 
@@ -58,29 +56,27 @@ public class KeyRepository extends AbstractDao {
     int mIndent;
 
     public static KeyRepository create(Context context) {
-        ContentResolver contentResolver = context.getContentResolver();
         LocalPublicKeyStorage localPublicKeyStorage = LocalPublicKeyStorage.getInstance(context);
         LocalSecretKeyStorage localSecretKeyStorage = LocalSecretKeyStorage.getInstance(context);
         KeychainDatabase database = KeychainDatabase.getInstance(context);
         DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
 
-        return new KeyRepository(contentResolver, database, databaseNotifyManager, localPublicKeyStorage, localSecretKeyStorage);
+        return new KeyRepository(database, databaseNotifyManager, localPublicKeyStorage, localSecretKeyStorage);
     }
 
-    private KeyRepository(ContentResolver contentResolver, KeychainDatabase database,
+    private KeyRepository(KeychainDatabase database,
             DatabaseNotifyManager databaseNotifyManager,
             LocalPublicKeyStorage localPublicKeyStorage,
             LocalSecretKeyStorage localSecretKeyStorage) {
-        this(contentResolver, database, databaseNotifyManager, localPublicKeyStorage, localSecretKeyStorage, new OperationLog(), 0);
+        this(database, databaseNotifyManager, localPublicKeyStorage, localSecretKeyStorage, new OperationLog(), 0);
     }
 
-    KeyRepository(ContentResolver contentResolver, KeychainDatabase database,
+    KeyRepository(KeychainDatabase database,
             DatabaseNotifyManager databaseNotifyManager,
             LocalPublicKeyStorage localPublicKeyStorage,
             LocalSecretKeyStorage localSecretKeyStorage,
             OperationLog log, int indent) {
         super(database, databaseNotifyManager);
-        this.contentResolver = contentResolver;
         mLocalPublicKeyStorage = localPublicKeyStorage;
         this.localSecretKeyStorage = localSecretKeyStorage;
         mIndent = indent;
@@ -279,10 +275,6 @@ public class KeyRepository extends AbstractDao {
     public byte[] getSecretKeyRingAsArmoredData(long masterKeyId) throws NotFoundException, IOException {
         byte[] data = loadSecretKeyRingData(masterKeyId);
         return getKeyRingAsArmoredData(data);
-    }
-
-    public ContentResolver getContentResolver() {
-        return contentResolver;
     }
 
     public final byte[] loadPublicKeyRingData(long masterKeyId) throws NotFoundException {

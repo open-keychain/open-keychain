@@ -109,7 +109,7 @@ public class KeyWritableRepository extends KeyRepository {
             LocalPublicKeyStorage localPublicKeyStorage,
             LocalSecretKeyStorage localSecretKeyStorage, DatabaseNotifyManager databaseNotifyManager,
             OperationLog log, int indent, AutocryptPeerDao autocryptPeerDao) {
-        super(context.getContentResolver(), database, databaseNotifyManager, localPublicKeyStorage, localSecretKeyStorage, log, indent);
+        super(database, databaseNotifyManager, localPublicKeyStorage, localSecretKeyStorage, log, indent);
 
         this.context = context;
         this.databaseNotifyManager = databaseNotifyManager;
