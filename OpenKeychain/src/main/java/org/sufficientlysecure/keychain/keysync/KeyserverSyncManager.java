@@ -18,19 +18,23 @@
 package org.sufficientlysecure.keychain.keysync;
 
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.support.annotation.WorkerThread;
 
 import androidx.work.Constraints.Builder;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
+import androidx.work.State;
 import androidx.work.SynchronousWorkManager;
 import androidx.work.WorkManager;
+import androidx.work.WorkStatus;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
 
@@ -42,11 +46,6 @@ public class KeyserverSyncManager {
     private static final String PERIODIC_WORK_TAG = "keyserverSync";
 
     public static void updateKeyserverSyncScheduleAsync(Context context, boolean forceReschedule) {
-        Preferences prefs = Preferences.getPreferences(context);
-        if (!forceReschedule && prefs.isKeyserverSyncScheduled() != prefs.isKeyserverSyncEnabled()) {
-            return;
-        }
-
         new AsyncTask<Void,Void,Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
@@ -56,20 +55,36 @@ public class KeyserverSyncManager {
         }.execute();
     }
 
+    @WorkerThread
     private static void updateKeyserverSyncSchedule(Context context, boolean forceReschedule) {
         Preferences prefs = Preferences.getPreferences(context);
-        // for some reason, the task is not actually scheduled sometimes unless we  use the synchronous interface.
         WorkManager workManager = WorkManager.getInstance();
         if (workManager == null) {
             Timber.e("WorkManager unavailable!");
             return;
         }
         SynchronousWorkManager synchronousWorkManager = workManager.synchronous();
+
+        UUID workUuid = prefs.getKeyserverSyncWorkUuid();
+        WorkStatus status = workUuid != null ? synchronousWorkManager.getStatusByIdSync(workUuid) : null;
+        boolean workIsScheduled = status != null && status.getState() != State.CANCELLED;
+        if (workIsScheduled == prefs.isKeyserverSyncEnabled()) {
+            if (!forceReschedule) {
+                Timber.d("Key sync already scheduled, no changes necessary");
+                return;
+            }
+            Timber.d("Key sync already scheduled, but forcing reschedule");
+        }
+
+        Timber.d("Cancelling sync tasks…");
         synchronousWorkManager.cancelAllWorkByTagSync(PERIODIC_WORK_TAG);
 
         if (!prefs.isKeyserverSyncEnabled()) {
+            Timber.d("Key sync disabled");
             return;
         }
+
+        Timber.d("Scheduling periodic key sync");
 
         Builder constraints = new Builder()
                 .setRequiredNetworkType(prefs.getWifiOnlySync() ? NetworkType.UNMETERED : NetworkType.CONNECTED)
@@ -85,7 +100,8 @@ public class KeyserverSyncManager {
                         .build();
         synchronousWorkManager.enqueueSync(workRequest);
 
-        prefs.setKeyserverSyncScheduled(true);
+        Timber.d("Work id: %s", workRequest.getId());
+        prefs.setKeyserverSyncScheduled(workRequest.getId());
     }
 
     public static void debugRunSyncNow() {

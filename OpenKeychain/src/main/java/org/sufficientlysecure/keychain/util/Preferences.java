@@ -21,6 +21,7 @@ package org.sufficientlysecure.keychain.util;
 import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.ListIterator;
+import java.util.UUID;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -33,7 +34,6 @@ import android.support.annotation.Nullable;
 import com.google.auto.value.AutoValue;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
-import org.sufficientlysecure.keychain.analytics.AnalyticsManager;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import timber.log.Timber;
 
@@ -350,12 +350,14 @@ public class Preferences {
         return mSharedPreferences.getBoolean(Pref.SYNC_KEYSERVER, true);
     }
 
-    public boolean isKeyserverSyncScheduled() {
-        return mSharedPreferences.getBoolean(Pref.SYNC_IS_SCHEDULED, false);
+    public UUID getKeyserverSyncWorkUuid() {
+        String uuidString = mSharedPreferences.getString(Pref.SYNC_WORK_UUID, null);
+        return uuidString != null ? UUID.fromString(uuidString) : null;
     }
 
-    public void setKeyserverSyncScheduled(boolean isScheduled) {
-        mSharedPreferences.edit().putBoolean(Pref.SYNC_IS_SCHEDULED, isScheduled).apply();
+    public void setKeyserverSyncScheduled(UUID uuid) {
+        String value = uuid != null ? uuid.toString() : null;
+        mSharedPreferences.edit().putString(Pref.SYNC_WORK_UUID, value).apply();
     }
 
     public boolean isAnalyticsAskedPolitely() {

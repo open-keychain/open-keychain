@@ -151,7 +151,7 @@ public final class Constants {
         public static final String SYNC_CONTACTS = "syncContacts";
         public static final String SYNC_KEYSERVER = "syncKeyserver";
         public static final String ENABLE_WIFI_SYNC_ONLY = "enableWifiSyncOnly";
-        public static final String SYNC_IS_SCHEDULED = "syncIsScheduled";
+        public static final String SYNC_WORK_UUID = "syncWorkUuid";
         // other settings
         public static final String EXPERIMENTAL_ENABLE_LINKED_IDENTITIES = "experimentalEnableLinkedIdentities";
         public static final String EXPERIMENTAL_ENABLE_KEYBASE = "experimentalEnableKeybase";

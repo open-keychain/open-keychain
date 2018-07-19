@@ -104,7 +104,7 @@ public class KeychainApplication extends Application {
         TlsCertificatePinning.addPinnedCertificate("api.keybase.io", getAssets(), "api.keybase.io.CA.cer");
         TlsCertificatePinning.addPinnedCertificate("keyserver.ubuntu.com", getAssets(), "DigiCertGlobalRootCA.cer");
 
-        KeyserverSyncManager.updateKeyserverSyncScheduleAsync(this, Constants.DEBUG_KEYSERVER_SYNC);
+        KeyserverSyncManager.updateKeyserverSyncScheduleAsync(this, false);
 
         TemporaryFileProvider.scheduleCleanupImmediately();
 
