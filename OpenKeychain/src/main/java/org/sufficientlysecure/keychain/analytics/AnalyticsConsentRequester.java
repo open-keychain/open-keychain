@@ -51,7 +51,7 @@ public class AnalyticsConsentRequester {
                     activity.getPackageManager().getPackageInfo(BuildConfig.APPLICATION_ID, 0).firstInstallTime;
             long threeDaysAgo = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(3);
             boolean installedLessThanThreeDaysAgo = firstInstallTime > threeDaysAgo;
-            if (!Constants.DEBUG && installedLessThanThreeDaysAgo) {
+            if (installedLessThanThreeDaysAgo) {
                 return;
             }
         } catch (NameNotFoundException e) {
@@ -60,7 +60,7 @@ public class AnalyticsConsentRequester {
 
         long twentyFourHoursAgo = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1);
         boolean askedLessThan24HoursAgo = preferences.getAnalyticsLastAsked() > twentyFourHoursAgo;
-        if (!Constants.DEBUG && askedLessThan24HoursAgo) {
+        if (askedLessThan24HoursAgo) {
             return;
         }
 
@@ -85,7 +85,6 @@ public class AnalyticsConsentRequester {
                 })
                 .show();
         alertDialog.<TextView>findViewById(android.R.id.message).setMovementMethod(LinkMovementMethod.getInstance());
-        alertDialog.setCanceledOnTouchOutside(false);
     }
 
     private void startExperimentalSettingsActivity() {
