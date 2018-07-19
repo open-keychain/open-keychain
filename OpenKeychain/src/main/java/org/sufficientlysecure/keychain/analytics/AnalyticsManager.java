@@ -153,10 +153,10 @@ public class AnalyticsManager implements OnSharedPreferenceChangeListener {
     }
 
     public synchronized void refreshSettings(Context context) {
-        boolean analyticsHasConsent = Preferences.getPreferences(context).isAnalyticsHasConsent();
+        boolean shouldEnableAnalytics = shouldEnableAnalytics(context);
         boolean analyticsEnabled = piwikTracker != null;
-        if (analyticsHasConsent != analyticsEnabled) {
-            if (analyticsHasConsent) {
+        if (shouldEnableAnalytics != analyticsEnabled) {
+            if (shouldEnableAnalytics) {
                 TrackerConfig trackerConfig;
                 if (Constants.DEBUG) {
                     trackerConfig = new TrackerConfig("https://piwik.openkeychain.org/", 3, "OpenKeychainDebug");
@@ -171,5 +171,10 @@ public class AnalyticsManager implements OnSharedPreferenceChangeListener {
                 piwikTracker = null;
             }
         }
+    }
+
+    private boolean shouldEnableAnalytics(Context context) {
+        Preferences preferences = Preferences.getPreferences(context);
+        return preferences.isAnalyticsHasConsent() && !preferences.getUseTorProxy();
     }
 }
