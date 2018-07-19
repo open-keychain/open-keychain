@@ -52,8 +52,8 @@ INSERT OR IGNORE INTO autocrypt_peers (package_name, identifier) VALUES (?, ?);
 
 selectAutocryptKeyStatus:
 SELECT autocryptPeer.*,
-        (CASE WHEN ac_key.expiry IS NULL THEN 0 WHEN ac_key.expiry > ?3 THEN 0 ELSE 1 END) AS key_is_expired_int,
-        (CASE WHEN gossip_key.expiry IS NULL THEN 0 WHEN gossip_key.expiry > ?3 THEN 0 ELSE 1 END) AS gossip_key_is_expired_int,
+        (CASE WHEN ac_key.expiry IS NULL THEN 0 WHEN ac_key.expiry > strftime('%s', 'now') THEN 0 ELSE 1 END) AS key_is_expired_int,
+        (CASE WHEN gossip_key.expiry IS NULL THEN 0 WHEN gossip_key.expiry > strftime('%s', 'now') THEN 0 ELSE 1 END) AS gossip_key_is_expired_int,
         ac_key.is_revoked AS key_is_revoked_int,
         gossip_key.is_revoked AS gossip_key_is_revoked_int,
         EXISTS (SELECT * FROM certs WHERE certs.master_key_id = autocryptPeer.master_key_id AND verified = 1 ) AS key_is_verified_int,

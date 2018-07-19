@@ -71,27 +71,13 @@ public class AutocryptPeerDao extends AbstractDao {
     }
 
     private List<AutocryptPeer> getAutocryptPeers(String packageName, String... autocryptId) {
-        ArrayList<AutocryptPeer> result = new ArrayList<>(autocryptId.length);
         SqlDelightQuery query = AutocryptPeer.FACTORY.selectByIdentifiers(packageName, autocryptId);
-        try (Cursor cursor = getReadableDb().query(query)) {
-            if (cursor.moveToNext()) {
-                AutocryptPeer autocryptPeer = AutocryptPeer.PEER_MAPPER.map(cursor);
-                result.add(autocryptPeer);
-            }
-        }
-        return result;
+        return mapAllRows(query, AutocryptPeer.PEER_MAPPER);
     }
 
     public List<AutocryptKeyStatus> getAutocryptKeyStatus(String packageName, String[] autocryptIds) {
-        ArrayList<AutocryptKeyStatus> result = new ArrayList<>(autocryptIds.length);
-        SqlDelightQuery query = AutocryptPeer.FACTORY.selectAutocryptKeyStatus(packageName, autocryptIds, System.currentTimeMillis());
-        try (Cursor cursor = getReadableDb().query(query)) {
-            if (cursor.moveToNext()) {
-                AutocryptKeyStatus autocryptPeer = AutocryptPeer.KEY_STATUS_MAPPER.map(cursor);
-                result.add(autocryptPeer);
-            }
-        }
-        return result;
+        SqlDelightQuery query = AutocryptPeer.FACTORY.selectAutocryptKeyStatus(packageName, autocryptIds);
+        return mapAllRows(query, AutocryptPeer.KEY_STATUS_MAPPER);
     }
 
     private void ensureAutocryptPeerExists(String packageName, String autocryptId) {
