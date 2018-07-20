@@ -64,6 +64,10 @@ public class KeyserverSyncManager {
             return;
         }
         SynchronousWorkManager synchronousWorkManager = workManager.synchronous();
+        if (synchronousWorkManager == null) {
+            Timber.e("WorkManager unavailable!");
+            return;
+        }
 
         UUID workUuid = prefs.getKeyserverSyncWorkUuid();
         WorkStatus status = workUuid != null ? synchronousWorkManager.getStatusByIdSync(workUuid) : null;
