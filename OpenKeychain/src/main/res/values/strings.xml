@@ -177,6 +177,7 @@
     <string name="label_creation">"Creation"</string>
     <string name="label_creation_colon">"Creation:"</string>
     <string name="label_expiry">"Expiry"</string>
+    <string name="label_valid_from">"Valid from"</string>
     <string name="label_usage">"Usage"</string>
     <string name="label_key_size">"Key Size"</string>
     <string name="label_ecc_curve">"Elliptic Curve"</string>

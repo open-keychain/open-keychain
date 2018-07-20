@@ -89,6 +89,8 @@ public class SubkeysAdapter extends BaseAdapter {
             view = layoutInflater.inflate(R.layout.view_key_adv_subkey_item, parent, false);
         }
 
+        Date now = new Date();
+
         if (mDefaultTextColor == null) {
             TextView keyId = view.findViewById(R.id.subkey_item_key_id);
             mDefaultTextColor = keyId.getTextColors();
@@ -180,6 +182,7 @@ public class SubkeysAdapter extends BaseAdapter {
         if (subKey.expires()) {
             expiryDate = new Date(subKey.expiry() * 1000);
         }
+        Date validFrom = new Date(subKey.validFrom() * 1000);
 
         // for edit key
         if (mSkpBuilder != null) {
@@ -205,9 +208,17 @@ public class SubkeysAdapter extends BaseAdapter {
             vEditImage.setVisibility(View.GONE);
         }
 
-        boolean isExpired;
-        if (expiryDate != null) {
-            isExpired = expiryDate.before(new Date());
+        boolean isNotYetValid = validFrom.after(now);
+        boolean isExpired = expiryDate != null && expiryDate.before(now);
+        if (isNotYetValid) {
+            Calendar validFromCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            validFromCal.setTime(validFrom);
+            // convert from UTC to time zone of device
+            validFromCal.setTimeZone(TimeZone.getDefault());
+
+            vKeyExpiry.setText(context.getString(R.string.label_valid_from) + ": "
+                    + DateFormat.getDateFormat(context).format(validFromCal.getTime()));
+        } else if (expiryDate != null) {
             Calendar expiryCal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             expiryCal.setTime(expiryDate);
             // convert from UTC to time zone of device
@@ -216,13 +227,11 @@ public class SubkeysAdapter extends BaseAdapter {
             vKeyExpiry.setText(context.getString(R.string.label_expiry) + ": "
                     + DateFormat.getDateFormat(context).format(expiryCal.getTime()));
         } else {
-            isExpired = false;
-
-            vKeyExpiry.setText(context.getString(R.string.label_expiry) + ": " + context.getString(R.string.none));
+            vKeyExpiry.setText("");
         }
 
         // if key is expired or revoked...
-        boolean isInvalid = isRevoked || isExpired || !subKey.is_secure();
+        boolean isInvalid = isRevoked || isExpired || isNotYetValid || !subKey.is_secure();
         if (isInvalid) {
             vStatus.setVisibility(View.VISIBLE);
 
@@ -244,7 +253,7 @@ public class SubkeysAdapter extends BaseAdapter {
                 vStatus.setColorFilter(
                         context.getResources().getColor(R.color.key_flag_gray),
                         PorterDuff.Mode.SRC_IN);
-            } else if (isExpired) {
+            } else if (isNotYetValid || isExpired) {
                 vStatus.setImageResource(R.drawable.status_signature_expired_cutout_24dp);
                 vStatus.setColorFilter(
                         context.getResources().getColor(R.color.key_flag_gray),
