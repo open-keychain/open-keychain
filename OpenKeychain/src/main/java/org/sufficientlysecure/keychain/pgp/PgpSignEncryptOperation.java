@@ -32,7 +32,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.SignatureException;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
@@ -651,7 +651,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
             PGPEncryptedDataGenerator cPk, long encryptMasterKeyId) {
         try {
             CanonicalizedPublicKeyRing keyRing = mKeyRepository.getCanonicalizedPublicKeyRing(encryptMasterKeyId);
-            Set<Long> encryptSubKeyIds = keyRing.getEncryptIds();
+            List<Long> encryptSubKeyIds = mKeyRepository.getPublicEncryptionIds(encryptMasterKeyId);
             for (Long subKeyId : encryptSubKeyIds) {
                 CanonicalizedPublicKey key = keyRing.getPublicKey(subKeyId);
                 cPk.addMethod(key.getPubKeyEncryptionGenerator(data.isHiddenRecipients()));

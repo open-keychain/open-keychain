@@ -313,6 +313,11 @@ public class KeyRepository extends AbstractDao {
         return mapSingleRowOrThrow(query, SubKey.FACTORY.selectEffectiveAuthKeyIdByMasterKeyIdMapper());
     }
 
+    public List<Long> getPublicEncryptionIds(long masterKeyId) {
+        SqlDelightQuery query = SubKey.FACTORY.selectEffectiveEncryptionKeyIdsByMasterKeyId(masterKeyId);
+        return mapAllRows(query, SubKey.FACTORY.selectEffectiveEncryptionKeyIdsByMasterKeyIdMapper());
+    }
+
     public static class NotFoundException extends Exception {
         public NotFoundException() {
         }

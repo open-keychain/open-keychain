@@ -225,6 +225,7 @@ public class KeyWritableRepository extends KeyRepository {
                     }
 
                     Date creation = key.getCreationTime();
+                    Date bindingSignatureTime = key.getBindingSignatureTime();
                     Date expiry = key.getExpiryTime();
                     if (expiry != null) {
                         if (key.isExpired()) {
@@ -240,7 +241,7 @@ public class KeyWritableRepository extends KeyRepository {
 
                     SubKey subKey = SubKey.create(masterKeyId, rank, key.getKeyId(),
                             key.getBitStrength(), key.getCurveOid(), key.getAlgorithm(), key.getFingerprint(),
-                            c, s, e, a, key.isRevoked(), SecretKeyType.UNAVAILABLE, key.isSecure(), creation, expiry);
+                            c, s, e, a, key.isRevoked(), SecretKeyType.UNAVAILABLE, key.isSecure(), creation, expiry, bindingSignatureTime);
                     operations.add(DatabaseBatchInteractor.createInsertSubKey(subKey));
 
                     ++rank;

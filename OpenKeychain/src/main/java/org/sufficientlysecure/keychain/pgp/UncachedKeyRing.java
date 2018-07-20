@@ -912,13 +912,6 @@ public class UncachedKeyRing {
                     continue;
                 }
 
-                if (cert.getCreationTime().after(nowPlusOneDay)) {
-                    // Creation date in the future? No way!
-                    log.add(LogType.MSG_KC_SUB_BAD_TIME, indent);
-                    badCerts += 1;
-                    continue;
-                }
-
                 if (cert.getCreationTime().before(keyCreationTime)) {
                     // Signature is earlier than key creation time
                     log.add(LogType.MSG_KC_SUB_BAD_TIME_EARLY, indent);

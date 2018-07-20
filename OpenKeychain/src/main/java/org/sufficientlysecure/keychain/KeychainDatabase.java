@@ -48,7 +48,7 @@ import timber.log.Timber;
  */
 public class KeychainDatabase {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 31;
+    private static final int DATABASE_VERSION = 32;
     private final SupportSQLiteOpenHelper supportSQLiteOpenHelper;
 
     private static KeychainDatabase sInstance;
@@ -348,6 +348,20 @@ public class KeychainDatabase {
 
             case 30:
                 // ignore. this case only came up in an unreleased beta.
+
+            case 31:
+                addSubkeyValidFromField(db);
+        }
+    }
+
+    private void addSubkeyValidFromField(SupportSQLiteDatabase db) {
+        try {
+            db.beginTransaction();
+            db.execSQL("ALTER TABLE keys ADD COLUMN validFrom INTEGER NOT NULL DEFAULT 0;");
+            db.execSQL("UPDATE keys SET validFrom = creation");
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
         }
     }
 
