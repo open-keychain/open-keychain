@@ -57,7 +57,7 @@ import org.sufficientlysecure.keychain.util.TestingUtils;
 public class PromoteKeyOperationTest {
 
     static UncachedKeyRing mStaticRing;
-    static Passphrase mKeyPhrase1 = TestingUtils.genPassphrase(true);
+    static Passphrase mKeyPhrase1 = TestingUtils.testPassphrase1;
 
     static PrintStream oldShadowStream;
 
