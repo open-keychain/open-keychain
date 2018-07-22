@@ -26,6 +26,7 @@ import java.security.Security;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.tools.ant.util.StringUtils;
 import org.bouncycastle.bcpg.BCPGInputStream;
@@ -47,13 +48,13 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLog;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureBitStrength;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureEncryptionAlgorithm;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.MissingMdc;
-import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -61,6 +62,7 @@ import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequiredInputType;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper.RawPacket;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Passphrase;
 import org.sufficientlysecure.keychain.util.TestingUtils;
@@ -334,6 +336,7 @@ public class PgpEncryptDecryptTest {
                     OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED, result.getDecryptionResult().getResult());
             Assert.assertEquals("signatureResult should be RESULT_VALID_CONFIRMED",
                     OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED, result.getSignatureResult().getResult());
+            Assert.assertNull(result.getSignatureResult().getIntendedRecipients());
 
             OpenPgpMetadata metadata = result.getDecryptionMetadata();
             Assert.assertEquals("filesize must be correct",
@@ -400,6 +403,7 @@ public class PgpEncryptDecryptTest {
             Assert.assertEquals("filesize must be correct",
                     out.toByteArray().length, metadata.getOriginalSize());
 
+            Assert.assertNull(result.getSignatureResult().getIntendedRecipients());
         }
 
     }
@@ -451,6 +455,8 @@ public class PgpEncryptDecryptTest {
                     OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED, result.getDecryptionResult().getResult());
             Assert.assertEquals("signatureResult should be RESULT_VALID_CONFIRMED",
                     OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED, result.getSignatureResult().getResult());
+
+            Assert.assertNull(result.getSignatureResult().getIntendedRecipients());
 
             // TODO should detached verify return any metadata?
             // OpenPgpMetadata metadata = result.getDecryptionMetadata();
@@ -515,6 +521,7 @@ public class PgpEncryptDecryptTest {
             Assert.assertEquals("filesize must be correct",
                     out.toByteArray().length, metadata.getOriginalSize());
 
+            Assert.assertNull(result.getSignatureResult().getIntendedRecipients());
         }
 
         { // decryption with passphrase cached should succeed
@@ -777,6 +784,8 @@ public class PgpEncryptDecryptTest {
             OpenPgpMetadata metadata = result.getDecryptionMetadata();
             Assert.assertEquals("filesize must be correct",
                     out.toByteArray().length, metadata.getOriginalSize());
+
+            Assert.assertNull(result.getSignatureResult().getIntendedRecipients());
         }
 
         { // decryption should succeed if key is allowed
@@ -904,6 +913,11 @@ public class PgpEncryptDecryptTest {
             OpenPgpMetadata metadata = result.getDecryptionMetadata();
             Assert.assertEquals("filesize must be correct",
                     out.toByteArray().length, metadata.getOriginalSize());
+
+            List<String> intendedRecipients = result.getSignatureResult().getIntendedRecipients();
+            Assert.assertEquals(2, intendedRecipients.size());
+            Assert.assertEquals(KeyFormattingUtils.convertFingerprintToHex(mStaticRing1.getFingerprint()), intendedRecipients.get(0));
+            Assert.assertEquals(KeyFormattingUtils.convertFingerprintToHex(mStaticRing2.getFingerprint()), intendedRecipients.get(1));
         }
 
         { // decryption with passphrase cached should succeed for the other key if first is gone
@@ -1079,6 +1093,24 @@ public class PgpEncryptDecryptTest {
         Assert.assertEquals(mStaticRing2.getMasterKeyId(), requiredInputParcel.getMasterKeyIds()[2]);
     }
 
+    @Test
+    public void testDecryptBadIntendedRecipient() throws Exception {
+        InputStream in = getResourceAsStream("/test-ciphertexts/bad_intended_recipient.asc");
+        String plaintext = "dies ist ein plaintext ☭";
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        InputData data = new InputData(in, in.available());
+
+        PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(mKeyPhrase2, mStaticRing2.getMasterKeyId(), null);
+        PgpDecryptVerifyInputParcel input = PgpDecryptVerifyInputParcel.builder().build();
+        DecryptVerifyResult result = op.execute(input, CryptoInputParcel.createCryptoInputParcel(), data, out);
+
+        Assert.assertTrue(result.success());
+        Assert.assertArrayEquals(out.toByteArray(), plaintext.getBytes());
+        Assert.assertEquals(OpenPgpDecryptionResult.RESULT_ENCRYPTED, result.getDecryptionResult().getResult());
+        Assert.assertEquals(OpenPgpSignatureResult.RESULT_INVALID_NOT_INTENDED_RECIPIENT, result.getSignatureResult().getResult());
+    }
+
     private PgpDecryptVerifyOperation operationWithFakePassphraseCache(
             final Passphrase passphrase, final Long checkMasterKeyId, final Long checkSubKeyId) {
 
@@ -1109,25 +1141,24 @@ public class PgpEncryptDecryptTest {
 
     /* skeleton for generating test data
     @Test
-    public void generateData() throws IOException {
+    public void generateData() throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ByteArrayInputStream in = new ByteArrayInputStream("dies ist ein plaintext ☭".getBytes());
 
         PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.application,
-                KeyWritableRepository.createDatabaseReadWriteInteractor(RuntimeEnvironment.application), null);
+                KeyWritableRepository.create(RuntimeEnvironment.application), null);
 
         InputData data = new InputData(in, in.available());
 
         PgpSignEncryptData.Builder pgpData = PgpSignEncryptData.builder();
-        pgpData.setEncryptionMasterKeyIds(new long[]{ mStaticRingInsecure.getMasterKeyId()});
+        pgpData.setSignatureMasterKeyId(mStaticRing1.getMasterKeyId());
+        pgpData.setEncryptionMasterKeyIds(new long[]{ mStaticRing2.getMasterKeyId()});
 
-        PgpSignEncryptInputParcel input = new PgpSignEncryptInputParcel(pgpData);
-
-        PgpSignEncryptResult result = op.execute(input, new CryptoInputParcel(new Date()),
+        PgpSignEncryptResult result = op.execute(pgpData.build(), CryptoInputParcel.createCryptoInputParcel(mKeyPhrase1),
                 data, out);
         Assert.assertTrue("encryption must succeed", result.success());
 
-        ArmoredOutputStream armoredOutputStream = new ArmoredOutputStream(new FileOutputStream("/tmp/rsa_1024.pgp.asc"));
+        ArmoredOutputStream armoredOutputStream = new ArmoredOutputStream(new FileOutputStream("/tmp/lalala.asc"));
         armoredOutputStream.write(out.toByteArray());
         armoredOutputStream.close();
     }
