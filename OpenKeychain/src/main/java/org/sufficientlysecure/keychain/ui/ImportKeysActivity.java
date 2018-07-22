@@ -130,7 +130,7 @@ public class ImportKeysActivity extends BaseActivity implements ImportKeysListen
         if (Intent.ACTION_VIEW.equals(action)) {
             if (FacebookKeyserverClient.isFacebookHost(dataUri)) {
                 action = ACTION_IMPORT_KEY_FROM_FACEBOOK;
-            } else if ("https".equalsIgnoreCase(scheme) || dataUri.getPath().startsWith("/.well-known/openpgpkey/hu/")) {
+            } else if ("https".equalsIgnoreCase(scheme) && dataUri.getPath().startsWith("/.well-known/openpgpkey/hu/")) {
                 action = ACTION_IMPORT_KEY_FROM_WEB_KEY_DIRECTORY;
             } else if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme)) {
                 action = ACTION_SEARCH_KEYSERVER_FROM_URL;
