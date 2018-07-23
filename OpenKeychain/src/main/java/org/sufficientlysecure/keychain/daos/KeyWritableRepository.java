@@ -671,6 +671,8 @@ public class KeyWritableRepository extends KeyRepository {
                 // with has_secret = 1
             }
 
+            databaseNotifyManager.notifyKeyChange(masterKeyId);
+
             log(LogType.MSG_IS_SUCCESS);
             return result;
 
