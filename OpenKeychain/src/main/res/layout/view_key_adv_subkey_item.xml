@@ -1,46 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
-    android:singleLine="true">
-
-    <FrameLayout
-        android:id="@+id/subkey_item_buttons"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true">
-
-        <ImageView
-            android:id="@+id/subkey_item_edit_image"
-            android:src="@drawable/ic_mode_edit_grey_24dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="8dp" />
-
-        <ImageButton
-            android:id="@+id/subkey_item_delete_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:src="@drawable/ic_close_grey_24dp"
-            android:background="?android:selectableItemBackground" />
-
-    </FrameLayout>
+    android:singleLine="true"
+    android:background="?android:selectableItemBackground">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="8dp"
-        android:layout_toLeftOf="@+id/subkey_item_status"
-        android:layout_toStartOf="@+id/subkey_item_status">
+        android:layout_alignParentStart="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -107,7 +84,7 @@
                 android:layout_weight="1" />
 
             <TextView
-                android:id="@+id/subkey_item_expiry"
+                android:id="@+id/subkey_item_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Expiry: 4/7/2016"
@@ -116,17 +93,44 @@
 
         </LinearLayout>
 
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/layout_subkey_action"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            tools:visibility="visible">
 
-    <ImageView
-        android:id="@+id/subkey_item_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left|center_vertical"
-        android:src="@drawable/status_signature_revoked_cutout_24dp"
-        android:paddingLeft="8dp"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/subkey_item_buttons"
-        android:layout_toStartOf="@+id/subkey_item_buttons" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="10dp"
+                android:src="@drawable/subdir_arrow_right"
+                />
+
+            <TextView
+                android:id="@+id/text_subkey_action"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center_vertical"
+                tools:text="Key will be revoked"
+                style="?android:textAppearanceMedium"
+                />
+
+            <ImageButton
+                android:id="@+id/button_subkey_action_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:src="@drawable/ic_close_grey_24dp"
+                android:background="?android:selectableItemBackground" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </RelativeLayout>

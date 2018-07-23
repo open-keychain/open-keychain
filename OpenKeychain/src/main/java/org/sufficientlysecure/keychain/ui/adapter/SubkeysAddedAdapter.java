@@ -17,6 +17,12 @@
 
 package org.sufficientlysecure.keychain.ui.adapter;
 
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
@@ -26,7 +32,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -36,25 +41,18 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.dialog.AddSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
-
 public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAdd> {
     private LayoutInflater mInflater;
     private Activity mActivity;
-    private boolean mNewKeyring;
 
-    public SubkeysAddedAdapter(Activity activity, List<SaveKeyringParcel.SubkeyAdd> data,
-                               boolean newKeyring) {
+    public SubkeysAddedAdapter(Activity activity, List<SaveKeyringParcel.SubkeyAdd> data) {
         super(activity, -1, data);
         mActivity = activity;
         mInflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mNewKeyring = newKeyring;
     }
 
     static class ViewHolder {
+        public View itemView;
         public TextView vKeyId;
         public TextView vKeyDetails;
         public TextView vKeyExpiry;
@@ -62,7 +60,6 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
         public ImageView vSignIcon;
         public ImageView vEncryptIcon;
         public ImageView vAuthenticateIcon;
-        public ImageButton vDelete;
         // also hold a reference to the model item
         public SaveKeyringParcel.SubkeyAdd mModel;
     }
@@ -73,22 +70,14 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
             // Not recycled, inflate a new view
             convertView = mInflater.inflate(R.layout.view_key_adv_subkey_item, parent, false);
             final ViewHolder holder = new ViewHolder();
+            holder.itemView = convertView;
             holder.vKeyId = convertView.findViewById(R.id.subkey_item_key_id);
             holder.vKeyDetails = convertView.findViewById(R.id.subkey_item_details);
-            holder.vKeyExpiry = convertView.findViewById(R.id.subkey_item_expiry);
+            holder.vKeyExpiry = convertView.findViewById(R.id.subkey_item_status);
             holder.vCertifyIcon = convertView.findViewById(R.id.subkey_item_ic_certify);
             holder.vSignIcon = convertView.findViewById(R.id.subkey_item_ic_sign);
             holder.vEncryptIcon = convertView.findViewById(R.id.subkey_item_ic_encrypt);
             holder.vAuthenticateIcon = convertView.findViewById(R.id.subkey_item_ic_authenticate);
-
-            holder.vDelete = convertView.findViewById(R.id.subkey_item_delete_button);
-            holder.vDelete.setVisibility(View.VISIBLE); // always visible
-
-            // not used:
-            ImageView vEdit = convertView.findViewById(R.id.subkey_item_edit_image);
-            vEdit.setVisibility(View.GONE);
-            ImageView vStatus = convertView.findViewById(R.id.subkey_item_status);
-            vStatus.setVisibility(View.GONE);
 
             convertView.setTag(holder);
         }
@@ -105,11 +94,10 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
                 holder.mModel.getCurve()
         );
 
-        boolean isMasterKey = mNewKeyring && position == 0;
+        boolean isMasterKey = position == 0;
         if (isMasterKey) {
             holder.vKeyId.setTypeface(null, Typeface.BOLD);
-            holder.vDelete.setImageResource(R.drawable.ic_change_grey_24dp);
-            holder.vDelete.setOnClickListener(new View.OnClickListener() {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // swapping out the old master key with newly set master key
@@ -135,8 +123,7 @@ public class SubkeysAddedAdapter extends ArrayAdapter<SaveKeyringParcel.SubkeyAd
             });
         } else {
             holder.vKeyId.setTypeface(null, Typeface.NORMAL);
-            holder.vDelete.setImageResource(R.drawable.ic_close_grey_24dp);
-            holder.vDelete.setOnClickListener(new View.OnClickListener() {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // remove reference model item from adapter (data and notify about change)

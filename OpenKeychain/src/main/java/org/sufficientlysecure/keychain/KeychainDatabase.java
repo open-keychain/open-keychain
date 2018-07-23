@@ -360,6 +360,11 @@ public class KeychainDatabase {
             db.execSQL("ALTER TABLE keys ADD COLUMN validFrom INTEGER NOT NULL DEFAULT 0;");
             db.execSQL("UPDATE keys SET validFrom = creation");
             db.setTransactionSuccessful();
+        } catch (SQLiteException e) {
+            // column probably already existed, nvm this
+            if (!Constants.DEBUG) {
+                throw e;
+            }
         } finally {
             db.endTransaction();
         }

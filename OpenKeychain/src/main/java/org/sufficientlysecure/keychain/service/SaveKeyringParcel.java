@@ -27,6 +27,7 @@ import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
+import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -224,6 +225,18 @@ public abstract class SaveKeyringParcel implements Parcelable {
 
             return autoBuild();
         }
+
+        public boolean hasModificationsForSubkey(long keyId) {
+            return revokeSubKeys.contains(keyId) || getSubkeyChange(keyId) != null;
+        }
+
+        public void removeModificationsForSubkey(long keyId) {
+            revokeSubKeys.remove(keyId);
+            SubkeyChange subkeyChange = getSubkeyChange(keyId);
+            if (subkeyChange != null) {
+                changeSubKeys.remove(subkeyChange);
+            }
+        }
     }
 
     // performance gain for using Parcelable here would probably be negligible,
@@ -242,6 +255,22 @@ public abstract class SaveKeyringParcel implements Parcelable {
         public static SubkeyAdd createSubkeyAdd(Algorithm algorithm, Integer keySize, Curve curve, int flags,
                 Long expiry) {
             return new AutoValue_SaveKeyringParcel_SubkeyAdd(algorithm, keySize, curve, flags, expiry);
+        }
+
+        public boolean canCertify() {
+            return (getFlags() & KeyFlags.CERTIFY_OTHER) > 0;
+        }
+
+        public boolean canSign() {
+            return (getFlags() & KeyFlags.SIGN_DATA) > 0;
+        }
+
+        public boolean canEncrypt() {
+            return ((getFlags() & KeyFlags.ENCRYPT_COMMS) > 0) || ((getFlags() & KeyFlags.ENCRYPT_STORAGE) > 0);
+        }
+
+        public boolean canAuthenticate() {
+            return (getFlags() & KeyFlags.AUTHENTICATION) > 0;
         }
     }
 

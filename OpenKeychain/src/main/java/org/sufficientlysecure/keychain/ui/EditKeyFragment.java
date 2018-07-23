@@ -117,7 +117,7 @@ public class EditKeyFragment extends Fragment {
         mUserIdsAddedAdapter = new UserIdsAddedAdapter(getActivity(), mSkpBuilder.getMutableAddUserIds(), true);
         mUserIdsAddedList.setAdapter(mUserIdsAddedAdapter);
 
-        mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSkpBuilder.getMutableAddSubKeys(), true);
+        mSubkeysAddedAdapter = new SubkeysAddedAdapter(getActivity(), mSkpBuilder.getMutableAddSubKeys());
         mSubkeysAddedList.setAdapter(mSubkeysAddedAdapter);
     }
 
