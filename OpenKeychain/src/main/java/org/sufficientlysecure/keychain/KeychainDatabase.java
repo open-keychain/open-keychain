@@ -51,7 +51,7 @@ import timber.log.Timber;
  */
 public class KeychainDatabase {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 31;
+    private static final int DATABASE_VERSION = 30;
     private final SupportSQLiteOpenHelper supportSQLiteOpenHelper;
 
     private static KeychainDatabase sInstance;
@@ -363,14 +363,7 @@ public class KeychainDatabase {
 
             case 29:
                 recreateUnifiedKeyView(db);
-
-            case 30:
-                fixKeyExpiries(db);
         }
-    }
-
-    private void fixKeyExpiries(SupportSQLiteDatabase db) {
-        db.execSQL("UPDATE keys SET expiry = NULL WHERE expiry = 0;");
     }
 
     private void recreateUnifiedKeyView(SupportSQLiteDatabase db) {
