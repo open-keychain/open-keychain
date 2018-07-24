@@ -363,6 +363,9 @@ public class KeychainDatabase {
 
             case 29:
                 recreateUnifiedKeyView(db);
+
+            case 30:
+                // ignore. this case only came up in an unreleased beta.
         }
     }
 
