@@ -51,7 +51,7 @@ import timber.log.Timber;
  */
 public class KeychainDatabase {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 30;
+    private static final int DATABASE_VERSION = 31;
     private final SupportSQLiteOpenHelper supportSQLiteOpenHelper;
 
     private static KeychainDatabase sInstance;
