@@ -34,9 +34,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteException;
 
 import org.sufficientlysecure.keychain.daos.LocalSecretKeyStorage;
-import org.sufficientlysecure.keychain.provider.KeychainContract.CertsColumns;
-import org.sufficientlysecure.keychain.provider.KeychainContract.KeysColumns;
-import org.sufficientlysecure.keychain.provider.KeychainContract.UserPacketsColumns;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
 
@@ -61,20 +58,6 @@ public class KeychainDatabase {
             sInstance = new KeychainDatabase(context.getApplicationContext());
         }
         return sInstance;
-    }
-
-    public static KeychainDatabase getTemporaryInstance(Context context) {
-        return new KeychainDatabase(context.getApplicationContext());
-    }
-
-    public interface Tables {
-        String KEY_RINGS_PUBLIC = "keyrings_public";
-        String KEYS = "keys";
-        String KEY_SIGNATURES = "key_signatures";
-        String USER_PACKETS = "user_packets";
-        String CERTS = "certs";
-        String API_ALLOWED_KEYS = "api_allowed_keys";
-        String OVERRIDDEN_WARNINGS = "overridden_warnings";
     }
 
     private KeychainDatabase(Context context) {
@@ -119,6 +102,7 @@ public class KeychainDatabase {
         return supportSQLiteOpenHelper.getWritableDatabase();
     }
 
+    @SuppressWarnings("deprecation") // using some sqldelight constants
     private void onCreate(SupportSQLiteDatabase db, Context context) {
         Timber.w("Creating database...");
 
@@ -136,13 +120,13 @@ public class KeychainDatabase {
         db.execSQL(KeysModel.VALIDKEYSVIEW);
         db.execSQL(UserPacketsModel.UIDSTATUS);
 
-        db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysColumns.RANK + ", " + KeysColumns.MASTER_KEY_ID + ");");
-        db.execSQL("CREATE INDEX uids_by_rank ON user_packets (" + UserPacketsColumns.RANK + ", "
-                + UserPacketsColumns.USER_ID + ", " + UserPacketsColumns.MASTER_KEY_ID + ");");
+        db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysModel.RANK + ", " + KeysModel.MASTER_KEY_ID + ");");
+        db.execSQL("CREATE INDEX uids_by_rank ON user_packets (" + UserPacketsModel.RANK + ", "
+                + UserPacketsModel.USER_ID + ", " + UserPacketsModel.MASTER_KEY_ID + ");");
         db.execSQL("CREATE INDEX verified_certs ON certs ("
-                + CertsColumns.VERIFIED + ", " + CertsColumns.MASTER_KEY_ID + ");");
+                + CertsModel.VERIFIED + ", " + CertsModel.MASTER_KEY_ID + ");");
         db.execSQL("CREATE INDEX uids_by_email ON user_packets ("
-                + UserPacketsColumns.EMAIL + ");");
+                + UserPacketsModel.EMAIL + ");");
 
         Preferences.getPreferences(context).setKeySignaturesTableInitialized();
     }
@@ -243,11 +227,9 @@ public class KeychainDatabase {
             case 12:
                 // do nothing here, just consolidate
             case 13:
-                db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysColumns.RANK + ");");
-                db.execSQL("CREATE INDEX uids_by_rank ON user_packets (" + UserPacketsColumns.RANK + ", "
-                        + UserPacketsColumns.USER_ID + ", " + UserPacketsColumns.MASTER_KEY_ID + ");");
-                db.execSQL("CREATE INDEX verified_certs ON certs ("
-                        + CertsColumns.VERIFIED + ", " + CertsColumns.MASTER_KEY_ID + ");");
+                db.execSQL("CREATE INDEX keys_by_rank ON keys (rank);");
+                db.execSQL("CREATE INDEX uids_by_rank ON user_packets (rank, user_id, master_key_id);");
+                db.execSQL("CREATE INDEX verified_certs ON certs (verified, master_key_id);");
             case 14:
                 db.execSQL("ALTER TABLE user_packets ADD COLUMN name TEXT");
                 db.execSQL("ALTER TABLE user_packets ADD COLUMN email TEXT");
@@ -475,13 +457,6 @@ public class KeychainDatabase {
             throw new IOException("Cannot write " + out.getName());
         }
         copy(in, out);
-    }
-
-    // DANGEROUS, use in test code ONLY!
-    public void clearDatabase() {
-        getWritableDatabase().execSQL("delete from " + KeyRingsPublicModel.TABLE_NAME);
-        getWritableDatabase().execSQL("delete from " + ApiAllowedKeysModel.TABLE_NAME);
-        getWritableDatabase().execSQL("delete from api_apps");
     }
 
 }

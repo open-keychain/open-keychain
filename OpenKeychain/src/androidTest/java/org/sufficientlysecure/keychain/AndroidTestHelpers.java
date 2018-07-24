@@ -151,7 +151,7 @@ public class AndroidTestHelpers {
 
     public static void cleanupForTests(Context context) throws Exception {
 
-        KeychainDatabase.getInstance(context).clearDatabase();
+        // KeychainDatabase.getInstance(context).clearDatabase();
 
         // import these two, make sure they're there
         importKeysFromResource(context, "x.sec.asc");
