@@ -100,6 +100,8 @@
   <string name="btn_save_default">Enregistrer comme valeur par défaut</string>
   <string name="btn_saved">Enregistré</string>
   <string name="btn_not_matching">Ne correspondent pas</string>
+  <!--Shortcut Strings-->
+  <string name="shortcut_debug">Actions de débogage</string>
   <!--Content Description-->
   <string name="cd_encrypt_files">Chiffrer des fichiers</string>
   <string name="cd_exchange_keys">Échanger des clés</string>
@@ -216,6 +218,8 @@
   <string name="label_experimental_settings_keybase_title">Preuves keybase.io</string>
   <string name="label_experimental_settings_keybase_summary">Contacter keybase.io pour obtenir des preuves de clé et les afficher chaque fois qu’une clé est affichée</string>
   <string name="label_experimental_settings_theme_summary">(Les icônes et de nombreux écrans ne sont pas encore adaptés au thème sombre)</string>
+  <string name="label_settings_analytics_title">Autoriser les statistiques anonymes d’utilisation</string>
+  <string name="label_settings_analytics_summary">Si cette option est activée, des statistiques anonymes d\'utilisation sont envoyées pour aider à améliorer l’appli</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Activer Tor</string>
   <string name="pref_proxy_tor_summary">Orbot doit être installé</string>
@@ -434,10 +438,8 @@
   <string name="progress_modify_passphrase">modification du mot passe…</string>
   <string name="progress_modify_pin">changement du NIP…</string>
   <string name="progress_modify_admin_pin">changement du NIP d’admin…</string>
-  <plurals name="progress_exporting_key">
-    <item quantity="one">exportation de la clé…</item>
-    <item quantity="other">exportation des clés…</item>
-  </plurals>
+  <string name="progress_exporting_key">exportation de la clé…</string>
+  <string name="progress_exporting_keys">exportation des clés…</string>
   <string name="progress_start">préparation de l’opération…</string>
   <string name="progress_extracting_signature_key">extraction de la clé de signature…</string>
   <string name="progress_extracting_key">extraction de la clé…</string>
@@ -661,8 +663,6 @@
   <string name="user_id_info_certified_text">Vous avez confirmé l’identité.</string>
   <string name="user_id_info_uncertified_title">Non confirmée</string>
   <string name="user_id_info_uncertified_text">Cette identité n’a pas encore été confirmée. Vous ne pouvez pas être certain si l’identité correspond vraiment à une personne spécifique.</string>
-  <string name="user_id_info_invalid_title">Invalide</string>
-  <string name="user_id_info_invalid_text">Quelque chose ne va pas avec cette identité</string>
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">Aucune preuve en provenance d’Internet sur la fiabilité de cette clé.</string>
   <string name="key_trust_start_cloud_search">Lancer la recherche</string>
@@ -910,7 +910,7 @@
   <!--Keyring Canonicalization log entries-->
   <string name="msg_kc_public">Canonicalisation du trousseau public %s</string>
   <string name="msg_kc_secret">Canonicalisation du trousseau secret %s</string>
-  <string name="msg_kc_error_v3">Ceci est une clé OpenPGP version 3, qui a été déprécié et n’est plus pris en charge</string>
+  <string name="msg_kc_error_v3">Ceci est une clé OpenPGP version 3, qui a été déprécié et n’est plus pris en charge</string>
   <string name="msg_kc_error_no_uid">Le trousseau n’a pas d’ID utilisateur valide</string>
   <string name="msg_kc_error_master_algo">La clé maîtresse utilise un algorithme (%s) inconnu</string>
   <string name="msg_kc_error_dup_key">La sous-clé %s se présente deux fois dans le trousseau. Le trousseau est mal formé, pas d’importation</string>
@@ -1113,6 +1113,7 @@
   <string name="msg_dc_error_invalid_data">Aucune donnée OpenPGP valide chiffrée ou signée n’a été trouvée</string>
   <string name="msg_dc_error_io">Erreur de lecture des données d’entrée</string>
   <string name="msg_dc_error_input">Erreur d’ouverture du flux de données d’entrée</string>
+  <string name="msg_dc_error_input_denied">Erreur d’ouverture du flux de données d’entrée : l’accès est refusé</string>
   <string name="msg_dc_error_no_data">Aucune donnée chiffrée n’a été trouvée dans le flux !</string>
   <string name="msg_dc_error_no_key">Aucune donnée chiffrée avec une clé secrète connue n’a été trouvée dans le flux !</string>
   <string name="msg_dc_error_no_signature">Il manque des données de signature</string>
@@ -1380,8 +1381,8 @@
   <string name="first_time_blank_security_token">Voulez-vous utiliser ce jeton de sécurité vide avec OpenKeychain ?\n\nVeuillez retirer le jeton de sécurité maintenant, vous serez informé quand elle sera requis de nouveau</string>
   <string name="first_time_blank_security_token_yes">Utiliser ce jeton de sécurité</string>
   <string name="backup_text">Les sauvegardes incluant vos propres clés ne doivent jamais être partagées avec d’autres personnes</string>
-  <string name="backup_all">Toutes les clés  + vos propres clés</string>
-  <string name="backup_public_keys">Toutes les clés</string>
+  <string name="backup_all">Sauvegarde complète (chiffrée)</string>
+  <string name="backup_public_keys">N’exporter que les clés des contacts</string>
   <string name="backup_section">Sauvegarde</string>
   <string name="restore_section">Restaurer</string>
   <!--unsorted-->
@@ -1499,7 +1500,7 @@
   <string name="error_loading_keys">Erreur de chargement des clés</string>
   <string name="error_empty_log">(erreur, journal vide)</string>
   <string name="error_reading_text">Impossible de lire l’entrée à déchiffrer</string>
-  <string name="error_reading_aosp">Échec de lecture des données, ce qui est un bogue du client de courriel Android (problème no 290).</string>
+  <string name="error_reading_aosp">Échec de lecture des données, ce qui est un bogue du client de courriel Android (problème no 290).</string>
   <string name="error_reading_k9">Des données incomplètes ont été reçues. Essayez de toucher « Télécharger le message complet » dans Courriel K-9 Mail.</string>
   <string name="filename_unknown">Nom de fichier inconnu (toucher pour ouvrir)</string>
   <string name="filename_unknown_text">Texte (toucher pour montrer)</string>
@@ -1870,4 +1871,30 @@
   <string name="button_goto_openkeychain">Aller dans OpenKeychain</string>
   <string name="backup_code_checkbox">J’ai pris ce code de sauvegarde par écrit. Sans lui, je ne pourrai pas à restaurer la sauvegarde.</string>
   <string name="msg_get_query_not_implemented">Le serveur ne prend pas en charge la requête actuelle. Certains serveurs n’acceptent que les adresses de courriel. Veuillez la redéfinir ou essayer un autre serveur.</string>
+  <string name="snack_keylist_clipboard_title">Des données de clé ont été trouvées dans le presse-papiers</string>
+  <string name="snack_keylist_clipboard_action">Visualiser</string>
+  <string name="notify_channel_keysync">Mise à jour du serveur de clés</string>
+  <string name="notify_channel_permission">Demandes d’autorisation</string>
+  <string name="notify_channel_passcache">Cache de la phrase de passe</string>
+  <string name="notify_channel_orbot">État d’Orbot</string>
+  <string name="notify_title_keysync">Mise à jour des clés…</string>
+  <string name="notify_title_keysync_finished">%d clés ont été mises à jour</string>
+  <string name="notify_content_keysync">Clé %d / %d</string>
+  <string name="snack_keysync_start">Début de mise à jour de toutes les clés…</string>
+  <string name="snack_keysync_finished">Les clés ont été mises à jour avec succès</string>
+  <string name="snack_keysync_error">Une erreur est survenue lors de la mise à jour de toutes les clés</string>
+  <string name="keychoice_cannot_encrypt">Cette clé ne peut pas être utilisée pour le chiffrement</string>
+  <string name="keychoice_cannot_sign">Cette clé ne peut pas être utilisée pour la signature</string>
+  <string name="keychoice_insecure">Cette clé ne peut pas être utilisée, car elle n’est pas sûre</string>
+  <string name="keychoice_revoked">Cette clé ne peut pas être utilisée, car elle a été révoquée</string>
+  <string name="keychoice_expired">Cette clé ne peut pas être utilisée, car elle est expirée</string>
+  <string name="keylist_item_key_id">ID de clé : %s</string>
+  <string name="keylist_header_anonymous">Anonyme</string>
+  <string name="keylist_header_special">#</string>
+  <string name="dialog_analytics_consent">Pour améliorer l’expérience de tous les utilisateurs, OpenKeychain peut-elle recueillir des statistiques anonymes d’utilisation ?\n\nPour en apprendre davantage, consultez notre <a href="https://openkeychain.org/help/privacy-policy">politique de confidentialité</a>.</string>
+  <string name="button_analytics_yes">Oui, je souhaite aider</string>
+  <string name="button_analytics_no">Non, merci</string>
+  <string name="snack_analytics_accept">Nous vous remercions de votre aide. Vous pouvez changer cette préférence dans vos paramètres.</string>
+  <string name="snack_analytics_reject">Très bien, nous ne vous le demanderons plus. Vous pouvez changer cette préférence dans les paramètres.</string>
+  <string name="snackbutton_analytics_settings">Paramètres</string>
 </resources>

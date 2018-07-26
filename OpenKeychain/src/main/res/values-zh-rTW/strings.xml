@@ -92,6 +92,7 @@
   <string name="btn_save_default">設為預設值</string>
   <string name="btn_saved">已儲存</string>
   <string name="btn_not_matching">不符合</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <string name="cd_encrypt_files">加密檔案</string>
   <string name="cd_exchange_keys">交換金鑰</string>
@@ -352,9 +353,7 @@
   <string name="progress_modify_passphrase">正在變更金鑰密碼...</string>
   <string name="progress_modify_pin">正在變更PIN碼...</string>
   <string name="progress_modify_admin_pin">正在變更管理者PIN碼...</string>
-  <plurals name="progress_exporting_key">
-    <item quantity="other">正在匯出金鑰…</item>
-  </plurals>
+  <string name="progress_exporting_keys">正在匯出金鑰…</string>
   <string name="progress_start">正在準備進行操作...</string>
   <string name="progress_extracting_signature_key">正在抽取簽名金鑰…</string>
   <string name="progress_extracting_key">正在抽取金鑰…</string>
@@ -522,8 +521,6 @@
   <string name="user_id_info_revoked_title">已撤銷</string>
   <string name="user_id_info_revoked_text">這個身分識別被金鑰持有人撤銷，已不再有效。</string>
   <string name="user_id_info_certified_title">已確認</string>
-  <string name="user_id_info_invalid_title">無效</string>
-  <string name="user_id_info_invalid_text">這個身份有些錯誤！</string>
   <!--Key trust-->
   <string name="key_trust_start_cloud_search">開始搜尋</string>
   <string name="key_trust_results_prefix">Keybase.io提供“證據”證明這把金鑰的持有人：</string>
@@ -765,6 +762,7 @@
   <string name="nfc_settings">設定</string>
   <string name="snack_security_token_view">檢視</string>
   <string name="snack_security_token_import">匯入</string>
+  <string name="security_token_serial_no">序號: %s</string>
   <string name="btn_reset">重置</string>
   <string name="security_token_error">錯誤: %s</string>
   <string name="security_token_error_unknown">不明的錯誤</string>
@@ -807,14 +805,41 @@
   <string name="transfer_connecting">連接中…</string>
   <string name="transfer_confirm_cancel">取消</string>
   <string name="transfer_confirm_ok">傳送</string>
+  <string name="status_search_local">在密鑰表單中尋找...</string>
+  <string name="status_import">滙入密鑰....</string>
+  <string name="status_token_promote">設置密鑰...</string>
+  <string name="status_token_check">檢查密鑰設定...</string>
   <string name="token_reset_confirm_ok">重置</string>
   <string name="token_result_not_found">找不到金鑰！</string>
+  <string name="token_result_key_found">找到金鑰！</string>
+  <string name="token_result_token_ok">開始使用！</string>
   <string name="token_action_import">匯入</string>
   <string name="token_menu_view_log">查看紀錄</string>
   <string name="token_unlock_ok">解鎖</string>
   <string name="token_hint_admin_pin">管理者PIN碼</string>
+  <string name="msg_ret_curi_ok">找到金鑰</string>
+  <string name="msg_ret_ks_error_not_found">找不到金鑰！</string>
+  <string name="msg_ret_ks_ok">找到金鑰</string>
+  <string name="msg_ret_local_not_found">找不到金鑰！</string>
+  <string name="msg_ret_local_ok">找到金鑰</string>
+  <string name="msg_ret_uri_ok">找到金鑰</string>
+  <string name="msg_trust">更新可信的資訊 ...</string>
+  <string name="msg_trust_ok">成功更新操作！</string>
+  <string name="msg_trust_initialize">初始化密鑰簽名快取</string>
   <string name="select_identity_cancel">關閉</string>
+  <string name="menu_list_unrelated_keys">列出無關的密鑰</string>
+  <string name="no_keys_gen_title">這是新的地址</string>
+  <string name="no_keys_gen_subtitle">在 OpenKeychain 建立一個全新的端對端密鑰</string>
+  <string name="no_keys_import_title">我已有密鑰</string>
+  <string name="no_keys_import_subtitle">從其它設備滙入密鑰</string>
   <string name="key_gen_progress">請稍候...</string>
   <string name="key_gen_back">返回</string>
   <string name="key_gen_finish">結束</string>
+  <string name="snack_keylist_clipboard_action">檢視</string>
+  <string name="notify_channel_passcache">快取口令</string>
+  <string name="notify_title_keysync">正在更新金鑰...</string>
+  <string name="keylist_header_special">#</string>
+  <string name="button_analytics_yes">是的，我想協助！</string>
+  <string name="button_analytics_no">不用，謝謝</string>
+  <string name="snackbutton_analytics_settings">設定</string>
 </resources>

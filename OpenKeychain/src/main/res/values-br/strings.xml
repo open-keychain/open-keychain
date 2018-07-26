@@ -16,6 +16,7 @@
   <string name="btn_no">Ket</string>
   <string name="btn_share_decrypted_text">Rannañ</string>
   <string name="btn_add_keyserver">Ouzhpennañ</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Arventennoù</string>
@@ -146,4 +147,6 @@
   <string name="transfer_status_connected">Kevreet</string>
   <string name="transfer_confirm_cancel">Nullañ</string>
   <string name="transfer_confirm_ok">Kas</string>
+  <string name="keylist_header_anonymous">Anonymous</string>
+  <string name="snackbutton_analytics_settings">Arventennoù</string>
 </resources>

@@ -96,6 +96,7 @@
   <string name="btn_save_default">Сачувај за подразумевано</string>
   <string name="btn_saved">Сачувано!</string>
   <string name="btn_not_matching">Не поклапа се</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <string name="cd_encrypt_files">Шифровање фајлова</string>
   <string name="cd_exchange_keys">Размена кључева</string>
@@ -389,11 +390,7 @@
   <string name="progress_modify_passphrase">мењам лозинку…</string>
   <string name="progress_modify_pin">мењам ПИН…</string>
   <string name="progress_modify_admin_pin">мењам администраторски ПИН…</string>
-  <plurals name="progress_exporting_key">
-    <item quantity="one">извозим кључ…</item>
-    <item quantity="few">извозим кључеве…</item>
-    <item quantity="other">извозим кључеве…</item>
-  </plurals>
+  <string name="progress_exporting_keys">извозим кључеве…</string>
   <string name="progress_start">припремам радњу…</string>
   <string name="progress_extracting_signature_key">извлачим кључ потписа…</string>
   <string name="progress_extracting_key">извлачим кључ…</string>
@@ -608,8 +605,6 @@
   <string name="user_id_info_certified_text">Овај идентитет сте ви потврдили.</string>
   <string name="user_id_info_uncertified_title">Није потврђен</string>
   <string name="user_id_info_uncertified_text">Овај идентитет још није потврђен. Не можете бити сигурни да идентитет заиста одговара одређеној особи.</string>
-  <string name="user_id_info_invalid_title">Неисправан</string>
-  <string name="user_id_info_invalid_text">Нешто није у реду са овим идентитетом!</string>
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">Нема доказа на интернету о веродостојности овог кључа.</string>
   <string name="key_trust_start_cloud_search">Почни претрагу</string>
@@ -1278,8 +1273,6 @@
   <string name="first_time_security_token_subtitle">(Fidesmo, YubiKey NEO, SIGILANCE, …)</string>
   <string name="first_time_skip">Прескочи поставу</string>
   <string name="backup_text">Резерве које укључују ваше сопствене кључеве никад немојте делити са другима!</string>
-  <string name="backup_all">Свих кључева + сопствених</string>
-  <string name="backup_public_keys">Свих кључева</string>
   <string name="backup_section">Резерва</string>
   <string name="restore_section">Врати</string>
   <!--unsorted-->
@@ -1524,4 +1517,9 @@
   <string name="select_identity_cancel">Онемогући</string>
   <string name="key_gen_back">Назад</string>
   <string name="key_gen_finish">Заврши</string>
+  <string name="snack_keylist_clipboard_action">Погледај</string>
+  <string name="notify_channel_passcache">Кеширај лозинку</string>
+  <string name="notify_title_keysync">Ажурирам кључеве…</string>
+  <string name="keylist_item_key_id">ИД кључа: %s</string>
+  <string name="snackbutton_analytics_settings">Podešavanja</string>
 </resources>

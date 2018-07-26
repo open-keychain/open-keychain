@@ -99,6 +99,7 @@
   <string name="btn_save_default">デフォルトとして保存</string>
   <string name="btn_saved">保存しました!</string>
   <string name="btn_not_matching">一致せず</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <string name="cd_encrypt_files">ファイルの暗号化</string>
   <string name="cd_exchange_keys">鍵の交換</string>
@@ -424,9 +425,7 @@
   <string name="progress_modify_passphrase">パスワードの変更中...</string>
   <string name="progress_modify_pin">PINを変更...</string>
   <string name="progress_modify_admin_pin">管理者PINを変更...</string>
-  <plurals name="progress_exporting_key">
-    <item quantity="other">鍵のエクスポート...</item>
-  </plurals>
+  <string name="progress_exporting_keys">鍵のエクスポート...</string>
   <string name="progress_start">操作準備中...</string>
   <string name="progress_extracting_signature_key">署名鍵の取り出し中...</string>
   <string name="progress_extracting_key">鍵の取り出し中...</string>
@@ -630,8 +629,6 @@
   <string name="user_id_info_certified_text">このIDはあなたが確認済です。</string>
   <string name="user_id_info_uncertified_title">未検証</string>
   <string name="user_id_info_uncertified_text">このIDはまだ確認されていません。IDが本当に特定の人に対応しているかを、あなたは確認することができません。</string>
-  <string name="user_id_info_invalid_title">無効</string>
-  <string name="user_id_info_invalid_text">このIDではなにかしら問題があります!</string>
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">この鍵の信頼性についてのインターネットでの検証がありません。</string>
   <string name="key_trust_start_cloud_search">検索開始</string>
@@ -1322,8 +1319,6 @@
   <string name="first_time_blank_security_token">OpenKeychainで、この空のセキュリティトークンを使用しますか?\n\nセキュリティトークンを取り除いてください。再度必要になったときにプロンプトが表示されます!</string>
   <string name="first_time_blank_security_token_yes">このセキュリティトークンを使用する</string>
   <string name="backup_text">あなた自身の鍵を含んだバックアップは、決して他の人と共有しないでください!</string>
-  <string name="backup_all">すべての鍵とあなた所有の鍵</string>
-  <string name="backup_public_keys">すべての鍵</string>
   <string name="backup_section">バックアップ</string>
   <string name="restore_section">リストア</string>
   <!--unsorted-->
@@ -1704,4 +1699,10 @@
   <string name="select_identity_cancel">無効</string>
   <string name="key_gen_back">戻る</string>
   <string name="key_gen_finish">終了</string>
+  <string name="snack_keylist_clipboard_action">表示</string>
+  <string name="notify_channel_passcache">パスフレーズキャッシュ</string>
+  <string name="notify_title_keysync">キーをアップデート中。。。</string>
+  <string name="keylist_item_key_id">鍵 ID: %s</string>
+  <string name="keylist_header_anonymous">匿名</string>
+  <string name="snackbutton_analytics_settings">設定</string>
 </resources>

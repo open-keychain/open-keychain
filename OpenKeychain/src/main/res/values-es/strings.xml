@@ -100,6 +100,8 @@
   <string name="btn_save_default">Guardar como predeterminado</string>
   <string name="btn_saved">¡Guardado!</string>
   <string name="btn_not_matching">No coninciden</string>
+  <!--Shortcut Strings-->
+  <string name="shortcut_debug">Acciones de Depuración</string>
   <!--Content Description-->
   <string name="cd_encrypt_files">Encriptar archivos</string>
   <string name="cd_exchange_keys">Intercambiar llaves</string>
@@ -157,6 +159,8 @@
   <string name="label_keyservers">Administrar servidores de claves OpenPGP</string>
   <string name="label_key_id">ID de clave</string>
   <string name="label_key_id_colon">Identificación de clave:</string>
+  <string name="label_key_created">Creado 1%s</string>
+  <string name="label_key_created_just_now">Creado justo ahora</string>
   <string name="label_key_type">Tipo</string>
   <string name="label_creation">Creación</string>
   <string name="label_creation_colon">Creación</string>
@@ -167,6 +171,7 @@
   <string name="label_main_user_id">Identidad principal</string>
   <string name="label_name">Nombre</string>
   <string name="label_email">Email</string>
+  <string name="label_send_key">Publicar certificación en servidores de claves</string>
   <string name="label_fingerprint">Huella digital</string>
   <string name="expiry_date_dialog_title">Establer la fecha de vencimiento</string>
   <string name="label_keyservers_title">Servidores de claves</string>
@@ -195,6 +200,8 @@
   <string name="pref_keybase_summary">Busca claves en keybase.io</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">Buscar claves en Facebook por nombre de usuario</string>
+  <string name="pref_wkd">Web Key Directory</string>
+  <string name="pref_wkd_summary">Buscar clave usando Web Key Directory</string>
   <string name="label_sync_settings_keyserver_title">Actualizaciones automáticas de claves</string>
   <string name="label_sync_settings_keyserver_summary_on">Cada tres días las claves se actualizarán desde el servidor de claves preferido</string>
   <string name="label_sync_settings_keyserver_summary_off">Las claves no se están actualizando automáticamente</string>
@@ -211,6 +218,8 @@
   <string name="label_experimental_settings_keybase_title">Comprobantes de Keybase.io</string>
   <string name="label_experimental_settings_keybase_summary">Contacta con keybase.io para obtener comprobantes de clave y muestrelos cada vez que se muestra una clave</string>
   <string name="label_experimental_settings_theme_summary">(Los iconos y algunas pantallas todavía no están ajustadas de acuerdo con el tema decorativo oscuro)</string>
+  <string name="label_settings_analytics_title">Permitir estadísticas de uso anónimas</string>
+  <string name="label_settings_analytics_summary">Si está habilitado, envía estadísticas de uso anónimas para ayudar a mejorar la app</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Habilitar Tor</string>
   <string name="pref_proxy_tor_summary">Requiere que Orbot esté instalado</string>
@@ -303,6 +312,8 @@
   <string name="passphrase_for_any">Introduzca la contraseña</string>
   <string name="passphrase_keyboard_hint_alpha">Cambiar a teclado alfabético</string>
   <string name="passphrase_keyboard_hint_numeric">Cambiar a teclado numérico</string>
+  <string name="passphrase_transfer">Ingrese el código de transferencia</string>
+  <string name="passphrase_transfer_autocrypt">Para importar este Mensaje de Configuración de Autocrypt, ingrese el código de transferencia:</string>
   <string name="pin_for">Introduzca PIN para \'%s\'</string>
   <string name="security_token_pin_for">Introduzca el PIN para acceder al token de seguridad para \'%s\'</string>
   <string name="security_token_nfc_text">Mantenga el Token de Seguridad contra la marca NFC en la parte trasera de su dispositivo.</string>
@@ -427,10 +438,8 @@
   <string name="progress_modify_passphrase">cambiando contraseña...</string>
   <string name="progress_modify_pin">cambiando PIN...</string>
   <string name="progress_modify_admin_pin">cambiando el PIN de Admin...</string>
-  <plurals name="progress_exporting_key">
-    <item quantity="one">exportando clave...</item>
-    <item quantity="other">exportando claves...</item>
-  </plurals>
+  <string name="progress_exporting_key">exportando clave...</string>
+  <string name="progress_exporting_keys">exportando claves...</string>
   <string name="progress_start">preparando operación...</string>
   <string name="progress_extracting_signature_key">extrayendo la clave de firma...</string>
   <string name="progress_extracting_key">extrayendo la clave...</string>
@@ -575,6 +584,7 @@
   <string name="intent_import_key">Importar clave con OpenKeychain</string>
   <string name="intent_send_encrypt">Cifrar con OpenKeychain</string>
   <string name="intent_send_decrypt">Descifrar con OpenKeychain</string>
+  <string name="intent_autocrypt_setup">Importar Mensade de Configuración de Autocrypt</string>
   <!--Remote API-->
   <string name="api_settings_show_info">Mostrar información avanzada</string>
   <string name="api_settings_hide_info">Ocultar información avanzada</string>
@@ -640,6 +650,7 @@
   <string name="key_view_action_share_with">Compartir con...</string>
   <string name="key_view_action_share_ssh_with">Compartir como clave pública SSH con...</string>
   <string name="key_view_action_share_nfc">Compartir por NFC</string>
+  <string name="key_view_action_upload">Publicar en Servidor de Claves</string>
   <string name="key_view_tab_main">Información principal</string>
   <string name="key_view_tab_start">Inicio</string>
   <string name="key_view_tab_share">Compartir</string>
@@ -652,8 +663,6 @@
   <string name="user_id_info_certified_text">Esta identidad ha sido confirmada por usted.</string>
   <string name="user_id_info_uncertified_title">No confirmada</string>
   <string name="user_id_info_uncertified_text">Esta identidad aún no ha sido confirmada. No puede estar seguro de si la identidad corresponde realmente a una persona específica.</string>
-  <string name="user_id_info_invalid_title">No válida</string>
-  <string name="user_id_info_invalid_text">¡Hay algo mal con esta identidad!</string>
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">No hay comprobante desde Internet de la confiabilidad de esta clave.</string>
   <string name="key_trust_start_cloud_search">Iniciar búsqueda</string>
@@ -715,6 +724,7 @@
   <string name="edit_key_error_bad_security_token_curve">¡El algoritmo de curva elíptica no está soportado por el token de seguridad!</string>
   <string name="edit_key_error_bad_security_token_stripped">¡No se puede mover la clave al token de seguridad (tanto si es una clave desnuda como si ya está en el token de seguridad)!</string>
   <!--Create key-->
+  <string name="create_key_upload">Publicar en Servidores de Claves</string>
   <string name="create_key_empty">Este campo es obligatorio</string>
   <string name="create_key_passphrases_not_equal">Las contraseñas no coinciden</string>
   <string name="create_key_final_text">Ha introducido la siguiente identidad :</string>
@@ -1081,6 +1091,8 @@
   <string name="msg_dc_asym">Se encontró un bloque de datos cifrados asimétricamente para la clave %s</string>
   <string name="msg_dc_charset">Se encontró cabecera de juego de caracteres: \'%s\'</string>
   <string name="msg_dc_backup_version">Encabezado de versión de respaldo encontrado: \'%s\'</string>
+  <string name="msg_dc_passphrase_format">Encabezado del formato de contraseña encontrado: \'1%s\'</string>
+  <string name="msg_dc_passphrase_begin">Encabezado de inicio de contraseña encontrado: \'1%s\'</string>
   <string name="msg_dc_clear_data">Procesando datos literales</string>
   <string name="msg_dc_clear_decompress">Desempaquetando datos comprimidos</string>
   <string name="msg_dc_clear_meta_file">Nombre del fichero: %s</string>
@@ -1101,6 +1113,7 @@
   <string name="msg_dc_error_invalid_data">¡No se encontraron datos firmados o cifrados con OpenPGP válidos!</string>
   <string name="msg_dc_error_io">¡Se encontró un error al leer los datos de entrada!</string>
   <string name="msg_dc_error_input">¡Error al abrir el flujo de datos de entrada!</string>
+  <string name="msg_dc_error_input_denied">Error al abrir la secuencia de datos de entrada: acceso denegado!</string>
   <string name="msg_dc_error_no_data">¡No se encontraron datos cifrados en el flujo de datos (`stream`)!</string>
   <string name="msg_dc_error_no_key">¡No se encontraron datos cifrados con clave secreta (privada) conocida en el flujo de datos (`stream`)!</string>
   <string name="msg_dc_error_no_signature">¡No existe información de firma!</string>
@@ -1368,8 +1381,8 @@
   <string name="first_time_blank_security_token">¿Desea usar este token de seguridad en blanco con OpenKeyChain?\n\n¡Por favor, retire ahora el token de seguridad, se le volverá a solicitar cuando sea necesario!</string>
   <string name="first_time_blank_security_token_yes">Usar este token de seguridad</string>
   <string name="backup_text">¡Las copias de seguridad que incluyen sus propias claves nunca se deben compartir con otras personas!</string>
-  <string name="backup_all">Todas las claves + sus propias claves</string>
-  <string name="backup_public_keys">Todas las claves</string>
+  <string name="backup_all">Copia de Seguridad Completa (encriptada)</string>
+  <string name="backup_public_keys">Exportar solo claves de contacto</string>
   <string name="backup_section">Copia de seguridad</string>
   <string name="restore_section">Restaurar</string>
   <!--unsorted-->
@@ -1587,6 +1600,7 @@
   <string name="backup_code_wrong">¡El código de respaldo ingresado es incorrecto!\n¿Está seguro de haberlo escrito correctamente?</string>
   <string name="btn_backup_share">Compartir respaldo</string>
   <string name="btn_backup_save">Guardar respaldo</string>
+  <string name="btn_backup_export">Exportar Copia de Seguridad</string>
   <string name="snack_backup_error_saving">¡Error guardando la copia de seguridad!</string>
   <string name="snack_backup_saved">Copia de seguridad guardada</string>
   <string name="snack_backup_exists">¡La copia de seguridad ya existe!</string>
@@ -1835,8 +1849,52 @@
   <string name="button_locate_nfc">¿Dónde está mi lector NFC?</string>
   <string name="label_usb_untested_summary">Si se habilita, se pueden usar lectores de smartcard USB que no han sido adecuadamente testados.</string>
   <string name="label_usb_untested">Permitir dispositivos USB no testados</string>
+  <string name="use_key">Usar clave: 1%</string>
+  <string name="use_key_no_name">Usar clave: <![CDATA[]]></string>
+  <string name="title_select_key">1%s quiere configurar el cifrado de extremo a extremo para esta dirección:</string>
   <string name="select_identity_cancel">Deshabilitar</string>
+  <string name="select_identity_create">Crear clave para mi</string>
+  <string name="error_save_key_internal">Error interno al guardar clave!</string>
+  <string name="menu_list_unrelated_keys">Listar claves no relacionadas</string>
+  <string name="no_keys_gen_title">Esta es una nueva dirección</string>
+  <string name="no_keys_gen_subtitle">Crear una nueva clave de extremo a extremo en OpenKeychain</string>
+  <string name="no_keys_import_title">Ya tengo una clave</string>
+  <string name="no_keys_import_subtitle">Importar clave de extremo a extremo desde otro dispositivo</string>
+  <string name="key_list_import">Usar una clave diferente</string>
   <string name="key_gen_progress">Por favor, espere...</string>
   <string name="key_gen_back">Atrás</string>
   <string name="key_gen_finish">Finalizar</string>
+  <string name="key_gen_done">Generar clave de extremo a extremo!</string>
+  <string name="key_gen_finishing">Finalizando configuración...</string>
+  <string name="key_import_text">Para usar una clave de extremo a extremo, debe ser importada a OpenKeychain.</string>
+  <string name="key_import_text_autocrypt_setup_msg">Para importar su configuración existente desde otro dispositivo, también puede abrir un Mensaje de Configuración de Autocrypt en 1%s.</string>
+  <string name="button_goto_openkeychain">Ir a OpenKeychain</string>
+  <string name="backup_code_checkbox">He escrito este código de copia de seguridad. Sin eso, no podré restaurar la Copia de Seguridad.</string>
+  <string name="msg_get_query_not_implemented">¡El servidor no admite la consulta actual! Algunos servidores solo aceptan direcciones de correo electrónico. Por favor, redefina o pruebe con un servidor diferente.</string>
+  <string name="snack_keylist_clipboard_title">Se encontraron datos clave en el portapapeles!</string>
+  <string name="snack_keylist_clipboard_action">Ver</string>
+  <string name="notify_channel_keysync">Actualizacion de Sevidor de Clave</string>
+  <string name="notify_channel_permission">Solicitudes de permiso</string>
+  <string name="notify_channel_passcache">Caché de frase-contraseña</string>
+  <string name="notify_channel_orbot">Estado de Orbot</string>
+  <string name="notify_title_keysync">Actualizando claves...</string>
+  <string name="notify_title_keysync_finished">Finalizó la actualización de 1%d claves</string>
+  <string name="notify_content_keysync">Clave 1%d / 1%d</string>
+  <string name="snack_keysync_start">Comenzó a actualizar todas las teclas...</string>
+  <string name="snack_keysync_finished">Actualización de Clave exitosa</string>
+  <string name="snack_keysync_error">Se produjo un error al actualizar todas las claves</string>
+  <string name="keychoice_cannot_encrypt">Esta clave no se puede usar para el cifrado!</string>
+  <string name="keychoice_cannot_sign">Esta clave no se puede usar para firmar!</string>
+  <string name="keychoice_insecure">Esta clave no se puede usar porque es insegura!</string>
+  <string name="keychoice_revoked">Esta clave no se puede usar porque está revocada!</string>
+  <string name="keychoice_expired">Esta clave no se puede usar porque está vencida!</string>
+  <string name="keylist_item_key_id">Identificación de la clave: %s</string>
+  <string name="keylist_header_anonymous">Anónimo</string>
+  <string name="keylist_header_special">#</string>
+  <string name="dialog_analytics_consent">Para mejorar la experiencia de todos los usuarios, ¿puede OpenKeychain recopilar estadísticas de uso anónimas? \n\n Para saber más, mira nuestra <a href="https://openkeychain.org/help/privacy-policy">Política de Privacidad</a>.</string>
+  <string name="button_analytics_yes">Si, quiero ayudar!</string>
+  <string name="button_analytics_no">No, gracias!</string>
+  <string name="snack_analytics_accept">Gracias por ayudar! Puede cambiar esta preferencia en la configuración.</string>
+  <string name="snack_analytics_reject">Está bien, no volveremos a preguntar. Puedes cambiar de opinión en la configuración.</string>
+  <string name="snackbutton_analytics_settings">Configuración</string>
 </resources>

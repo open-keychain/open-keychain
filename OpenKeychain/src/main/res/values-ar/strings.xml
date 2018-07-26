@@ -88,6 +88,7 @@
   <string name="btn_save_default">حفظ كافتراضي</string>
   <string name="btn_saved">تم الإحتفاظ به</string>
   <string name="btn_not_matching">غير متطابقة</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <string name="cd_encrypt_files">تعمية الملفات</string>
   <string name="cd_exchange_keys">تبادل المفاتيح</string>
@@ -526,8 +527,6 @@
   <string name="first_time_create_key">أنشئ مفتاحي</string>
   <string name="first_time_import_key">استيراد مفتاح من ملف</string>
   <string name="first_time_skip">تخطي الإعداد</string>
-  <string name="backup_all">كافة المفاتيح + مفاتيحك</string>
-  <string name="backup_public_keys">كل المفاتيح</string>
   <string name="backup_section">النسخ الاحتياطي</string>
   <string name="restore_section">إستعادة</string>
   <!--unsorted-->
@@ -596,6 +595,7 @@
   <string name="prompt_fidesmo_app_install_button_negative">إلغاء</string>
   <string name="redirect_import_key_yes">إمسح ثانية</string>
   <string name="redirect_import_key_no">إغلاق</string>
+  <string name="button_allow">اسمح</string>
   <string name="button_cancel">إلغاء</string>
   <string name="button_back">السابق</string>
   <string name="button_got_it">فهمت ذلك</string>
@@ -655,4 +655,9 @@
   <string name="key_gen_progress">الرجاء الإنتظار </string>
   <string name="key_gen_back">السابق</string>
   <string name="key_gen_finish">نهاية</string>
+  <string name="snack_keylist_clipboard_action">الاطلاع</string>
+  <string name="notify_title_keysync">تحديث المفاتيح ...</string>
+  <string name="keylist_header_anonymous">مجهول</string>
+  <string name="keylist_header_special">#</string>
+  <string name="snackbutton_analytics_settings">الإعدادات</string>
 </resources>

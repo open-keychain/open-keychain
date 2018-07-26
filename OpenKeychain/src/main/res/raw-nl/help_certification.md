@@ -8,7 +8,7 @@ Om sleutels tussen meer dan twee personen te bevestigen stellen we voor om de sl
 ## Sleutelstatus
 
 <img src="status_signature_verified_cutout_24dp"/>  
-Bevestigd: je hebt deze sleutel al bevestigd, bv. door de QR-code te scannen.  
+Bevestigd: je hebt deze sleutel al bevestigd, bijvoorbeeld door de QR-code te scannen.  
 <img src="status_signature_unverified_cutout_24dp"/>  
 Niet bevestigd: deze sleutel is nog niet bevestigd. Je kan niet zeker zijn dat de sleutel echt overeenkomt met een bepaald persoon.  
 <img src="status_signature_expired_cutout_24dp"/>  

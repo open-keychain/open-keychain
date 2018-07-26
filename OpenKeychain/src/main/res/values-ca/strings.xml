@@ -8,9 +8,11 @@
   <!--button-->
   <string name="btn_do_not_save">Cancel·la</string>
   <string name="btn_proceed">Procedir</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <!--menu-->
   <!--label-->
+  <string name="label_theme">Tema</string>
   <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <!--proxy type choices and values-->
@@ -21,6 +23,8 @@
   <string name="orbot_start_dialog_cancel">Cancel·la</string>
   <!--choice-->
   <string name="error">Error</string>
+  <string name="theme_dark">Fosc</string>
+  <string name="theme_light">Clar</string>
   <!--sentences-->
   <!--errors
          no punctuation, all lowercase,
@@ -109,4 +113,6 @@
   <string name="select_identity_cancel">Deshabilitar </string>
   <string name="key_gen_back">Enrera</string>
   <string name="key_gen_finish">Fi</string>
+  <string name="snack_keylist_clipboard_action">Visualitza</string>
+  <string name="snackbutton_analytics_settings">Configuració</string>
 </resources>

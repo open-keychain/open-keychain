@@ -2,7 +2,7 @@
 
 ## Schlüsselbestätigung
 Ohne Bestätigung können sie nicht wissen, ob ein Schlüssel wirklich zu einer bestimmten Person gehört.
-Der einfachste Weg einen Schlüssel zu bestätigen ist den QR Code zu scannen oder ihn mit NFC auszutauschen.
+Der einfachste Weg einen Schlüssel zu bestätigen, ist den QR Code zu scannen oder ihn mit NFC auszutauschen.
 Um Schlüssel zwischen mehr als zwei Personen zu bestätigen, empfehlen wir die Schlüssel-Tausch Funktion zu benutzen, die für deine Schlüssel verfügbar sind. 
 
 ## Schlüsselstatus

@@ -100,6 +100,8 @@
   <string name="btn_save_default">Opslaan als standaard</string>
   <string name="btn_saved">Opgeslagen!</string>
   <string name="btn_not_matching">Niet gelijk</string>
+  <!--Shortcut Strings-->
+  <string name="shortcut_debug">Debug-acties</string>
   <!--Content Description-->
   <string name="cd_encrypt_files">Versleutel bestanden</string>
   <string name="cd_exchange_keys">Wissel sleutels uit</string>
@@ -216,6 +218,8 @@
   <string name="label_experimental_settings_keybase_title">Keybase.io-bewijzen</string>
   <string name="label_experimental_settings_keybase_summary">Maak contact met keybase.io voor bevestigingen van sleutels en weergeef dit elke keer als een sleutel wordt weer gegeven</string>
   <string name="label_experimental_settings_theme_summary">(De iconnen en veel schermen zijn nog niet geoptimalizeerd voor het donkere thema)</string>
+  <string name="label_settings_analytics_title">Sta anonieme gebruikersstatistieken toe</string>
+  <string name="label_settings_analytics_summary">Indien ingeschakeld, stuur anonieme gebruikersstatistieken om de app te verbeteren</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Tor aanzetten</string>
   <string name="pref_proxy_tor_summary">Vereist dat Orbot geïnstalleerd is</string>
@@ -434,10 +438,8 @@
   <string name="progress_modify_passphrase">bezig met veranderen van wachtwoord…</string>
   <string name="progress_modify_pin">bezig met veranderen van pincode…</string>
   <string name="progress_modify_admin_pin">bezig met veranderen van administrator-pincode…</string>
-  <plurals name="progress_exporting_key">
-    <item quantity="one">sleutel exporteren…</item>
-    <item quantity="other">sleutels exporteren…</item>
-  </plurals>
+  <string name="progress_exporting_key">sleutel exporteren...</string>
+  <string name="progress_exporting_keys">sleutels exporteren…</string>
   <string name="progress_start">bewerking voorbereiden…</string>
   <string name="progress_extracting_signature_key">ondertekeningssleutel uitpakken…</string>
   <string name="progress_extracting_key">sleutel uitpakken…</string>
@@ -661,8 +663,6 @@
   <string name="user_id_info_certified_text">Deze identiteit is bevestigd door jou.</string>
   <string name="user_id_info_uncertified_title">Niet bevestigd</string>
   <string name="user_id_info_uncertified_text">Deze identiteit is nog niet bevestigd. Je kunt er niet zeker van zijn dat de identiteit overeenkomt met een specifiek persoon.</string>
-  <string name="user_id_info_invalid_title">Ongeldig</string>
-  <string name="user_id_info_invalid_text">Er is iets mis met deze identiteit!</string>
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">Geen bewijs van het internet over de betrouwbaarheid van deze sleutel.</string>
   <string name="key_trust_start_cloud_search">Zoeken starten</string>
@@ -1113,6 +1113,7 @@
   <string name="msg_dc_error_invalid_data">Geen geldige OpenPGP-versleutelde of ondertekende inhoud gevonden!</string>
   <string name="msg_dc_error_io">Fout bij lezen van invoergegevens!</string>
   <string name="msg_dc_error_input">Fout bij openen van invoergegevensstream!</string>
+  <string name="msg_dc_error_input_denied">Fout bij openen van invoergegevensstream: toegang geweigerd!</string>
   <string name="msg_dc_error_no_data">Geen versleutelde gegevens gevonden!</string>
   <string name="msg_dc_error_no_key">Geen versleutelde gegevens met bekende geheime sleutel gevonden!</string>
   <string name="msg_dc_error_no_signature">Handtekening gegevens ontbreken!</string>
@@ -1380,8 +1381,8 @@
   <string name="first_time_blank_security_token">Wil je deze lege Security Token gebruiken met OpenKeychain?\n\nVerwijder de Security Token, een melding verschijnt zodra deze weer nodig is!</string>
   <string name="first_time_blank_security_token_yes">Gebruik dit Security Token</string>
   <string name="backup_text">Back-ups die je eigen sleutels bevatten mogen nooit gedeeld worden met anderen!</string>
-  <string name="backup_all">Alle sleutels + je eigen sleutels</string>
-  <string name="backup_public_keys">Alle sleutels</string>
+  <string name="backup_all">Volledige back-up (versleuteld)</string>
+  <string name="backup_public_keys">Alleen contactsleutels exporteren</string>
   <string name="backup_section">Back-up</string>
   <string name="restore_section">Herstellen</string>
   <!--unsorted-->
@@ -1870,4 +1871,30 @@
   <string name="button_goto_openkeychain">Ga naar OpenKeychain</string>
   <string name="backup_code_checkbox">Ik heb de code voor deze back-up opgeschreven. Zonder deze code zal ik de back-up niet kunnen herstellen.</string>
   <string name="msg_get_query_not_implemented">De server ondersteunt de huidige zoekopdracht niet! Sommige servers aanvaarden enkel e-mailadressen. Herdefinieer of geef een andere server in.</string>
+  <string name="snack_keylist_clipboard_title">Sleutelgegevens gevonden op het klembord!</string>
+  <string name="snack_keylist_clipboard_action">Beeld</string>
+  <string name="notify_channel_keysync">Sleutelserverupdate</string>
+  <string name="notify_channel_permission">App-machtigingsverzoeken</string>
+  <string name="notify_channel_passcache">Wachtwoordcache</string>
+  <string name="notify_channel_orbot">Orbotstatus</string>
+  <string name="notify_title_keysync">Bezig met bijwerken van sleutels…</string>
+  <string name="notify_title_keysync_finished">%d sleutel bijgewerkt</string>
+  <string name="notify_content_keysync">Sleutel %d/%d</string>
+  <string name="snack_keysync_start">Alle sleutels worden bijgewerkt…</string>
+  <string name="snack_keysync_finished">Sleutelupdate voltooid</string>
+  <string name="snack_keysync_error">Er trad een fout op bij het bijwerken van alle sleutels</string>
+  <string name="keychoice_cannot_encrypt">Deze sleutel kan niet worden gebruikt voor ontsleuteling!</string>
+  <string name="keychoice_cannot_sign">Deze sleutel kan niet worden gebruikt voor ondertekening!</string>
+  <string name="keychoice_insecure">Deze sleutel kan niet worden gebruikt omdat hij onveilig is!</string>
+  <string name="keychoice_revoked">Deze sleutel kan niet worden gebruikt omdat hij is ingetrokken!</string>
+  <string name="keychoice_expired">Deze sleutel kan niet worden gebruikt omdat hij is verlopen!</string>
+  <string name="keylist_item_key_id">Sleutel-ID: %s</string>
+  <string name="keylist_header_anonymous">Anoniem</string>
+  <string name="keylist_header_special">#</string>
+  <string name="dialog_analytics_consent">Mag OpenKeychain gebruikersstatistieken verzamelen om de ervaring voor alle gebruikers te verbeteren?\n\nVoor meer informatie, zie ons <a href="https://openkeychain.org/help/privacy-policy">privacybeleid</a>.</string>
+  <string name="button_analytics_yes">Ja, ik wil helpen!</string>
+  <string name="button_analytics_no">Nee, bedankt</string>
+  <string name="snack_analytics_accept">Bedankt voor het helpen! Je kan deze voorkeur veranderen in de instellingen.</string>
+  <string name="snack_analytics_reject">Geen probleem, we zullen het niet opnieuw vragen. Je kan van gedachten veranderen in de instellingen.</string>
+  <string name="snackbutton_analytics_settings">Instellingen</string>
 </resources>

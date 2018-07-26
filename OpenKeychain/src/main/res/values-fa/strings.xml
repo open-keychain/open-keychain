@@ -77,6 +77,7 @@
   <string name="btn_add_keyserver">اضافه‌کردن</string>
   <string name="btn_save_default">ذخیره به عنوان پیش‌فرض</string>
   <string name="btn_saved">ذخیره شد!</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <string name="cd_encrypt_files">رمزگذاری فایلها</string>
   <string name="cd_encrypt_text">رمزگذاری فایل</string>
@@ -173,6 +174,8 @@
   <string name="usage_sign">امضاء کردن</string>
   <string name="usage_encrypt">رمزگذاری</string>
   <string name="error">خطا </string>
+  <string name="theme_dark">تاریک</string>
+  <string name="theme_light">روشن</string>
   <!--sentences-->
   <string name="wrong_passphrase">رمزعبور اشتباه است.</string>
   <string name="no_filemanager_installed">برنامهٔ مدیریتِ فایل سازگاری نصب نیست.</string>
@@ -287,8 +290,6 @@
   <string name="key_view_tab_share">به‌اشتراک گذاشتن</string>
   <string name="key_view_tab_keys">زیرکلیدها</string>
   <string name="user_id_info_revoked_title">لغو</string>
-  <string name="user_id_info_invalid_title">نامعتبر</string>
-  <string name="user_id_info_invalid_text">هویت مشکل دارد!</string>
   <!--Key trust-->
   <string name="key_trust_start_cloud_search">آغاز جستجو</string>
   <!--keybase proof stuff-->
@@ -423,4 +424,7 @@
   <string name="key_gen_progress">لطفا صبر کنید ...</string>
   <string name="key_gen_back"> به عقب</string>
   <string name="key_gen_finish">پایان</string>
+  <string name="snack_keylist_clipboard_action">مشاهده</string>
+  <string name="notify_title_keysync">درحال آپدیت‌کردن کلیدها...</string>
+  <string name="snackbutton_analytics_settings">تنظیمات</string>
 </resources>

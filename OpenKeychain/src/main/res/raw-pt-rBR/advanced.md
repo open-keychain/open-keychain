@@ -3,7 +3,7 @@
 A tela Avançado permite a você
 * compartilhar chaves de formas não recomendadas
 * editar identidades
-* editar sub-chaves
+* editar subchaves
 * examinar certificados em detalhes
 
 Só prossiga se você sabe o que está fazendo!

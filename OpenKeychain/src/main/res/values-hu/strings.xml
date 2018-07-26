@@ -92,6 +92,7 @@
   <string name="btn_add_keyserver">Hozzáad</string>
   <string name="btn_save_default">Mentés alapértelmezettként</string>
   <string name="btn_saved">Mentve!</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <string name="cd_encrypt_files">Fájlok titkosítása</string>
   <string name="cd_encrypt_text">Szöveg titkosítása</string>
@@ -466,4 +467,7 @@
   <string name="key_gen_back">Vissza</string>
   <string name="key_gen_finish">Befejezés</string>
   <string name="key_gen_finishing">Telepítés befejezése...</string>
+  <string name="snack_keylist_clipboard_action">Megtekintés</string>
+  <string name="keylist_header_anonymous">Anoním / Névtelen</string>
+  <string name="snackbutton_analytics_settings">Beállítások</string>
 </resources>

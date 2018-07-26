@@ -1,9 +1,9 @@
 [//]: # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
 ## 5.1
-  * Support for Ledger Nano S
-  * Support Web Key Directory (WKD) search
-  * Fixed potential API security issue
+  * Prise en charge de Ledger Nano S
+  * Prise en charge de la recherche dans l’annuaire de clés Web (WKD)
+  * Correctif d’un problème de sécurité possible de l’API
 
 ## 5.0
   * Prise en charge améliorée d’Autocrypt
@@ -40,7 +40,7 @@
 
 ## 4.4
 
-  *  Le nouvel état des clé affiche en détail pourquoi une clef est considérée comme non fiable ou défectueuse
+  * Le nouvel état des clés affiche en détail pourquoi une clé est considérée comme non fiable ou défectueuse
 
 
 ## 4.3
@@ -84,7 +84,7 @@
 
 ## 3.7
 
-  * Prise en charge améliorée d’Android 6 (permissions, intégration dans la sélection des textes)
+  * Prise en charge améliorée d’Android 6 (autorisations, intégration dans la sélection de textes)
   * API : version 10
 
 
@@ -127,7 +127,7 @@
 
   * Première version avec prise en charge complète de la YubiKey, proposée dans l’interface utilisateur : modifier les clés, relier la YubiKey aux clés…
   * Conception matérielle
-  * Intégration de la lecture de code QR (nouvelles permissions exigées)
+  * Intégration de la lecture de code QR (de nouvelles autorisations sont exigées)
   * Amélioration de l’assistant de création de clé
   * Correctif - Contacts manquants après la synchro
   * Android 4 exigé

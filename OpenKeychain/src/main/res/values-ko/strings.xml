@@ -99,6 +99,7 @@
   <string name="btn_save_default">기본값으로 저장</string>
   <string name="btn_saved">저장 성공!</string>
   <string name="btn_not_matching">일치하지 않음</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <string name="cd_encrypt_files">파일들 암호화</string>
   <string name="cd_exchange_keys">키 교환</string>
@@ -419,9 +420,7 @@
   <string name="progress_modify_passphrase">암호를 변경하는 중...</string>
   <string name="progress_modify_pin">PIN을 변경하는 중...</string>
   <string name="progress_modify_admin_pin">관리자 PIN을 변경하는 중...</string>
-  <plurals name="progress_exporting_key">
-    <item quantity="other">키들을 내보내는 중...</item>
-  </plurals>
+  <string name="progress_exporting_keys">키들을 내보내는 중...</string>
   <string name="progress_start">작업을 준비하는 중...</string>
   <string name="progress_extracting_signature_key">서명 키를 추출하는 중...</string>
   <string name="progress_extracting_key">키를 추출하는 중...</string>
@@ -611,7 +610,6 @@
   <string name="user_id_info_certified_text">이 신원은 당신에 의해 확인되었습니다.</string>
   <string name="user_id_info_uncertified_title">확인되지 않음</string>
   <string name="user_id_info_uncertified_text">이 신원은 아직 확인되지 않았습니다. 신원이 실제로 특정인과 일치하는지 확신 할 수 없습니다.</string>
-  <string name="user_id_info_invalid_text">이 신원에 문제가 있습니다!</string>
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">이 키의 신뢰성에 대해 인터넷에서 어떤한 증거도 찾을 수없습니다.</string>
   <string name="key_trust_start_cloud_search">검색 시작</string>
@@ -887,4 +885,8 @@
   <string name="key_gen_progress">잠시만 기다려주세요...</string>
   <string name="key_gen_back">뒤로</string>
   <string name="key_gen_finish">종료</string>
+  <string name="snack_keylist_clipboard_action">보기</string>
+  <string name="notify_title_keysync">키를 업데이트 중...</string>
+  <string name="keylist_header_anonymous">익명</string>
+  <string name="snackbutton_analytics_settings">설정</string>
 </resources>

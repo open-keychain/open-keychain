@@ -9,6 +9,7 @@
   <string name="btn_save">Memorare</string>
   <string name="btn_do_not_save">Claudere</string>
   <string name="btn_no">Non</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <!--menu-->
   <string name="menu_help">Auxilium</string>

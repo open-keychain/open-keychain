@@ -87,6 +87,7 @@
   <string name="btn_add_keyserver">Agregar</string>
   <string name="btn_save_default">Guardar como predeterminado</string>
   <string name="btn_saved">¡Guardado!</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <string name="cd_encrypt_files">Cifrar archivos</string>
   <string name="cd_encrypt_text">Cifrar texto</string>
@@ -339,4 +340,6 @@
   <string name="token_unlock_ok">Abrir</string>
   <string name="select_identity_cancel">Desactivar</string>
   <string name="key_gen_back">Atrás</string>
+  <string name="snack_keylist_clipboard_action">Ve</string>
+  <string name="snackbutton_analytics_settings">Ajustes</string>
 </resources>

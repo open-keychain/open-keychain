@@ -20,7 +20,7 @@
 
 ## 4.7
 
-  * Improved import from clipboard
+  * Poprawiono importowanie ze schowka
   * New key creation wizard for Security Tokens
   * Removed password cache "time to live" setting
 

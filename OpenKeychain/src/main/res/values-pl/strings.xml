@@ -27,6 +27,7 @@
   <string name="title_log_display">Logi</string>
   <string name="title_exchange_keys">Wymień się kluczami</string>
   <string name="title_advanced_key_info">Zaawansowane</string>
+  <string name="title_delete_secret_key">Usunąć TWÓJ klucz \'%s\'?</string>
   <string name="title_manage_my_keys">Zarządzaj kluczami</string>
   <!--section-->
   <string name="section_user_ids">Tożsamości</string>
@@ -72,6 +73,7 @@
   <string name="btn_add_keyserver">Dodaj</string>
   <string name="btn_save_default">Zapisz jako domyślny</string>
   <string name="btn_saved">Zapisano!</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <string name="cd_encrypt_files">Zaszyfruj pliki</string>
   <string name="cd_encrypt_text">Zaszyfruj tekst</string>
@@ -151,13 +153,16 @@
   <!--proxy type choices and values-->
   <string name="pref_proxy_type_choice_http">HTTP</string>
   <!--OrbotHelper strings-->
+  <string name="orbot_ignore_tor">Nie używaj Tora</string>
   <!--InstallDialogFragment strings-->
   <string name="orbot_install_dialog_install">Instaluj</string>
   <string name="orbot_install_dialog_cancel">Anuluj</string>
+  <string name="orbot_install_dialog_ignore_tor">Nie używaj Tora</string>
   <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_btn">Uruchom aplikację Orbot</string>
   <string name="orbot_start_dialog_start">Uruchom aplikację Orbot</string>
   <string name="orbot_start_dialog_cancel">Anuluj</string>
+  <string name="orbot_start_dialog_ignore_tor">Nie używaj Tora</string>
   <plurals name="n_keys">
     <item quantity="one">1 klucz</item>
     <item quantity="few">%d klucze</item>
@@ -281,12 +286,7 @@
   <string name="progress_modify_subkeyrevoke">unieważnianie pod-kluczy...</string>
   <string name="progress_modify_subkeystrip">usuwanie podkluczy...</string>
   <string name="progress_modify_subkeyadd">dodawanie pod-kluczy...</string>
-  <plurals name="progress_exporting_key">
-    <item quantity="one">eksportowanie klucza...</item>
-    <item quantity="few">eksportowanie kluczy...</item>
-    <item quantity="many">eksportowanie kluczy...</item>
-    <item quantity="other">eksportowanie kluczy...</item>
-  </plurals>
+  <string name="progress_exporting_keys">eksportowanie kluczy...</string>
   <string name="progress_extracting_signature_key">wyodrębnianie klucza podpisu...</string>
   <string name="progress_extracting_key">wyodrębnianie klucza...</string>
   <string name="progress_preparing_streams">przygotowywanie strumieni...</string>
@@ -459,8 +459,6 @@
   <string name="key_view_tab_certs">Certyfikaty</string>
   <string name="user_id_info_revoked_title">Unieważnione</string>
   <string name="user_id_info_revoked_text">Ta tożsamość została unieważniona przez właściciela klucza. Nie jest ona już ważna.</string>
-  <string name="user_id_info_invalid_title">Nieprawidłowe</string>
-  <string name="user_id_info_invalid_text">Coś jest nie tak z tą tożsamością!</string>
   <!--Key trust-->
   <!--keybase proof stuff-->
   <string name="keybase_verify">Weryfikacja</string>
@@ -510,6 +508,7 @@
   <string name="drawer_open">Otwórz panel nawigacji</string>
   <string name="drawer_close">Zamknij panel nawigacji</string>
   <string name="my_keys">Moje klucze</string>
+  <string name="nav_backup">Kopia zapasowa/Przywracanie</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Wpisz tekst</string>
   <!--certs-->
@@ -686,12 +685,13 @@
   <string name="linked_create_verify">Weryfikacja</string>
   <!--Other Linked Identity strings-->
   <string name="btn_finish">Zakończ</string>
-  <string name="linked_title_twitter">świergot</string>
+  <string name="linked_title_twitter">Twitter</string>
   <string name="linked_button_verify">Weryfikacja</string>
   <string name="linked_button_retry">Spróbuj ponownie</string>
   <string name="linked_button_confirm">Potwierdź</string>
   <string name="linked_button_view">Podgląd</string>
   <string name="linked_text_error">Błąd</string>
+  <string name="snack_backup_saved_dir">Zapisano do katalogu OpenKeychain</string>
   <string name="share_log_dialog_share_button">Udostępnij</string>
   <string name="share_log_dialog_cancel_button">Zamknij</string>
   <string name="menu_uids_save">Zapisz</string>
@@ -732,4 +732,9 @@
   <string name="key_gen_progress">Proszę czekać...</string>
   <string name="key_gen_back">Wstecz</string>
   <string name="key_gen_finish">Zakończ</string>
+  <string name="snack_keylist_clipboard_action">Podgląd</string>
+  <string name="notify_channel_passcache">Pamięć hasła</string>
+  <string name="keylist_header_anonymous">Anonimowy</string>
+  <string name="keylist_header_special">#</string>
+  <string name="snackbutton_analytics_settings">Ustawienia</string>
 </resources>

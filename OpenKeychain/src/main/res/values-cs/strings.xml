@@ -95,6 +95,7 @@
   <string name="btn_save_default">Uložit jako výchozí</string>
   <string name="btn_saved">Uloženo!</string>
   <string name="btn_not_matching">Neodpovídá</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <string name="cd_encrypt_files">Zašifrovat soubory</string>
   <string name="cd_exchange_keys">Vyměnit klíče</string>
@@ -368,12 +369,7 @@
   <string name="progress_modify_subkeyrevoke">revokuji podklíče...</string>
   <string name="progress_modify_subkeyadd">přidávám podklíče...</string>
   <string name="progress_modify_passphrase">měním heslo...</string>
-  <plurals name="progress_exporting_key">
-    <item quantity="one">exportuji klíč...</item>
-    <item quantity="few">exportuji klíče...</item>
-    <item quantity="many">exportuji klíče...</item>
-    <item quantity="other">exportuji klíče...</item>
-  </plurals>
+  <string name="progress_exporting_keys">exportuji klíče...</string>
   <string name="progress_start">připravuji operaci...</string>
   <string name="progress_extracting_signature_key">extrahuji podpisový klíč...</string>
   <string name="progress_extracting_key">extrahuji klíč...</string>
@@ -564,8 +560,6 @@
   <string name="user_id_info_certified_text">Tato identita byla potvrzena vámi.</string>
   <string name="user_id_info_uncertified_title">Nepotvrzeno</string>
   <string name="user_id_info_uncertified_text">Tato identita zatím nebyla potvrzena. Nemůžete si být jisti zda je identita odpovídá určité osobě.</string>
-  <string name="user_id_info_invalid_title">Neplatná</string>
-  <string name="user_id_info_invalid_text">S touto identitou je něco v nepořádku!</string>
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">Žádný důkaz o důvěryhodnosti klíče z internetu.</string>
   <string name="key_trust_start_cloud_search">Vyhledat</string>
@@ -975,4 +969,9 @@
   <string name="select_identity_cancel">Zakázat</string>
   <string name="key_gen_back">Zpět</string>
   <string name="key_gen_finish">Dokončit</string>
+  <string name="snack_keylist_clipboard_action">Zobrazit</string>
+  <string name="notify_channel_passcache">Cache hesel</string>
+  <string name="notify_title_keysync">Aktualizuji klíče...</string>
+  <string name="keylist_header_anonymous">Anonymní</string>
+  <string name="snackbutton_analytics_settings">Nastavení</string>
 </resources>

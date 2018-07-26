@@ -16,7 +16,7 @@ Expired: This key is no longer valid. Only the owner can extend its validity.
 <img src="status_signature_revoked_cutout_24dp"/>  
 Revoked: This key is no longer valid. It has been revoked by its owner.
 
-## Advanced Information
+## Zaawansowane informacje
 A "key confirmation" in OpenKeychain is implemented by creating a certification according to the OpenPGP standard.
 This certification is a ["generic certification (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) described in the standard by:
 "The issuer of this certification does not make any particular assertion as to how well the certifier has checked that the owner of the key is in fact the person described by the User ID."

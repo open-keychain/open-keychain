@@ -8,13 +8,13 @@ För att bekräfta nycklar mellan mer än två personer, föreslår vi att du an
 ## Nyckelstatus
 
 <img src="status_signature_verified_cutout_24dp"/>  
-Bekräftat: Du har redan bekräftat den här nyckeln, t.ex genom att skanna QR-koden.  
+Bekräftad: Du har redan bekräftat den här nyckeln, t.ex genom att skanna QR-koden.  
 <img src="status_signature_unverified_cutout_24dp"/>  
 Obekräftad: Denna nyckel har inte bekräftats ännu. Du kan inte vara säker på om nyckeln verkligen motsvarar en viss person.  
 <img src="status_signature_expired_cutout_24dp"/>  
 Utgången: Den här nyckeln är inte längre giltig. Endast ägaren kan förlänga dess giltighet.  
 <img src="status_signature_revoked_cutout_24dp"/>  
-Återkallats: Denna nyckel är inte längre giltig. Den har återkallats av dess ägare.
+Återkallad: Denna nyckel är inte längre giltig. Den har återkallats av dess ägare.
 
 ## Avancerad information
 En "nyckelbekräftelse" i OpenKeychain genomförs genom att skapa en certifiering enligt OpenPGP-standard.

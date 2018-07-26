@@ -100,6 +100,8 @@
   <string name="btn_save_default">Сохранить по умолчанию</string>
   <string name="btn_saved">Сохранено!</string>
   <string name="btn_not_matching">Не совпадают</string>
+  <!--Shortcut Strings-->
+  <string name="shortcut_debug">Действия отладки</string>
   <!--Content Description-->
   <string name="cd_encrypt_files">Зашифровать файлы</string>
   <string name="cd_exchange_keys">Обмен ключами</string>
@@ -216,6 +218,8 @@
   <string name="label_experimental_settings_keybase_title">Подтверждение Keybase.io </string>
   <string name="label_experimental_settings_keybase_summary">Опрашивать keybase.io для подтверждения ключей и показывать это каждый раз при отображении ключей</string>
   <string name="label_experimental_settings_theme_summary">(Значки и многие экраны ещё не скорректированы для тёмной темы)</string>
+  <string name="label_settings_analytics_title">Разрешить отправку анонимной статистики</string>
+  <string name="label_settings_analytics_summary">Если данная функция включена, приложение будет отправлять анонимную статистику для помощи разработчикам</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Использовать Tor</string>
   <string name="pref_proxy_tor_summary">Требуется установка Orbot</string>
@@ -443,12 +447,8 @@
   <string name="progress_modify_passphrase">изменение пароля...</string>
   <string name="progress_modify_pin">смена PIN-кода…</string>
   <string name="progress_modify_admin_pin">изменение PIN-кода администратора…</string>
-  <plurals name="progress_exporting_key">
-    <item quantity="one">экспорт ключа...</item>
-    <item quantity="few">экспорт ключей...</item>
-    <item quantity="many">экспорт ключей...</item>
-    <item quantity="other">экспорт ключей...</item>
-  </plurals>
+  <string name="progress_exporting_key">экспорт ключа...</string>
+  <string name="progress_exporting_keys">экспорт ключей...</string>
   <string name="progress_start">подготовка действия...</string>
   <string name="progress_extracting_signature_key">извлечение подписи ключа...</string>
   <string name="progress_extracting_key">извлечение ключа...</string>
@@ -700,8 +700,6 @@
   <string name="user_id_info_certified_text">Эта идентичность была подтверждена вами.</string>
   <string name="user_id_info_uncertified_title">Не подтверждён</string>
   <string name="user_id_info_uncertified_text">Эта идентичность ещё не была подтверждена. Вы не можете быть уверены, соответствует ли идентичность действительно определённому человеку.</string>
-  <string name="user_id_info_invalid_title">Недействительно</string>
-  <string name="user_id_info_invalid_text">Что-то не так с идентификатором!</string>
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">Отсутствуют подтверждения из интернета о достоверности этого ключа.</string>
   <string name="key_trust_start_cloud_search">Начать поиск</string>
@@ -1162,6 +1160,7 @@
   <string name="msg_dc_error_invalid_data">Зашифрованные или подписанные данные OpenPGP не найдены!</string>
   <string name="msg_dc_error_io">Ошибка при открытии входного потока данных!</string>
   <string name="msg_dc_error_input">Ошибка при открытии входного потока данных!</string>
+  <string name="msg_dc_error_input_denied">Ошибка при открытии входящего потока данных: доступ запрещён!</string>
   <string name="msg_dc_error_no_data">Зашифрованные данные не найдены!</string>
   <string name="msg_dc_error_no_key">Зашифрованные данные с известным приватным ключом не найдены!</string>
   <string name="msg_dc_error_no_signature">Отсутствуют данные подписи!</string>
@@ -1445,8 +1444,8 @@
   <string name="first_time_blank_security_token">Вы хотите использовать этот пустой токен безопасности с OpenKeychain?\n\nПожалуйста, теперь уберите токен безопасности, вам сообщат, когда он снова понадобится!</string>
   <string name="first_time_blank_security_token_yes">Использовать этот токен безопасности</string>
   <string name="backup_text">Резервные копии, которые включают в себя ваши собственные ключи, никогда не должны использоваться совместно с другими людьми!</string>
-  <string name="backup_all">Все ключи + ваши собственные ключи</string>
-  <string name="backup_public_keys">Все ключи</string>
+  <string name="backup_all">Полное резервное копирование (зашифровано)</string>
+  <string name="backup_public_keys">Только экспорт ключей контактов</string>
   <string name="backup_section">Резервное копирование</string>
   <string name="restore_section">Восстановление</string>
   <!--unsorted-->
@@ -1942,5 +1941,31 @@
   <string name="key_import_text_autocrypt_setup_msg">Чтобы импортировать существующие настройки с другого устройства, вы также можете открыть сообщение настройки Autocrypt в %s.</string>
   <string name="button_goto_openkeychain">Перейти к OpenKeychain</string>
   <string name="backup_code_checkbox">На экране показан код резервной копии. Без него восстановить данную копию будет невозможно.</string>
-  <string name="msg_get_query_not_implemented">Сервер не поддерживает такой запрос! Некоторые серверы принимают только адреса электронной почты. Пожалуйста, перенастройте или попробуйте другой сервер.</string>
+  <string name="msg_get_query_not_implemented">Сервер не поддерживает текущий запрос! Некоторые серверы принимают только адреса электронной почты. Пожалуйста, измените запрос или попробуйте другой сервер.</string>
+  <string name="snack_keylist_clipboard_title">Обнаружены данные ключа в буфере обмена!</string>
+  <string name="snack_keylist_clipboard_action">Детали</string>
+  <string name="notify_channel_keysync">Обновление сервера ключей</string>
+  <string name="notify_channel_permission">Запросы разрешений</string>
+  <string name="notify_channel_passcache">Запоминание пароля</string>
+  <string name="notify_channel_orbot">Статус Orbot</string>
+  <string name="notify_title_keysync">Обновление ключей...</string>
+  <string name="notify_title_keysync_finished">Завершено обновление %d ключей</string>
+  <string name="notify_content_keysync">Ключ %d / %d</string>
+  <string name="snack_keysync_start">Запущено обновление всех ключей…</string>
+  <string name="snack_keysync_finished">Обновление ключей завершено успешно</string>
+  <string name="snack_keysync_error">Ошибка при обновлении всех ключей</string>
+  <string name="keychoice_cannot_encrypt">Данный ключ нельзя использовать для шифрования!</string>
+  <string name="keychoice_cannot_sign">Данный ключ нельзя использовать для подписи!</string>
+  <string name="keychoice_insecure">Данный ключ нельзя использовать, он небезопасен!</string>
+  <string name="keychoice_revoked">Данный ключ нельзя использовать, он отозван!</string>
+  <string name="keychoice_expired">Данный ключ нельзя использовать, срок его действия истёк!</string>
+  <string name="keylist_item_key_id">ID ключа: %s</string>
+  <string name="keylist_header_anonymous">Аноним</string>
+  <string name="keylist_header_special">#</string>
+  <string name="dialog_analytics_consent">Может ли OpenKeychain собирать анонимную статистику для улучшения работы приложения?\n\nЧтобы узнать больше, изучите нашу <a href="https://openkeychain.org/help/privacy-policy">Политику конфиденциальности</a>.</string>
+  <string name="button_analytics_yes">Да, я хочу помочь!</string>
+  <string name="button_analytics_no">Нет, спасибо</string>
+  <string name="snack_analytics_accept">Спасибо за помощь! Вы можете изменить данную функцию в настройках.</string>
+  <string name="snack_analytics_reject">Всё нормально, больше мы не будем спрашивать. Вы можете изменить своё мнение с помощью настроек.</string>
+  <string name="snackbutton_analytics_settings">Настройки</string>
 </resources>

@@ -10,6 +10,7 @@
   <!--section-->
   <!--button-->
   <string name="btn_proceed">ดำเนิน</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">การตั้งค่า</string>
@@ -99,4 +100,6 @@
   <string name="select_identity_cancel">ปิดการใช้งาน</string>
   <string name="key_gen_back">ย้อนกลับ</string>
   <string name="key_gen_finish">เสร็จ</string>
+  <string name="snack_keylist_clipboard_action">ดู</string>
+  <string name="snackbutton_analytics_settings">การตั้งค่า</string>
 </resources>

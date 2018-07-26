@@ -99,6 +99,7 @@
   <string name="btn_save_default">保存为默认值</string>
   <string name="btn_saved">已保存！</string>
   <string name="btn_not_matching">不匹配</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <string name="cd_encrypt_files">加密文件</string>
   <string name="cd_exchange_keys">交换密钥</string>
@@ -407,9 +408,7 @@
   <string name="progress_modify_passphrase">变更密码中…</string>
   <string name="progress_modify_pin">变更PIN码中…</string>
   <string name="progress_modify_admin_pin">变更管理者PIN码中…</string>
-  <plurals name="progress_exporting_key">
-    <item quantity="other">导出密钥中…</item>
-  </plurals>
+  <string name="progress_exporting_keys">导出密钥中…</string>
   <string name="progress_start">准备中…</string>
   <string name="progress_extracting_signature_key">提取签名密钥中…</string>
   <string name="progress_extracting_key">提取密钥中…</string>
@@ -604,8 +603,6 @@
   <string name="user_id_info_certified_text">该用户标识已被您验证</string>
   <string name="user_id_info_uncertified_title">未验证</string>
   <string name="user_id_info_uncertified_text">该用户标识还未被验证，您不能确定它是否属于指定的用户。</string>
-  <string name="user_id_info_invalid_title">不可用</string>
-  <string name="user_id_info_invalid_text">该用户标识存在问题！</string>
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">网上没有关于此密钥可信度的证明</string>
   <string name="key_trust_start_cloud_search">开始搜索</string>
@@ -1266,8 +1263,6 @@
   <string name="first_time_blank_security_token">您希望将此空白的安全令牌用于 OpenKeychain 吗？\n\n现在请将安全令牌移开，当再次需要时，我们会提示您！</string>
   <string name="first_time_blank_security_token_yes">使用该安全令牌</string>
   <string name="backup_text">含有您私钥的备份在任何情况下都不能分享给其他人！</string>
-  <string name="backup_all">所有密钥 + 您自己的密钥</string>
-  <string name="backup_public_keys">所有密钥</string>
   <string name="backup_section">备份</string>
   <string name="restore_section">恢复</string>
   <!--unsorted-->
@@ -1588,4 +1583,8 @@
   <string name="key_gen_progress">请稍候...</string>
   <string name="key_gen_back">返回</string>
   <string name="key_gen_finish">完成</string>
+  <string name="snack_keylist_clipboard_action">查看</string>
+  <string name="notify_title_keysync">更新密钥中…</string>
+  <string name="keylist_item_key_id">密钥 ID：%s</string>
+  <string name="snackbutton_analytics_settings">设置</string>
 </resources>

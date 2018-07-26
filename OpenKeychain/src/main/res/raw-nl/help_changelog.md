@@ -1,9 +1,9 @@
 [//]: # (Ter info: Zet iedere zin op een eigen regel, Transifex zet iedere regel in zijn eigen vertalingsveld!)
 
 ## 5.1
-  * Support for Ledger Nano S
-  * Support Web Key Directory (WKD) search
-  * Fixed potential API security issue
+  * Ondersteuning voor Ledger Nano S
+  * Ondersteuning voor zoeken in Web Key Directory (WKD)
+  * Mogelijke API-beveiligingsfout hersteld
 
 ## 5.0
   * Verbeterde ondersteuning voor Autocrypt

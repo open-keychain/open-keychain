@@ -5,6 +5,7 @@
   <!--title-->
   <!--section-->
   <!--button-->
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <!--menu-->
   <!--label-->
@@ -87,4 +88,6 @@
   <string name="button_back">Reen</string>
   <string name="key_gen_back">Reen</string>
   <string name="key_gen_finish">Fini</string>
+  <string name="snack_keylist_clipboard_action">Rigardi</string>
+  <string name="snackbutton_analytics_settings">Agordoj</string>
 </resources>

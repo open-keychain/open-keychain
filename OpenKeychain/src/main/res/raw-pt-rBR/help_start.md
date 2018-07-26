@@ -10,7 +10,7 @@ Para usar OpenKeychain com K-9 Mail, você terá seguir estes passos:
 Por favor reporte o bug utilizando o [rastreador de questões do OpenKeychain](https://github.com/openpgp-keychain/openpgp-keychain/issues).
 
 ## Contribua
-Se você deseja nos ajudar a desenvolver o OpenKeychain contribuindo com o codigo [Siga o nosso pequeno guia no Github](https://github.com/openpgp-keychain/openpgp-keychain#contribute-code).
+Se você deseja nos ajudar a desenvolver o OpenKeychain contribuindo com o código [Siga o nosso pequeno guia no Github](https://github.com/openpgp-keychain/openpgp-keychain#contribute-code).
 
 ## Traduções
 Ajude a traduzir o OpenKeychain! Todos podem participar em [OpenKeychain no Transifex](https://www.transifex.com/projects/p/open-keychain/).

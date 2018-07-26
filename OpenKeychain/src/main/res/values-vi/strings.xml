@@ -97,6 +97,7 @@
   <string name="btn_save_default">Lưu làm mặc định</string>
   <string name="btn_saved">Đã lưu lại</string>
   <string name="btn_not_matching">Không phù hợp</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <string name="cd_encrypt_files">Mã hóa tệp tin</string>
   <string name="cd_exchange_keys">Trao đổi khóa</string>
@@ -373,4 +374,7 @@
   <string name="key_gen_progress">Xin chờ...</string>
   <string name="key_gen_back">Lùi</string>
   <string name="key_gen_finish">Kết thúc</string>
+  <string name="snack_keylist_clipboard_action">Xem</string>
+  <string name="keylist_header_anonymous">Ẩn danh</string>
+  <string name="snackbutton_analytics_settings">Thiết đặt</string>
 </resources>

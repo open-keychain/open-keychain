@@ -99,6 +99,7 @@
   <string name="btn_save_default">Lagre som forvalg</string>
   <string name="btn_saved">Lagret!</string>
   <string name="btn_not_matching">Samsvarer ikke</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <string name="cd_encrypt_files">Krypter filer</string>
   <string name="cd_exchange_keys">Utveksle nøkler</string>
@@ -383,10 +384,7 @@
   <string name="progress_modify_passphrase">endrer passord…</string>
   <string name="progress_modify_pin">endrer PIN…</string>
   <string name="progress_modify_admin_pin">endrer administrator-PIN…</string>
-  <plurals name="progress_exporting_key">
-    <item quantity="one">eksporterer nøkkel…</item>
-    <item quantity="other">eksporterer nøkler…</item>
-  </plurals>
+  <string name="progress_exporting_keys">eksporterer nøkler…</string>
   <string name="progress_start">forbereder operasjon…</string>
   <string name="progress_extracting_signature_key">pakker ut signaturnøkkel…</string>
   <string name="progress_extracting_key">pakker ut nøkkel…</string>
@@ -547,8 +545,6 @@
   <string name="user_id_info_certified_text">Denne identiteten har blitt bekreftet av deg.</string>
   <string name="user_id_info_uncertified_title">Ikke bekreftet</string>
   <string name="user_id_info_uncertified_text">Denne identiteten har ikke blitt bekreftet enda. Du kan ikke være sikker på at identiteten faktisk samsvarer med en spesifikk person.</string>
-  <string name="user_id_info_invalid_title">Ugyldig</string>
-  <string name="user_id_info_invalid_text">Noe er galt med denne identiteten!</string>
   <!--Key trust-->
   <string name="key_trust_start_cloud_search">Begynn å søke</string>
   <!--keybase proof stuff-->
@@ -736,8 +732,6 @@
   <string name="first_time_security_token_subtitle">(Fidesmo, YubiKey NEO, SIGILANCE, osv.)</string>
   <string name="first_time_skip">Hopp over oppsett</string>
   <string name="backup_text">Sikkerhetskopier som inneholder dine egne nøkler, må aldri bli delt med andre folk!</string>
-  <string name="backup_all">Alle nøkler + dine egne nøkler</string>
-  <string name="backup_public_keys">Alle nøkler</string>
   <string name="backup_section">Sikkerhetskopier</string>
   <string name="restore_section">Gjenopprett</string>
   <!--unsorted-->
@@ -894,4 +888,9 @@
   <string name="select_identity_cancel">Skru av</string>
   <string name="key_gen_back">Tilbake</string>
   <string name="key_gen_finish">Ferdig</string>
+  <string name="snack_keylist_clipboard_action">Vis</string>
+  <string name="notify_title_keysync">oppdaterer nøkler…</string>
+  <string name="keylist_item_key_id">Nøkkel-ID: %s</string>
+  <string name="keylist_header_anonymous">Anonym</string>
+  <string name="snackbutton_analytics_settings">Innstillinger</string>
 </resources>

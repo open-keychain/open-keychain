@@ -82,6 +82,7 @@
   <string name="btn_add_keyserver">Lisää</string>
   <string name="btn_save_default">Tallenna oletukseksi</string>
   <string name="btn_saved">Tallennettu!</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <string name="cd_encrypt_files">Salaa Tiedostoja</string>
   <string name="cd_exchange_keys">Vaihda Avaimia</string>
@@ -274,7 +275,6 @@
   <string name="key_view_tab_keys">Aliavaimet</string>
   <string name="key_view_tab_certs">Varmenteet</string>
   <string name="user_id_info_revoked_title">Kumottu</string>
-  <string name="user_id_info_invalid_title">Virheellinen</string>
   <!--Key trust-->
   <!--keybase proof stuff-->
   <string name="keybase_verify">Todenna</string>
@@ -404,4 +404,8 @@
   <string name="select_identity_cancel">Poista käytöstä</string>
   <string name="key_gen_back">Takaisin</string>
   <string name="key_gen_finish">Loppu</string>
+  <string name="snack_keylist_clipboard_action">Näkymä</string>
+  <string name="notify_title_keysync">Päivitetään avaimia...</string>
+  <string name="keylist_header_anonymous">Anonyymi</string>
+  <string name="snackbutton_analytics_settings">Asetukset</string>
 </resources>

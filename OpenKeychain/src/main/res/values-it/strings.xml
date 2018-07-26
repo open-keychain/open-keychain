@@ -12,7 +12,7 @@
   <string name="title_edit_key">Modifica chiave</string>
   <string name="title_linked_create">Creare un\'identità collegata</string>
   <string name="title_preferences">Impostazioni</string>
-  <string name="title_api_registered_apps">Apps</string>
+  <string name="title_api_registered_apps">Applicazioni</string>
   <string name="title_key_server_preference">Server chiavi OpenPGP</string>
   <string name="title_change_passphrase">Cambia la password</string>
   <string name="title_share_fingerprint_with">Condivi impronta con...</string>
@@ -96,6 +96,7 @@
   <string name="btn_save_default">Salva come predefinito</string>
   <string name="btn_saved">Salvato!</string>
   <string name="btn_not_matching">Non corrispondono</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <string name="cd_encrypt_files">Codifica file</string>
   <string name="cd_exchange_keys">Scambia le chiavi</string>
@@ -401,10 +402,7 @@
   <string name="progress_modify_passphrase">cambiando la password...</string>
   <string name="progress_modify_pin">cambiando PIN...</string>
   <string name="progress_modify_admin_pin">cambiando Admin PIN...</string>
-  <plurals name="progress_exporting_key">
-    <item quantity="one">esportazione chiave...</item>
-    <item quantity="other">esportazione chiavi...</item>
-  </plurals>
+  <string name="progress_exporting_keys">esportazione chiavi...</string>
   <string name="progress_start">preparazione operazione...</string>
   <string name="progress_extracting_signature_key">estrazione chiavi di firma...</string>
   <string name="progress_extracting_key">estrazione chiave...</string>
@@ -618,8 +616,6 @@
   <string name="user_id_info_certified_text">Hai confermato questa identità.</string>
   <string name="user_id_info_uncertified_title">Non confermata</string>
   <string name="user_id_info_uncertified_text">Questa identità non è ancora stata confermata. Non puoi essere certo che l\'identità corrisponda effettivamente a una persona specifica.</string>
-  <string name="user_id_info_invalid_title">Non valido</string>
-  <string name="user_id_info_invalid_text">C\'è qualcosa che non va con questa identità!</string>
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">Nessuna prova da internet sull\'affidabilità di questa chiave.</string>
   <string name="key_trust_start_cloud_search">Avvia la ricerca</string>
@@ -1194,7 +1190,15 @@
   <string name="token_hint_admin_pin">Admin PIN</string>
   <string name="token_hint_new_pin">Nuovo PIN</string>
   <string name="select_identity_cancel">Disabilita</string>
+  <string name="key_list_import">Usa una chiave differente</string>
   <string name="key_gen_progress">Attendere…</string>
   <string name="key_gen_back">Indietro</string>
   <string name="key_gen_finish">Termina</string>
+  <string name="snack_keylist_clipboard_action">Mostra</string>
+  <string name="notify_channel_passcache">Memorizza password</string>
+  <string name="notify_title_keysync">Aggiorna chiavi...</string>
+  <string name="keylist_item_key_id">ID chiave: %s</string>
+  <string name="keylist_header_anonymous">Anonimo</string>
+  <string name="keylist_header_special">#</string>
+  <string name="snackbutton_analytics_settings">Impostazioni</string>
 </resources>

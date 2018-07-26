@@ -6,8 +6,8 @@ Följ dessa steg för att använda OpenKeychain tillsammans med K-9 Mail:
   2. Välj "Kontoinställningar", skrolla längst ner och klicka på "Kryptering".
   3. Klicka på "OpenPGP-leverantör" och välj OpenKeyChain från listan.
 
-## Jag hittade en bugg i OpenKeychain!
-Rapportera buggen genom att använda [problemspåraren för OpenKeychain](https://github.com/openpgp-keychain/openpgp-keychain/issues).
+## Jag hittade ett fel i OpenKeychain!
+Rapportera felet genom att använda [problembevakaren för OpenKeychain](https://github.com/openpgp-keychain/openpgp-keychain/issues).
 
 ## Bidra
 Om du vill hjälpa oss att utveckla OpenKeychain genom att bidra med kod [följ vår lilla guide på Github](https://github.com/openpgp-keychain/openpgp-keychain#contribute-code).

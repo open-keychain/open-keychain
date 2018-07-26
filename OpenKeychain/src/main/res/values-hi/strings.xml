@@ -37,9 +37,11 @@
   <string name="btn_back">पिछला</string>
   <string name="btn_no">नहीं</string>
   <string name="btn_create_key">कुंजी बनाएं</string>
+  <string name="btn_share_decrypted_text">शेयर</string>
   <string name="btn_copy_decrypted_text">क्लिपबोर्ड पर कॉपी करें</string>
   <string name="btn_unlock">अनलॉक</string>
   <string name="btn_add_keyserver">डालो</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">सेटिंग</string>
@@ -72,9 +74,12 @@
   <string name="orbot_start_dialog_cancel">रद्द करना</string>
   <!--choice-->
   <string name="choice_none">कुछ भी नहीं</string>
+  <string name="choice_1hour">1 घंटा</string>
   <string name="usage_encrypt">एन्क्रिप्ट</string>
   <string name="error">त्रुटि</string>
   <!--sentences-->
+  <string name="passphrase_for_symmetric_encryption">पास वर्ड दर्ज करें</string>
+  <string name="passphrase_for_any">पास वर्ड दर्ज करें</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -117,6 +122,7 @@
   <!--Key list-->
   <!--Key view-->
   <string name="key_view_tab_start">प्रारंभ</string>
+  <string name="key_view_tab_share">शेयर</string>
   <string name="key_view_tab_keys">उपकुंजियाँ</string>
   <!--Key trust-->
   <!--keybase proof stuff-->
@@ -165,6 +171,7 @@
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <string name="enter_passphrase">पास वर्ड दर्ज करें</string>
   <string name="passphrase">पासवर्ड</string>
   <string name="passphrase_again">फिर</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
@@ -178,8 +185,10 @@
   <string name="btn_finish">समाप्त</string>
   <string name="linked_title_github">गीथहब</string>
   <string name="linked_title_twitter">ट्विटर</string>
+  <string name="linked_button_retry">पुन: प्रयास करें</string>
   <string name="linked_button_view">राय</string>
   <string name="linked_text_error">त्रुटि</string>
+  <string name="share_log_dialog_share_button">शेयर</string>
   <string name="share_log_dialog_cancel_button">रद्द करना</string>
   <string name="menu_uids_save">बचाना</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">रद्द करना</string>
@@ -201,4 +210,6 @@
   <string name="select_identity_cancel">अक्षम</string>
   <string name="key_gen_back">पिछला</string>
   <string name="key_gen_finish">समाप्त</string>
+  <string name="snack_keylist_clipboard_action">राय</string>
+  <string name="snackbutton_analytics_settings">सेटिंग्स</string>
 </resources>

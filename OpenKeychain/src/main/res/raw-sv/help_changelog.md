@@ -1,9 +1,9 @@
 [//]: # (NOTERING: Var vänlig och sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
 
 ## 5.1
-  * Support for Ledger Nano S
-  * Support Web Key Directory (WKD) search
-  * Fixed potential API security issue
+  * Stöd för Ledger Nano S
+  * Stöd för Web Key Directory (WKD) sökning
+  * Åtgärdat potentiellt API-säkerhetsproblem
 
 ## 5.0
   * Förbättrat stöd för Autocrypt
@@ -118,7 +118,7 @@
 
 ## 3.3
 
-  * New decryption screen
+  * Ny dekrypteringsfönster
   * Decryption of multiple files at once
   * Better handling of YubiKey errors
 

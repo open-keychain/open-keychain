@@ -1,14 +1,14 @@
-[//]: # (NOTA: coloque cada frase em sua própria linha, Transifex coloca cada linha em seu próprio campo de tradução!)
+[//]: # (NOTA: coloque cada sentença em sua própria linha, o Transifex coloca cada linha em seu próprio campo de tradução!)
 
 [https://www.openkeychain.org](https://www.openkeychain.org)
 
-[OpenKeychain](https://www.openkeychain.org) é uma implementação OpenPGP para Android.
+O [OpenKeychain](https://www.openkeychain.org) é uma implementação OpenPGP para Android.
 
 Licença: GPLv3+
 
 [//]: # (NOTA: Ordem alfabética)
 
-## Desenvolvedores principais
+## Principais Desenvolvedores
   * Dominik Schürmann (Mantenedor)
   * Vincent Breitmoser
 
@@ -19,7 +19,7 @@ Licença: GPLv3+
   * Ash Hughes
   * 'mar-v-in'
   * Nikita Mikhailov
-  * 'Thialfihar' (APG desenvolvedor)
+  * 'Thialfihar' (desenvolvedor do APG)
   * Tim Bray
   * Tobias Erthal
 

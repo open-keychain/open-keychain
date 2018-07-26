@@ -100,6 +100,8 @@
   <string name="btn_save_default">Зберегти типово</string>
   <string name="btn_saved">Збережено!</string>
   <string name="btn_not_matching">Немає збігів</string>
+  <!--Shortcut Strings-->
+  <string name="shortcut_debug">Дії зневадження</string>
   <!--Content Description-->
   <string name="cd_encrypt_files">Зашифрувати файли</string>
   <string name="cd_exchange_keys">Обміняти ключі</string>
@@ -158,6 +160,7 @@
   <string name="label_key_id">ІД ключа</string>
   <string name="label_key_id_colon">Ідентифікатор ключа:</string>
   <string name="label_key_created">Створено %s</string>
+  <string name="label_key_created_just_now">Щойно створено</string>
   <string name="label_key_type">Тип</string>
   <string name="label_creation">Створення</string>
   <string name="label_creation_colon">Створення:</string>
@@ -168,6 +171,7 @@
   <string name="label_main_user_id">Первинна сутність</string>
   <string name="label_name">Назва</string>
   <string name="label_email">Ел. пошта</string>
+  <string name="label_send_key">Публікувати сертифікати на серверах ключів</string>
   <string name="label_fingerprint">Відбиток</string>
   <string name="expiry_date_dialog_title">Задати термін дії</string>
   <string name="label_keyservers_title">Сервери ключів</string>
@@ -176,6 +180,7 @@
   <string name="label_selected_smartpgp_authority_title">Обраний центр повноважень</string>
   <string name="label_preferred">бажаний</string>
   <string name="label_enable_compression">Увімкнути стиснення</string>
+  <string name="label_enable_self_encrypt">Зашифрувати до підписувача</string>
   <string name="label_encrypt_filenames">Шифрувати імена файлів</string>
   <string name="label_hidden_recipients">Сховати отримувачів</string>
   <string name="label_smartpgp_verify">SmartPGP: перевірка сертифікатів</string>
@@ -195,6 +200,8 @@
   <string name="pref_keybase_summary">Шукати ключі на keybase.io</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">Шукати ключі в Facebook за іменем користувача</string>
+  <string name="pref_wkd">Web Key Directory</string>
+  <string name="pref_wkd_summary">Пошук ключі за допомогою Web Key Directory</string>
   <string name="label_sync_settings_keyserver_title">Автоматичне оновлення ключа</string>
   <string name="label_sync_settings_keyserver_summary_on">Щотри дні ключі оновлюються з обраних серверів ключів</string>
   <string name="label_sync_settings_keyserver_summary_off">Ключі не оновлені автоматично</string>
@@ -309,6 +316,8 @@
   <string name="passphrase_for_any">Введіть пароль</string>
   <string name="passphrase_keyboard_hint_alpha">Перемкнути на алфавітну клавіатуру</string>
   <string name="passphrase_keyboard_hint_numeric">Перемкнути на цифрову клавіатуру</string>
+  <string name="passphrase_transfer">Введіть код передачі</string>
+  <string name="passphrase_transfer_autocrypt">Щоби імпортувати повідомлення налаштування Autocrypt, введіть код передачі:</string>
   <string name="pin_for">Введіть ПІН для \'%s\'</string>
   <string name="security_token_pin_for">Введіть ПІН для отримання доступу до маркера безпеки \'%s\'</string>
   <string name="security_token_nfc_text">Тримайте маркер безпеки навпроти позначки NFC зі зворотного боку Вашого пристрою.</string>
@@ -439,12 +448,8 @@
   <string name="progress_modify_passphrase">зміна паролю...</string>
   <string name="progress_modify_pin">змінюємо PIN…</string>
   <string name="progress_modify_admin_pin">зміна PIN адміністратора…</string>
-  <plurals name="progress_exporting_key">
-    <item quantity="one">експортується ключ…</item>
-    <item quantity="few">експортуються ключі…</item>
-    <item quantity="many">експортуються ключі…</item>
-    <item quantity="other">експортуються ключі…</item>
-  </plurals>
+  <string name="progress_exporting_key">експортується ключ…</string>
+  <string name="progress_exporting_keys">експортуються ключі…</string>
   <string name="progress_start">підготовка операції...</string>
   <string name="progress_extracting_signature_key">видобування ключа підпису…</string>
   <string name="progress_extracting_key">видобувається ключа…</string>
@@ -615,6 +620,7 @@
   <string name="intent_import_key">Імпортувати ключ з OpenKeychain</string>
   <string name="intent_send_encrypt">Зашифрувати з OpenKeychain</string>
   <string name="intent_send_decrypt">Розшифрувати з OpenKeychain</string>
+  <string name="intent_autocrypt_setup">Імпортувати повідомлення налаштування Autocrypt</string>
   <!--Remote API-->
   <string name="api_settings_show_info">Показати розширену інформацію</string>
   <string name="api_settings_hide_info">Сховати розширену інформацію</string>
@@ -682,6 +688,7 @@
   <string name="key_view_action_share_with">Поділитися із…</string>
   <string name="key_view_action_share_ssh_with">Поділитися відкритим ключем SSH із…</string>
   <string name="key_view_action_share_nfc">Поділитися через NFC</string>
+  <string name="key_view_action_upload">Публікувати на сервері ключів</string>
   <string name="key_view_tab_main">Основна інформація</string>
   <string name="key_view_tab_start">Початок</string>
   <string name="key_view_tab_share">Поділитися</string>
@@ -694,8 +701,6 @@
   <string name="user_id_info_certified_text">Ця сутність була затверджена Вами.</string>
   <string name="user_id_info_uncertified_title">Не підтверджений</string>
   <string name="user_id_info_uncertified_text">Ця ідентичність ще не підтверджена. Ви не можете бути впевнені, що ідентичність дійсно відповідає конкретній людині.</string>
-  <string name="user_id_info_invalid_title">Недійсна</string>
-  <string name="user_id_info_invalid_text">Щось неправильне у цій сутності!</string>
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">Немає підтверджень з Інтернету на надійність цього ключа.</string>
   <string name="key_trust_start_cloud_search">Почати пошук</string>
@@ -757,6 +762,7 @@
   <string name="edit_key_error_bad_security_token_curve">Крива не підтримує маркер безпеки!</string>
   <string name="edit_key_error_bad_security_token_stripped">Не можу перемістити ключ до маркера безпеки (ключ вже відділено чи переміщено на маркер безпеки)</string>
   <!--Create key-->
+  <string name="create_key_upload">Публікувати на серверах ключів</string>
   <string name="create_key_empty">Це поле - обов\'язкове</string>
   <string name="create_key_passphrases_not_equal">Паролі не збігаються</string>
   <string name="create_key_final_text">Ви ввели наступну сутність:</string>
@@ -1133,6 +1139,8 @@
   <string name="msg_dc_asym">Знайдено блок асиметрично зашифрованих даних для ключа %s</string>
   <string name="msg_dc_charset">Знайдено заголовок кодової сторінки: \'%s\'</string>
   <string name="msg_dc_backup_version">Знайдено заголовок версії резервного копіювання: \'%s\'</string>
+  <string name="msg_dc_passphrase_format">Знайдено заголовок у форматі парольної фрази: \'%s\'</string>
+  <string name="msg_dc_passphrase_begin">Знайдено заголовок початку парольної фрази: \'%s\'</string>
   <string name="msg_dc_clear_data">Обробка літеральних даних</string>
   <string name="msg_dc_clear_decompress">Розпакування стиснутих даних</string>
   <string name="msg_dc_clear_meta_file">Назва файла: %s</string>
@@ -1153,6 +1161,7 @@
   <string name="msg_dc_error_invalid_data">Відсутні дані, що зашифровані чи підписані OpenPGP!</string>
   <string name="msg_dc_error_io">Виявлена помилка читання вхідних даних!</string>
   <string name="msg_dc_error_input">Помилка відкриття вхідного потоку даних!</string>
+  <string name="msg_dc_error_input_denied">Помилка відкриття вхідного потоку даних: доступ заборонено!</string>
   <string name="msg_dc_error_no_data">Зашифрованих даних не знайдено у потоці!</string>
   <string name="msg_dc_error_no_key">Немає зашифрованих даних з відомим ключем в потоці!</string>
   <string name="msg_dc_error_no_signature">Відсутні дані підпису!</string>
@@ -1436,8 +1445,8 @@
   <string name="first_time_blank_security_token">Чи бажаєте Ви використовувати цей чистий маркер безпеки з OpenKeychain?\n\nБудь ласка, приберіть маркер безпеки зараз. Вам буде запропоновано його надати, коли він буде потрібен!</string>
   <string name="first_time_blank_security_token_yes">Використовувати цей маркер безпеки</string>
   <string name="backup_text">Резервна копія з Вашими особистими ключами не повинна бути поширена серед інших людей!</string>
-  <string name="backup_all">Всі ключі + мої ключі</string>
-  <string name="backup_public_keys">Всі ключі</string>
+  <string name="backup_all">Повне резервування (зашифровано)</string>
+  <string name="backup_public_keys">Експортувати лише ключі контактів</string>
   <string name="backup_section">Резервна копія</string>
   <string name="restore_section">Відновити</string>
   <!--unsorted-->
@@ -1552,6 +1561,8 @@
   <string name="snack_armor_off">Вивід закодовано як Бінарний</string>
   <string name="snack_compression_on">Стискання <b>увімкнено</b>.</string>
   <string name="snack_compression_off">Стискання <b>вимкнено</b>.</string>
+  <string name="snack_self_encrypt_on">Шифрування до підписувача <b>увімкнено</b>.</string>
+  <string name="snack_self_encrypt_off">Шифрування до підписувача <b>вимкнено</b>.</string>
   <string name="error_loading_keys">Помилка завантаження ключів!</string>
   <string name="error_empty_log">(помилка, порожній журнал)</string>
   <string name="error_reading_text">Не можу прочитати вхідні дані,  щоб розшифрувати!</string>
@@ -1657,6 +1668,7 @@
   <string name="backup_code_wrong">Код резервної копії, що ВИ надали некоректний!\nЧи коректно Ви його записали?</string>
   <string name="btn_backup_share">Поділитися резервною копією</string>
   <string name="btn_backup_save">Зберегти резервну копію</string>
+  <string name="btn_backup_export">Експортувати резервну копію</string>
   <string name="snack_backup_error_saving">Помилка створення резервної копії!</string>
   <string name="snack_backup_saved">Резервна копія збережена</string>
   <string name="snack_backup_exists">Резервна копія вже існує!</string>
@@ -1909,8 +1921,45 @@
   <string name="button_locate_nfc">Де мій зчитувач NFC?</string>
   <string name="label_usb_untested_summary">При увімкненні можуть використовуватися зчитувачі карток USB, що не тестовані належним чином.</string>
   <string name="label_usb_untested">Дозволити неперевірені пристрої USB</string>
+  <string name="use_key">Використовувати ключ: %s</string>
+  <string name="use_key_no_name">Використовувати ключ: <![CDATA[<no name>]]></string>
+  <string name="title_select_key">%s хоче налаштувати наскрізне шифрування для цієї адреси:</string>
   <string name="select_identity_cancel">Вимкнути</string>
+  <string name="select_identity_create">Створити ключ для мене</string>
+  <string name="error_save_key_internal">Внутрішня помилка збереження ключа!</string>
+  <string name="menu_list_unrelated_keys">Список непов\'язаних ключів</string>
+  <string name="no_keys_gen_title">Це нова адреса</string>
+  <string name="no_keys_gen_subtitle">Створити наскрізний ключ у OpenKeychain</string>
+  <string name="no_keys_import_title">У мене є ключ</string>
+  <string name="no_keys_import_subtitle">Імпортувати наскрізний ключ із іншого пристрою</string>
+  <string name="key_list_import">Використовувати інший ключ</string>
   <string name="key_gen_progress">Будь ласка, зачекайте ...</string>
   <string name="key_gen_back">Назад</string>
   <string name="key_gen_finish">Закінчити</string>
+  <string name="key_gen_done">Згенеровано наскрізний ключ!</string>
+  <string name="key_gen_finishing">Завершення налаштування...</string>
+  <string name="key_import_text">Щоб використовувати наскрізний ключ, його потрібно імпортувати в OpenKeychain.</string>
+  <string name="key_import_text_autocrypt_setup_msg">Щоб імпортувати ваші наявні налаштування з іншого пристрою, вам потрібно також відкрити повідомлення налаштування Autocrypt у %s.</string>
+  <string name="button_goto_openkeychain">Перейти на OpenKeychain</string>
+  <string name="backup_code_checkbox">Я записав цей резервний код. Без цього я не зможу відновити резервну копію.</string>
+  <string name="msg_get_query_not_implemented">Сервер не підтримує поточний запит! Деякі сервери приймають лише електронні адреси. Перевизначте або спробуйте інший сервер.</string>
+  <string name="snack_keylist_clipboard_title">Знайдено дані ключів у буфері обміну!</string>
+  <string name="snack_keylist_clipboard_action">Переглянути</string>
+  <string name="notify_channel_keysync">Оновлення сервера ключів</string>
+  <string name="notify_channel_passcache">Кеш парольної фрази</string>
+  <string name="notify_title_keysync">Оновлення ключів...</string>
+  <string name="notify_title_keysync_finished">Завершено оновлення %d ключів</string>
+  <string name="notify_content_keysync">Ключ %d / %d</string>
+  <string name="snack_keysync_start">Розпочато оновлення всіх ключів...</string>
+  <string name="snack_keysync_finished">Онвовлення ключів успішне</string>
+  <string name="snack_keysync_error">Трапилася помилка під час оновлення всіх ключів</string>
+  <string name="keychoice_cannot_encrypt">Цей ключ не можна використовувати для шифрування!</string>
+  <string name="keychoice_cannot_sign">Цей ключ не можна використовувати для підписування!</string>
+  <string name="keychoice_insecure">Цей ключ не можна використовувати, бо він небезпечний!</string>
+  <string name="keychoice_revoked">Цей ключ не можна використовувати, бо він відкликаний!</string>
+  <string name="keychoice_expired">Цей ключ не можна використовувати, бо він застарів!</string>
+  <string name="keylist_item_key_id">Ідентифікатор ключа: %s</string>
+  <string name="keylist_header_anonymous">Анонімно</string>
+  <string name="keylist_header_special">#</string>
+  <string name="snackbutton_analytics_settings">Налаштування</string>
 </resources>

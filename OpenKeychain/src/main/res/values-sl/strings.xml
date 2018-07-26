@@ -66,6 +66,7 @@
   <string name="btn_encrypt_text">Šifriraj besedilo</string>
   <string name="btn_add_email">Dodaj elektronske naslove</string>
   <string name="btn_add_keyserver">Dodaj</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <string name="cd_encrypt_files">Šifriraj datoteke</string>
   <string name="cd_encrypt_text">Šifriraj besedilo</string>
@@ -254,12 +255,7 @@
   <string name="progress_modify_subkeyrevoke">preklicevanje podključev...</string>
   <string name="progress_modify_subkeystrip">razstavljam podključe...</string>
   <string name="progress_modify_subkeyadd">dodajanje podključev...</string>
-  <plurals name="progress_exporting_key">
-    <item quantity="one">izvažam ključ...</item>
-    <item quantity="two">izvažam ključa...</item>
-    <item quantity="few">izvažam ključe...</item>
-    <item quantity="other">izvažam ključe...</item>
-  </plurals>
+  <string name="progress_exporting_keys">izvažam ključe...</string>
   <string name="progress_extracting_signature_key">izvlačim ključ za podpisovanje...</string>
   <string name="progress_extracting_key">izvlačim ključ...</string>
   <string name="progress_preparing_streams">pripravljam tokove...</string>
@@ -436,8 +432,6 @@
   <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">Preklican</string>
   <string name="user_id_info_revoked_text">Lastnik ključa je preklical to identiteto. Ta ni več veljavna.</string>
-  <string name="user_id_info_invalid_title">Neveljaven</string>
-  <string name="user_id_info_invalid_text">Nekaj je narobe s to identiteto!</string>
   <!--Key trust-->
   <string name="key_trust_start_cloud_search">Začni iskanje</string>
   <string name="key_trust_results_prefix">Keybase.io ponuja \"dokazilo\", da je lastnik tega kluča:</string>
@@ -816,4 +810,7 @@
   <string name="token_menu_view_log">Poglej dnevnik</string>
   <string name="key_gen_back">Nazaj</string>
   <string name="key_gen_finish">Končaj</string>
+  <string name="notify_channel_passcache">Hranjenje gesla v spominu</string>
+  <string name="notify_title_keysync">Posodabljam ključe...</string>
+  <string name="snackbutton_analytics_settings">Nastavitve</string>
 </resources>

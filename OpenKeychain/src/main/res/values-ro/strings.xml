@@ -60,6 +60,7 @@
   <string name="btn_proceed">Continua</string>
   <string name="btn_add_keyserver">Adaugă</string>
   <string name="btn_saved">Salvat!</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <string name="cd_encrypt_files">Criptează fișiere</string>
   <string name="cd_exchange_keys">Schimbă chei</string>
@@ -336,8 +337,6 @@
   <string name="first_time_security_token">Folosește un Token de Securitate</string>
   <string name="first_time_skip">Sari peste configurare</string>
   <string name="backup_text">Backup-urile care includ cheile proprii nu trebuiesc partajate niciodată cu alte persoane!</string>
-  <string name="backup_all">Toate cheile + cheile proprii</string>
-  <string name="backup_public_keys">Toate cheile</string>
   <string name="restore_section">Restaurare</string>
   <!--unsorted-->
   <string name="label_user_id">Identitate</string>
@@ -428,4 +427,8 @@
   <string name="select_identity_cancel">Dezactivează</string>
   <string name="key_gen_back">Înapoi</string>
   <string name="key_gen_finish">Termină</string>
+  <string name="snack_keylist_clipboard_action">Vizualizare</string>
+  <string name="keylist_header_anonymous">Anonim</string>
+  <string name="keylist_header_special">#</string>
+  <string name="snackbutton_analytics_settings">Setări</string>
 </resources>

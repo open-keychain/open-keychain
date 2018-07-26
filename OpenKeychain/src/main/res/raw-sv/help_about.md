@@ -17,9 +17,9 @@ Licens: GPLv3+
   * Andrea Torlaschi
   * Arnaud Fontaine
   * Ash Hughes
-  * 'mar-v-in'
+  * "mar-v-in"
   * Nikita Mikhailov
-  * 'Thialfihar' (APG-utvecklare)
+  * "Thialfihar" (APG-utvecklare)
   * Tim Bray
   * Tobias Erthal
 
@@ -28,23 +28,23 @@ Licens: GPLv3+
   * Andrea Torlaschi
   * Art O Cathain
   * Brian C. Barnes
-  * Bahtiar 'kalkin' Gadimov
+  * Bahtiar "kalkin" Gadimov
   * Daniel Albert
   * Daniel Hammann
   * Daniel Haß
   * Daniel Nelz
   * Daniel Ramos
   * Greg Witczak
-  * 'iseki'
+  * "iseki"
   * Ishan Khanna
-  * 'jellysheep'
-  * 'Jesperbk'
-  * 'jkolo'
+  * "jellysheep"
+  * "Jesperbk"
+  * "jkolo"
   * Joey Castillo
   * Kai Jiang
   * Kartik Arora
-  * 'Kent'
-  * 'ligi'
+  * "Kent"
+  * "ligi"
   * Lukas Zorich
   * Manoj Khanna
   * Markus Doits
@@ -54,7 +54,7 @@ Licens: GPLv3+
   * Nikhil Peter Raj
   * Paul Sarbinowski
   * Petter Arvidsson
-  * 'Senecaso'
+  * "Senecaso"
   * Signe Rüsch
   * Sreeram Boyapati
-  * 'steelman'
+  * "steelman"

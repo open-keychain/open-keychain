@@ -42,6 +42,7 @@
   <string name="btn_unlock">Tidak terkunci</string>
   <string name="btn_proceed">Lanjutkan</string>
   <string name="btn_add_keyserver">Tambahkan</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Pengaturan</string>
@@ -154,7 +155,6 @@
   <string name="key_view_tab_share">Share </string>
   <string name="key_view_tab_certs">Sertifikat</string>
   <string name="user_id_info_revoked_title">Dicabut</string>
-  <string name="user_id_info_invalid_title">Tidak Valid</string>
   <!--Key trust-->
   <!--keybase proof stuff-->
   <string name="keybase_verify">Verifikasi</string>
@@ -242,6 +242,7 @@
   <string name="keyserver_title_published">Telah dipublikasikan</string>
   <string name="button_import">impor</string>
   <string name="transfer_status_connected">Terhubung</string>
+  <string name="transfer_status_disconnected">Terputus!</string>
   <string name="transfer_connecting">Menyambung...</string>
   <string name="transfer_confirm_cancel">Batalkan</string>
   <string name="transfer_confirm_ok">Kirim</string>
@@ -252,4 +253,8 @@
   <string name="key_gen_progress">Silakan tunggu...</string>
   <string name="key_gen_back">Kembali</string>
   <string name="key_gen_finish">Selesai</string>
+  <string name="snack_keylist_clipboard_action">Lihat</string>
+  <string name="keylist_header_anonymous">Anonim</string>
+  <string name="keylist_header_special"># </string>
+  <string name="snackbutton_analytics_settings">Pengaturan</string>
 </resources>

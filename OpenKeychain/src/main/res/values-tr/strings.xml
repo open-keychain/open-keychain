@@ -57,6 +57,7 @@
   <string name="btn_unlock">Kilidi Aç</string>
   <string name="btn_proceed">Devam Et</string>
   <string name="btn_add_keyserver">Ekle</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <string name="cd_encrypt_files">Dosyaları şifrele</string>
   <string name="cd_encrypt_text">Metni şifrele</string>
@@ -227,10 +228,7 @@
   <string name="progress_modify_subkeyrevoke">altanahtarlar yürürlükten kaldırılıyor...</string>
   <string name="progress_modify_subkeystrip">altanahtarlar çıkarılıyor...</string>
   <string name="progress_modify_subkeyadd">altanahtarlar ekleniyor...</string>
-  <plurals name="progress_exporting_key">
-    <item quantity="one">anahtar dışa aktarılıyor...</item>
-    <item quantity="other">anahtarlar dışa aktarılıyor...</item>
-  </plurals>
+  <string name="progress_exporting_keys">anahtarlar dışa aktarılıyor...</string>
   <string name="progress_extracting_signature_key">imza anahtarı çıkarılıyor...</string>
   <string name="progress_extracting_key">anahtar çıkarılıyor...</string>
   <string name="progress_preparing_streams">akışlar hazırlanıyor...</string>
@@ -348,8 +346,6 @@
   <string name="key_view_tab_certs">Sertifikalar</string>
   <string name="user_id_info_revoked_title">Yürürlükten kaldırılmış</string>
   <string name="user_id_info_revoked_text">Bu kimlik anahtar sahibi tarafından yürürlükten kaldırılmış. Artık geçerli değil.</string>
-  <string name="user_id_info_invalid_title">Geçersiz</string>
-  <string name="user_id_info_invalid_text">Bu kimlikle ilgili yanlış olan bazı şeyler var!</string>
   <!--Key trust-->
   <!--keybase proof stuff-->
   <string name="keybase_verify">Doğrula</string>
@@ -526,4 +522,7 @@
   <string name="key_gen_progress">Lütfen bekleyin...</string>
   <string name="key_gen_back">Geri</string>
   <string name="key_gen_finish">Bitti</string>
+  <string name="snack_keylist_clipboard_action">Göster</string>
+  <string name="notify_channel_passcache">Parola önbelleği</string>
+  <string name="snackbutton_analytics_settings">Ayarlar</string>
 </resources>

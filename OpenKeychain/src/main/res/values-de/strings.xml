@@ -100,6 +100,8 @@
   <string name="btn_save_default">Als Standard speichern</string>
   <string name="btn_saved">Gespeichert!</string>
   <string name="btn_not_matching">Nicht übereinstimmend</string>
+  <!--Shortcut Strings-->
+  <string name="shortcut_debug">Debug-Aktionen</string>
   <!--Content Description-->
   <string name="cd_encrypt_files">Dateien verschlüsseln</string>
   <string name="cd_exchange_keys">Schlüssel austauschen</string>
@@ -216,6 +218,8 @@
   <string name="label_experimental_settings_keybase_title">Keybase.io-Nachweise</string>
   <string name="label_experimental_settings_keybase_summary">Keybase.io für Schlüsselnachweise kontaktieren und diese jedesmal zeigen, wenn ein Schlüssel angezeigt wird</string>
   <string name="label_experimental_settings_theme_summary">(Die Symbole und viele Bildschirme sind noch nicht an das dunkle Design angepasst)</string>
+  <string name="label_settings_analytics_title">Erlaube anonyme Benutzungsstatistiken</string>
+  <string name="label_settings_analytics_summary">Wenn aktiviert, sendet anonyme Benutzungsstatistiken, um dabei zu helfen, die App zu verbessern</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Tor aktivieren</string>
   <string name="pref_proxy_tor_summary">Orbot muss installiert sein</string>
@@ -434,10 +438,8 @@
   <string name="progress_modify_passphrase">Passwort wird geändert…</string>
   <string name="progress_modify_pin">PIN wird geändert…</string>
   <string name="progress_modify_admin_pin">Admin-PIN wird geändert…</string>
-  <plurals name="progress_exporting_key">
-    <item quantity="one">Schlüssel wird exportiert…</item>
-    <item quantity="other">Schlüssel werden exportiert…</item>
-  </plurals>
+  <string name="progress_exporting_key">exportiere Schlüssel...</string>
+  <string name="progress_exporting_keys">Schlüssel werden exportiert…</string>
   <string name="progress_start">Vorgang wird vorbereitet…</string>
   <string name="progress_extracting_signature_key">Signaturschlüssel wird extrahiert…</string>
   <string name="progress_extracting_key">Schlüssel wird extrahiert…</string>
@@ -661,8 +663,6 @@
   <string name="user_id_info_certified_text">Diese Identität wurde von dir bestätigt.</string>
   <string name="user_id_info_uncertified_title">Nicht bestätigt</string>
   <string name="user_id_info_uncertified_text">Diese Identität wurde noch nicht bestätigt. Du kannst nicht sicher sein, dass diese Identität wirklich zu einer bestimmten Person gehört.</string>
-  <string name="user_id_info_invalid_title">Ungültig</string>
-  <string name="user_id_info_invalid_text">Mit dieser Identität ist etwas nicht in Ordnung!</string>
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">Es gibt keinen Nachweis aus dem Internet zur Vertrauenswürdigkeit dieses Schlüssels.</string>
   <string name="key_trust_start_cloud_search">Suche beginnen</string>
@@ -1113,6 +1113,7 @@
   <string name="msg_dc_error_invalid_data">Es wurde kein gültiger OpenPGP-verschlüsselter oder -signierter Inhalt gefunden!</string>
   <string name="msg_dc_error_io">Beim Einlesen der Eingabedaten ist ein Fehler aufgetreten!</string>
   <string name="msg_dc_error_input">Fehler beim Öffnen des eingehenden Datenstroms!</string>
+  <string name="msg_dc_error_input_denied">Fehler beim Öffnen des eingehenden Datenstroms: Zugriff verweigert!</string>
   <string name="msg_dc_error_no_data">Keine verschlüsselten Daten im Datenstrom gefunden!</string>
   <string name="msg_dc_error_no_key">Es wurden keine verschlüsselten Daten eines bekannten privaten Schlüssels im Datenstrom gefunden!</string>
   <string name="msg_dc_error_no_signature">Signaturdaten fehlen!</string>
@@ -1380,8 +1381,8 @@
   <string name="first_time_blank_security_token">Diesen leeren Security-Token mit OpenKeychain verwenden?\n\nBitte entferne den Security-Token jetzt. Du wirst aufgefordert, wenn er erneut benötigt wird!</string>
   <string name="first_time_blank_security_token_yes">Diesen Security-Token verwenden</string>
   <string name="backup_text">Backups, die deine eigenen Schlüssel beinhalten, dürfen unter keinen Umständen an andere Personen weitergegeben werden.</string>
-  <string name="backup_all">Alle Schlüssel + deine eigenen Schlüssel</string>
-  <string name="backup_public_keys">Alle Schlüssel</string>
+  <string name="backup_all">Vollständiges Backup (verschlüsselt)</string>
+  <string name="backup_public_keys">Nur Schlüssel der Kontakte exportieren</string>
   <string name="backup_section">Backup</string>
   <string name="restore_section">Wiederherstellung</string>
   <!--unsorted-->
@@ -1740,7 +1741,7 @@ Ein sicherer Schlüssel sollte eine Stärke von 2048 Bits besitzen.</string>
   <string name="button_scan">Einlesen</string>
   <string name="button_more_info">Weitere Informationen</string>
   <string name="transfer_scan_explanation">Um Ihr Schlüssel-Setup zu teilen oder zu importieren, erstellen Sie eine sichere Verbindung durch Scannen mit beiden Geräten.</string>
-  <string name="transfer_scan_warning">Nur mit ihren eigenen Geräten verwenden!</string>
+  <string name="transfer_scan_warning">Nur mit Ihren eigenen Geräten verwenden!</string>
   <string name="connection_status">Verbindungsstatus:</string>
   <string name="section_transfer_keys">Für Transfer verfügbare Schlüssel</string>
   <string name="section_received_keys">Erhaltene Schlüssel</string>
@@ -1870,5 +1871,31 @@ Ein sicherer Schlüssel sollte eine Stärke von 2048 Bits besitzen.</string>
   <string name="key_import_text_autocrypt_setup_msg">Um ein existierendes Setup von einem anderen Gerät zu importieren, kann eine Autocrypt Setup Nachricht in %s geöffnet werden.</string>
   <string name="button_goto_openkeychain">Zu OpenKeychain gehen</string>
   <string name="backup_code_checkbox">Ich habe den Backup-Code aufgeschrieben. Ohne diesen werde ich das Backup nicht wiederherstellen können.</string>
-  <string name="msg_get_query_not_implemented">Der Server unterstützt die aktuelle Anfrage nicht! Manche Server akzeptieren nur E-Mail-Adressen. Bitte verändern Sie die Anfragen oder verwenden Sie einen anderen Server.</string>
+  <string name="msg_get_query_not_implemented">Der Server unterstützt die aktuelle Anfrage nicht! Manche Server akzeptieren nur E-Mail-Adressen. Bitte verändern Sie die Anfrage oder verwenden Sie einen anderen Server.</string>
+  <string name="snack_keylist_clipboard_title">Schlüsseldaten in der Zwischenablage gefunden!</string>
+  <string name="snack_keylist_clipboard_action">Ansicht</string>
+  <string name="notify_channel_keysync">Schlüsselserver aktualisieren</string>
+  <string name="notify_channel_permission">Berechtigungsanfragen</string>
+  <string name="notify_channel_passcache">Passwort-Cache</string>
+  <string name="notify_channel_orbot">Orbot-Status</string>
+  <string name="notify_title_keysync">Schlüssel werden aktualisiert...</string>
+  <string name="notify_title_keysync_finished">%d Schlüssel wurden aktualisiert </string>
+  <string name="notify_content_keysync">Schlüssel %d / %d</string>
+  <string name="snack_keysync_start">Aktualisierung aller Schlüssel gestartet....</string>
+  <string name="snack_keysync_finished">Schlüsselaktualisierung erfolgreich</string>
+  <string name="snack_keysync_error">Beim Aktualisieren der Schlüssel ist ein Fehler aufgetreten</string>
+  <string name="keychoice_cannot_encrypt">Dieser Schlüssel kann nicht zum Verschlüsseln verwendet werden!</string>
+  <string name="keychoice_cannot_sign">Dieser Schlüssel kann nicht zum Signieren verwendet werden!</string>
+  <string name="keychoice_insecure">Dieser Schlüssel kann nicht verwendet werden, da er unsicher ist!</string>
+  <string name="keychoice_revoked">Dieser Schlüssel kann nicht verwendet werden, da er widerrufen wurde!</string>
+  <string name="keychoice_expired">Dieser Schlüssel kann nicht verwendet werden, da er abgelaufen ist!</string>
+  <string name="keylist_item_key_id">Key ID: %s</string>
+  <string name="keylist_header_anonymous">Anonym</string>
+  <string name="keylist_header_special">#</string>
+  <string name="dialog_analytics_consent">Um die Erfahrung aller Benutzer zu verbessen, soll OpenKeychain anonyme Benutzungsstatistiken sammeln dürfen?\n\nUm mehr zu erfahren, schau in unsere<a href="https://openkeychain.org/help/privacy-policy">Privatsphärenrichtlinien</a>.</string>
+  <string name="button_analytics_yes">Ja, ich möchte helfen!</string>
+  <string name="button_analytics_no">Nein, danke</string>
+  <string name="snack_analytics_accept">Vielen Dank für die Hilfe! Du kannst deine Entscheidung in den Einstellungen ändern.</string>
+  <string name="snack_analytics_reject">Das ist in Ordnung, wir werden nicht erneut fragen. Du kannst deine Entscheidung in den Einstellungen ändern.</string>
+  <string name="snackbutton_analytics_settings">Einstellungen</string>
 </resources>

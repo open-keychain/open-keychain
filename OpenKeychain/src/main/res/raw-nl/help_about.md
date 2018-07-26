@@ -23,7 +23,7 @@ Licentie: GPLv3+
   * Tim Bray
   * Tobias Erthal
 
-## Occasionele medewerkers
+## Gelegenheidsbijdragers
   * Alex Fong Jie Wen
   * Andrea Torlaschi
   * Art O Cathain

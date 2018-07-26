@@ -31,6 +31,7 @@
   <string name="btn_unlock">Lås op</string>
   <string name="btn_proceed">Fortsæt</string>
   <string name="btn_add_keyserver">Tilføje</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Indstillinger</string>
@@ -213,4 +214,6 @@
   <string name="select_identity_cancel">Deaktivere</string>
   <string name="key_gen_back">Tilbage</string>
   <string name="key_gen_finish">Afslut</string>
+  <string name="snack_keylist_clipboard_action">Gennemse</string>
+  <string name="snackbutton_analytics_settings">Indstillinger</string>
 </resources>
