@@ -18,8 +18,10 @@
 package org.sufficientlysecure.keychain.ui;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
+import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,15 +31,19 @@ import android.os.Messenger;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.ViewAnimator;
 
+import eu.davidea.flexibleadapter.FlexibleAdapter;
+import eu.davidea.flexibleadapter.FlexibleAdapter.OnItemClickListener;
+import eu.davidea.flexibleadapter.items.IFlexible;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.model.SubKey;
@@ -45,52 +51,38 @@ import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Builder;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.ui.ViewKeyAdvActivity.ViewKeyAdvViewModel;
-import org.sufficientlysecure.keychain.ui.adapter.SubkeysAdapter;
-import org.sufficientlysecure.keychain.ui.adapter.SubkeysAddedAdapter;
+import org.sufficientlysecure.keychain.ui.adapter.SubkeyAddedItem;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.AddSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyDialogFragment;
 import org.sufficientlysecure.keychain.ui.dialog.EditSubkeyExpiryDialogFragment;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.DividerItemDecoration;
 
 
 public class ViewKeyAdvSubkeysFragment extends Fragment {
-    private ListView mSubkeysList;
-    private ListView mSubkeysAddedList;
-    private View mSubkeysAddedLayout;
-    private ViewAnimator mSubkeyAddFabLayout;
+    public static final int SUBKEY_TYPE_DETAIL = 1;
+    public static final int SUBKEY_TYPE_ADDED = 2;
 
-    private SubkeysAdapter mSubkeysAdapter;
-    private SubkeysAddedAdapter mSubkeysAddedAdapter;
+    private RecyclerView subkeysList;
+    private ViewAnimator subkeyAddFabLayout;
+
+    private FlexibleAdapter<IFlexible> subkeysAdapter;
 
     private CryptoOperationHelper<SaveKeyringParcel, EditKeyResult> mEditKeyHelper;
-
-    private SaveKeyringParcel.Builder mEditModeSkpBuilder;
-    private UnifiedKeyInfo unifiedKeyInfo;
+    private SubkeyEditViewModel subkeyEditViewModel;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup viewGroup, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.view_key_adv_subkeys_fragment, viewGroup, false);
 
-        mSubkeysList = view.findViewById(R.id.view_key_subkeys);
-        mSubkeysAddedList = view.findViewById(R.id.view_key_subkeys_added);
-        mSubkeysAddedLayout = view.findViewById(R.id.view_key_subkeys_add_layout);
+        subkeysList = view.findViewById(R.id.view_key_subkeys);
+        subkeysList.setLayoutManager(new LinearLayoutManager(requireContext()));
+        subkeysList.addItemDecoration(new DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL, false));
 
-        mSubkeysList.setOnItemClickListener((parent, view1, position, id) -> editSubkey(position));
-
-        View footer = new View(getActivity());
-        int spacing = (int) android.util.TypedValue.applyDimension(
-                android.util.TypedValue.COMPLEX_UNIT_DIP, 72, getResources().getDisplayMetrics()
-        );
-        android.widget.AbsListView.LayoutParams params = new android.widget.AbsListView.LayoutParams(
-                android.widget.AbsListView.LayoutParams.MATCH_PARENT,
-                spacing
-        );
-        footer.setLayoutParams(params);
-        mSubkeysAddedList.addFooterView(footer, null, false);
-
-        mSubkeyAddFabLayout = view.findViewById(R.id.view_key_subkey_fab_layout);
+                subkeyAddFabLayout = view.findViewById(R.id.view_key_subkey_fab_layout);
         view.findViewById(R.id.view_key_subkey_fab).setOnClickListener(v -> addSubkey());
 
         setHasOptionsMenu(true);
@@ -102,26 +94,32 @@ public class ViewKeyAdvSubkeysFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Create an empty adapter we will use to display the loaded data.
-        mSubkeysAdapter = new SubkeysAdapter(requireContext());
-        mSubkeysList.setAdapter(mSubkeysAdapter);
+        subkeysAdapter = new FlexibleAdapter<>(null, null, true);
+        subkeysAdapter.addListener((OnItemClickListener) (view, position) -> editSubkey(position));
+        subkeysList.setAdapter(subkeysAdapter);
 
         ViewKeyAdvViewModel viewModel = ViewModelProviders.of(requireActivity()).get(ViewKeyAdvViewModel.class);
-        viewModel.getUnifiedKeyInfoLiveData(requireContext()).observe(this, this::onLoadFinished);
+        viewModel.getUnifiedKeyInfoLiveData(requireContext()).observe(this, this::onLoadUnifiedKeyId);
         viewModel.getSubkeyLiveData(requireContext()).observe(this, this::onLoadSubKeys);
+
+        subkeyEditViewModel = ViewModelProviders.of(this).get(SubkeyEditViewModel.class);
     }
 
-    public void onLoadFinished(UnifiedKeyInfo unifiedKeyInfo) {
-        // Avoid NullPointerExceptions, if we get an empty result set.
-        if (unifiedKeyInfo == null) {
-            return;
-        }
+    public static class SubkeyEditViewModel extends ViewModel {
+        public Builder skpBuilder;
+        UnifiedKeyInfo unifiedKeyInfo;
+    }
 
-        this.unifiedKeyInfo = unifiedKeyInfo;
+    public void onLoadUnifiedKeyId(UnifiedKeyInfo unifiedKeyInfo) {
+        subkeyEditViewModel.unifiedKeyInfo = unifiedKeyInfo;
     }
 
     private void onLoadSubKeys(List<SubKey> subKeys) {
-        mSubkeysAdapter.setData(subKeys);
+        ArrayList<IFlexible> subKeyItems = new ArrayList<>(subKeys.size());
+        for (SubKey subKey : subKeys) {
+            subKeyItems.add(new SubKeyItem(subKey, subkeyEditViewModel));
+        }
+        subkeysAdapter.updateDataSet(subKeyItems);
     }
 
     @Override
@@ -152,16 +150,10 @@ public class ViewKeyAdvSubkeysFragment extends Fragment {
         activity.startActionMode(new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-
-                mEditModeSkpBuilder = SaveKeyringParcel.buildChangeKeyringParcel(unifiedKeyInfo.master_key_id(), unifiedKeyInfo.fingerprint());
-
-                mSubkeysAddedAdapter = new SubkeysAddedAdapter(
-                        getActivity(), mEditModeSkpBuilder.getMutableAddSubKeys(), false);
-                mSubkeysAddedList.setAdapter(mSubkeysAddedAdapter);
-                mSubkeysAddedLayout.setVisibility(View.VISIBLE);
-                mSubkeyAddFabLayout.setDisplayedChild(1);
-
-                mSubkeysAdapter.setEditMode(mEditModeSkpBuilder);
+                subkeyAddFabLayout.setDisplayedChild(1);
+                subkeyEditViewModel.skpBuilder = SaveKeyringParcel.buildChangeKeyringParcel(
+                        subkeyEditViewModel.unifiedKeyInfo.master_key_id(), subkeyEditViewModel.unifiedKeyInfo.fingerprint());
+                subkeysAdapter.notifyDataSetChanged();
 
                 mode.setTitle(R.string.title_edit_subkeys);
                 mode.getMenuInflater().inflate(R.menu.action_edit_uids, menu);
@@ -182,63 +174,60 @@ public class ViewKeyAdvSubkeysFragment extends Fragment {
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
-                mEditModeSkpBuilder = null;
-                mSubkeysAdapter.setEditMode(null);
-                mSubkeysAddedLayout.setVisibility(View.GONE);
-                mSubkeyAddFabLayout.setDisplayedChild(0);
+                subkeyEditViewModel.skpBuilder = null;
+                subkeysAdapter.removeItemsOfType(2);
+                subkeyAddFabLayout.setDisplayedChild(0);
+                subkeysAdapter.notifyDataSetChanged();
             }
         });
     }
 
     private void addSubkey() {
-        boolean willBeMasterKey;
-        if (mSubkeysAdapter != null) {
-            willBeMasterKey = mSubkeysAdapter.getCount() == 0 && mSubkeysAddedAdapter.getCount() == 0;
-        } else {
-            willBeMasterKey = mSubkeysAddedAdapter.getCount() == 0;
-        }
+        boolean willBeMasterKey = subkeysAdapter.getItemCount() == 0;
 
-        AddSubkeyDialogFragment addSubkeyDialogFragment =
-                AddSubkeyDialogFragment.newInstance(willBeMasterKey);
-        addSubkeyDialogFragment
-                .setOnAlgorithmSelectedListener(newSubkey -> mSubkeysAddedAdapter.add(newSubkey));
+        AddSubkeyDialogFragment addSubkeyDialogFragment = AddSubkeyDialogFragment.newInstance(willBeMasterKey);
+        addSubkeyDialogFragment.setOnAlgorithmSelectedListener(newSubkey -> {
+            subkeyEditViewModel.skpBuilder.addSubkeyAdd(newSubkey);
+            subkeysAdapter.addItem(new SubkeyAddedItem(newSubkey, subkeyEditViewModel));
+        });
         addSubkeyDialogFragment.show(requireFragmentManager(), "addSubkeyDialog");
     }
 
-    private void editSubkey(final int position) {
-        final SubKey subKey = mSubkeysAdapter.getItem(position);
+    private boolean editSubkey(final int position) {
+        if (subkeyEditViewModel.skpBuilder == null) {
+            return false;
+        }
+
+        IFlexible item = subkeysAdapter.getItem(position);
+        if (item instanceof SubKeyItem) {
+            editSubkey(position, ((SubKeyItem) item));
+        }
+
+        return false;
+    }
+
+    private void editSubkey(int position, SubKeyItem item) {
+        if (subkeyEditViewModel.skpBuilder.hasModificationsForSubkey(item.subkeyInfo.key_id())) {
+            return;
+        }
 
         Handler returnHandler = new Handler() {
             @Override
             public void handleMessage(Message message) {
                 switch (message.what) {
                     case EditSubkeyDialogFragment.MESSAGE_CHANGE_EXPIRY:
-                        editSubkeyExpiry(position);
+                        editSubkeyExpiry(item);
                         break;
                     case EditSubkeyDialogFragment.MESSAGE_REVOKE:
-                        // toggle
-                        if (mEditModeSkpBuilder.getMutableRevokeSubKeys().contains(subKey.key_id())) {
-                            mEditModeSkpBuilder.removeRevokeSubkey(subKey.key_id());
-                        } else {
-                            mEditModeSkpBuilder.addRevokeSubkey(subKey.key_id());
-                        }
+                        SubKey subKey = item.subkeyInfo;
+                        subkeyEditViewModel.skpBuilder.addRevokeSubkey(subKey.key_id());
                         break;
                     case EditSubkeyDialogFragment.MESSAGE_STRIP: {
-                        if (subKey.has_secret() == SecretKeyType.GNU_DUMMY) {
-                            // Key is already stripped; this is a no-op.
-                            break;
-                        }
-
-                        SubkeyChange change = mEditModeSkpBuilder.getSubkeyChange(subKey.key_id());
-                        if (change == null || !change.getDummyStrip()) {
-                            mEditModeSkpBuilder.addOrReplaceSubkeyChange(SubkeyChange.createStripChange(subKey.key_id()));
-                        } else {
-                            mEditModeSkpBuilder.removeSubkeyChange(change);
-                        }
+                        editSubkeyToggleStrip(item);
                         break;
                     }
                 }
-                mSubkeysAdapter.notifyDataSetChanged();
+                subkeysAdapter.notifyItemChanged(position);
             }
         };
 
@@ -246,15 +235,24 @@ public class ViewKeyAdvSubkeysFragment extends Fragment {
         final Messenger messenger = new Messenger(returnHandler);
 
         DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(() -> {
-            EditSubkeyDialogFragment dialogFragment =
-                    EditSubkeyDialogFragment.newInstance(messenger);
-
+            EditSubkeyDialogFragment dialogFragment = EditSubkeyDialogFragment.newInstance(messenger);
             dialogFragment.show(requireFragmentManager(), "editSubkeyDialog");
         });
     }
 
-    private void editSubkeyExpiry(final int position) {
-        SubKey subKey = mSubkeysAdapter.getItem(position);
+    private void editSubkeyToggleStrip(SubKeyItem item) {
+        SubKey subKey = item.subkeyInfo;
+        if (subKey.has_secret() == SecretKeyType.GNU_DUMMY) {
+            // Key is already stripped; this is a no-op.
+            return;
+        }
+
+        subkeyEditViewModel.skpBuilder.addOrReplaceSubkeyChange(SubkeyChange.createStripChange(subKey.key_id()));
+    }
+
+    private void editSubkeyExpiry(SubKeyItem item) {
+        SubKey subKey = item.subkeyInfo;
+
         final long keyId = subKey.key_id();
         final Long creationDate = subKey.creation();
         final Long expiryDate = subKey.expiry();
@@ -266,11 +264,11 @@ public class ViewKeyAdvSubkeysFragment extends Fragment {
                     case EditSubkeyExpiryDialogFragment.MESSAGE_NEW_EXPIRY:
                         Long expiry = (Long) message.getData().getSerializable(
                                 EditSubkeyExpiryDialogFragment.MESSAGE_DATA_EXPIRY);
-                        mEditModeSkpBuilder.addOrReplaceSubkeyChange(
+                        subkeyEditViewModel.skpBuilder.addOrReplaceSubkeyChange(
                                 SubkeyChange.createFlagsOrExpiryChange(keyId, null, expiry));
                         break;
                 }
-                mSubkeysAdapter.notifyDataSetChanged();
+                subkeysAdapter.notifyDataSetChanged();
             }
         };
 
@@ -292,7 +290,7 @@ public class ViewKeyAdvSubkeysFragment extends Fragment {
 
             @Override
             public SaveKeyringParcel createOperationInput() {
-                return mEditModeSkpBuilder.build();
+                return subkeyEditViewModel.skpBuilder.build();
             }
 
             @Override

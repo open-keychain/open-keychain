@@ -455,7 +455,6 @@ public abstract class OperationResult implements Parcelable {
         MSG_KC_SUB_BAD_ERR(LogLevel.WARN, R.string.msg_kc_sub_bad_err),
         MSG_KC_SUB_BAD_LOCAL(LogLevel.WARN, R.string.msg_kc_sub_bad_local),
         MSG_KC_SUB_BAD_KEYID(LogLevel.WARN, R.string.msg_kc_sub_bad_keyid),
-        MSG_KC_SUB_BAD_TIME(LogLevel.WARN, R.string.msg_kc_sub_bad_time),
         MSG_KC_SUB_BAD_TIME_EARLY(LogLevel.WARN, R.string.msg_kc_sub_bad_time_early),
         MSG_KC_SUB_BAD_TYPE(LogLevel.WARN, R.string.msg_kc_sub_bad_type),
         MSG_KC_SUB_DUP (LogLevel.DEBUG, R.string.msg_kc_sub_dup),

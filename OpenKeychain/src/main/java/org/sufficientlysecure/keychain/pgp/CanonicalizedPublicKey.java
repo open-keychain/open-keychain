@@ -134,9 +134,31 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
                 : PGPSignature.SUBKEY_REVOCATION).hasNext();
     }
 
-    public boolean isExpired () {
+    public boolean isExpired() {
         Date expiry = getExpiryTime();
         return expiry != null && expiry.before(new Date());
+    }
+
+    private boolean hasFutureSigningDate() {
+        if (isMasterKey()) {
+            return false;
+        }
+
+        WrappedSignature subkeyBindingSignature = getSubkeyBindingSignature();
+        return subkeyBindingSignature.getCreationTime().after(new Date());
+    }
+
+    private WrappedSignature getSubkeyBindingSignature() {
+        Iterator subkeyBindingSignatures = mPublicKey.getSignaturesOfType(PGPSignature.SUBKEY_BINDING);
+        PGPSignature singleSubkeyBindingsignature = (PGPSignature) subkeyBindingSignatures.next();
+        if (subkeyBindingSignatures.hasNext()) {
+            throw new IllegalStateException();
+        }
+        return new WrappedSignature(singleSubkeyBindingsignature);
+    }
+
+    public Date getBindingSignatureTime() {
+        return isMasterKey() ? getCreationTime() : getSubkeyBindingSignature().getCreationTime();
     }
 
     public boolean isSecure() {
@@ -206,7 +228,7 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
 
     /** Returns whether this key is valid, ie not expired or revoked. */
     public boolean isValid() {
-        return !isRevoked() && !isExpired();
+        return !isRevoked() && !isExpired() && !hasFutureSigningDate();
     }
 
     // For use in key export only; returns the public key in a JCA compatible format.

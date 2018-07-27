@@ -31,11 +31,13 @@ public abstract class SubKey implements KeysModel {
 
     public static SubKey create(long masterKeyId, long rank, long keyId, Integer keySize, String keyCurveOid,
             int algorithm, byte[] fingerprint, boolean canCertify, boolean canSign, boolean canEncrypt, boolean canAuth,
-            boolean isRevoked, SecretKeyType hasSecret, boolean isSecure, Date creation, Date expiry) {
+            boolean isRevoked, SecretKeyType hasSecret, boolean isSecure, Date creation, Date expiry,
+            Date validFrom) {
         long creationUnixTime = creation.getTime() / 1000;
         Long expiryUnixTime = expiry != null ? expiry.getTime() / 1000 : null;
+        long validFromTime = validFrom.getTime() / 1000;
         return new AutoValue_SubKey(masterKeyId, rank, keyId, keySize, keyCurveOid, algorithm, fingerprint, canCertify,
-                canSign, canEncrypt, canAuth, isRevoked, hasSecret, isSecure, creationUnixTime, expiryUnixTime);
+                canSign, canEncrypt, canAuth, isRevoked, hasSecret, isSecure, creationUnixTime, expiryUnixTime, validFromTime);
     }
 
     public static InsertKey createInsertStatement(SupportSQLiteDatabase db) {
@@ -53,7 +55,7 @@ public abstract class SubKey implements KeysModel {
     public void bindTo(InsertKey statement) {
         statement.bind(master_key_id(), rank(), key_id(), key_size(), key_curve_oid(), algorithm(), fingerprint(),
                 can_certify(), can_sign(), can_encrypt(), can_authenticate(), is_revoked(), has_secret(), is_secure(),
-                creation(), expiry());
+                creation(), expiry(), validFrom());
     }
 
     @AutoValue

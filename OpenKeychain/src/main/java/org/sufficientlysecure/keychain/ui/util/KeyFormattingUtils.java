@@ -158,6 +158,10 @@ public class KeyFormattingUtils {
                 return algorithmStr;
             }
 
+            case EDDSA: {
+                return "EdDSA";
+            }
+
             default: {
                 if (context != null) {
                     algorithmStr = context.getResources().getString(R.string.unknown);

@@ -54,8 +54,8 @@ public class KeyRepositorySaveTest {
         ShadowLog.stream = System.out;
     }
 
-    @Test public void testImportCooperPair() throws Exception {
-
+    @Test
+    public void testImportCooperPairOne() throws Exception {
         // insert two keys with same long key id, make sure the second one gets rejected either way!
         UncachedKeyRing first =
                 readRingFromResource("/test-keys/cooperpair/9E669861368BCA0BE42DAF7DDDA252EBB8EBE1AF.asc");
@@ -69,10 +69,18 @@ public class KeyRepositorySaveTest {
         Assert.assertTrue("first keyring import should succeed", result.success());
         result = KeyWritableRepository.create(RuntimeEnvironment.application).savePublicKeyRing(second);
         Assert.assertFalse("second keyring import should fail", result.success());
+    }
 
-        KeychainDatabase.getInstance(RuntimeEnvironment.application).clearDatabase();
+    @Test
+    public void testImportCooperPairTwo() throws Exception {
+        // insert two keys with same long key id, make sure the second one gets rejected either way!
+        UncachedKeyRing first =
+                readRingFromResource("/test-keys/cooperpair/9E669861368BCA0BE42DAF7DDDA252EBB8EBE1AF.asc");
+        UncachedKeyRing second =
+                readRingFromResource("/test-keys/cooperpair/A55120427374F3F7AA5F1166DDA252EBB8EBE1AF.asc");
 
-        // and the other way around
+        SaveKeyringResult result;
+
         result = KeyWritableRepository.create(RuntimeEnvironment.application).savePublicKeyRing(second);
         Assert.assertTrue("first keyring import should succeed", result.success());
         result = KeyWritableRepository.create(RuntimeEnvironment.application).savePublicKeyRing(first);
