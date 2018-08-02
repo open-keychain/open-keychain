@@ -106,6 +106,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
 import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Preferences;
+import org.sufficientlysecure.keychain.util.ShareKeyHelper;
 import timber.log.Timber;
 
 
@@ -139,6 +140,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
     private ImageButton actionEncryptFile;
     private ImageButton actionEncryptText;
+    private ImageButton actionShare;
+    private ImageButton actionShareClipboard;
     private FloatingActionButton floatingActionButton;
     private ImageView photoView;
     private FrameLayout photoLayout;
@@ -177,6 +180,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
         actionEncryptFile = findViewById(R.id.view_key_action_encrypt_files);
         actionEncryptText = findViewById(R.id.view_key_action_encrypt_text);
+        actionShare= findViewById(R.id.view_key_action_share);
+        actionShareClipboard = findViewById(R.id.view_key_action_share_clipboard);
         floatingActionButton = findViewById(R.id.fab);
         photoView = findViewById(R.id.view_key_photo);
         photoLayout = findViewById(R.id.view_key_photo_layout);
@@ -189,6 +194,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
         ContentDescriptionHint.setup(actionEncryptFile);
         ContentDescriptionHint.setup(actionEncryptText);
+        ContentDescriptionHint.setup(actionShare);
+        ContentDescriptionHint.setup(actionShareClipboard);
         ContentDescriptionHint.setup(floatingActionButton);
 
 
@@ -256,6 +263,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
         actionEncryptFile.setOnClickListener(v -> encrypt(false));
         actionEncryptText.setOnClickListener(v -> encrypt(true));
+        actionShare.setOnClickListener(v -> ShareKeyHelper.shareKey(this, unifiedKeyInfo));
+        actionShareClipboard.setOnClickListener(v -> ShareKeyHelper.shareKeyToClipboard(this, unifiedKeyInfo));
 
         floatingActionButton.setOnClickListener(v -> {
             if (unifiedKeyInfo.has_any_secret()) {
@@ -798,12 +807,16 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
             actionEncryptFile.setVisibility(View.VISIBLE);
             actionEncryptText.setVisibility(View.VISIBLE);
+            actionShare.setVisibility(View.VISIBLE);
+            actionShareClipboard.setVisibility(View.VISIBLE);
 
             showFab();
             floatingActionButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_white_24dp));
         } else {
             actionEncryptFile.setVisibility(View.VISIBLE);
             actionEncryptText.setVisibility(View.VISIBLE);
+            actionShare.setVisibility(View.VISIBLE);
+            actionShareClipboard.setVisibility(View.VISIBLE);
             qrCodeLayout.setVisibility(View.GONE);
 
             if (unifiedKeyInfo.is_verified()) {

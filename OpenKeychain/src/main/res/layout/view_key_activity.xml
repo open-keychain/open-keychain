@@ -111,6 +111,26 @@
                         android:src="@drawable/ic_action_encrypt_text_24dp"
                         android:visibility="invisible"
                         tools:visibility="visible" />
+
+                    <ImageButton
+                            android:id="@+id/view_key_action_share"
+                            android:contentDescription="@string/share_key"
+                            style="?android:attr/borderlessButtonStyle"
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:src="@drawable/ic_share_white_24dp"
+                            android:visibility="invisible"
+                            tools:visibility="visible"/>
+
+                    <ImageButton
+                            android:id="@+id/view_key_action_share_clipboard"
+                            android:contentDescription="@string/share_key_clipboard"
+                            style="?android:attr/borderlessButtonStyle"
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:src="?attr/actionModeCopyDrawable"
+                            android:visibility="invisible"
+                            tools:visibility="visible"/>
                 </LinearLayout>
 
                 <ImageView

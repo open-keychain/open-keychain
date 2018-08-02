@@ -2063,4 +2063,6 @@
     <string name="subkey_action_strip">Subkey will be stripped</string>
     <string name="subkey_action_expiry_never">Expiry will change to never</string>
     <string name="subkey_action_expiry_date">Expiry will change to %s</string>
+    <string name="share_key_clipboard">Share key via clipboard</string>
+    <string name="share_key">Share key</string>
 </resources>
