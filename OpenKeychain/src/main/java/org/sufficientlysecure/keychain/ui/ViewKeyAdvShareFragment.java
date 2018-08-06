@@ -18,12 +18,6 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.security.NoSuchAlgorithmException;
-
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.arch.lifecycle.LiveData;
@@ -38,7 +32,6 @@ import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -50,23 +43,17 @@ import android.view.animation.AlphaAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.livedata.GenericLiveData;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
-import org.sufficientlysecure.keychain.pgp.SshPublicKey;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.daos.KeyRepository;
-import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.ViewKeyAdvActivity.ViewKeyAdvViewModel;
 import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
-import timber.log.Timber;
+import org.sufficientlysecure.keychain.util.ShareKeyHelper;
 
 public class ViewKeyAdvShareFragment extends Fragment {
     private ImageView mQrCode;
@@ -121,12 +108,15 @@ public class ViewKeyAdvShareFragment extends Fragment {
 
         vFingerprintShareButton.setOnClickListener(v -> shareFingerprint(false));
         vFingerprintClipboardButton.setOnClickListener(v -> shareFingerprint(true));
-        vKeyShareButton.setOnClickListener(v -> shareKey(false, false));
-        vKeyClipboardButton.setOnClickListener(v -> shareKey(true, false));
+
+        vKeyShareButton.setOnClickListener(v -> ShareKeyHelper.shareKey(getActivity(), unifiedKeyInfo));
+
+        vKeyClipboardButton.setOnClickListener(v -> ShareKeyHelper.shareKeyToClipboard(getActivity(), unifiedKeyInfo));
 
         vKeySafeSlingerButton.setOnClickListener(v -> startSafeSlinger());
-        vKeySshShareButton.setOnClickListener(v -> shareKey(false, true));
-        vKeySshClipboardButton.setOnClickListener(v -> shareKey(true, true));
+        vKeySshShareButton.setOnClickListener(v -> ShareKeyHelper.shareSshKey(getActivity(), unifiedKeyInfo));
+
+        vKeySshClipboardButton.setOnClickListener(v -> ShareKeyHelper.shareSshKeyToClipboard(getActivity(), unifiedKeyInfo));
         vKeyUploadButton.setOnClickListener(v -> uploadToKeyserver());
 
         return view;
@@ -136,96 +126,6 @@ public class ViewKeyAdvShareFragment extends Fragment {
         Intent safeSlingerIntent = new Intent(getActivity(), SafeSlingerActivity.class);
         safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, unifiedKeyInfo.master_key_id());
         startActivityForResult(safeSlingerIntent, 0);
-    }
-
-    private String getShareKeyContent(boolean asSshKey)
-            throws KeyRepository.NotFoundException, IOException, PgpGeneralException, NoSuchAlgorithmException {
-
-        KeyRepository keyRepository = KeyRepository.create(requireContext());
-
-        String content;
-        if (asSshKey) {
-            long authSubKeyId = unifiedKeyInfo.has_auth_key_int();
-            CanonicalizedPublicKey publicKey = keyRepository.getCanonicalizedPublicKeyRing(unifiedKeyInfo.master_key_id())
-                                                            .getPublicKey(authSubKeyId);
-            SshPublicKey sshPublicKey = new SshPublicKey(publicKey);
-            content = sshPublicKey.getEncodedKey();
-        } else {
-            content = keyRepository.getPublicKeyRingAsArmoredString(unifiedKeyInfo.master_key_id());
-        }
-
-        return content;
-    }
-
-    private void shareKey(boolean toClipboard, boolean asSshKey) {
-        Activity activity = getActivity();
-        if (activity == null || unifiedKeyInfo == null) {
-            return;
-        }
-        if (asSshKey && !unifiedKeyInfo.has_auth_key()) {
-            Notify.create(activity, R.string.authentication_subkey_not_found, Style.ERROR).show();
-            return;
-        }
-
-        try {
-            String content = getShareKeyContent(asSshKey);
-
-            if (toClipboard) {
-                ClipboardManager clipMan = (ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
-                if (clipMan == null) {
-                    Notify.create(activity, R.string.error_clipboard_copy, Style.ERROR).show();
-                    return;
-                }
-
-                ClipData clip = ClipData.newPlainText(Constants.CLIPBOARD_LABEL, content);
-                clipMan.setPrimaryClip(clip);
-
-                Notify.create(activity, R.string.key_copied_to_clipboard, Notify.Style.OK).show();
-                return;
-            }
-
-            // let user choose application
-            Intent sendIntent = new Intent(Intent.ACTION_SEND);
-            sendIntent.setType(Constants.MIME_TYPE_KEYS);
-
-            // NOTE: Don't use Intent.EXTRA_TEXT to send the key
-            // better send it via a Uri!
-            // example: Bluetooth Share will convert text/plain sent via Intent.EXTRA_TEXT to HTML
-            try {
-                TemporaryFileProvider shareFileProv = new TemporaryFileProvider();
-
-                String filename;
-                if (unifiedKeyInfo.name() != null) {
-                    filename = unifiedKeyInfo.name();
-                } else {
-                    filename = KeyFormattingUtils.convertFingerprintToHex(unifiedKeyInfo.fingerprint());
-                }
-                Uri contentUri = TemporaryFileProvider.createFile(activity, filename + Constants.FILE_EXTENSION_ASC);
-
-                BufferedWriter contentWriter = new BufferedWriter(new OutputStreamWriter(
-                        new ParcelFileDescriptor.AutoCloseOutputStream(
-                                shareFileProv.openFile(contentUri, "w"))));
-                contentWriter.write(content);
-                contentWriter.close();
-
-                sendIntent.putExtra(Intent.EXTRA_STREAM, contentUri);
-            } catch (FileNotFoundException e) {
-                Timber.e(e, "Error creating temporary key share file!");
-                // no need for a snackbar because one sharing option doesn't work
-                // Notify.create(getActivity(), R.string.error_temp_file, Notify.Style.ERROR).show();
-            }
-
-            String title = getString(R.string.title_share_key);
-            Intent shareChooser = Intent.createChooser(sendIntent, title);
-
-            startActivity(shareChooser);
-        } catch (PgpGeneralException | IOException | NoSuchAlgorithmException e) {
-            Timber.e(e, "error processing key!");
-            Notify.create(activity, R.string.error_key_processing, Notify.Style.ERROR).show();
-        } catch (KeyRepository.NotFoundException e) {
-            Timber.e(e, "key not found!");
-            Notify.create(activity, R.string.error_key_not_found, Notify.Style.ERROR).show();
-        }
     }
 
     private void shareFingerprint(boolean toClipboard) {
