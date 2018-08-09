@@ -88,7 +88,7 @@ import static org.sufficientlysecure.keychain.service.SaveKeyringParcel.buildCha
 public class PgpKeyOperationTest {
 
     static UncachedKeyRing staticRing;
-    final static Passphrase passphrase = new Passphrase("passphrase");
+    final static Passphrase passphrase = TestingUtils.testPassphrase0;
 
     UncachedKeyRing ring;
     PgpKeyOperation op;
@@ -321,9 +321,6 @@ public class PgpKeyOperationTest {
 
         {
             Passphrase badphrase = new Passphrase();
-            if (badphrase.equals(passphrase)) {
-                badphrase = new Passphrase("a");
-            }
             builder.addUserId("allure");
 
             assertModifyFailure("keyring modification with bad passphrase should fail",
@@ -1152,7 +1149,7 @@ public class PgpKeyOperationTest {
                 PacketTags.SECRET_SUBKEY, sKeyNoPassphrase.tag);
 
         // modify keyring, change to non-empty passphrase
-        Passphrase otherPassphrase = TestingUtils.genPassphrase(true);
+        Passphrase otherPassphrase = TestingUtils.testPassphrase1;
         CryptoInputParcel otherCryptoInput = CryptoInputParcel.createCryptoInputParcel(otherPassphrase);
         builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(otherPassphrase));
         modified = applyModificationWithChecks(builder.build(), modified, onlyA, onlyB,
@@ -1179,7 +1176,7 @@ public class PgpKeyOperationTest {
         Assert.assertEquals("extracted packet should be a secret subkey",
                 PacketTags.SECRET_SUBKEY, sKeyNoPassphrase.tag);
 
-        Passphrase otherPassphrase2 = TestingUtils.genPassphrase(true);
+        Passphrase otherPassphrase2 = TestingUtils.testPassphrase2;
         builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(otherPassphrase2));
         {
             // if we replace a secret key with one without passphrase

@@ -57,8 +57,8 @@ import org.sufficientlysecure.keychain.util.TestingUtils;
 public class CertifyOperationTest {
 
     static UncachedKeyRing mStaticRing1, mStaticRing2;
-    static Passphrase mKeyPhrase1 = TestingUtils.genPassphrase(true);
-    static Passphrase mKeyPhrase2 = TestingUtils.genPassphrase(true);
+    static Passphrase mKeyPhrase1 = TestingUtils.testPassphrase1;
+    static Passphrase mKeyPhrase2 = TestingUtils.testPassphrase2;
 
     static PrintStream oldShadowStream;
 

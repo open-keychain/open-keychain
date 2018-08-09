@@ -23,6 +23,11 @@ import junit.framework.Assert;
 
 
 public class TestingUtils {
+
+    public static Passphrase testPassphrase0 = new Passphrase("This is a passphrase ☢☣☠☤☮☭⚗⚛⚿∰ℹ℻ ∇∙B=0 |ℕ|=ℵ₀");
+    public static Passphrase testPassphrase1 = new Passphrase("This is a different passphrase ☢☣☠☤☮☭⚗⚛⚿∰ℹ℻ |ℕ|=ℵ₀");
+    public static Passphrase testPassphrase2 = new Passphrase("This is a yet another passphrase ☢☣☠☤☮☭⚗⚛⚿∰ℹ℻");
+
     public static Passphrase genPassphrase(boolean noEmpty) {
         String chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789!@#$%^&*()-_=";
         Random r = new Random();

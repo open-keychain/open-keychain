@@ -79,11 +79,9 @@ import static org.mockito.Mockito.when;
 @RunWith(KeychainTestRunner.class)
 public class BackupOperationTest {
 
-    static Passphrase mPassphrase = TestingUtils.genPassphrase(true);
+    static Passphrase mPassphrase = TestingUtils.testPassphrase0;
 
     static UncachedKeyRing mStaticRing1, mStaticRing2;
-    static Passphrase mKeyPhrase1 = TestingUtils.genPassphrase(true);
-    static Passphrase mKeyPhrase2 = TestingUtils.genPassphrase(true);
 
     static PrintStream oldShadowStream;
 
@@ -104,7 +102,7 @@ public class BackupOperationTest {
             builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
                     Algorithm.ECDH, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.ENCRYPT_COMMS, 0L));
             builder.addUserId("snips");
-            builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(mKeyPhrase1));
+            builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(mPassphrase));
 
             PgpEditKeyResult result = op.createSecretKeyRing(builder.build());
             assertTrue("initial test key creation must succeed", result.success());

@@ -73,7 +73,7 @@ import static org.hamcrest.core.Is.is;
 @RunWith(KeychainTestRunner.class)
 public class PgpEncryptDecryptTest {
 
-    static Passphrase mSymmetricPassphrase = TestingUtils.genPassphrase(true);
+    static Passphrase mSymmetricPassphrase = TestingUtils.testPassphrase0;
 
     static UncachedKeyRing mStaticRing1, mStaticRing2, mStaticRingInsecure;
     static Passphrase mKeyPhrase1, mKeyPhrase2;
@@ -165,7 +165,7 @@ public class PgpEncryptDecryptTest {
     @Test
     public void testSymmetricEncryptDecrypt() {
 
-        String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
+        String plaintext = "dies ist ein plaintext ☭";
         byte[] ciphertext;
 
         { // encrypt data with a given passphrase
@@ -291,7 +291,7 @@ public class PgpEncryptDecryptTest {
     @Test
     public void testAsymmetricSignLiteral() {
 
-        String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
+        String plaintext = "dies ist ein plaintext ☭";
         byte[] ciphertext;
 
         { // encrypt data with key
@@ -346,7 +346,7 @@ public class PgpEncryptDecryptTest {
     @Test
     public void testAsymmetricSignCleartext() {
 
-        String plaintext = "dies ist ein\r\nplaintext\n ☭" + TestingUtils.genPassphrase(true);
+        String plaintext = "dies ist ein\r\nplaintext\n ☭";
         byte[] ciphertext;
 
         { // encrypt data with key
@@ -407,7 +407,7 @@ public class PgpEncryptDecryptTest {
     @Test
     public void testAsymmetricSignDetached() {
 
-        String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
+        String plaintext = "dies ist ein plaintext ☭";
         byte[] detachedSignature;
 
         { // encrypt data with key
@@ -464,7 +464,7 @@ public class PgpEncryptDecryptTest {
     @Test
     public void testAsymmetricEncryptDecrypt() {
 
-        String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
+        String plaintext = "dies ist ein plaintext ☭";
         byte[] ciphertext;
 
         { // encrypt data with key
@@ -563,7 +563,7 @@ public class PgpEncryptDecryptTest {
     @Test
     public void testMultiSubkeyEncryptSkipStripOrBadFlag() throws Exception {
 
-        String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
+        String plaintext = "dies ist ein plaintext ☭";
 
         byte[] ciphertext;
         long encKeyId1;
@@ -670,7 +670,7 @@ public class PgpEncryptDecryptTest {
     @Test
     public void testMultiSubkeyEncryptSkipRevoked() throws Exception {
 
-        String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
+        String plaintext = "dies ist ein plaintext ☭";
 
         { // revoke first encryption subkey of keyring in database
             SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildChangeKeyringParcel(
@@ -727,7 +727,7 @@ public class PgpEncryptDecryptTest {
     @Test
     public void testMultiAsymmetricEncryptDecrypt() {
 
-        String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
+        String plaintext = "dies ist ein plaintext ☭";
         byte[] ciphertext;
 
         { // encrypt data with a given passphrase
@@ -855,7 +855,7 @@ public class PgpEncryptDecryptTest {
     @Test
     public void testMultiAsymmetricSignEncryptDecryptVerify() {
 
-        String plaintext = "dies ist ein plaintext ☭" + TestingUtils.genPassphrase(true);
+        String plaintext = "dies ist ein plaintext ☭";
         byte[] ciphertext;
 
         { // encrypt data with a given passphrase
