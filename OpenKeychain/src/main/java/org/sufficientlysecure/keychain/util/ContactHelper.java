@@ -41,6 +41,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Email;
+import android.provider.ContactsContract.CommonDataKinds.Im;
 import android.provider.ContactsContract.Data;
 import android.support.v4.content.ContextCompat;
 import android.util.Patterns;
@@ -785,17 +786,29 @@ public class ContactHelper {
      */
     private void writeContactEmail(ArrayList<ContentProviderOperation> ops,
                                    long rawContactId, long masterKeyId) {
-        ContentProviderOperation deleteOp = selectByRawContactAndItemType(
+        ContentProviderOperation deleteEmailOp = selectByRawContactAndItemType(
                 ContentProviderOperation.newDelete(Data.CONTENT_URI), rawContactId, Email.CONTENT_ITEM_TYPE).build();
-        ops.add(deleteOp);
+        ops.add(deleteEmailOp);
+
+        ContentProviderOperation deleteJabberOp = selectByRawContactAndItemType(
+                ContentProviderOperation.newDelete(Data.CONTENT_URI), rawContactId, Im.CONTENT_ITEM_TYPE).build();
+        ops.add(deleteJabberOp);
 
         for (UserId userId : keyRepository.getUserIds(masterKeyId)) {
-            ContentProviderOperation insertOp =
-                    referenceRawContact(ContentProviderOperation.newInsert(Data.CONTENT_URI), rawContactId)
-                            .withValue(Data.MIMETYPE, Email.CONTENT_ITEM_TYPE)
-                            .withValue(Email.DATA, userId.email())
-                            .build();
-            ops.add(insertOp);
+            if (userId.email() != null) {
+                ContentProviderOperation.Builder builder = referenceRawContact(
+                        ContentProviderOperation.newInsert(Data.CONTENT_URI), rawContactId);
+
+                if (userId.email().startsWith("xmpp:")) {
+                    builder = builder.withValue(Data.MIMETYPE, Im.CONTENT_ITEM_TYPE)
+                            .withValue(Im.PROTOCOL, Im.PROTOCOL_JABBER)
+                            .withValue(Im.DATA, userId.email().substring(5));
+                } else {
+                    builder = builder.withValue(Data.MIMETYPE, Email.CONTENT_ITEM_TYPE)
+                            .withValue(Email.DATA, userId.email());
+                }
+                ops.add(builder.build());
+            }
         }
     }
 
