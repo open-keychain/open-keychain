@@ -139,6 +139,11 @@ public class KeyRepository extends AbstractDao {
         return mapSingleRow(query, SubKey.FACTORY.selectMasterKeyIdBySubkeyMapper());
     }
 
+    public Long getMasterKeyIdByAuthSubkeyId(long subKeyId) throws NotFoundException {
+        SqlDelightQuery query = SubKey.FACTORY.selectMasterKeyIdByAuthSubkey(subKeyId);
+        return mapSingleRowOrThrow(query, SubKey.FACTORY.selectMasterKeyIdByAuthSubkeyMapper());
+    }
+
     public UnifiedKeyInfo getUnifiedKeyInfo(long masterKeyId) {
         SqlDelightQuery query = SubKey.FACTORY.selectUnifiedKeyInfoByMasterKeyId(masterKeyId);
         return mapSingleRow(query, SubKey.UNIFIED_KEY_INFO_MAPPER);
