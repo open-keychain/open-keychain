@@ -1,0 +1,272 @@
+/*
+ * Copyright (C) 2017 Schürmann & Breitmoser GbR
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package org.sufficientlysecure.keychain.remote.ui.dialog;
+
+
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Dialog;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Drawable.ConstantState;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import com.mikepenz.materialdrawer.util.KeyboardUtil;
+import org.openintents.ssh.authentication.SshAuthenticationApi;
+import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.daos.ApiAppDao;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.livedata.GenericLiveData;
+import org.sufficientlysecure.keychain.model.SubKey;
+import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationActivity;
+import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectAuthenticationSubKeyPresenter.RemoteSelectAuthenticationSubKeyView;
+import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
+import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.DividerItemDecoration;
+import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerItemClickListener;
+
+import java.util.List;
+
+
+public class RemoteSelectAuthenticationSubKeyActivity extends FragmentActivity {
+    public static final String EXTRA_PACKAGE_NAME = "package_name";
+    public static final String EXTRA_MASTER_KEY_ID = "master_key_id";
+
+
+    private RemoteSelectAuthenticationSubKeyPresenter presenter;
+    private String packageName;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        presenter = new RemoteSelectAuthenticationSubKeyPresenter(getBaseContext(), this);
+
+        KeyboardUtil.hideKeyboard(this);
+
+        if (savedInstanceState == null) {
+            RemoteSelectAuthenticationSubKeyDialogFragment frag = new RemoteSelectAuthenticationSubKeyDialogFragment();
+            frag.show(getSupportFragmentManager(), "selectAuthenticationSubKeyDialog");
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        Intent intent = getIntent();
+        packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
+        long masterKeyId = intent.getLongExtra(EXTRA_MASTER_KEY_ID, 0);
+
+        SelectAuthSubKeyViewModel viewModel = ViewModelProviders.of(this).get(SelectAuthSubKeyViewModel.class);
+        viewModel.setPackageName(packageName);
+        viewModel.setMasterKeyId(masterKeyId);
+
+        presenter.setupFromViewModel(viewModel);
+    }
+
+    public static class SelectAuthSubKeyViewModel extends ViewModel {
+        private LiveData<List<SubKey>> keyInfoLiveData;
+        private String packageName;
+        private long masterKeyId;
+
+        public LiveData<List<SubKey>> getKeyInfoLiveData(Context context) {
+            if (keyInfoLiveData == null) {
+                keyInfoLiveData = new GenericLiveData<>(context, () -> {
+                    KeyRepository keyRepository = KeyRepository.create(context);
+                    return keyRepository.getAuthSubKeysByMasterKeyId(masterKeyId);
+                });
+            }
+            return keyInfoLiveData;
+        }
+
+        public void setMasterKeyId(long masterKeyId) {
+            this.masterKeyId = masterKeyId;
+        }
+
+        public void setPackageName(String packageName) {
+            this.packageName = packageName;
+        }
+
+        public String getPackageName() {
+            return packageName;
+        }
+    }
+
+    private void onKeySelected(long subKeyId) {
+        Intent callingIntent = getIntent();
+        Intent originalIntent = callingIntent.getParcelableExtra(
+                RemoteSecurityTokenOperationActivity.EXTRA_DATA);
+
+        ApiAppDao apiAppDao = ApiAppDao.getInstance(getBaseContext());
+        apiAppDao.addAllowedKeyIdForApp(packageName, subKeyId);
+
+//        originalIntent.putExtra(SshAuthenticationApi.EXTRA_KEY_ID, String.valueOf(subKeyId));
+        // BAD should be String
+        originalIntent.putExtra(SshAuthenticationApi.EXTRA_KEY_ID, subKeyId);
+
+        setResult(RESULT_OK, originalIntent);
+        finish();
+    }
+
+    public static class RemoteSelectAuthenticationSubKeyDialogFragment extends DialogFragment {
+        private RemoteSelectAuthenticationSubKeyPresenter presenter;
+        private RemoteSelectAuthenticationSubKeyView mvpView;
+
+        private Button buttonSelect;
+        private Button buttonCancel;
+        private RecyclerView keyChoiceList;
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            Activity activity = requireActivity();
+
+            ContextThemeWrapper theme = ThemeChanger.getDialogThemeWrapper(activity);
+            CustomAlertDialogBuilder alert = new CustomAlertDialogBuilder(theme);
+
+            LayoutInflater layoutInflater = LayoutInflater.from(theme);
+            @SuppressLint("InflateParams")
+            View view = layoutInflater.inflate(R.layout.api_remote_select_authentication_key, null, false);
+            alert.setView(view);
+
+            buttonSelect = view.findViewById(R.id.button_select);
+            buttonCancel = view.findViewById(R.id.button_cancel);
+
+            keyChoiceList = view.findViewById(R.id.authentication_key_list);
+            keyChoiceList.setLayoutManager(new LinearLayoutManager(activity));
+            keyChoiceList.addItemDecoration(
+                    new DividerItemDecoration(activity, DividerItemDecoration.VERTICAL_LIST, true));
+
+            setupListenersForPresenter();
+            mvpView = createMvpView(view, layoutInflater);
+
+            return alert.create();
+        }
+
+        @Override
+        public void onActivityCreated(Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+
+            presenter = ((RemoteSelectAuthenticationSubKeyActivity) requireActivity()).presenter;
+            presenter.setView(mvpView);
+        }
+
+        @Override
+        public void onCancel(DialogInterface dialog) {
+            super.onCancel(dialog);
+
+            if (presenter != null) {
+                presenter.onCancel();
+            }
+        }
+
+        @Override
+        public void onDismiss(DialogInterface dialog) {
+            super.onDismiss(dialog);
+
+            if (presenter != null) {
+                presenter.setView(null);
+                presenter = null;
+            }
+        }
+
+        @NonNull
+        private RemoteSelectAuthenticationSubKeyView createMvpView(View view, LayoutInflater layoutInflater) {
+            final ImageView iconClientApp = view.findViewById(R.id.icon_client_app);
+            final DialogSubKeyChoiceAdapter keyChoiceAdapter = new DialogSubKeyChoiceAdapter(requireContext(), layoutInflater);
+            keyChoiceList.setAdapter(keyChoiceAdapter);
+
+            return new RemoteSelectAuthenticationSubKeyView() {
+                @Override
+                public void finish(long subKeyId) {
+                    FragmentActivity activity = getActivity();
+                    if (activity == null) {
+                        return;
+                    }
+
+                    ((RemoteSelectAuthenticationSubKeyActivity)activity).onKeySelected(subKeyId);
+                }
+
+                @Override
+                public void finishAsCancelled() {
+                    FragmentActivity activity = getActivity();
+                    if (activity == null) {
+                        return;
+                    }
+
+                    activity.setResult(RESULT_CANCELED);
+                    activity.finish();
+                }
+
+                @Override
+                public void setTitleClientIcon(Drawable drawable) {
+                    iconClientApp.setImageDrawable(drawable);
+
+                    Resources resources = getResources();
+                    ConstantState constantState = drawable.getConstantState();
+                    Drawable iconSelected = constantState.newDrawable(resources);
+                    Drawable iconUnselected = constantState.newDrawable(resources);
+                    DrawableCompat.setTint(iconUnselected.mutate(), ResourcesCompat.getColor(resources, R.color.md_grey_300, null));
+
+                    keyChoiceAdapter.setSelectionDrawables(iconSelected, iconUnselected);
+                }
+
+                @Override
+                public void setKeyListData(List<SubKey> data) {
+                    keyChoiceAdapter.setData(data);
+                }
+
+                @Override
+                public void setActiveItem(Integer position) {
+                    keyChoiceAdapter.setActiveItem(position);
+                }
+
+                @Override
+                public void setEnableSelectButton(boolean enabled) {
+                    buttonSelect.setEnabled(enabled);
+                }
+            };
+        }
+
+        private void setupListenersForPresenter() {
+            buttonSelect.setOnClickListener(view -> presenter.onClickSelect());
+            buttonCancel.setOnClickListener(view -> presenter.onClickCancel());
+            keyChoiceList.addOnItemTouchListener(new RecyclerItemClickListener(getContext(),
+                    (view, position) -> presenter.onKeyItemClick(position)));
+        }
+    }
+}
