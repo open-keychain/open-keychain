@@ -164,7 +164,7 @@ public class SshAuthenticationService extends Service {
 
         // carries the metadata necessary for authentication
         AuthenticationData.Builder authData = AuthenticationData.builder();
-        authData.setAuthenticationMasterKeyId(requestKeyId);
+        authData.setAuthenticationMasterKeyId(masterKeyId);
         authData.setAuthenticationSubKeyId(authSubKeyId);
         authData.setHashAlgorithm(hashAlgorithmTag);
 
