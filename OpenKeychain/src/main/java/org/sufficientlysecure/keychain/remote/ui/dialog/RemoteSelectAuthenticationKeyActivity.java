@@ -120,17 +120,57 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
     }
 
     private void onKeySelected(long masterKeyId) {
+//        Intent callingIntent = getIntent();
+//        Intent originalIntent = callingIntent.getParcelableExtra(
+//                RemoteSecurityTokenOperationActivity.EXTRA_DATA);
+//
+//        ApiAppDao apiAppDao = ApiAppDao.getInstance(getBaseContext());
+//        apiAppDao.addAllowedKeyIdForApp(packageName, masterKeyId);
+//
+//        originalIntent.putExtra(SshAuthenticationApi.EXTRA_KEY_ID, String.valueOf(masterKeyId));
+//
+//        setResult(RESULT_OK, originalIntent);
+//        finish();
+
+        // ==============
         Intent callingIntent = getIntent();
         Intent originalIntent = callingIntent.getParcelableExtra(
                 RemoteSecurityTokenOperationActivity.EXTRA_DATA);
 
-        ApiAppDao apiAppDao = ApiAppDao.getInstance(getBaseContext());
-        apiAppDao.addAllowedKeyIdForApp(packageName, masterKeyId);
 
-        originalIntent.putExtra(SshAuthenticationApi.EXTRA_KEY_ID, String.valueOf(masterKeyId));
+        Intent intent = new Intent(getApplicationContext(), RemoteSelectAuthenticationSubKeyActivity.class);
+        intent.putExtra(RemoteSelectAuthenticationSubKeyActivity.EXTRA_PACKAGE_NAME, packageName);
+        intent.putExtra(RemoteSelectAuthenticationSubKeyActivity.EXTRA_MASTER_KEY_ID, masterKeyId);
+        intent.putExtra(RemoteSecurityTokenOperationActivity.EXTRA_DATA, originalIntent);
+        startActivityForResult(intent, 42);
+        // ==============
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        setResult(RESULT_OK, originalIntent);
-        finish();
+        if (requestCode == 42) {
+            Intent callingIntent = getIntent();
+            Intent originalIntent = callingIntent.getParcelableExtra(
+                    RemoteSecurityTokenOperationActivity.EXTRA_DATA);
+
+            long subKeyId;
+            if (data != null) {
+                subKeyId = data.getLongExtra(SshAuthenticationApi.EXTRA_KEY_ID, 0);
+            } else {
+                return;
+            }
+
+            // ======
+
+            ApiAppDao apiAppDao = ApiAppDao.getInstance(getBaseContext());
+            apiAppDao.addAllowedKeyIdForApp(packageName, subKeyId);
+
+            originalIntent.putExtra(SshAuthenticationApi.EXTRA_KEY_ID, String.valueOf(subKeyId));
+
+            setResult(RESULT_OK, originalIntent);
+            finish();
+        }
     }
 
     public static class RemoteSelectAuthenticationKeyDialogFragment extends DialogFragment {
