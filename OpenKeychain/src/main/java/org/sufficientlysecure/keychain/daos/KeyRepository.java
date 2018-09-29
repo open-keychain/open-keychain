@@ -185,6 +185,11 @@ public class KeyRepository extends AbstractDao {
         return mapAllRows(query, SubKey.SUBKEY_MAPPER);
     }
 
+    public List<SubKey> getAuthSubKeysByMasterKeyId(long masterKeyId) {
+        SqlDelightQuery query = SubKey.FACTORY.selectAuthSubkeysByMasterKeyId(masterKeyId);
+        return mapAllRows(query, SubKey.SUBKEY_MAPPER);
+    }
+
     public SecretKeyType getSecretKeyType(long keyId) throws NotFoundException {
         SqlDelightQuery query = SubKey.FACTORY.selectSecretKeyType(keyId);
         return mapSingleRowOrThrow(query, SubKey.SKT_MAPPER);
