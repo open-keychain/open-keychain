@@ -123,11 +123,9 @@ public class SshAuthenticationService extends Service {
             return errorIntent;
         }
 
-        // keyid == masterkeyid -> authkeyid
-        // keyId is the pgp master keyId, the keyId used will be the first authentication
-        // key in the keyring designated by the master keyId
         String keyIdString = data.getStringExtra(SshAuthenticationApi.EXTRA_KEY_ID);
-        long masterKeyId = Long.valueOf(keyIdString);
+        // requestKeyId is assumed to be a auth subkey id
+        long requestKeyId = Long.valueOf(keyIdString);
 
         int hashAlgorithmTag = getHashAlgorithm(data);
         if (hashAlgorithmTag == HASHALGORITHM_NONE) {
@@ -139,31 +137,38 @@ public class SshAuthenticationService extends Service {
             return createErrorResult(SshAuthenticationApiError.GENERIC_ERROR, "No challenge given");
         }
 
-        // carries the metadata necessary for authentication
-        AuthenticationData.Builder authData = AuthenticationData.builder();
-        authData.setAuthenticationMasterKeyId(masterKeyId);
-
+        long masterKeyId;
         long authSubKeyId;
         int authSubKeyAlgorithm;
         String authSubKeyCurveOid = null;
+
         try {
-            // get first usable subkey capable of authentication
-            authSubKeyId = mKeyRepository.getSecretAuthenticationId(masterKeyId);
+            masterKeyId = mKeyRepository.getMasterKeyIdByAuthSubkeyId(requestKeyId);
+        } catch (NotFoundException e) {
+            return createExceptionErrorResult(SshAuthenticationApiError.NO_SUCH_KEY,
+                    "Master key for sub key id not found", e);
+        }
+        authSubKeyId = requestKeyId;
+
+        try {
+            CanonicalizedPublicKey publicKey = getPublicKey(masterKeyId, authSubKeyId);
             // needed for encoding the resulting signature
-            authSubKeyAlgorithm = getPublicKey(masterKeyId).getAlgorithm();
+            authSubKeyAlgorithm = publicKey.getAlgorithm();
             if (authSubKeyAlgorithm == PublicKeyAlgorithmTags.ECDSA) {
-                authSubKeyCurveOid = getPublicKey(masterKeyId).getCurveOid();
+                authSubKeyCurveOid = publicKey.getCurveOid();
             }
         } catch (NotFoundException e) {
             return createExceptionErrorResult(SshAuthenticationApiError.NO_SUCH_KEY,
-                    "Key for master key id not found", e);
+                    "Authentication key for key id not found", e);
         }
 
+        // carries the metadata necessary for authentication
+        AuthenticationData.Builder authData = AuthenticationData.builder();
+        authData.setAuthenticationMasterKeyId(masterKeyId);
         authData.setAuthenticationSubKeyId(authSubKeyId);
+        authData.setHashAlgorithm(hashAlgorithmTag);
 
         authData.setAllowedAuthenticationKeyIds(getAllowedKeyIds());
-
-        authData.setHashAlgorithm(hashAlgorithmTag);
 
         CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
         if (inputParcel == null) {
@@ -217,8 +222,8 @@ public class SshAuthenticationService extends Service {
     }
 
     private Intent checkForKeyId(Intent data) {
-        long authMasterKeyId = getKeyId(data);
-        if (authMasterKeyId == Constants.key.none) {
+        long keyId = getKeyId(data);
+        if (keyId == Constants.key.none) {
             return createErrorResult(SshAuthenticationApiError.NO_KEY_ID,
                     "No key id in request");
         }
@@ -227,15 +232,15 @@ public class SshAuthenticationService extends Service {
 
     private long getKeyId(Intent data) {
         String keyIdString = data.getStringExtra(SshAuthenticationApi.EXTRA_KEY_ID);
-        long authMasterKeyId = Constants.key.none;
+        long keyId = Constants.key.none;
         if (keyIdString != null) {
             try {
-                authMasterKeyId = Long.valueOf(keyIdString);
+                keyId = Long.valueOf(keyIdString);
             } catch (NumberFormatException e) {
                 return Constants.key.none;
             }
         }
-        return authMasterKeyId;
+        return keyId;
     }
 
     private int getHashAlgorithm(Intent data) {
@@ -260,18 +265,20 @@ public class SshAuthenticationService extends Service {
     }
 
     private Intent getAuthenticationKey(Intent data) {
-        long masterKeyId = getKeyId(data);
-        if (masterKeyId != Constants.key.none) {
+        long subKeyId = getKeyId(data);
+        if (subKeyId != Constants.key.none) {
             String description;
 
+            long masterKeyId;
             try {
-                description = getDescription(masterKeyId);
+                masterKeyId = mKeyRepository.getMasterKeyIdByAuthSubkeyId(subKeyId);
             } catch (NotFoundException e) {
                 return createExceptionErrorResult(SshAuthenticationApiError.NO_SUCH_KEY,
-                        "Could not create description", e);
+                        "Master key for sub key id not found", e);
             }
+            description = getDescription(masterKeyId, subKeyId);
 
-            return new KeySelectionResponse(String.valueOf(masterKeyId), description).toIntent();
+            return new KeySelectionResponse(String.valueOf(subKeyId), description).toIntent();
         } else {
             return redirectToKeySelection(data);
         }
@@ -292,20 +299,17 @@ public class SshAuthenticationService extends Service {
     }
 
     private Intent getAuthenticationPublicKey(Intent data, boolean asSshKey) {
-        long masterKeyId = getKeyId(data);
-        if (masterKeyId != Constants.key.none) {
+        long keyId = getKeyId(data);
+        if (keyId != Constants.key.none) {
             try {
                 if (asSshKey) {
-                    return getSSHPublicKey(masterKeyId);
+                    return getSSHPublicKey(keyId);
                 } else {
-                    return getX509PublicKey(masterKeyId);
+                    return getX509PublicKey(keyId);
                 }
             } catch (KeyRepository.NotFoundException e) {
                 return createExceptionErrorResult(SshAuthenticationApiError.NO_SUCH_KEY,
                         "Key for master key id not found", e);
-            } catch (PgpKeyNotFoundException e) {
-                return createExceptionErrorResult(SshAuthenticationApiError.NO_AUTH_KEY,
-                        "Authentication key for master key id not found in keychain", e);
             } catch (NoSuchAlgorithmException e) {
                 return createExceptionErrorResult(SshAuthenticationApiError.INVALID_ALGORITHM,
                         "Algorithm not supported", e);
@@ -316,13 +320,14 @@ public class SshAuthenticationService extends Service {
         }
     }
 
-    private Intent getX509PublicKey(long masterKeyId) throws KeyRepository.NotFoundException, PgpKeyNotFoundException, NoSuchAlgorithmException {
+    private Intent getX509PublicKey(long subKeyId) throws KeyRepository.NotFoundException, NoSuchAlgorithmException {
         byte[] encodedPublicKey;
         int algorithm;
 
         PublicKey publicKey;
         try {
-            publicKey = getPublicKey(masterKeyId).getJcaPublicKey();
+            long masterKeyId = mKeyRepository.getMasterKeyIdByAuthSubkeyId(subKeyId);
+            publicKey = getPublicKey(masterKeyId, subKeyId).getJcaPublicKey();
         } catch (PgpGeneralException e) { // this should probably never happen
             return createExceptionErrorResult(SshAuthenticationApiError.GENERIC_ERROR,
                     "Error converting public key", e);
@@ -350,10 +355,11 @@ public class SshAuthenticationService extends Service {
         }
     }
 
-    private Intent getSSHPublicKey(long masterKeyId) throws KeyRepository.NotFoundException, PgpKeyNotFoundException {
+    private Intent getSSHPublicKey(long subKeyId) throws KeyRepository.NotFoundException {
         String sshPublicKeyBlob;
 
-        CanonicalizedPublicKey publicKey = getPublicKey(masterKeyId);
+        long masterKeyId = mKeyRepository.getMasterKeyIdByAuthSubkeyId(subKeyId);
+        CanonicalizedPublicKey publicKey = getPublicKey(masterKeyId, subKeyId);
 
         SshPublicKey sshPublicKey = new SshPublicKey(publicKey);
         try {
@@ -366,20 +372,14 @@ public class SshAuthenticationService extends Service {
         return new SshPublicKeyResponse(sshPublicKeyBlob).toIntent();
     }
 
-    private CanonicalizedPublicKey getPublicKey(long masterKeyId) throws NotFoundException {
+    private CanonicalizedPublicKey getPublicKey(long masterKeyId, long authSubKeyId) throws NotFoundException {
         KeyRepository keyRepository = KeyRepository.create(getApplicationContext());
-        UnifiedKeyInfo unifiedKeyInfo = keyRepository.getUnifiedKeyInfo(masterKeyId);
-        if (unifiedKeyInfo == null) {
-            throw new NotFoundException();
-        }
-        return keyRepository.getCanonicalizedPublicKeyRing(masterKeyId).getPublicKey(unifiedKeyInfo.has_auth_key_int());
+        return keyRepository.getCanonicalizedPublicKeyRing(masterKeyId).getPublicKey(authSubKeyId);
     }
 
-    private String getDescription(long masterKeyId) throws NotFoundException {
-        UnifiedKeyInfo unifiedKeyInfo = mKeyRepository.getUnifiedKeyInfo(masterKeyId);
-
+    private String getDescription(long masterKeyId, long authSubKeyId) {
         String description = "";
-        long authSubKeyId = mKeyRepository.getSecretAuthenticationId(masterKeyId);
+        UnifiedKeyInfo unifiedKeyInfo = mKeyRepository.getUnifiedKeyInfo(masterKeyId);
         description += unifiedKeyInfo.user_id();
         description += " (" + Long.toHexString(authSubKeyId) + ")";
 

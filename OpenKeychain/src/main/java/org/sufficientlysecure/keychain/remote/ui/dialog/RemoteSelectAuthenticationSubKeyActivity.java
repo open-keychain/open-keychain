@@ -18,8 +18,6 @@
 package org.sufficientlysecure.keychain.remote.ui.dialog;
 
 
-import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
@@ -45,27 +43,29 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-
 import com.mikepenz.materialdrawer.util.KeyboardUtil;
 import org.openintents.ssh.authentication.SshAuthenticationApi;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.livedata.GenericLiveData;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.SubKey;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationActivity;
-import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectAuthenticationKeyPresenter.RemoteSelectAuthenticationKeyView;
+import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectAuthenticationSubKeyPresenter.RemoteSelectAuthenticationSubKeyView;
 import org.sufficientlysecure.keychain.ui.dialog.CustomAlertDialogBuilder;
 import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.DividerItemDecoration;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerItemClickListener;
 
+import java.util.List;
 
-public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
+
+public class RemoteSelectAuthenticationSubKeyActivity extends FragmentActivity {
     public static final String EXTRA_PACKAGE_NAME = "package_name";
+    public static final String EXTRA_MASTER_KEY_ID = "master_key_id";
 
 
-    private RemoteSelectAuthenticationKeyPresenter presenter;
+    private RemoteSelectAuthenticationSubKeyPresenter presenter;
     private String packageName;
 
 
@@ -73,13 +73,13 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        presenter = new RemoteSelectAuthenticationKeyPresenter(getBaseContext(), this);
+        presenter = new RemoteSelectAuthenticationSubKeyPresenter(getBaseContext(), this);
 
         KeyboardUtil.hideKeyboard(this);
 
         if (savedInstanceState == null) {
-            RemoteSelectAuthenticationKeyDialogFragment frag = new RemoteSelectAuthenticationKeyDialogFragment();
-            frag.show(getSupportFragmentManager(), "selectAuthenticationKeyDialog");
+            RemoteSelectAuthenticationSubKeyDialogFragment frag = new RemoteSelectAuthenticationSubKeyDialogFragment();
+            frag.show(getSupportFragmentManager(), "selectAuthenticationSubKeyDialog");
         }
     }
 
@@ -89,25 +89,32 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
 
         Intent intent = getIntent();
         packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME);
+        long masterKeyId = intent.getLongExtra(EXTRA_MASTER_KEY_ID, 0);
 
-        SelectAuthKeyViewModel viewModel = ViewModelProviders.of(this).get(SelectAuthKeyViewModel.class);
+        SelectAuthSubKeyViewModel viewModel = ViewModelProviders.of(this).get(SelectAuthSubKeyViewModel.class);
         viewModel.setPackageName(packageName);
+        viewModel.setMasterKeyId(masterKeyId);
 
         presenter.setupFromViewModel(viewModel);
     }
 
-    public static class SelectAuthKeyViewModel extends ViewModel {
-        private LiveData<List<UnifiedKeyInfo>> keyInfoLiveData;
+    public static class SelectAuthSubKeyViewModel extends ViewModel {
+        private LiveData<List<SubKey>> keyInfoLiveData;
         private String packageName;
+        private long masterKeyId;
 
-        public LiveData<List<UnifiedKeyInfo>> getKeyInfoLiveData(Context context) {
+        public LiveData<List<SubKey>> getKeyInfoLiveData(Context context) {
             if (keyInfoLiveData == null) {
                 keyInfoLiveData = new GenericLiveData<>(context, () -> {
                     KeyRepository keyRepository = KeyRepository.create(context);
-                    return keyRepository.getAllUnifiedKeyInfoWithSecret();
+                    return keyRepository.getAuthSubKeysByMasterKeyId(masterKeyId);
                 });
             }
             return keyInfoLiveData;
+        }
+
+        public void setMasterKeyId(long masterKeyId) {
+            this.masterKeyId = masterKeyId;
         }
 
         public void setPackageName(String packageName) {
@@ -119,63 +126,25 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
         }
     }
 
-    private void onKeySelected(long masterKeyId) {
-//        Intent callingIntent = getIntent();
-//        Intent originalIntent = callingIntent.getParcelableExtra(
-//                RemoteSecurityTokenOperationActivity.EXTRA_DATA);
-//
-//        ApiAppDao apiAppDao = ApiAppDao.getInstance(getBaseContext());
-//        apiAppDao.addAllowedKeyIdForApp(packageName, masterKeyId);
-//
-//        originalIntent.putExtra(SshAuthenticationApi.EXTRA_KEY_ID, String.valueOf(masterKeyId));
-//
-//        setResult(RESULT_OK, originalIntent);
-//        finish();
-
-        // ==============
+    private void onKeySelected(long subKeyId) {
         Intent callingIntent = getIntent();
         Intent originalIntent = callingIntent.getParcelableExtra(
                 RemoteSecurityTokenOperationActivity.EXTRA_DATA);
 
+        ApiAppDao apiAppDao = ApiAppDao.getInstance(getBaseContext());
+        apiAppDao.addAllowedKeyIdForApp(packageName, subKeyId);
 
-        Intent intent = new Intent(getApplicationContext(), RemoteSelectAuthenticationSubKeyActivity.class);
-        intent.putExtra(RemoteSelectAuthenticationSubKeyActivity.EXTRA_PACKAGE_NAME, packageName);
-        intent.putExtra(RemoteSelectAuthenticationSubKeyActivity.EXTRA_MASTER_KEY_ID, masterKeyId);
-        intent.putExtra(RemoteSecurityTokenOperationActivity.EXTRA_DATA, originalIntent);
-        startActivityForResult(intent, 42);
-        // ==============
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+//        originalIntent.putExtra(SshAuthenticationApi.EXTRA_KEY_ID, String.valueOf(subKeyId));
+        // BAD should be String
+        originalIntent.putExtra(SshAuthenticationApi.EXTRA_KEY_ID, subKeyId);
 
-        if (requestCode == 42) {
-            Intent callingIntent = getIntent();
-            Intent originalIntent = callingIntent.getParcelableExtra(
-                    RemoteSecurityTokenOperationActivity.EXTRA_DATA);
-
-            long subKeyId;
-            if (data != null) {
-                subKeyId = data.getLongExtra(SshAuthenticationApi.EXTRA_KEY_ID, 0);
-            } else {
-                return;
-            }
-
-            // ======
-
-            ApiAppDao apiAppDao = ApiAppDao.getInstance(getBaseContext());
-            apiAppDao.addAllowedKeyIdForApp(packageName, subKeyId);
-
-            originalIntent.putExtra(SshAuthenticationApi.EXTRA_KEY_ID, String.valueOf(subKeyId));
-
-            setResult(RESULT_OK, originalIntent);
-            finish();
-        }
+        setResult(RESULT_OK, originalIntent);
+        finish();
     }
 
-    public static class RemoteSelectAuthenticationKeyDialogFragment extends DialogFragment {
-        private RemoteSelectAuthenticationKeyPresenter presenter;
-        private RemoteSelectAuthenticationKeyView mvpView;
+    public static class RemoteSelectAuthenticationSubKeyDialogFragment extends DialogFragment {
+        private RemoteSelectAuthenticationSubKeyPresenter presenter;
+        private RemoteSelectAuthenticationSubKeyView mvpView;
 
         private Button buttonSelect;
         private Button buttonCancel;
@@ -212,7 +181,7 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
         public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
 
-            presenter = ((RemoteSelectAuthenticationKeyActivity) requireActivity()).presenter;
+            presenter = ((RemoteSelectAuthenticationSubKeyActivity) requireActivity()).presenter;
             presenter.setView(mvpView);
         }
 
@@ -236,20 +205,20 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
         }
 
         @NonNull
-        private RemoteSelectAuthenticationKeyView createMvpView(View view, LayoutInflater layoutInflater) {
+        private RemoteSelectAuthenticationSubKeyView createMvpView(View view, LayoutInflater layoutInflater) {
             final ImageView iconClientApp = view.findViewById(R.id.icon_client_app);
-            final DialogKeyChoiceAdapter keyChoiceAdapter = new DialogKeyChoiceAdapter(requireContext(), layoutInflater);
+            final DialogSubKeyChoiceAdapter keyChoiceAdapter = new DialogSubKeyChoiceAdapter(requireContext(), layoutInflater);
             keyChoiceList.setAdapter(keyChoiceAdapter);
 
-            return new RemoteSelectAuthenticationKeyView() {
+            return new RemoteSelectAuthenticationSubKeyView() {
                 @Override
-                public void finish(long masterKeyId) {
+                public void finish(long subKeyId) {
                     FragmentActivity activity = getActivity();
                     if (activity == null) {
                         return;
                     }
 
-                    ((RemoteSelectAuthenticationKeyActivity)activity).onKeySelected(masterKeyId);
+                    ((RemoteSelectAuthenticationSubKeyActivity)activity).onKeySelected(subKeyId);
                 }
 
                 @Override
@@ -277,7 +246,7 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
                 }
 
                 @Override
-                public void setKeyListData(List<UnifiedKeyInfo> data) {
+                public void setKeyListData(List<SubKey> data) {
                     keyChoiceAdapter.setData(data);
                 }
 
