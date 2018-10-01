@@ -148,7 +148,7 @@ public class SshAuthenticationService extends Service {
         String authSubKeyCurveOid = null;
         try {
             // get first usable subkey capable of authentication
-            authSubKeyId = mKeyRepository.getSecretAuthenticationId(masterKeyId);
+            authSubKeyId = mKeyRepository.getEffectiveAuthenticationKeyId(masterKeyId);
             // needed for encoding the resulting signature
             authSubKeyAlgorithm = getPublicKey(masterKeyId).getAlgorithm();
             if (authSubKeyAlgorithm == PublicKeyAlgorithmTags.ECDSA) {
@@ -350,12 +350,11 @@ public class SshAuthenticationService extends Service {
         }
     }
 
-    private Intent getSSHPublicKey(long masterKeyId) throws KeyRepository.NotFoundException, PgpKeyNotFoundException {
-        String sshPublicKeyBlob;
-
+    private Intent getSSHPublicKey(long masterKeyId) throws KeyRepository.NotFoundException {
         CanonicalizedPublicKey publicKey = getPublicKey(masterKeyId);
 
         SshPublicKey sshPublicKey = new SshPublicKey(publicKey);
+        String sshPublicKeyBlob;
         try {
             sshPublicKeyBlob = sshPublicKey.getEncodedKey();
         } catch (PgpGeneralException | NoSuchAlgorithmException e) {
@@ -368,18 +367,15 @@ public class SshAuthenticationService extends Service {
 
     private CanonicalizedPublicKey getPublicKey(long masterKeyId) throws NotFoundException {
         KeyRepository keyRepository = KeyRepository.create(getApplicationContext());
-        UnifiedKeyInfo unifiedKeyInfo = keyRepository.getUnifiedKeyInfo(masterKeyId);
-        if (unifiedKeyInfo == null) {
-            throw new NotFoundException();
-        }
-        return keyRepository.getCanonicalizedPublicKeyRing(masterKeyId).getPublicKey(unifiedKeyInfo.has_auth_key_int());
+        long authKeyId = keyRepository.getEffectiveAuthenticationKeyId(masterKeyId);
+        return keyRepository.getCanonicalizedPublicKeyRing(masterKeyId).getPublicKey(authKeyId);
     }
 
     private String getDescription(long masterKeyId) throws NotFoundException {
         UnifiedKeyInfo unifiedKeyInfo = mKeyRepository.getUnifiedKeyInfo(masterKeyId);
 
         String description = "";
-        long authSubKeyId = mKeyRepository.getSecretAuthenticationId(masterKeyId);
+        long authSubKeyId = mKeyRepository.getEffectiveAuthenticationKeyId(masterKeyId);
         description += unifiedKeyInfo.user_id();
         description += " (" + Long.toHexString(authSubKeyId) + ")";
 

@@ -18,6 +18,12 @@
 package org.sufficientlysecure.keychain.util;
 
 
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.security.NoSuchAlgorithmException;
+
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -25,9 +31,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
+import android.support.annotation.Nullable;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.SshPublicKey;
@@ -37,32 +46,33 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import timber.log.Timber;
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.security.NoSuchAlgorithmException;
-
 public class ShareKeyHelper {
 
-    private static String getKeyContent(UnifiedKeyInfo unifiedKeyInfo, KeyRepository keyRepository)
-            throws KeyRepository.NotFoundException, IOException {
-
-        return keyRepository.getPublicKeyRingAsArmoredString(unifiedKeyInfo.master_key_id());
+    @Nullable
+    private static String getKeyContent(long masterKeyId, KeyRepository keyRepository) throws IOException {
+        try {
+            return keyRepository.getPublicKeyRingAsArmoredString(masterKeyId);
+        } catch (NotFoundException e) {
+            return null;
+        }
     }
 
-    private static String getSshKeyContent(UnifiedKeyInfo unifiedKeyInfo, KeyRepository keyRepository)
-            throws KeyRepository.NotFoundException, PgpGeneralException, NoSuchAlgorithmException {
+    @Nullable
+    private static String getSshKeyContent(long masterKeyId, KeyRepository keyRepository)
+            throws PgpGeneralException, NoSuchAlgorithmException {
+        try {
+            long authSubKeyId = keyRepository.getEffectiveAuthenticationKeyId(masterKeyId);
+            CanonicalizedPublicKey publicKey = keyRepository.getCanonicalizedPublicKeyRing(masterKeyId)
+                    .getPublicKey(authSubKeyId);
+            SshPublicKey sshPublicKey = new SshPublicKey(publicKey);
 
-        long authSubKeyId = unifiedKeyInfo.has_auth_key_int();
-        CanonicalizedPublicKey publicKey = keyRepository.getCanonicalizedPublicKeyRing(unifiedKeyInfo.master_key_id())
-                .getPublicKey(authSubKeyId);
-        SshPublicKey sshPublicKey = new SshPublicKey(publicKey);
-
-        return sshPublicKey.getEncodedKey();
+            return sshPublicKey.getEncodedKey();
+        } catch (NotFoundException e) {
+            return null;
+        }
     }
 
-    private static void shareKeyIntent(Activity activity, UnifiedKeyInfo unifiedKeyInfo, String content) throws IOException {
+    private static void shareKeyIntent(Activity activity, long masterKeyId, String content) throws IOException {
         // let user choose application
         Intent sendIntent = new Intent(Intent.ACTION_SEND);
         sendIntent.setType(Constants.MIME_TYPE_KEYS);
@@ -72,6 +82,8 @@ public class ShareKeyHelper {
         // example: Bluetooth Share will convert text/plain sent via Intent.EXTRA_TEXT to HTML
         try {
             TemporaryFileProvider shareFileProv = new TemporaryFileProvider();
+
+            UnifiedKeyInfo unifiedKeyInfo = KeyRepository.create(activity).getUnifiedKeyInfo(masterKeyId);
 
             String filename;
             if (unifiedKeyInfo.name() != null) {
@@ -113,63 +125,63 @@ public class ShareKeyHelper {
         Notify.create(activity, R.string.key_copied_to_clipboard, Notify.Style.OK).show();
     }
 
-    private static void shareKey(Activity activity, UnifiedKeyInfo unifiedKeyInfo, boolean toClipboard) {
-        if (activity == null || unifiedKeyInfo == null) {
+    private static void shareKey(Activity activity, long masterKeyId, boolean toClipboard) {
+        if (activity == null) {
             return;
         }
 
         try {
-            String content = getKeyContent(unifiedKeyInfo, KeyRepository.create(activity));
+            String content = getKeyContent(masterKeyId, KeyRepository.create(activity));
+            if (content == null) {
+                Notify.create(activity, R.string.error_key_not_found, Notify.Style.ERROR).show();
+                return;
+            }
+
             if (toClipboard) {
                 shareKeyToClipBoard(activity, content);
             } else {
-                shareKeyIntent(activity, unifiedKeyInfo, content);
+                shareKeyIntent(activity, masterKeyId, content);
             }
         } catch (IOException e) {
             Timber.e(e, "error processing key!");
             Notify.create(activity, R.string.error_key_processing, Notify.Style.ERROR).show();
-        } catch (KeyRepository.NotFoundException e) {
-            Timber.e(e, "key not found!");
-            Notify.create(activity, R.string.error_key_not_found, Notify.Style.ERROR).show();
         }
     }
 
-    private static void shareSshKey(Activity activity, UnifiedKeyInfo unifiedKeyInfo, boolean toClipboard) {
-        if (activity == null || unifiedKeyInfo == null) {
-            return;
-        }
-        if (!unifiedKeyInfo.has_auth_key()) {
-            Notify.create(activity, R.string.authentication_subkey_not_found, Notify.Style.ERROR).show();
+    private static void shareSshKey(Activity activity, long masterKeyId, boolean toClipboard) {
+        if (activity == null) {
             return;
         }
 
         try {
-            String content = getSshKeyContent(unifiedKeyInfo, KeyRepository.create(activity));
+            String content = getSshKeyContent(masterKeyId, KeyRepository.create(activity));
+            if (content == null) {
+                Notify.create(activity, R.string.authentication_subkey_not_found, Notify.Style.ERROR).show();
+                return;
+            }
+
             if (toClipboard) {
                 shareKeyToClipBoard(activity, content);
             } else {
-                shareKeyIntent(activity, unifiedKeyInfo, content);
+                shareKeyIntent(activity, masterKeyId, content);
             }
         } catch (PgpGeneralException | IOException | NoSuchAlgorithmException e) {
             Timber.e(e, "error processing key!");
             Notify.create(activity, R.string.error_key_processing, Notify.Style.ERROR).show();
-        } catch (KeyRepository.NotFoundException e) {
-            Timber.e(e, "key not found!");
-            Notify.create(activity, R.string.error_key_not_found, Notify.Style.ERROR).show();
         }
     }
 
-    public static void shareKeyToClipboard(Activity activity, UnifiedKeyInfo unifiedKeyInfo) {
-        shareKey(activity, unifiedKeyInfo, true);
+    public static void shareKeyToClipboard(Activity activity, long masterKeyId) {
+        shareKey(activity, masterKeyId, true);
     }
-    public static void shareKey(Activity activity, UnifiedKeyInfo unifiedKeyInfo) {
-        shareKey(activity, unifiedKeyInfo, false);
+    public static void shareKey(Activity activity, long masterKeyId) {
+        shareKey(activity, masterKeyId, false);
     }
-    public static void shareSshKey(Activity activity, UnifiedKeyInfo unifiedKeyInfo) {
-        shareSshKey(activity, unifiedKeyInfo, false);
+    public static void shareSshKey(Activity activity, long masterKeyId) {
+        shareSshKey(activity, masterKeyId, false);
     }
-    public static void shareSshKeyToClipboard(Activity activity, UnifiedKeyInfo unifiedKeyInfo) {
-        shareSshKey(activity, unifiedKeyInfo, true);
+    public static void shareSshKeyToClipboard(Activity activity, long masterKeyId) {
+        shareSshKey(activity, masterKeyId, true);
     }
 
 }

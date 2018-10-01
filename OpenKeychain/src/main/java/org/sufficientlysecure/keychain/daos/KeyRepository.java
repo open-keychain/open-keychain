@@ -242,7 +242,7 @@ public class KeyRepository extends AbstractDao {
         return mapSingleRowOrThrow(query, SubKey.FACTORY.selectEffectiveSignKeyIdByMasterKeyIdMapper());
     }
 
-    public long getSecretAuthenticationId(long masterKeyId) throws NotFoundException {
+    public long getEffectiveAuthenticationKeyId(long masterKeyId) throws NotFoundException {
         SqlDelightQuery query = SubKey.FACTORY.selectEffectiveAuthKeyIdByMasterKeyId(masterKeyId);
         return mapSingleRowOrThrow(query, SubKey.FACTORY.selectEffectiveAuthKeyIdByMasterKeyIdMapper());
     }

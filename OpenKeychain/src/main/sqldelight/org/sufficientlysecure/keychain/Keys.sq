@@ -41,11 +41,17 @@ UPDATE keys
     SET has_secret = ?2
     WHERE key_id = ?1;
 
-validKeysView:
+validMasterKeysView:
 CREATE VIEW validMasterKeys AS
+SELECT *
+    FROM validKeys
+    WHERE rank = 0;
+
+validKeysView:
+CREATE VIEW validKeys AS
 SELECT master_key_id, rank, key_id, key_size, key_curve_oid, algorithm, fingerprint, can_certify, can_sign, can_encrypt, can_authenticate, is_revoked, has_secret, is_secure, creation, expiry
     FROM keys
-    WHERE rank = 0 AND is_revoked = 0 AND is_secure = 1 AND (expiry IS NULL OR expiry >= strftime('%s', 'now'));
+    WHERE is_revoked = 0 AND is_secure = 1 AND (expiry IS NULL OR expiry >= strftime('%s', 'now')) AND validFrom <= strftime('%s', 'now');
 
 unifiedKeyView:
 CREATE VIEW unifiedKeyView AS
@@ -109,18 +115,17 @@ SELECT fingerprint
 
 selectEffectiveEncryptionKeyIdsByMasterKeyId:
 SELECT key_id
-    FROM keys
-    WHERE is_revoked = 0 AND is_secure = 1 AND ( expiry IS NULL OR expiry >= strftime('%s', 'now') ) AND validFrom <= strftime('%s', 'now')
-        AND can_encrypt = 1 AND master_key_id = ?;
+    FROM validKeys
+    WHERE has_secret > 1 AND can_encrypt = 1 AND master_key_id = ?;
 
 selectEffectiveSignKeyIdByMasterKeyId:
 SELECT key_id
-    FROM keys
-    WHERE is_revoked = 0 AND is_secure = 1 AND has_secret > 1 AND ( expiry IS NULL OR expiry >= strftime('%s', 'now') )
-        AND can_sign = 1 AND master_key_id = ?;
+    FROM validKeys
+    WHERE has_secret > 1 AND can_sign = 1 AND master_key_id = ?;
 
 selectEffectiveAuthKeyIdByMasterKeyId:
 SELECT key_id
-    FROM keys
-    WHERE is_revoked = 0 AND is_secure = 1 AND has_secret > 1 AND ( expiry IS NULL OR expiry >= strftime('%s', 'now') )
-        AND can_authenticate = 1 AND master_key_id = ?;
+    FROM validKeys
+    WHERE can_authenticate = 1 AND master_key_id = ?
+    ORDER BY has_secret > 1 DESC, creation DESC
+    LIMIT 1;

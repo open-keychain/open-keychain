@@ -67,6 +67,8 @@ import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
@@ -74,8 +76,6 @@ import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
-import org.sufficientlysecure.keychain.daos.KeyRepository;
-import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
@@ -263,8 +263,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
 
         actionEncryptFile.setOnClickListener(v -> encrypt(false));
         actionEncryptText.setOnClickListener(v -> encrypt(true));
-        actionShare.setOnClickListener(v -> ShareKeyHelper.shareKey(this, unifiedKeyInfo));
-        actionShareClipboard.setOnClickListener(v -> ShareKeyHelper.shareKeyToClipboard(this, unifiedKeyInfo));
+        actionShare.setOnClickListener(v -> ShareKeyHelper.shareKey(this, masterKeyId));
+        actionShareClipboard.setOnClickListener(v -> ShareKeyHelper.shareKeyToClipboard(this, masterKeyId));
 
         floatingActionButton.setOnClickListener(v -> {
             if (unifiedKeyInfo.has_any_secret()) {
