@@ -150,6 +150,7 @@ public class AuthenticationOperationTest {
         databaseInteractor.saveSecretKeyRing(mStaticRingEcDsa);
         databaseInteractor.saveSecretKeyRing(mStaticRingEdDsa);
         databaseInteractor.saveSecretKeyRing(mStaticRingDsa);
+        databaseInteractor.saveSecretKeyRing(mStaticRingRevoked);
 
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;
@@ -401,17 +402,13 @@ public class AuthenticationOperationTest {
 
     @Test
     public void testKeySelection() throws Exception {
-
-        String expectedAuthSubKeyId = "0xcf64ee600f6fec9c";
+        long expectedAuthSubKeyId = KeyFormattingUtils.convertKeyIdHexToKeyId("0xcf64ee600f6fec9c");
 
         KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
 
         long masterKeyId = mStaticRingRevoked.getMasterKeyId();
-        Long authSubKeyId = keyRepository.getSecretAuthenticationId(masterKeyId);
-        String authSubKeyIdString = KeyFormattingUtils.convertKeyIdToHex(authSubKeyId);
+        long authSubKeyId = keyRepository.getEffectiveAuthenticationKeyId(masterKeyId);
 
-        boolean isRightKey = authSubKeyIdString.equals(expectedAuthSubKeyId);
-
-        Assert.assertTrue("selected key must be the same: " + authSubKeyIdString + " != " + expectedAuthSubKeyId, isRightKey);
+        Assert.assertEquals(expectedAuthSubKeyId, authSubKeyId);
     }
 }
