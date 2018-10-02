@@ -49,6 +49,7 @@ import org.sufficientlysecure.keychain.ssh.AuthenticationOperation;
 import org.sufficientlysecure.keychain.ssh.AuthenticationParcel;
 import org.sufficientlysecure.keychain.ssh.AuthenticationResult;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
+import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 @RunWith(KeychainTestRunner.class)
@@ -58,6 +59,7 @@ public class AuthenticationOperationTest {
     private static UncachedKeyRing mStaticRingEcDsa;
     private static UncachedKeyRing mStaticRingEdDsa;
     private static UncachedKeyRing mStaticRingDsa;
+    private static UncachedKeyRing mStaticRingRevoked;
     private static Passphrase mKeyPhrase;
 
     private static PrintStream oldShadowStream;
@@ -132,6 +134,8 @@ public class AuthenticationOperationTest {
         mStaticRingEcDsa = KeyringTestingHelper.readRingFromResource("/test-keys/authenticate_ecdsa.sec");
         mStaticRingEdDsa = KeyringTestingHelper.readRingFromResource("/test-keys/authenticate_eddsa.sec");
         mStaticRingDsa = KeyringTestingHelper.readRingFromResource("/test-keys/authenticate_dsa.sec");
+
+        mStaticRingRevoked = KeyringTestingHelper.readRingFromResource("/test-keys/authenticate_multisub_with_revoked.asc");
     }
 
     @Before
@@ -395,4 +399,19 @@ public class AuthenticationOperationTest {
         }
     }
 
+    @Test
+    public void testKeySelection() throws Exception {
+
+        String expectedAuthSubKeyId = "0xcf64ee600f6fec9c";
+
+        KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
+
+        long masterKeyId = mStaticRingRevoked.getMasterKeyId();
+        Long authSubKeyId = keyRepository.getSecretAuthenticationId(masterKeyId);
+        String authSubKeyIdString = KeyFormattingUtils.convertKeyIdToHex(authSubKeyId);
+
+        boolean isRightKey = authSubKeyIdString.equals(expectedAuthSubKeyId);
+
+        Assert.assertTrue("selected key must be the same: " + authSubKeyIdString + " != " + expectedAuthSubKeyId, isRightKey);
+    }
 }
