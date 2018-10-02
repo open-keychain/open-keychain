@@ -103,7 +103,7 @@ public class AuthenticationOperation extends BaseOperation<AuthenticationParcel>
         Long authSubKeyId = data.getAuthenticationSubKeyId();
         if (authSubKeyId == null) {
             try { // Get the key id of the authentication key belonging to the master key id
-                authSubKeyId = mKeyRepository.getSecretAuthenticationId(authMasterKeyId);
+                authSubKeyId = mKeyRepository.getEffectiveAuthenticationKeyId(authMasterKeyId);
             } catch (NotFoundException e) {
                 log.add(LogType.MSG_AUTH_ERROR_KEY_AUTH, indent);
                 return new AuthenticationResult(AuthenticationResult.RESULT_ERROR, log);

@@ -48,7 +48,7 @@ import timber.log.Timber;
  */
 public class KeychainDatabase {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 32;
+    private static final int DATABASE_VERSION = 33;
     private final SupportSQLiteOpenHelper supportSQLiteOpenHelper;
 
     private static KeychainDatabase sInstance;
@@ -118,6 +118,7 @@ public class KeychainDatabase {
         db.execSQL(ApiAllowedKeysModel.CREATE_TABLE);
         db.execSQL(KeysModel.UNIFIEDKEYVIEW);
         db.execSQL(KeysModel.VALIDKEYSVIEW);
+        db.execSQL(KeysModel.VALIDMASTERKEYSVIEW);
         db.execSQL(UserPacketsModel.UIDSTATUS);
 
         db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysModel.RANK + ", " + KeysModel.MASTER_KEY_ID + ");");
@@ -351,6 +352,9 @@ public class KeychainDatabase {
 
             case 31:
                 addSubkeyValidFromField(db);
+
+            case 32:
+                recreateUnifiedKeyView(db);
         }
     }
 
@@ -378,8 +382,11 @@ public class KeychainDatabase {
             db.execSQL("DROP VIEW IF EXISTS " + KeysModel.UNIFIEDKEYVIEW_VIEW_NAME);
             db.execSQL(KeysModel.UNIFIEDKEYVIEW);
             // noinspection deprecation
-            db.execSQL("DROP VIEW IF EXISTS " + KeysModel.VALIDMASTERKEYS_VIEW_NAME);
+            db.execSQL("DROP VIEW IF EXISTS " + KeysModel.VALIDKEYS_VIEW_NAME);
             db.execSQL(KeysModel.VALIDKEYSVIEW);
+            // noinspection deprecation
+            db.execSQL("DROP VIEW IF EXISTS " + KeysModel.VALIDMASTERKEYS_VIEW_NAME);
+            db.execSQL(KeysModel.VALIDMASTERKEYSVIEW);
             // noinspection deprecation
             db.execSQL("DROP VIEW IF EXISTS " + UserPacketsModel.UIDSTATUS_VIEW_NAME);
             db.execSQL(UserPacketsModel.UIDSTATUS);

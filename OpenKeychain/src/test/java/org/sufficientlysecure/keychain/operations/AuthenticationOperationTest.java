@@ -160,7 +160,7 @@ public class AuthenticationOperationTest {
         KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
 
         long masterKeyId = mStaticRingRsa.getMasterKeyId();
-        Long authSubKeyId = keyRepository.getSecretAuthenticationId(masterKeyId);
+        Long authSubKeyId = keyRepository.getEffectiveAuthenticationKeyId(masterKeyId);
 
         { // sign challenge
             AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.application,
@@ -206,7 +206,7 @@ public class AuthenticationOperationTest {
         KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
 
         long masterKeyId = mStaticRingEcDsa.getMasterKeyId();
-        Long authSubKeyId = keyRepository.getSecretAuthenticationId(masterKeyId);
+        Long authSubKeyId = keyRepository.getEffectiveAuthenticationKeyId(masterKeyId);
 
         { // sign challenge
             AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.application,
@@ -252,7 +252,7 @@ public class AuthenticationOperationTest {
         KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
 
         long masterKeyId = mStaticRingEdDsa.getMasterKeyId();
-        Long authSubKeyId = keyRepository.getSecretAuthenticationId(masterKeyId);
+        Long authSubKeyId = keyRepository.getEffectiveAuthenticationKeyId(masterKeyId);
 
         { // sign challenge
             AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.application,
@@ -300,7 +300,7 @@ public class AuthenticationOperationTest {
         KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
 
         long masterKeyId = mStaticRingDsa.getMasterKeyId();
-        Long authSubKeyId = keyRepository.getSecretAuthenticationId(masterKeyId);
+        Long authSubKeyId = keyRepository.getEffectiveAuthenticationKeyId(masterKeyId);
 
         { // sign challenge
             AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.application,
@@ -345,7 +345,7 @@ public class AuthenticationOperationTest {
         KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
 
         long masterKeyId = mStaticRingEcDsa.getMasterKeyId();
-        Long authSubKeyId = keyRepository.getSecretAuthenticationId(masterKeyId);
+        Long authSubKeyId = keyRepository.getEffectiveAuthenticationKeyId(masterKeyId);
 
         { // sign challenge - should succeed with selected key allowed
             AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.application,
