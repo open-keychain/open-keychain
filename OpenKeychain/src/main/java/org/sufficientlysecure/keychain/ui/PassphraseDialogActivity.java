@@ -651,7 +651,11 @@ public class PassphraseDialogActivity extends FragmentActivity {
         @Override
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
             // Associate the "done" button on the soft keyboard with the okay button in the view
-            if (EditorInfo.IME_ACTION_DONE == actionId) {
+            // and the Enter Key, in case a hard keyboard is used
+            if (EditorInfo.IME_ACTION_DONE == actionId ||
+                    (actionId == EditorInfo.IME_ACTION_UNSPECIFIED &&
+                            event.getAction() == KeyEvent.ACTION_DOWN &&
+                            event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
                 AlertDialog dialog = ((AlertDialog) getDialog());
                 Button bt = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
 
