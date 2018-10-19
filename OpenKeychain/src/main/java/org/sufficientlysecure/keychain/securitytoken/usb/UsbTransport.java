@@ -70,6 +70,9 @@ public class UsbTransport implements Transport {
     private static final int VENDOR_FSIJ = 9035;
     private static final int VENDOR_LEDGER = 11415;
 
+    private static final int VENDOR_SECALOT = 4617;
+    private static final int PRODUCT_SECALOT = 28672;
+
     private final UsbDevice usbDevice;
     private final UsbManager usbManager;
 
@@ -253,6 +256,13 @@ public class UsbTransport implements Transport {
             }
             case VENDOR_LEDGER: {
                 return TokenType.LEDGER_NANO_S;
+            }
+            case VENDOR_SECALOT: {
+                switch (productId) {
+                    case PRODUCT_SECALOT:
+                        return TokenType.SECALOT;
+                }
+                break;
             }
         }
 
