@@ -1,5 +1,8 @@
 [//]: # (NOTERING: Var vänlig och sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
 
+## 5.2
+  * Förbättrad nyckel importera från urklipp
+
 ## 5.1
   * Stöd för Ledger Nano S
   * Stöd för Web Key Directory (WKD) sökning
@@ -22,12 +25,12 @@
 
   * Förbättrad import från urklipp
   * Ny nyckelskaparguide för säkerhetstoken
-  * Removed password cache "time to live" setting
+  * Bortttaget lösenord cache "tid att leva" inställning
 
 
 ## 4.6
 
-  * Import your keys using our new Secure Wi-Fi Transfer mechanism
+  * Importera dina nycklar med vår nya Secure Wi-Fi Transfer-mekanism
 
 
 ## 4.5
@@ -51,10 +54,10 @@
 
 ## 4.2
 
-  * Experimental support for Elliptic Curve Encryption with Security Tokens
-  * Redesigned key import screen
-  * Design improvements to key lists
-  * Support for keyserver onion addresses
+  * Experimentellt stöd för elliptisk kurvkryptering med säkerhetstoken
+  * Omgjord nyckelimportskärm
+  * Design förbättringar till nyckellistor
+  * Stöd för nyckelservrar med onion-adresser
 
 
 ## 4.1
@@ -105,7 +108,7 @@
 
   * Nyckelåterkallelse vid nyckelradering
   * Förbättrade kontroller för osäker kryptografi
-  * Fix: Don't close OpenKeychain after first time wizard succeeds
+  * Åtgärd: Stäng inte OpenKeychain efter första gången guiden lyckas
   * API: Version 8
 
 
@@ -113,14 +116,14 @@
 
   * Anonym nyckelhämtning över Tor
   * Proxy stöd
-  * Better YubiKey error handling
+  * Bättre YubiKey-felhantering
 
 
 ## 3.3
 
   * Ny dekrypteringsfönster
-  * Decryption of multiple files at once
-  * Better handling of YubiKey errors
+  * Dekryptering av flera filer samtidigt
+  * Bättre hantering av YubiKey-fel
 
 
 ## 3.2
@@ -131,8 +134,8 @@
   * Förbättrade guiden för skapande av nyckel
   * Åtgärda kontakter som saknas efter synkronisering
   * Kräver Android 4
-  * Redesigned key screen
-  * Simplify crypto preferences, better selection of secure ciphers
+  * Omgjort nyckelskärm
+  * Förenkla krypteringspreferenser, bättre val av säkra ciffrar
   * API: Detached signatures, free selection of signing key,...
   * Korrigering: Vissa giltiga nycklar visades som återkallade eller förfallna
   * Acceptera inte signaturer av undernycklar som har förfallit eller återkallats

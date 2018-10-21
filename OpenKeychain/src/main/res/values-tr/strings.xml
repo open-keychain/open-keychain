@@ -95,6 +95,7 @@
   <string name="label_creation">Oluşturma</string>
   <string name="label_expiry">Bitiş</string>
   <string name="label_usage">Kullanım</string>
+  <string name="label_revoked">İptal edildi</string>
   <string name="label_key_size">Anahtar Boyutu</string>
   <string name="label_ecc_curve">Eliptik Eğri</string>
   <string name="label_main_user_id">Birincil kimlik</string>
@@ -440,6 +441,7 @@
   <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_keys">Kaydedilmiş parolalar</string>
   <string name="passp_cache_notif_pwd">Parola</string>
   <!--Keyserver sync-->
   <!--First Time-->

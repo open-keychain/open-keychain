@@ -1,5 +1,8 @@
 [//]: # (Ter info: Zet iedere zin op een eigen regel, Transifex zet iedere regel in zijn eigen vertalingsveld!)
 
+## 5.2
+  * Importeren van sleutel vanuit toetsenbord verbeterd
+
 ## 5.1
   * Ondersteuning voor Ledger Nano S
   * Ondersteuning voor zoeken in Web Key Directory (WKD)

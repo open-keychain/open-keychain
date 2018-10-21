@@ -4,8 +4,10 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
   <string name="title_preferences">సెట్టింగులు</string>
+  <string name="title_help">సహాయం</string>
   <!--section-->
   <!--button-->
+  <string name="btn_do_not_save">రద్దు</string>
   <string name="btn_next">తరువాత</string>
   <string name="btn_share_decrypted_text">వంతు</string>
   <string name="btn_add_keyserver">జోడించండి</string>
@@ -13,20 +15,27 @@
   <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">సెట్టింగులు</string>
+  <string name="menu_help">సహాయం</string>
   <string name="menu_search">శోధన</string>
   <string name="menu_open">తెరవండి</string>
   <string name="menu_change_password">పాస్ వర్డ్ ను మార్చండి</string>
   <string name="menu_keyserver_add">జోడించండి</string>
   <!--label-->
+  <string name="label_name">Name</string>
+  <string name="label_enter_smartpgp_authority_name">Name</string>
   <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
+  <string name="pref_proxy_tor_title">Enable Tor</string>
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
   <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_cancel">రద్దు</string>
   <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_cancel">రద్దు</string>
   <!--choice-->
   <string name="choice_none"> ఏమీ కాదు</string>
   <string name="choice_1hour">1 గంట</string>
+  <string name="error">లోపం</string>
   <!--sentences-->
   <string name="passphrase_for_symmetric_encryption">రహస్య సంకేతం తెలపండి
 </string>
@@ -39,6 +48,7 @@
   <!--results shown after decryption/verification-->
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
+  <string name="progress_cancel">రద్దు</string>
   <!--action strings-->
   <!--key bit length selections-->
   <!--elliptic curve names-->
@@ -49,6 +59,7 @@
   <!--compression-->
   <!--Help-->
   <string name="help_tab_about">గురించి</string>
+  <string name="help_about_version">Version:</string>
   <!--Import-->
   <!--Generic result toast-->
   <!--Import result toast-->
@@ -58,6 +69,7 @@
   <!--Intent labels-->
   <!--Remote API-->
   <string name="api_settings_no_key">ఏ కీ ఎంచుకోలేదు</string>
+  <string name="api_settings_cancel">రద్దు</string>
   <string name="api_settings_settings">సెట్టింగులు</string>
   <!--Share-->
   <!--retry upload dialog-->
@@ -108,8 +120,14 @@
   <string name="nfc_settings">సెట్టింగులు</string>
   <!--Other Linked Identity strings-->
   <string name="linked_button_retry">మళ్ళీ ప్రయత్నించు</string>
+  <string name="linked_text_error">లోపం</string>
   <string name="share_log_dialog_share_button">వంతు</string>
+  <string name="share_log_dialog_cancel_button">రద్దు</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">రద్దు</string>
+  <string name="prompt_fidesmo_app_install_button_negative">రద్దు</string>
   <string name="redirect_import_key_no">మూసివేయు</string>
+  <string name="button_cancel">రద్దు</string>
   <string name="transfer_status_connected">సంబంధిత</string>
+  <string name="transfer_confirm_cancel">రద్దు</string>
   <string name="snackbutton_analytics_settings">సెట్టింగులు</string>
 </resources>

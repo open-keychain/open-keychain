@@ -1,5 +1,8 @@
 [//]: # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
+## 5.2
+  * Amélioration de l’importation des clés à partir du presse-papiers
+
 ## 5.1
   * Prise en charge de Ledger Nano S
   * Prise en charge de la recherche dans l’annuaire de clés Web (WKD)

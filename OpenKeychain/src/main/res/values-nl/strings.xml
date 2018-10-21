@@ -165,7 +165,10 @@
   <string name="label_creation">Aanmaak</string>
   <string name="label_creation_colon">Aangemaakt:</string>
   <string name="label_expiry">Verlopen</string>
+  <string name="label_valid_from">Geldig van</string>
   <string name="label_usage">Gebruik</string>
+  <string name="label_revoked">Ingetrokken</string>
+  <string name="label_insecure">Onveilig</string>
   <string name="label_key_size">Sleutelgrootte</string>
   <string name="label_ecc_curve">Elliptische curve</string>
   <string name="label_main_user_id">Primaire identiteit</string>
@@ -1897,4 +1900,11 @@
   <string name="snack_analytics_accept">Bedankt voor het helpen! Je kan deze voorkeur veranderen in de instellingen.</string>
   <string name="snack_analytics_reject">Geen probleem, we zullen het niet opnieuw vragen. Je kan van gedachten veranderen in de instellingen.</string>
   <string name="snackbutton_analytics_settings">Instellingen</string>
+  <string name="subkey_action_create">Subsleutel zal worden aangemaakt</string>
+  <string name="subkey_action_revoke">Subsleutel zal worden ingetrokken</string>
+  <string name="subkey_action_strip">Subsleutel zal worden gestript</string>
+  <string name="subkey_action_expiry_never">Verloopdatum zal wijzigen naar nooit</string>
+  <string name="subkey_action_expiry_date">Verloopdatum zal wijzigen naar %s</string>
+  <string name="share_key_clipboard">Sleutel delen via klembord</string>
+  <string name="share_key">Sleutel delen</string>
 </resources>

@@ -1,17 +1,20 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 5.2
+  * 클립보드로 부터 가져오기 개선
+
 ## 5.1
-  * Support for Ledger Nano S
-  * Support Web Key Directory (WKD) search
-  * Fixed potential API security issue
+  * Ledger Nano S 지원
+  * Web Key Directory (WKD) 검색 지원
+  * 잠재적인 API 보안 문제 수정
 
 ## 5.0
-  * Improved Autocrypt support
+  * Autocrypt 지원 개선
 
 ## 4.9
 
-  * Curve25519 support
-  * Improved support for security tokens
+  * Curve25519 지원
+  * 보안 토큰 지원 개선
 
 ## 4.8
 
@@ -40,45 +43,45 @@
 
 ## 4.4
 
-  * New key status displays detailed information why a key is considered insecure or defective
+  * 새로운 키 상태가 안전하지 않거나 결함이 있을때 자세한 사항을 표시 합니다.
 
 
 ## 4.3
 
   * 대형 키 지원 향상
-  * Fix import of Gpg4win files with broken encodings
+  * 손상된 인코딩이 포함된 Gpg4win 파일 가져오기 수정
 
 
 ## 4.2
 
-  * Experimental support for Elliptic Curve Encryption with Security Tokens
-  * Redesigned key import screen
-  * Design improvements to key lists
-  * Support for keyserver onion addresses
+  * 보안 토큰을 사용한 타원 곡선 암호화에 대한 실험적 지원
+  * 키 가져오기 화면 재디자인
+  * 키 목록 표시 개선
+  * 키서버 onion 주소 지원
 
 
 ## 4.1
 
-  * Better detection of emails and other content when opened
+  * 이메일 및 기타 콘텐츠 감지를 개선
 
 
 ## 4.0
 
-  * Experimental support for Security Tokens over USB
-  * Allow password changing of stripped keys
+  * USB를 통한 보안 토큰에 대한 실험적 지원
+  * 간략화 된 키에 대한 암호 변경 허가
 
 
 ## 3.9
 
-  * Detection and handling of text data
-  * Performance improvements
-  * UI improvements for Security Token handling
+  * 텍스트 데이터의 감지와 처리
+  * 성능 개선
+  * 보안 토큰 처리에 대한 UI 개선
 
 
 ## 3.8
 
   * 키 편집 재설계
-  * Choose remember time individually when entering passwords
+  * 암호를 입력 할 때 개별적으로 시간 기억 선택
   * Facebook 키 들여오기
 
 

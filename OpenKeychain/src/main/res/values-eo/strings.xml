@@ -3,19 +3,49 @@
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
+  <string name="title_preferences">Agordoj</string>
+  <string name="title_api_registered_apps">Aplikaĵoj</string>
+  <string name="title_help">Helpo</string>
+  <string name="title_advanced_key_info">Altnivela</string>
   <!--section-->
+  <string name="section_share_key">Ŝlosilo</string>
   <!--button-->
+  <string name="btn_save">Konservi</string>
+  <string name="btn_do_not_save">Rezigni</string>
+  <string name="btn_delete">Forigi</string>
+  <string name="btn_next">Sekva</string>
+  <string name="btn_back">Reen</string>
+  <string name="btn_no">Ne</string>
+  <string name="btn_add_keyserver">Aldoni</string>
   <!--Shortcut Strings-->
   <!--Content Description-->
   <!--menu-->
+  <string name="menu_preferences">Agordoj</string>
+  <string name="menu_help">Helpo</string>
+  <string name="menu_search">Serĉi</string>
+  <string name="menu_open">Malfermi</string>
+  <string name="menu_advanced">Altnivela</string>
+  <string name="menu_keyserver_add">Aldoni</string>
   <!--label-->
+  <string name="label_file">Dosiero</string>
+  <string name="label_passphrase">Pasvorto</string>
+  <string name="label_key_id">Ŝlosila identigilo</string>
+  <string name="label_key_type">Tipo</string>
+  <string name="label_name">Nomo</string>
+  <string name="label_enter_smartpgp_authority_name">Nomo</string>
   <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="label_experimental_settings_desc_title">Averto</string>
   <!--Proxy Preferences-->
+  <string name="pref_proxy_tor_title">Enable Tor</string>
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
   <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_cancel">Rezigni</string>
   <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_cancel">Rezigni</string>
   <!--choice-->
+  <string name="choice_none">Neniom</string>
+  <string name="error">Eraro</string>
   <!--sentences-->
   <!--errors
          no punctuation, all lowercase,
@@ -24,6 +54,7 @@
   <!--results shown after decryption/verification-->
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
+  <string name="progress_cancel">Rezigni</string>
   <!--action strings-->
   <!--key bit length selections-->
   <!--elliptic curve names-->
@@ -33,7 +64,14 @@
     <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
   <!--Help-->
+  <string name="help_tab_start">Ek</string>
+  <string name="help_tab_faq">Oftaj Demandoj</string>
+  <string name="help_tab_changelog">ŝanĝoprotokolo</string>
+  <string name="help_tab_about">Pri</string>
+  <string name="help_about_version">Version:</string>
+  <string name="help_tab_donations">Donaci</string>
   <!--Import-->
+  <string name="btn_import">Enporti</string>
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
@@ -41,12 +79,17 @@
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
+  <string name="api_settings_save">Konservi</string>
+  <string name="api_settings_cancel">Rezigni</string>
+  <string name="api_settings_advanced">Altnivela</string>
+  <string name="api_settings_settings">Agordoj</string>
   <!--Share-->
   <!--retry upload dialog-->
   <!--Delete or revoke private key dialog-->
   <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <!--Key view-->
+  <string name="key_view_tab_start">Ek</string>
   <!--Key trust-->
   <!--keybase proof stuff-->
   <!--Edit key-->
@@ -55,8 +98,11 @@
   <!--Add/Edit keyserver-->
   <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
+  <string name="nav_apps">Aplikaĵoj</string>
   <!--hints-->
   <!--certs-->
+  <string name="cert_none">neniom/neniu</string>
+  <string name="cert_verify_ok">Okej</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
@@ -69,6 +115,7 @@
   <!--Other messages used in OperationLogs-->
   <!--Messages for DecryptVerify operation-->
   <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl_ok">Okej</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
@@ -76,16 +123,38 @@
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_pwd">Pasvorto</string>
   <!--Keyserver sync-->
   <!--First Time-->
   <!--unsorted-->
+  <string name="label_cert_type">Tipo</string>
+  <string name="unknown">nekonata</string>
   <!--Android Account-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <string name="passphrase">Pasvorto</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="nfc_settings">Agordoj</string>
+  <string name="snack_security_token_view">Rigardi</string>
+  <string name="snack_security_token_import">Enporti</string>
+  <string name="btn_reset">Rekomencigo</string>
   <!--Other Linked Identity strings-->
+  <string name="linked_button_retry">Reprovi</string>
+  <string name="linked_button_view">Rigardi</string>
+  <string name="linked_text_error">Eraro</string>
+  <string name="share_log_dialog_cancel_button">Rezigni</string>
+  <string name="menu_uids_save">Konservi</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">Rezigni</string>
+  <string name="prompt_fidesmo_app_install_button_negative">Rezigni</string>
+  <string name="redirect_import_key_no">Fermi</string>
+  <string name="button_cancel">Rezigni</string>
   <string name="button_back">Reen</string>
+  <string name="button_import">Enporti</string>
+  <string name="transfer_confirm_cancel">Rezigni</string>
+  <string name="transfer_confirm_ok">Sendi</string>
+  <string name="token_reset_confirm_ok">Rekomencigo</string>
+  <string name="token_action_import">Enporti</string>
   <string name="key_gen_back">Reen</string>
   <string name="key_gen_finish">Fini</string>
   <string name="snack_keylist_clipboard_action">Rigardi</string>

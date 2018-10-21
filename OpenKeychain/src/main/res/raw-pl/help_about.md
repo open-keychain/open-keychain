@@ -2,7 +2,7 @@
 
 [https://www.openkeychain.org](https://www.openkeychain.org)
 
-[OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
+[OpenKeychain](https://www.openkeychain.org) jest implementacją OpenPGP dla Androida.
 
 Licencja: GPLv3+
 
@@ -12,7 +12,7 @@ Licencja: GPLv3+
   * Dominik Schürmann (Opiekun projektu)
   * Vincent Breitmoser
 
-## Top Contributors
+## Najlepsi Współtwórcy 
   * Adithya Abraham Philip
   * Andrea Torlaschi
   * Arnaud Fontaine
@@ -23,7 +23,7 @@ Licencja: GPLv3+
   * Tim Bray
   * Tobias Erthal
 
-## Occasional Contributors
+## Okazjonalni Współtwórcy
   * Alex Fong Jie Wen
   * Andrea Torlaschi
   * Art O Cathain

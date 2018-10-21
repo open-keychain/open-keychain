@@ -157,6 +157,8 @@
   <string name="label_creation">Creazione</string>
   <string name="label_expiry">Scadenza</string>
   <string name="label_usage">Utilizzo</string>
+  <string name="label_revoked">Revocato</string>
+  <string name="label_insecure">Non sicuro</string>
   <string name="label_key_size">Dimensione Chiave</string>
   <string name="label_ecc_curve">Curva Elittica</string>
   <string name="label_main_user_id">Identità Primaria</string>
@@ -962,6 +964,8 @@
   <string name="msg_pse_error_pgp">Errore interno di PGP!</string>
   <string name="msg_pse_error_unlock">Errore sconosciuto durante apertura chiave!</string>
   <!--Messages for Authentication operation-->
+  <string name="msg_auth_error_bad_passphrase">Password errata!</string>
+  <string name="msg_crt_error_master_not_found">Chiave principale non trovata!</string>
   <string name="msg_crt_error_nothing">Nessuna chiave certificata!</string>
   <string name="msg_crt_saving">Salvataggio portachiavi in corso</string>
   <string name="msg_crt_success">Identità certificata correttamente</string>
@@ -979,6 +983,9 @@
   <string name="msg_backup_error_db">Errore banca dati!</string>
   <string name="msg_backup_error_io">Errore di input/output!</string>
   <string name="msg_backup_success">Backup eseguito con successo</string>
+  <string name="msg_upload_proxy_direct">Proxy utilizzato: nessuno</string>
+  <string name="msg_upload_proxy_tor">Proxy utilizzato: TOR</string>
+  <string name="msg_upload_proxy">Proxy utilizzato: %s</string>
   <string name="msg_upload_server">Server: %s</string>
   <string name="msg_upload_key">ID chiave: %s</string>
   <string name="msg_upload_error_not_found">Chiave non trovata!</string>
@@ -1018,6 +1025,7 @@
   <string name="msg_keybase_error_msg_payload_mismatch">La prova decifrata non corrisponde con il valore previsto</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_keys">Password salvate</string>
   <string name="passp_cache_notif_clear">Cancella password</string>
   <string name="passp_cache_notif_pwd">Password</string>
   <!--Keyserver sync-->
@@ -1110,6 +1118,7 @@
   <string name="section_linked_identities">Identità collegate</string>
   <string name="btn_finish">Concludi</string>
   <string name="linked_title_https">Sito (HTTPS)</string>
+  <string name="linked_title_dns">Nome a dominio (DNS)</string>
   <string name="linked_title_github">GitHub</string>
   <string name="linked_title_twitter">Twitter</string>
   <string name="linked_button_verify">Verifica</string>
@@ -1173,6 +1182,7 @@
   <string name="button_got_it">Ho capito</string>
   <string name="key_health_expired_title">Scaduti</string>
   <string name="key_health_revoked_title">Revocato</string>
+  <string name="key_health_insecure_title">Non sicuro</string>
   <string name="keyserver_title_published">Pubblicato</string>
   <string name="dialog_insecure_title">Avviso di Protezione</string>
   <string name="dialog_insecure_button_ok">Ho capito</string>

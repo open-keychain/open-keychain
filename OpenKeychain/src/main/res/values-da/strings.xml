@@ -51,6 +51,7 @@
   <string name="label_key_type">Type</string>
   <string name="label_expiry">Ophør</string>
   <string name="label_usage">Forbrug</string>
+  <string name="label_revoked">Tilbagekaldt</string>
   <string name="label_name">Navn</string>
   <string name="label_email">Email</string>
   <string name="label_fingerprint">Fingeraftryk</string>

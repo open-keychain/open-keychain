@@ -97,6 +97,7 @@
   <string name="label_key_type">Tip</string>
   <string name="label_expiry">Expirare</string>
   <string name="label_usage">Utilizare</string>
+  <string name="label_revoked">Revocat</string>
   <string name="label_key_size">Mărime cheie</string>
   <string name="label_ecc_curve">Curbă eliptică</string>
   <string name="label_name">Nume</string>

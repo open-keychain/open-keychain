@@ -165,6 +165,8 @@
   <string name="label_creation_colon">Creada:</string>
   <string name="label_expiry">Caducidade</string>
   <string name="label_usage">Uso</string>
+  <string name="label_revoked">Revogada</string>
+  <string name="label_insecure">Inseguro</string>
   <string name="label_key_size">Tamaño da chave</string>
   <string name="label_ecc_curve">Curva elíptica</string>
   <string name="label_main_user_id">Identidade primaria</string>
@@ -1153,6 +1155,8 @@
   <string name="msg_bench_success">Avaliación comparativa completa!</string>
   <string name="msg_data_detached_raw">Procesando datos asinados</string>
   <string name="msg_data_mime_filename">Nome do ficheiro: \'%s\'</string>
+  <string name="msg_data_mime">Analisando a estrutura de datos MIME</string>
+  <string name="msg_data_mime_ok">Finalizada a análise</string>
   <string name="msg_get_no_valid_keys">Non se atoparon chaves válidas no ficheiro/portapapeis!</string>
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_error_no_prover">Non se atopou validador de proba para %s</string>

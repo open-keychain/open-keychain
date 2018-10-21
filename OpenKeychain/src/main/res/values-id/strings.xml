@@ -64,6 +64,7 @@
   <string name="label_key_type">Tipe</string>
   <string name="label_expiry">Waktu kadarluarsa</string>
   <string name="label_usage">Usage </string>
+  <string name="label_revoked">Dicabut</string>
   <string name="label_name">Nama</string>
   <string name="label_email">Email </string>
   <string name="label_fingerprint">Fingerprint</string>
@@ -212,6 +213,7 @@
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">Masukkan kata sandi</string>
   <string name="passphrase">Password </string>
+  <string name="passphrase_again">Lagi</string>
   <string name="set_passphrase">Setel kata sandi</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="nfc_settings">Pengaturan</string>
@@ -221,6 +223,7 @@
   <string name="linked_create_verify">Verifikasi</string>
   <!--Other Linked Identity strings-->
   <string name="btn_finish">Selesai</string>
+  <string name="linked_title_github">GitHub</string>
   <string name="linked_title_twitter">Twitter</string>
   <string name="linked_button_verify">Verifikasi</string>
   <string name="linked_button_retry">Coba Ulang</string>

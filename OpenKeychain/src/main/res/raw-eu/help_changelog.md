@@ -1,5 +1,8 @@
 [//]: # (OHARRA: Meseez jarri esaldi bakoitza bere lerroan, Transifex-ek lerroak bere itzulpen eremuan jartzen ditu!)
 
+## 5.2
+  * Improved key import from clipboard
+
 ## 5.1
   * Support for Ledger Nano S
   * Support Web Key Directory (WKD) search

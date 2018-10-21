@@ -5,7 +5,7 @@ Bez potwierdzenia nie masz pewności czy klucz odpowiada danej osobie.
 Najłatwiejszą drogą potwierdzenia klucza jest zeskanowanie kodu QR lub wysłanie go przez NFC
 To confirm keys between more than two persons, we suggest using the key exchange method available for your keys.
 
-## Key Status
+## Stan klucza
 
 <img src="status_signature_verified_cutout_24dp"/>  
 Confirmed: You have already confirmed this key, e.g., by scanning the QR Code.  

@@ -1,25 +1,25 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (MEGJEGYZÉS: minden mondatot külön sorba írjon, a Transifex minden sort a saját fordítási mezőjébe tesz!)
 
 [https://www.openkeychain.org](https://www.openkeychain.org)
 
-[OpenKeychain](https://www.openkeychain.org) egy OpenPGP implementáció Android-ra.
+Az [OpenKeychain](https://www.openkeychain.org) egy OpenPGP megvalósítás Androidra.
 
 Licenc: GPLv3+
 
-[//]: # (NOTE: Alphabetic ordering)
+[//]: # (MEGJEGYZÉS: ábécé sorrend)
 
 ## Fő fejlesztők
-  * Dominik Schürmann (Maintainer)
+  * Dominik Schürmann (karbantartó)
   * Vincent Breitmoser
 
-## Legnagyobb hozzájárulók
+## Legfőbb hozzájárulók
   * Adithya Abraham Philip
   * Andrea Torlaschi
   * Arnaud Fontaine
   * Ash Hughes
-  * 'mar-v-in'
+  * „mar-v-in”
   * Nikita Mikhailov
-  * 'Thialfihar' (APG developer)
+  * 'Thialfihar' (APG fejlesztő)
   * Tim Bray
   * Tobias Erthal
 
@@ -28,23 +28,23 @@ Licenc: GPLv3+
   * Andrea Torlaschi
   * Art O Cathain
   * Brian C. Barnes
-  * Bahtiar 'kalkin' Gadimov
+  * Bahtiar „kalkin” Gadimov
   * Daniel Albert
   * Daniel Hammann
   * Daniel Haß
   * Daniel Nelz
   * Daniel Ramos
   * Greg Witczak
-  * 'iseki'
+  * „iseki”
   * Ishan Khanna
-  * 'jellysheep'
-  * 'Jesperbk'
-  * 'jkolo'
+  * „jellysheep”
+  * „Jesperbk”
+  * „jkolo”
   * Joey Castillo
   * Kai Jiang
   * Kartik Arora
-  * 'Kent'
-  * 'ligi'
+  * „Kent”
+  * „ligi”
   * Lukas Zorich
   * Manoj Khanna
   * Markus Doits
@@ -54,7 +54,7 @@ Licenc: GPLv3+
   * Nikhil Peter Raj
   * Paul Sarbinowski
   * Petter Arvidsson
-  * 'Senecaso'
+  * „Senecaso”
   * Signe Rüsch
   * Sreeram Boyapati
-  * 'steelman'
+  * „steelman”

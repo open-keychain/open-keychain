@@ -1,5 +1,8 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 5.2
+  * Improved key import from clipboard
+
 ## 5.1
   * Support for Ledger Nano S
   * Support Web Key Directory (WKD) search
@@ -10,7 +13,7 @@
 
 ## 4.9
 
-  * Curve25519 support
+  * Wsparcie dla Curve25519 
   * Improved support for security tokens
 
 ## 4.8
@@ -98,7 +101,7 @@
   * Experimental feature: link keys to Github, Twitter accounts
   * Experimental feature: key confirmation via phrases
   * Experimental feature: dark theme
-  * API: Version 9
+  * API: Wersja 9
 
 
 ## 3.5
@@ -106,13 +109,13 @@
   * Key revocation on key deletion
   * Improved checks for insecure cryptography
   * Fix: Don't close OpenKeychain after first time wizard succeeds
-  * API: Version 8
+  * API: Wersja 8
 
 
 ## 3.4
 
   * Anonymous key download over Tor
-  * Proxy support
+  * Wsparcie proxy
   * Better YubiKey error handling
 
 

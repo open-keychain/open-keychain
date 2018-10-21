@@ -20,8 +20,12 @@
   <string name="title_encrypt_to_file">Zaszyfruj do pliku</string>
   <string name="title_decrypt_to_file">Odszyfruj do pliku</string>
   <string name="title_import_keys">Importuj klucze</string>
+  <string name="title_export_key">Klucz Zapasowy</string>
+  <string name="title_export_keys">Klucze Zapasowe</string>
   <string name="title_key_not_found">Nie znaleziono klucza</string>
   <string name="title_send_key">Wyślij do serwera kluczy</string>
+  <string name="title_backup">Klucz Zapasowy</string>
+  <string name="title_certify_key">Potwierdź klucz</string>
   <string name="title_key_details">Szczegóły klucza</string>
   <string name="title_help">Pomoc</string>
   <string name="title_log_display">Logi</string>
@@ -33,6 +37,7 @@
   <string name="section_user_ids">Tożsamości</string>
   <string name="section_security_token">Token Bezpieczeństwa</string>
   <string name="section_keys">Pod-klucze</string>
+  <string name="section_cloud_search_summary">Serwery kluczy, keybase.io</string>
   <string name="section_gui">Interfejs</string>
   <string name="section_sync_settings">Synchronizacja</string>
   <string name="section_experimental_features">Funkcje eksperymentalne</string>
@@ -48,6 +53,7 @@
   <string name="btn_encrypt_save_file">Szyfruj i zapisz plik</string>
   <string name="btn_save_file">Zapisz plik</string>
   <string name="btn_save">Zapisz</string>
+  <string name="btn_view_log">Pokaż logi</string>
   <string name="btn_do_not_save">Anuluj</string>
   <string name="btn_delete">Usuń</string>
   <string name="btn_no_date">Bez wygaśnięcia</string>
@@ -81,6 +87,7 @@
   <!--menu-->
   <string name="menu_preferences">Ustawienia</string>
   <string name="menu_help">Pomoc</string>
+  <string name="menu_export_key">Klucz zapasowy</string>
   <string name="menu_delete_key">Usuń klucz</string>
   <string name="menu_manage_keys">Zarządzaj kluczami</string>
   <string name="menu_search">Szukaj</string>
@@ -91,6 +98,7 @@
   <string name="menu_encrypt_to">Zaszyfruj do...</string>
   <string name="menu_select_all">Wybierz wszystko</string>
   <string name="menu_export_all_keys">Eksportuj wszystkie klucze</string>
+  <string name="menu_share_log">Udostępnij log</string>
   <string name="menu_change_password">Zmień hasło</string>
   <string name="menu_advanced">Zaawansowane</string>
   <string name="menu_keyserver_add">Dodaj</string>
@@ -106,10 +114,12 @@
   <string name="label_passphrase_again">Powtórz hasło</string>
   <string name="label_show_passphrase">Pokaż hasło</string>
   <string name="label_algorithm">Algorytm</string>
+  <string name="label_algorithm_colon">Algorytm:</string>
   <string name="label_ascii_armor">Plik ASCII Armor</string>
   <string name="label_file_ascii_armor">Włącz ASCII Armor</string>
   <string name="label_write_version_header">Niech inni wiedzą, że używasz OpenKeychain</string>
   <string name="label_write_version_header_summary">Wpisuje \'\'OpenKeychain v2.7\' do podpisów, szyfrogramów i wyeksportowanych kluczy OpenPGP.</string>
+  <string name="label_to">Szyfruj do</string>
   <string name="label_delete_after_encryption">Usuń pliki po zaszyfrowaniu</string>
   <string name="label_delete_after_decryption">Usuń po odszyfrowaniu</string>
   <string name="label_encryption_algorithm">Algorytm szyfrowania</string>
@@ -119,15 +129,21 @@
   <string name="label_file_compression">Kompresja pliku</string>
   <string name="label_key_id">Identyfikator klucza</string>
   <string name="label_key_id_colon">ID Klucza:</string>
+  <string name="label_key_created">Utworzono %s</string>
+  <string name="label_key_created_just_now">Utworzono właśnie teraz</string>
   <string name="label_key_type">Rodzaj</string>
   <string name="label_creation">Utworzenia</string>
+  <string name="label_creation_colon">Utworzenie:</string>
   <string name="label_expiry">Wygaśnięcia</string>
   <string name="label_usage">Wykorzystanie</string>
+  <string name="label_revoked">Unieważnione</string>
+  <string name="label_insecure">Niebezpieczny</string>
   <string name="label_key_size">Rozmiar klucza</string>
   <string name="label_ecc_curve">Elliptic Curve - Krzywe Eliptyczne</string>
   <string name="label_main_user_id">Główna tożsamość</string>
   <string name="label_name">Imię</string>
   <string name="label_email">Adres email</string>
+  <string name="label_send_key">Opublikuj certyfikację na serwerach kluczy</string>
   <string name="label_fingerprint">Odcisk</string>
   <string name="expiry_date_dialog_title">Ustaw datę wygaśnięcia</string>
   <string name="label_keyservers_title">Serwery kluczy</string>
@@ -145,6 +161,7 @@
   <string name="pref_facebook">Facebook</string>
   <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">Ostrzeżenie</string>
+  <string name="label_experimental_settings_keybase_title">Dowody keybase.io</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Włącz Tora</string>
   <string name="pref_proxy_host_title">Proxy Host</string>
@@ -152,9 +169,11 @@
   <string name="pref_proxy_type_title">Typ Proxy</string>
   <!--proxy type choices and values-->
   <string name="pref_proxy_type_choice_http">HTTP</string>
+  <string name="pref_proxy_type_choice_socks">SOCKS</string>
   <!--OrbotHelper strings-->
   <string name="orbot_ignore_tor">Nie używaj Tora</string>
   <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_title">Zainstalować Orbota, aby używać Tora?</string>
   <string name="orbot_install_dialog_install">Instaluj</string>
   <string name="orbot_install_dialog_cancel">Anuluj</string>
   <string name="orbot_install_dialog_ignore_tor">Nie używaj Tora</string>
@@ -163,6 +182,8 @@
   <string name="orbot_start_dialog_start">Uruchom aplikację Orbot</string>
   <string name="orbot_start_dialog_cancel">Anuluj</string>
   <string name="orbot_start_dialog_ignore_tor">Nie używaj Tora</string>
+  <string name="user_id_no_name"><![CDATA[<no name>]]></string>
+  <string name="none"><![CDATA[<none>]]></string>
   <plurals name="n_keys">
     <item quantity="one">1 klucz</item>
     <item quantity="few">%d klucze</item>
@@ -207,15 +228,27 @@
   <string name="theme_dark">Ciemny</string>
   <string name="theme_light">Jasny</string>
   <!--sentences-->
+  <string name="wrong_passphrase">Nieprawidłowe hasło.</string>
   <string name="no_filemanager_installed">Nie zainstalowano żadnego kompatybilnego menadżera plików.</string>
+  <string name="passphrases_do_not_match">Hasła nie pasują do siebie.</string>
+  <string name="passphrase_must_not_be_empty">Wpisz swoje hasło</string>
   <string name="passphrase_for_symmetric_encryption">Wpisz hasło</string>
   <string name="passphrase_for">Wpisz hasło dla \'%s\'</string>
   <string name="passphrase_for_any">Wpisz hasło</string>
   <string name="pin_for">Wpisz PIN dla \'%s\'</string>
+  <string name="file_delete_confirmation_title">Usunąć pierwotny plik?</string>
+  <string name="file_delete_confirmation">Następujące pliki będą usunięte: %s</string>
+  <string name="file_delete_successful">%1$d z %2$d plików zostało usuniętych. %3$s</string>
+  <string name="no_file_selected">Nie wybrano pliku.</string>
   <string name="encrypt_sign_successful">Pomyślnie podpisano i/lub zaszyfrowano.</string>
   <string name="encrypt_sign_clipboard_successful">Pomyslnie podpisano i/lub zaszyfrowano do schowka.</string>
   <string name="select_encryption_key">Wybierz co najmniej jeden klucz szyfrujący.</string>
   <string name="error_no_encryption_or_signature_key">Wybierz co najmniej jeden klucz szyfrujący lub klucz podpisujący.</string>
+  <string name="specify_file_to_encrypt_to">Wskaż, do którego pliku zapisać zaszyfrowane dane.\nOSTRZEŻENIE: Plik zostanie nadpisany, jeżeli istnieje.</string>
+  <string name="specify_file_to_decrypt_to">Wskaż, do którego pliku zapisać odszyfrowane dane.\nOSTRZEŻENIE: Plik zostanie nadpisany, jeżeli istnieje.</string>
+  <string name="key_deletion_confirmation_multi">Czy na pewno chcesz usunąć wszystkie zaznaczone klucze?</string>
+  <string name="secret_key_deletion_confirmation">Po usunięciu nie będziesz mógł deszyfrować wiadomości/plików zaszyfrowanych tym kluczem i stracisz wszystkie potwierdzenia wykonane za pomocą tego klucza.</string>
+  <string name="public_key_deletetion_confirmation">Usunąć klucz \'%s\'?</string>
   <string name="also_export_secret_keys">Także eksportuj tajne klucze</string>
   <string name="reinstall_openkeychain">Napotkałeś się na znany błąd w Androidzie. Proszę ponownie zainstalować OpenKeychain jeśli chcesz połączyć kontakty z kluczami.</string>
   <string name="key_exported">Pomyślnie wyeksportowano 1 klucz.</string>
@@ -237,18 +270,24 @@
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
+  <string name="error_file_delete_failed">nie były usunięte. Usuń je ręcznie!</string>
+  <string name="error_file_added_already">%s został już wcześniej dodany.</string>
   <string name="error_file_not_found">plik nie znaleziony</string>
   <string name="error_no_secret_key_found">nie znaleziono pasującego klucza prywatnego</string>
   <string name="error_external_storage_not_ready">zewnętrzne urządzenie jest niegotowe</string>
   <string name="error_key_size_minimum512bit">klucz musi mieć rozmiar co najmniej 512 bitów</string>
   <string name="error_unknown_algorithm_choice">wybrano nieznany algorytm</string>
+  <string name="error_user_id_no_email">nie znaleziono adresów e-mail</string>
   <string name="error_key_needs_a_user_id">potrzeba przynajmniej jeden tożsamości</string>
+  <string name="error_no_signature_passphrase">nie podano hasła</string>
   <string name="error_no_signature_key">nie podano klucza podpisu</string>
   <string name="error_invalid_data">Brak treści szyfrowanej lub podpisanej OpenPGP!</string>
   <string name="error_integrity_check_failed">Sprawdzanie spójności zakończone niepowodzeniem! Dane były modyfikowane!</string>
+  <string name="error_wrong_passphrase">nieprawidłowe hasło</string>
   <string name="error_could_not_extract_private_key">nie można wyodrębnić klucza prywatnego</string>
   <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">Potrzebujesz Androida 4.1 aby korzystać z Android NFC Beam</string>
+  <string name="error_nfc_needed">NFC musi być włączone!</string>
   <string name="error_nothing_import">Nie znaleziono kluczy!</string>
   <string name="error_contacts_key_id_missing">Pobieranie ID klucza z kontaktów nie powiodło się!</string>
   <string name="error_generic_report_bug">Wystąpił błąd ogólny, proszę zgłoś go autorom OpenKeychain.</string>
@@ -286,11 +325,13 @@
   <string name="progress_modify_subkeyrevoke">unieważnianie pod-kluczy...</string>
   <string name="progress_modify_subkeystrip">usuwanie podkluczy...</string>
   <string name="progress_modify_subkeyadd">dodawanie pod-kluczy...</string>
+  <string name="progress_exporting_key">eksportowanie klucza...</string>
   <string name="progress_exporting_keys">eksportowanie kluczy...</string>
   <string name="progress_extracting_signature_key">wyodrębnianie klucza podpisu...</string>
   <string name="progress_extracting_key">wyodrębnianie klucza...</string>
   <string name="progress_preparing_streams">przygotowywanie strumieni...</string>
   <string name="progress_encrypting">szyfrowanie danych...</string>
+  <string name="progress_decrypting">Odszyfrowywanie danych...</string>
   <string name="progress_preparing_signature">przygotowywanie podpisu...</string>
   <string name="progress_processing_signature">przetwarzanie podpisu...</string>
   <string name="progress_generating_signature">generowanie podpisu...</string>
@@ -327,6 +368,7 @@
   <!--Help-->
   <string name="help_tab_start">Początek</string>
   <string name="help_tab_faq">FAQ</string>
+  <string name="help_tab_wot">Potwierdzenie klucza</string>
   <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Dziennik zmian</string>
   <string name="help_tab_license">Licencje</string>
@@ -337,6 +379,8 @@
   <string name="import_tab_keyserver">Serwery kluczy</string>
   <string name="import_tab_direct">Plik/Schowek</string>
   <string name="import_tab_qr_code">Kod QR/NFC</string>
+  <string name="import_qr_code_wrong">Nie wspierany format kodu QR (specyfikacja: https://github.com/open-keychain/open-keychain/wiki/QR-Codes)!</string>
+  <string name="import_qr_code_too_short_fingerprint">Odcisk klucza zbyt krótki!</string>
   <string name="import_qr_code_button">Skanuj kod QR</string>
   <string name="import_qr_code_text">Umieść kod QR przed kamerą!</string>
   <string name="btn_import">Importuj</string>
@@ -392,6 +436,7 @@
     <item quantity="other">Pomyślnie usunięto %1$d kluczy%2$s.</item>
   </plurals>
   <string name="delete_nothing">Nie ma nic do usunięcia.</string>
+  <string name="delete_cancelled">Usunięcie anulowane.</string>
   <!--Revoke result toast (snackbar)-->
   <!--Certify result toast-->
   <plurals name="certify_keys_with_errors">
@@ -416,6 +461,7 @@
   <string name="api_settings_hide_info">Ukryj zaawansowane informacje</string>
   <string name="api_settings_no_key">Nie wybrano klucza</string>
   <string name="api_settings_select_key">Wybierz klucz</string>
+  <string name="api_settings_create_key">Stwórz nowy klucz</string>
   <string name="api_settings_save">Zapisz</string>
   <string name="api_settings_cancel">Anuluj</string>
   <string name="api_settings_revoke">Odwołaj dostęp</string>
@@ -423,9 +469,12 @@
   <string name="api_settings_package_name">Nazwa paczki</string>
   <string name="api_settings_advanced">Zaawansowane</string>
   <string name="api_settings_settings">Ustawienia</string>
+  <string name="api_register_text">%s chce użyć OpenKeychain jako dostawcy kryptografii. Zostaniesz zapytany o zgodę przed użyciem twoich kluczy do deszyfrowania.\n\nMożesz odwołać dostęp później na ekranie \'Aplikacje\'.</string>
   <string name="api_register_allow">Zezwól na dostęp</string>
   <string name="api_register_disallow">Odmów dostępu</string>
   <string name="api_register_error_select_key">Wybierz klucz!</string>
+  <string name="api_select_pub_keys_missing_text">Nie znaleziono kluczy dla tych adresów e-mail:</string>
+  <string name="api_select_pub_keys_dublicates_text">Więcej niż jeden klucz istnieje dla tych adresów e-mail:</string>
   <string name="api_select_pub_keys_text">Proszę przejrzeć listę adresatów!</string>
   <string name="api_select_pub_keys_text_no_user_ids">Prosimy o wybranie odbiorców!</string>
   <string name="api_error_wrong_signature">Sprawdzanie podpisu zakończone niepowodzeniem! Czy zainstalowałeś tę aplikację z innego źródła? Jeżeli jesteś pewien, że nie jest to atak, odwołaj rejestrację teg aplikacji w OpenKeychain, a następnie zarejestruj ją ponownie.</string>
@@ -445,10 +494,12 @@
   <string name="key_list_empty_text1">Nie znaleziono kluczy!</string>
   <string name="key_list_filter_show_all">Pokaż wszystkie klucze</string>
   <string name="key_list_fab_qr_code">Skanuj kod QR</string>
+  <string name="key_list_fab_import">Importuj z Pliku</string>
   <!--Key view-->
   <string name="key_view_action_edit">Edytuj</string>
   <string name="key_view_action_encrypt">Szyfruj tekst</string>
   <string name="key_view_action_encrypt_files">pliki</string>
+  <string name="key_view_action_certify">Potwierdź klucz</string>
   <string name="key_view_action_update">Aktualizuj z serwera kluczy</string>
   <string name="key_view_action_share_with">Podziel się z...</string>
   <string name="key_view_action_share_nfc">Udostępnij używając NFC</string>
@@ -457,10 +508,19 @@
   <string name="key_view_tab_share">Udostępnij</string>
   <string name="key_view_tab_keys">Pod-klucze</string>
   <string name="key_view_tab_certs">Certyfikaty</string>
+  <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">Unieważnione</string>
   <string name="user_id_info_revoked_text">Ta tożsamość została unieważniona przez właściciela klucza. Nie jest ona już ważna.</string>
+  <string name="user_id_info_certified_title">Potwierdzony</string>
+  <string name="user_id_info_uncertified_title">Niepotwierdzony</string>
   <!--Key trust-->
   <!--keybase proof stuff-->
+  <string name="keybase_narrative_github">Jest znany na GitHubie jako %s</string>
+  <string name="keybase_narrative_coinbase">Jest znany na Coinbase jako %s</string>
+  <string name="keybase_twitter_proof">Tweet</string>
+  <string name="keybase_web_site_proof">Plik tekstowy</string>
+  <string name="keybase_github_proof">Gist</string>
+  <string name="keybase_reddit_proof">Plik JSON</string>
   <string name="keybase_verify">Weryfikacja</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Zmień hasło</string>
@@ -497,9 +557,14 @@
   <string name="create_key_hint_full_name">Pełne imię lub przezwisko</string>
   <string name="create_key_edit">Zmień ustawienia klucza</string>
   <string name="create_key_yubi_key_pin">PIN</string>
+  <string name="create_key_yubi_key_pin_insecure">Proszę wybierz bezpieczny PIN, nie 000000, 123456 lub podobne kombinacje (top 20 najczęściej wybieranych PIN-ów jest niedozwolona)</string>
   <!--View key-->
+  <string name="view_key_my_key">Mój klucz</string>
   <string name="view_key_fragment_no_system_contact">&lt;żaden&gt;</string>
   <!--Add/Edit keyserver-->
+  <string name="add_keyserver_dialog_title">Dodaj serwer kluczy</string>
+  <string name="edit_keyserver_dialog_title">Edytuj serwer kluczy</string>
+  <string name="add_keyserver_invalid_url">Nieprawidłowy URL!</string>
   <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
   <string name="nav_keys">Klucze</string>
@@ -509,6 +574,7 @@
   <string name="drawer_close">Zamknij panel nawigacji</string>
   <string name="my_keys">Moje klucze</string>
   <string name="nav_backup">Kopia zapasowa/Przywracanie</string>
+  <string name="nav_transfer">Bezpieczny Transfer Wifi</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Wpisz tekst</string>
   <!--certs-->
@@ -558,6 +624,7 @@
   <string name="msg_dc_clear_decompress">Rozpakowywanie skompresowanych danych</string>
   <string name="msg_dc_clear_meta_file">Nazwa pliku: %s</string>
   <string name="msg_dc_clear_meta_mime">Typ MIME: %s</string>
+  <string name="msg_dc_clear_meta_size">Rozmiar pliku: %s</string>
   <string name="msg_dc_clear_meta_time">Czas modyfikacji: %s</string>
   <string name="msg_dc_clear_signature_bad">Sprawdzanie podpisu NIE JEST OK</string>
   <string name="msg_dc_clear_signature_check">Weryfikowanie danych podpisu...</string>
@@ -569,11 +636,13 @@
   <string name="msg_vl_clear_meta_file">Nazwa pliku: %s</string>
   <string name="msg_vl_clear_meta_mime">Typ MIME: %s</string>
   <string name="msg_vl_clear_meta_time">Czas modyfikacji: %s</string>
+  <string name="msg_vl_clear_meta_size">Rozmiar pliku: %s</string>
   <string name="msg_vl_clear_signature_check">Weryfikowanie danych podpisu...</string>
   <string name="msg_vl_ok">OK</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <string name="msg_pse_encrypting">Szyfrowanie danych</string>
+  <string name="msg_pse_error_bad_passphrase">Nieprawidłowe hasło!</string>
   <string name="msg_pse_error_pgp">Błąd wewnętrzny PGP!</string>
   <string name="msg_pse_key_ok">Szyfrowanie dla klucza: %s</string>
   <string name="msg_pse_key_unknown">Brakujący klucz do szyfrowania: %s</string>
@@ -583,6 +652,8 @@
   <string name="msg_pse_signing">Podpisywanie danych (bez podpisu)</string>
   <string name="msg_pse_sigcrypting">Szyfrowanie danych z podpisem</string>
   <!--Messages for Authentication operation-->
+  <string name="msg_auth_error_bad_passphrase">Nieprawidłowe hasło!</string>
+  <string name="msg_crt_certifying">Generowanie certyfikatów</string>
   <string name="msg_crt_saving">Zapisywanie pęków kluczy</string>
   <string name="msg_crt_unlock">Odblokowanie master klucza</string>
   <string name="msg_crt_success">Pomyślnie certyfikowane tożsamości</string>
@@ -599,6 +670,11 @@
   <string name="msg_import_fetch_error_not_found">Nie znaleziono klucza!</string>
   <string name="msg_import_error">Operacja importowania nie udała się!</string>
   <string name="msg_backup_error_db">Błąd bazy danych!</string>
+  <string name="msg_upload_proxy_direct">Używane proxy: Żadne</string>
+  <string name="msg_upload_proxy_tor">Używane proxy: TOR</string>
+  <string name="msg_upload_proxy">Używane proxy: %s</string>
+  <string name="msg_upload_server">Serwer: %s</string>
+  <string name="msg_upload_key">ID Klucza: %s</string>
   <string name="msg_upload_error_not_found">Nie znaleziono klucza!</string>
   <string name="msg_del_error_empty">Nie ma nic do usunięcia!</string>
   <string name="msg_del_error_multi_secret">Klucze prywatne mogą być usuwane tylko pojedynczo!</string>
@@ -623,6 +699,7 @@
     <item quantity="other">Nie udało się usunąć %d kluczy</item>
   </plurals>
   <!--Linked Identity verification-->
+  <string name="msg_data_mime_filename">Nazwa pliku: \'%s\'</string>
   <string name="msg_get_success">Pobrano pomyślnie!</string>
   <string name="msg_get_too_many_responses">Wyszukiwanie kluczy znalazło zbyt wiele kandydatów. Proszę zdefiniuj swoje zapytanie!</string>
   <string name="msg_get_query_too_short">Fraza której szukasz jest zbyt krótka. Proszę ponownie zdefiniować swoje zapytanie!</string>
@@ -632,12 +709,17 @@
   <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_keys">Zapamiętane hasła</string>
+  <string name="passp_cache_notif_clear">Wyczyść hasła</string>
   <string name="passp_cache_notif_pwd">Hasło</string>
   <!--Keyserver sync-->
   <string name="keyserver_sync_orbot_notif_start">Uruchom aplikację Orbot</string>
   <!--First Time-->
   <string name="first_time_text1">Weź prywatność w swoje ręce używając OpenKeychain!</string>
   <string name="first_time_create_key">Utwórz mój klucz</string>
+  <string name="first_time_import_key">Importuj klucz z pliku</string>
+  <string name="first_time_security_token">Użyj Tokenu Bezpieczeństwa</string>
+  <string name="first_time_security_token_subtitle">(Fidesmo, YubiKey NEO, SIGILANCE, …)</string>
   <string name="first_time_skip">Pomiń ustawienia</string>
   <string name="backup_section">Kopia zapasowa</string>
   <string name="restore_section">Przewracanie</string>
@@ -664,6 +746,7 @@
   <string name="error_no_file_selected">Wybierz przynajmniej jeden plik, aby szyfrować!</string>
   <string name="key_colon">Klucz:</string>
   <string name="btn_start_exchange">Rozpocznij wymianę</string>
+  <string name="user_id_none"><![CDATA[<none>]]></string>
   <!--Android Account-->
   <string name="account_privacy_title">Prywatność</string>
   <!--Passphrase wizard-->
@@ -671,8 +754,10 @@
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">Wpisz hasło</string>
   <string name="passphrase">Hasło</string>
+  <string name="passphrase_invalid">Nieprawidłowe hasło</string>
   <string name="passphrase_again">Ponów</string>
   <string name="set_passphrase">Ustaw hasło</string>
+  <string name="nfc_title">NFC</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="unlocked">Odblokowane</string>
   <string name="nfc_settings">Settings</string>
@@ -682,23 +767,44 @@
   <string name="security_token_error">Błąd: %s</string>
   <string name="security_token_error_unknown">Nieznany błąd</string>
   <string name="security_token_error_try_again">Spróbuj ponownie</string>
+  <string name="btn_delete_original">Usuń pierwotny plik</string>
+  <string name="file_saved">Zapisano plik!</string>
+  <string name="error_clipboard_empty">Schowek jest pusty!</string>
+  <string name="linked_create_https_1_4">Przykład: https://example.com/pgpkey.txt</string>
   <string name="linked_create_verify">Weryfikacja</string>
   <!--Other Linked Identity strings-->
+  <string name="linked_verify_success">Zweryfikowano!</string>
+  <string name="menu_linked_add_identity">Połącz do konta</string>
   <string name="btn_finish">Zakończ</string>
+  <string name="linked_title_https">Strona internetowa (HTTPS)</string>
+  <string name="linked_title_dns">Nazwa domeny (DNS)</string>
+  <string name="linked_title_github">GitHub</string>
   <string name="linked_title_twitter">Twitter</string>
   <string name="linked_button_verify">Weryfikacja</string>
   <string name="linked_button_retry">Spróbuj ponownie</string>
   <string name="linked_button_confirm">Potwierdź</string>
   <string name="linked_button_view">Podgląd</string>
   <string name="linked_text_error">Błąd</string>
+  <string name="linked_webview_title_github">Autoryzacja GitHub</string>
+  <string name="snack_btn_overwrite">Nadpisz</string>
   <string name="snack_backup_saved_dir">Zapisano do katalogu OpenKeychain</string>
   <string name="share_log_dialog_share_button">Udostępnij</string>
   <string name="share_log_dialog_cancel_button">Zamknij</string>
   <string name="menu_uids_save">Zapisz</string>
   <string name="prompt_fidesmo_pgp_install_button_positive">Instaluj</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">Zamknij</string>
+  <string name="prompt_fidesmo_app_install_title">Zainstalować Fidesmo?</string>
   <string name="prompt_fidesmo_app_install_button_positive">Instaluj</string>
   <string name="prompt_fidesmo_app_install_button_negative">Zamknij</string>
+  <string-array name="help_donation_google_catalog_values">
+    <item>1 EUR</item>
+    <item>2 EUR</item>
+    <item>3 EUR</item>
+    <item>5 EUR</item>
+    <item>10 EUR</item>
+    <item>50 EUR</item>
+    <item>100 EUR</item>
+  </string-array>
   <string name="redirect_import_key_no">Close</string>
   <string name="button_allow">Pozwól</string>
   <string name="button_cancel">Zamknij</string>
@@ -710,31 +816,55 @@
   <string name="key_health_divert_partial_title">Prawidłowy (częściowy token)</string>
   <string name="key_health_expired_title">Wygasło</string>
   <string name="key_health_revoked_title">Unieważnione</string>
+  <string name="key_health_insecure_title">Niebezpieczny</string>
+  <string name="key_health_insecure_subtitle">Ten klucz jest niebezpieczny!</string>
   <string name="key_health_sign_only_title">Prawidłowy (klucz podpisujący)</string>
   <string name="key_health_stripped_title">Prawidłowy (zredukowany)</string>
   <string name="key_health_partial_stripped_title">Prawidłowy (częściowo zredukowany)</string>
   <string name="keyserver_title_published">Opublikowane</string>
   <string name="dialog_insecure_title">Ostrzeżenie Bezpieczeństwa</string>
+  <string name="dialog_insecure_button_view_key">Pokaż klucz</string>
   <string name="dialog_insecure_button_ok">Mam to</string>
   <string name="usage_authentication">Uwierzytelnianie</string>
+  <string name="identity_context_forget">Zapomnij</string>
   <string name="button_scan">Skan</string>
+  <string name="button_more_info">Więcej informacji</string>
   <string name="button_import">Importuj</string>
   <string name="transfer_status_connected">Połączony</string>
   <string name="transfer_connecting">Trwa łączenie...</string>
+  <string name="first_time_secure_wifi_transfer">Bezpieczny Transfer Wifi</string>
+  <string name="menu_secure_wifi_transfer">Bezpieczny Transfer Wifi</string>
   <string name="transfer_confirm_cancel">Zamknij</string>
   <string name="transfer_confirm_ok">Send</string>
+  <string name="transfer_confirm_title">Wysłać twój klucz?</string>
+  <string name="status_import">Importowanie klucza…</string>
   <string name="token_reset_confirm_ok">Zresetuj</string>
   <string name="token_result_not_found">Nie znaleziono klucza!</string>
+  <string name="token_result_empty">Token jest pusty</string>
   <string name="token_action_import">Importuj</string>
+  <string name="token_action_view_key">Pokaż klucz</string>
+  <string name="token_menu_change_pin">Zmień PIN</string>
   <string name="token_menu_view_log">Pokaż logi</string>
   <string name="token_unlock_ok">Odblokuj</string>
+  <string name="token_hint_new_pin">Nowy PIN</string>
+  <string name="token_hint_new_pin_repeat">Nowy PIN (powtórz)</string>
+  <string name="token_error_pin_min6">Nowy PIN musi zawierać 6 znaków lub więcej!</string>
+  <string name="msg_ret_ks_error_not_found">Nie znaleziono klucza</string>
+  <string name="msg_ret_local_not_found">Nie znaleziono klucza</string>
   <string name="select_identity_cancel">Wyłącz</string>
   <string name="key_gen_progress">Proszę czekać...</string>
   <string name="key_gen_back">Wstecz</string>
   <string name="key_gen_finish">Zakończ</string>
+  <string name="button_goto_openkeychain">Idź do OpenKeychain</string>
   <string name="snack_keylist_clipboard_action">Podgląd</string>
   <string name="notify_channel_passcache">Pamięć hasła</string>
+  <string name="notify_content_keysync">Klucz %d / %d</string>
+  <string name="keylist_item_key_id">ID Klucza: %s</string>
   <string name="keylist_header_anonymous">Anonimowy</string>
   <string name="keylist_header_special">#</string>
+  <string name="button_analytics_yes">Tak, chcę pomóc!</string>
+  <string name="button_analytics_no">Nie, dzięki</string>
   <string name="snackbutton_analytics_settings">Ustawienia</string>
+  <string name="share_key_clipboard">Podziej się kluczem przez schowek</string>
+  <string name="share_key">Podziel się kluczem</string>
 </resources>

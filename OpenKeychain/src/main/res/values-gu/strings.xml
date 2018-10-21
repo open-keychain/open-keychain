@@ -2,20 +2,187 @@
 <resources>
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
+  <string name="app_name">ઓપનકીચેન</string>
   <!--title-->
+  <string name="title_encrypt_text">એનક્રિપ્ટ કરો </string>
+  <string name="title_encrypt_files">એનક્રિપ્ટ કરો </string>
+  <string name="title_decrypt">ડિક્રિપ્ટ કરો </string>
+  <string name="title_add_subkey">ઉપચાવી ઉમેરો</string>
+  <string name="title_change_master_key">મુખ્ય ચાવી બદલો</string>
+  <string name="title_edit_key">ચાવી સુધારો</string>
+  <string name="title_linked_create">જોડેલી ઓળખ બનાવો</string>
+  <string name="title_preferences">સેટિંગ્સ</string>
+  <string name="title_api_registered_apps">એપ્સ</string>
+  <string name="title_key_server_preference">OpenPGP ચાવી સર્વરો</string>
+  <string name="title_smartpgp_authorities_preference">SmartPGP: વિશ્વસનીય સત્તાવાળાઓ</string>
+  <string name="title_change_passphrase">પાસવર્ડ બદલો</string>
+  <string name="title_share_fingerprint_with">...ની સાથે ફિંગરપ્રિન્ટ શેર કરો</string>
+  <string name="title_share_key">...ની સાથે ચાવી શેર કરો</string>
+  <string name="title_share_file">...ની સાથે ફાઈલ શેર કરો</string>
+  <string name="title_share_message">...ની સાથે લખાણ શેર કરો</string>
+  <string name="title_encrypt_to_file">ફાઈલ પર એનક્રિપ્ટ કરો</string>
+  <string name="title_decrypt_to_file">ફાઈલ પર ડિક્રિપ્ટ કરો</string>
+  <string name="title_import_keys">ચાવીઓ આયાત કરો</string>
+  <string name="title_export_key">ચાવીની નકલ સાચવો</string>
+  <string name="title_export_keys">ચાવીઓની નકલ સાચવો</string>
+  <string name="title_key_not_found">ચાવી મળી નથી</string>
+  <string name="title_send_key">ચાવી સર્વર પર અપલોડ કરો</string>
+  <string name="title_backup">ચાવીની નકલ સાચવો</string>
+  <string name="title_certify_key">ચાવીની પુષ્ટિ કરો</string>
+  <string name="title_key_details">ચાવીની માહિતીઓ</string>
+  <string name="title_help">સહાય</string>
+  <string name="title_log_display">નોંધણી</string>
+  <string name="title_exchange_keys">ચાવી અદલોબદલો</string>
+  <string name="title_advanced_key_info">અદ્યતન</string>
+  <string name="title_delete_secret_key">તમારી ચાવી \'%s\' ને કાઢી નાખવી?</string>
+  <string name="title_manage_my_keys">મારી ચાવીઓનું સંચાલન કરો</string>
+  <string name="title_alert_strip">ઉપચાવીને સ્ટ્રીપ કરો</string>
   <!--section-->
+  <string name="section_user_ids">ઓળખ</string>
+  <string name="section_security_token">સુરક્ષા ટોકન</string>
+  <string name="section_linked_system_contact">જોડાયેલા સાધન સંપર્ક</string>
+  <string name="section_keybase_proofs">Kaybase.io સાબિતીઓ</string>
+  <string name="section_should_you_trust">શું તમારે આ ચાવી પર ભરોસો કરવો જોઈએ?</string>
+  <string name="section_proof_details">સાબિતીની ચકાસણી</string>
+  <string name="section_keys">ઉપચાવીઓ</string>
+  <string name="section_cloud_search">ચાવી શોધો</string>
+  <string name="section_cloud_search_summary">ચાવી સર્વર, keybase.io</string>
+  <string name="section_passphrase_cache">પાસવર્ડસ અને પિન્સ</string>
+  <string name="section_proxy_settings">નેટવર્ક અનામિત્વ</string>
+  <string name="section_proxy_settings_summary">ટોર, પ્રોક્સી સેટિંગ્સ</string>
+  <string name="section_gui">ઇન્ટરફેસ</string>
+  <string name="section_sync_settings">સમન્વયન</string>
+  <string name="section_sync_settings_summary">ઑટોમૅટિક ચાવી સુધારાઓ, કોન્ટકટ લિંકિંગ </string>
+  <string name="section_experimental_features">પ્રાયોગિક સુવિધાઓ</string>
+  <string name="section_certify">પુષ્ટિ કરો</string>
+  <string name="section_actions">ક્રિયાઓ</string>
+  <string name="section_share_key">ચાવી</string>
+  <string name="section_key_server">ચાવી સર્વર</string>
+  <string name="section_fingerprint">ફિંગરપ્રિન્ટ</string>
+  <string name="section_encrypt">એનક્રિપ્ટ</string>
+  <string name="section_decrypt">ડિક્રિપ્ટ કરો/ચકાસો </string>
+  <string name="section_current_expiry">હાલની સમાપ્તિ</string>
+  <string name="section_new_expiry">નવી સમાપ્તિ</string>
   <!--button-->
+  <string name="btn_decrypt_verify_file">ડિક્રિપ્ટ કરો, ચકાસો, અને ફાઈલ સાચવો</string>
+  <string name="btn_encrypt_share_file">એનક્રિપ્ટ કરી ફાઈલ શેર કરો</string>
+  <string name="btn_encrypt_save_file">એનક્રિપ્ટ કરી ફાઈલ સાચવો</string>
+  <string name="btn_save_file">ફાઈલ સાચવો</string>
+  <string name="btn_save">સાચવો</string>
+  <string name="btn_view_log">નોંધણીઓ જુવો</string>
+  <string name="btn_do_not_save">રદ્ કરો</string>
+  <string name="btn_delete">કાઢવું</string>
+  <string name="btn_no_date">સમાપ્તિ નથી</string>
+  <string name="btn_okay">બરાબર</string>
+  <string name="btn_export_to_server">ચાવી સર્વર પર અપલોડ કરો</string>
+  <string name="btn_next">પછીનું</string>
+  <string name="btn_back">પહેલાનું</string>
+  <string name="btn_no">નહિ</string>
+  <string name="btn_match">ફિંગરપ્રિન્ટસ મળે છે</string>
+  <string name="btn_share_encrypted_signed">એનક્રિપ્ટ/સહી  કરો અને લખાણ શેર કરો</string>
+  <string name="btn_copy_encrypted_signed">એનક્રિપ્ટ/સહી  કરો અને લખાણની નકલ ઉતારો</string>
+  <string name="btn_paste_encrypted_signed">એનક્રિપ્ટ/સહી  કરો અને લખાણની નકલ છાપો</string>
+  <string name="btn_view_cert_key">સર્ટિફિકેશન ચાવી જુવો</string>
+  <string name="btn_create_key">ચાવી બનાવો</string>
+  <string name="btn_add_files">ફાઈલ(લો)  ઉમેરો</string>
+  <string name="btn_share_decrypted_text">શેર કરો</string>
+  <string name="btn_open_with">...વળે ખોલો</string>
+  <string name="btn_copy_decrypted_text">ક્લિપબોર્ડ પર નકલ ઉતારો</string>
+  <string name="btn_decrypt_clipboard">કલીપબોર્ડ પરથી વાંચો</string>
+  <string name="btn_decrypt_files">ઇનપુટ ફાઇલ પસંદ કરો</string>
+  <string name="btn_encrypt_files">ફાઈલો એનક્રિપ્ટ કરો</string>
+  <string name="btn_encrypt_text">લખાણ એનક્રિપ્ટ કરો</string>
+  <string name="btn_add_email">વધુ ઈમેલ સરનામા ઉમેરો</string>
+  <string name="btn_unlock">લોક ખોલો</string>
+  <string name="btn_proceed">આગળ વધો</string>
+  <string name="btn_add_keyserver">ઉમેરો</string>
+  <string name="btn_save_default">મૂળભૂત તરીકે સાચવો</string>
+  <string name="btn_saved">સચવાયેલ છે!</string>
+  <string name="btn_not_matching">મેળ થયો નથી</string>
   <!--Shortcut Strings-->
+  <string name="shortcut_debug">ક્રિયાઓ ડિબગ કરો</string>
   <!--Content Description-->
+  <string name="cd_encrypt_files">ફાઈલો એનક્રિપ્ટ કરો</string>
+  <string name="cd_exchange_keys">ચાવી અદલોબદલો</string>
+  <string name="cd_encrypt_text">લખાણ એનક્રિપ્ટ કરો</string>
+  <string name="cd_share_nfc">NFC વળે શેર કરો</string>
   <!--menu-->
+  <string name="menu_preferences">સેટિંગ્સ</string>
+  <string name="menu_help">સહાય</string>
+  <string name="menu_export_key">ચાવીની નકલ સાચવો</string>
+  <string name="menu_delete_key">ચાવી કાઢી નાખો</string>
+  <string name="menu_status">ચાવીની સ્થિતિ જુઓ</string>
+  <string name="menu_manage_keys">મારી ચાવીઓનું સંચાલન કરો</string>
+  <string name="menu_search">શોધ</string>
+  <string name="menu_open">ખોલો</string>
+  <string name="menu_read_clipboard">કલીપબોર્ડ પરથી વાંચો</string>
+  <string name="menu_nfc_preferences">NFC સેટિંગ્સ</string>
+  <string name="menu_beam_preferences">Beam સેટિંગ્સ</string>
+  <string name="menu_encrypt_to">... પર એનક્રિપ્ટ કરો</string>
+  <string name="menu_select_all">બધા પસંદ કરો</string>
+  <string name="menu_export_all_keys">બધી ચાવીઓ નિકાસ કરો </string>
+  <string name="menu_update_all_keys">બધી ચાવીઓઅપડેટ કરો </string>
+  <string name="menu_certify_fingerprint">ફિંગરપ્રિન્ટ વળે ખાતરી કરો</string>
+  <string name="menu_certify_fingerprint_phrases">શબ્દો વળે ખાતરી કરો</string>
+  <string name="menu_share_log">નોંધણીઓ શેર કરો</string>
+  <string name="menu_change_password">પાસવર્ડ બદલો</string>
+  <string name="menu_advanced">અદ્યતન</string>
+  <string name="menu_keyserver_add">ઉમેરો</string>
   <!--label-->
+  <string name="label_message">લખાણ</string>
+  <string name="label_file">ફાઈલ</string>
+  <string name="label_files">ફાઈલો</string>
+  <string name="label_file_colon">ફાઈલ:</string>
+  <string name="label_no_passphrase">પાસવર્ડ નહી</string>
+  <string name="label_passphrase">પાસવર્ડ</string>
+  <string name="label_pin">પિન</string>
+  <string name="label_unlock">અનલૉક થઇ રહ્યું...</string>
+  <string name="label_passphrase_again">ફરી પાસવર્ડ લખો</string>
+  <string name="label_show_passphrase">પાસવર્ડ બતાવો</string>
+  <string name="label_algorithm">અલ્ગોરિધમ</string>
+  <string name="label_algorithm_colon">અલ્ગોરિધમ:</string>
+  <string name="label_write_version_header">કોઈ બીજાને કહો કે તમે ઓપેનકિચેન વાપરી રહ્યા છો</string>
+  <string name="label_asymmetric_from">વળે સહી કરો:</string>
+  <string name="label_to">પર એનક્રિપ્ટ કરો</string>
+  <string name="label_delete_after_encryption">એનક્રિપ્ટ કર્યા બાદ ફાઈલો કાઢી નાખો</string>
+  <string name="label_delete_after_decryption">ડિક્રિપ્ટ કર્યા બાદ કાઢી નાખો</string>
+  <string name="label_encryption_algorithm">એનક્રિપશન અલ્ગોરિધમ</string>
+  <string name="label_hash_algorithm">હેશ અલ્ગોરિધમ</string>
+  <string name="label_symmetric">પાસવર્ડ વળે એનક્રિપ્ટ કરો</string>
+  <string name="label_passphrase_cache_subs">ઉપચાવી વળે પાસવર્ડ યાદ રાખો</string>
+  <string name="label_message_compression">લખાણ સંક્ષેપણ</string>
+  <string name="label_file_compression">ફાઈલ સંક્ષેપણ</string>
+  <string name="label_keyservers">OpenPGP ચાવીના સર્વરોનું સંચાલન કરો</string>
+  <string name="label_key_id">ચાવી ઓળખ</string>
+  <string name="label_key_id_colon">ચાવી ઓળખ:</string>
+  <string name="label_key_created">%s બનાવેલ</string>
+  <string name="label_key_created_just_now">હમણાંજ બનાવેલ</string>
+  <string name="label_key_type">પ્રકાર</string>
+  <string name="label_creation">બનાવટ</string>
+  <string name="label_creation_colon">બનાવટ:</string>
+  <string name="label_expiry">અવધિ પૂર્ણ</string>
+  <string name="label_valid_from">અવધિ શરુ </string>
+  <string name="label_usage">વપરાશ </string>
+  <string name="label_revoked">રદ</string>
+  <string name="label_insecure">અસુરક્ષિત</string>
+  <string name="label_key_size">ચાવીનું માપ</string>
+  <string name="label_name">નામ</string>
+  <string name="label_fingerprint">ફિંગરપ્રિન્ટ</string>
+  <string name="label_smartpgp_roots">SmartPGP: વિશ્વસનીય સત્તાવાળાઓ</string>
+  <string name="label_enter_smartpgp_authority_name">નામ</string>
+  <string name="pref_keyserver">OpenPGP ચાવીના સર્વરો</string>
   <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
+  <string name="pref_proxy_tor_title">ટોર સક્રિય કરો</string>
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
   <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_cancel">રદ્ કરો</string>
   <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_cancel">રદ્ કરો</string>
   <!--choice-->
+  <string name="choice_none">એકે નહિ</string>
+  <string name="usage_encrypt">એનક્રિપ્ટ</string>
   <!--sentences-->
   <!--errors
          no punctuation, all lowercase,
@@ -24,6 +191,7 @@
   <!--results shown after decryption/verification-->
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
+  <string name="progress_cancel">રદ્ કરો</string>
   <!--action strings-->
   <!--key bit length selections-->
   <!--elliptic curve names-->
@@ -33,7 +201,11 @@
     <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
   <!--Help-->
+  <string name="help_tab_changelog">નોંધણીઓ બદલો</string>
+  <string name="help_about_version">Version:</string>
   <!--Import-->
+  <string name="import_tab_keyserver">ચાવી સર્વર</string>
+  <string name="import_tab_cloud">ચાવી શોધો</string>
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
@@ -41,22 +213,37 @@
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
+  <string name="api_settings_no_key">કોઈ પણ ચાવી પસંદ કરેલ નથી</string>
+  <string name="api_settings_save">સંગ્રહો</string>
+  <string name="api_settings_cancel">રદ્ કરો</string>
+  <string name="api_settings_advanced">અદ્યતન</string>
+  <string name="api_settings_settings">સેટિંગ્સ</string>
   <!--Share-->
   <!--retry upload dialog-->
   <!--Delete or revoke private key dialog-->
   <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
+  <string name="key_list_fab_search">ચાવી શોધો</string>
   <!--Key view-->
+  <string name="key_view_action_encrypt">લખાણ એનક્રિપ્ટ કરો</string>
+  <string name="key_view_tab_share">શેર કરો</string>
+  <string name="key_view_tab_keys">ઉપચાવીઓ</string>
+  <string name="user_id_info_revoked_title">રદ</string>
   <!--Key trust-->
   <!--keybase proof stuff-->
+  <string name="keybase_verify">ચકાસો</string>
   <!--Edit key-->
+  <string name="edit_key_action_change_passphrase">પાસવર્ડ બદલો</string>
   <!--Create key-->
+  <string name="create_key_yubi_key_pin">પિન</string>
   <!--View key-->
   <!--Add/Edit keyserver-->
   <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
+  <string name="nav_apps">એપ્સ</string>
   <!--hints-->
   <!--certs-->
+  <string name="cert_verify_ok">બરાબર</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
@@ -69,6 +256,7 @@
   <!--Other messages used in OperationLogs-->
   <!--Messages for DecryptVerify operation-->
   <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl_ok">બરાબર</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
@@ -76,13 +264,37 @@
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_pwd">પાસવર્ડ</string>
   <!--Keyserver sync-->
   <!--First Time-->
   <!--unsorted-->
+  <string name="label_cert_type">પ્રકાર</string>
   <!--Android Account-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <string name="passphrase">પાસવર્ડ</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="nfc_settings">સેટિંગ્સ</string>
+  <string name="btn_reset">ફરી ગોઠવો</string>
+  <string name="linked_create_verify">chakaso</string>
   <!--Other Linked Identity strings-->
+  <string name="linked_button_verify">chakaso</string>
+  <string name="linked_button_retry">ફરી પ્રયત્ન કરો</string>
+  <string name="linked_button_confirm">પુષ્ટિ કરો </string>
+  <string name="share_log_dialog_share_button">શેર કરો</string>
+  <string name="share_log_dialog_cancel_button">રદ્ કરો</string>
+  <string name="menu_uids_save">સંગ્રહો</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">રદ્ કરો</string>
+  <string name="prompt_fidesmo_app_install_button_negative">રદ્ કરો</string>
+  <string name="redirect_import_key_no">બંધ કરો</string>
+  <string name="button_cancel">રદ્ કરો</string>
+  <string name="button_back">પહેલાનું</string>
+  <string name="key_health_revoked_title">રદ</string>
+  <string name="key_health_insecure_title">અસુરક્ષિત</string>
+  <string name="transfer_confirm_cancel">રદ્ કરો</string>
+  <string name="token_reset_confirm_ok">ફરી ગોઠવો</string>
+  <string name="token_unlock_ok">લોક ખોલો</string>
+  <string name="key_gen_back">પહેલાનું</string>
+  <string name="snackbutton_analytics_settings">સેટિંગ્સ</string>
 </resources>

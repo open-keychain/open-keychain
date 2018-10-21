@@ -3,7 +3,7 @@
 ##金鑰確認
 未經驗證之前，你無法確定這個金鑰是否真的屬於特定人。
 認證金鑰的最簡單方式就是透過掃描QR code或是經由NFC交換。
-To confirm keys between more than two persons, we suggest using the key exchange method available for your keys.
+如果超過兩人要認證彼此的金鑰，我們建議的方法是交換金鑰。
 
 ## 金鑰狀態
 

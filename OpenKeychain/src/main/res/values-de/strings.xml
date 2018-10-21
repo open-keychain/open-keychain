@@ -165,7 +165,10 @@
   <string name="label_creation">Erzeugungsdatum</string>
   <string name="label_creation_colon">Erstellung:</string>
   <string name="label_expiry">Ablaufdatum</string>
+  <string name="label_valid_from">Gültig ab</string>
   <string name="label_usage">Verwendungszweck</string>
+  <string name="label_revoked">Widerrufen</string>
+  <string name="label_insecure">Unsicher</string>
   <string name="label_key_size">Schlüssellänge</string>
   <string name="label_ecc_curve">Elliptische Kurve</string>
   <string name="label_main_user_id">Hauptidentität</string>
@@ -1859,7 +1862,7 @@ Ein sicherer Schlüssel sollte eine Stärke von 2048 Bits besitzen.</string>
   <string name="menu_list_unrelated_keys">Nicht zugeordnete Schlüssel auflisten</string>
   <string name="no_keys_gen_title">Dies ist eine neue Adresse</string>
   <string name="no_keys_gen_subtitle">Erstelle einen neuen Ende-zu-Ende-Schlüssel in OpenKeychain</string>
-  <string name="no_keys_import_title">I besitze bereits einen Schlüssel</string>
+  <string name="no_keys_import_title">Ich besitze bereits einen Schlüssel</string>
   <string name="no_keys_import_subtitle">Ende-zu-Ende-Schlüssel von anderem Gerät importieren</string>
   <string name="key_list_import">Einen anderen Schlüssel verwenden</string>
   <string name="key_gen_progress">Bitte warten…</string>
@@ -1898,4 +1901,7 @@ Ein sicherer Schlüssel sollte eine Stärke von 2048 Bits besitzen.</string>
   <string name="snack_analytics_accept">Vielen Dank für die Hilfe! Du kannst deine Entscheidung in den Einstellungen ändern.</string>
   <string name="snack_analytics_reject">Das ist in Ordnung, wir werden nicht erneut fragen. Du kannst deine Entscheidung in den Einstellungen ändern.</string>
   <string name="snackbutton_analytics_settings">Einstellungen</string>
+  <string name="subkey_action_create">Teilschlüssel wird erstellt werden</string>
+  <string name="subkey_action_revoke">Teilschlüssel wird widerrufen werden</string>
+  <string name="share_key">Schlüssel teilen</string>
 </resources>

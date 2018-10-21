@@ -166,6 +166,8 @@
   <string name="label_creation_colon">Criação:</string>
   <string name="label_expiry">Data de expiração</string>
   <string name="label_usage">Uso</string>
+  <string name="label_revoked">Revogada</string>
+  <string name="label_insecure">Insegura</string>
   <string name="label_key_size">Tamanho da chave</string>
   <string name="label_ecc_curve">Curva elíptica</string>
   <string name="label_main_user_id">Identidade primária</string>

@@ -161,6 +161,7 @@
   <string name="label_creation_colon">Opprettet:</string>
   <string name="label_expiry">Utløper</string>
   <string name="label_usage">Bruk</string>
+  <string name="label_revoked">Tilbakekalt</string>
   <string name="label_key_size">Nøkkelstørrelse</string>
   <string name="label_ecc_curve">Elliptisk kurve</string>
   <string name="label_main_user_id">Hovedidentitet</string>

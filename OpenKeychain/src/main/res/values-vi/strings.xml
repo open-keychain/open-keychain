@@ -154,6 +154,7 @@
   <string name="label_key_type">Kiểu</string>
   <string name="label_creation">Tạo</string>
   <string name="label_expiry">Hạn dùng</string>
+  <string name="label_valid_from">Có hiệu lực từ</string>
   <string name="label_usage">Đã dùng</string>
   <string name="label_key_size">Kích cỡ khóa</string>
   <string name="label_ecc_curve">Đường cong Elliptic</string>

@@ -1,5 +1,8 @@
 [//]: # (NOTA: ¡Por favor ponga cada frase en su propia línea, Transifex pone cada línea en su propio campo de traducción!)
 
+## 5.2
+  * Improved key import from clipboard
+
 ## 5.1
   * Soporte para Ledger Nano S
   * Soporte para busqueda Web Key Directory (WKD)

@@ -7,23 +7,56 @@
   <string name="title_api_registered_apps">แอป</string>
   <string name="title_help">ช่วยเหลือ</string>
   <string name="title_log_display">บันทึก</string>
+  <string name="title_advanced_key_info">ขั้นสูง</string>
   <!--section-->
+  <string name="section_certify">ยืนยัน</string>
+  <string name="section_share_key">รหัสกุญแจ</string>
+  <string name="section_fingerprint">ลายนิ้วมือ</string>
   <!--button-->
+  <string name="btn_save">บันทึก</string>
+  <string name="btn_do_not_save">ยกเลิก</string>
+  <string name="btn_delete">ลบ</string>
+  <string name="btn_okay">ตกลง</string>
+  <string name="btn_next">ต่อไป</string>
+  <string name="btn_back">ย้อนกลับ</string>
+  <string name="btn_no">ไม่ใช่</string>
+  <string name="btn_unlock">ปลดล็อค</string>
   <string name="btn_proceed">ดำเนิน</string>
+  <string name="btn_add_keyserver">เพิ่ม</string>
   <!--Shortcut Strings-->
   <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">การตั้งค่า</string>
   <string name="menu_help">ช่วยเหลือ</string>
+  <string name="menu_search">ค้นหา</string>
+  <string name="menu_open">เปิด</string>
+  <string name="menu_advanced">ขั้นสูง</string>
+  <string name="menu_keyserver_add">เพิ่ม</string>
   <!--label-->
+  <string name="label_message">แบบอักษร</string>
+  <string name="label_file">แฟ้ม</string>
+  <string name="label_passphrase">รหัสผ่าน</string>
+  <string name="label_unlock">กำลังปลดล็อค...</string>
+  <string name="label_key_type">ชนิด</string>
+  <string name="label_name">ชื่อเอกสาร</string>
   <string name="label_email">อีเมล</string>
+  <string name="label_fingerprint">ลายนิ้วมือ</string>
+  <string name="label_hidden_recipients">ซ่อนผู้รับ:</string>
+  <string name="label_enter_smartpgp_authority_name">ชื่อเอกสาร</string>
   <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="label_experimental_settings_desc_title">คำเตือน</string>
   <!--Proxy Preferences-->
+  <string name="pref_proxy_tor_title">Enable Tor</string>
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
   <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_install">ติดตั้ง</string>
+  <string name="orbot_install_dialog_cancel">ยกเลิก</string>
   <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_cancel">ยกเลิก</string>
   <!--choice-->
+  <string name="choice_none">ไม่มี</string>
+  <string name="error">ข้อผิดพลาด</string>
   <!--sentences-->
   <!--errors
          no punctuation, all lowercase,
@@ -32,6 +65,7 @@
   <!--results shown after decryption/verification-->
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
+  <string name="progress_cancel">ยกเลิก</string>
   <!--action strings-->
   <!--key bit length selections-->
   <!--elliptic curve names-->
@@ -41,7 +75,14 @@
     <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
   <!--Help-->
+  <string name="help_tab_start">เริ่ม</string>
+  <string name="help_tab_changelog">สมุดบันทึกสิ่งของใหม่</string>
+  <string name="help_tab_about">เกี่ยวกับ</string>
+  <string name="help_about_version">Version:</string>
+  <string name="help_tab_donations">บริจาค</string>
   <!--Import-->
+  <string name="btn_import">นำเข้า</string>
+  <string name="btn_refresh">แสดงใหม่</string>
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
@@ -49,6 +90,9 @@
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
+  <string name="api_settings_save">บันทึก</string>
+  <string name="api_settings_cancel">ยกเลิก</string>
+  <string name="api_settings_advanced">ขั้นสูง</string>
   <string name="api_settings_settings">การตั้งค่า</string>
   <!--Share-->
   <!--retry upload dialog-->
@@ -56,8 +100,11 @@
   <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <!--Key view-->
+  <string name="key_view_action_edit">แก้ไข</string>
+  <string name="key_view_tab_start">เริ่ม</string>
   <!--Key trust-->
   <!--keybase proof stuff-->
+  <string name="keybase_verify">ตรวจยืนยัน</string>
   <!--Edit key-->
   <!--Create key-->
   <!--View key-->
@@ -67,6 +114,8 @@
   <string name="nav_apps">แอป</string>
   <!--hints-->
   <!--certs-->
+  <string name="cert_none">เปล่า</string>
+  <string name="cert_verify_ok">ตกลง</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
@@ -79,6 +128,7 @@
   <!--Other messages used in OperationLogs-->
   <!--Messages for DecryptVerify operation-->
   <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl_ok">ตกลง</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
@@ -86,17 +136,46 @@
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
+  <string name="passp_cache_notif_pwd">รหัสผ่าน</string>
   <!--Keyserver sync-->
   <!--First Time-->
   <!--unsorted-->
+  <string name="label_cert_type">ชนิด</string>
+  <string name="unknown">ไม่ทราบ</string>
   <!--Android Account-->
+  <string name="account_privacy_title">ความเป็นส่วนตัว</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <string name="passphrase">รหัสผ่าน</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="nfc_settings">การตั้งค่า</string>
+  <string name="snack_security_token_view">มองดู</string>
+  <string name="snack_security_token_import">นำเข้า</string>
+  <string name="btn_reset">ล้างทิ้ง</string>
+  <string name="linked_create_verify">ตรวจยืนยัน</string>
   <!--Other Linked Identity strings-->
+  <string name="btn_finish">เสร็จ</string>
+  <string name="linked_button_verify">ตรวจยืนยัน</string>
+  <string name="linked_button_retry">ลองใหม่</string>
+  <string name="linked_button_confirm">ยืนยัน</string>
+  <string name="linked_button_view">มองดู</string>
+  <string name="linked_text_error">ข้อผิดพลาด</string>
+  <string name="share_log_dialog_cancel_button">ยกเลิก</string>
+  <string name="menu_uids_save">บันทึก</string>
+  <string name="prompt_fidesmo_pgp_install_button_positive">ติดตั้ง</string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">ยกเลิก</string>
+  <string name="prompt_fidesmo_app_install_button_positive">ติดตั้ง</string>
+  <string name="prompt_fidesmo_app_install_button_negative">ยกเลิก</string>
+  <string name="redirect_import_key_no">ปิด</string>
+  <string name="button_cancel">ยกเลิก</string>
   <string name="button_back">ย้อนกลับ</string>
+  <string name="button_import">นำเข้า</string>
+  <string name="transfer_confirm_cancel">ยกเลิก</string>
+  <string name="transfer_confirm_ok">ส่ง</string>
+  <string name="token_reset_confirm_ok">ล้างทิ้ง</string>
+  <string name="token_action_import">นำเข้า</string>
+  <string name="token_unlock_ok">ปลดล็อค</string>
   <string name="select_identity_cancel">ปิดการใช้งาน</string>
   <string name="key_gen_back">ย้อนกลับ</string>
   <string name="key_gen_finish">เสร็จ</string>

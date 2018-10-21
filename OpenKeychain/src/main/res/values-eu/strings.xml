@@ -163,6 +163,8 @@
   <string name="label_creation_colon">Sortzea:</string>
   <string name="label_expiry">Epemuga</string>
   <string name="label_usage">Erabilpena</string>
+  <string name="label_revoked">Ukatuta</string>
+  <string name="label_insecure">Ez da segurua</string>
   <string name="label_key_size">Giltza Neurria</string>
   <string name="label_ecc_curve">Bihurgune Eliptikoa</string>
   <string name="label_main_user_id">Lehen nortasuna</string>
@@ -212,6 +214,7 @@
   <string name="label_experimental_settings_linked_identities_summary">Lotu giltzak Twitter, GitHub, webgune edo DNS-ra (keybase.io antzekoa baina zentralizatu gabea)</string>
   <string name="label_experimental_settings_keybase_summary">Jarri harremanetan keybase.io giltzak probatzeko eta erakutsi hauek giltza bat erakusten den bakoitzean</string>
   <string name="label_experimental_settings_theme_summary">(Ikurrak eta ikusleiho asko oraindik ez daude azalgai ilunarekin zehaztuta)</string>
+  <string name="label_settings_analytics_title">Ahalbidetu izengabeko estatistika erabilpena</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Gaitu Tor</string>
   <string name="pref_proxy_tor_summary">Orbot ezarrita egotea behar du</string>
@@ -414,12 +417,15 @@
   <string name="progress_modify_passphrase">sarhitza aldatzen...</string>
   <string name="progress_modify_pin">PIN-a aldatzen...</string>
   <string name="progress_modify_admin_pin">Administrari PIN-a aldatzen...</string>
+  <string name="progress_exporting_key">giltza esportatzen..</string>
   <string name="progress_exporting_keys">giltzak esportatzen</string>
   <string name="progress_start">eragiketa gertatzen...</string>
   <string name="progress_extracting_signature_key">sinadura giltza ateratzen...</string>
   <string name="progress_extracting_key">giltza ateratzen...</string>
   <string name="progress_preparing_streams">jarioak gertatzen...</string>
   <string name="progress_encrypting">datuak enkriptatzen...</string>
+  <string name="progress_prepare_decryption">Dekriptaketa abiatzen...</string>
+  <string name="progress_decrypting">Datuak dekriptatzen...</string>
   <string name="progress_preparing_signature">sinadura gertatzen...</string>
   <string name="progress_processing_signature">sinadura prozesatzen...</string>
   <string name="progress_generating_signature">sinadura sortzen...</string>
@@ -432,6 +438,7 @@
   <string name="progress_verifying_integrity">osotasuna egiaztatzen...</string>
   <string name="progress_deleting_securely">\'%s\' segurtasunez ezabatzen...</string>
   <string name="progress_deleting">giltzak ezabatzen...</string>
+  <string name="progress_update_trust">argibide fidagarriak eguneratzen...</string>
   <string name="progress_verifying_keyserver_connection">elkarketa egiaztatzen...</string>
   <string name="progress_starting_orbot">Orbot Abiarazten...</string>
   <!--action strings-->
@@ -618,6 +625,7 @@
   <string name="key_view_action_share_with">Elkarbanatu honekin...</string>
   <string name="key_view_action_share_ssh_with">Elkarbanatu SSH giltza publiko bezala honekin...</string>
   <string name="key_view_action_share_nfc">Elkarbanatu NFC gain</string>
+  <string name="key_view_action_upload">Argitaratu giltza-zerbitzarian</string>
   <string name="key_view_tab_main">Argibide Nagusiak</string>
   <string name="key_view_tab_start">Hasi</string>
   <string name="key_view_tab_share">Elkarbanatu</string>
@@ -1065,8 +1073,11 @@
   <!--Messages for Authentication operation-->
   <string name="msg_auth">Egiaztapen eragiketa abiatzen</string>
   <string name="msg_auth_error_unlock">Akats ezezaguna giltza desblokeatzean!</string>
+  <string name="msg_auth_pending_passphrase">Sarhitza beharrezkoa, erabiltzaile sarrera eskatzen...</string>
   <string name="msg_auth_error_bad_passphrase">Sarhitz okerra!</string>
   <string name="msg_auth_error_nfc">NFC datu akatsa!</string>
+  <string name="msg_auth_error_sig">OpenPGP sinadura salbuespena aurkitu da!</string>
+  <string name="msg_auth_ok">Egiaztapen eragiketa ongi!</string>
   <string name="msg_crt_certifying">Egiaztagiriak sortzen</string>
   <string name="msg_crt_error_self">Ezin da hau bezalako berez-egiaztatua jaulki!</string>
   <string name="msg_crt_error_master_not_found">Maisu giltza ez da aurkitu!</string>
@@ -1587,6 +1598,9 @@
   <string name="msg_ret_local_none_found">Ez da bat datorren giltzarik aurkitu</string>
   <string name="msg_ret_local_ok">Giltza aurkitu da</string>
   <string name="msg_ret_uri_ok">Giltza aurkitu da</string>
+  <string name="msg_trust">Argibide fidagarriak eguneratzen...</string>
+  <string name="msg_trust_ok">Eguneraketa eragiketa ongi!</string>
+  <string name="msg_trust_initialize">Giltza sinadura katxea abiarazten</string>
   <string name="msg_trust_count_none">Ez dago giltzarik eguneratzeko</string>
   <string name="button_locate_nfc">Non dago nire NFC irakurtzailea?</string>
   <string name="label_usb_untested_summary">Gaituta badago, USB txartel-adimentsu irakutzaileak erabili daitezke baina ez daude egoki aztertuta.</string>
@@ -1613,6 +1627,7 @@
   <string name="notify_channel_passcache">Sar-esaldi katxea</string>
   <string name="notify_channel_orbot">Orbot egoera</string>
   <string name="notify_title_keysync">Giltzak eguneratzen...</string>
+  <string name="notify_content_keysync">Giltza %d / %d</string>
   <string name="snack_keysync_start">Giltza guztien eguneratzea abiatzen...</string>
   <string name="snack_keysync_finished">Giltza ongi eguneratu da</string>
   <string name="snack_keysync_error">Akats bat gertatu da giltza guztiak eguneratzean</string>
@@ -1624,5 +1639,13 @@
   <string name="keylist_item_key_id">Giltza ID-a: %s</string>
   <string name="keylist_header_anonymous">Izengabe</string>
   <string name="keylist_header_special">#</string>
+  <string name="button_analytics_yes">Bai, laguntzea nahi dut!</string>
+  <string name="button_analytics_no">Ez, mila esker</string>
   <string name="snackbutton_analytics_settings">Ezarpenak</string>
+  <string name="subkey_action_create">Azpigiltza sortuko da</string>
+  <string name="subkey_action_revoke">Azpigiltza ukatuko da</string>
+  <string name="subkey_action_expiry_never">Epemuga inoiz ez-ra aldatuko da</string>
+  <string name="subkey_action_expiry_date">Epemuga aldatuko da hona %s</string>
+  <string name="share_key_clipboard">Elkarbanatu giltza gakoaren bidez</string>
+  <string name="share_key">Elkarbanatu giltza</string>
 </resources>

@@ -1,16 +1,16 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (MEGJEGYZÉS: minden mondatot külön sorba írjon, a Transifex minden sort a saját fordítási mezőjébe tesz!)
 
-## How do I activate OpenKeychain in K-9 Mail?
-To use OpenKeychain with K-9 Mail, you want to follow these steps:
-  1. Open K-9 Mail and long-tap on the account you want to use OpenKeychain with.
-  2. Select "Account settings", scroll to the very bottom and click "Cryptography".
-  3. Click on "OpenPGP Provider" and select OpenKeychain from the list.
+## Hogyan aktiválhatom az OpenKeychaint a K-9 Mailben?
+Az OpenKeychain K-9 Maillel történő használatához kövesse ezeket a lépéseket:
+  1. Nyissa meg a K-9 Mailt, és nyomjon hosszan arra a fiókra, amelyet az OpenKeychainnel szeretne használni.
+  2. Válassza a „Fiók beállításai” lehetőséget, görgessen le a legaljára, és kattintson a „Kriptográfia” menüpontra.
+  3. Kattintson az „OpenPGP szolgáltató” lehetőségre, és válassza ki az OpenKeychaint a listából.
 
-## I found a bug in OpenKeychain!
-Please report the bug using the [issue tracker of OpenKeychain](https://github.com/openpgp-keychain/openpgp-keychain/issues).
+## Találtam egy hibát az OpenKeychain alkalmazásban!
+Jelentse be a hibát az [OpenKeychain hibakövetőjének](https://github.com/openpgp-keychain/openpgp-keychain/issues) használatával.
 
-## Contribute
-If you want to help us developing OpenKeychain by contributing code [follow our small guide on Github](https://github.com/openpgp-keychain/openpgp-keychain#contribute-code).
+## Közreműködés
+Ha kód beküldésével szeretne segíteni nekünk az OpenKeychain fejlesztésében, akkor [kövesse a Githubon lévő kis útmutatónkat](https://github.com/openpgp-keychain/openpgp-keychain#contribute-code).
 
-## Translations
-Help translating OpenKeychain! Everybody can participate at [OpenKeychain on Transifex](https://www.transifex.com/projects/p/open-keychain/).
+## Fordítások
+Segítsen lefordítani az OpenKeychain alkalmazást! Mindenki részt vehet az [OpenKeychain Transifex oldalán](https://www.transifex.com/projects/p/open-keychain/).

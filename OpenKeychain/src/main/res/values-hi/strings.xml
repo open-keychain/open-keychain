@@ -58,6 +58,7 @@
   <string name="label_name">नाम</string>
   <string name="label_email">ईमेल</string>
   <string name="label_enter_keyserver_url">यूआरएल</string>
+  <string name="label_theme">विषय</string>
   <string name="label_enter_smartpgp_authority_name">नाम</string>
   <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">चेतावनी</string>
@@ -77,6 +78,8 @@
   <string name="choice_1hour">1 घंटा</string>
   <string name="usage_encrypt">एन्क्रिप्ट</string>
   <string name="error">त्रुटि</string>
+  <string name="theme_dark">अंधेरा</string>
+  <string name="theme_light">रोशनी</string>
   <!--sentences-->
   <string name="passphrase_for_symmetric_encryption">पास वर्ड दर्ज करें</string>
   <string name="passphrase_for_any">पास वर्ड दर्ज करें</string>
@@ -99,9 +102,11 @@
   <!--compression-->
   <!--Help-->
   <string name="help_tab_start">प्रारंभ</string>
+  <string name="help_tab_faq">सामान्य प्रश्न</string>
   <string name="help_tab_changelog">परिवर्तनसूची।</string>
   <string name="help_tab_about">बारे में</string>
   <string name="help_about_version">संस्करण:</string>
+  <string name="help_tab_donations">दान करें </string>
   <!--Import-->
   <string name="btn_import">आयात</string>
   <!--Generic result toast-->

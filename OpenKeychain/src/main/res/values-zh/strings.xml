@@ -49,7 +49,7 @@
   <string name="section_passphrase_cache">密码和 PIN 码</string>
   <string name="section_passphrase_cache_summary">正在处理</string>
   <string name="section_proxy_settings">匿名网络</string>
-  <string name="section_proxy_settings_summary">Tor，代理服务器设置</string>
+  <string name="section_proxy_settings_summary">Tor 和代理服务器设置</string>
   <string name="section_gui">界面</string>
   <string name="section_sync_settings">同步</string>
   <string name="section_sync_settings_summary">密钥自动更新，关联联系人</string>
@@ -84,7 +84,7 @@
   <string name="btn_paste_encrypted_signed">加密/签名并粘贴文本</string>
   <string name="btn_view_cert_key">显示密钥</string>
   <string name="btn_create_key">创建密钥</string>
-  <string name="btn_add_files">添加文件（多个）</string>
+  <string name="btn_add_files">添加文件</string>
   <string name="btn_share_decrypted_text">分享</string>
   <string name="btn_open_with">打开为</string>
   <string name="btn_copy_decrypted_text">复制到剪贴板</string>
@@ -144,7 +144,7 @@
   <string name="label_file_ascii_armor">启用 ASCII 封装</string>
   <string name="label_write_version_header">写入文件头信息</string>
   <string name="label_write_version_header_summary">在OpenPGP签名、加密文本和导出密钥中写入 \'OpenKeychain v2.7\' 标记。</string>
-  <string name="label_asymmetric_from">签名为：</string>
+  <string name="label_asymmetric_from">签名密钥：</string>
   <string name="label_to">加密到</string>
   <string name="label_delete_after_encryption">加密后删除文件</string>
   <string name="label_delete_after_decryption">解密后删除</string>
@@ -157,16 +157,22 @@
   <string name="label_keyservers">管理 OpenPGP 密钥服务器</string>
   <string name="label_key_id">密钥 ID</string>
   <string name="label_key_id_colon">密钥 ID：</string>
+  <string name="label_key_created">创建于 %s</string>
+  <string name="label_key_created_just_now">刚刚创建</string>
   <string name="label_key_type">类型</string>
   <string name="label_creation">创建时间</string>
   <string name="label_creation_colon">创建时间：</string>
   <string name="label_expiry">过期时间</string>
+  <string name="label_valid_from">有效自</string>
   <string name="label_usage">用途</string>
+  <string name="label_revoked">已吊销</string>
+  <string name="label_insecure">不安全</string>
   <string name="label_key_size">密钥大小</string>
   <string name="label_ecc_curve">椭圆曲线</string>
   <string name="label_main_user_id">主要标识</string>
   <string name="label_name">姓名</string>
   <string name="label_email">电子邮件</string>
+  <string name="label_send_key">将证书发布到密钥服务器</string>
   <string name="label_fingerprint">指纹</string>
   <string name="expiry_date_dialog_title">设置有效期</string>
   <string name="label_keyservers_title">密钥服务器</string>
@@ -176,6 +182,7 @@
   <string name="label_enable_compression">启用压缩</string>
   <string name="label_encrypt_filenames">加密文件名</string>
   <string name="label_hidden_recipients">隐藏收件人</string>
+  <string name="label_smartpgp_verify">SmartPGP：验证证书</string>
   <string name="label_verify_keyserver_connection">连接测试</string>
   <string name="label_only_trusted_keyserver">只信任该密钥服务器</string>
   <string name="label_enter_keyserver_url">URL</string>
@@ -189,12 +196,14 @@
   <string name="pref_keybase_summary">在 keybase.io 搜索密钥</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">在 Facebook 上根据用户名搜索密钥</string>
+  <string name="pref_wkd">网络密钥目录</string>
+  <string name="pref_wkd_summary">使用网络密钥目录搜索密钥</string>
   <string name="label_sync_settings_keyserver_title">自动更新密钥</string>
   <string name="label_sync_settings_keyserver_summary_on">每隔三天，自动与服务器更新密钥</string>
   <string name="label_sync_settings_keyserver_summary_off">不自动更新密钥</string>
   <string name="label_sync_settings_wifi_title">仅在 Wi-Fi 环境下同步</string>
   <string name="label_sync_settings_contacts_title">与联系人关联密钥</string>
-  <string name="label_sync_settings_contacts_summary_on">根据名字和邮件地址将密钥关联到联系人。这是本地操作，不需要联网。</string>
+  <string name="label_sync_settings_contacts_summary_on">根据名字和邮件地址将密钥关联到联系人。这是本地操作，不需要设备联网。</string>
   <string name="label_sync_settings_contacts_summary_off">新密钥将不会与联系人相关联</string>
   <!--label shown in Android settings under the OpenKeychain account-->
   <string name="keyserver_sync_settings_title">自动更新密钥</string>
@@ -205,15 +214,17 @@
   <string name="label_experimental_settings_keybase_title">Keybase.io 证明</string>
   <string name="label_experimental_settings_keybase_summary">每次展示密钥时自动从keybase.io获取证明并显示它们</string>
   <string name="label_experimental_settings_theme_summary">（图标和某些界面还未根据深色主题进行调整）</string>
+  <string name="label_settings_analytics_title">允许使用匿名统计数据</string>
+  <string name="label_settings_analytics_summary">如果开启，发送匿名的统计数据来帮助我们改进此软件</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">启用 Tor 代理</string>
   <string name="pref_proxy_tor_summary">必需已安装 Orbot</string>
   <string name="pref_proxy_normal_title">启用其它代理服务器</string>
-  <string name="pref_proxy_host_title">地址</string>
+  <string name="pref_proxy_host_title">代理服务器地址</string>
   <string name="pref_proxy_host_err_invalid">代理服务器地址不能为空</string>
   <string name="pref_proxy_port_title">端口</string>
   <string name="pref_proxy_port_err_invalid">不正确的端口</string>
-  <string name="pref_proxy_type_title">协议</string>
+  <string name="pref_proxy_type_title">代理协议</string>
   <!--proxy type choices and values-->
   <string name="pref_proxy_type_choice_http">HTTP</string>
   <string name="pref_proxy_type_choice_socks">SOCKS</string>
@@ -222,7 +233,7 @@
   <!--InstallDialogFragment strings-->
   <string name="orbot_install_dialog_title">安装 Orbot 以使用 Tor 代理？</string>
   <string name="orbot_install_dialog_install">安装</string>
-  <string name="orbot_install_dialog_content">必需安装 Orbot 并启用代理传输。您希望安装么?</string>
+  <string name="orbot_install_dialog_content">必须安装 Orbot 并启用代理传输。您希望安装么?</string>
   <string name="orbot_install_dialog_cancel">取消</string>
   <string name="orbot_install_dialog_ignore_tor">不使用 Tor</string>
   <!--StartOrbotDialogFragment strings-->
@@ -287,6 +298,9 @@
   <string name="passphrase_for_backup">输入备份码</string>
   <string name="passphrase_for">输入 \'%s\' 的密码</string>
   <string name="passphrase_for_any">输入密码</string>
+  <string name="passphrase_keyboard_hint_alpha">切换到字母键盘</string>
+  <string name="passphrase_keyboard_hint_numeric">切换到数字键盘</string>
+  <string name="passphrase_transfer">输入传输密码</string>
   <string name="pin_for">输入 \'%s\' 的 PIN 码</string>
   <string name="security_token_pin_for">输入 PIN 码以访问 \'%s\' 的安全令牌</string>
   <string name="security_token_nfc_text">将安全令牌贴近设备背面的 NFC 标志.</string>
@@ -408,12 +422,15 @@
   <string name="progress_modify_passphrase">变更密码中…</string>
   <string name="progress_modify_pin">变更PIN码中…</string>
   <string name="progress_modify_admin_pin">变更管理者PIN码中…</string>
+  <string name="progress_exporting_key">正在导出密钥…</string>
   <string name="progress_exporting_keys">导出密钥中…</string>
   <string name="progress_start">准备中…</string>
   <string name="progress_extracting_signature_key">提取签名密钥中…</string>
   <string name="progress_extracting_key">提取密钥中…</string>
   <string name="progress_preparing_streams">准备数据流…</string>
   <string name="progress_encrypting">加密数据中…</string>
+  <string name="progress_prepare_decryption">开始解密…</string>
+  <string name="progress_decrypting">加密数据中…</string>
   <string name="progress_preparing_signature">准备签名中…</string>
   <string name="progress_processing_signature">处理签名中…</string>
   <string name="progress_generating_signature">产生签名中…</string>
@@ -426,6 +443,7 @@
   <string name="progress_verifying_integrity">完整性验证中…</string>
   <string name="progress_deleting_securely">安全删除 \'%s\' 中…</string>
   <string name="progress_deleting">在删除密钥中…</string>
+  <string name="progress_update_trust">正在更新信任信息…</string>
   <string name="progress_verifying_keyserver_connection">验证网络连接中…</string>
   <string name="progress_starting_orbot">启动 Orbot 中…</string>
   <!--action strings-->
@@ -465,12 +483,15 @@
   <string name="import_tab_cloud">搜索密钥</string>
   <string name="import_tab_direct">文件/剪切板</string>
   <string name="import_tab_qr_code">二维码/NFC</string>
+  <string name="import_found_keys">找到%1$d个密钥</string>
   <string name="import_qr_code_wrong">二维码格式不支持 (格式规范: https://github.com/open-keychain/open-keychain/wiki/QR-Codes)!</string>
   <string name="import_qr_code_fp">指纹异常或太短！</string>
   <string name="import_qr_code_too_short_fingerprint">指纹太短！</string>
   <string name="import_qr_code_button">扫描二维码</string>
   <string name="import_qr_code_text">将您的镜头对准二维码！</string>
   <string name="btn_import">导入</string>
+  <string name="btn_import_keys">导入所有密钥</string>
+  <string name="btn_view_list">查看列表</string>
   <string name="btn_refresh">刷新</string>
   <string name="btn_go_to_key">转到密钥</string>
   <!--Generic result toast-->
@@ -510,6 +531,7 @@
     <item quantity="other">成功删除了 %1$d 个密钥%2$s。</item>
   </plurals>
   <string name="delete_nothing">没有待删除的密钥。</string>
+  <string name="delete_cancelled"> 删除操作已取消。 </string>
   <!--Revoke result toast (snackbar)-->
   <string name="revoke_ok">吊销密钥成功。</string>
   <string name="revoke_fail">吊销密钥出错！</string>

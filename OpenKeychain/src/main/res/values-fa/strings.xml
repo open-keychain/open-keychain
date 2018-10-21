@@ -129,6 +129,7 @@
   <string name="label_creation">ساخت</string>
   <string name="label_expiry">انقضأ</string>
   <string name="label_usage">مصرف</string>
+  <string name="label_revoked">لغو</string>
   <string name="label_key_size">اندازهٔ کلید</string>
   <string name="label_main_user_id">هویت اصلی</string>
   <string name="label_name">نام</string>

@@ -1,5 +1,8 @@
 [//]: # (Ter info: Zet iedere zin op een eigen regel, Transifex zet iedere regel in zijn eigen vertalingsveld!)
 
+## 5.2
+  * Improved key import from clipboard
+
 ## 5.1
   * Ondersteuning voor Ledger Nano S
   * Ondersteuning voor Web Key Directory (WKD) naslag

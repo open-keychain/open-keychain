@@ -1,5 +1,8 @@
 [//]: # (تذکر: هر جمله در همان خط!)
 
+## 5.2
+  * Improved key import from clipboard
+
 ## 5.1
   * Support for Ledger Nano S
   * Support Web Key Directory (WKD) search

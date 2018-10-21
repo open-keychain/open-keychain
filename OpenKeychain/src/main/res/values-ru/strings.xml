@@ -165,7 +165,10 @@
   <string name="label_creation">Создан</string>
   <string name="label_creation_colon">Создан:</string>
   <string name="label_expiry">Годен до</string>
+  <string name="label_valid_from">Начиная с</string>
   <string name="label_usage">Применение</string>
+  <string name="label_revoked">Аннулировано</string>
+  <string name="label_insecure">Небезопасный</string>
   <string name="label_key_size">Размер ключа</string>
   <string name="label_ecc_curve">Эллиптические кривые</string>
   <string name="label_main_user_id">Основной идентификатор</string>
@@ -1968,4 +1971,11 @@
   <string name="snack_analytics_accept">Спасибо за помощь! Вы можете изменить данную функцию в настройках.</string>
   <string name="snack_analytics_reject">Всё нормально, больше мы не будем спрашивать. Вы можете изменить своё мнение с помощью настроек.</string>
   <string name="snackbutton_analytics_settings">Настройки</string>
+  <string name="subkey_action_create">Доп. ключ будет создан</string>
+  <string name="subkey_action_revoke">Доп. ключ будет отозван</string>
+  <string name="subkey_action_strip">Доп. ключ будет отделён</string>
+  <string name="subkey_action_expiry_never">Срок годности будет изменён на вечный</string>
+  <string name="subkey_action_expiry_date">Срок годности будет изменён на %s</string>
+  <string name="share_key_clipboard">Отправить ключ в буфер обмена</string>
+  <string name="share_key">Отправить ключ</string>
 </resources>

@@ -165,7 +165,10 @@
   <string name="label_creation">Création</string>
   <string name="label_creation_colon">Création :</string>
   <string name="label_expiry">Expiration</string>
+  <string name="label_valid_from">Valide à partir de</string>
   <string name="label_usage">Utilisation</string>
+  <string name="label_revoked">Révoquée</string>
+  <string name="label_insecure">Non fiable</string>
   <string name="label_key_size">Taille de la clé</string>
   <string name="label_ecc_curve">Courbe elliptique </string>
   <string name="label_main_user_id">Identité principale</string>
@@ -1897,4 +1900,11 @@
   <string name="snack_analytics_accept">Nous vous remercions de votre aide. Vous pouvez changer cette préférence dans vos paramètres.</string>
   <string name="snack_analytics_reject">Très bien, nous ne vous le demanderons plus. Vous pouvez changer cette préférence dans les paramètres.</string>
   <string name="snackbutton_analytics_settings">Paramètres</string>
+  <string name="subkey_action_create">Une sous-clé sera créée</string>
+  <string name="subkey_action_revoke">La sous-clé sera révoquée</string>
+  <string name="subkey_action_strip">La sous-clé sera dépouillée</string>
+  <string name="subkey_action_expiry_never">La date d’expiration sera changé en jamais</string>
+  <string name="subkey_action_expiry_date">La date d’expiration sera changé à %s</string>
+  <string name="share_key_clipboard">Partager la clé avec le presse-papiers</string>
+  <string name="share_key">Partager la clé</string>
 </resources>

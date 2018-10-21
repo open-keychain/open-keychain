@@ -162,6 +162,8 @@
   <string name="label_creation_colon">生成:</string>
   <string name="label_expiry">満了</string>
   <string name="label_usage">使い方</string>
+  <string name="label_revoked">破棄</string>
+  <string name="label_insecure">安全でない</string>
   <string name="label_key_size">鍵サイズ</string>
   <string name="label_ecc_curve">楕円曲線</string>
   <string name="label_main_user_id">主ユーザID</string>
@@ -1705,4 +1707,5 @@
   <string name="keylist_item_key_id">鍵 ID: %s</string>
   <string name="keylist_header_anonymous">匿名</string>
   <string name="snackbutton_analytics_settings">設定</string>
+  <string name="share_key">鍵の共有</string>
 </resources>

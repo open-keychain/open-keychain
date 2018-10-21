@@ -143,7 +143,10 @@
   <string name="label_creation">خلق</string>
   <string name="label_creation_colon">الإنشاء :</string>
   <string name="label_expiry">المدة</string>
+  <string name="label_valid_from">ساري من</string>
   <string name="label_usage">استعمال</string>
+  <string name="label_revoked">ملغى</string>
+  <string name="label_insecure">غير آمن</string>
   <string name="label_key_size">حجم المفتاح</string>
   <string name="label_ecc_curve">منحنى إهليلجي</string>
   <string name="label_main_user_id">الهوية الرئيسية</string>
@@ -276,6 +279,7 @@
   <string name="decrypt_result_encrypted">مشفرة</string>
   <string name="decrypt_result_insecure">تشفير غير آمن</string>
   <string name="decrypt_result_action_show">عرض</string>
+  <string name="decrypt_result_action_Lookup">ابحث عن</string>
   <!--Add keys-->
   <string name="add_keys_my_key">مفتاحي :</string>
   <!--progress dialogs, usually ending in '…'-->

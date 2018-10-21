@@ -154,6 +154,7 @@
   <string name="label_creation">Створен</string>
   <string name="label_expiry">Истиче</string>
   <string name="label_usage">Употреба</string>
+  <string name="label_revoked">Опозван</string>
   <string name="label_key_size">Величина кључа</string>
   <string name="label_ecc_curve">Елиптичка крива</string>
   <string name="label_main_user_id">Примарни идентитет</string>

@@ -1,9 +1,9 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (MEGJEGYZÉS: minden mondatot külön sorba írjon, a Transifex minden sort a saját fordítási mezőjébe tesz!)
 
-A haladó képernyő lehetővé teszi, hogy:
-* a nem ajánlott kulcsmegosztást
-* személyazonosság szerkesztést
-* alkulcs szerkesztést
-* tanúsítványok részletes megtekintését
+A speciális képernyő a következőket teszi lehetővé:
+* kulcs megosztása nem ajánlott módon
+* személyazonosságok szerkesztése
+* alkulcsok szerkesztése
+* tanúsítványok részletes megvizsgálása
 
-Csak akkor folytasd, ha tudod mit csinálsz!
+Csak akkor folytassa, ha tudja, hogy mit csinál!

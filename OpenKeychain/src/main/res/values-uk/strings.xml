@@ -165,7 +165,10 @@
   <string name="label_creation">Створення</string>
   <string name="label_creation_colon">Створення:</string>
   <string name="label_expiry">Закінчення</string>
+  <string name="label_valid_from">Дійсний з</string>
   <string name="label_usage">Використання</string>
+  <string name="label_revoked">Відкликано</string>
+  <string name="label_insecure">Незахищено</string>
   <string name="label_key_size">Розмір ключа</string>
   <string name="label_ecc_curve">Еліптична крива</string>
   <string name="label_main_user_id">Первинна сутність</string>

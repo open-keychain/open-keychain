@@ -35,6 +35,7 @@
   <string name="section_should_you_trust">Ali zaupate temu ključu?</string>
   <string name="section_proof_details">Overba dokazila</string>
   <string name="section_keys">Podključi</string>
+  <string name="section_cloud_search">Iskanje ključev</string>
   <string name="section_certify">Potrdi</string>
   <string name="section_actions">Ravnanja</string>
   <string name="section_share_key">Ključ</string>
@@ -61,11 +62,13 @@
   <string name="btn_create_key">Ustvari ključ</string>
   <string name="btn_add_files">Dodaj datoteko</string>
   <string name="btn_share_decrypted_text">Deli</string>
+  <string name="btn_open_with">Odpri z...</string>
   <string name="btn_copy_decrypted_text">Kopiraj na odložišče</string>
   <string name="btn_encrypt_files">Šifriraj datoteke</string>
   <string name="btn_encrypt_text">Šifriraj besedilo</string>
   <string name="btn_add_email">Dodaj elektronske naslove</string>
   <string name="btn_add_keyserver">Dodaj</string>
+  <string name="btn_saved">Shranjeno!</string>
   <!--Shortcut Strings-->
   <!--Content Description-->
   <string name="cd_encrypt_files">Šifriraj datoteke</string>
@@ -109,6 +112,7 @@
   <string name="label_creation">Ustvarjanje</string>
   <string name="label_expiry">Pretek</string>
   <string name="label_usage">Uporaba</string>
+  <string name="label_revoked">Preklican</string>
   <string name="label_key_size">Velikost ključa</string>
   <string name="label_ecc_curve">Eliptična krivulja</string>
   <string name="label_main_user_id">Glavna identiteta</string>
@@ -304,6 +308,7 @@
   <string name="help_about_version">Različica:</string>
   <!--Import-->
   <string name="import_tab_keyserver">Strežnik</string>
+  <string name="import_tab_cloud">Iskanje ključev</string>
   <string name="import_tab_direct">Datoteka/odložišče</string>
   <string name="import_tab_qr_code">Koda QR/NFC</string>
   <string name="import_qr_code_button">Skeniraj kodo QR</string>
@@ -416,6 +421,7 @@
   <string name="key_list_empty_text1">Najden ni bil noben ključ!</string>
   <string name="key_list_filter_show_all">Prikaži vse ključe</string>
   <string name="key_list_fab_qr_code">Skeniraj kodo QR</string>
+  <string name="key_list_fab_search">Iskanje ključev</string>
   <!--Key view-->
   <string name="key_view_action_edit">Uredi</string>
   <string name="key_view_action_encrypt">Šifriraj besedilo</string>
@@ -813,4 +819,5 @@
   <string name="notify_channel_passcache">Hranjenje gesla v spominu</string>
   <string name="notify_title_keysync">Posodabljam ključe...</string>
   <string name="snackbutton_analytics_settings">Nastavitve</string>
+  <string name="share_key">Deli ključ</string>
 </resources>

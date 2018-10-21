@@ -159,13 +159,16 @@
   <string name="label_keyservers">Administrar servidores de claves OpenPGP</string>
   <string name="label_key_id">ID de clave</string>
   <string name="label_key_id_colon">Identificación de clave:</string>
-  <string name="label_key_created">Creado 1%s</string>
+  <string name="label_key_created">Creado %s</string>
   <string name="label_key_created_just_now">Creado justo ahora</string>
   <string name="label_key_type">Tipo</string>
   <string name="label_creation">Creación</string>
   <string name="label_creation_colon">Creación</string>
   <string name="label_expiry">Caducidad</string>
+  <string name="label_valid_from">Válido desde</string>
   <string name="label_usage">Uso</string>
+  <string name="label_revoked">Revocada</string>
+  <string name="label_insecure">No segura</string>
   <string name="label_key_size">Tamaño de clave</string>
   <string name="label_ecc_curve">Curva elíptica</string>
   <string name="label_main_user_id">Identidad principal</string>
@@ -1091,8 +1094,8 @@
   <string name="msg_dc_asym">Se encontró un bloque de datos cifrados asimétricamente para la clave %s</string>
   <string name="msg_dc_charset">Se encontró cabecera de juego de caracteres: \'%s\'</string>
   <string name="msg_dc_backup_version">Encabezado de versión de respaldo encontrado: \'%s\'</string>
-  <string name="msg_dc_passphrase_format">Encabezado del formato de contraseña encontrado: \'1%s\'</string>
-  <string name="msg_dc_passphrase_begin">Encabezado de inicio de contraseña encontrado: \'1%s\'</string>
+  <string name="msg_dc_passphrase_format">Encabezado del formato de contraseña encontrado: \'%s\'</string>
+  <string name="msg_dc_passphrase_begin">Encabezado de inicio de contraseña encontrado: \'%s\'</string>
   <string name="msg_dc_clear_data">Procesando datos literales</string>
   <string name="msg_dc_clear_decompress">Desempaquetando datos comprimidos</string>
   <string name="msg_dc_clear_meta_file">Nombre del fichero: %s</string>
@@ -1849,9 +1852,9 @@
   <string name="button_locate_nfc">¿Dónde está mi lector NFC?</string>
   <string name="label_usb_untested_summary">Si se habilita, se pueden usar lectores de smartcard USB que no han sido adecuadamente testados.</string>
   <string name="label_usb_untested">Permitir dispositivos USB no testados</string>
-  <string name="use_key">Usar clave: 1%</string>
+  <string name="use_key">Usar clave: %s</string>
   <string name="use_key_no_name">Usar clave: <![CDATA[]]></string>
-  <string name="title_select_key">1%s quiere configurar el cifrado de extremo a extremo para esta dirección:</string>
+  <string name="title_select_key">%s quiere configurar el cifrado de extremo a extremo para esta dirección:</string>
   <string name="select_identity_cancel">Deshabilitar</string>
   <string name="select_identity_create">Crear clave para mi</string>
   <string name="error_save_key_internal">Error interno al guardar clave!</string>
@@ -1867,7 +1870,7 @@
   <string name="key_gen_done">Generar clave de extremo a extremo!</string>
   <string name="key_gen_finishing">Finalizando configuración...</string>
   <string name="key_import_text">Para usar una clave de extremo a extremo, debe ser importada a OpenKeychain.</string>
-  <string name="key_import_text_autocrypt_setup_msg">Para importar su configuración existente desde otro dispositivo, también puede abrir un Mensaje de Configuración de Autocrypt en 1%s.</string>
+  <string name="key_import_text_autocrypt_setup_msg">Para importar su configuración existente desde otro dispositivo, también puede abrir un Mensaje de Configuración de Autocrypt en %s.</string>
   <string name="button_goto_openkeychain">Ir a OpenKeychain</string>
   <string name="backup_code_checkbox">He escrito este código de copia de seguridad. Sin eso, no podré restaurar la Copia de Seguridad.</string>
   <string name="msg_get_query_not_implemented">¡El servidor no admite la consulta actual! Algunos servidores solo aceptan direcciones de correo electrónico. Por favor, redefina o pruebe con un servidor diferente.</string>
@@ -1897,4 +1900,5 @@
   <string name="snack_analytics_accept">Gracias por ayudar! Puede cambiar esta preferencia en la configuración.</string>
   <string name="snack_analytics_reject">Está bien, no volveremos a preguntar. Puedes cambiar de opinión en la configuración.</string>
   <string name="snackbutton_analytics_settings">Configuración</string>
+  <string name="share_key">Compartir clave</string>
 </resources>
