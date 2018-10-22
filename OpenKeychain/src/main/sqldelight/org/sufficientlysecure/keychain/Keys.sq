@@ -116,7 +116,7 @@ SELECT fingerprint
 selectEffectiveEncryptionKeyIdsByMasterKeyId:
 SELECT key_id
     FROM validKeys
-    WHERE has_secret > 1 AND can_encrypt = 1 AND master_key_id = ?;
+    WHERE can_encrypt = 1 AND master_key_id = ?;
 
 selectEffectiveSignKeyIdByMasterKeyId:
 SELECT key_id
