@@ -8,10 +8,10 @@ import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
+import org.sufficientlysecure.keychain.daos.KeyMetadataDao;
 import org.sufficientlysecure.keychain.livedata.GenericLiveData;
 import org.sufficientlysecure.keychain.model.KeyMetadata;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
-import org.sufficientlysecure.keychain.daos.KeyMetadataDao;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.IdentityInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao;
@@ -26,13 +26,12 @@ public class KeyFragmentViewModel extends ViewModel {
     private LiveData<SystemContactInfo> systemContactInfo;
     private LiveData<KeyMetadata> keyserverStatus;
 
-    LiveData<List<IdentityInfo>> getIdentityInfo(Context context, LiveData<UnifiedKeyInfo> unifiedKeyInfoLiveData,
-            boolean showLinkedIds) {
+    LiveData<List<IdentityInfo>> getIdentityInfo(Context context, LiveData<UnifiedKeyInfo> unifiedKeyInfoLiveData) {
         if (identityInfo == null) {
             IdentityDao identityDao = IdentityDao.getInstance(context);
             identityInfo = Transformations.switchMap(unifiedKeyInfoLiveData,
                     (unifiedKeyInfo) -> unifiedKeyInfo == null ? null : new GenericLiveData<>(context,
-                            () -> identityDao.getIdentityInfos(unifiedKeyInfo.master_key_id(), showLinkedIds)));
+                            () -> identityDao.getIdentityInfos(unifiedKeyInfo.master_key_id())));
         }
         return identityInfo;
     }

@@ -41,7 +41,7 @@ inkscape -w 192 -h 192 -e "$XDPI_DIR/${NAME}_96dp.png" "$SRC_DIR/$NAME.svg"
 inkscape -w 256 -h 256 -e "$XXDPI_DIR/${NAME}_96dp.png" "$SRC_DIR/$NAME.svg"
 done
 
-for NAME in "create_key_robot" "linked_dns" "linked_https" "linked_github" "linked_twitter" "account_key"
+for NAME in "create_key_robot" "account_key"
 do
 echo $NAME
 inkscape -w 48 -h 48 -e "$MDPI_DIR/$NAME.png" "$SRC_DIR/$NAME.svg"
