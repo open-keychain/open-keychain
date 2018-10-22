@@ -39,17 +39,16 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLog;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
-import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
+import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ssh.AuthenticationData;
 import org.sufficientlysecure.keychain.ssh.AuthenticationOperation;
 import org.sufficientlysecure.keychain.ssh.AuthenticationParcel;
 import org.sufficientlysecure.keychain.ssh.AuthenticationResult;
 import org.sufficientlysecure.keychain.support.KeyringTestingHelper;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
 @RunWith(KeychainTestRunner.class)
@@ -59,7 +58,6 @@ public class AuthenticationOperationTest {
     private static UncachedKeyRing mStaticRingEcDsa;
     private static UncachedKeyRing mStaticRingEdDsa;
     private static UncachedKeyRing mStaticRingDsa;
-    private static UncachedKeyRing mStaticRingRevoked;
     private static Passphrase mKeyPhrase;
 
     private static PrintStream oldShadowStream;
@@ -134,8 +132,6 @@ public class AuthenticationOperationTest {
         mStaticRingEcDsa = KeyringTestingHelper.readRingFromResource("/test-keys/authenticate_ecdsa.sec");
         mStaticRingEdDsa = KeyringTestingHelper.readRingFromResource("/test-keys/authenticate_eddsa.sec");
         mStaticRingDsa = KeyringTestingHelper.readRingFromResource("/test-keys/authenticate_dsa.sec");
-
-        mStaticRingRevoked = KeyringTestingHelper.readRingFromResource("/test-keys/authenticate_multisub_with_revoked.asc");
     }
 
     @Before
@@ -150,7 +146,6 @@ public class AuthenticationOperationTest {
         databaseInteractor.saveSecretKeyRing(mStaticRingEcDsa);
         databaseInteractor.saveSecretKeyRing(mStaticRingEdDsa);
         databaseInteractor.saveSecretKeyRing(mStaticRingDsa);
-        databaseInteractor.saveSecretKeyRing(mStaticRingRevoked);
 
         // ok NOW log verbosely!
         ShadowLog.stream = System.out;
@@ -398,17 +393,5 @@ public class AuthenticationOperationTest {
 
             Assert.assertFalse("authentication must fail with selected key disallowed", result.success());
         }
-    }
-
-    @Test
-    public void testKeySelection() throws Exception {
-        long expectedAuthSubKeyId = KeyFormattingUtils.convertKeyIdHexToKeyId("0xcf64ee600f6fec9c");
-
-        KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
-
-        long masterKeyId = mStaticRingRevoked.getMasterKeyId();
-        long authSubKeyId = keyRepository.getEffectiveAuthenticationKeyId(masterKeyId);
-
-        Assert.assertEquals(expectedAuthSubKeyId, authSubKeyId);
     }
 }
