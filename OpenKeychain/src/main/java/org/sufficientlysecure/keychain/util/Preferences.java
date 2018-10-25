@@ -432,10 +432,6 @@ public class Preferences {
 
     // experimental prefs
 
-    public boolean getExperimentalEnableLinkedIdentities() {
-        return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_ENABLE_LINKED_IDENTITIES, false);
-    }
-
     public boolean getExperimentalEnableKeybase() {
         return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_ENABLE_KEYBASE, false);
     }

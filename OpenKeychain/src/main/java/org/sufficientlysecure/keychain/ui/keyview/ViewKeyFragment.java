@@ -41,17 +41,16 @@ import android.view.ViewGroup;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
+import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
 import org.sufficientlysecure.keychain.model.KeyMetadata;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
-import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter.IdentityClickListener;
 import org.sufficientlysecure.keychain.ui.dialog.UserIdInfoDialogFragment;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.AutocryptPeerInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.IdentityInfo;
-import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.LinkedIdInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.UserIdInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.KeyHealthStatus;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.KeySubkeyStatus;
@@ -62,8 +61,6 @@ import org.sufficientlysecure.keychain.ui.keyview.view.KeyHealthView;
 import org.sufficientlysecure.keychain.ui.keyview.view.KeyStatusList.KeyDisplayStatus;
 import org.sufficientlysecure.keychain.ui.keyview.view.KeyserverStatusView;
 import org.sufficientlysecure.keychain.ui.keyview.view.SystemContactCardView;
-import org.sufficientlysecure.keychain.ui.linked.LinkedIdWizard;
-import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
 
 
@@ -128,8 +125,7 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
 
         KeyFragmentViewModel model = ViewModelProviders.of(this).get(KeyFragmentViewModel.class);
 
-        boolean showLinkedIds = Preferences.getPreferences(context).getExperimentalEnableLinkedIdentities();
-        model.getIdentityInfo(context, unifiedKeyInfoLiveData, showLinkedIds).observe(this, this::onLoadIdentityInfo);
+        model.getIdentityInfo(context, unifiedKeyInfoLiveData).observe(this, this::onLoadIdentityInfo);
         model.getKeyserverStatus(context, unifiedKeyInfoLiveData).observe(this, this::onLoadKeyMetadata);
         model.getSystemContactInfo(context, unifiedKeyInfoLiveData).observe(this, this::onLoadSystemContact);
         model.getSubkeyStatus(context, unifiedKeyInfoLiveData).observe(this, this::onLoadSubkeyStatus);
@@ -238,21 +234,12 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
             return;
         }
 
-        Context context = requireContext();
-
         this.unifiedKeyInfo = unifiedKeyInfo;
-
-        boolean showLinkedIds = Preferences.getPreferences(context).getExperimentalEnableLinkedIdentities();
-        boolean isSecret = unifiedKeyInfo.has_any_secret();
-        identitiesCardView.setAddLinkedIdButtonVisible(showLinkedIds && isSecret);
-        identitiesCardView.setIdentitiesCardListener((v) -> addLinkedIdentity());
     }
 
     private void showIdentityInfo(final int position) {
         IdentityInfo info = identitiesAdapter.getInfo(position);
-        if (info instanceof LinkedIdInfo) {
-            showLinkedId((LinkedIdInfo) info);
-        } else if (info instanceof UserIdInfo) {
+        if (info instanceof UserIdInfo) {
             showUserIdInfo((UserIdInfo) info);
         } else if (info instanceof AutocryptPeerInfo) {
             Intent autocryptPeerIntent = ((AutocryptPeerInfo) info).getAutocryptPeerIntent();
@@ -266,23 +253,11 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
         showContextMenu(position, anchor);
     }
 
-    private void showLinkedId(final LinkedIdInfo info) {
-        LinkedIdViewFragment frag = LinkedIdViewFragment.newInstance(info.getMasterKeyId(), info.getRank(), unifiedKeyInfo.has_any_secret());
-
-        switchToFragment(frag, "linked_id");
-    }
-
     private void showUserIdInfo(UserIdInfo info) {
         if (!unifiedKeyInfo.has_any_secret()) {
             UserIdInfoDialogFragment dialogFragment = UserIdInfoDialogFragment.newInstance(false, info.isVerified());
             showDialogFragment(dialogFragment, "userIdInfoDialog");
         }
-    }
-
-    private void addLinkedIdentity() {
-        Intent intent = new Intent(requireContext(), LinkedIdWizard.class);
-        intent.putExtra(LinkedIdWizard.EXTRA_MASTER_KEY_ID, unifiedKeyInfo.master_key_id());
-        startActivity(intent);
     }
 
     public void onClickForgetIdentity(int position) {
@@ -296,7 +271,7 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
     }
 
     private void onLoadIdentityInfo(List<IdentityInfo> identityInfos) {
-        identitiesAdapter.setData(identityInfos, unifiedKeyInfo.has_any_secret());
+        identitiesAdapter.setData(identityInfos);
     }
 
     private void onLoadSystemContact(SystemContactInfo systemContactInfo) {

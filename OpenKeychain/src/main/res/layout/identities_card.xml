@@ -18,30 +18,4 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dip"
-        android:background="?android:attr/listDivider" />
-
-    <LinearLayout
-        android:id="@+id/view_key_card_user_ids_buttons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="right|end"
-        android:orientation="horizontal"
-        style="?buttonBarStyle">
-
-        <Button
-            android:id="@+id/view_key_card_linked_ids_add"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/menu_linked_add_identity"
-            android:textColor="@color/card_view_button"
-            android:visibility="gone"
-            tools:visibility="visible"
-            />
-
-    </LinearLayout>
-
 </LinearLayout>

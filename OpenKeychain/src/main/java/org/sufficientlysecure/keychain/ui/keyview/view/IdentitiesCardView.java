@@ -36,8 +36,6 @@ import org.sufficientlysecure.keychain.ui.util.recyclerview.DividerItemDecoratio
 public class IdentitiesCardView extends CardView {
     private final RecyclerView vIdentities;
 
-    private final Button linkedIdsAddButton;
-
     public IdentitiesCardView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -46,8 +44,6 @@ public class IdentitiesCardView extends CardView {
         vIdentities = view.findViewById(R.id.view_key_user_ids);
         vIdentities.setLayoutManager(new LinearLayoutManager(context));
         vIdentities.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL_LIST, false));
-
-        linkedIdsAddButton = view.findViewById(R.id.view_key_card_linked_ids_add);
     }
 
     public void setIdentitiesAdapter(IdentityAdapter identityAdapter) {
@@ -58,13 +54,5 @@ public class IdentitiesCardView extends CardView {
             }
         });
         vIdentities.setAdapter(identityAdapter);
-    }
-
-    public void setIdentitiesCardListener(OnClickListener identitiesCardListener) {
-        linkedIdsAddButton.setOnClickListener(identitiesCardListener);
-    }
-
-    public void setAddLinkedIdButtonVisible(boolean show) {
-        linkedIdsAddButton.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 }

@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.ui.keyview.loader;
 
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,17 +34,12 @@ import android.support.annotation.Nullable;
 import com.google.auto.value.AutoValue;
 import com.squareup.sqldelight.SqlDelightQuery;
 import org.openintents.openpgp.util.OpenPgpApi;
-import org.sufficientlysecure.keychain.linked.LinkedAttribute;
-import org.sufficientlysecure.keychain.linked.UriAttribute;
+import org.sufficientlysecure.keychain.KeychainDatabase;
+import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
 import org.sufficientlysecure.keychain.model.AutocryptPeer;
 import org.sufficientlysecure.keychain.model.UserPacket;
-import org.sufficientlysecure.keychain.model.UserPacket.UserAttribute;
 import org.sufficientlysecure.keychain.model.UserPacket.UserId;
-import org.sufficientlysecure.keychain.pgp.WrappedUserAttribute;
-import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
-import org.sufficientlysecure.keychain.KeychainDatabase;
 import org.sufficientlysecure.keychain.ui.util.PackageIconGetter;
-import timber.log.Timber;
 
 
 public class IdentityDao {
@@ -71,12 +65,9 @@ public class IdentityDao {
         this.autocryptPeerDao = autocryptPeerDao;
     }
 
-    public List<IdentityInfo> getIdentityInfos(long masterKeyId, boolean showLinkedIds) {
+    public List<IdentityInfo> getIdentityInfos(long masterKeyId) {
         ArrayList<IdentityInfo> identities = new ArrayList<>();
 
-        if (showLinkedIds) {
-            loadLinkedIds(identities, masterKeyId);
-        }
         loadUserIds(identities, masterKeyId);
         correlateOrAddAutocryptPeers(identities, masterKeyId);
 
@@ -132,46 +123,6 @@ public class IdentityDao {
         return null;
     }
 
-    private void loadLinkedIds(ArrayList<IdentityInfo> identities, long masterKeyId) {
-        SqlDelightQuery query = UserPacket.FACTORY.selectUserAttributesByTypeAndMasterKeyId(
-                (long) WrappedUserAttribute.UAT_URI_ATTRIBUTE, masterKeyId);
-        try (Cursor cursor = db.query(query)) {
-            while (cursor.moveToNext()) {
-                UserAttribute userAttribute = UserPacket.USER_ATTRIBUTE_MAPPER.map(cursor);
-
-                LinkedIdInfo linkedIdInfo = parseLinkedIdInfo(userAttribute);
-                identities.add(linkedIdInfo);
-            }
-        }
-    }
-
-    public LinkedIdInfo getLinkedIdInfo(long masterKeyId, int rank) {
-        SqlDelightQuery query = UserPacket.FACTORY.selectSpecificUserAttribute(
-                (long) WrappedUserAttribute.UAT_URI_ATTRIBUTE, masterKeyId, rank);
-        try (Cursor cursor = db.query(query)) {
-            if (cursor.moveToFirst()) {
-                UserAttribute userAttribute = UserPacket.USER_ATTRIBUTE_MAPPER.map(cursor);
-
-                return parseLinkedIdInfo(userAttribute);
-            }
-        }
-        return null;
-    }
-
-    @Nullable
-    private LinkedIdInfo parseLinkedIdInfo(UserAttribute userAttribute) {
-        try {
-            UriAttribute uriAttribute = LinkedAttribute.fromAttributeData(userAttribute.attribute_data());
-            if (uriAttribute instanceof LinkedAttribute) {
-                return LinkedIdInfo.create(userAttribute.master_key_id(), userAttribute.rank(),
-                        userAttribute.isVerified(), userAttribute.is_primary(), (LinkedAttribute) uriAttribute);
-            }
-        } catch (IOException e) {
-            Timber.e(e, "Failed parsing uri attribute");
-        }
-        return null;
-    }
-
     private void loadUserIds(ArrayList<IdentityInfo> identities, long... masterKeyId) {
         SqlDelightQuery query = UserPacket.FACTORY.selectUserIdsByMasterKeyId(masterKeyId);
         try (Cursor cursor = db.query(query)) {
@@ -211,20 +162,6 @@ public class IdentityDao {
         static UserIdInfo create(long masterKeyId, int rank, boolean isVerified, boolean isPrimary, String name, String email,
                 String comment) {
             return new AutoValue_IdentityDao_UserIdInfo(masterKeyId, rank, isVerified, isPrimary, name, email, comment);
-        }
-    }
-
-    @AutoValue
-    public abstract static class LinkedIdInfo implements IdentityInfo {
-        public abstract long getMasterKeyId();
-        public abstract int getRank();
-        public abstract boolean isVerified();
-        public abstract boolean isPrimary();
-
-        public abstract LinkedAttribute getLinkedAttribute();
-
-        static LinkedIdInfo create(long masterKeyId, int rank, boolean isVerified, boolean isPrimary, LinkedAttribute linkedAttribute) {
-            return new AutoValue_IdentityDao_LinkedIdInfo(masterKeyId, rank, isVerified, isPrimary, linkedAttribute);
         }
     }
 

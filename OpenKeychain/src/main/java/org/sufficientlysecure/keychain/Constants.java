@@ -17,6 +17,12 @@
 
 package org.sufficientlysecure.keychain;
 
+
+import java.io.File;
+import java.net.Proxy;
+import java.util.Arrays;
+import java.util.List;
+
 import android.os.Environment;
 
 import org.bouncycastle.bcpg.sig.KeyFlags;
@@ -25,11 +31,6 @@ import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
 import org.sufficientlysecure.keychain.securitytoken.RSAKeyFormat;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
-
-import java.io.File;
-import java.net.Proxy;
-import java.util.Arrays;
-import java.util.List;
 
 
 public final class Constants {
@@ -153,7 +154,6 @@ public final class Constants {
         public static final String ENABLE_WIFI_SYNC_ONLY = "enableWifiSyncOnly";
         public static final String SYNC_WORK_UUID = "syncWorkUuid";
         // other settings
-        public static final String EXPERIMENTAL_ENABLE_LINKED_IDENTITIES = "experimentalEnableLinkedIdentities";
         public static final String EXPERIMENTAL_ENABLE_KEYBASE = "experimentalEnableKeybase";
         public static final String EXPERIMENTAL_USB_ALLOW_UNTESTED = "experimentalUsbAllowUntested";
         public static final String EXPERIMENTAL_SMARTPGP_VERIFY_AUTHORITY = "smartpgp_authorities_pref";
@@ -179,7 +179,7 @@ public final class Constants {
         // we generally only track booleans. never snoop around in the user's string settings!!
         public static final List<String> ANALYTICS_PREFS = Arrays.asList(USE_NORMAL_PROXY, USE_TOR_PROXY,
                 SYNC_CONTACTS, SYNC_KEYSERVER, ENABLE_WIFI_SYNC_ONLY, EXPERIMENTAL_ENABLE_KEYBASE,
-                EXPERIMENTAL_ENABLE_LINKED_IDENTITIES, EXPERIMENTAL_USB_ALLOW_UNTESTED,
+                EXPERIMENTAL_USB_ALLOW_UNTESTED,
                 PASSPHRASE_CACHE_SUBS, SEARCH_KEYSERVER, SEARCH_KEYBASE, SEARCH_WEB_KEY_DIRECTORY,
                 TEXT_USE_COMPRESSION, TEXT_SELF_ENCRYPT, FILE_USE_COMPRESSION, FILE_SELF_ENCRYPT, USE_ARMOR,
                 USE_NUMKEYPAD_FOR_SECURITY_TOKEN_PIN, ENCRYPT_FILENAMES);
