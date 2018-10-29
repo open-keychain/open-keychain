@@ -167,7 +167,7 @@ public class SecurityTokenConnection {
     @VisibleForTesting
     void setConnectionCapabilities(OpenPgpCapabilities openPgpCapabilities) throws IOException {
         this.openPgpCapabilities = openPgpCapabilities;
-        this.cardCapabilities = new CardCapabilities(openPgpCapabilities.getHistoricalBytes());
+        this.cardCapabilities = new CardCapabilities(openPgpCapabilities.getHistoricalBytes(), tokenType);
     }
 
     // endregion

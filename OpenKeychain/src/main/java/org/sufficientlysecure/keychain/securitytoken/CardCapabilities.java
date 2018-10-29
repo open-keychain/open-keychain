@@ -18,7 +18,7 @@
 package org.sufficientlysecure.keychain.securitytoken;
 
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
-
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -36,12 +36,15 @@ class CardCapabilities {
     private byte[] historicalBytes;
     private byte[] capabilityBytes;
 
-    public CardCapabilities(byte[] historicalBytes) throws UsbTransportException {
+    private TokenType tokenType;
+
+    public CardCapabilities(byte[] historicalBytes, TokenType tokenType) throws UsbTransportException {
         if ((historicalBytes == null) || (historicalBytes[0] != 0x00)) {
             throw new UsbTransportException("Invalid historical bytes category indicator byte");
         }
         this.historicalBytes = historicalBytes;
         capabilityBytes = getCapabilitiesBytes(historicalBytes);
+        this.tokenType = tokenType;
     }
 
     public CardCapabilities() {
@@ -78,6 +81,10 @@ class CardCapabilities {
 
         // Yk neo simply ends with 0x0000
         if (!hasExpectedLastBytes) {
+            return true;
+        }
+
+        if (tokenType == TokenType.SECALOT) {
             return true;
         }
 
