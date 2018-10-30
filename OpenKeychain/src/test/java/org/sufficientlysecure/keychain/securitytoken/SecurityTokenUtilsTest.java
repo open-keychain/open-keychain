@@ -28,6 +28,7 @@ import org.mockito.Mockito;
 import org.robolectric.shadows.ShadowLog;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -164,33 +165,39 @@ public class SecurityTokenUtilsTest extends Mockito {
         CardCapabilities capabilities;
 
         // Yk neo
-        capabilities = new CardCapabilities(Hex.decode("007300008000000000000000000000"));
+        capabilities = new CardCapabilities(Hex.decode("007300008000000000000000000000"), TokenType.YUBIKEY_NEO);
         Assert.assertEquals(capabilities.hasChaining(), true);
         Assert.assertEquals(capabilities.hasExtended(), false);
         Assert.assertEquals(capabilities.hasLifeCycleManagement(), true);
 
         // Yk 4
-        capabilities = new CardCapabilities(Hex.decode("0073000080059000"));
+        capabilities = new CardCapabilities(Hex.decode("0073000080059000"), TokenType.YUBIKEY_4);
         Assert.assertEquals(capabilities.hasChaining(), true);
         Assert.assertEquals(capabilities.hasExtended(), false);
         Assert.assertEquals(capabilities.hasLifeCycleManagement(), true);
 
         // Nitrokey pro
-        capabilities = new CardCapabilities(Hex.decode("0031c573c00140059000"));
+        capabilities = new CardCapabilities(Hex.decode("0031c573c00140059000"), TokenType.NITROKEY_PRO);
         Assert.assertEquals(capabilities.hasChaining(), false);
         Assert.assertEquals(capabilities.hasExtended(), true);
         Assert.assertEquals(capabilities.hasLifeCycleManagement(), true);
 
         // GNUK without Life Cycle Management
-        capabilities = new CardCapabilities(Hex.decode("00318473800180009000"));
+        capabilities = new CardCapabilities(Hex.decode("00318473800180009000"), TokenType.GNUK_OLD);
         Assert.assertEquals(capabilities.hasChaining(), true);
         Assert.assertEquals(capabilities.hasExtended(), false);
         Assert.assertEquals(capabilities.hasLifeCycleManagement(), false);
 
         // GNUK with Life Cycle Management: ./configure --enable-factory-reset
-        capabilities = new CardCapabilities(Hex.decode("00318473800180059000"));
+        capabilities = new CardCapabilities(Hex.decode("00318473800180059000"), TokenType.GNUK_OLD);
         Assert.assertEquals(capabilities.hasChaining(), true);
         Assert.assertEquals(capabilities.hasExtended(), false);
+        Assert.assertEquals(capabilities.hasLifeCycleManagement(), true);
+
+        // Secalot
+        capabilities = new CardCapabilities(Hex.decode("0031C573C00140009000"), TokenType.SECALOT);
+        Assert.assertEquals(capabilities.hasChaining(), false);
+        Assert.assertEquals(capabilities.hasExtended(), true);
         Assert.assertEquals(capabilities.hasLifeCycleManagement(), true);
     }
 

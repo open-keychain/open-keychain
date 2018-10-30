@@ -98,11 +98,11 @@ public abstract class OpenPgpCapabilities {
     }
 
     public int getPw1MaxLength() {
-        return getPwStatusBytes()[MAX_PW1_LENGTH_INDEX];
+        return getPwStatusBytes()[MAX_PW1_LENGTH_INDEX] & 0xFF;
     }
 
     public int getPw3MaxLength() {
-        return getPwStatusBytes()[MAX_PW3_LENGTH_INDEX];
+        return getPwStatusBytes()[MAX_PW3_LENGTH_INDEX] & 0xFF;
     }
 
     public int getPw1TriesLeft() {
