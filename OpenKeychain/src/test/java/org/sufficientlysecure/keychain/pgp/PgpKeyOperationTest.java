@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.pgp;
 
 
 import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.security.Security;
@@ -33,6 +34,7 @@ import java.util.Random;
 
 import junit.framework.AssertionFailedError;
 import org.bouncycastle.bcpg.BCPGInputStream;
+import org.bouncycastle.bcpg.HashAlgorithmTags;
 import org.bouncycastle.bcpg.Packet;
 import org.bouncycastle.bcpg.PacketTags;
 import org.bouncycastle.bcpg.S2K;
@@ -44,6 +46,8 @@ import org.bouncycastle.bcpg.UserAttributeSubpacket;
 import org.bouncycastle.bcpg.UserIDPacket;
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openpgp.PGPSecretKey;
+import org.bouncycastle.openpgp.PGPSecretKeyRing;
 import org.bouncycastle.openpgp.PGPSignature;
 import org.junit.Assert;
 import org.junit.Before;
@@ -73,6 +77,8 @@ import org.sufficientlysecure.keychain.util.TestingUtils;
 
 import static org.bouncycastle.bcpg.sig.KeyFlags.CERTIFY_OTHER;
 import static org.bouncycastle.bcpg.sig.KeyFlags.SIGN_DATA;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.sufficientlysecure.keychain.operations.results.OperationResult.LogType.MSG_MF_ERROR_FINGERPRINT;
 import static org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm.ECDSA;
 import static org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm.RSA;
@@ -223,6 +229,39 @@ public class PgpKeyOperationTest {
     }
 
     @Test
+    public void checkS2kNoPassphrase() throws Exception {
+        SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildNewKeyringParcel();
+        builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
+                Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
+        builder.addUserId("test");
+
+        PgpKeyOperation op = new PgpKeyOperation(null);
+        PgpEditKeyResult result = op.createSecretKeyRing(builder.build());
+        PGPSecretKey secretKey = ((PGPSecretKeyRing) result.getRing().mRing).getSecretKey();
+
+        assertNull(secretKey.getS2K());
+        assertEquals(SecretKeyPacket.USAGE_NONE, secretKey.getS2KUsage());
+    }
+
+    @Test
+    public void checkS2kWithPassphrase() throws Exception {
+        SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildNewKeyringParcel();
+        builder.addSubkeyAdd(SubkeyAdd.createSubkeyAdd(
+                Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.CERTIFY_OTHER, 0L));
+        builder.addUserId("test");
+        builder.setNewUnlock(ChangeUnlockParcel.createUnLockParcelForNewKey(new Passphrase("test")));
+
+        PgpKeyOperation op = new PgpKeyOperation(null);
+        PgpEditKeyResult result = op.createSecretKeyRing(builder.build());
+        PGPSecretKey secretKey = ((PGPSecretKeyRing) result.getRing().mRing).getSecretKey();
+
+        assertEquals(S2K.SALTED_AND_ITERATED, secretKey.getS2K().getType());
+        assertEquals(HashAlgorithmTags.SHA512, secretKey.getS2K().getHashAlgorithm());
+        assertEquals(-1, secretKey.getS2K().getProtectionMode());
+        assertEquals(SecretKeyPacket.USAGE_CHECKSUM, secretKey.getS2KUsage());
+    }
+
+    @Test
     // this is a special case since the flags are in user id certificates rather than
     // subkey binding certificates
     public void testMasterFlags() throws Exception {
@@ -232,9 +271,9 @@ public class PgpKeyOperationTest {
         builder.addUserId("luna");
         ring = assertCreateSuccess("creating ring with master key flags must succeed", builder.build());
 
-        Assert.assertEquals("the keyring should contain only the master key",
+        assertEquals("the keyring should contain only the master key",
                 1, KeyringTestingHelper.itToList(ring.getPublicKeys()).size());
-        Assert.assertEquals("first (master) key must have both flags",
+        assertEquals("first (master) key must have both flags",
                 KeyFlags.CERTIFY_OTHER | KeyFlags.SIGN_DATA, (long) ring.getPublicKey().getKeyUsage());
 
     }
@@ -248,46 +287,46 @@ public class PgpKeyOperationTest {
 
         Assert.assertNotNull("key creation failed", ring);
 
-        Assert.assertNull("primary user id must be empty",
+        assertNull("primary user id must be empty",
                 ring.getPublicKey().getPrimaryUserId());
 
-        Assert.assertEquals("number of user ids must be two",
+        assertEquals("number of user ids must be two",
                 2, ring.getPublicKey().getUnorderedUserIds().size());
 
         ArrayList<WrappedUserAttribute> attributes =
             ring.getPublicKey().getUnorderedUserAttributes();
-        Assert.assertEquals("number of user attributes must be one",
+        assertEquals("number of user attributes must be one",
                 1, attributes.size());
-        Assert.assertEquals("user attribute must be correct type",
+        assertEquals("user attribute must be correct type",
                 42, attributes.get(0).getType());
-        Assert.assertEquals("user attribute must have one subpacket",
+        assertEquals("user attribute must have one subpacket",
                 1, attributes.get(0).getSubpackets().length);
         Assert.assertArrayEquals("user attribute must have correct data",
                 new byte[] { 0, 1, 2, 3, 4 }, attributes.get(0).getSubpackets()[0]);
 
         List<UncachedPublicKey> subkeys = KeyringTestingHelper.itToList(ring.getPublicKeys());
-        Assert.assertEquals("number of subkeys must be three", 3, subkeys.size());
+        assertEquals("number of subkeys must be three", 3, subkeys.size());
 
         Assert.assertTrue("key ring should have been created in the last 360 seconds",
                 ring.getPublicKey().getCreationTime().after(new Date(new Date().getTime()-1000*360)));
 
-        Assert.assertNull("key ring should not expire",
+        assertNull("key ring should not expire",
                 ring.getPublicKey().getUnsafeExpiryTimeForTesting());
 
-        Assert.assertEquals("first (master) key can certify",
+        assertEquals("first (master) key can certify",
                 KeyFlags.CERTIFY_OTHER, (long) subkeys.get(0).getKeyUsage());
 
-        Assert.assertEquals("second key can sign",
+        assertEquals("second key can sign",
                 KeyFlags.SIGN_DATA, (long) subkeys.get(1).getKeyUsage());
         ArrayList<WrappedSignature> sigs = subkeys.get(1).getSignatures().next().getEmbeddedSignatures();
-        Assert.assertEquals("signing key signature should have one embedded signature",
+        assertEquals("signing key signature should have one embedded signature",
                 1, sigs.size());
-        Assert.assertEquals("embedded signature should be of primary key binding type",
+        assertEquals("embedded signature should be of primary key binding type",
                 PGPSignature.PRIMARYKEY_BINDING, sigs.get(0).getSignatureType());
-        Assert.assertEquals("primary key binding signature issuer should be signing subkey",
+        assertEquals("primary key binding signature issuer should be signing subkey",
                 subkeys.get(1).getKeyId(), sigs.get(0).getKeyId());
 
-        Assert.assertEquals("third key can encrypt",
+        assertEquals("third key can encrypt",
                 KeyFlags.ENCRYPT_COMMS, (long) subkeys.get(2).getKeyUsage());
 
     }
@@ -345,8 +384,8 @@ public class PgpKeyOperationTest {
 
         UncachedKeyRing modified = applyModificationWithChecks(builder.build(), ring, onlyA, onlyB);
 
-        Assert.assertEquals("no extra packets in original", 0, onlyA.size());
-        Assert.assertEquals("exactly two extra packets in modified", 2, onlyB.size());
+        assertEquals("no extra packets in original", 0, onlyA.size());
+        assertEquals("exactly two extra packets in modified", 2, onlyB.size());
 
         Packet p;
 
@@ -355,9 +394,9 @@ public class PgpKeyOperationTest {
 
         p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(1).buf)).readPacket();
         Assert.assertTrue("second new packet must be signature", p instanceof SignaturePacket);
-        Assert.assertEquals("signature type must be subkey binding certificate",
+        assertEquals("signature type must be subkey binding certificate",
                 PGPSignature.SUBKEY_BINDING, ((SignaturePacket) p).getSignatureType());
-        Assert.assertEquals("signature must have been created by master key",
+        assertEquals("signature must have been created by master key",
                 ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
 
         // get new key from ring. it should be the last one (add a check to make sure?)
@@ -372,9 +411,9 @@ public class PgpKeyOperationTest {
         Assert.assertNotNull("new key is not null", newKey);
         Assert.assertNotNull("added key must have an expiry date",
                 newKey.getUnsafeExpiryTimeForTesting());
-        Assert.assertEquals("added key must have expected expiry date",
+        assertEquals("added key must have expected expiry date",
                 expiry, newKey.getUnsafeExpiryTimeForTesting().getTime()/1000);
-        Assert.assertEquals("added key must have expected flags",
+        assertEquals("added key must have expected flags",
                 flags, (long) newKey.getKeyUsage());
 
         { // bad keysize should fail
@@ -415,24 +454,24 @@ public class PgpKeyOperationTest {
             builder.addOrReplaceSubkeyChange(createFlagsOrExpiryChange(keyId, null, expiry));
             modified = applyModificationWithChecks(builder.build(), modified, onlyA, onlyB);
 
-            Assert.assertEquals("one extra packet in original", 1, onlyA.size());
-            Assert.assertEquals("one extra packet in modified", 1, onlyB.size());
+            assertEquals("one extra packet in original", 1, onlyA.size());
+            assertEquals("one extra packet in modified", 1, onlyB.size());
 
-            Assert.assertEquals("old packet must be signature",
+            assertEquals("old packet must be signature",
                     PacketTags.SIGNATURE, onlyA.get(0).tag);
 
             Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
             Assert.assertTrue("first new packet must be signature", p instanceof SignaturePacket);
-            Assert.assertEquals("signature type must be subkey binding certificate",
+            assertEquals("signature type must be subkey binding certificate",
                     PGPSignature.SUBKEY_BINDING, ((SignaturePacket) p).getSignatureType());
-            Assert.assertEquals("signature must have been created by master key",
+            assertEquals("signature must have been created by master key",
                     ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
 
             Assert.assertNotNull("modified key must have an expiry date",
                     modified.getPublicKey(keyId).getUnsafeExpiryTimeForTesting());
-            Assert.assertEquals("modified key must have expected expiry date",
+            assertEquals("modified key must have expected expiry date",
                     expiry, modified.getPublicKey(keyId).getUnsafeExpiryTimeForTesting().getTime()/1000);
-            Assert.assertEquals("modified key must have same flags as before",
+            assertEquals("modified key must have same flags as before",
                     ring.getPublicKey(keyId).getKeyUsage(), modified.getPublicKey(keyId).getKeyUsage());
         }
 
@@ -444,9 +483,9 @@ public class PgpKeyOperationTest {
 
             Assert.assertNotNull("modified key must have an expiry date",
                     modified.getPublicKey(keyId).getUnsafeExpiryTimeForTesting());
-            Assert.assertEquals("modified key must have expected expiry date",
+            assertEquals("modified key must have expected expiry date",
                     expiry, modified.getPublicKey(keyId).getUnsafeExpiryTimeForTesting().getTime()/1000);
-            Assert.assertEquals("modified key must have same flags as before",
+            assertEquals("modified key must have same flags as before",
                     ring.getPublicKey(keyId).getKeyUsage(), modified.getPublicKey(keyId).getKeyUsage());
         }
 
@@ -456,21 +495,21 @@ public class PgpKeyOperationTest {
             builder.addOrReplaceSubkeyChange(createFlagsOrExpiryChange(keyId, flags, null));
             modified = applyModificationWithChecks(builder.build(), modified, onlyA, onlyB);
 
-            Assert.assertEquals("old packet must be signature",
+            assertEquals("old packet must be signature",
                     PacketTags.SIGNATURE, onlyA.get(0).tag);
 
             Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
             Assert.assertTrue("first new packet must be signature", p instanceof SignaturePacket);
-            Assert.assertEquals("signature type must be subkey binding certificate",
+            assertEquals("signature type must be subkey binding certificate",
                     PGPSignature.SUBKEY_BINDING, ((SignaturePacket) p).getSignatureType());
-            Assert.assertEquals("signature must have been created by master key",
+            assertEquals("signature must have been created by master key",
                     ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
 
-            Assert.assertEquals("modified key must have expected flags",
+            assertEquals("modified key must have expected flags",
                     flags, (long) modified.getPublicKey(keyId).getKeyUsage());
             Assert.assertNotNull("key must retain its expiry",
                     modified.getPublicKey(keyId).getUnsafeExpiryTimeForTesting());
-            Assert.assertEquals("key expiry must be unchanged",
+            assertEquals("key expiry must be unchanged",
                     expiry, modified.getPublicKey(keyId).getUnsafeExpiryTimeForTesting().getTime()/1000);
         }
 
@@ -479,17 +518,17 @@ public class PgpKeyOperationTest {
             builder.addOrReplaceSubkeyChange(createFlagsOrExpiryChange(keyId, null, 0L));
             modified = applyModificationWithChecks(builder.build(), modified, onlyA, onlyB);
 
-            Assert.assertEquals("old packet must be signature",
+            assertEquals("old packet must be signature",
                     PacketTags.SIGNATURE, onlyA.get(0).tag);
 
             Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
             Assert.assertTrue("first new packet must be signature", p instanceof SignaturePacket);
-            Assert.assertEquals("signature type must be subkey binding certificate",
+            assertEquals("signature type must be subkey binding certificate",
                     PGPSignature.SUBKEY_BINDING, ((SignaturePacket) p).getSignatureType());
-            Assert.assertEquals("signature must have been created by master key",
+            assertEquals("signature must have been created by master key",
                     ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
 
-            Assert.assertNull("key must not expire anymore", modified.getPublicKey(keyId).getUnsafeExpiryTimeForTesting());
+            assertNull("key must not expire anymore", modified.getPublicKey(keyId).getUnsafeExpiryTimeForTesting());
         }
 
         { // a past expiry should fail
@@ -530,23 +569,23 @@ public class PgpKeyOperationTest {
             modified = applyModificationWithChecks(builder.build(), modified, onlyA, onlyB);
 
             // this implies that only the two non-revoked signatures were changed!
-            Assert.assertEquals("two extra packets in original", 2, onlyA.size());
-            Assert.assertEquals("two extra packets in modified", 2, onlyB.size());
+            assertEquals("two extra packets in original", 2, onlyA.size());
+            assertEquals("two extra packets in modified", 2, onlyB.size());
 
-            Assert.assertEquals("first original packet must be a signature",
+            assertEquals("first original packet must be a signature",
                     PacketTags.SIGNATURE, onlyA.get(0).tag);
-            Assert.assertEquals("second original packet must be a signature",
+            assertEquals("second original packet must be a signature",
                     PacketTags.SIGNATURE, onlyA.get(1).tag);
-            Assert.assertEquals("first new packet must be signature",
+            assertEquals("first new packet must be signature",
                     PacketTags.SIGNATURE, onlyB.get(0).tag);
-            Assert.assertEquals("first new packet must be signature",
+            assertEquals("first new packet must be signature",
                     PacketTags.SIGNATURE, onlyB.get(1).tag);
 
             Assert.assertNotNull("modified key must have an expiry date",
                     modified.getPublicKey().getUnsafeExpiryTimeForTesting());
-            Assert.assertEquals("modified key must have expected expiry date",
+            assertEquals("modified key must have expected expiry date",
                     expiry, modified.getPublicKey().getUnsafeExpiryTimeForTesting().getTime() / 1000);
-            Assert.assertEquals("modified key must have same flags as before",
+            assertEquals("modified key must have same flags as before",
                     ring.getPublicKey().getKeyUsage(), modified.getPublicKey().getKeyUsage());
         }
 
@@ -558,14 +597,14 @@ public class PgpKeyOperationTest {
 
             Assert.assertNotNull("modified key must have an expiry date",
                     modified.getPublicKey(keyId).getUnsafeExpiryTimeForTesting());
-            Assert.assertEquals("modified key must have expected expiry date",
+            assertEquals("modified key must have expected expiry date",
                     expiry, modified.getPublicKey(keyId).getUnsafeExpiryTimeForTesting().getTime() / 1000);
-            Assert.assertEquals("modified key must have same flags as before",
+            assertEquals("modified key must have same flags as before",
                     ring.getPublicKey(keyId).getKeyUsage(), modified.getPublicKey(keyId).getKeyUsage());
 
             Date date = modified.canonicalize(new OperationLog(), 0).getPublicKey().getExpiryTime();
             Assert.assertNotNull("modified key must have an expiry date", date);
-            Assert.assertEquals("modified key must have expected expiry date",
+            assertEquals("modified key must have expected expiry date",
                     expiry, date.getTime() / 1000);
 
         }
@@ -576,11 +615,11 @@ public class PgpKeyOperationTest {
             builder.addOrReplaceSubkeyChange(createFlagsOrExpiryChange(keyId, flags, null));
             modified = applyModificationWithChecks(builder.build(), modified, onlyA, onlyB);
 
-            Assert.assertEquals("modified key must have expected flags",
+            assertEquals("modified key must have expected flags",
                     flags, (long) modified.getPublicKey(keyId).getKeyUsage());
             Assert.assertNotNull("key must retain its expiry",
                     modified.getPublicKey(keyId).getUnsafeExpiryTimeForTesting());
-            Assert.assertEquals("key expiry must be unchanged",
+            assertEquals("key expiry must be unchanged",
                     expiry, modified.getPublicKey(keyId).getUnsafeExpiryTimeForTesting().getTime()/1000);
         }
 
@@ -597,7 +636,7 @@ public class PgpKeyOperationTest {
             modified = applyModificationWithChecks(builder.build(), modified, onlyA, onlyB);
 
             // for this check, it is relevant that we DON'T use the unsafe one!
-            Assert.assertNull("key must not expire anymore",
+            assertNull("key must not expire anymore",
                     modified.canonicalize(new OperationLog(), 0).getPublicKey().getExpiryTime());
             // make sure the unsafe one behaves incorrectly as expected
             Assert.assertNotNull("unsafe expiry must yield wrong result from revoked user id",
@@ -640,16 +679,16 @@ public class PgpKeyOperationTest {
 
         UncachedKeyRing modified = applyModificationWithChecks(builder.build(), ring, onlyA, onlyB);
 
-        Assert.assertEquals("no extra packets in original", 0, onlyA.size());
-        Assert.assertEquals("exactly one extra packet in modified", 1, onlyB.size());
+        assertEquals("no extra packets in original", 0, onlyA.size());
+        assertEquals("exactly one extra packet in modified", 1, onlyB.size());
 
         Packet p;
 
         p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
         Assert.assertTrue("first new packet must be secret subkey", p instanceof SignaturePacket);
-        Assert.assertEquals("signature type must be subkey binding certificate",
+        assertEquals("signature type must be subkey binding certificate",
                 PGPSignature.KEY_REVOCATION, ((SignaturePacket) p).getSignatureType());
-        Assert.assertEquals("signature must have been created by master key",
+        assertEquals("signature must have been created by master key",
                 ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
 
         Assert.assertTrue("subkey must actually be revoked",
@@ -673,7 +712,7 @@ public class PgpKeyOperationTest {
             CanonicalizedSecretKeyRing secretRing = new CanonicalizedSecretKeyRing(ring.getEncoded(), VerificationStatus.UNVERIFIED);
             UncachedKeyRing otherModified = op.modifySecretKeyRing(secretRing, cryptoInput, builder.build()).getRing();
 
-            Assert.assertNull("revoking a nonexistent subkey should fail", otherModified);
+            assertNull("revoking a nonexistent subkey should fail", otherModified);
 
         }
 
@@ -685,16 +724,16 @@ public class PgpKeyOperationTest {
             modified = applyModificationWithChecks(builder.build(), ring, onlyA, onlyB,
                     CryptoInputParcel.createCryptoInputParcel(new Date(), passphrase));
 
-            Assert.assertEquals("no extra packets in original", 0, onlyA.size());
-            Assert.assertEquals("exactly one extra packet in modified", 1, onlyB.size());
+            assertEquals("no extra packets in original", 0, onlyA.size());
+            assertEquals("exactly one extra packet in modified", 1, onlyB.size());
 
             Packet p;
 
             p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
             Assert.assertTrue("first new packet must be secret subkey", p instanceof SignaturePacket);
-            Assert.assertEquals("signature type must be subkey binding certificate",
+            assertEquals("signature type must be subkey binding certificate",
                     PGPSignature.SUBKEY_REVOCATION, ((SignaturePacket) p).getSignatureType());
-            Assert.assertEquals("signature must have been created by master key",
+            assertEquals("signature must have been created by master key",
                     ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
 
             Assert.assertTrue("subkey must actually be revoked",
@@ -709,35 +748,35 @@ public class PgpKeyOperationTest {
 
             modified = applyModificationWithChecks(builder.build(), modified, onlyA, onlyB);
 
-            Assert.assertEquals("exactly two outdated packets in original", 2, onlyA.size());
-            Assert.assertEquals("exactly one extra packet in modified", 1, onlyB.size());
+            assertEquals("exactly two outdated packets in original", 2, onlyA.size());
+            assertEquals("exactly one extra packet in modified", 1, onlyB.size());
 
             Packet p;
 
             p = new BCPGInputStream(new ByteArrayInputStream(onlyA.get(0).buf)).readPacket();
             Assert.assertTrue("first outdated packet must be signature", p instanceof SignaturePacket);
-            Assert.assertEquals("first outdated signature type must be subkey binding certification",
+            assertEquals("first outdated signature type must be subkey binding certification",
                     PGPSignature.SUBKEY_BINDING, ((SignaturePacket) p).getSignatureType());
-            Assert.assertEquals("first outdated signature must have been created by master key",
+            assertEquals("first outdated signature must have been created by master key",
                     ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
 
             p = new BCPGInputStream(new ByteArrayInputStream(onlyA.get(1).buf)).readPacket();
             Assert.assertTrue("second outdated packet must be signature", p instanceof SignaturePacket);
-            Assert.assertEquals("second outdated signature type must be subkey revocation",
+            assertEquals("second outdated signature type must be subkey revocation",
                     PGPSignature.SUBKEY_REVOCATION, ((SignaturePacket) p).getSignatureType());
-            Assert.assertEquals("second outdated signature must have been created by master key",
+            assertEquals("second outdated signature must have been created by master key",
                     ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
 
             p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
             Assert.assertTrue("new packet must be signature ", p instanceof SignaturePacket);
-            Assert.assertEquals("new signature type must be subkey binding certification",
+            assertEquals("new signature type must be subkey binding certification",
                     PGPSignature.SUBKEY_BINDING, ((SignaturePacket) p).getSignatureType());
-            Assert.assertEquals("signature must have been created by master key",
+            assertEquals("signature must have been created by master key",
                     ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
 
             Assert.assertFalse("subkey must no longer be revoked",
                     modified.getPublicKey(keyId).isMaybeRevoked());
-            Assert.assertEquals("subkey must have the same usage flags as before",
+            assertEquals("subkey must have the same usage flags as before",
                     flags, (long) modified.getPublicKey(keyId).getKeyUsage());
 
         }
@@ -750,22 +789,22 @@ public class PgpKeyOperationTest {
         builder.addOrReplaceSubkeyChange(createStripChange(keyId));
         applyModificationWithChecks(builder.build(), ring, onlyA, onlyB);
 
-        Assert.assertEquals("one extra packet in original", 1, onlyA.size());
-        Assert.assertEquals("one extra packet in modified", 1, onlyB.size());
+        assertEquals("one extra packet in original", 1, onlyA.size());
+        assertEquals("one extra packet in modified", 1, onlyB.size());
 
-        Assert.assertEquals("old packet must be secret subkey",
+        assertEquals("old packet must be secret subkey",
                 PacketTags.SECRET_SUBKEY, onlyA.get(0).tag);
-        Assert.assertEquals("new packet must be secret subkey",
+        assertEquals("new packet must be secret subkey",
                 PacketTags.SECRET_SUBKEY, onlyB.get(0).tag);
 
         Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
-        Assert.assertEquals("new packet should have GNU_DUMMY S2K type",
+        assertEquals("new packet should have GNU_DUMMY S2K type",
                 S2K.GNU_DUMMY_S2K, ((SecretSubkeyPacket) p).getS2K().getType());
-        Assert.assertEquals("new packet should have GNU_DUMMY protection mode 0x1",
+        assertEquals("new packet should have GNU_DUMMY protection mode 0x1",
                 0x1, ((SecretSubkeyPacket) p).getS2K().getProtectionMode());
-        Assert.assertEquals("new packet secret key data should have length zero",
+        assertEquals("new packet secret key data should have length zero",
                 0, ((SecretSubkeyPacket) p).getSecretKeyData().length);
-        Assert.assertNull("new packet should have no iv data", ((SecretSubkeyPacket) p).getIV());
+        assertNull("new packet should have no iv data", ((SecretSubkeyPacket) p).getIV());
 
     }
 
@@ -776,22 +815,22 @@ public class PgpKeyOperationTest {
         builder.addOrReplaceSubkeyChange(createStripChange(keyId));
         applyModificationWithChecks(builder.build(), ring, onlyA, onlyB);
 
-        Assert.assertEquals("one extra packet in original", 1, onlyA.size());
-        Assert.assertEquals("one extra packet in modified", 1, onlyB.size());
+        assertEquals("one extra packet in original", 1, onlyA.size());
+        assertEquals("one extra packet in modified", 1, onlyB.size());
 
-        Assert.assertEquals("old packet must be secret key",
+        assertEquals("old packet must be secret key",
                 PacketTags.SECRET_KEY, onlyA.get(0).tag);
-        Assert.assertEquals("new packet must be secret key",
+        assertEquals("new packet must be secret key",
                 PacketTags.SECRET_KEY, onlyB.get(0).tag);
 
         Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
-        Assert.assertEquals("new packet should have GNU_DUMMY S2K type",
+        assertEquals("new packet should have GNU_DUMMY S2K type",
                 S2K.GNU_DUMMY_S2K, ((SecretKeyPacket) p).getS2K().getType());
-        Assert.assertEquals("new packet should have GNU_DUMMY protection mode 0x1",
+        assertEquals("new packet should have GNU_DUMMY protection mode 0x1",
                 0x1, ((SecretKeyPacket) p).getS2K().getProtectionMode());
-        Assert.assertEquals("new packet secret key data should have length zero",
+        assertEquals("new packet secret key data should have length zero",
                 0, ((SecretKeyPacket) p).getSecretKeyData().length);
-        Assert.assertNull("new packet should have no iv data", ((SecretKeyPacket) p).getIV());
+        assertNull("new packet should have no iv data", ((SecretKeyPacket) p).getIV());
     }
 
     @Test
@@ -805,11 +844,11 @@ public class PgpKeyOperationTest {
             builder.addOrReplaceSubkeyChange(createStripChange(keyId));
             modified = applyModificationWithChecks(builder.build(), ring, onlyA, onlyB,
                     CryptoInputParcel.createCryptoInputParcel());
-            Assert.assertEquals("one extra packet in modified", 1, onlyB.size());
+            assertEquals("one extra packet in modified", 1, onlyB.size());
             Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
-            Assert.assertEquals("new packet should have GNU_DUMMY S2K type",
+            assertEquals("new packet should have GNU_DUMMY S2K type",
                     S2K.GNU_DUMMY_S2K, ((SecretKeyPacket) p).getS2K().getType());
-            Assert.assertEquals("new packet should have GNU_DUMMY protection mode stripped",
+            assertEquals("new packet should have GNU_DUMMY protection mode stripped",
                     S2K.GNU_PROTECTION_MODE_NO_PRIVATE_KEY, ((SecretKeyPacket) p).getS2K().getProtectionMode());
         }
 
@@ -871,7 +910,7 @@ public class PgpKeyOperationTest {
             PgpKeyOperation op = new PgpKeyOperation(null);
             PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, securityTokenBuilder.build());
             Assert.assertTrue("moveKeyToSecurityToken operation should be pending", result.isPending());
-            Assert.assertEquals("required input should be RequiredInputType.SECURITY_TOKEN_MOVE_KEY_TO_CARD",
+            assertEquals("required input should be RequiredInputType.SECURITY_TOKEN_MOVE_KEY_TO_CARD",
                     result.getRequiredInputParcel().mType, RequiredInputType.SECURITY_TOKEN_MOVE_KEY_TO_CARD);
 
             // Create a cryptoInputParcel that matches what the SecurityTokenOperationActivity would return.
@@ -886,11 +925,11 @@ public class PgpKeyOperationTest {
             inputParcel = inputParcel.withCryptoData(keyIdBytes, serial);
 
             modified = applyModificationWithChecks(securityTokenBuilder.build(), ringSecurityToken, onlyA, onlyB, inputParcel);
-            Assert.assertEquals("one extra packet in modified", 1, onlyB.size());
+            assertEquals("one extra packet in modified", 1, onlyB.size());
             Packet p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
-            Assert.assertEquals("new packet should have GNU_DUMMY S2K type",
+            assertEquals("new packet should have GNU_DUMMY S2K type",
                     S2K.GNU_DUMMY_S2K, ((SecretKeyPacket) p).getS2K().getType());
-            Assert.assertEquals("new packet should have GNU_DUMMY protection mode divert-to-card",
+            assertEquals("new packet should have GNU_DUMMY protection mode divert-to-card",
                     S2K.GNU_PROTECTION_MODE_DIVERT_TO_CARD, ((SecretKeyPacket) p).getS2K().getProtectionMode());
             Assert.assertArrayEquals("new packet should have correct serial number as iv",
                     serial, ((SecretKeyPacket) p).getIV());
@@ -906,7 +945,7 @@ public class PgpKeyOperationTest {
             PgpKeyOperation op = new PgpKeyOperation(null);
             PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, securityTokenBuilder.build());
             Assert.assertTrue("moveKeyToSecurityToken operation should be pending", result.isPending());
-            Assert.assertEquals("required input should be RequiredInputType.SECURITY_TOKEN_SIGN",
+            assertEquals("required input should be RequiredInputType.SECURITY_TOKEN_SIGN",
                     RequiredInputType.SECURITY_TOKEN_SIGN, result.getRequiredInputParcel().mType);
         }
 
@@ -922,16 +961,16 @@ public class PgpKeyOperationTest {
             builder.addRevokeUserId(uid);
             modified = applyModificationWithChecks(builder.build(), ring, onlyA, onlyB);
 
-            Assert.assertEquals("no extra packets in original", 0, onlyA.size());
-            Assert.assertEquals("exactly one extra packet in modified", 1, onlyB.size());
+            assertEquals("no extra packets in original", 0, onlyA.size());
+            assertEquals("exactly one extra packet in modified", 1, onlyB.size());
 
             Packet p;
 
             p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
             Assert.assertTrue("first new packet must be secret subkey", p instanceof SignaturePacket);
-            Assert.assertEquals("signature type must be subkey binding certificate",
+            assertEquals("signature type must be subkey binding certificate",
                     PGPSignature.CERTIFICATION_REVOCATION, ((SignaturePacket) p).getSignatureType());
-            Assert.assertEquals("signature must have been created by master key",
+            assertEquals("signature must have been created by master key",
                     ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
 
         }
@@ -953,30 +992,30 @@ public class PgpKeyOperationTest {
 
             applyModificationWithChecks(builder.build(), modified, onlyA, onlyB);
 
-            Assert.assertEquals("exactly two outdated packets in original", 2, onlyA.size());
-            Assert.assertEquals("exactly one extra packet in modified", 1, onlyB.size());
+            assertEquals("exactly two outdated packets in original", 2, onlyA.size());
+            assertEquals("exactly one extra packet in modified", 1, onlyB.size());
 
             Packet p;
 
             p = new BCPGInputStream(new ByteArrayInputStream(onlyA.get(0).buf)).readPacket();
             Assert.assertTrue("first outdated packet must be signature", p instanceof SignaturePacket);
-            Assert.assertEquals("first outdated signature type must be positive certification",
+            assertEquals("first outdated signature type must be positive certification",
                     PGPSignature.POSITIVE_CERTIFICATION, ((SignaturePacket) p).getSignatureType());
-            Assert.assertEquals("first outdated signature must have been created by master key",
+            assertEquals("first outdated signature must have been created by master key",
                     ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
 
             p = new BCPGInputStream(new ByteArrayInputStream(onlyA.get(1).buf)).readPacket();
             Assert.assertTrue("second outdated packet must be signature", p instanceof SignaturePacket);
-            Assert.assertEquals("second outdated signature type must be certificate revocation",
+            assertEquals("second outdated signature type must be certificate revocation",
                     PGPSignature.CERTIFICATION_REVOCATION, ((SignaturePacket) p).getSignatureType());
-            Assert.assertEquals("second outdated signature must have been created by master key",
+            assertEquals("second outdated signature must have been created by master key",
                     ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
 
             p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
             Assert.assertTrue("new packet must be signature ", p instanceof SignaturePacket);
-            Assert.assertEquals("new signature type must be positive certification",
+            assertEquals("new signature type must be positive certification",
                     PGPSignature.POSITIVE_CERTIFICATION, ((SignaturePacket) p).getSignatureType());
-            Assert.assertEquals("signature must have been created by master key",
+            assertEquals("signature must have been created by master key",
                     ring.getMasterKeyId(), ((SignaturePacket) p).getKeyID());
         }
 
@@ -1007,8 +1046,8 @@ public class PgpKeyOperationTest {
         Assert.assertTrue("keyring must contain added user id",
                 modified.getPublicKey().getUnorderedUserIds().contains("rainbow"));
 
-        Assert.assertEquals("no extra packets in original", 0, onlyA.size());
-        Assert.assertEquals("exactly two extra packets in modified", 2, onlyB.size());
+        assertEquals("no extra packets in original", 0, onlyA.size());
+        assertEquals("exactly two extra packets in modified", 2, onlyB.size());
 
         Assert.assertTrue("keyring must contain added user id",
                 modified.getPublicKey().getUnorderedUserIds().contains("rainbow"));
@@ -1017,12 +1056,12 @@ public class PgpKeyOperationTest {
 
         p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(0).buf)).readPacket();
         Assert.assertTrue("first new packet must be user id", p instanceof UserIDPacket);
-        Assert.assertEquals("user id packet must match added user id",
+        assertEquals("user id packet must match added user id",
                 "rainbow", ((UserIDPacket) p).getID());
 
         p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(1).buf)).readPacket();
         Assert.assertTrue("second new packet must be signature", p instanceof SignaturePacket);
-        Assert.assertEquals("signature type must be positive certification",
+        assertEquals("signature type must be positive certification",
                 PGPSignature.POSITIVE_CERTIFICATION, ((SignaturePacket) p).getSignatureType());
 
     }
@@ -1048,8 +1087,8 @@ public class PgpKeyOperationTest {
 
         UncachedKeyRing modified = applyModificationWithChecks(builder.build(), ring, onlyA, onlyB);
 
-        Assert.assertEquals("no extra packets in original", 0, onlyA.size());
-        Assert.assertEquals("exactly two extra packets in modified", 2, onlyB.size());
+        assertEquals("no extra packets in original", 0, onlyA.size());
+        assertEquals("exactly two extra packets in modified", 2, onlyB.size());
 
         Assert.assertTrue("keyring must contain added user attribute",
                 modified.getPublicKey().getUnorderedUserAttributes().contains(uat));
@@ -1060,9 +1099,9 @@ public class PgpKeyOperationTest {
         Assert.assertTrue("first new packet must be user attribute", p instanceof UserAttributePacket);
         {
             UserAttributeSubpacket[] subpackets = ((UserAttributePacket) p).getSubpackets();
-            Assert.assertEquals("user attribute packet must contain one subpacket",
+            assertEquals("user attribute packet must contain one subpacket",
                     1, subpackets.length);
-            Assert.assertEquals("user attribute subpacket type must be as specified above",
+            assertEquals("user attribute subpacket type must be as specified above",
                     type, subpackets[0].getType());
             Assert.assertArrayEquals("user attribute subpacket data must be as specified above",
                     data, subpackets[0].getData());
@@ -1070,7 +1109,7 @@ public class PgpKeyOperationTest {
 
         p = new BCPGInputStream(new ByteArrayInputStream(onlyB.get(1).buf)).readPacket();
         Assert.assertTrue("second new packet must be signature", p instanceof SignaturePacket);
-        Assert.assertEquals("signature type must be positive certification",
+        assertEquals("signature type must be positive certification",
                 PGPSignature.POSITIVE_CERTIFICATION, ((SignaturePacket) p).getSignatureType());
 
         Thread.sleep(1000);
@@ -1080,8 +1119,8 @@ public class PgpKeyOperationTest {
         applyModificationWithChecks(builder.build(), modified, onlyA, onlyB,
                 CryptoInputParcel.createCryptoInputParcel(new Date(), passphrase), true, false);
 
-        Assert.assertEquals("duplicate modification: one extra packet in original", 1, onlyA.size());
-        Assert.assertEquals("duplicate modification: one extra packet in modified", 1, onlyB.size());
+        assertEquals("duplicate modification: one extra packet in original", 1, onlyA.size());
+        assertEquals("duplicate modification: one extra packet in modified", 1, onlyB.size());
 
         p = new BCPGInputStream(new ByteArrayInputStream(onlyA.get(0).buf)).readPacket();
         Assert.assertTrue("lost packet must be signature", p instanceof SignaturePacket);
@@ -1103,7 +1142,7 @@ public class PgpKeyOperationTest {
 
             modified = applyModificationWithChecks(builder.build(), modified, onlyA, onlyB);
 
-            Assert.assertEquals("primary user id must be the one added",
+            assertEquals("primary user id must be the one added",
                     "jack", modified.getPublicKey().getPrimaryUserId());
         }
 
@@ -1113,10 +1152,10 @@ public class PgpKeyOperationTest {
 
             modified = applyModificationWithChecks(builder.build(), modified, onlyA, onlyB);
 
-            Assert.assertEquals("old keyring must have two outdated certificates", 2, onlyA.size());
-            Assert.assertEquals("new keyring must have two new packets", 2, onlyB.size());
+            assertEquals("old keyring must have two outdated certificates", 2, onlyA.size());
+            assertEquals("new keyring must have two new packets", 2, onlyB.size());
 
-            Assert.assertEquals("primary user id must be the one changed to",
+            assertEquals("primary user id must be the one changed to",
                     "pink", modified.getPublicKey().getPrimaryUserId());
         }
 
@@ -1140,12 +1179,12 @@ public class PgpKeyOperationTest {
         // note that canonicalization here necessarily strips the empty notation packet
         UncachedKeyRing modified = applyModificationWithChecks(builder.build(), ring, onlyA, onlyB, cryptoInput);
 
-        Assert.assertEquals("exactly three packets should have been modified (the secret keys)",
+        assertEquals("exactly three packets should have been modified (the secret keys)",
                 3, onlyB.size());
 
         // remember secret key packet with no passphrase for later
         RawPacket sKeyNoPassphrase = onlyB.get(1);
-        Assert.assertEquals("extracted packet should be a secret subkey",
+        assertEquals("extracted packet should be a secret subkey",
                 PacketTags.SECRET_SUBKEY, sKeyNoPassphrase.tag);
 
         // modify keyring, change to non-empty passphrase
@@ -1155,7 +1194,7 @@ public class PgpKeyOperationTest {
         modified = applyModificationWithChecks(builder.build(), modified, onlyA, onlyB,
                 CryptoInputParcel.createCryptoInputParcel(new Date(), new Passphrase()));
 
-        Assert.assertEquals("exactly three packets should have been modified (the secret keys)",
+        assertEquals("exactly three packets should have been modified (the secret keys)",
                 3, onlyB.size());
 
         { // quick check to make sure no two secret keys have the same IV
@@ -1173,7 +1212,7 @@ public class PgpKeyOperationTest {
         }
 
         RawPacket sKeyWithPassphrase = onlyB.get(1);
-        Assert.assertEquals("extracted packet should be a secret subkey",
+        assertEquals("extracted packet should be a secret subkey",
                 PacketTags.SECRET_SUBKEY, sKeyNoPassphrase.tag);
 
         Passphrase otherPassphrase2 = TestingUtils.testPassphrase2;
@@ -1303,7 +1342,7 @@ public class PgpKeyOperationTest {
     public void testConcat() throws Exception {
         byte[] actual = TestDataUtil.concatAll(new byte[]{1}, new byte[]{2, -2}, new byte[]{5}, new byte[]{3});
         byte[] expected = new byte[]{1,2,-2,5,3};
-        Assert.assertEquals(java.util.Arrays.toString(expected), java.util.Arrays.toString(actual));
+        assertEquals(java.util.Arrays.toString(expected), java.util.Arrays.toString(actual));
     }
 
     private void assertFailure(String reason, SaveKeyringParcel parcel, LogType expected) {
@@ -1311,7 +1350,7 @@ public class PgpKeyOperationTest {
         PgpEditKeyResult result = op.createSecretKeyRing(parcel);
 
         Assert.assertFalse(reason, result.success());
-        Assert.assertNull(reason, result.getRing());
+        assertNull(reason, result.getRing());
         Assert.assertTrue(reason + "(with correct error)",
                 result.getLog().containsType(expected));
 
@@ -1325,7 +1364,7 @@ public class PgpKeyOperationTest {
         PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcel);
 
         Assert.assertFalse(reason, result.success());
-        Assert.assertNull(reason, result.getRing());
+        assertNull(reason, result.getRing());
         Assert.assertTrue(reason + "(with correct error)",
                 result.getLog().containsType(expected));
 
@@ -1339,7 +1378,7 @@ public class PgpKeyOperationTest {
         PgpEditKeyResult result = op.modifySecretKeyRing(secretRing, cryptoInput, parcel);
 
         Assert.assertFalse(reason, result.success());
-        Assert.assertNull(reason, result.getRing());
+        assertNull(reason, result.getRing());
         Assert.assertTrue(reason + "(with correct error)",
                 result.getLog().containsType(expected));
 

@@ -35,6 +35,8 @@ import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import android.support.annotation.Nullable;
+
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.nist.NISTNamedCurves;
 import org.bouncycastle.bcpg.ECDHPublicBCPGKey;
@@ -338,18 +340,10 @@ public class PgpKeyOperation {
 
             progress(R.string.progress_building_master_key, 40);
 
-            // Build key encrypter and decrypter based on passphrase
-            PGPDigestCalculator encryptorHashCalc = new JcaPGPDigestCalculatorProviderBuilder()
-                    .build().get(PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_HASH_ALGO);
-            PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
-                    PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO,
-                    encryptorHashCalc, PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_S2K_COUNT)
-                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build("".toCharArray());
-
             PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder()
                     .build().get(PgpSecurityConstants.SECRET_KEY_SIGNATURE_CHECKSUM_HASH_ALGO);
             PGPSecretKey masterSecretKey = new PGPSecretKey(keyPair.getPrivateKey(), keyPair.getPublicKey(),
-                    sha1Calc, true, keyEncryptor);
+                    sha1Calc, true, null);
 
             PGPSecretKeyRing sKR = new PGPSecretKeyRing(
                     masterSecretKey.getEncoded(), new JcaKeyFingerprintCalculator());
@@ -1073,14 +1067,7 @@ public class PgpKeyOperation {
                 }
 
                 PGPSecretKey sKey; {
-                    // Build key encrypter and decrypter based on passphrase
-                    PGPDigestCalculator encryptorHashCalc = new JcaPGPDigestCalculatorProviderBuilder()
-                            .build().get(PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_HASH_ALGO);
-                    PBESecretKeyEncryptor keyEncryptor = new JcePBESecretKeyEncryptorBuilder(
-                            PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO, encryptorHashCalc,
-                            PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_S2K_COUNT)
-                            .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(
-                                    cryptoInput.getPassphrase().getCharArray());
+                    PBESecretKeyEncryptor keyEncryptor = buildKeyEncryptorFromPassphrase(cryptoInput.getPassphrase());
 
                     PGPDigestCalculator sha1Calc = new JcaPGPDigestCalculatorProviderBuilder()
                             .build().get(PgpSecurityConstants.SECRET_KEY_SIGNATURE_CHECKSUM_HASH_ALGO);
@@ -1171,6 +1158,22 @@ public class PgpKeyOperation {
         log.add(LogType.MSG_MF_SUCCESS, indent);
         return new PgpEditKeyResult(OperationResult.RESULT_OK, log, new UncachedKeyRing(sKR));
 
+    }
+
+    @Nullable
+    private PBESecretKeyEncryptor buildKeyEncryptorFromPassphrase(Passphrase passphrase) throws PGPException {
+        if (passphrase == null || passphrase.isEmpty()) {
+            return null;
+        }
+
+        PGPDigestCalculator encryptorHashCalc = new JcaPGPDigestCalculatorProviderBuilder()
+                .build()
+                .get(PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_HASH_ALGO);
+        return new JcePBESecretKeyEncryptorBuilder(
+                PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO,
+                encryptorHashCalc, PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_S2K_COUNT)
+                .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME)
+                .build(passphrase.getCharArray());
     }
 
     /** This method does the actual modifications in a keyring just like internal, except it
