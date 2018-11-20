@@ -34,7 +34,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 
 import de.cotech.sweetspot.NfcSweetspotData;
-import de.cotech.sweetspot.ShowNfcSweetspotActivity;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;

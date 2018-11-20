@@ -858,7 +858,7 @@
             android:theme="@android:style/Theme.NoDisplay" />
 
         <activity
-            android:name="de.cotech.sweetspot.ShowNfcSweetspotActivity"
+            android:name="org.sufficientlysecure.keychain.ui.ShowNfcSweetspotActivity"
             android:exported="false"
             android:theme="@style/Theme.Keychain.AppCompat.Transparent.Fullscreen"
             />
