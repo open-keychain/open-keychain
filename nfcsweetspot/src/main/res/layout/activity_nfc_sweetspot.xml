@@ -9,7 +9,7 @@
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/nfc_sweetspot_indicator"
+        android:id="@+id/indicator_nfc_sweetspot"
         tools:layout_marginLeft="60dp"
         tools:layout_marginTop="100dp"
         tools:ignore="UselessParent">
@@ -18,35 +18,36 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_nfc_white_24dp"
-            android:id="@+id/nfc_sweetspot_icon"
+            android:src="@drawable/ic_nfc"
+            android:id="@+id/icon_nfc_sweetspot"
+            android:tint="#fff"
             />
 
         <ImageView
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="center"
-            android:src="@drawable/circle"
-            android:id="@+id/nfc_sweetspot_circle_1"
-            android:tint="@color/md_white_1000"
+            android:src="@drawable/ic_circle"
+            android:id="@+id/circle_nfc_sweetspot_1"
+            android:tint="#fff"
             />
 
         <ImageView
             android:layout_width="95dp"
             android:layout_height="95dp"
             android:layout_gravity="center"
-            android:src="@drawable/circle"
-            android:id="@+id/nfc_sweetspot_circle_2"
-            android:tint="@color/md_white_1000"
+            android:src="@drawable/ic_circle"
+            android:id="@+id/circle_nfc_sweetspot_2"
+            android:tint="#fff"
             />
 
         <ImageView
             android:layout_width="130dp"
             android:layout_height="130dp"
             android:layout_gravity="center"
-            android:src="@drawable/circle"
-            android:id="@+id/nfc_sweetspot_circle_3"
-            android:tint="@color/md_white_1000"
+            android:src="@drawable/ic_circle"
+            android:id="@+id/circle_nfc_sweetspot_3"
+            android:tint="#fff"
             />
 
     </FrameLayout>

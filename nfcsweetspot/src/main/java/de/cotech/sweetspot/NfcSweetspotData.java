@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.securitytoken;
+package de.cotech.sweetspot;
 
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.os.Build;
 import android.util.Pair;
 
 
@@ -968,5 +969,17 @@ public class NfcSweetspotData {
         data.put("Zumbo_S_2017", new Pair<>(0.427777777778, 0.43485915493));
 
         SWEETSPOT_DATA = Collections.unmodifiableMap(data);
+    }
+
+    public static boolean hasSweetspotData() {
+        return NfcSweetspotData.SWEETSPOT_DATA.containsKey(Build.MODEL);
+    }
+
+    public static Pair<Double, Double> getSweetspotForBuildModel() {
+        return getSweetspotForBuildModel(Build.MODEL);
+    }
+
+    public static Pair<Double, Double> getSweetspotForBuildModel(String buildModel) {
+        return SWEETSPOT_DATA.get(buildModel);
     }
 }

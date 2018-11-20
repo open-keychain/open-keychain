@@ -56,6 +56,7 @@ dependencies {
     // libs as submodules
     implementation project(':libkeychain')
     implementation project(':openpgp-api-lib')
+    implementation project(':nfcsweetspot')
     implementation project(':sshauthentication-api')
     implementation project(':extern:bouncycastle:core')
     implementation project(':extern:bouncycastle:pg')

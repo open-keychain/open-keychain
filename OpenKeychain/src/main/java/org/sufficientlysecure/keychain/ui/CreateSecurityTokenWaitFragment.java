@@ -33,6 +33,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 
+import de.cotech.sweetspot.NfcSweetspotData;
+import de.cotech.sweetspot.ShowNfcSweetspotActivity;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
@@ -92,7 +94,7 @@ public class CreateSecurityTokenWaitFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_security_token_wait_fragment, container, false);
 
-        boolean showLocateSweetspot = ShowNfcSweetspotActivity.hasSweetspotData();
+        boolean showLocateSweetspot = NfcSweetspotData.hasSweetspotData();
         View buttonLocateSweetspot = view.findViewById(R.id.button_locate_nfc);
         buttonLocateSweetspot.setVisibility(showLocateSweetspot ? View.VISIBLE : View.GONE);
         buttonLocateSweetspot.setOnClickListener(new OnClickListener() {

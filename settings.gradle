@@ -1,5 +1,6 @@
 include ':OpenKeychain'
 include ':libkeychain'
+include ':nfcsweetspot'
 include ':extern:bouncycastle:core'
 include ':extern:bouncycastle:pg'
 include ':extern:bouncycastle:prov'

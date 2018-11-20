@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Schürmann & Breitmoser GbR
+ * Copyright (C) 2018 Schürmann & Breitmoser GbR
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,30 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui;
+package de.cotech.sweetspot;
 
 
 import android.app.Activity;
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.securitytoken.NfcSweetspotData;
-import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
-import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 
-
-public class ShowNfcSweetspotActivity extends BaseSecurityTokenActivity {
-    public static final String EXTRA_TOKEN_INFO = "token_info";
-
+public class ShowNfcSweetspotActivity extends Activity {
     private View sweetspotIndicator;
     private View sweetspotIcon;
     private View sweetspotCircle1;
@@ -46,15 +35,16 @@ public class ShowNfcSweetspotActivity extends BaseSecurityTokenActivity {
     private View sweetspotCircle3;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    protected void onCreate(Bundle savedInstanceState) {
+        setTheme(android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
         overridePendingTransition(R.anim.fade_in_quick, R.anim.fade_out_quick);
 
-        setContentView(R.layout.show_nfc_sweetspot_activity);
-        sweetspotIndicator = findViewById(R.id.nfc_sweetspot_indicator);
+        super.onCreate(savedInstanceState);
 
-        Pair<Double, Double> nfcPosition = NfcSweetspotData.SWEETSPOT_DATA.get(Build.MODEL);
+        setContentView(R.layout.activity_nfc_sweetspot);
+        sweetspotIndicator = findViewById(R.id.indicator_nfc_sweetspot);
+
+        Pair<Double, Double> nfcPosition = NfcSweetspotData.getSweetspotForBuildModel();
         if (nfcPosition == null) {
             throw new IllegalArgumentException("No data available for this model. This activity should not be called!");
         }
@@ -71,10 +61,10 @@ public class ShowNfcSweetspotActivity extends BaseSecurityTokenActivity {
             }
         });
 
-        sweetspotIcon = findViewById(R.id.nfc_sweetspot_icon);
-        sweetspotCircle1 = findViewById(R.id.nfc_sweetspot_circle_1);
-        sweetspotCircle2 = findViewById(R.id.nfc_sweetspot_circle_2);
-        sweetspotCircle3 = findViewById(R.id.nfc_sweetspot_circle_3);
+        sweetspotIcon = findViewById(R.id.icon_nfc_sweetspot);
+        sweetspotCircle1 = findViewById(R.id.circle_nfc_sweetspot_1);
+        sweetspotCircle2 = findViewById(R.id.circle_nfc_sweetspot_2);
+        sweetspotCircle3 = findViewById(R.id.circle_nfc_sweetspot_3);
 
         sweetspotIcon.setAlpha(0.0f);
         sweetspotCircle1.setAlpha(0.0f);
@@ -94,23 +84,10 @@ public class ShowNfcSweetspotActivity extends BaseSecurityTokenActivity {
     }
 
     @Override
-    protected void initTheme() {
-        // do nothing
-    }
-
-    @Override
     public void finish() {
         super.finish();
 
         overridePendingTransition(R.anim.fade_in_quick, R.anim.fade_out_quick);
-    }
-
-    @Override
-    protected void onSecurityTokenPostExecute(SecurityTokenConnection stConnection) {
-        Intent result = new Intent();
-        result.putExtra(EXTRA_TOKEN_INFO, tokenInfo);
-        setResult(Activity.RESULT_OK, result);
-        finish();
     }
 
     @Override
@@ -124,15 +101,10 @@ public class ShowNfcSweetspotActivity extends BaseSecurityTokenActivity {
         return super.onTouchEvent(event);
     }
 
-    @NonNull
     private DisplayMetrics getDisplaySize() {
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
         return metrics;
-    }
-
-    public static boolean hasSweetspotData() {
-        return NfcSweetspotData.SWEETSPOT_DATA.containsKey(Build.MODEL);
     }
 }
