@@ -15,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.sufficientlysecure.keychain.ui;
+package de.cotech.sweetspot;
 
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Pair;
@@ -27,14 +26,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
-import de.cotech.sweetspot.NfcSweetspotData;
-import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
-import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 
-
-public class ShowNfcSweetspotActivity extends BaseSecurityTokenActivity {
-    public static final String EXTRA_TOKEN_INFO = "token_info";
-
+public class ShowNfcSweetspotActivity extends Activity {
     private View sweetspotIndicator;
     private View sweetspotIcon;
     private View sweetspotCircle1;
@@ -44,12 +37,12 @@ public class ShowNfcSweetspotActivity extends BaseSecurityTokenActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-        overridePendingTransition(de.cotech.sweetspot.R.anim.fade_in_quick, de.cotech.sweetspot.R.anim.fade_out_quick);
+        overridePendingTransition(R.anim.fade_in_quick, R.anim.fade_out_quick);
 
         super.onCreate(savedInstanceState);
 
-        setContentView(de.cotech.sweetspot.R.layout.activity_nfc_sweetspot);
-        sweetspotIndicator = findViewById(de.cotech.sweetspot.R.id.indicator_nfc_sweetspot);
+        setContentView(R.layout.activity_nfc_sweetspot);
+        sweetspotIndicator = findViewById(R.id.indicator_nfc_sweetspot);
 
         Pair<Double, Double> nfcPosition = NfcSweetspotData.getSweetspotForBuildModel();
         if (nfcPosition == null) {
@@ -60,28 +53,23 @@ public class ShowNfcSweetspotActivity extends BaseSecurityTokenActivity {
         final float translationX = (float) (displayDimensions.widthPixels * nfcPosition.first);
         final float translationY = (float) (displayDimensions.heightPixels * nfcPosition.second);
 
-        sweetspotIndicator.post(() -> {
-            sweetspotIndicator.setTranslationX(translationX - sweetspotIndicator.getWidth() / 2);
-            sweetspotIndicator.setTranslationY(translationY - sweetspotIndicator.getHeight() / 2);
+        sweetspotIndicator.post(new Runnable() {
+            @Override
+            public void run() {
+                sweetspotIndicator.setTranslationX(translationX - sweetspotIndicator.getWidth() / 2);
+                sweetspotIndicator.setTranslationY(translationY - sweetspotIndicator.getHeight() / 2);
+            }
         });
 
-        sweetspotIcon = findViewById(de.cotech.sweetspot.R.id.icon_nfc_sweetspot);
-        sweetspotCircle1 = findViewById(de.cotech.sweetspot.R.id.circle_nfc_sweetspot_1);
-        sweetspotCircle2 = findViewById(de.cotech.sweetspot.R.id.circle_nfc_sweetspot_2);
-        sweetspotCircle3 = findViewById(de.cotech.sweetspot.R.id.circle_nfc_sweetspot_3);
+        sweetspotIcon = findViewById(R.id.icon_nfc_sweetspot);
+        sweetspotCircle1 = findViewById(R.id.circle_nfc_sweetspot_1);
+        sweetspotCircle2 = findViewById(R.id.circle_nfc_sweetspot_2);
+        sweetspotCircle3 = findViewById(R.id.circle_nfc_sweetspot_3);
 
         sweetspotIcon.setAlpha(0.0f);
         sweetspotCircle1.setAlpha(0.0f);
         sweetspotCircle2.setAlpha(0.0f);
         sweetspotCircle3.setAlpha(0.0f);
-    }
-
-    @Override
-    protected void onSecurityTokenPostExecute(SecurityTokenConnection stConnection) {
-        Intent result = new Intent();
-        result.putExtra(EXTRA_TOKEN_INFO, tokenInfo);
-        setResult(Activity.RESULT_OK, result);
-        finish();
     }
 
     @Override
@@ -99,7 +87,7 @@ public class ShowNfcSweetspotActivity extends BaseSecurityTokenActivity {
     public void finish() {
         super.finish();
 
-        overridePendingTransition(de.cotech.sweetspot.R.anim.fade_in_quick, de.cotech.sweetspot.R.anim.fade_out_quick);
+        overridePendingTransition(R.anim.fade_in_quick, R.anim.fade_out_quick);
     }
 
     @Override

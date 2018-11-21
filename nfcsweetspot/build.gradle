@@ -1,0 +1,18 @@
+apply plugin: 'com.android.library'
+
+dependencies {
+}
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion 14
+    }
+
+    // Do not abort build if lint finds errors
+    lintOptions {
+        abortOnError false
+    }
+}
