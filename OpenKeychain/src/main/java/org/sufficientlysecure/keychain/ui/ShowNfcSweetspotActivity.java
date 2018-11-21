@@ -25,6 +25,8 @@ import android.util.DisplayMetrics;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 
 import de.cotech.sweetspot.NfcSweetspotData;
@@ -43,7 +45,8 @@ public class ShowNfcSweetspotActivity extends BaseSecurityTokenActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         overridePendingTransition(de.cotech.sweetspot.R.anim.fade_in_quick, de.cotech.sweetspot.R.anim.fade_out_quick);
 
         super.onCreate(savedInstanceState);
