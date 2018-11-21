@@ -108,7 +108,7 @@ class OpenPgpServiceKeyIdExtractor {
         HashSet<Long> keyIds = new HashSet<>();
         ArrayList<String> missingEmails = new ArrayList<>();
         ArrayList<String> duplicateEmails = new ArrayList<>();
-        int combinedAutocryptState = AutocryptStatus.AUTOCRYPT_PEER_DISABLED;
+        Integer combinedAutocryptState = null;
 
         if (hasAddresses) {
             HashMap<String, AddressQueryResult> userIdEntries = getStatusMapForQueriedAddresses(
@@ -128,8 +128,12 @@ class OpenPgpServiceKeyIdExtractor {
                         anyKeyNotVerified = true;
                     }
 
-                    combinedAutocryptState = combineAutocryptState(
-                            combinedAutocryptState, addressQueryResult.autocryptState);
+                    if (combinedAutocryptState == null) {
+                        combinedAutocryptState = addressQueryResult.autocryptState;
+                    } else {
+                        combinedAutocryptState = combineAutocryptState(
+                                combinedAutocryptState, addressQueryResult.autocryptState);
+                    }
 
                     continue;
                 }
