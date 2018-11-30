@@ -104,7 +104,7 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
             if (keyInfoLiveData == null) {
                 keyInfoLiveData = new GenericLiveData<>(context, () -> {
                     KeyRepository keyRepository = KeyRepository.create(context);
-                    return keyRepository.getAllUnifiedKeyInfoWithSecret();
+                    return keyRepository.getAllUnifiedKeyInfoWithAuthKeySecret();
                 });
             }
             return keyInfoLiveData;

@@ -92,6 +92,11 @@ SELECT * FROM unifiedKeyView
     WHERE has_any_secret_int = 1
    ORDER BY creation DESC;
 
+selectAllUnifiedKeyInfoWithAuthKeySecret:
+SELECT * FROM unifiedKeyView
+    WHERE has_any_secret_int = 1 AND has_auth_key_int IS NOT NULL
+   ORDER BY creation DESC;
+
 selectMasterKeyIdBySubkey:
 SELECT master_key_id
     FROM keys

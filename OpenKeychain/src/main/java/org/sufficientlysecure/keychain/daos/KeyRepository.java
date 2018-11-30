@@ -164,6 +164,11 @@ public class KeyRepository extends AbstractDao {
         return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER);
     }
 
+    public List<UnifiedKeyInfo> getAllUnifiedKeyInfoWithAuthKeySecret() {
+        SqlDelightQuery query = SubKey.FACTORY.selectAllUnifiedKeyInfoWithAuthKeySecret();
+        return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER);
+    }
+
     public List<UserId> getUserIds(long... masterKeyIds) {
         SqlDelightQuery query = UserPacket.FACTORY.selectUserIdsByMasterKeyId(masterKeyIds);
         return mapAllRows(query, UserPacket.USER_ID_MAPPER);
