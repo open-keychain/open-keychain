@@ -108,6 +108,8 @@ public class ApiAppsLiveData extends AsyncTaskLiveData<List<ListedApp>> {
             new ListedApp("com.fsck.k9", false, false, "K-9 Mail", null, R.drawable.apps_k9),
             new ListedApp("com.zeapo.pwdstore", false, false, "Password Store", null, R.drawable.apps_password_store),
             new ListedApp("eu.siacs.conversations", false, false, "Conversations (Instant Messaging)", null,
-                    R.drawable.apps_conversations)
+                    R.drawable.apps_conversations),
+            new ListedApp("io.oversec.one", false, false, "Oversec (Universal Encryption)", null,
+                    R.drawable.apps_oversec)
     };
 }
