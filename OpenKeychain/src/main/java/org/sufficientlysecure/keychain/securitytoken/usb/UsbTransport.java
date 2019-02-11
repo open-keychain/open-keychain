@@ -56,10 +56,10 @@ public class UsbTransport implements Transport {
     private static final int PRODUCT_YUBIKEY_NEO_CCID = 274;
     private static final int PRODUCT_YUBIKEY_NEO_U2F_CCID = 277;
     private static final int PRODUCT_YUBIKEY_NEO_OTP_U2F_CCID = 278;
-    private static final int PRODUCT_YUBIKEY_4_CCID = 1028;
-    private static final int PRODUCT_YUBIKEY_4_OTP_CCID = 1029;
-    private static final int PRODUCT_YUBIKEY_4_U2F_CCID = 1030;
-    private static final int PRODUCT_YUBIKEY_4_OTP_U2F_CCID = 1031;
+    private static final int PRODUCT_YUBIKEY_4_5_CCID = 1028;
+    private static final int PRODUCT_YUBIKEY_4_5_OTP_CCID = 1029;
+    private static final int PRODUCT_YUBIKEY_4_5_FIDO_CCID = 1030;
+    private static final int PRODUCT_YUBIKEY_4_5_OTP_FIDO_CCID = 1031;
 
     // https://www.nitrokey.com/de/documentation/installation#p:nitrokey-pro&os:linux
     private static final int VENDOR_NITROKEY = 8352;
@@ -226,11 +226,11 @@ public class UsbTransport implements Transport {
                     case PRODUCT_YUBIKEY_NEO_U2F_CCID:
                     case PRODUCT_YUBIKEY_NEO_OTP_U2F_CCID:
                         return TokenType.YUBIKEY_NEO;
-                    case PRODUCT_YUBIKEY_4_CCID:
-                    case PRODUCT_YUBIKEY_4_OTP_CCID:
-                    case PRODUCT_YUBIKEY_4_U2F_CCID:
-                    case PRODUCT_YUBIKEY_4_OTP_U2F_CCID:
-                        return TokenType.YUBIKEY_4;
+                    case PRODUCT_YUBIKEY_4_5_CCID:
+                    case PRODUCT_YUBIKEY_4_5_OTP_CCID:
+                    case PRODUCT_YUBIKEY_4_5_FIDO_CCID:
+                    case PRODUCT_YUBIKEY_4_5_OTP_FIDO_CCID:
+                        return TokenType.YUBIKEY_4_5;
                 }
                 break;
             }

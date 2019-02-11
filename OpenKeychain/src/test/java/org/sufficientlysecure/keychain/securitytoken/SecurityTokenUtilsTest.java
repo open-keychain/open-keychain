@@ -171,7 +171,7 @@ public class SecurityTokenUtilsTest extends Mockito {
         Assert.assertEquals(capabilities.hasLifeCycleManagement(), true);
 
         // Yk 4
-        capabilities = new CardCapabilities(Hex.decode("0073000080059000"), TokenType.YUBIKEY_4);
+        capabilities = new CardCapabilities(Hex.decode("0073000080059000"), TokenType.YUBIKEY_4_5);
         Assert.assertEquals(capabilities.hasChaining(), true);
         Assert.assertEquals(capabilities.hasExtended(), false);
         Assert.assertEquals(capabilities.hasLifeCycleManagement(), true);
