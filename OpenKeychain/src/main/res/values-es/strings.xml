@@ -1853,7 +1853,7 @@
   <string name="label_usb_untested_summary">Si se habilita, se pueden usar lectores de smartcard USB que no han sido adecuadamente testados.</string>
   <string name="label_usb_untested">Permitir dispositivos USB no testados</string>
   <string name="use_key">Usar clave: %s</string>
-  <string name="use_key_no_name">Usar clave: <![CDATA[]]></string>
+  <string name="use_key_no_name">Usar clave: <![CDATA[<no name>]]></string>
   <string name="title_select_key">%s quiere configurar el cifrado de extremo a extremo para esta dirección:</string>
   <string name="select_identity_cancel">Deshabilitar</string>
   <string name="select_identity_create">Crear clave para mi</string>
