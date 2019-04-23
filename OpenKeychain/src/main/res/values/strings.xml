@@ -860,6 +860,7 @@
     <string name="my_keys">"My Keys"</string>
     <string name="nav_backup">"Backup/Restore"</string>
     <string name="nav_transfer">"Secure Wifi Transfer"</string>
+    <string name="nav_shop">Shop</string>
 
     <!-- hints -->
     <string name="encrypt_content_edit_text_hint">"Type text"</string>
@@ -1997,4 +1998,6 @@
     <string name="subkey_action_expiry_date">Expiry will change to %s</string>
     <string name="share_key_clipboard">Share key via clipboard</string>
     <string name="share_key">Share key</string>
+
+    <string name="shop_loading_label">Loading shop...</string>
 </resources>
