@@ -471,8 +471,9 @@ public class Preferences {
                 case 7: {
                     addOnionToSks();
                 }
-                case 8: {
-                    replaceDefaultKeyserverWithUbuntu();
+                case 8:
+                case 9: {
+                    replaceDefaultKeyserverWithKeysOpenPgpOrg();
                 }
             }
 
@@ -531,19 +532,22 @@ public class Preferences {
         setKeyServers(servers);
     }
 
-    private void replaceDefaultKeyserverWithUbuntu() {
+    private void replaceDefaultKeyserverWithKeysOpenPgpOrg() {
         ArrayList<HkpKeyserverAddress> servers = getKeyServers();
         if (servers.isEmpty()) {
             return;
         }
-        boolean oldDefaults = "hkps://hkps.pool.sks-keyservers.net".equalsIgnoreCase(servers.get(0).getUrl()) ||
-                "hkps://pgp.mit.edu".equalsIgnoreCase(servers.get(0).getUrl());
+        String currentKeyserverUri = servers.get(0).getUrl();
+        boolean oldDefaults = "hkps://keyserver.ubuntu.com".equalsIgnoreCase(currentKeyserverUri) ||
+                "hkps://hkps.pool.sks-keyservers.net".equalsIgnoreCase(currentKeyserverUri) ||
+                "hkps://pgp.mit.edu".equalsIgnoreCase(currentKeyserverUri);
 
-        HkpKeyserverAddress ubuntuKeyserver = HkpKeyserverAddress.createFromUri("hkps://keyserver.ubuntu.com");
+        HkpKeyserverAddress keysOpenPgpOrgKeyserver = HkpKeyserverAddress.createWithOnionProxy(
+                "hkps://keys.openpgp.org", "zkaan2xfbuxia2wpf7ofnkbz6r5zdbbvxbunvp5g2iebopbfc4iqmbad.onion");
         if (oldDefaults) {
-            servers.add(0, ubuntuKeyserver);
-        } else if (!servers.contains(ubuntuKeyserver)) {
-            servers.add(ubuntuKeyserver);
+            servers.add(0, keysOpenPgpOrgKeyserver);
+        } else if (!servers.contains(keysOpenPgpOrgKeyserver)) {
+            servers.add(keysOpenPgpOrgKeyserver);
         }
         setKeyServers(servers);
     }
