@@ -15,7 +15,6 @@
     <string name="title_add_subkey">"Add subkey"</string>
     <string name="title_change_master_key">Change master key</string>
     <string name="title_edit_key">"Edit Key"</string>
-    <string name="title_linked_create">"Create a Linked Identity"</string>
     <string name="title_preferences">"Settings"</string>
     <string name="title_api_registered_apps">"Apps"</string>
     <string name="title_key_server_preference">"OpenPGP keyservers"</string>
@@ -233,8 +232,6 @@
     <string name="label_experimental_settings_desc_title">"Warning"</string>
     <string name="label_experimental_settings_desc_summary">"These features are not yet finished or results of user experience/security research. Thus, don't rely on their security and please don't report issues you encounter!"</string>
 
-    <string name="label_experimental_settings_linked_identities_title">"Linked Identities"</string>
-    <string name="label_experimental_settings_linked_identities_summary">"Link keys to Twitter, GitHub, websites or DNS (similar to keybase.io but decentralized)"</string>
     <string name="label_experimental_settings_keybase_title">"Keybase.io proofs"</string>
     <string name="label_experimental_settings_keybase_summary">"Contact keybase.io for key proofs and show them every time a key is displayed"</string>
     <string name="label_experimental_settings_theme_summary">"(The icons and many screens are not yet adjusted accordingly for the dark theme)"</string>
@@ -1393,28 +1390,6 @@
     <string name="msg_revoke_key_fail">"Failed revoking key"</string>
     <string name="msg_revoke_ok">"Successfully revoked key"</string>
 
-    <!-- Linked Identity verification -->
-    <string name="msg_lv">"Verifying linked identity…"</string>
-    <string name="msg_lv_match">"Searching for token"</string>
-    <string name="msg_lv_match_error">"No token found in resource!"</string>
-    <string name="msg_lv_fp_ok">"Fingerprint OK."</string>
-    <string name="msg_lv_fp_error">"Fingerprint mismatch!"</string>
-
-    <string name="msg_lv_error_twitter_auth">"Error obtaining Twitter auth token!"</string>
-    <string name="msg_lv_error_twitter_handle">"Twitter account handle mismatch in response!"</string>
-    <string name="msg_lv_error_twitter_response">"Unexpected response from Twitter API!"</string>
-    <string name="msg_lv_error_github_handle">"GitHub account handle mismatch in response!"</string>
-    <string name="msg_lv_error_github_not_found">"Gist contains no matching files!"</string>
-
-    <string name="msg_lv_fetch">"Fetching URI '%s'"</string>
-    <string name="msg_lv_fetch_redir">"Following redirect to '%s'"</string>
-    <string name="msg_lv_fetch_ok">"Successfully fetched (HTTP %s)"</string>
-    <string name="msg_lv_fetch_error">"Server error (HTTP %s)"</string>
-    <string name="msg_lv_fetch_error_url">"URL is malformed!"</string>
-    <string name="msg_lv_fetch_error_io">"IO Error!"</string>
-    <string name="msg_lv_fetch_error_format">"Format error!"</string>
-    <string name="msg_lv_fetch_error_nothing">"Resource not found!"</string>
-
     <string name="msg_bench">"Benchmarking some operations…"</string>
     <string name="msg_bench_enc_time">"Encryption time: %ss"</string>
     <string name="msg_bench_enc_time_avg">"Average time to encrypt 5MB: %ss"</string>
@@ -1646,11 +1621,6 @@
     <string name="error_scan_fp">"Error scanning fingerprint!"</string>
     <string name="error_scan_match">"Fingerprints did not match!"</string>
     <string name="error_expiry_past">"Expiry date is in the past!"</string>
-
-    <plurals name="linked_id_expand">
-        <item quantity="one">"There is one more unknown identity type"</item>
-        <item quantity="other">"There are %d more unknown identity types"</item>
-    </plurals>
 
     <!-- Other Linked Identity strings -->
     <string name="btn_finish">"Finish"</string>
