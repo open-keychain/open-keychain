@@ -48,7 +48,7 @@ import timber.log.Timber;
  */
 public class KeychainDatabase {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 33;
+    private static final int DATABASE_VERSION = 34;
     private final SupportSQLiteOpenHelper supportSQLiteOpenHelper;
 
     private static KeychainDatabase sInstance;
@@ -282,44 +282,38 @@ public class KeychainDatabase {
                         + ")");
 
             case 24: {
-                try {
-                    db.beginTransaction();
-                    db.execSQL("ALTER TABLE api_autocrypt_peers RENAME TO tmp");
-                    db.execSQL("CREATE TABLE api_autocrypt_peers ("
-                            + "package_name TEXT NOT NULL, "
-                            + "identifier TEXT NOT NULL, "
-                            + "last_seen INTEGER, "
-                            + "last_seen_key INTEGER, "
-                            + "is_mutual INTEGER, "
-                            + "master_key_id INTEGER, "
-                            + "gossip_master_key_id INTEGER, "
-                            + "gossip_last_seen_key INTEGER, "
-                            + "gossip_origin INTEGER, "
-                            + "PRIMARY KEY(package_name, identifier), "
-                            + "FOREIGN KEY(package_name) REFERENCES api_apps (package_name) ON DELETE CASCADE"
-                            + ")");
-                    // Note: Keys from Autocrypt 0.X with state == "reset" (0) are dropped
-                    db.execSQL("INSERT INTO api_autocrypt_peers " +
-                            "(package_name, identifier, last_seen, gossip_last_seen_key, gossip_master_key_id, gossip_origin) " +
-                            "SELECT package_name, identifier, last_updated, last_seen_key, master_key_id, 0 " +
-                            "FROM tmp WHERE state = 1"); // Autocrypt 0.X, "gossip" -> now origin=autocrypt
-                    db.execSQL("INSERT INTO api_autocrypt_peers " +
-                            "(package_name, identifier, last_seen, gossip_last_seen_key, gossip_master_key_id, gossip_origin) " +
-                            "SELECT package_name, identifier, last_updated, last_seen_key, master_key_id, 20 " +
-                            "FROM tmp WHERE state = 2"); // "selected" keys -> now origin=dedup
-                    db.execSQL("INSERT INTO api_autocrypt_peers " +
-                            "(package_name, identifier, last_seen, last_seen_key, master_key_id, is_mutual) " +
-                            "SELECT package_name, identifier, last_updated, last_seen_key, master_key_id, 0 " +
-                            "FROM tmp WHERE state = 3"); // Autocrypt 0.X, state = "available"
-                    db.execSQL("INSERT INTO api_autocrypt_peers " +
-                            "(package_name, identifier, last_seen, last_seen_key, master_key_id, is_mutual) " +
-                            "SELECT package_name, identifier, last_updated, last_seen_key, master_key_id, 1 " +
-                            "FROM tmp WHERE state = 4"); // from Autocrypt 0.X, state = "mutual"
-                    db.execSQL("DROP TABLE tmp");
-                    db.setTransactionSuccessful();
-                } finally {
-                    db.endTransaction();
-                }
+                db.execSQL("ALTER TABLE api_autocrypt_peers RENAME TO tmp");
+                db.execSQL("CREATE TABLE api_autocrypt_peers ("
+                        + "package_name TEXT NOT NULL, "
+                        + "identifier TEXT NOT NULL, "
+                        + "last_seen INTEGER, "
+                        + "last_seen_key INTEGER, "
+                        + "is_mutual INTEGER, "
+                        + "master_key_id INTEGER, "
+                        + "gossip_master_key_id INTEGER, "
+                        + "gossip_last_seen_key INTEGER, "
+                        + "gossip_origin INTEGER, "
+                        + "PRIMARY KEY(package_name, identifier), "
+                        + "FOREIGN KEY(package_name) REFERENCES api_apps (package_name) ON DELETE CASCADE"
+                        + ")");
+                // Note: Keys from Autocrypt 0.X with state == "reset" (0) are dropped
+                db.execSQL("INSERT INTO api_autocrypt_peers " +
+                        "(package_name, identifier, last_seen, gossip_last_seen_key, gossip_master_key_id, gossip_origin) " +
+                        "SELECT package_name, identifier, last_updated, last_seen_key, master_key_id, 0 " +
+                        "FROM tmp WHERE state = 1"); // Autocrypt 0.X, "gossip" -> now origin=autocrypt
+                db.execSQL("INSERT INTO api_autocrypt_peers " +
+                        "(package_name, identifier, last_seen, gossip_last_seen_key, gossip_master_key_id, gossip_origin) " +
+                        "SELECT package_name, identifier, last_updated, last_seen_key, master_key_id, 20 " +
+                        "FROM tmp WHERE state = 2"); // "selected" keys -> now origin=dedup
+                db.execSQL("INSERT INTO api_autocrypt_peers " +
+                        "(package_name, identifier, last_seen, last_seen_key, master_key_id, is_mutual) " +
+                        "SELECT package_name, identifier, last_updated, last_seen_key, master_key_id, 0 " +
+                        "FROM tmp WHERE state = 3"); // Autocrypt 0.X, state = "available"
+                db.execSQL("INSERT INTO api_autocrypt_peers " +
+                        "(package_name, identifier, last_seen, last_seen_key, master_key_id, is_mutual) " +
+                        "SELECT package_name, identifier, last_updated, last_seen_key, master_key_id, 1 " +
+                        "FROM tmp WHERE state = 4"); // from Autocrypt 0.X, state = "mutual"
+                db.execSQL("DROP TABLE tmp");
 
                 db.execSQL("CREATE INDEX IF NOT EXISTS uids_by_email ON user_packets (email);");
                 db.execSQL("DROP INDEX keys_by_rank");
@@ -355,46 +349,43 @@ public class KeychainDatabase {
 
             case 32:
                 recreateUnifiedKeyView(db);
+
+            case 33:
+                dropKeyMetadataForeignKey(db);
         }
     }
 
     private void addSubkeyValidFromField(SupportSQLiteDatabase db) {
         try {
-            db.beginTransaction();
             db.execSQL("ALTER TABLE keys ADD COLUMN validFrom INTEGER NOT NULL DEFAULT 0;");
             db.execSQL("UPDATE keys SET validFrom = creation");
-            db.setTransactionSuccessful();
         } catch (SQLiteException e) {
             // column probably already existed, nvm this
-            if (!Constants.DEBUG) {
-                throw e;
-            }
-        } finally {
-            db.endTransaction();
         }
     }
 
     private void recreateUnifiedKeyView(SupportSQLiteDatabase db) {
-        try {
-            db.beginTransaction();
+        // noinspection deprecation
+        db.execSQL("DROP VIEW IF EXISTS " + KeysModel.UNIFIEDKEYVIEW_VIEW_NAME);
+        db.execSQL(KeysModel.UNIFIEDKEYVIEW);
+        // noinspection deprecation
+        db.execSQL("DROP VIEW IF EXISTS " + KeysModel.VALIDKEYS_VIEW_NAME);
+        db.execSQL(KeysModel.VALIDKEYSVIEW);
+        // noinspection deprecation
+        db.execSQL("DROP VIEW IF EXISTS " + KeysModel.VALIDMASTERKEYS_VIEW_NAME);
+        db.execSQL(KeysModel.VALIDMASTERKEYSVIEW);
+        // noinspection deprecation
+        db.execSQL("DROP VIEW IF EXISTS " + UserPacketsModel.UIDSTATUS_VIEW_NAME);
+        db.execSQL(UserPacketsModel.UIDSTATUS);
+    }
 
-            // noinspection deprecation
-            db.execSQL("DROP VIEW IF EXISTS " + KeysModel.UNIFIEDKEYVIEW_VIEW_NAME);
-            db.execSQL(KeysModel.UNIFIEDKEYVIEW);
-            // noinspection deprecation
-            db.execSQL("DROP VIEW IF EXISTS " + KeysModel.VALIDKEYS_VIEW_NAME);
-            db.execSQL(KeysModel.VALIDKEYSVIEW);
-            // noinspection deprecation
-            db.execSQL("DROP VIEW IF EXISTS " + KeysModel.VALIDMASTERKEYS_VIEW_NAME);
-            db.execSQL(KeysModel.VALIDMASTERKEYSVIEW);
-            // noinspection deprecation
-            db.execSQL("DROP VIEW IF EXISTS " + UserPacketsModel.UIDSTATUS_VIEW_NAME);
-            db.execSQL(UserPacketsModel.UIDSTATUS);
-
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
+    private void dropKeyMetadataForeignKey(SupportSQLiteDatabase db) {
+        // noinspection deprecation
+        db.execSQL("ALTER TABLE " + KeyMetadataModel.TABLE_NAME + " RENAME TO metadata_tmp");
+        db.execSQL(KeyMetadataModel.CREATE_TABLE);
+        // noinspection deprecation
+        db.execSQL("INSERT INTO " + KeyMetadataModel.TABLE_NAME + " SELECT * FROM metadata_tmp");
+        db.execSQL("DROP TABLE metadata_tmp");
     }
 
     private void migrateSecretKeysFromDbToLocalStorage(SupportSQLiteDatabase db, Context context) throws IOException {
