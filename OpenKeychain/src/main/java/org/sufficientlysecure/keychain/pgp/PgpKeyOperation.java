@@ -1161,7 +1161,7 @@ public class PgpKeyOperation {
     }
 
     @Nullable
-    private PBESecretKeyEncryptor buildKeyEncryptorFromPassphrase(Passphrase passphrase) throws PGPException {
+    private static PBESecretKeyEncryptor buildKeyEncryptorFromPassphrase(Passphrase passphrase) throws PGPException {
         if (passphrase == null || passphrase.isEmpty()) {
             return null;
         }
@@ -1344,19 +1344,11 @@ public class PgpKeyOperation {
             Passphrase newPassphrase,
             OperationLog log, int indent) throws PGPException {
 
-        PGPDigestCalculator encryptorHashCalc = new JcaPGPDigestCalculatorProviderBuilder().build()
-                .get(PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_HASH_ALGO);
         PBESecretKeyDecryptor keyDecryptor = new JcePBESecretKeyDecryptorBuilder().setProvider(
                 Constants.BOUNCY_CASTLE_PROVIDER_NAME).build(passphrase.getCharArray());
         // Build key encryptor based on new passphrase
-        PBESecretKeyEncryptor keyEncryptorNew = null;
-        if (newPassphrase != null && !newPassphrase.isEmpty()) {
-            keyEncryptorNew = new JcePBESecretKeyEncryptorBuilder(
-                    PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO, encryptorHashCalc,
-                    PgpSecurityConstants.SECRET_KEY_ENCRYPTOR_S2K_COUNT)
-                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME)
-                    .build(newPassphrase.getCharArray());
-        }
+        PBESecretKeyEncryptor keyEncryptor = buildKeyEncryptorFromPassphrase(newPassphrase);
+
         boolean keysModified = false;
 
         for (PGPSecretKey sKey : new IterableIterator<>(sKR.getSecretKeys())) {
@@ -1367,7 +1359,7 @@ public class PgpKeyOperation {
 
             try {
                 // try to set new passphrase
-                sKey = PGPSecretKey.copyWithNewPassword(sKey, keyDecryptor, keyEncryptorNew);
+                sKey = PGPSecretKey.copyWithNewPassword(sKey, keyDecryptor, keyEncryptor);
                 ok = true;
             } catch (PGPException e) {
 
@@ -1384,7 +1376,7 @@ public class PgpKeyOperation {
                     PBESecretKeyDecryptor emptyDecryptor =
                             new JcePBESecretKeyDecryptorBuilder().setProvider(
                                     Constants.BOUNCY_CASTLE_PROVIDER_NAME).build("".toCharArray());
-                    sKey = PGPSecretKey.copyWithNewPassword(sKey, emptyDecryptor, keyEncryptorNew);
+                    sKey = PGPSecretKey.copyWithNewPassword(sKey, emptyDecryptor, keyEncryptor);
                     ok = true;
                 } catch (PGPException e2) {
                     // non-fatal but not ok, handled below
