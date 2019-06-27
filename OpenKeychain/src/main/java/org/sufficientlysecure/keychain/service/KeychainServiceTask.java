@@ -165,7 +165,7 @@ public class KeychainServiceTask {
                         operationCallback.operationFinished(result);
                     }
                 };
-        asyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        asyncTask.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
 
         CancellationSignal cancellationSignal = new CancellationSignal();
         cancellationSignal.setOnCancelListener(() -> {

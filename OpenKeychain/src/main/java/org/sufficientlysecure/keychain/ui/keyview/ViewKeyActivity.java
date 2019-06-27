@@ -110,8 +110,7 @@ import org.sufficientlysecure.keychain.util.ShareKeyHelper;
 import timber.log.Timber;
 
 
-public class ViewKeyActivity extends BaseSecurityTokenActivity implements
-        CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> {
+public class ViewKeyActivity extends BaseSecurityTokenActivity {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({REQUEST_QR_FINGERPRINT, REQUEST_BACKUP, REQUEST_CERTIFY, REQUEST_DELETE})
     private @interface RequestType {
@@ -169,7 +168,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         super.onCreate(savedInstanceState);
 
         keyRepository = KeyRepository.create(this);
-        importOpHelper = new CryptoOperationHelper<>(1, this, this, null);
+        importOpHelper = new CryptoOperationHelper<>(1, this, importKeyCallback, null);
+        editOpHelper = new CryptoOperationHelper<>(2, this, editKeyCallback, null);
 
         setTitle(null);
 
@@ -380,38 +380,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
     }
 
     private void changePassword() {
-        CryptoOperationHelper.Callback<ChangeUnlockParcel, EditKeyResult> editKeyCallback
-                = new CryptoOperationHelper.Callback<ChangeUnlockParcel, EditKeyResult>() {
-            @Override
-            public ChangeUnlockParcel createOperationInput() {
-                return changeUnlockParcel;
-            }
-
-            @Override
-            public void onCryptoOperationSuccess(EditKeyResult result) {
-                displayResult(result);
-                long masterKeyId = unifiedKeyInfo.master_key_id();
-                PassphraseCacheService.clearCachedPassphrase(getApplicationContext(), masterKeyId, masterKeyId);
-            }
-
-            @Override
-            public void onCryptoOperationCancelled() {
-
-            }
-
-            @Override
-            public void onCryptoOperationError(EditKeyResult result) {
-                displayResult(result);
-            }
-
-            @Override
-            public boolean onCryptoSetProgress(String msg, int progress, int max) {
-                return false;
-            }
-        };
-
-        editOpHelper = new CryptoOperationHelper<>(2, this, editKeyCallback, R.string.progress_building_key);
-
         // Message is received after passphrase is cached
         Handler returnHandler = new Handler() {
             @Override
@@ -540,8 +508,8 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         if (importOpHelper.handleActivityResult(requestCode, resultCode, data)) {
             return;
         }
-        if (editOpHelper != null) {
-            editOpHelper.handleActivityResult(requestCode, resultCode, data);
+        if (editOpHelper.handleActivityResult(requestCode, resultCode, data)) {
+            return;
         }
 
         if (resultCode != Activity.RESULT_OK) {
@@ -897,36 +865,70 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity implements
         importOpHelper.cryptoOperation();
     }
 
-    @Override
-    public ImportKeyringParcel createOperationInput() {
-        HkpKeyserverAddress preferredKeyserver = Preferences.getPreferences(this).getPreferredKeyserver();
+    CryptoOperationHelper.Callback<ChangeUnlockParcel, EditKeyResult> editKeyCallback
+            = new CryptoOperationHelper.Callback<ChangeUnlockParcel, EditKeyResult>() {
+        @Override
+        public ChangeUnlockParcel createOperationInput() {
+            return changeUnlockParcel;
+        }
 
-        ParcelableKeyRing keyEntry = ParcelableKeyRing.createFromReference(unifiedKeyInfo.fingerprint(), null, null, null);
+        @Override
+        public void onCryptoOperationSuccess(EditKeyResult result) {
+            displayResult(result);
+            long masterKeyId = unifiedKeyInfo.master_key_id();
+            PassphraseCacheService.clearCachedPassphrase(getApplicationContext(), masterKeyId, masterKeyId);
+        }
 
-        return ImportKeyringParcel.createImportKeyringParcel(Collections.singletonList(keyEntry), preferredKeyserver);
-    }
+        @Override
+        public void onCryptoOperationCancelled() {
 
-    @Override
-    public void onCryptoOperationSuccess(ImportKeyResult result) {
-        isRefreshing = false;
-        result.createNotify(this).show();
-    }
+        }
 
-    @Override
-    public void onCryptoOperationCancelled() {
-        isRefreshing = false;
-    }
+        @Override
+        public void onCryptoOperationError(EditKeyResult result) {
+            displayResult(result);
+        }
 
-    @Override
-    public void onCryptoOperationError(ImportKeyResult result) {
-        isRefreshing = false;
-        result.createNotify(this).show();
-    }
+        @Override
+        public boolean onCryptoSetProgress(String msg, int progress, int max) {
+            return true;
+        }
+    };
 
-    @Override
-    public boolean onCryptoSetProgress(String msg, int progress, int max) {
-        return true;
-    }
+    CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult> importKeyCallback
+            = new CryptoOperationHelper.Callback<ImportKeyringParcel, ImportKeyResult>() {
+        @Override
+        public ImportKeyringParcel createOperationInput() {
+            HkpKeyserverAddress preferredKeyserver = Preferences.getPreferences(getApplicationContext()).getPreferredKeyserver();
 
+            ParcelableKeyRing keyEntry =
+                    ParcelableKeyRing.createFromReference(unifiedKeyInfo.fingerprint(), null, null, null);
+
+            return ImportKeyringParcel
+                    .createImportKeyringParcel(Collections.singletonList(keyEntry), preferredKeyserver);
+        }
+
+        @Override
+        public void onCryptoOperationSuccess(ImportKeyResult result) {
+            isRefreshing = false;
+            displayResult(result);
+        }
+
+        @Override
+        public void onCryptoOperationCancelled() {
+            isRefreshing = false;
+        }
+
+        @Override
+        public void onCryptoOperationError(ImportKeyResult result) {
+            isRefreshing = false;
+            displayResult(result);
+        }
+
+        @Override
+        public boolean onCryptoSetProgress(String msg, int progress, int max) {
+            return true;
+        }
+    };
 }
 
