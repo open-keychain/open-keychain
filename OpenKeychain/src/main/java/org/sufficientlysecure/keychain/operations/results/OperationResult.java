@@ -859,27 +859,6 @@ public abstract class OperationResult implements Parcelable {
         MSG_DATA_OK (LogLevel.OK, R.string.msg_data_ok),
         MSG_DATA_SKIP_MIME (LogLevel.DEBUG, R.string.msg_data_skip_mime),
 
-        MSG_LV (LogLevel.START, R.string.msg_lv),
-        MSG_LV_MATCH (LogLevel.DEBUG, R.string.msg_lv_match),
-        MSG_LV_MATCH_ERROR (LogLevel.ERROR, R.string.msg_lv_match_error),
-        MSG_LV_FP_OK (LogLevel.DEBUG, R.string.msg_lv_fp_ok),
-        MSG_LV_FP_ERROR (LogLevel.ERROR, R.string.msg_lv_fp_error),
-
-        MSG_LV_ERROR_TWITTER_AUTH (LogLevel.ERROR, R.string.msg_lv_error_twitter_auth),
-        MSG_LV_ERROR_TWITTER_HANDLE (LogLevel.ERROR, R.string.msg_lv_error_twitter_handle),
-        MSG_LV_ERROR_TWITTER_RESPONSE (LogLevel.ERROR, R.string.msg_lv_error_twitter_response),
-        MSG_LV_ERROR_GITHUB_HANDLE (LogLevel.ERROR, R.string.msg_lv_error_github_handle),
-        MSG_LV_ERROR_GITHUB_NOT_FOUND (LogLevel.ERROR, R.string.msg_lv_error_github_not_found),
-
-        MSG_LV_FETCH (LogLevel.DEBUG, R.string.msg_lv_fetch),
-        MSG_LV_FETCH_REDIR (LogLevel.DEBUG, R.string.msg_lv_fetch_redir),
-        MSG_LV_FETCH_OK (LogLevel.DEBUG, R.string.msg_lv_fetch_ok),
-        MSG_LV_FETCH_ERROR (LogLevel.ERROR, R.string.msg_lv_fetch_error),
-        MSG_LV_FETCH_ERROR_URL (LogLevel.ERROR, R.string.msg_lv_fetch_error_url),
-        MSG_LV_FETCH_ERROR_IO (LogLevel.ERROR, R.string.msg_lv_fetch_error_io),
-        MSG_LV_FETCH_ERROR_FORMAT(LogLevel.ERROR, R.string.msg_lv_fetch_error_format),
-        MSG_LV_FETCH_ERROR_NOTHING (LogLevel.ERROR, R.string.msg_lv_fetch_error_nothing),
-
         MSG_BENCH (LogLevel.START, R.string.msg_bench),
         MSG_BENCH_ENC_TIME (LogLevel.DEBUG, R.string.msg_bench_enc_time),
         MSG_BENCH_ENC_TIME_AVG (LogLevel.INFO, R.string.msg_bench_enc_time_avg),
