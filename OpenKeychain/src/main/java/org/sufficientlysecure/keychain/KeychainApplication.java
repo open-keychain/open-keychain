@@ -99,10 +99,11 @@ public class KeychainApplication extends Application {
         // Upgrade preferences as needed
         preferences.upgradePreferences();
 
+        TlsCertificatePinning.addPinnedCertificate("keys.openpgp.org", getAssets(), "LetsEncryptCA.cer");
         TlsCertificatePinning.addPinnedCertificate("hkps.pool.sks-keyservers.net", getAssets(), "hkps.pool.sks-keyservers.net.CA.cer");
         TlsCertificatePinning.addPinnedCertificate("pgp.mit.edu", getAssets(), "pgp.mit.edu.cer");
         TlsCertificatePinning.addPinnedCertificate("api.keybase.io", getAssets(), "api.keybase.io.CA.cer");
-        TlsCertificatePinning.addPinnedCertificate("keyserver.ubuntu.com", getAssets(), "DigiCertGlobalRootCA.cer");
+        TlsCertificatePinning.addPinnedCertificate("keyserver.ubuntu.com", getAssets(), "LetsEncryptCA.cer");
 
         KeyserverSyncManager.updateKeyserverSyncScheduleAsync(this, false);
 
