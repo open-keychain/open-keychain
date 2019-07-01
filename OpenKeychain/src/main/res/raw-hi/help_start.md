@@ -1,16 +1,16 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (नोट: कृपया प्रत्येक वाक्य को अपनी पंक्ति में रखें, ट्रांसइफेक्स हर पंक्ति को अपने अनुवाद क्षेत्र में रखता है!)
 
-## How do I activate OpenKeychain in K-9 Mail?
-To use OpenKeychain with K-9 Mail, you want to follow these steps:
-  1. Open K-9 Mail and long-tap on the account you want to use OpenKeychain with.
-  2. Select "Account settings", scroll to the very bottom and click "Cryptography".
-  3. Click on "OpenPGP Provider" and select OpenKeychain from the list.
+## मैं के-9 मेल में ओपेनकीचैन को कैसे सक्रिय करूं?
+के-9 मेल के साथ ओपेनकीचैन का उपयोग करने के लिए, आप इन चरणों का पालन करेंगे:
+  1. के-9 मेल खोलें और उस खाता पर लंबे समय तक दबायें जिसके साथ आप ओपेनकीचैन का उपयोग करना चाहते हैं।
+  2. "खाता सेटिंग" चुनें, बहुत नीचे तक स्क्रॉल करें और "कूटलेखन" पर क्लिक करें।
+  3. "ओपनपीजीपी प्रदाता" पर क्लिक करें और सूची से ओपेनकीचैन का चयन करें।
 
-## I found a bug in OpenKeychain!
-Please report the bug using the [issue tracker of OpenKeychain](https://github.com/openpgp-keychain/openpgp-keychain/issues).
+## मुझे ओपेनकीचैन में एक त्रुटि मिला!
+[ओपेनकीचैन के समस्या सूची] (https://github.com/openpgp-keychain/openpgp-keychain/issues) का उपयोग करके त्रुटि की सूचना दें।
 
-## Contribute
-If you want to help us developing OpenKeychain by contributing code [follow our small guide on Github](https://github.com/openpgp-keychain/openpgp-keychain#contribute-code).
+## योगदान
+यदि आप कोड का योगदान करके हमें ओपेनकीचैन को विकसित करने में मदद करना चाहते हैं [गिटहब पर हमारे छोटे गाइड का अनुसरण करें] (https://github.com/openpgp-keychain/openpgp-keychain#contribute-code)।
 
-## Translations
-Help translating OpenKeychain! Everybody can participate at [OpenKeychain on Transifex](https://www.transifex.com/projects/p/open-keychain/).
+## अनुवाद
+ओपेनकीचैन का अनुवाद करने में मदद करें! हर कोई [ट्रांसिफेक्स पर ओपेनकीचैन] (https://www.transifex.com/projects/p/open-keychain/) में भाग ले सकता है।

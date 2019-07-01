@@ -180,7 +180,6 @@
   <!--label shown in Android settings under the OpenKeychain account-->
   <string name="keyserver_sync_settings_title">تحديثات تلقائية للمفاتيح</string>
   <string name="label_experimental_settings_desc_title">تحذير</string>
-  <string name="label_experimental_settings_linked_identities_title">الهويات المرتبطة</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">فعّل تور</string>
   <string name="pref_proxy_tor_summary">يتطلب نتصيب تطبيق أوربوت</string>
@@ -307,6 +306,7 @@
   <string name="progress_verifying_signature">جارٍ التحقق مِن التوقيع …</string>
   <string name="progress_signing">لتوقيع …</string>
   <string name="progress_reading_data">قراءة البيانات …</string>
+  <string name="progress_verifying_keyserver_connection">جارٍ التحقق مِن الاتصال…</string>
   <string name="progress_starting_orbot">جارٍ تشغيل أوربوت …</string>
   <!--action strings-->
   <!--key bit length selections-->
@@ -496,7 +496,9 @@
   <string name="msg_dc_clear_meta_size_unknown">حجم الملف : مجهول</string>
   <string name="msg_dc_clear_meta_time">تاريخ التعديل : %s</string>
   <string name="msg_dc_clear">معالجة البيانات النصية المُجرّدة</string>
+  <string name="msg_dc_error_no_signature">معطيات التوقيع ناقصة!</string>
   <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl_error_no_signature">معطيات التوقيع ناقصة!</string>
   <string name="msg_vl_clear_meta_file">إسم الملف : %s</string>
   <string name="msg_vl_clear_meta_time">تاريخ التعديل : %s</string>
   <string name="msg_vl_clear_meta_size">حجم الملف : %s</string>
@@ -514,9 +516,9 @@
   <string name="msg_import_fetch_error_not_found">مفتاح غير موجود!</string>
   <string name="msg_backup_error_db">خطأ في قاعدة البيانات !</string>
   <string name="msg_upload">تحميل المفتاح العمومي</string>
+  <string name="msg_upload_server">الخادِم: %s</string>
   <string name="msg_upload_error_not_found">مفتاح غير موجود!</string>
   <string name="msg_upload_success">نجحت عملية الرفع إلى خادم المفاتيح</string>
-  <!--Linked Identity verification-->
   <string name="msg_data_detached_raw">معالجَة البيانات المُوقّعَة</string>
   <string name="msg_data_ok">تمت معالجة البيانات بنجاح</string>
   <string name="msg_get_no_valid_keys">لم يُعثَر على أي مفتاح صحيح سواءا في الملف أو على الحافظة !</string>
@@ -526,6 +528,7 @@
   <!--PassphraseCache-->
   <string name="passp_cache_notif_pwd">كلمة السر</string>
   <!--Keyserver sync-->
+  <string name="keyserver_sync_orbot_notif_msg">انقر لتشغيل تطبيق أوربوت</string>
   <string name="keyserver_sync_orbot_notif_start">بدء تشغيل Orbot</string>
   <!--First Time-->
   <string name="first_time_create_key">أنشئ مفتاحي</string>
@@ -561,27 +564,19 @@
   <string name="nfc_settings">الإعدادات</string>
   <string name="snack_security_token_view">مراجعة</string>
   <string name="snack_security_token_import">إستيراد</string>
+  <string name="security_token_serial_no">الرقم التسلسلي: %s</string>
   <string name="btn_reset">إعادة الضبط</string>
   <string name="security_token_error">خطأ : %s</string>
+  <string name="security_token_error_unknown">خطأ مجهول</string>
+  <string name="security_token_error_try_again">أعد المحاولة</string>
   <string name="btn_delete_original">حذف الملف الأصلي</string>
   <string name="progress_processing">المُعالَجة جارية …</string>
   <string name="file_delete_ok">تمت عملية حذف الملف الأصلي.</string>
   <string name="error_clipboard_empty">الحافظة فارغة !</string>
   <string name="error_clipboard_copy">طرأ خطأ أثناء نسخ البيانات إلى الحافظة !</string>
   <string name="error_clipboard_bad">تعذّرَت قراءة المفاتيح من الحافظة !</string>
-  <string name="linked_create_verify">التحقق</string>
-  <string name="linked_text_clipboard">تم نسخ الملف إلى الحافظة !</string>
   <!--Other Linked Identity strings-->
-  <string name="menu_linked_add_identity">الربط بحساب</string>
-  <string name="section_linked_identities">الهويات المرتبطة</string>
   <string name="btn_finish">نهاية</string>
-  <string name="linked_title_twitter">تويتر</string>
-  <string name="linked_button_verify">التحقق</string>
-  <string name="linked_button_retry">حاول مجددا</string>
-  <string name="linked_button_confirm">تأكيد </string>
-  <string name="linked_button_view">مراجعة</string>
-  <string name="linked_text_error">خطأ</string>
-  <string name="title_linked_id_create">إنشاء هوية مَوْصولة</string>
   <string name="backup_code_explanation">سوف يتم تأمين النسخة الإحتياطية برمز أمان. يُرجى كتابة هذا الرمز في مكان آخَر قبل مُواصلة هذه الخطوة !</string>
   <string name="btn_code_wrotedown">حسنا، لقد قمت بكتابته !</string>
   <string name="btn_backup_back">العودة للتحقق ثانية</string>
@@ -593,6 +588,7 @@
   <string name="title_edit_subkeys">تعديل المفاتيح الفرعية</string>
   <string name="cache_ttl_one_hour">لمدة ساعة</string>
   <string name="cache_ttl_one_day">لمدة يوم</string>
+  <string name="remember">تذكَّر</string>
   <string name="prompt_fidesmo_pgp_install_button_positive">تثبيت</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">إلغاء</string>
   <string name="prompt_fidesmo_app_install_button_positive">تثبيت</string>
@@ -614,6 +610,7 @@
   <string name="key_health_ok_subtitle">المفتاح خال من الأخطاء.</string>
   <string name="key_health_divert_subtitle">المفتاح خال من الأخطاء.</string>
   <string name="key_health_divert_partial_subtitle">إضغط لمعرفة التفاصيل</string>
+  <string name="key_health_expired_title">انقضت صلاحيتها</string>
   <string name="key_health_expired_subtitle">يجب ألاّ يستخدم هذا المفتاح من الآن فصاعدا.</string>
   <string name="key_health_revoked_title">ملغى</string>
   <string name="key_health_insecure_title">غير آمن</string>
@@ -655,13 +652,19 @@
   <string name="token_unlock_ok">إلغاء القفل</string>
   <string name="token_hint_admin_pin">رمز PIN الخاص بالمدير</string>
   <string name="msg_trust_count_none">لا توجد هناك مفاتيح للتحديث</string>
+  <string name="use_key">استخدم مفتاح: %s</string>
   <string name="select_identity_cancel">إلغاء</string>
+  <string name="no_keys_import_title">لديّ مفتاح</string>
   <string name="key_gen_progress">الرجاء الإنتظار </string>
   <string name="key_gen_back">السابق</string>
   <string name="key_gen_finish">نهاية</string>
+  <string name="button_goto_openkeychain">الانتقال إلى أوبن كي تشاين</string>
   <string name="snack_keylist_clipboard_action">الاطلاع</string>
   <string name="notify_title_keysync">تحديث المفاتيح ...</string>
+  <string name="notify_content_keysync">مفتاح %d / %d</string>
   <string name="keylist_header_anonymous">مجهول</string>
   <string name="keylist_header_special">#</string>
+  <string name="button_analytics_no">لا، شكراً</string>
   <string name="snackbutton_analytics_settings">الإعدادات</string>
+  <string name="share_key">شارك المفتاح</string>
 </resources>

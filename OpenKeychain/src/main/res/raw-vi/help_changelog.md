@@ -1,5 +1,8 @@
 [//]: # (CHÚ Ý: Xin hãy để mỗi câu văn bản trên một dòng, Transifex sẽ chuyển từng dòng vào cho từng trường đã được dịch sang các ngôn ngữ!)
 
+## 5.3
+  * Usw keys.openpgp.org as default keyserver
+
 ## 5.2
   * Improved key import from clipboard
 

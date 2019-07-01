@@ -1,5 +1,8 @@
 [//]: # (NOTERING: Var vänlig och sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
 
+## 5.3
+  * Usw keys.openpgp.org as default keyserver
+
 ## 5.2
   * Förbättrad nyckel importera från urklipp
 
@@ -136,7 +139,7 @@
   * Kräver Android 4
   * Omgjort nyckelskärm
   * Förenkla krypteringspreferenser, bättre val av säkra ciffrar
-  * API: Detached signatures, free selection of signing key,...
+  * API: Fristående signaturer, fri urval av signeringsnyckel,...
   * Korrigering: Vissa giltiga nycklar visades som återkallade eller förfallna
   * Acceptera inte signaturer av undernycklar som har förfallit eller återkallats
   * Keybase.io-stöd i avancerad vy
@@ -145,12 +148,12 @@
 
 ## 3.1.2
 
-  * Fix key export to files (now for real)
+  * Åtgärda nyckelexport till filer (nu på riktigt)
 
 
 ## 3.1.1
 
-  * Fix key export to files (they were written partially)
+  * Åtgärda nyckel export till filer (de skrevs delvis)
   * Åtgärda krasch i Android 2.3
 
 
@@ -158,17 +161,17 @@
 
   * Åtgärda krasch i Android 5
   Ny certifieringsskärm
-  * Secure Exchange directly from key list (SafeSlinger library)
-  * New QR Code program flow
+  * Säker utbyte direkt från nyckellistan (SafeSlinger-bibliotek)
+  * Ny QR-kod programflöde
   * Redesigned decrypt screen
-  * New icon usage and colors
-  * Fix import of secret keys from Symantec Encryption Desktop
+  * Ny ikon användning och färger
+  * Åtgärda import av hemliga nycklar från Symantec Encryption Desktop
   * Experimental YubiKey support: Subkey IDs are now checked correctly
 
 
 ## 3.0.1
 
-  * Better handling of large key imports
+  * Bättre hantering av stora viktiga importeringar
   * Improved subkey selection
 
 
@@ -176,12 +179,12 @@
 
   * Propose installable compatible apps in apps list
   * New design for decryption screens
-  * Many fixes for key import, also fixes stripped keys
+  * Många korrigeringar för nyckel importering, åtgärdar också avskalade nycklar
   * Honor and display key authenticate flags
   * User interface to generate custom keys
   * Fixing user ID revocation certificates
   * Ny moln sökning (sökningar över traditionella nyckelservrar och keybase.io)
-  * Support for stripping keys inside OpenKeychain
+  * Stöd för att avskala nycklar inuti OpenKeychain
   * Experimental YubiKey support: Support for signature generation and decryption
 
 
@@ -193,13 +196,13 @@
 
 ## 2.9.1
 
-  * Split encrypt screen into two
+  * Dela krypteringsskärmen i två
   * Fix key flags handling (now supporting Mailvelope 0.7 keys)
   * Improved passphrase handling
   * Key sharing via SafeSlinger
-  * Experimental YubiKey support: Preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
-  * Fix usage of stripped keys
-  * SHA256 as default for compatibility
+  * Stöd för experimentell YubiKey: Föredrar att låta andra PIN-koder, för närvarande endast signering via OpenPGP API fungerar, inte inne i OpenKeychain
+  * Åtgärda användning av avskalade nycklar
+  * SHA256 som standard för kompatibilitet
   * Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API
   * OpenPGP API hanterar nu återkallade/utgångna nycklar och returnerar alla användar-ids
 
@@ -243,7 +246,7 @@ This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2
 ## 2.6
 
   * Key certifications (thanks to Vincent Breitmoser)
-  * Support for GnuPG partial secret keys (thanks to Vincent Breitmoser)
+  * Stöd för GnuPG delvis hemliga nycklar (tack vare Vincent Breitmoser)
   * New design for signature verification
   * Custom key length (thanks to Greg Witczak)
   * Fix share-functionality from other apps
@@ -378,7 +381,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
   * Filterable key lists
   * Smarter pre-selection of encryption keys
-  * New Intent handling for VIEW and SEND, allows files to be encrypted/decrypted out of file managers
+  * Ny avsiktlig hantering för VISA och SKICKA, tillåter filer som ska krypteras/dekrypteras ur filhanterare
   * Fixes and additional features (key preselection) for K-9 Mail, new beta build available
 
 

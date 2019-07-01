@@ -10,7 +10,6 @@
   <string name="title_add_subkey">ઉપચાવી ઉમેરો</string>
   <string name="title_change_master_key">મુખ્ય ચાવી બદલો</string>
   <string name="title_edit_key">ચાવી સુધારો</string>
-  <string name="title_linked_create">જોડેલી ઓળખ બનાવો</string>
   <string name="title_preferences">સેટિંગ્સ</string>
   <string name="title_api_registered_apps">એપ્સ</string>
   <string name="title_key_server_preference">OpenPGP ચાવી સર્વરો</string>
@@ -183,6 +182,7 @@
   <!--choice-->
   <string name="choice_none">એકે નહિ</string>
   <string name="usage_encrypt">એનક્રિપ્ટ</string>
+  <string name="error">ભૂલ</string>
   <!--sentences-->
   <!--errors
          no punctuation, all lowercase,
@@ -202,6 +202,7 @@
   <!--compression-->
   <!--Help-->
   <string name="help_tab_changelog">નોંધણીઓ બદલો</string>
+  <string name="help_tab_about">વિશે</string>
   <string name="help_about_version">Version:</string>
   <!--Import-->
   <string name="import_tab_keyserver">ચાવી સર્વર</string>
@@ -243,6 +244,7 @@
   <string name="nav_apps">એપ્સ</string>
   <!--hints-->
   <!--certs-->
+  <string name="cert_none">કંઈ નહીં</string>
   <string name="cert_verify_ok">બરાબર</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
@@ -260,7 +262,6 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
@@ -277,11 +278,7 @@
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="nfc_settings">સેટિંગ્સ</string>
   <string name="btn_reset">ફરી ગોઠવો</string>
-  <string name="linked_create_verify">chakaso</string>
   <!--Other Linked Identity strings-->
-  <string name="linked_button_verify">chakaso</string>
-  <string name="linked_button_retry">ફરી પ્રયત્ન કરો</string>
-  <string name="linked_button_confirm">પુષ્ટિ કરો </string>
   <string name="share_log_dialog_share_button">શેર કરો</string>
   <string name="share_log_dialog_cancel_button">રદ્ કરો</string>
   <string name="menu_uids_save">સંગ્રહો</string>
@@ -295,6 +292,7 @@
   <string name="transfer_confirm_cancel">રદ્ કરો</string>
   <string name="token_reset_confirm_ok">ફરી ગોઠવો</string>
   <string name="token_unlock_ok">લોક ખોલો</string>
+  <string name="select_identity_cancel">નિષ્ક્રિય કરો</string>
   <string name="key_gen_back">પહેલાનું</string>
   <string name="snackbutton_analytics_settings">સેટિંગ્સ</string>
 </resources>

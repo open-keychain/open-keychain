@@ -10,7 +10,6 @@
   <string name="title_add_subkey">Προσθήκη υποκλειδιού</string>
   <string name="title_change_master_key">Αλλαγή κύριου κλειδιού</string>
   <string name="title_edit_key">Επεξεργασία Κλειδιού</string>
-  <string name="title_linked_create">Δημιουργία Συνδεδεμένης Ταυτότητας</string>
   <string name="title_preferences">Ρυθμίσεις</string>
   <string name="title_api_registered_apps">Εφαρμογές</string>
   <string name="title_key_server_preference">Διακομιστές κλειδιών OpenPGP</string>
@@ -121,6 +120,7 @@
   <string name="orbot_start_dialog_cancel">Ακύρωση</string>
   <!--choice-->
   <string name="choice_none">Καμία</string>
+  <string name="choice_1hour">1 ώρα</string>
   <string name="usage_encrypt">Κρυπτογράφηση</string>
   <string name="error">Σφάλμα</string>
   <!--sentences-->
@@ -152,6 +152,7 @@
   <!--Import-->
   <string name="import_tab_keyserver">Διακομιστής Κλειδιών</string>
   <string name="import_tab_cloud">Αναζήτηση Κλειδιού</string>
+  <string name="import_qr_code_button">Σκανάρισμα κωδικού QR</string>
   <string name="btn_import">Εισαγωγή</string>
   <string name="btn_refresh">Ανανέωση</string>
   <!--Generic result toast-->
@@ -171,6 +172,7 @@
   <!--Delete or revoke private key dialog-->
   <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
+  <string name="key_list_fab_qr_code">Σκανάρισμα κωδικού QR</string>
   <string name="key_list_fab_search">Αναζήτηση Κλειδιού</string>
   <!--Key view-->
   <string name="key_view_action_edit">Επεξεργασία</string>
@@ -213,7 +215,6 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
@@ -236,15 +237,8 @@
   <string name="snack_security_token_view">Προβολή</string>
   <string name="snack_security_token_import">Εισαγωγή</string>
   <string name="btn_reset">Μηδενισμός</string>
-  <string name="linked_create_verify">Επιβεβαίωση</string>
   <!--Other Linked Identity strings-->
   <string name="btn_finish">Τέλος</string>
-  <string name="linked_title_twitter">Twitter</string>
-  <string name="linked_button_verify">Επιβεβαίωση</string>
-  <string name="linked_button_retry">Ξαναδοκιμάστε</string>
-  <string name="linked_button_confirm">Επιβεβαίωση</string>
-  <string name="linked_button_view">Προβολή</string>
-  <string name="linked_text_error">Σφάλμα</string>
   <string name="share_log_dialog_share_button">Κοινή χρήση</string>
   <string name="share_log_dialog_cancel_button">Ακύρωση</string>
   <string name="menu_uids_save">Αποθήκευση</string>
@@ -269,5 +263,6 @@
   <string name="snack_keylist_clipboard_action">Δείτε τα αποτελέσματα</string>
   <string name="keylist_header_anonymous">Ανώνυμος</string>
   <string name="keylist_header_special">#</string>
+  <string name="button_analytics_no">Όχι, ευχαριστώ</string>
   <string name="snackbutton_analytics_settings">Ρυθμίσεις</string>
 </resources>

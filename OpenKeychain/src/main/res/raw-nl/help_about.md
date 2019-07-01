@@ -1,4 +1,4 @@
-[//]: # (Ter info: Zet iedere zin op een eigen regel, Transifex zet iedere regel in zijn eigen vertalingsveld!)
+[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
 [https://www.openkeychain.org](https://www.openkeychain.org)
 
@@ -17,9 +17,9 @@ Licentie: GPLv3+
   * Andrea Torlaschi
   * Arnaud Fontaine
   * Ash Hughes
-  * 'mar-v-in'
+  * ‘mar-v-in’
   * Nikita Mikhailov
-  * 'Thialfihar' (ontwikkelaar van APG)
+  * ‘Thialfihar’ (ontwikkelaar van APG)
   * Tim Bray
   * Tobias Erthal
 
@@ -28,23 +28,23 @@ Licentie: GPLv3+
   * Andrea Torlaschi
   * Art O Cathain
   * Brian C. Barnes
-  * Bahtiar 'kalkin' Gadimov
+  * Bahtiar ‘kalkin’ Gadimov
   * Daniel Albert
   * Daniel Hammann
   * Daniel Haß
   * Daniel Nelz
   * Daniel Ramos
   * Greg Witczak
-  * 'iseki'
+  * ‘iseki’
   * Ishan Khanna
-  * 'jellysheep'
-  * 'Jesperbk'
-  * 'jkolo'
+  * ‘jellysheep’
+  * ‘Jesperbk’
+  * ‘jkolo’
   * Joey Castillo
   * Kai Jiang
   * Kartik Arora
-  * 'Kent'
-  * 'ligi'
+  * ‘Kent’
+  * ‘ligi’
   * Lukas Zorich
   * Manoj Khanna
   * Markus Doits
@@ -54,7 +54,7 @@ Licentie: GPLv3+
   * Nikhil Peter Raj
   * Paul Sarbinowski
   * Petter Arvidsson
-  * 'Senecaso'
+  * ‘Senecaso’
   * Signe Rüsch
   * Sreeram Boyapati
-  * 'steelman'
+  * ‘steelman’

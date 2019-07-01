@@ -39,6 +39,7 @@
   <string name="btn_encrypt_share_file">Şifrele ve dosyayı paylaş</string>
   <string name="btn_encrypt_save_file">Şifrele ve dosyayı kaydet</string>
   <string name="btn_save">Kaydet</string>
+  <string name="btn_view_log">Günlüğü görüntüle</string>
   <string name="btn_do_not_save">İptal</string>
   <string name="btn_delete">Sil</string>
   <string name="btn_no_date">Zaman Aşımı Yok</string>
@@ -434,7 +435,6 @@
   <string name="msg_backup_error_io">Giriş/çıkış hatası!</string>
   <string name="msg_upload_error_not_found">Anahtar bulunamadı!</string>
   <string name="msg_del_error_empty">Silinecek bir şey yok!</string>
-  <!--Linked Identity verification-->
   <string name="msg_get_success">Başarıyla indirildi!</string>
   <string name="msg_download_query_failed">Anahtarlar aranırken bir hata oluştu.</string>
   <!--Messages for Keybase Verification operation-->
@@ -485,15 +485,8 @@
   <string name="security_token_error">Hata: %s</string>
   <string name="security_token_error_unknown">Bilinmeyen Hata</string>
   <string name="security_token_error_try_again">Tekrar dene</string>
-  <string name="linked_create_verify">Doğrula</string>
   <!--Other Linked Identity strings-->
   <string name="btn_finish">Bitti</string>
-  <string name="linked_title_twitter">Twitter</string>
-  <string name="linked_button_verify">Doğrula</string>
-  <string name="linked_button_retry">Tekrar dene</string>
-  <string name="linked_button_confirm">Onayla</string>
-  <string name="linked_button_view">Göster</string>
-  <string name="linked_text_error">Hata</string>
   <string name="share_log_dialog_share_button">Paylaş</string>
   <string name="share_log_dialog_cancel_button">Kapat</string>
   <string name="menu_uids_save">Kaydet</string>
@@ -512,6 +505,7 @@
   <string name="dialog_insecure_button_ok">Anladım</string>
   <string name="button_import">İçe Aktar</string>
   <string name="transfer_status_connected">Bağlanıldı</string>
+  <string name="transfer_status_disconnected">Bağlantı kesildi!</string>
   <string name="transfer_connecting">Bağlanılıyor...</string>
   <string name="transfer_confirm_cancel">Kapat</string>
   <string name="transfer_confirm_ok">Gönder</string>
@@ -526,5 +520,6 @@
   <string name="key_gen_finish">Bitti</string>
   <string name="snack_keylist_clipboard_action">Göster</string>
   <string name="notify_channel_passcache">Parola önbelleği</string>
+  <string name="button_analytics_no">Hayır, teşekkürler</string>
   <string name="snackbutton_analytics_settings">Ayarlar</string>
 </resources>

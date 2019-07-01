@@ -1,12 +1,15 @@
 [//]: # (注意：请把每个句子放在单独一行中， Transifex 将把每一行放置在独立的翻译表单内！)
 
+## 5.3
+  * Usw keys.openpgp.org as default keyserver
+
 ## 5.2
-  * Improved key import from clipboard
+  * 改进的剪贴板密钥导入
 
 ## 5.1
-  * Support for Ledger Nano S
-  * Support Web Key Directory (WKD) search
-  * Fixed potential API security issue
+  * 对 Ledger Nano S 的支持
+  * 对网络密钥目录（WKD）搜索的支持
+  * 修复了潜在的 API 安全问题
 
 ## 5.0
   * 改善 Autocrypt 支持
@@ -19,26 +22,26 @@
 ## 4.8
 
   * 改善对 USB 安全令牌的支持：Gnuk、Nitrokey 型号、YubiKey 4 型号
-  * Feature to find the position of the device's NFC reader
+  * 寻找设备 NFC 读取器位置的特性
 
 ## 4.7
 
-  * Improved import from clipboard
+  * 改进的剪贴板导入
   * New key creation wizard for Security Tokens
-  * Removed password cache "time to live" setting
+  * 移除密码缓存“存活时间”设定
 
 
 ## 4.6
 
-  * Import your keys using our new Secure Wi-Fi Transfer mechanism
+  * 使用我们新的安全 Wi-Fi 传输机制导入您的密钥
 
 
 ## 4.5
 
-  * Detailed description of security problems
-  * Display keyserver status per key
-  * Support for EdDSA
-  * Fix pgp.mit.edu (new certificate)
+  * 安全问题的详细描述
+  * 显示各个密钥的密钥服务器状态
+  * 对 EdDSA 的支持
+  * 修复 pgp.mit.edu （新证书）
 
 
 ## 4.4

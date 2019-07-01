@@ -1,5 +1,8 @@
 [//]: # (NOTA: Por avor escriba cada frase na súa propia liña, Transifex pon cada liña no seu propio campo da tradución!)
 
+## 5.3
+  * Usw keys.openpgp.org as default keyserver
+
 ## 5.2
   * Improved key import from clipboard
 

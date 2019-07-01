@@ -9,7 +9,6 @@
   <string name="title_decrypt">Rozšifrovat</string>
   <string name="title_add_subkey">Přidat podklíč</string>
   <string name="title_edit_key">Editovat klíč</string>
-  <string name="title_linked_create">Vyrořit propojenou identitu</string>
   <string name="title_preferences">Nastavení</string>
   <string name="title_api_registered_apps">Aplikace</string>
   <string name="title_key_server_preference">OpenPGP keyservery</string>
@@ -190,8 +189,6 @@
   <string name="keyserver_sync_settings_title">Automaticky aktualizovat klíč</string>
   <string name="label_experimental_settings_desc_title">Varovnání</string>
   <string name="label_experimental_settings_desc_summary">Tyto funkce nejsou ještě dokončené nebo neprošli uživatelským testováním/bezpečnostním auditem. Prosím nepoužívejte je v situacích kdy na nich závisí vaše zabezpečení a nehlašte problémy s nimi spojené, pokud na ně narazíte.</string>
-  <string name="label_experimental_settings_linked_identities_title">Propojené identity</string>
-  <string name="label_experimental_settings_linked_identities_summary">Propojit klíče s Twitterem, GitHubem, webem nebo DNS (podobně jako keybase.io ale decentralizované)</string>
   <string name="label_experimental_settings_keybase_summary">Kontaktovat keybase.io pro proofs klíče a ukázat je pokaždé když je klíč zobrazen</string>
   <string name="label_experimental_settings_theme_summary">(Ikony a mnoho obrazovek ještě nejsou uzpůsobené pro temné téma vzhledu)</string>
   <!--Proxy Preferences-->
@@ -878,7 +875,6 @@
   <string name="msg_import_fetch_error_not_found">Klíč nenalezen!</string>
   <string name="msg_backup_error_db">Chyba databáze!</string>
   <string name="msg_upload_error_not_found">Klíč nenalezen!</string>
-  <!--Linked Identity verification-->
   <string name="msg_get_too_many_responses">Dotaz pro vyhledání klíče vrátil příliš mnoho položek. Prosím specifikujte lépe svůj dotaz!</string>
   <string name="msg_get_query_too_short">Vyhledávací dotaz příliš krátký. Prosím specifikujte více dotaz!</string>
   <string name="msg_get_query_too_short_or_too_many_responses">Žádný nebo příliš mnoho klíčů bylo nalezeno. Prosím o vylepšení vašeho dotazu!</string>
@@ -929,16 +925,8 @@
   <string name="snack_security_token_import">Importovat</string>
   <string name="btn_reset">Restartovat</string>
   <string name="security_token_error">Chyba: %s</string>
-  <string name="linked_create_verify">Ověřit</string>
   <!--Other Linked Identity strings-->
-  <string name="section_linked_identities">Propojené identity</string>
   <string name="btn_finish">Dokončit</string>
-  <string name="linked_title_twitter">Twitter</string>
-  <string name="linked_button_verify">Ověřit</string>
-  <string name="linked_button_retry">Opakovat</string>
-  <string name="linked_button_confirm">Potvrdit</string>
-  <string name="linked_button_view">Zobrazit</string>
-  <string name="linked_text_error">Chyba</string>
   <string name="share_log_dialog_share_button">Sdílet</string>
   <string name="share_log_dialog_cancel_button">Zrušit</string>
   <string name="menu_uids_save">Uložit</string>

@@ -10,7 +10,6 @@
   <string name="title_add_subkey">उपकुंजी जोड़ें</string>
   <string name="title_change_master_key">मास्टर कुंजी बदले</string>
   <string name="title_edit_key">संपादित कुंजी</string>
-  <string name="title_linked_create">एक  लिंक्डन  पहचान बनाने</string>
   <string name="title_preferences">सेटिंग</string>
   <string name="title_api_registered_apps">एप्लिकेशन</string>
   <string name="title_change_passphrase">पासवर्ड परिवर्तन </string>
@@ -60,6 +59,7 @@
   <string name="label_enter_keyserver_url">यूआरएल</string>
   <string name="label_theme">विषय</string>
   <string name="label_enter_smartpgp_authority_name">नाम</string>
+  <string name="pref_facebook">फेसबुक</string>
   <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">चेतावनी</string>
   <!--Proxy Preferences-->
@@ -116,6 +116,7 @@
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
+  <string name="api_settings_no_key">कोई भी कुंजी चयनित नहीं है</string>
   <string name="api_settings_save">बचाना</string>
   <string name="api_settings_cancel">रद्द करना</string>
   <string name="api_settings_advanced">उन्नत</string>
@@ -163,7 +164,6 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
@@ -188,11 +188,6 @@
   <string name="security_token_error_try_again">पुनः प्रयास करें</string>
   <!--Other Linked Identity strings-->
   <string name="btn_finish">समाप्त</string>
-  <string name="linked_title_github">गीथहब</string>
-  <string name="linked_title_twitter">ट्विटर</string>
-  <string name="linked_button_retry">पुन: प्रयास करें</string>
-  <string name="linked_button_view">राय</string>
-  <string name="linked_text_error">त्रुटि</string>
   <string name="share_log_dialog_share_button">शेयर</string>
   <string name="share_log_dialog_cancel_button">रद्द करना</string>
   <string name="menu_uids_save">बचाना</string>
@@ -216,5 +211,6 @@
   <string name="key_gen_back">पिछला</string>
   <string name="key_gen_finish">समाप्त</string>
   <string name="snack_keylist_clipboard_action">राय</string>
+  <string name="button_analytics_no">जी नहीं, धन्यवाद</string>
   <string name="snackbutton_analytics_settings">सेटिंग्स</string>
 </resources>

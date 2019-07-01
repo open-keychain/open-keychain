@@ -1,5 +1,8 @@
 [//]: # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
+## 5.3
+  * Usw keys.openpgp.org as default keyserver
+
 ## 5.2
   * Amélioration de l’importation des clés à partir du presse-papiers
 
@@ -348,7 +351,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
   * Correctif - Plantage lors de l’ajout de compte sur Froyo
   * Suppression sécurisée de fichiers
-  * Option de suppression du fichier clé après importation
+  * Option de suppression du fichier de clé après importation
   * Chiffrement/déchiffrement de flux (galerie, etc.)
   * Nouvelles options (langue, forcer les signatures v3)
   * Changements dans l’interface

@@ -11,6 +11,7 @@
   <string name="title_edit_key">Uredi ključ</string>
   <string name="title_preferences">Nastavitve</string>
   <string name="title_api_registered_apps">Aplikacije</string>
+  <string name="title_change_passphrase">Spremeni geslo</string>
   <string name="title_share_fingerprint_with">Deli prstni odtis z...</string>
   <string name="title_share_key">Deli ključ z...</string>
   <string name="title_share_file">Deli datoteko z...</string>
@@ -164,11 +165,26 @@
   <string name="choice_8hours">8 ur</string>
   <string name="choice_forever">za vedno</string>
   <string name="filemanager_title_open">Odpri...</string>
+  <string name="rsa_2048">RSA 2048</string>
+  <string name="rsa_2048_description_html">manjša velikost, se smatra za varno do 2030</string>
+  <string name="rsa_3072">RSA 3072</string>
+  <string name="rsa_3072_description_html">priporočeno, se smatra za varno do 2040</string>
+  <string name="rsa_4096">RSA 4096</string>
+  <string name="rsa_4096_description_html">večja velikost, se smatra za varno do 2040+</string>
+  <string name="ecc_p256">ECC P-256</string>
+  <string name="ecc_p256_description_html">zelo majhna velikost, se smatra za varno do 2040 &lt;br/&gt; &lt;u&gt;eksperimentalno in še ne podprto z vsemi programi&lt;/u&gt;</string>
+  <string name="ecc_p384">ECC P-384</string>
+  <string name="ecc_p384_description_html">zelo majhna velikost, se smatra za varno do 2040 &lt;br/&gt; &lt;u&gt;eksperimentalno in še ne podprto z vsemi programi&lt;/u&gt;</string>
+  <string name="ecc_p521">ECC P-521</string>
+  <string name="ecc_p521_description_html">majhna velikost, se smatra za varno do 2040+ &lt;br/&gt; &lt;u&gt;eksperimentalno in še ne podprto z vsemi programi&lt;/u&gt;</string>
+  <string name="ecc_eddsa">ECC EdDSA</string>
+  <string name="ecc_eddsa_description_html">majhna velikost, se smatra za varno do 2040+ &lt;br/&gt; &lt;u&gt;eksperimentalno in še ne podprto z vsemi programi&lt;/u&gt;</string>
   <string name="usage_sign">Podpiši</string>
   <string name="usage_encrypt">Šifriraj</string>
   <string name="error">Napaka</string>
   <string name="error_message">Napaka: %s</string>
   <!--sentences-->
+  <string name="wrong_passphrase">Napačno geslo</string>
   <string name="no_filemanager_installed">Nimate nameščenega združljivega upravljalnika datotek.</string>
   <string name="pin_for">Vnesite PIN kodo za \'%s\'</string>
   <string name="file_delete_confirmation_title">Izbrišem izvirne datoteke?</string>
@@ -306,6 +322,7 @@
   <string name="help_tab_changelog">Dnevnik sprememb</string>
   <string name="help_tab_about">O aplikaciji</string>
   <string name="help_about_version">Različica:</string>
+  <string name="help_tab_donations">Doniraj</string>
   <!--Import-->
   <string name="import_tab_keyserver">Strežnik</string>
   <string name="import_tab_cloud">Iskanje ključev</string>
@@ -459,6 +476,7 @@
   <string name="keybase_reddit_proof">Datoteka JSON</string>
   <string name="keybase_verify">Overi</string>
   <!--Edit key-->
+  <string name="edit_key_action_change_passphrase">Spremeni geslo</string>
   <string name="edit_key_action_add_identity">Dodaj identiteto</string>
   <string name="edit_key_action_add_subkey">Dodaj podključ</string>
   <string name="edit_key_edit_user_id_title">Izberite dejanje!</string>
@@ -748,7 +766,6 @@
   <string name="msg_backup_error_db">Napaka v bazi podatkov!</string>
   <string name="msg_upload_error_not_found">Ključ ni bil najden!</string>
   <string name="msg_del_error_multi_secret">Zasebne ključe je mogoče izbrisati zgolj posamično!</string>
-  <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_error_key_mismatch">Prstni odtis ključa ne ustreza tistemu v dokazilu</string>
   <string name="msg_keybase_error_msg_payload_mismatch">Dešifrirano dokazilo ne ustreza pričakovani vrednosti</string>
@@ -780,6 +797,7 @@
   <string name="contact_show_key">Prikaži ključ (%s)</string>
   <string name="key_colon">Ključ:</string>
   <!--Android Account-->
+  <string name="account_privacy_title">Zasebnost</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
@@ -790,13 +808,8 @@
   <string name="snack_security_token_import">Uvozi</string>
   <string name="btn_reset">Ponastavi</string>
   <string name="security_token_error">Napaka: %s</string>
-  <string name="linked_create_verify">Overi</string>
   <!--Other Linked Identity strings-->
   <string name="btn_finish">Končaj</string>
-  <string name="linked_button_verify">Overi</string>
-  <string name="linked_button_retry">Poizkusi ponovno</string>
-  <string name="linked_button_confirm">Potrdi</string>
-  <string name="linked_text_error">Napaka</string>
   <string name="share_log_dialog_share_button">Deli</string>
   <string name="share_log_dialog_cancel_button">Prekliči</string>
   <string name="menu_uids_save">Shrani</string>

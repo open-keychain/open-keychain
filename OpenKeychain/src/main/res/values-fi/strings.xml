@@ -10,7 +10,6 @@
   <string name="title_add_subkey">Lisää aliavain</string>
   <string name="title_change_master_key">Vaihda yleisavain</string>
   <string name="title_edit_key">Muokkaa avainta</string>
-  <string name="title_linked_create">Luo linkitetty identiteetti</string>
   <string name="title_preferences">Asetukset</string>
   <string name="title_api_registered_apps">Sovellukset</string>
   <string name="title_key_server_preference">OpenPGP-avainpalvelimet</string>
@@ -152,7 +151,6 @@
   <string name="pref_facebook">Facebook</string>
   <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">Varoitus</string>
-  <string name="label_experimental_settings_linked_identities_title">Linkitetyt identiteetit</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Ota Tor käyttöö</string>
   <string name="pref_proxy_tor_summary">Orbot tulee olla asennettu</string>
@@ -316,7 +314,6 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Mime parsing operation-->
@@ -351,33 +348,8 @@
   <string name="security_token_error_unknown">Tuntematon virhe</string>
   <string name="security_token_error_try_again">Yritä uudelleen</string>
   <string name="progress_processing">Käsitellään...</string>
-  <string name="linked_create_twitter_1_3">Syötäthän Twitter-näyttönimesi jatkaaksesi.</string>
-  <string name="linked_create_twitter_handle">Twitter-välikappale</string>
-  <string name="linked_create_verify">Todenna</string>
-  <string name="linked_text_clipboard">Teksti on kopioitu leikepöydälle</string>
   <!--Other Linked Identity strings-->
-  <string name="linked_verifying">Todennetaan...</string>
-  <string name="linked_verify_success">Todennettu!</string>
-  <string name="linked_verify_error">Virhe todennuksessa!</string>
-  <string name="linked_verify_pending">Ei vielä todennettu</string>
-  <string name="linked_need_verify">Resurssi täytyy todentaa ennenkuin voit jatkaa!</string>
-  <string name="menu_linked_add_identity">Linkitä tunnukseen</string>
-  <string name="section_linked_identities">Linkitetyt identiteetit</string>
   <string name="btn_finish">Loppu</string>
-  <string name="linked_title_https">Verkkosivu (HTTPS)</string>
-  <string name="linked_title_dns">Domain-nimi (DNS)</string>
-  <string name="linked_title_github">GitHub</string>
-  <string name="linked_title_twitter">Twitter</string>
-  <string name="card_linked_identity">Linkitetty identiteetti</string>
-  <string name="linked_button_verify">Todenna</string>
-  <string name="linked_button_retry">Yritä uudelleen</string>
-  <string name="linked_button_confirm">Vahvista</string>
-  <string name="linked_button_view">Näkymä</string>
-  <string name="linked_text_verifying">Todennetaan...</string>
-  <string name="linked_text_error">Virhe</string>
-  <string name="linked_text_confirming">Vahvistetaan...</string>
-  <string name="linked_ids_more_unknown">Vielä %d tunnistamatonta identiteettityyppiä</string>
-  <string name="title_linked_id_create">Luo linkitetty identiteetti</string>
   <string name="share_log_dialog_share_button">Jaa</string>
   <string name="share_log_dialog_cancel_button">Peruuta</string>
   <string name="menu_uids_save">Tallenna</string>

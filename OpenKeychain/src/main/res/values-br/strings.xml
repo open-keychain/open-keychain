@@ -79,6 +79,7 @@
   <!--Import-->
   <string name="btn_import">Emporzhiañ</string>
   <!--Generic result toast-->
+  <string name="snackbar_details">Munudoù</string>
   <!--Import result toast-->
   <!--Delete result toast-->
   <!--Revoke result toast (snackbar)-->
@@ -87,6 +88,7 @@
   <!--Remote API-->
   <string name="api_settings_save">Enrollañ</string>
   <string name="api_settings_cancel">Nullañ</string>
+  <string name="api_settings_package_name">Anv ar pak</string>
   <string name="api_settings_advanced">Araokaet</string>
   <string name="api_settings_settings">Arventennoù</string>
   <!--Share-->
@@ -129,7 +131,6 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
@@ -144,12 +145,11 @@
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">Ebarzhiñ ar ger-tremen</string>
   <string name="passphrase">Ger-tremen</string>
+  <string name="passphrase_again">Adarre</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="nfc_settings">Arventennoù</string>
   <string name="snack_security_token_import">Emporzhiañ</string>
   <!--Other Linked Identity strings-->
-  <string name="linked_button_retry">Adklask</string>
-  <string name="linked_text_error">Fazi</string>
   <string name="share_log_dialog_share_button">Rannañ</string>
   <string name="share_log_dialog_cancel_button">Nullañ</string>
   <string name="menu_uids_save">Enrollañ</string>
@@ -166,5 +166,6 @@
   <string name="transfer_confirm_ok">Kas</string>
   <string name="token_action_import">Emporzhiañ</string>
   <string name="keylist_header_anonymous">Anonymous</string>
+  <string name="button_analytics_no">Nann, avat</string>
   <string name="snackbutton_analytics_settings">Arventennoù</string>
 </resources>

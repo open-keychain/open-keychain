@@ -9,7 +9,6 @@
   <string name="title_decrypt">Descifrar</string>
   <string name="title_add_subkey">Agregar subclave</string>
   <string name="title_edit_key">Editar clave</string>
-  <string name="title_linked_create">Crear una identidad en LinkedIn</string>
   <string name="title_preferences">Ajustes</string>
   <string name="title_api_registered_apps">Apps</string>
   <string name="title_key_server_preference">Servidores OpenPGP</string>
@@ -298,7 +297,6 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
@@ -319,12 +317,7 @@
   <string name="snack_security_token_view">Ve</string>
   <string name="snack_security_token_import">Importar</string>
   <string name="security_token_error">Error: %s</string>
-  <string name="linked_create_verify">Verificar</string>
   <!--Other Linked Identity strings-->
-  <string name="linked_button_verify">Verificar</string>
-  <string name="linked_button_confirm">Confirmar</string>
-  <string name="linked_button_view">Ve</string>
-  <string name="linked_text_error">Error</string>
   <string name="share_log_dialog_share_button">Compartir</string>
   <string name="share_log_dialog_cancel_button">Cancelar</string>
   <string name="menu_uids_save">Guardar</string>

@@ -1,7 +1,10 @@
 [//]: # (NOTA: ¡Por favor ponga cada frase en su propia línea, Transifex pone cada línea en su propio campo de traducción!)
 
+## 5.3
+  * Usw keys.openpgp.org as default keyserver
+
 ## 5.2
-  * Improved key import from clipboard
+  * Mejorada la importación de la clave desde el portapapeles
 
 ## 5.1
   * Soporte para Ledger Nano S

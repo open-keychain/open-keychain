@@ -1,28 +1,28 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (नोट: कृपया प्रत्येक वाक्य को अपनी पंक्ति में रखें, ट्रांसइफेक्स हर पंक्ति को अपने अनुवाद क्षेत्र में रखता है!)
 
-## Key Confirmation
-Without confirmation, you cannot be sure if a key really corresponds to a specific person.
-The simplest way to confirm a key is by scanning the QR Code or exchanging it via NFC.
-To confirm keys between more than two persons, we suggest using the key exchange method available for your keys.
+## कुंजी पुष्टि
+पुष्टि के बिना, आपको यकीन नहीं हो सकता है कि क्या कोई कुंजी वास्तव में किसी विशिष्ट व्यक्ति से मेल खाती है।
+किसी कुंजी की पुष्टि करने का सबसे सरल तरीका है क्यूआर कोड को स्कैन करना या एनएफसी के माध्यम से इसका आदान-प्रदान करना।
+दो से अधिक व्यक्तियों के बीच कुंजियों की पुष्टि करने के लिए, हम आपकी कुंजियों के लिए उपलब्ध प्रमुख विनिमय पद्धति का उपयोग करने का सुझाव देते हैं।
 
-## Key Status
+## प्रमुख स्थिति
 
 <img src="status_signature_verified_cutout_24dp"/>  
-Confirmed: You have already confirmed this key, e.g., by scanning the QR Code.  
+पुष्टि की गई: आप पहले ही इस कुंजी की पुष्टि कर चुके हैं, जैसे कि QR कोड स्कैन करके।  
 <img src="status_signature_unverified_cutout_24dp"/>  
-Unconfirmed: This key has not been confirmed yet. You cannot be sure if the key really corresponds to a specific person.  
+अपुष्ट: यह कुंजी अभी तक पुष्टि नहीं की गई है। आप सुनिश्चित नहीं हो सकते की कुंजी वास्तव में किसी विशिष्ट व्यक्ति से मेल खाती है।  
 <img src="status_signature_expired_cutout_24dp"/>  
-Expired: This key is no longer valid. Only the owner can extend its validity.  
+समय सीमा समाप्त: यह कुंजी अब मान्य नहीं है। केवल मालिक ही इसकी वैधता बढ़ा सकते हैं।  
 <img src="status_signature_revoked_cutout_24dp"/>  
-Revoked: This key is no longer valid. It has been revoked by its owner.
+निरस्त: यह कुंजी अब मान्य नहीं है। इसके मालिक द्वारा इसे निरस्त कर दिया गया है।
 
-## Advanced Information
-A "key confirmation" in OpenKeychain is implemented by creating a certification according to the OpenPGP standard.
-This certification is a ["generic certification (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) described in the standard by:
-"The issuer of this certification does not make any particular assertion as to how well the certifier has checked that the owner of the key is in fact the person described by the User ID."
+## उन्नत जानकारी
+ओपेनकीचैन में एक "कुंजी पुष्टि" ओपनपीजीपी मानक के अनुसार एक प्रमाण पत्र बनाकर कार्यान्वित की जाती है।
+यह प्रमाणन मानक में वर्णित एक ["सामान्य प्रमाणीकरण (0x10)"] (http://tools.ietf.org/html/rfc4880#section-5.2.1.1) है:
+"इस प्रमाण-पत्र को जारी करने वाला इस बात पर कोई विशेष जोर नहीं देता है कि प्रमाण-पत्र ने कितनी अच्छी तरह जाँच की है कि कुंजी का स्वामी वास्तव में उपयोगकर्ता आईडी द्वारा वर्णित व्यक्ति है।"
 
-Traditionally, certifications (also with higher certification levels, such as "positive certifications" (0x13)) are organized in OpenPGP's Web of Trust.
-Our model of key confirmation is a much simpler concept to avoid common usability problems related to this Web of Trust.
-We assume that keys are verified only to a certain degree that is still usable enough to be executed "on the go".
-We also do not implement (potentially transitive) trust signatures or an ownertrust database like in GnuPG.
-Furthermore, keys which contain at least one user ID certified by a trusted key will be marked as "confirmed" in the key listings.
+परंपरागत रूप से, प्रमाणपत्र (उच्च प्रमाणीकरण स्तर के साथ, जैसे "सकारात्मक प्रमाणपत्र" (0x13)) ओपनपीजीपी के वेब ऑफ ट्रस्ट में आयोजित किए जाते हैं।
+इस वेब ऑफ़ ट्रस्ट से संबंधित सामान्य प्रयोज्य समस्याओं से बचने के लिए, महत्वपूर्ण पुष्टि का हमारा मॉडल एक बहुत सरल अवधारणा है।
+हम मानते हैं कि कुंजियाँ केवल एक निश्चित हद तक ही सत्यापित होती हैं जो अभी भी "सक्रिय" होने के लिए पर्याप्त रूप से उपयोग करने योग्य हैं।
+हम ग्नूपीजी की तरह विश्ववसनीय हस्ताक्षरों या एक आत्मीयता डेटाबेस को भी लागू नहीं करते हैं।
+इसके अलावा, कुंजियाँ जिनमें एक विश्वसनीय कुंजी द्वारा प्रमाणित कम से कम एक उपयोगकर्ता आईडी है, को कुंजी लिस्टिंग में "पुष्टि" के रूप में चिह्नित किया जाएगा।

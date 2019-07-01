@@ -324,7 +324,6 @@
   <string name="msg_import_fetch_error_not_found">Cheia nu a fost găsită!</string>
   <string name="msg_backup_error_db">Eroare bază de date!</string>
   <string name="msg_upload_error_not_found">Cheia nu a fost găsită!</string>
-  <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Mime parsing operation-->
@@ -370,22 +369,8 @@
   <string name="btn_reset">Resetează </string>
   <string name="security_token_error_unknown">Eroare necunoscută</string>
   <string name="security_token_error_try_again">Încearcă din nou</string>
-  <string name="linked_create_verify">Verifică</string>
   <!--Other Linked Identity strings-->
-  <string name="linked_verifying">Se verifică...</string>
-  <string name="linked_verify_success">Verificat!</string>
-  <string name="linked_verify_error">Eroare la verificare!</string>
   <string name="btn_finish">Termină</string>
-  <string name="linked_title_github">GitHub</string>
-  <string name="linked_title_twitter">Twitter</string>
-  <string name="linked_button_verify">Verifică</string>
-  <string name="linked_button_retry">Reâncearcă</string>
-  <string name="linked_button_confirm">Confirmă</string>
-  <string name="linked_button_view">Vizualizare</string>
-  <string name="linked_text_verifying">Se verifică...</string>
-  <string name="linked_text_error">Eroare</string>
-  <string name="linked_text_confirming">Se confirmă...</string>
-  <string name="linked_progress_auth_github">Autorizează prin GitHub...</string>
   <string name="snack_btn_overwrite">Suprascrie</string>
   <string name="backup_code_ok">Cod acceptat!</string>
   <string name="share_log_dialog_share_button">Partajează</string>

@@ -119,7 +119,6 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
@@ -140,9 +139,6 @@
   <string name="snack_security_token_import">Enporti</string>
   <string name="btn_reset">Rekomencigo</string>
   <!--Other Linked Identity strings-->
-  <string name="linked_button_retry">Reprovi</string>
-  <string name="linked_button_view">Rigardi</string>
-  <string name="linked_text_error">Eraro</string>
   <string name="share_log_dialog_cancel_button">Rezigni</string>
   <string name="menu_uids_save">Konservi</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">Rezigni</string>

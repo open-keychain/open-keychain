@@ -10,7 +10,6 @@
   <string name="title_add_subkey">Thêm khóa con</string>
   <string name="title_change_master_key">Thay đổi khóa chính</string>
   <string name="title_edit_key">Sửa khóa</string>
-  <string name="title_linked_create">Tạo định danh kết hợp với khóa</string>
   <string name="title_preferences">Thiết lập</string>
   <string name="title_api_registered_apps">Ứng dụng đã cấp quyền</string>
   <string name="title_key_server_preference">Máy chủ lưu khóa</string>
@@ -193,8 +192,6 @@
   <string name="keyserver_sync_settings_title">Cập nhật khóa tự động</string>
   <string name="label_experimental_settings_desc_title">Cảnh báo</string>
   <string name="label_experimental_settings_desc_summary">Tính năng này hiện chưa được hoàn thành hoặc chỉ mới là kết quả nghiên cứu/thử nghiệm. Do vậy, bạn đừng tin cậy vào tính an toàn của chúng cũng như không cần thiết phải thông báo với chúng tôi!</string>
-  <string name="label_experimental_settings_linked_identities_title">Các định danh đã liên kết</string>
-  <string name="label_experimental_settings_linked_identities_summary">Liên kết khóa với Twitter, GitHub, website hoặc DNS (tương tự như đưa lên keybase.io nhưng có phân cấp)</string>
   <string name="label_experimental_settings_keybase_summary">Liên hệ với keybase.io để minh chứng khóa và hiển thị chúng mỗi khi khóa được gọi</string>
   <string name="label_experimental_settings_theme_summary">(Các biểu tượng và nhiều màn hình không được thêm vào giao diện dạng tối)</string>
   <!--Proxy Preferences-->
@@ -278,6 +275,7 @@
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Đổi mật khẩu</string>
   <!--Create key-->
+  <string name="create_key_empty">Trường bắt buộc </string>
   <string name="create_key_yubi_key_pin">Mã PIN</string>
   <!--View key-->
   <!--Add/Edit keyserver-->
@@ -310,7 +308,6 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Mime parsing operation-->
@@ -337,16 +334,8 @@
   <string name="snack_security_token_view">Xem</string>
   <string name="snack_security_token_import">Nhập</string>
   <string name="btn_reset">Đặt lại</string>
-  <string name="linked_create_verify">Phối kiểm</string>
   <!--Other Linked Identity strings-->
-  <string name="section_linked_identities">Các định danh đã liên kết</string>
   <string name="btn_finish">Kết thúc</string>
-  <string name="linked_title_twitter">Twitter</string>
-  <string name="linked_button_verify">Phối kiểm</string>
-  <string name="linked_button_retry">Thử lại</string>
-  <string name="linked_button_confirm">Xác nhận</string>
-  <string name="linked_button_view">Xem</string>
-  <string name="linked_text_error">Lỗi</string>
   <string name="share_log_dialog_share_button">Chia sẻ</string>
   <string name="share_log_dialog_cancel_button">Hủy</string>
   <string name="menu_uids_save">Lưu</string>

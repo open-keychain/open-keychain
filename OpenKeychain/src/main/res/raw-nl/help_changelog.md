@@ -1,4 +1,7 @@
-[//]: # (Ter info: Zet iedere zin op een eigen regel, Transifex zet iedere regel in zijn eigen vertalingsveld!)
+[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+
+## 5.3
+  * Usw keys.openpgp.org as default keyserver
 
 ## 5.2
   * Importeren van sleutel vanuit toetsenbord verbeterd
@@ -68,7 +71,7 @@
 ## 4.0
 
   * Experimentele ondersteuning voor Security Tokens via USB
-  * Sta wachtwoordverandering to van gestripte sleutels
+  * Sta wachtwoordverandering toe van gestripte sleutels
 
 
 ## 3.9
@@ -88,20 +91,20 @@
 ## 3.7
 
   * Verbetering van ondersteuning voor Android 6 (permissies, integratie in tekstselectie)
-  * API: Versie 10
+  * API: versie 10
 
 
 ## 3.6
 
-  * Versleutelde backups
+  * Versleutelde back-ups
   * Beveiligingsoplossingen gebaseerd op externe audit
   * Sleutelaanmaakwizard voor YubiKey NEO 
   * Basisondersteuning interne MIME
   * Automatische sleutelsynchronisatie
-  * Experimentele functionaliteit: koppel sleutels aan accounts op Github, Twitter.
+  * Experimentele functionaliteit: koppel sleutels aan accounts op GitHub, Twitter.
   * Experimentele functionaliteit: sleutelbevestiging via zinnen
   * Experimentele functionaliteit: donker thema
-  * API: Versie 9
+  * API: versie 9
 
 
 ## 3.5
@@ -377,19 +380,19 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 ## 1.0.2
 
   * Filterbare sleutellijsten
-  * Slimmere preselectie van cryptosleutels
+  * Slimmere preselectie van versleutelingssleutels
   * Nieuwe intents voor VIEW en SEND, laat toe bestanden te versleutelen/ontsleutelen vanuit bestandsbeheerders
-  * Oplossingen en nieuwe functies (sleutel preselectie) voor K-9 Mail, nieuwe beta build beschikbaar
+  * Oplossingen en nieuwe functies (sleutelpreselectie) voor K-9 Mail, nieuwe bètaversie beschikbaar
 
 
 ## 1.0.1
 
-  * GMail account lijsten was stuk in 1.0.0, weer opgelost
+  * GMail-accountlijsten werkten niet in 1.0.0, weer opgelost
 
 
 ## 1.0.0
 
-  * K-9 Mail integratie, APG ondersteunende beta versie van K-9 Mail
+  * K-9 Mail-integratie, APG-ondersteunende bètaversie van K-9 Mail
   * Ondersteuning voor meer bestandsbeheerders (waaronder ASTRO)
   * Sloveense vertaling
   * Nieuwe database, veel sneller, minder geheugengebruik

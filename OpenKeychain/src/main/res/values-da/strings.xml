@@ -159,7 +159,6 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
@@ -183,15 +182,8 @@
   <string name="snack_security_token_view">Gennemse</string>
   <string name="snack_security_token_import">Importér</string>
   <string name="btn_reset">Nulstille</string>
-  <string name="linked_create_verify">Verificer</string>
   <!--Other Linked Identity strings-->
   <string name="btn_finish">Afslut</string>
-  <string name="linked_title_twitter">Twitter</string>
-  <string name="linked_button_verify">Verificer</string>
-  <string name="linked_button_retry">Forsøg igen</string>
-  <string name="linked_button_confirm">Bekræft</string>
-  <string name="linked_button_view">Gennemse</string>
-  <string name="linked_text_error">Fejl</string>
   <string name="share_log_dialog_share_button">Del</string>
   <string name="share_log_dialog_cancel_button">Annuller</string>
   <string name="menu_uids_save">Gem</string>

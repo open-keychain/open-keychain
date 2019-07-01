@@ -172,6 +172,7 @@
   <!--choice-->
   <string name="choice_none">هیـچ</string>
   <string name="choice_1hour">1 ساعت</string>
+  <string name="choice_forever">همیشه</string>
   <string name="usage_sign">امضاء کردن</string>
   <string name="usage_encrypt">رمزگذاری</string>
   <string name="error">خطا </string>
@@ -263,6 +264,7 @@
   <string name="help_tab_donations">حمایت مالی</string>
   <!--Import-->
   <string name="import_tab_keyserver">سرور کلید</string>
+  <string name="import_qr_code_button">اسکن کد QR</string>
   <string name="btn_import">وارد کردن</string>
   <string name="btn_refresh">تازه کردن</string>
   <!--Generic result toast-->
@@ -281,12 +283,15 @@
   <string name="api_settings_settings">تنظیمات</string>
   <!--Share-->
   <!--retry upload dialog-->
+  <string name="retry_up_dialog_title">آپلود ناموفق بود</string>
   <!--Delete or revoke private key dialog-->
   <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
+  <string name="key_list_fab_qr_code">اسکن کد QR</string>
   <!--Key view-->
   <string name="key_view_action_edit">ویرایش</string>
   <string name="key_view_action_encrypt">رمزگذاری فایل</string>
+  <string name="key_view_action_certify">تایید کلید</string>
   <string name="key_view_tab_start">شروع</string>
   <string name="key_view_tab_share">به‌اشتراک گذاشتن</string>
   <string name="key_view_tab_keys">زیرکلیدها</string>
@@ -355,7 +360,6 @@
   <string name="msg_crt_warn_not_found">کلید یافت نشد!</string>
   <string name="msg_import_fetch_error_not_found">کلید یافت نشد!</string>
   <string name="msg_upload_error_not_found">کلید یافت نشد!</string>
-  <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Mime parsing operation-->
@@ -364,6 +368,7 @@
   <!--Keyserver sync-->
   <string name="keyserver_sync_orbot_notif_start">اجرای Orbot</string>
   <!--First Time-->
+  <string name="first_time_import_key">درون برد کلید از فایل</string>
   <string name="backup_section">پشتیبان گیری </string>
   <string name="restore_section">بازگرداندن</string>
   <!--unsorted-->
@@ -372,6 +377,7 @@
   <string name="error_key_not_found">کلید یافت نشد!</string>
   <string name="key_unavailable">در دسترس نیست</string>
   <string name="unknown">ناشناخته</string>
+  <string name="key_colon">کلید:</string>
   <!--Android Account-->
   <string name="account_privacy_title">حریم خصوصی</string>
   <!--Passphrase wizard-->
@@ -379,20 +385,15 @@
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">رمزعبور را وارد کنید</string>
   <string name="passphrase">رمز عبور</string>
+  <string name="set_passphrase">تنظیم گذرواژه</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="nfc_settings">تنظیمات</string>
   <string name="snack_security_token_view">مشاهده</string>
   <string name="snack_security_token_import">وارد کردن</string>
   <string name="btn_reset">راه اندازی مجدد</string>
-  <string name="linked_create_verify">تایید</string>
+  <string name="security_token_error_unknown">خطا ناشناخته</string>
   <!--Other Linked Identity strings-->
   <string name="btn_finish">پایان</string>
-  <string name="linked_title_twitter">توییتر</string>
-  <string name="linked_button_verify">تایید</string>
-  <string name="linked_button_retry">تلاش دوباره</string>
-  <string name="linked_button_confirm">تایید </string>
-  <string name="linked_button_view">مشاهده</string>
-  <string name="linked_text_error">خطا </string>
   <string name="share_log_dialog_share_button">به‌اشتراک گذاشتن</string>
   <string name="share_log_dialog_cancel_button">لغو</string>
   <string name="menu_uids_save">ذخيره</string>
@@ -427,5 +428,7 @@
   <string name="key_gen_finish">پایان</string>
   <string name="snack_keylist_clipboard_action">مشاهده</string>
   <string name="notify_title_keysync">درحال آپدیت‌کردن کلیدها...</string>
+  <string name="keylist_header_anonymous">ناشناس</string>
+  <string name="button_analytics_no">نه، ممنون</string>
   <string name="snackbutton_analytics_settings">تنظیمات</string>
 </resources>

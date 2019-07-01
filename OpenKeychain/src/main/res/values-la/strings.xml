@@ -92,7 +92,6 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
@@ -105,10 +104,7 @@
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-  <string name="linked_create_verify">Probare</string>
   <!--Other Linked Identity strings-->
-  <string name="linked_button_verify">Probare</string>
-  <string name="linked_text_error">Erratum</string>
   <string name="share_log_dialog_cancel_button">Claudere</string>
   <string name="menu_uids_save">Memorare</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">Claudere</string>

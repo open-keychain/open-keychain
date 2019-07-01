@@ -10,7 +10,6 @@
   <string name="title_add_subkey">Tambah kunci tambahan</string>
   <string name="title_change_master_key">Ubah kunci master</string>
   <string name="title_edit_key">Edit kunci</string>
-  <string name="title_linked_create">Buat identitas yang tersambung</string>
   <string name="title_preferences">Pengaturan</string>
   <string name="title_api_registered_apps">Aplikasi</string>
   <string name="title_key_server_preference">Server kunci OpenPGP</string>
@@ -191,7 +190,6 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Mime parsing operation-->
@@ -220,16 +218,8 @@
   <string name="snack_security_token_view">Lihat</string>
   <string name="snack_security_token_import">impor</string>
   <string name="btn_reset">Reset</string>
-  <string name="linked_create_verify">Verifikasi</string>
   <!--Other Linked Identity strings-->
   <string name="btn_finish">Selesai</string>
-  <string name="linked_title_github">GitHub</string>
-  <string name="linked_title_twitter">Twitter</string>
-  <string name="linked_button_verify">Verifikasi</string>
-  <string name="linked_button_retry">Coba Ulang</string>
-  <string name="linked_button_confirm">Konfirmasi</string>
-  <string name="linked_button_view">Lihat</string>
-  <string name="linked_text_error">Kesalahan</string>
   <string name="share_log_dialog_share_button">Share </string>
   <string name="share_log_dialog_cancel_button">Batalkan</string>
   <string name="menu_uids_save">Simpan</string>

@@ -1,5 +1,8 @@
 [//]: #
 
+## 5.3
+  * Usw keys.openpgp.org as default keyserver
+
 ## 5.2
   * Improved key import from clipboard
 

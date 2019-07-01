@@ -10,7 +10,6 @@
   <string name="title_add_subkey">Alkulcs hozzáadása</string>
   <string name="title_change_master_key">Mesterkulcs megváltoztatása</string>
   <string name="title_edit_key">Kulcs szerkesztése</string>
-  <string name="title_linked_create">Kapcsolt személyazonosság létrehozása</string>
   <string name="title_preferences">Beállítások</string>
   <string name="title_api_registered_apps">Alkalmazások</string>
   <string name="title_key_server_preference">OpenPGP kulcskiszolgálók</string>
@@ -216,8 +215,6 @@
   <string name="keyserver_sync_settings_title">Automatikus kulcsfrissítések</string>
   <string name="label_experimental_settings_desc_title">Figyelmeztetés</string>
   <string name="label_experimental_settings_desc_summary">Ezek a funkciók még nincsenek befejezve, vagy felhasználói élmény és biztonsági kutatást eredményei. Emiatt ne bízzon a biztonságukban, és ne jelentse a felmerülő hibákat!</string>
-  <string name="label_experimental_settings_linked_identities_title">Kapcsolt személyazonosságok</string>
-  <string name="label_experimental_settings_linked_identities_summary">Kulcsok összekapcsolása Twitter, GitHub, weblapok vagy DNS (hasonló a keybase.io-hoz, csak decentralizált) azonosítókkal</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io igazolások</string>
   <string name="label_experimental_settings_keybase_summary">Kapcsolatfelvétel a keybase.io-val a kulcsigazolásokért, és megtekintés minden alkalommal, amikor egy kulcs megjelenik</string>
   <string name="label_experimental_settings_theme_summary">(Az ikonok és számos képernyő még nem lett hozzáigazítva a sötét témához)</string>
@@ -481,6 +478,7 @@
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Jelszó megváltoztatása</string>
   <!--Create key-->
+  <string name="create_key_empty">Ez a mező kötelező</string>
   <string name="create_key_passphrases_not_equal">A jelszavak nem egyeznek</string>
   <string name="create_key_yubi_key_pin">PIN</string>
   <!--View key-->
@@ -534,7 +532,6 @@
   <string name="msg_upload_proxy_direct">Proxy használata: Egyik sem</string>
   <string name="msg_upload_proxy_tor">Proxy használata: TOR</string>
   <string name="msg_upload_proxy">Proxy használata: %s</string>
-  <!--Linked Identity verification-->
   <string name="msg_bench_dec_time_avg">Átlagos idő 5MB visszafejtéséhez: %ss</string>
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
@@ -569,16 +566,8 @@
   <string name="security_token_error">Hiba: %s</string>
   <string name="security_token_error_unknown">Ismeretlen hiba</string>
   <string name="error_expiry_past">Lejárati dátum a múltban van!</string>
-  <string name="linked_create_verify">Megerősít</string>
   <!--Other Linked Identity strings-->
-  <string name="section_linked_identities">Kapcsolt személyazonosságok</string>
   <string name="btn_finish">Befejezés</string>
-  <string name="linked_title_twitter">Twitter</string>
-  <string name="linked_button_verify">Megerősít</string>
-  <string name="linked_button_retry">Ismétlés</string>
-  <string name="linked_button_confirm">Megerősít</string>
-  <string name="linked_button_view">Megtekintés</string>
-  <string name="linked_text_error">Hiba</string>
   <string name="share_log_dialog_share_button">Megoszt</string>
   <string name="share_log_dialog_cancel_button">Mégse</string>
   <string name="menu_uids_save">Mentés</string>

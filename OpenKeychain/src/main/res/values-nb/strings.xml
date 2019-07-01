@@ -10,7 +10,6 @@
   <string name="title_add_subkey">Legg til undernøkkel</string>
   <string name="title_change_master_key">Endre hovednøkkel</string>
   <string name="title_edit_key">Rediger nøkkel</string>
-  <string name="title_linked_create">Lag en tilknyttet identitet</string>
   <string name="title_preferences">Innstillinger</string>
   <string name="title_api_registered_apps">Programmer</string>
   <string name="title_key_server_preference">OpenPGP-nøkkeltjenere</string>
@@ -206,8 +205,6 @@
   <string name="keyserver_sync_settings_title">Automatiske nøkkeloppdateringer</string>
   <string name="label_experimental_settings_desc_title">Advarsel</string>
   <string name="label_experimental_settings_desc_summary">Disse funksjonene er ikke ferdige enda, eller resultat av brukererfaring/sikkerhetsforskning. Som sådan, bør du ikke stole på at de er sikre, og ikke rapportere feil du kommer over!</string>
-  <string name="label_experimental_settings_linked_identities_title">Lenkede identiteter</string>
-  <string name="label_experimental_settings_linked_identities_summary">Lenk nøkler til Twitter, GitHub, nettsider eller DNS (likt keybase.io, men desentralisert)</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io-bevis</string>
   <string name="label_experimental_settings_keybase_summary">Kontakt keybase.io for nøkkelbevis og vis dem hver gang en nøkkel vises</string>
   <string name="label_experimental_settings_theme_summary">(Ikonene og mange av skjermene er ikke justert i henhold til den mørke drakten)</string>
@@ -712,7 +709,6 @@
     <item quantity="one">Lyktes i å slette nøkkelen</item>
     <item quantity="other">Lyktes i å slette %d nøkler</item>
   </plurals>
-  <!--Linked Identity verification-->
   <string name="msg_get_success">Vellykket nedlasting!</string>
   <string name="msg_get_no_valid_keys">Ingen gyldige nøkler ble funnet i filen/utklippstavlen!</string>
   <!--Messages for Keybase Verification operation-->
@@ -786,28 +782,8 @@
   <string name="security_token_error_try_again">Prøv igjen</string>
   <string name="btn_delete_original">Slett orginalfil</string>
   <string name="file_delete_ok">Originalfil slettet.</string>
-  <string name="linked_create_verify">Bekreft</string>
   <!--Other Linked Identity strings-->
-  <string name="linked_verifying">Bekrefter…</string>
-  <string name="linked_verify_success">Bekreftet!</string>
-  <string name="linked_verify_error">Bekreftelsesfeil!</string>
-  <string name="linked_verify_pending">Ikke bekreftet enda</string>
-  <string name="section_linked_identities">Lenkede identiteter</string>
   <string name="btn_finish">Ferdig</string>
-  <string name="linked_title_https">Nettside (HTTPS)</string>
-  <string name="linked_title_dns">Domenenavn (DNS)</string>
-  <string name="linked_title_github">GitHub</string>
-  <string name="linked_title_twitter">Twitter</string>
-  <string name="linked_button_verify">Bekreft</string>
-  <string name="linked_button_retry">Prøv igjen</string>
-  <string name="linked_button_retry_step">Gjenta siste steg</string>
-  <string name="linked_button_confirm">Bekreft</string>
-  <string name="linked_button_view">Vis</string>
-  <string name="linked_text_verifying">Bekrefter…</string>
-  <string name="linked_text_error">Feil</string>
-  <string name="linked_text_confirming">Bekrefter…</string>
-  <string name="linked_button_start">Lenk til GitHub-konto</string>
-  <string name="linked_error_network">Nettverksfeil!</string>
   <string name="snack_btn_overwrite">Overskriv</string>
   <string name="backup_code_explanation">Sikkerhetskopien vil bli sikret med en sikkerhetskopieringskode. Skriv den ned før du fortsetter!</string>
   <string name="backup_code_enter">Vennligst skriv inn sikkerhetskopiens kode:</string>

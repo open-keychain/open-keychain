@@ -3,15 +3,20 @@
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
+  <string name="title_encrypt_text">การเข้ารหัสลับของข้อความ</string>
+  <string name="title_encrypt_files">การเข้ารหัสลับของข้อความ</string>
+  <string name="title_decrypt">ถอดรหัส</string>
   <string name="title_preferences">การตั้งค่า</string>
   <string name="title_api_registered_apps">แอป</string>
   <string name="title_help">ช่วยเหลือ</string>
   <string name="title_log_display">บันทึก</string>
   <string name="title_advanced_key_info">ขั้นสูง</string>
   <!--section-->
+  <string name="section_keys">กุญแจย่อย</string>
   <string name="section_certify">ยืนยัน</string>
   <string name="section_share_key">รหัสกุญแจ</string>
   <string name="section_fingerprint">ลายนิ้วมือ</string>
+  <string name="section_encrypt">การเข้ารหัสลับของข้อความ</string>
   <!--button-->
   <string name="btn_save">บันทึก</string>
   <string name="btn_do_not_save">ยกเลิก</string>
@@ -20,16 +25,20 @@
   <string name="btn_next">ต่อไป</string>
   <string name="btn_back">ย้อนกลับ</string>
   <string name="btn_no">ไม่ใช่</string>
+  <string name="btn_copy_decrypted_text">คัดลอกคลิปบอร์ด</string>
+  <string name="btn_encrypt_files">เข้ารหัสลับ</string>
   <string name="btn_unlock">ปลดล็อค</string>
   <string name="btn_proceed">ดำเนิน</string>
   <string name="btn_add_keyserver">เพิ่ม</string>
   <!--Shortcut Strings-->
   <!--Content Description-->
+  <string name="cd_encrypt_files">เข้ารหัสลับ</string>
   <!--menu-->
   <string name="menu_preferences">การตั้งค่า</string>
   <string name="menu_help">ช่วยเหลือ</string>
   <string name="menu_search">ค้นหา</string>
   <string name="menu_open">เปิด</string>
+  <string name="menu_change_password">เปลี่ยนรหัสผ่าน</string>
   <string name="menu_advanced">ขั้นสูง</string>
   <string name="menu_keyserver_add">เพิ่ม</string>
   <!--label-->
@@ -37,10 +46,14 @@
   <string name="label_file">แฟ้ม</string>
   <string name="label_passphrase">รหัสผ่าน</string>
   <string name="label_unlock">กำลังปลดล็อค...</string>
+  <string name="label_algorithm">อัลกอริทึม</string>
+  <string name="label_key_id">รหัสระบุกุญแจ</string>
+  <string name="label_key_id_colon">รหัสระบุกุญแจ</string>
   <string name="label_key_type">ชนิด</string>
   <string name="label_name">ชื่อเอกสาร</string>
   <string name="label_email">อีเมล</string>
   <string name="label_fingerprint">ลายนิ้วมือ</string>
+  <string name="label_preferred">ที่ต้องการ</string>
   <string name="label_hidden_recipients">ซ่อนผู้รับ:</string>
   <string name="label_enter_smartpgp_authority_name">ชื่อเอกสาร</string>
   <!--label shown in Android settings under the OpenKeychain account-->
@@ -56,6 +69,7 @@
   <string name="orbot_start_dialog_cancel">ยกเลิก</string>
   <!--choice-->
   <string name="choice_none">ไม่มี</string>
+  <string name="usage_encrypt">การเข้ารหัสลับของข้อความ</string>
   <string name="error">ข้อผิดพลาด</string>
   <!--sentences-->
   <!--errors
@@ -63,6 +77,7 @@
          they will be put after "error_message", e.g. "Error: file not found"-->
   <!--errors without preceding Error:-->
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_action_show">แสดง</string>
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_cancel">ยกเลิก</string>
@@ -101,12 +116,15 @@
   <!--Key list-->
   <!--Key view-->
   <string name="key_view_action_edit">แก้ไข</string>
+  <string name="key_view_action_certify">ยืนหยันกุญแจ</string>
   <string name="key_view_tab_start">เริ่ม</string>
+  <string name="key_view_tab_keys">กุญแจย่อย</string>
   <!--Key trust-->
   <!--keybase proof stuff-->
   <string name="keybase_verify">ตรวจยืนยัน</string>
   <!--Edit key-->
   <!--Create key-->
+  <string name="create_key_passphrases_not_equal">รหัสผ่านไม่ตรงกัน</string>
   <!--View key-->
   <!--Add/Edit keyserver-->
   <!--Add/Edit SmartPGP authority-->
@@ -115,6 +133,7 @@
   <!--hints-->
   <!--certs-->
   <string name="cert_none">เปล่า</string>
+  <string name="cert_revoke">ถูกยกเลิก</string>
   <string name="cert_verify_ok">ตกลง</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
@@ -124,23 +143,31 @@
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
   <!--Edit Key (higher level than modify)-->
+  <string name="msg_ed_error_key_not_found">ไม่พบกุญแจ</string>
   <!--Promote key-->
+  <string name="msg_pr_error_key_not_found">ไม่พบกุญแจ</string>
   <!--Other messages used in OperationLogs-->
+  <string name="msg_ek_error_not_found">ไม่พบกุญแจ</string>
   <!--Messages for DecryptVerify operation-->
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl_ok">ตกลง</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Linked Identity verification-->
+  <string name="msg_crt_warn_not_found">ไม่พบกุญแจ</string>
+  <string name="msg_import_fetch_error_not_found">ไม่พบกุญแจ</string>
+  <string name="msg_upload_error_not_found">ไม่พบกุญแจ</string>
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_pwd">รหัสผ่าน</string>
   <!--Keyserver sync-->
   <!--First Time-->
+  <string name="first_time_import_key">นำเข้ากุญแจจากไฟล์</string>
+  <string name="backup_section">สำรอง</string>
   <!--unsorted-->
   <string name="label_cert_type">ชนิด</string>
+  <string name="error_key_not_found">ไม่พบกุญแจ</string>
   <string name="unknown">ไม่ทราบ</string>
   <!--Android Account-->
   <string name="account_privacy_title">ความเป็นส่วนตัว</string>
@@ -153,14 +180,8 @@
   <string name="snack_security_token_view">มองดู</string>
   <string name="snack_security_token_import">นำเข้า</string>
   <string name="btn_reset">ล้างทิ้ง</string>
-  <string name="linked_create_verify">ตรวจยืนยัน</string>
   <!--Other Linked Identity strings-->
   <string name="btn_finish">เสร็จ</string>
-  <string name="linked_button_verify">ตรวจยืนยัน</string>
-  <string name="linked_button_retry">ลองใหม่</string>
-  <string name="linked_button_confirm">ยืนยัน</string>
-  <string name="linked_button_view">มองดู</string>
-  <string name="linked_text_error">ข้อผิดพลาด</string>
   <string name="share_log_dialog_cancel_button">ยกเลิก</string>
   <string name="menu_uids_save">บันทึก</string>
   <string name="prompt_fidesmo_pgp_install_button_positive">ติดตั้ง</string>
@@ -170,10 +191,14 @@
   <string name="redirect_import_key_no">ปิด</string>
   <string name="button_cancel">ยกเลิก</string>
   <string name="button_back">ย้อนกลับ</string>
+  <string name="button_got_it">ได้รับมัน</string>
+  <string name="dialog_insecure_button_ok">ได้รับมัน</string>
   <string name="button_import">นำเข้า</string>
+  <string name="transfer_status_connected">เชื่อมต่อสำเร็จ</string>
   <string name="transfer_confirm_cancel">ยกเลิก</string>
   <string name="transfer_confirm_ok">ส่ง</string>
   <string name="token_reset_confirm_ok">ล้างทิ้ง</string>
+  <string name="token_result_not_found">ไม่พบกุญแจ</string>
   <string name="token_action_import">นำเข้า</string>
   <string name="token_unlock_ok">ปลดล็อค</string>
   <string name="select_identity_cancel">ปิดการใช้งาน</string>

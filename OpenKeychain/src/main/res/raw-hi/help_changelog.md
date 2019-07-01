@@ -1,4 +1,7 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (नोट: कृपया प्रत्येक वाक्य को अपनी पंक्ति में रखें, ट्रांसइफेक्स हर पंक्ति को अपने अनुवाद क्षेत्र में रखता है!)
+
+## 5.3
+  * Usw keys.openpgp.org as default keyserver
 
 ## 5.2
   * Improved key import from clipboard

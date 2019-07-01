@@ -103,7 +103,6 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Linked Identity verification-->
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
@@ -119,8 +118,6 @@
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="nfc_settings">సెట్టింగులు</string>
   <!--Other Linked Identity strings-->
-  <string name="linked_button_retry">మళ్ళీ ప్రయత్నించు</string>
-  <string name="linked_text_error">లోపం</string>
   <string name="share_log_dialog_share_button">వంతు</string>
   <string name="share_log_dialog_cancel_button">రద్దు</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">రద్దు</string>

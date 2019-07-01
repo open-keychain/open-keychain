@@ -3,6 +3,7 @@
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
+  <string name="title_decrypt">Desxifra</string>
   <string name="title_preferences">Configuració</string>
   <string name="title_api_registered_apps">Apps</string>
   <string name="title_help">Ajuda</string>
@@ -15,6 +16,7 @@
   <string name="section_fingerprint">Empremta</string>
   <!--button-->
   <string name="btn_save">Desa</string>
+  <string name="btn_view_log">Mostra els registre</string>
   <string name="btn_do_not_save">Cancel·la</string>
   <string name="btn_delete">Esborrar</string>
   <string name="btn_okay">D\'acord</string>
@@ -22,11 +24,14 @@
   <string name="btn_back">Enrera</string>
   <string name="btn_no">No</string>
   <string name="btn_share_decrypted_text">Compartir</string>
+  <string name="btn_copy_decrypted_text">Copia al porta-retalls</string>
+  <string name="btn_encrypt_files">Xifratge de fitxers</string>
   <string name="btn_unlock">Desbloquejar</string>
   <string name="btn_proceed">Procedir</string>
   <string name="btn_add_keyserver">Afegeix</string>
   <!--Shortcut Strings-->
   <!--Content Description-->
+  <string name="cd_encrypt_files">Xifratge de fitxers</string>
   <!--menu-->
   <string name="menu_preferences">Configuració</string>
   <string name="menu_help">Ajuda</string>
@@ -46,6 +51,7 @@
   <string name="label_email">Correu electrònic</string>
   <string name="label_fingerprint">Empremta</string>
   <string name="label_hidden_recipients">Oculta els destinataris</string>
+  <string name="label_enter_keyserver_url">URL</string>
   <string name="label_theme">Tema</string>
   <string name="label_enter_smartpgp_authority_name">Nom</string>
   <!--label shown in Android settings under the OpenKeychain account-->
@@ -92,6 +98,7 @@
   <string name="help_about_version">Versió</string>
   <string name="help_tab_donations">Fes una donació</string>
   <!--Import-->
+  <string name="import_qr_code_button">Escaneja el codi QR</string>
   <string name="btn_import">Subscriu-me</string>
   <string name="btn_refresh">Refresca</string>
   <!--Generic result toast-->
@@ -110,6 +117,7 @@
   <!--Delete or revoke private key dialog-->
   <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
+  <string name="key_list_fab_qr_code">Escaneja el codi QR</string>
   <!--Key view-->
   <string name="key_view_action_edit">Editar</string>
   <string name="key_view_tab_start">Inicia</string>
@@ -119,6 +127,7 @@
   <string name="keybase_verify">Verifica</string>
   <!--Edit key-->
   <!--Create key-->
+  <string name="create_key_empty">El camp és necessari</string>
   <string name="create_key_passphrases_not_equal">Les contrasenyes no coincideixen</string>
   <!--View key-->
   <!--Add/Edit keyserver-->
@@ -138,16 +147,22 @@
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
+  <string name="msg_mf_error_noop">No hi ha res a fer!</string>
   <!--Edit Key (higher level than modify)-->
+  <string name="msg_ed_error_key_not_found">No s’ha trobat la clau.</string>
   <!--Promote key-->
+  <string name="msg_pr_error_key_not_found">No s’ha trobat la clau.</string>
   <!--Other messages used in OperationLogs-->
+  <string name="msg_ek_error_not_found">No s’ha trobat la clau.</string>
   <!--Messages for DecryptVerify operation-->
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl_ok">OK</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Linked Identity verification-->
+  <string name="msg_crt_warn_not_found">No s’ha trobat la clau.</string>
+  <string name="msg_import_fetch_error_not_found">No s’ha trobat la clau.</string>
+  <string name="msg_upload_error_not_found">No s’ha trobat la clau.</string>
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
@@ -157,6 +172,7 @@
   <!--First Time-->
   <!--unsorted-->
   <string name="label_cert_type">Tipus</string>
+  <string name="error_key_not_found">No s’ha trobat la clau.</string>
   <string name="key_unavailable">no disponible</string>
   <string name="unknown">desconegut</string>
   <!--Android Account-->
@@ -170,15 +186,8 @@
   <string name="snack_security_token_view">Visualitza</string>
   <string name="snack_security_token_import">Subscriu-me</string>
   <string name="btn_reset">Reinicia</string>
-  <string name="linked_create_verify">Verifica</string>
   <!--Other Linked Identity strings-->
   <string name="btn_finish">Fi</string>
-  <string name="linked_title_twitter">Twitter</string>
-  <string name="linked_button_verify">Verifica</string>
-  <string name="linked_button_retry">Reintenta</string>
-  <string name="linked_button_confirm">Confirma</string>
-  <string name="linked_button_view">Visualitza</string>
-  <string name="linked_text_error">Error</string>
   <string name="share_log_dialog_share_button">Compartir</string>
   <string name="share_log_dialog_cancel_button">Cancel·la</string>
   <string name="menu_uids_save">Desa</string>
@@ -191,10 +200,13 @@
   <string name="button_cancel">Cancel·la</string>
   <string name="button_back">Enrera</string>
   <string name="button_got_it">D\'acord</string>
+  <string name="dialog_insecure_button_ok">Entesos</string>
+  <string name="usage_authentication">Autenticació</string>
   <string name="button_import">Subscriu-me</string>
   <string name="transfer_confirm_cancel">Cancel·la</string>
   <string name="transfer_confirm_ok">Envia</string>
   <string name="token_reset_confirm_ok">Reinicia</string>
+  <string name="token_result_not_found">No s’ha trobat la clau.</string>
   <string name="token_action_import">Subscriu-me</string>
   <string name="token_unlock_ok">Desbloquejar</string>
   <string name="select_identity_cancel">Deshabilitar </string>
@@ -202,5 +214,6 @@
   <string name="key_gen_finish">Fi</string>
   <string name="snack_keylist_clipboard_action">Visualitza</string>
   <string name="keylist_header_anonymous">Anònim </string>
+  <string name="button_analytics_no">No, gràcies</string>
   <string name="snackbutton_analytics_settings">Configuració</string>
 </resources>
