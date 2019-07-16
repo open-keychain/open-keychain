@@ -1,27 +1,16 @@
 language: android
-#jdk: oraclejdk8
-env:
-  - TEST=unit
-#  - TEST=android ANDROID_TARGET=android-25 ANDROID_ABI=armeabi-v7a ADB_INSTALL_TIMEOUT=10
+
+jdk: oraclejdk8
 
 # force non-container build
 sudo: required
-before_install:
-  - sudo add-apt-repository ppa:openjdk-r/ppa -y
-  - sudo apt-get update
-  - sudo apt-get install -y openjdk-8-jdk
-  - sudo update-alternatives --auto java
-  - sudo update-alternatives --auto javac
-  - export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-  # workaround for https://github.com/travis-ci/travis-ci/issues/8874
-  - yes | sdkmanager "platforms;android-27"
 
 android:
   components:
     - tools
-    - android-27
+    - android-28
     - platform-tools
-    - build-tools-27.0.3
+    - build-tools-28.0.3
     - extra-android-support
     - extra-android-m2repository
     - sys-img-armeabi-v7a-android-27
@@ -31,9 +20,7 @@ android:
     - 'google-gdk-license-.+'
 
 script:
-  - if [ ${TEST} == "unit" ]; then
-    ./gradlew --stacktrace testDebug jacocoTestReport;
-    fi
+    ./gradlew --stacktrace testDebug
   - if [ ${TEST} == "android" ]; then
     echo no | android create avd --force --name test --target $ANDROID_TARGET --abi $ANDROID_ABI;
     emulator -avd test -no-skin -no-audio -no-window &
