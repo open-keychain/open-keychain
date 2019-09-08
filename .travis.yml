@@ -32,7 +32,7 @@ android:
 
 script:
   - if [ ${TEST} == "unit" ]; then
-    ./gradlew --stacktrace testDebug jacocoTestReport;
+    ./gradlew --stacktrace testDebug jacocoTestReport -PchecksumPrint -PchecksumFailOn=build_finish;
     fi
   - if [ ${TEST} == "android" ]; then
     echo no | android create avd --force --name test --target $ANDROID_TARGET --abi $ANDROID_ABI;
