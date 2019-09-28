@@ -23,12 +23,12 @@ public class WebKeyDirectoryUtil {
      * @see <a href="https://tools.ietf.org/html/draft-koch-openpgp-webkey-service-05#section-3.1">Key Discovery</a>
      */
     @Nullable
-    public static URL toWebKeyDirectoryURL(String name) {
+    public static URL toWebKeyDirectoryURL(String name, Boolean wkdMethodAdvanced) {
         if (name == null) {
             return null;
         }
 
-        if (name.startsWith("https://") && name.contains("/.well-known/openpgpkey/hu/")) {
+        if (name.startsWith("https://") && name.contains("/.well-known/openpgpkey/"))  {
             try {
                 return new URL(name);
             } catch (MalformedURLException e) {
@@ -47,10 +47,18 @@ public class WebKeyDirectoryUtil {
         String domain = matcher.group(2);
 
         try {
-            return new URL("https://" + domain + "/.well-known/openpgpkey/hu/" + encodedPart);
+
+            if(wkdMethodAdvanced) {
+                // Advanced method
+                return new URL("https://openpgpkey." + domain + "/.well-known/openpgpkey/" + domain + "/hu/" + encodedPart);
+            }else{
+                // Direct method
+                return new URL("https://" + domain + "/.well-known/openpgpkey/hu/" + encodedPart);
+            }
         } catch (MalformedURLException e) {
             return null;
         }
+        
     }
 
     private static byte[] toSHA1(byte[] input) {
