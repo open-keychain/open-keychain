@@ -260,7 +260,7 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
     }
 
     private void onShopSelected() {
-        mToolbar.setTitle("Cotech Security Keys");
+        mToolbar.setTitle(R.string.shop_title);
         mDrawer.setSelection(ID_SHOP, false);
         Fragment frag = new SecurityKeyShopFragment();
         setFragment(frag);

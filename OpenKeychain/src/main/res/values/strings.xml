@@ -1969,5 +1969,6 @@
     <string name="share_key_clipboard">Share key via clipboard</string>
     <string name="share_key">Share key</string>
 
-    <string name="shop_loading_label">Loading shop...</string>
+    <string name="shop_loading_label">Loading shop…</string>
+    <string name="shop_title">COTECH Security Keys</string>
 </resources>
