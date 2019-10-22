@@ -220,7 +220,7 @@ public class FileHelper {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             try {
                 return DocumentsContract.getDocumentThumbnail(context.getContentResolver(), uri, size, null);
-            } catch (FileNotFoundException e) {
+            } catch (Exception e) {
                 return null;
             }
         } else {
