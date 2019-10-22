@@ -1,7 +1,11 @@
 [//]: # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
+## 5.4
+  * Add WKD Advanced method
+  * Add COTECH Security Key Shop
+
 ## 5.3
-  * Usw keys.openpgp.org as default keyserver
+  * Utiliser keys.openpgp.org comme serveur de clés par défaut
 
 ## 5.2
   * Amélioration de l’importation des clés à partir du presse-papiers
@@ -133,7 +137,7 @@
 
   * Première version avec prise en charge complète de la YubiKey, proposée dans l’interface utilisateur : modifier les clés, relier la YubiKey aux clés…
   * Conception matérielle
-  * Intégration de la lecture de code QR (de nouvelles autorisations sont exigées)
+  * Intégration du balayage de codes QR (de nouvelles autorisations sont exigées)
   * Amélioration de l’assistant de création de clé
   * Correctif - Contacts manquants après la synchro
   * Android 4 exigé

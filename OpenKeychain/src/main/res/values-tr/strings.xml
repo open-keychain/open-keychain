@@ -378,6 +378,7 @@
   <!--Navigation Drawer-->
   <string name="nav_keys">Anahtarlar</string>
   <string name="nav_apps">Uygulamalar</string>
+  <string name="drawer_close">Gezinme çekmecesini kapat</string>
   <string name="my_keys">Anahtarlarım</string>
   <!--hints-->
   <!--certs-->
@@ -520,6 +521,7 @@
   <string name="key_gen_finish">Bitti</string>
   <string name="snack_keylist_clipboard_action">Göster</string>
   <string name="notify_channel_passcache">Parola önbelleği</string>
+  <string name="keylist_header_anonymous">Anonim</string>
   <string name="button_analytics_no">Hayır, teşekkürler</string>
   <string name="snackbutton_analytics_settings">Ayarlar</string>
 </resources>

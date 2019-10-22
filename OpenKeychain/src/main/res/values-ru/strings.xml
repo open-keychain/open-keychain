@@ -79,7 +79,7 @@
   <string name="btn_back">Назад</string>
   <string name="btn_no">Нет</string>
   <string name="btn_match">Отпечатки совпадают</string>
-  <string name="btn_share_encrypted_signed">Зашифровать/подписать и поделиться текстом</string>
+  <string name="btn_share_encrypted_signed">Зашифровать/подписать и отправить текст</string>
   <string name="btn_copy_encrypted_signed">Зашифровать/подписать и скопировать текст</string>
   <string name="btn_paste_encrypted_signed">Зашифровать/подписать и вставить текст</string>
   <string name="btn_view_cert_key">Просмотр ключа</string>
@@ -178,7 +178,7 @@
   <string name="expiry_date_dialog_title">Срок годности</string>
   <string name="label_keyservers_title">Серверы ключей</string>
   <string name="label_keyserver_settings_hint">Переместите для смены приоритета, зажмите чтобы редактировать/удалить</string>
-  <string name="label_selected_keyserver_title">Выбранные серверы ключей</string>
+  <string name="label_selected_keyserver_title">Выбранный сервер ключей</string>
   <string name="label_selected_smartpgp_authority_title">Выбранный центр</string>
   <string name="label_preferred">предпочитаемый</string>
   <string name="label_enable_compression">Использовать сжатие</string>
@@ -1169,7 +1169,7 @@
   <string name="msg_dc_ok_meta_only">Были запрошены только метаданные без расшифровки</string>
   <string name="msg_dc_ok">Расшифрование/проверка закончена</string>
   <string name="msg_dc_pass_cached">Применяю кэшированный пароль</string>
-  <string name="msg_dc_pending_nfc">Требуется NFC-токен, жду действий пользователя...</string>
+  <string name="msg_dc_pending_nfc">Требуется токен NFC, жду действий пользователя...</string>
   <string name="msg_dc_pending_passphrase">Требуется пароль, жду действий пользователя...</string>
   <string name="msg_dc_prep_streams">Подготовка потоков для расшифровки</string>
   <string name="msg_dc">Расшифровка началась...</string>
@@ -1225,7 +1225,7 @@
   <string name="msg_pse_key_unknown">Отсутствует ключ для шифрования: %s</string>
   <string name="msg_pse_key_warn">Некорректный ключ для шифрования: %s</string>
   <string name="msg_pse_ok">Подпись/шифрование успешно произведены!</string>
-  <string name="msg_pse_pending_nfc">Требуется NFC-токен, жду действий пользователя...</string>
+  <string name="msg_pse_pending_nfc">Требуется токен NFC, жду действий пользователя...</string>
   <string name="msg_pse_pending_passphrase">Требуется пароль, жду действий пользователя...</string>
   <string name="msg_pse_signing">Подписывание данных (без шифрования)</string>
   <string name="msg_pse_signing_cleartext">Создание текстовой подписи</string>
@@ -1585,13 +1585,13 @@
   <string name="snack_backup_saved_dir">Сохранено в папке OpenKeychain</string>
   <string name="btn_backup_back">Вернуться для проверки</string>
   <string name="snack_text_too_long">Текст слишком длинный, чтобы показать его полностью!</string>
-  <string name="snack_shared_text_too_long">Общий текст был сокращён, потому что он был слишком большим!</string>
+  <string name="snack_shared_text_too_long">Отправляемый текст был сокращён, потому что он был слишком большим!</string>
   <string name="share_log_dialog_title">Отправить журнал?</string>
   <string name="share_log_dialog_message">Хотя журналы могут быть супер полезными для разработчиков, чтобы найти ошибки в OpenKeychain, они могут потенциально содержать конфиденциальную информацию, такую как данные об обновлённых ключах. Пожалуйста, убедитесь, что у вас всё в порядке с распространением этой информации.</string>
   <string name="share_log_dialog_share_button">Отправить...</string>
   <string name="share_log_dialog_cancel_button">Отмена</string>
   <string name="toast_wrong_mimetype">Неправильный тип данных, ожидался текст!</string>
-  <string name="toast_no_text">В публикуемых данных нет текста!</string>
+  <string name="toast_no_text">В отправляемых данных нет текста!</string>
   <string name="menu_uids_save">Сохранить</string>
   <string name="title_edit_identities">Изменить соответствия</string>
   <string name="title_edit_subkeys">Изменить доп. ключи</string>
@@ -1828,7 +1828,7 @@
     <item quantity="many">Обновление %d ключей</item>
     <item quantity="other">Обновление %d ключей</item>
   </plurals>
-  <string name="button_locate_nfc">Где мой NFC-ридер?</string>
+  <string name="button_locate_nfc">Где мой NFC-модуль?</string>
   <string name="label_usb_untested_summary">Если данная функция включена, вы можете использовать USB-ридеры смарт-карт, которые не были полностью протестированы.</string>
   <string name="label_usb_untested">Использовать непротестированные USB-устройства</string>
   <string name="use_key">Использовать ключ: %s</string>

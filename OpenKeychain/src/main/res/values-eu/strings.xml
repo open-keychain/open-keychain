@@ -1070,6 +1070,7 @@
   <!--Messages for Authentication operation-->
   <string name="msg_auth">Egiaztapen eragiketa abiatzen</string>
   <string name="msg_auth_error_unlock">Akats ezezaguna giltza desblokeatzean!</string>
+  <string name="msg_auth_pending_nfc">NFC ezagutarazlea beharrezkoa, erabiltzaile sarrera eskatzen...</string>
   <string name="msg_auth_pending_passphrase">Sarhitza beharrezkoa, erabiltzaile sarrera eskatzen...</string>
   <string name="msg_auth_error_bad_passphrase">Sarhitz okerra!</string>
   <string name="msg_auth_error_nfc">NFC datu akatsa!</string>

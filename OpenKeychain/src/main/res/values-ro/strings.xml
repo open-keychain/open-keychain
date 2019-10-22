@@ -320,6 +320,7 @@
   <!--Messages for PgpSignEncrypt operation-->
   <string name="msg_pse_error_bad_passphrase">Parolă greșită!</string>
   <!--Messages for Authentication operation-->
+  <string name="msg_auth_error_bad_passphrase">Parolă greșită!</string>
   <string name="msg_crt_warn_not_found">Cheia nu a fost găsită!</string>
   <string name="msg_import_fetch_error_not_found">Cheia nu a fost găsită!</string>
   <string name="msg_backup_error_db">Eroare bază de date!</string>

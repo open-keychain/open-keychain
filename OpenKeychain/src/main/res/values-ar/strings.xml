@@ -206,6 +206,14 @@
   <string name="orbot_start_dialog_ignore_tor">لا تستعن بشبكة تور</string>
   <string name="user_id_no_name"><![CDATA[<no name>]]></string>
   <string name="none"><![CDATA[<none>]]></string>
+  <plurals name="n_keys">
+    <item quantity="zero">%d مفاتيح</item>
+    <item quantity="one">مفتاح واحد</item>
+    <item quantity="two">مفتاحيْن</item>
+    <item quantity="few">%d مفاتيح</item>
+    <item quantity="many">%d مفاتيح</item>
+    <item quantity="other">%d مفاتيح</item>
+  </plurals>
   <string name="secret_key">المفتاح السري :</string>
   <!--choice-->
   <string name="choice_none">لا شيء</string>
@@ -245,6 +253,7 @@
   <string name="passphrase_for_backup">قم بإدخال الرمز الإحتياطي</string>
   <string name="passphrase_for">أدخل كلمة السر لـ \'%s\'</string>
   <string name="passphrase_for_any">إدخال كلمة السر</string>
+  <string name="passphrase_transfer">ادخل رمز النقل</string>
   <string name="file_delete_confirmation_title">هل تود حذف الملفات الأصلية ؟</string>
   <string name="no_file_selected">لم يتم تحديد أي ملف.</string>
   <string name="select_encryption_key">قم بتحديد مفتاح التشفير على الأقل.</string>
@@ -276,6 +285,7 @@
   <string name="decrypt_result_signature_secret">تم توقيعه بمفتاحك</string>
   <string name="decrypt_result_signature_certified">تم توقيعه بمفتاح مُؤكَّد</string>
   <string name="decrypt_result_encrypted">مشفرة</string>
+  <string name="decrypt_result_not_encrypted">غير مُعمّى</string>
   <string name="decrypt_result_insecure">تشفير غير آمن</string>
   <string name="decrypt_result_action_show">عرض</string>
   <string name="decrypt_result_action_Lookup">ابحث عن</string>
@@ -349,6 +359,7 @@
   <string name="snackbar_details">التفاصيل</string>
   <!--Import result toast-->
   <string name="import_warn_missing">لم يتم العثور على المفتاح على خادم المفاتيح.</string>
+  <string name="import_error_nothing">لا شيء للاستيراد.</string>
   <string name="import_error_nothing_cancelled">تم إلغاء عملية الإستيراد.</string>
   <!--Delete result toast-->
   <string name="delete_nothing">ليس هناك أي شيء للحذف.</string>
@@ -407,6 +418,7 @@
   <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">ملغى</string>
   <string name="user_id_info_certified_title">هوية مؤكَّدة</string>
+  <string name="user_id_info_certified_text">تمّ تأكيد هذه الهوية مِن طرفك.</string>
   <string name="user_id_info_uncertified_title">هوية غير مؤكَّدة</string>
   <!--Key trust-->
   <string name="key_trust_start_cloud_search">إبدأ البحث</string>
@@ -426,6 +438,7 @@
   <string name="edit_key_error_add_identity">قم بإضافة هوية واحدة على الأقل !</string>
   <string name="edit_key_error_add_subkey">أضف مفتاحا فرعيا على الأقل !</string>
   <!--Create key-->
+  <string name="create_key_upload">انشره على خوادم المفاتيح</string>
   <string name="create_key_empty">هذا الحقل إلزامي</string>
   <string name="create_key_passphrases_not_equal">كلمات السر غير متطابقة</string>
   <string name="create_key_final_text">لقد قمت بإدخال الهوية التالية :</string>
@@ -467,8 +480,10 @@
   <string name="cert_default">الإفتراضية</string>
   <string name="cert_none">ﻻشيئ</string>
   <string name="cert_positive">إيجابية</string>
+  <string name="cert_revoke">ملغاة</string>
   <string name="cert_verify_ok">موافق</string>
   <string name="cert_verify_error">خطأ !</string>
+  <string name="cert_verify_unavailable">مفتاح غير متوفّر</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <string name="msg_cancelled">لقد أُلغيَت العملية.</string>
   <!--Import Public log entries-->
@@ -481,6 +496,7 @@
   <string name="msg_kc_master">معالَجة المفتاح الرئيسي</string>
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
+  <string name="msg_cr">جارٍ توليد مفتاح رئيسي جديد</string>
   <string name="msg_cr_error_keysize_2048">يتوجب أن يكون حجم المفتاح أكبر أو يساوي 2048 !</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mf_require_passphrase">كلمة السر مطلوبة للقيام بالإجراءات</string>
@@ -520,6 +536,7 @@
   <string name="msg_upload_error_not_found">مفتاح غير موجود!</string>
   <string name="msg_upload_success">نجحت عملية الرفع إلى خادم المفاتيح</string>
   <string name="msg_data_detached_raw">معالجَة البيانات المُوقّعَة</string>
+  <string name="msg_data_mime_filename">اسم الملف: \'%s\'</string>
   <string name="msg_data_ok">تمت معالجة البيانات بنجاح</string>
   <string name="msg_get_no_valid_keys">لم يُعثَر على أي مفتاح صحيح سواءا في الملف أو على الحافظة !</string>
   <!--Messages for Keybase Verification operation-->
@@ -548,6 +565,7 @@
   <string name="title_view_cert">الإطلاع على تفاصيل الشهادة</string>
   <string name="unknown">غير معروف</string>
   <string name="error_empty_text">قم بكتابة نص تود تعميتة !</string>
+  <string name="key_colon">المفتاح:</string>
   <string name="btn_start_exchange">بداية التبادل</string>
   <string name="user_id_none"><![CDATA[<none>]]></string>
   <!--Android Account-->
@@ -579,6 +597,9 @@
   <string name="btn_finish">نهاية</string>
   <string name="backup_code_explanation">سوف يتم تأمين النسخة الإحتياطية برمز أمان. يُرجى كتابة هذا الرمز في مكان آخَر قبل مُواصلة هذه الخطوة !</string>
   <string name="btn_code_wrotedown">حسنا، لقد قمت بكتابته !</string>
+  <string name="btn_backup_share">شارك النسخة الاحتياطية</string>
+  <string name="btn_backup_save">احفظ النسخة الاحتياطية</string>
+  <string name="btn_backup_export">صدّر النسخة الاحتياطية</string>
   <string name="btn_backup_back">العودة للتحقق ثانية</string>
   <string name="share_log_dialog_title">هل تود مشاركة السجل ؟</string>
   <string name="share_log_dialog_share_button">شارك</string>
@@ -589,6 +610,7 @@
   <string name="cache_ttl_one_hour">لمدة ساعة</string>
   <string name="cache_ttl_one_day">لمدة يوم</string>
   <string name="remember">تذكَّر</string>
+  <string name="prompt_fidesmo_pgp_install_title">تنصيب PGP؟</string>
   <string name="prompt_fidesmo_pgp_install_button_positive">تثبيت</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">إلغاء</string>
   <string name="prompt_fidesmo_app_install_button_positive">تثبيت</string>

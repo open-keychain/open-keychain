@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+  <!--GENERAL: Please put all strings inside quotes as described in example 1 on
+    http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
+  <!--title-->
+  <string name="title_preferences">സെറ്റിംഗ്സ് </string>
+  <string name="title_help">സഹായം</string>
+  <string name="title_advanced_key_info">പുരോഗമിച്ച</string>
+  <!--section-->
+  <string name="section_certify">ഉറപ്പാക്കു </string>
+  <string name="section_share_key">കീ </string>
+  <!--button-->
+  <string name="btn_save">സംരക്ഷിക്കുക</string>
+  <string name="btn_do_not_save">വേണ്ടെന്നു വയ്ക്കുക</string>
+  <string name="btn_delete">നീക്കം ചെയ്യുക</string>
+  <string name="btn_next">അടുത്തത്</string>
+  <string name="btn_back">പിന്നോട്ട്</string>
+  <string name="btn_no">വേണ്ട</string>
+  <string name="btn_unlock">അൺലോക്കുചെയ്യുക</string>
+  <string name="btn_add_keyserver">ചേര്‍ക്കുക</string>
+  <!--Shortcut Strings-->
+  <!--Content Description-->
+  <!--menu-->
+  <string name="menu_preferences">സെറ്റിംഗ്സ് </string>
+  <string name="menu_help">സഹായം</string>
+  <string name="menu_search">തിരയുക</string>
+  <string name="menu_advanced">പുരോഗമിച്ച</string>
+  <string name="menu_keyserver_add">ചേര്‍ക്കുക</string>
+  <!--label-->
+  <string name="label_passphrase">രഹസ്യവാക്കു്</string>
+  <string name="label_unlock">അൺലോക്കുചെയ്യുന്നു…</string>
+  <string name="label_key_id">കീ ഐഡി</string>
+  <string name="label_key_type">തരം</string>
+  <string name="label_revoked">പിന്‍വലിക്കപ്പെട്ടു</string>
+  <string name="label_name">Name</string>
+  <string name="label_email">ഇ-മെയിൽ </string>
+  <string name="label_hidden_recipients">സ്വീകർത്താക്കളെ മറയ്‌ക്കുക</string>
+  <string name="label_enter_smartpgp_authority_name">Name</string>
+  <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="label_experimental_settings_desc_title">താക്കീത്</string>
+  <!--Proxy Preferences-->
+  <string name="pref_proxy_tor_title">Enable Tor</string>
+  <string name="pref_proxy_type_title">പ്രോക്സി തരം</string>
+  <!--proxy type choices and values-->
+  <!--OrbotHelper strings-->
+  <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_install">ഇൻസ്റ്റോൾ </string>
+  <string name="orbot_install_dialog_cancel">വേണ്ടെന്നു വയ്ക്കുക</string>
+  <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_cancel">വേണ്ടെന്നു വയ്ക്കുക</string>
+  <!--choice-->
+  <string name="error">പിശക്</string>
+  <!--sentences-->
+  <!--errors
+         no punctuation, all lowercase,
+         they will be put after "error_message", e.g. "Error: file not found"-->
+  <!--errors without preceding Error:-->
+  <!--results shown after decryption/verification-->
+  <string name="decrypt_result_no_signature">ഒപ്പിട്ടിട്ടില്ല</string>
+  <!--Add keys-->
+  <!--progress dialogs, usually ending in '…'-->
+  <string name="progress_cancel">വേണ്ടെന്നു വയ്ക്കുക</string>
+  <!--action strings-->
+  <!--key bit length selections-->
+  <!--elliptic curve names-->
+  <!--not in for now, see SaveKeyringParcel
+    <string name="key_curve_bp_p256">"Brainpool P-256"</string>
+    <string name="key_curve_bp_p384">"Brainpool P-384"</string>
+    <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
+  <!--compression-->
+  <!--Help-->
+  <string name="help_tab_start">ആരംഭിക്കുക</string>
+  <string name="help_tab_changelog">മാറ്റ വിവരപ്പട്ടിക </string>
+  <string name="help_tab_about">വിവരം</string>
+  <string name="help_about_version">Version:</string>
+  <string name="help_tab_donations">സംഭാവന ചെയ്യുക </string>
+  <!--Import-->
+  <string name="btn_import">ഇറക്കുമതി ചെയ്യുക</string>
+  <!--Generic result toast-->
+  <!--Import result toast-->
+  <!--Delete result toast-->
+  <!--Revoke result toast (snackbar)-->
+  <!--Certify result toast-->
+  <!--Intent labels-->
+  <!--Remote API-->
+  <string name="api_settings_save">സംരക്ഷിക്കുക</string>
+  <string name="api_settings_cancel">വേണ്ടെന്നു വയ്ക്കുക</string>
+  <string name="api_settings_advanced">പുരോഗമിച്ച</string>
+  <string name="api_settings_settings">സെറ്റിംഗ്സ് </string>
+  <!--Share-->
+  <!--retry upload dialog-->
+  <!--Delete or revoke private key dialog-->
+  <!--Delete Or Revoke Dialog spinner-->
+  <!--Key list-->
+  <!--Key view-->
+  <string name="key_view_tab_start">ആരംഭിക്കുക</string>
+  <string name="user_id_info_revoked_title">പിന്‍വലിക്കപ്പെട്ടു</string>
+  <!--Key trust-->
+  <!--keybase proof stuff-->
+  <!--Edit key-->
+  <!--Create key-->
+  <string name="create_key_empty">ഈ ഫീൽഡ് പൂരിപ്പിക്കേണ്ടതുണ്ട്</string>
+  <!--View key-->
+  <!--Add/Edit keyserver-->
+  <!--Add/Edit SmartPGP authority-->
+  <!--Navigation Drawer-->
+  <!--hints-->
+  <!--certs-->
+  <string name="cert_none">ഒന്നുമില്ല</string>
+  <string name="cert_verify_ok">ശരി</string>
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <!--Import Public log entries-->
+  <!--Import Secret log entries-->
+  <!--Keyring Canonicalization log entries-->
+  <!--Keyring merging log entries-->
+  <!--createSecretKeyRing-->
+  <!--modifySecretKeyRing-->
+  <string name="msg_mf_error_noop">ഒന്നും ചെയ്യാനില്ല!</string>
+  <!--Edit Key (higher level than modify)-->
+  <!--Promote key-->
+  <!--Other messages used in OperationLogs-->
+  <!--Messages for DecryptVerify operation-->
+  <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl_ok">ശരി</string>
+  <!--Messages for SignEncrypt operation-->
+  <!--Messages for PgpSignEncrypt operation-->
+  <!--Messages for Authentication operation-->
+  <!--Messages for Keybase Verification operation-->
+  <!--Messages for Mime parsing operation-->
+  <!--PassphraseCache-->
+  <string name="passp_cache_notif_pwd">രഹസ്യവാക്കു്</string>
+  <!--Keyserver sync-->
+  <!--First Time-->
+  <string name="restore_section">തിരികെയെത്തിക്കുക</string>
+  <!--unsorted-->
+  <string name="label_cert_type">തരം</string>
+  <!--Android Account-->
+  <string name="account_privacy_title">സ്വകാര്യത </string>
+  <!--Passphrase wizard-->
+  <!--TODO: rename all the things!-->
+  <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <string name="passphrase">രഹസ്യവാക്കു്</string>
+  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="nfc_settings">സെറ്റിംഗ്സ് </string>
+  <string name="snack_security_token_view">കാണുക</string>
+  <string name="snack_security_token_import">ഇറക്കുമതി ചെയ്യുക</string>
+  <!--Other Linked Identity strings-->
+  <string name="share_log_dialog_cancel_button">വേണ്ടെന്നു വയ്ക്കുക</string>
+  <string name="menu_uids_save">സംരക്ഷിക്കുക</string>
+  <string name="prompt_fidesmo_pgp_install_button_positive">ഇൻസ്റ്റോൾ </string>
+  <string name="prompt_fidesmo_pgp_install_button_negative">വേണ്ടെന്നു വയ്ക്കുക</string>
+  <string name="prompt_fidesmo_app_install_button_positive">ഇൻസ്റ്റോൾ </string>
+  <string name="prompt_fidesmo_app_install_button_negative">വേണ്ടെന്നു വയ്ക്കുക</string>
+  <string name="redirect_import_key_no">അടക്കുക</string>
+  <string name="button_cancel">വേണ്ടെന്നു വയ്ക്കുക</string>
+  <string name="button_back">പിന്നോട്ട്</string>
+  <string name="key_health_expired_title">കാലഹരണപ്പെട്ടതു്</string>
+  <string name="key_health_revoked_title">പിന്‍വലിക്കപ്പെട്ടു</string>
+  <string name="button_import">ഇറക്കുമതി ചെയ്യുക</string>
+  <string name="transfer_confirm_cancel">വേണ്ടെന്നു വയ്ക്കുക</string>
+  <string name="transfer_confirm_ok">അയയ്‌ക്കുക</string>
+  <string name="token_action_import">ഇറക്കുമതി ചെയ്യുക</string>
+  <string name="token_unlock_ok">അൺലോക്കുചെയ്യുക</string>
+  <string name="select_identity_cancel">പ്രവർത്തനരഹിതമാക്കു </string>
+  <string name="key_gen_back">പിന്നോട്ട്</string>
+  <string name="snack_keylist_clipboard_action">കാണുക</string>
+  <string name="snackbutton_analytics_settings">സെറ്റിംഗ്സ് </string>
+</resources>

@@ -1,7 +1,11 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 5.4
+  * Add WKD Advanced method
+  * Add COTECH Security Key Shop
+
 ## 5.3
-  * Usw keys.openpgp.org as default keyserver
+  * keys.openpgp.orgをデフォルトのキーサーバーとして使用
 
 ## 5.2
   * クリップボードからの鍵のインポートを改善
@@ -12,33 +16,33 @@
   * APIのセキュリティ上問題となりうる部分を修正
 
 ## 5.0
-  * Improved Autocrypt support
+  * Autocryptサポートの改善
 
 ## 4.9
 
-  * Curve25519 support
-  * Improved support for security tokens
+  * Curve25519のサポート
+  *セキュリティトークンのサポートの改善
 
 ## 4.8
 
-  * Improved support for USB tokens: Gnuk, Nitrokey models, YubiKey 4 models
-  * Feature to find the position of the device's NFC reader
+  * USBトークンのサポートの改善：Gnuk、Nitrokeyモデル、YubiKey 4モデル
+  *デバイスのNFCリーダーの位置を見つける機能
 
 ## 4.7
 
-  * Improved import from clipboard
-  * New key creation wizard for Security Tokens
-  * Removed password cache "time to live" setting
+  *クリップボードからのインポートの改善
+  *セキュリティトークンの新しいキー作成ウィザード
+  *パスワードキャッシュの「有効期間」設定を削除
 
 
 ## 4.6
 
-  * Import your keys using our new Secure Wi-Fi Transfer mechanism
+  *新しいセキュアWi-Fi転送メカニズムを使用してキーをインポート
 
 
 ## 4.5
 
-  * Detailed description of security problems
+  *セキュリティ問題の詳細な説明
   * 鍵ごとに鍵サーバの状態を表示
   * EdDSA のサポート
   * pgp.mit.edu の修正 (新しい証明書)

@@ -378,7 +378,7 @@
   <string name="error_could_not_extract_private_key">impossible d’extraire la clé privée</string>
   <string name="error_wrong_security_token">ce jeton de sécurité ne contient pas la clé exigée</string>
   <!--errors without preceding Error:-->
-  <string name="error_jelly_bean_needed">Il vous faut Android 4.1 pour utiliser la fonction NFC Beam CCP d’Android</string>
+  <string name="error_jelly_bean_needed">Il vous faut Android 4.1 pour utiliser la fonction CCP Beam d’Android</string>
   <string name="error_nfc_needed">La CCP doit être activée</string>
   <string name="error_beam_needed">Beam doit être activé</string>
   <string name="error_nothing">Rien encore à afficher.</string>
@@ -503,7 +503,7 @@
   <string name="import_qr_code_wrong">Le format du code QR n’est pas pris en charge (spécification de format : https://github.com/open-keychain/open-keychain/wiki/QR-Codes)</string>
   <string name="import_qr_code_fp">L’empreinte est mal formée ou trop courte</string>
   <string name="import_qr_code_too_short_fingerprint">L’empreinte est trop courte</string>
-  <string name="import_qr_code_button">Lire un code QR</string>
+  <string name="import_qr_code_button">Balayer un code QR</string>
   <string name="import_qr_code_text">Placez votre appareil photo au-dessus du code QR</string>
   <string name="btn_import">Importer</string>
   <string name="btn_import_keys">Importer toutes les clés</string>
@@ -636,7 +636,7 @@
   <string name="key_list_empty_text1">Aucune clé n’a été trouvée</string>
   <string name="key_list_filter_show_all">Afficher toutes les clés</string>
   <string name="key_list_filter_show_certified">N’afficher que les clés confirmées</string>
-  <string name="key_list_fab_qr_code">Lire un code QR</string>
+  <string name="key_list_fab_qr_code">Balayer un code QR</string>
   <string name="key_list_fab_search">Recherche de clés</string>
   <string name="key_list_fab_import">Importer d’un fichier</string>
   <string name="key_list_dummy_title">Vous n’avez pas encore de clé</string>
@@ -756,7 +756,7 @@
   <!--View key-->
   <string name="view_key_my_key">Ma clé</string>
   <string name="view_key_verified">clé confirmée</string>
-  <string name="view_key_unverified">Non confirmée : lisez un code QR pour confirmer la clé</string>
+  <string name="view_key_unverified">Non confirmée : balayez un code QR pour confirmer la clé</string>
   <string name="view_key_fragment_no_system_contact">&lt;aucun&gt;</string>
   <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Ajouter un serveur de clés</string>
@@ -1555,9 +1555,9 @@
     <item>50 EUR</item>
     <item>100 EUR</item>
   </string-array>
-  <string name="redirect_import_key_title">Lire avec OpenKeychain</string>
-  <string name="redirect_import_key_message">Vous avez lu un code QR OpenPGP avec une autre appli. Veuillez le lire directement avec OpenKeychain pour des raisons de sécurité.</string>
-  <string name="redirect_import_key_yes">Relire</string>
+  <string name="redirect_import_key_title">Balayer avec OpenKeychain</string>
+  <string name="redirect_import_key_message">Vous avez balayé un code QR OpenPGP avec une autre appli. Veuillez le balayer directement avec OpenKeychain pour des raisons de sécurité.</string>
+  <string name="redirect_import_key_yes">Rebalayer</string>
   <string name="redirect_import_key_no">Ferner</string>
   <string name="request_permission_title">Autoriser l’accès à votre clé ?</string>
   <string name="request_permission_msg">%1$s demande d’accéder à l’une de vos clés, ce qui lui permettra de déchiffrer les messages envoyés à cette clé. Vous pourrez révoquer l’accès ultérieurement dans OpenKeychain.</string>
@@ -1634,7 +1634,7 @@
   <string name="insecure_sign_not_whitelisted_curve">La clé à partir de laquelle ce message a été envoyé (signé) utilise la courbe elliptique dont l’OID est %1$s, qui ne fait pas partie de la liste blanche.</string>
   <string name="insecure_encrypt_unidentified">La clé utilisée pour recevoir (déchiffrer) ce message pose un problème de sécurité non identifié.</string>
   <string name="insecure_sign_unidentified">La clé utilisée pour envoyer (signer) ce message pose un problème de sécurité non identifié.</string>
-  <string name="insecure_report_suggestion">Ce problème peut provenir d’OpenKeychain. Veuillez le signaler sur notre gestionnaire de problèmes.</string>
+  <string name="insecure_report_suggestion">Ce problème peut provenir d’OpenKeychain. Veuillez le signaler sur notre système de suivi des problèmes.</string>
   <string name="insecure_mdc">Ce message n’a pas été signé et ne contient pas de code de détection des modifications (MDC). Il pourrait avoir été modifié par un assaillant.</string>
   <string name="insecure_mdc_suggestion">L’absence d’un MDC provient d’un problème dans le logiciel d’expédition ou d’une attaque. Pour des communications sécurisées de bout en bout, les messages devraient aussi être signés par l’expéditeur.</string>
   <string name="insecure_symmetric_algo">Ce message a été chiffré en utilisant l’algorithme %s, ce qui est considéré comme non sécurisé et pour le moins inhabituel !</string>
@@ -1650,9 +1650,9 @@
   <string name="dialog_insecure_button_ok">Compris</string>
   <string name="usage_authentication">Authentification</string>
   <string name="identity_context_forget">Oublier</string>
-  <string name="button_scan">Lire</string>
+  <string name="button_scan">Balayer</string>
   <string name="button_more_info">Plus d’infos</string>
-  <string name="transfer_scan_explanation">Pour partager ou importer la configuration de votre clé, établissez une connexion sécurisée en lisant avec l’un ou l’autre des appareils.</string>
+  <string name="transfer_scan_explanation">Pour partager ou importer la configuration de votre clé, établissez une connexion sécurisée en balayant avec l’un ou l’autre des appareils.</string>
   <string name="transfer_scan_warning">À n’utiliser qu’avec vos propres appareils !</string>
   <string name="connection_status">État de connexion :</string>
   <string name="section_transfer_keys">Clés disponibles pour le transfert</string>
@@ -1675,7 +1675,7 @@
   <string name="transfer_confirm_ok">Envoyer</string>
   <string name="transfer_confirm_title">Envoyer votre clé ?</string>
   <string name="transfer_confirm_text">Cela transférera l’accès complet à votre clé à l’appareil connecté. Vous ne devriez jamais envoyer vos propres clés à des appareils dont vous n’est pas propriétaire.</string>
-  <string name="button_scan_again">Réanalyser</string>
+  <string name="button_scan_again">Rebalayer</string>
   <string name="transfer_error_wifi_text">Échec de connexion</string>
   <string name="transfer_error_wifi_text_instructions">Assurez-vous d’être sur le même réseau, puis réanalysez.</string>
   <string name="transfer_error_wifi_text_instructions_ssid">Assurez-vous d’être sur le réseau « %s », puis réanalysez.</string>

@@ -1,7 +1,11 @@
 [//]: # (MEGJEGYZÉS: minden mondatot külön sorba írjon, a Transifex minden sort a saját fordítási mezőjébe tesz!)
 
+## 5.4
+  * Add WKD Advanced method
+  * Add COTECH Security Key Shop
+
 ## 5.3
-  * Usw keys.openpgp.org as default keyserver
+  * Use keys.openpgp.org as default keyserver
 
 ## 5.2
   * Továbbfejlesztett kulcsimportálás a vágólapról

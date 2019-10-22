@@ -1,7 +1,11 @@
 [//]: # (Beachte: Bitte schreibe jeden Satz in eine eigene Zeile, Transifex wird jede Zeile in ein eigenes Übesetzungsfeld setzen!)
 
+## 5.4
+  * Add WKD Advanced method
+  * Add COTECH Security Key Shop
+
 ## 5.3
-  * Usw keys.openpgp.org as default keyserver
+  * Verwende keys.openpgp.org als standardmäßigen Schlüsselserver
 
 ## 5.2
   * Verbesserter Schlüsselimport aus der Zwischenablage

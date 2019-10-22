@@ -34,6 +34,7 @@
   <string name="label_email">Postel</string>
   <string name="label_theme">Tem</string>
   <string name="label_enter_smartpgp_authority_name">Anv</string>
+  <string name="pref_facebook">Facebook</string>
   <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Gweredekaat Tor</string>

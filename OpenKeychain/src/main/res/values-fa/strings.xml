@@ -323,6 +323,7 @@
   <!--Add/Edit keyserver-->
   <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
+  <string name="nav_keys">کلید ها</string>
   <string name="nav_apps">برنامه‌ها</string>
   <string name="drawer_open">باز کردن منوی برنامه</string>
   <string name="drawer_close">بستن منوی برنامه</string>

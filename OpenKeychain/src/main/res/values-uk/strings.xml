@@ -1884,6 +1884,7 @@
   <string name="snackbutton_analytics_settings">Налаштування</string>
   <string name="subkey_action_create">Підключ буде створено</string>
   <string name="subkey_action_revoke">Підключ буде відкликано</string>
+  <string name="subkey_action_strip">Підключ буде відділено</string>
   <string name="subkey_action_expiry_never">Термін дії буде змінено на ніколи</string>
   <string name="subkey_action_expiry_date">Термін дії буде змінено на %s</string>
   <string name="share_key_clipboard">Поділитися ключем через буфер обміну</string>

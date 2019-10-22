@@ -135,7 +135,7 @@
   <string name="label_file_colon">Fil:</string>
   <string name="label_no_passphrase">Inget lösenord</string>
   <string name="label_passphrase">Lösenord</string>
-  <string name="label_pin">PIN</string>
+  <string name="label_pin">PIN-kod</string>
   <string name="label_unlock">Låser upp…</string>
   <string name="label_passphrase_again">Upprepa lösenord</string>
   <string name="label_show_passphrase">Visa lösenord</string>
@@ -314,7 +314,7 @@
   <string name="passphrase_keyboard_hint_numeric">Byt till numeriskt tangentbord</string>
   <string name="passphrase_transfer">Ange överföringskod</string>
   <string name="passphrase_transfer_autocrypt">För att importera detta Autocrypt-inställningsmeddelande, ange överföringskod:</string>
-  <string name="pin_for">Ange PIN för \'%s\'</string>
+  <string name="pin_for">Ange PIN-kod för \'%s\'</string>
   <string name="security_token_pin_for">Ange PIN-kod för att få tillgång till säkerhetstoken för \'%s\'</string>
   <string name="security_token_nfc_text">Håll Säkerhetstoken mot NFC markören på baksidan av enheten.</string>
   <string name="security_token_nfc_wait">Håll säkerhetstoken mot baksidan!</string>
@@ -437,7 +437,7 @@
   <string name="progress_modify_subkeyadd">lägger till undernycklar…</string>
   <string name="progress_modify_passphrase">byter lösenord...</string>
   <string name="progress_modify_pin">ändrar PIN-kod...</string>
-  <string name="progress_modify_admin_pin">ändrar administratörs-PIN...</string>
+  <string name="progress_modify_admin_pin">ändrar administratör-PIN-kod...</string>
   <string name="progress_exporting_key">exporterar nyckel...</string>
   <string name="progress_exporting_keys">exporterar nycklar…</string>
   <string name="progress_start">förbereder operation...</string>
@@ -738,11 +738,11 @@
   <string name="create_key_email_already_exists_text">E-postadress har redan lagts till</string>
   <string name="create_key_email_empty_email">E-postadress kan inte vara tom</string>
   <string name="create_key_yubi_key_pin_text">Välj en PIN-kod med 6 siffror.</string>
-  <string name="create_key_yubi_key_admin_pin_text">Skriv ner administratörs-PIN-koden och lagra den på ett säkert ställe (krävs när du använde en fel PIN-kod 3 gånger).</string>
-  <string name="create_key_yubi_key_pin">PIN</string>
-  <string name="create_key_yubi_key_admin_pin">Administratör PIN</string>
-  <string name="create_key_yubi_key_pin_repeat">Upprepa PIN</string>
-  <string name="create_key_yubi_key_pin_not_correct">PIN är inte korrekt!</string>
+  <string name="create_key_yubi_key_admin_pin_text">Skriv ner administratör-PIN-koden och lagra den på ett säkert ställe (krävs när du använde en fel PIN-kod 3 gånger).</string>
+  <string name="create_key_yubi_key_pin">PIN-kod</string>
+  <string name="create_key_yubi_key_admin_pin">Administratör-PIN-kod</string>
+  <string name="create_key_yubi_key_pin_repeat">Upprepa PIN-kod</string>
+  <string name="create_key_yubi_key_pin_not_correct">PIN-koden är inte korrekt!</string>
   <string name="create_key_yubi_key_pin_too_short">PIN-koden måste vara minst 6 nummer långt!</string>
   <string name="create_key_yubi_key_pin_insecure">Välj en säker PIN-kod, inte 000000, 123456 eller liknande kombinationer (de 20 mest valda PIN-koderna är inte tillåtna)</string>
   <string name="create_key_yubi_key_algorithm_text">Välj en algoritm för varje nyckel.</string>
@@ -929,12 +929,14 @@
   <string name="msg_kc_uid_bad_err">Tar bort dåligt eget-certifikat för användar-ID \'%s\'</string>
   <string name="msg_kc_uid_bad_local">Ta bort user ID-certifikat med \"lokal\" flagga</string>
   <string name="msg_kc_uid_bad_time">Tar bort användar-ID med framtida tidstämpel</string>
+  <string name="msg_kc_uid_bad_type">Tar bort användar-ID-certifikat av okänd typ (%s)</string>
   <string name="msg_kc_uid_bad">Tar bort dåligt eget-certifikat för användar-ID \'%s\'</string>
   <string name="msg_kc_uid_cert_dup">Tar bort föråldrat eget-certifikat för användar-ID \'%s\'</string>
   <string name="msg_kc_uid_revoke_dup">Tar bort överflödigt återkallelsecertifikat för användar-ID \'%s\'</string>
   <string name="msg_kc_uid_revoke_old">Tar bort föråldrat återkallelsecertifikat för användar-ID \'%s\'</string>
   <string name="msg_kc_uid_no_cert">Inget giltigt eget-certifikat hittades för användar-ID \'%s\', tar bort från nyckelring</string>
   <string name="msg_kc_uid_remove">Tar bort ogiltigt användar-ID \'%s\'</string>
+  <string name="msg_kc_uid_dup">Tar bort duplicerat användar-ID \"%s\". Nyckelringen innehöll två av dem. Detta kan resultera i saknade certifikat!</string>
   <string name="msg_kc_uid_warn_encoding">Användar-ID verifieras inte som UTF-8!</string>
   <string name="msg_kc_uat_jpeg">Bearbetar användarattribut av typ JPEG</string>
   <string name="msg_kc_uat_unknown">Bearbetar användarattribut av okänd typ</string>
@@ -995,7 +997,7 @@
   <string name="msg_mf_master">Ändring av huvudcertifieringar</string>
   <string name="msg_mf_passphrase">Ändra lösenord för nyckelring</string>
   <string name="msg_mf_pin">Ändrar PIN-kod på kort</string>
-  <string name="msg_mf_admin_pin">Ändrar administratörs PIN-kod på kort</string>
+  <string name="msg_mf_admin_pin">Ändrar administratör-PIN-kod på kort</string>
   <string name="msg_mf_passphrase_key">Återkrypterar undernyckel %s med nytt lösenord</string>
   <string name="msg_mf_passphrase_empty_retry">Inställning av nytt lösenord misslyckades, försök igen med tomt gammalt lösenord</string>
   <string name="msg_mf_passphrase_fail">Lösenord för undernyckel kunde inte ändras! (Har den en annan än de andra nycklarna?)</string>
@@ -1062,6 +1064,7 @@
   <string name="msg_dc_error_invalid_data">Ingen giltig OpenPGP krypterad eller signerad data hittad!</string>
   <string name="msg_dc_error_io">Stötte på ett fel vid läsning av inmatningsdata!</string>
   <string name="msg_dc_error_input">Fel vid öppning av inmatningsdataström!</string>
+  <string name="msg_dc_error_input_denied">Fel vid öppning av inmatningsdataström: åtkomst nekad!</string>
   <string name="msg_dc_error_no_data">Ingen krypterad data hittad i strömmen!</string>
   <string name="msg_dc_error_no_key">Ingen krypterad data med känd hemlig nyckel hittad i strömmen!</string>
   <string name="msg_dc_error_no_signature">Saknar signaturdata!</string>
@@ -1094,6 +1097,8 @@
   <!--Messages for SignEncrypt operation-->
   <string name="msg_se">Startar signerings/krypterings procedur</string>
   <string name="msg_se_error_no_input">Ingen inmatning ges!</string>
+  <string name="msg_se_error_input_uri_not_found">Fel vid öppnande av URI för läsning!</string>
+  <string name="msg_se_error_output_uri_not_found">Fel vid öppnande av URI för skrivning!</string>
   <string name="msg_se_success">Signering/kryptering lyckades!</string>
   <!--Messages for PgpSignEncrypt operation-->
   <string name="msg_pse_asymmetric">Förbereder öppna nycklar för kryptering</string>
@@ -1342,6 +1347,7 @@
   <string name="snack_security_token_view">Visa</string>
   <string name="snack_security_token_import">Importera</string>
   <string name="security_token_serial_no">Serienummer: %s</string>
+  <string name="security_token_key_holder">Nyckelhållare: %s</string>
   <string name="security_token_status_partly">Säkerhetstoken matchar, delvis bunden till nyckel</string>
   <string name="security_token_create">Håll säkerhetstoken mot baksidan av din enhet.</string>
   <string name="btn_reset">Återställ</string>
@@ -1349,12 +1355,17 @@
   <string name="security_token_radio_reset">Återställ token</string>
   <string name="security_token_reset_warning">Återställning av säkerhetstecken förstör fullständigt nycklarna på den. Efteråt kommer du inte att kunna dekryptera meddelanden/filer krypterade med denna nyckel!</string>
   <string name="security_token_error">Fel: %s</string>
-  <string name="security_token_error_wrong_length">Inmatad PIN-kod är för kort. PIN:er är minst 6 siffror långa.\n(Fel: Fel längd)</string>
+  <plurals name="security_token_error_pin">
+    <item quantity="one">Fel PIN-kod!\n%d försök kvar!</item>
+    <item quantity="other">Fel PIN-kod!\n%d försök kvar.</item>
+  </plurals>
+  <string name="security_token_error_wrong_length">Inmatad PIN-kod är för kort. PIN-koder är minst 6 siffror långa.\n(Fel: Fel längd)</string>
   <string name="security_token_error_conditions_not_satisfied">Villkoren för användning är inte uppfyllda.</string>
-  <string name="security_token_error_security_not_satisfied">Fel PIN!\n(Kom ihåg att du bara har 3 försök!)</string>
-  <string name="security_token_error_authentication_blocked">PIN blockerad efter alltför många försök.</string>
+  <string name="security_token_error_security_not_satisfied">Fel PIN-kod!\n(Kom ihåg att du bara har 3 försök!)</string>
+  <string name="security_token_error_authentication_blocked">PIN-kod blockerad efter alltför många försök.</string>
   <string name="security_token_error_data_not_found">Nyckel eller objekt hittades inte.</string>
   <string name="security_token_error_unknown">Okänt fel</string>
+  <string name="security_token_error_bad_data">Inmatad PIN-kod är för kort. PIN-koder är minst 6 siffror långa.\n(Fel: Ogiltiga data)</string>
   <string name="security_token_error_header">Säkerhetstoken rapporterade ogiltig %s byte.</string>
   <string name="security_token_error_tag_lost">Säkerhetstoken har tagits bort för tidigt. Håll säkerhetstoken på baksidan tills operationen är klar.</string>
   <string name="security_token_error_iso_dep_not_supported">Säkerhetstoken stöder inte den nödvändiga kommunikationsstandarden (ISO-DEP, ISO 14443-4)</string>
@@ -1373,6 +1384,7 @@
   <string name="error_loading_keys">Fel vid inläsning av nycklar!</string>
   <string name="error_empty_log">(fel, tom logg)</string>
   <string name="error_reading_text">Kunde inte läsa indata för att dekryptera!</string>
+  <string name="error_reading_k9">Mottog ofullständiga data, försök att trycka \"Hämta komplett meddelande\" i K-9 Mail!</string>
   <string name="filename_unknown">Okänt filnamn (tryck för att öppna)</string>
   <string name="filename_unknown_text">Text (tryck för att visa)</string>
   <string name="filename_keys">Nyckel säkerhetskopiering (rör för att importera)</string>
@@ -1454,6 +1466,8 @@
   <string name="button_back">Tillbaka</string>
   <string name="button_got_it">Förstått</string>
   <string name="requested_key_label">Begärd nyckel:</string>
+  <string name="error_preselect_sign_key">Fel vid val av nyckel %s för signering!</string>
+  <string name="error_preselect_encrypt_key">Fel vid val av nyckel %s för kryptering!</string>
   <string name="title_key_status">Nyckelstatus</string>
   <string name="caption_secret_status">Den här nyckeln är din. Du kan använda den för att:</string>
   <string name="cap_title_confirm">Bekräfta andra nycklar</string>
@@ -1531,6 +1545,7 @@
   <string name="transfer_status_connected">Ansluten</string>
   <string name="transfer_status_disconnected">Frånkopplad!</string>
   <string name="transfer_error_connect">Anslutningen misslyckades!</string>
+  <string name="transfer_error_listen">Fel väntar på anslutning!</string>
   <string name="transfer_error_generic">Okänt kommunikationsfel!</string>
   <string name="transfer_error_generic_msg">Kommunikationsfel: %s</string>
   <string name="transfer_connecting">Ansluter...</string>
@@ -1538,8 +1553,11 @@
   <string name="menu_secure_wifi_transfer">Säker Wi-Fi-överföring</string>
   <string name="transfer_confirm_cancel">Avbryt</string>
   <string name="transfer_confirm_ok">Skicka</string>
+  <string name="transfer_confirm_title">Skicka din nyckel?</string>
   <string name="button_scan_again">Skanna igen</string>
   <string name="transfer_error_wifi_text">Anslutningen misslyckades!</string>
+  <string name="transfer_error_wifi_text_instructions">Kontrollera att du är på samma nätverk och skanna sedan igen.</string>
+  <string name="transfer_error_wifi_text_instructions_ssid">Kontrollera att du är på nätverket \"%s\" och skanna sedan igen.</string>
   <string name="status_check_key">Kontrollerar nyckelstatus...</string>
   <string name="status_search_local">Söker i nyckellistan...</string>
   <string name="status_search_uri">Söker på webbadress för token...</string>
@@ -1559,6 +1577,7 @@
   <string name="token_action_import">Importera</string>
   <string name="token_action_view_key">Visa nyckel</string>
   <string name="token_action_setup">Ställ in med ny nyckel</string>
+  <string name="token_action_unlock">Lås upp med administratör-PIN-kod</string>
   <string name="token_unlock_attempts_none">Inga upplåsningsförsök kvar</string>
   <plurals name="token_unlock_attempts">
     <item quantity="one">1 försök kvar</item>
@@ -1568,9 +1587,11 @@
   <string name="token_menu_change_pin">Ändra PIN-kod</string>
   <string name="token_menu_view_log">Visa logg</string>
   <string name="token_unlock_ok">Lås upp</string>
-  <string name="token_hint_admin_pin">Administratör PIN</string>
+  <string name="token_hint_admin_pin">Administratör-PIN-kod</string>
   <string name="token_hint_new_pin">Ny PIN-kod</string>
   <string name="token_hint_new_pin_repeat">Ny PIN-kod (upprepa)</string>
+  <string name="token_error_admin_min8">Adminstratör-PIN-kod måste vara 8 tecken eller längre!</string>
+  <string name="token_error_pin_min6">Ny PIN-kod måste vara 6 tecken eller längre!</string>
   <string name="token_error_pin_repeat">PIN-koderna matchar inte!</string>
   <string name="msg_ret_curi_error_no_match">Ingen matchande nyckel hittades</string>
   <string name="msg_ret_curi_error_not_found">Kunde inte öppna filen!</string>
@@ -1627,7 +1648,7 @@
   <string name="keylist_item_key_id">Nyckel-ID: %s</string>
   <string name="keylist_header_anonymous">Anonym</string>
   <string name="keylist_header_special">#</string>
-  <string name="dialog_analytics_consent">För att förbättra upplevelsen för alla användare, kan OpenKeychain samla anonym användningsstatistik?\n\nFör mer information, se vår<a href="https://openkeychain.org/help/privacy-policy">integritetspolicy</a>.</string>
+  <string name="dialog_analytics_consent">För att förbättra upplevelsen för alla användare, kan OpenKeychain samla anonym användningsstatistik?\n\nFör mer information, se vår <a href="https://openkeychain.org/help/privacy-policy">integritetspolicy</a>.</string>
   <string name="button_analytics_yes">Ja, jag vill hjälpa till!</string>
   <string name="button_analytics_no">Nej tack</string>
   <string name="snack_analytics_accept">Tack för hjälpen! Du kan ändra denna inställning i inställningarna.</string>

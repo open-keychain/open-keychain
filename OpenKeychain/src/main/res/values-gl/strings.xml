@@ -163,6 +163,7 @@
   <string name="label_creation">Creada</string>
   <string name="label_creation_colon">Creada:</string>
   <string name="label_expiry">Caducidade</string>
+  <string name="label_valid_from">Válido desde</string>
   <string name="label_usage">Uso</string>
   <string name="label_revoked">Revogada</string>
   <string name="label_insecure">Inseguro</string>
@@ -952,15 +953,32 @@
     <item quantity="one">A canonización do chaveiro foi exitosa e eliminouse un certificado redundante</item>
     <item quantity="other">A canonización do chaveiro foi exitosa, elimináronse %d certificados redundantes</item>
   </plurals>
+  <string name="msg_kc_uid_bad_err">Eliminando o auto-certificado malo para o ID usario \'%s\'</string>
   <string name="msg_kc_uid_bad_local">Eliminando certificado de ID de usuaria con sinal \'local\'</string>
+  <string name="msg_kc_uid_bad_time">Eliminando ID usuario con marca temporal futura</string>
+  <string name="msg_kc_uid_bad_type">Eliminando o certificado de tipo descoñecido para ID de usuario (%s)</string>
+  <string name="msg_kc_uid_bad">Eliminando o auto-certificado malo para o ID usario \'%s\'</string>
+  <string name="msg_kc_uid_cert_dup">Eliminando o auto-certificado caducado para ID usuario \'%s\'</string>
+  <string name="msg_kc_uid_foreign">Eliminando o certificado externo para o ID de usuario  por \'%s\'</string>
   <string name="msg_kc_uid_revoke_dup">Eliminando o certificado de revogación redundante para o ID de usuaria \'%s\'</string>
   <string name="msg_kc_uid_revoke_old">Eliminando o certificado de revogación desactualizado para o ID de usuaria \'%s\'</string>
+  <string name="msg_kc_uid_no_cert">Non hai auto-certificado válido para o ID de usuario \'%s\', eliminando do anel</string>
+  <string name="msg_kc_uid_remove">Eliminando ID usuario non válido \'%s\'</string>
   <string name="msg_kc_uid_dup">Eliminando ID de usuaria duplicado \'%s\'. O chaveiro contiña dous deles. Isto pode resultar en certificados perdidos!</string>
+  <string name="msg_kc_uid_too_many">Eliminando ID usuario \'%s\'. Non se importan máis de 100 IDs de usuario!</string>
+  <string name="msg_kc_uid_warn_encoding">O ID de usuario non valida como UTF-8!</string>
+  <string name="msg_kc_uat_jpeg">Procesando o atributo de usuario tipo JPEG</string>
   <string name="msg_kc_uat_unknown">Procesando o atributo de usuaria de tipo descoñecido</string>
+  <string name="msg_kc_uat_bad_err">Eliminando o auto-certificado malo para o atributo de usuario</string>
   <string name="msg_kc_uat_bad_local">Eliminando certificado de atributo de usuario con sinal \'local\'</string>
+  <string name="msg_kc_uat_bad_time">Elimiandno o atributo de usuario con marca temporal futura</string>
+  <string name="msg_kc_uat_bad_type">Eliminando o certificado de tipo descoñecido como atributo de usuario (%s)</string>
+  <string name="msg_kc_uat_bad">Eliminando o auto-certificado malo para o atributo de usuario</string>
+  <string name="msg_kc_uat_cert_dup">Eliminando o autocertificao caducado para o atributo de usuario</string>
   <string name="msg_kc_uat_dup">Eliminando atributo de usuaria duplicado. O chaveiro contiña dous deles. Isto pode resultar en certificados perdidos!</string>
   <string name="msg_kc_uat_revoke_dup">Eliminando o certificado de revogación redundante para o atributo de usuario</string>
   <string name="msg_kc_uat_revoke_old">Eliminando o certificado de revogación desactualizado para o atributo de usuario</string>
+  <string name="msg_kc_uat_warn_encoding">O ID de usuario non valida como UTF-8!</string>
   <!--Keyring merging log entries-->
   <string name="msg_mg_error_heterogeneous">Tentouse fusionar chaveiros con distintas pegadas dixitais!</string>
   <string name="msg_mg_error_encode">Erro fatal codificando a sinatura!</string>

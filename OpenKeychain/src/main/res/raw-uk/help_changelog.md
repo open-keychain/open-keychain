@@ -1,10 +1,14 @@
 [//]: # (Увага: Будь ласка розміщуйте кожне речення у окремому рядку, Transifex розмістить кожен рядок у відповідному полі для перекладу!)
 
+## 5.4
+  * Add WKD Advanced method
+  * Add COTECH Security Key Shop
+
 ## 5.3
-  * Usw keys.openpgp.org as default keyserver
+  * Сервер keys.openpgp.org використовується як типовий
 
 ## 5.2
-  * Improved key import from clipboard
+  * Покращений імпорт ключа з буферу обміну
 
 ## 5.1
   * Підтримка для Ledger Nano S

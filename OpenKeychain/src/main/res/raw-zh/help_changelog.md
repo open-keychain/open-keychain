@@ -1,7 +1,11 @@
 [//]: # (注意：请把每个句子放在单独一行中， Transifex 将把每一行放置在独立的翻译表单内！)
 
+## 5.4
+  * Add WKD Advanced method
+  * Add COTECH Security Key Shop
+
 ## 5.3
-  * Usw keys.openpgp.org as default keyserver
+  * 将 keys.openpgp.org 设置为默认密钥服务器
 
 ## 5.2
   * 改进的剪贴板密钥导入
@@ -27,7 +31,7 @@
 ## 4.7
 
   * 改进的剪贴板导入
-  * New key creation wizard for Security Tokens
+  * 新的安全令牌密钥生成向导
   * 移除密码缓存“存活时间”设定
 
 
@@ -46,21 +50,21 @@
 
 ## 4.4
 
-  * New key status displays detailed information why a key is considered insecure or defective
+  * 新的密钥详情界面会显示密钥被认定为不安全或是有缺陷的详细原因
 
 
 ## 4.3
 
-  * Better support for large keys
-  * Fix import of Gpg4win files with broken encodings
+  * 更好的支持大密钥
+  * 修复编码损坏的Gpg4win文件的导入问题
 
 
 ## 4.2
 
-  * Experimental support for Elliptic Curve Encryption with Security Tokens
-  * Redesigned key import screen
-  * Design improvements to key lists
-  * Support for keyserver onion addresses
+  * 实验性地支持了基于安全令牌的椭圆曲线加密算法
+  * 重新设计的密钥导入界面
+  * 设计了改良后的密钥列表
+  * 对于洋葱协议的密钥服务器地址的支持
 
 
 ## 4.1
@@ -182,7 +186,7 @@
   * 修复密钥导入的众多问题，其中有剥离密的钥问题
   * 头衔和显示密钥验证的旗帜标记
   * 产生自定义密钥的用户界面
-  * Fixing user ID revocation certificates
+  * 修复了使用者ID吊销证书
   * 新的云搜索（通过传统的密钥服务器和keybase.io搜索）
   * OpenKeychain支持剥离密钥
   * 试验性的YubiKey支持：支持生成签名和解密

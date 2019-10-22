@@ -1,7 +1,11 @@
 [//]: # (NOTA: ¡Por favor ponga cada frase en su propia línea, Transifex pone cada línea en su propio campo de traducción!)
 
+## 5.4
+  * Add WKD Advanced method
+  * Add COTECH Security Key Shop
+
 ## 5.3
-  * Usw keys.openpgp.org as default keyserver
+  * Usar keys.openpgp.org como servidor de claves por defecto
 
 ## 5.2
   * Mejorada la importación de la clave desde el portapapeles

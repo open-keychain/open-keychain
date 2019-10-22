@@ -3,12 +3,19 @@
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
+  <string name="title_encrypt_text">Ĉifri</string>
+  <string name="title_encrypt_files">Ĉifri</string>
+  <string name="title_decrypt">Malĉifri</string>
   <string name="title_preferences">Agordoj</string>
   <string name="title_api_registered_apps">Aplikaĵoj</string>
+  <string name="title_import_keys">Importi Ŝlosilojn</string>
   <string name="title_help">Helpo</string>
+  <string name="title_log_display">Protokolo</string>
   <string name="title_advanced_key_info">Altnivela</string>
   <!--section-->
   <string name="section_share_key">Ŝlosilo</string>
+  <string name="section_key_server">Retŝlosilejo</string>
+  <string name="section_encrypt">Ĉifri</string>
   <!--button-->
   <string name="btn_save">Konservi</string>
   <string name="btn_do_not_save">Rezigni</string>
@@ -32,21 +39,30 @@
   <string name="label_key_id">Ŝlosila identigilo</string>
   <string name="label_key_type">Tipo</string>
   <string name="label_name">Nomo</string>
+  <string name="label_email">Retpoŝto</string>
   <string name="label_enter_smartpgp_authority_name">Nomo</string>
+  <string name="pref_facebook">Facebook</string>
   <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">Averto</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Enable Tor</string>
+  <string name="pref_proxy_host_title">Gastiga servo de retprokurilo</string>
+  <string name="pref_proxy_port_title">Pordo de retprokurilo</string>
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
   <!--InstallDialogFragment strings-->
   <string name="orbot_install_dialog_cancel">Rezigni</string>
   <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_btn">Startigi Orbot</string>
+  <string name="orbot_start_dialog_start">Startigi Orbot</string>
   <string name="orbot_start_dialog_cancel">Rezigni</string>
   <!--choice-->
   <string name="choice_none">Neniom</string>
+  <string name="usage_encrypt">Ĉifri</string>
   <string name="error">Eraro</string>
   <!--sentences-->
+  <string name="passphrase_for_symmetric_encryption">Entajpu pasvorton</string>
+  <string name="passphrase_for_any">Entajpu pasvorton</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -71,6 +87,7 @@
   <string name="help_about_version">Version:</string>
   <string name="help_tab_donations">Donaci</string>
   <!--Import-->
+  <string name="import_tab_keyserver">Retŝlosilejo</string>
   <string name="btn_import">Enporti</string>
   <!--Generic result toast-->
   <!--Import result toast-->
@@ -102,6 +119,7 @@
   <!--hints-->
   <!--certs-->
   <string name="cert_none">neniom/neniu</string>
+  <string name="cert_revoke">revokita</string>
   <string name="cert_verify_ok">Okej</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
@@ -124,7 +142,9 @@
   <!--PassphraseCache-->
   <string name="passp_cache_notif_pwd">Pasvorto</string>
   <!--Keyserver sync-->
+  <string name="keyserver_sync_orbot_notif_start">Startigi Orbot</string>
   <!--First Time-->
+  <string name="restore_section">Restaŭri</string>
   <!--unsorted-->
   <string name="label_cert_type">Tipo</string>
   <string name="unknown">nekonata</string>
@@ -132,6 +152,7 @@
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <string name="enter_passphrase">Entajpu pasvorton</string>
   <string name="passphrase">Pasvorto</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="nfc_settings">Agordoj</string>
@@ -139,6 +160,7 @@
   <string name="snack_security_token_import">Enporti</string>
   <string name="btn_reset">Rekomencigo</string>
   <!--Other Linked Identity strings-->
+  <string name="btn_finish">Fini</string>
   <string name="share_log_dialog_cancel_button">Rezigni</string>
   <string name="menu_uids_save">Konservi</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">Rezigni</string>

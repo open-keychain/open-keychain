@@ -2,13 +2,13 @@
 
 ## Confirmation de clé
 Sans confirmation, vous ne pouvez pas être certain qu’une clé correspond à une personne déterminée.
-La façon la plus simple de confirmer une clé est en lisant le code QR ou en l’échangeant par CCP.
+La façon la plus simple de confirmer une clé est en balayant le code QR ou en l’échangeant par CCP.
 Pour confirmer des clés entre plus de deux personnes, nous suggérons d’utiliser la méthode d’échange de clés proposée pour vos clés.
 
 ## État de la clé
 
 <img src="status_signature_verified_cutout_24dp"/>  
-Confirmée : vous avez déjà confirmé cette clé, p. ex. en lisant le code QR.  
+Confirmée : vous avez déjà confirmé cette clé, p. ex. en balayant le code QR.  
 <img src="status_signature_unverified_cutout_24dp"/>  
 Non confirmée : cette clé n’a pas encore été confirmée. Vous ne pouvez pas être certain que la clé correspond à une personne déterminée.  
 <img src="status_signature_expired_cutout_24dp"/>  

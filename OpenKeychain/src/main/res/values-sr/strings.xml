@@ -1093,6 +1093,12 @@
   <string name="msg_pse">Почињем радњу потписивања и/или шифровања</string>
   <string name="msg_pse_symmetric">Припремам симетрично шифровање</string>
   <!--Messages for Authentication operation-->
+  <string name="msg_auth_error_unlock">Непозната грешка откључавања кључа!</string>
+  <string name="msg_auth_pending_nfc">Потребан је НФЦ токен, захтевам унос корисника…</string>
+  <string name="msg_auth_pending_passphrase">Потребна је лозинка, захтевам унос корисника…</string>
+  <string name="msg_auth_error_bad_passphrase">Нетачна лозинка!</string>
+  <string name="msg_auth_error_nfc">Грешка НФЦ података!</string>
+  <string name="msg_auth_error_sig">Наиђох на изузетак ОпенПГП потписивања!</string>
   <string name="msg_crt_certifying">Генеришем сертификате</string>
   <plurals name="msg_crt_certify_uids">
     <item quantity="one">Потврђујем кориснички ИД за кључ %2$s</item>

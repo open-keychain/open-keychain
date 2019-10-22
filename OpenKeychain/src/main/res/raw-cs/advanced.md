@@ -1,9 +1,9 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (Poznámka: Prosím, vložte každou větu na zvláštní řádek, Transifex vkládá každý řádek do vlastního překladového pole!)
 
-Advanced screen allows you to
-* share key in non-recommended ways
-* edit identities
-* edit subkeys
-* examine certificates in detail
+Obrazovka Pokročilé Vám umožní
+* sdílet klíč nedoporučenými způsoby
+* upravit identity
+* upravit podklíče
+* prozkoumat certifikáty v detailu
 
-Only proceed if you know what you are doing!
+Pokračujte jen v případě, že víte, co činíte!

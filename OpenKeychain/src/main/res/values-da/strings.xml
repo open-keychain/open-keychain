@@ -13,6 +13,7 @@
   <string name="title_log_display">Log</string>
   <string name="title_advanced_key_info">Avanceret</string>
   <!--section-->
+  <string name="section_keys">undernøgler</string>
   <string name="section_certify">Bekræft</string>
   <string name="section_actions">Handlinger</string>
   <string name="section_share_key">Nøgle</string>
@@ -28,11 +29,14 @@
   <string name="btn_back">Tilbage</string>
   <string name="btn_no">Nej</string>
   <string name="btn_share_decrypted_text">Del</string>
+  <string name="btn_copy_decrypted_text">Kopier til udklipsholder</string>
+  <string name="btn_encrypt_files">Krypter filer</string>
   <string name="btn_unlock">Lås op</string>
   <string name="btn_proceed">Fortsæt</string>
   <string name="btn_add_keyserver">Tilføje</string>
   <!--Shortcut Strings-->
   <!--Content Description-->
+  <string name="cd_encrypt_files">Krypter filer</string>
   <!--menu-->
   <string name="menu_preferences">Indstillinger</string>
   <string name="menu_help">Hjælp</string>
@@ -40,6 +44,7 @@
   <string name="menu_search">Søg</string>
   <string name="menu_open">Åbn</string>
   <string name="menu_select_all">Vælg alle</string>
+  <string name="menu_change_password">Skift adgangskode</string>
   <string name="menu_advanced">Avanceret</string>
   <string name="menu_keyserver_add">Tilføje</string>
   <!--label-->
@@ -47,6 +52,7 @@
   <string name="label_file">Fil</string>
   <string name="label_passphrase">Adgangskode</string>
   <string name="label_unlock">Låser op…</string>
+  <string name="label_algorithm">Algoritme</string>
   <string name="label_key_id">Nøgle ID</string>
   <string name="label_key_type">Type</string>
   <string name="label_expiry">Ophør</string>
@@ -55,6 +61,7 @@
   <string name="label_name">Navn</string>
   <string name="label_email">Email</string>
   <string name="label_fingerprint">Fingeraftryk</string>
+  <string name="label_preferred">foretrukket</string>
   <string name="label_hidden_recipients">Skjul modtagere</string>
   <string name="label_enter_keyserver_url">URL</string>
   <string name="label_enter_smartpgp_authority_name">Navn</string>
@@ -84,6 +91,7 @@
          they will be put after "error_message", e.g. "Error: file not found"-->
   <!--errors without preceding Error:-->
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_action_show">Vis</string>
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_cancel">Annuller</string>
@@ -125,14 +133,17 @@
   <!--Key list-->
   <!--Key view-->
   <string name="key_view_action_edit">Ændre</string>
+  <string name="key_view_action_certify">Bekræft nøgle</string>
   <string name="key_view_tab_start">Start</string>
   <string name="key_view_tab_share">Del</string>
+  <string name="key_view_tab_keys">undernøgler</string>
   <string name="user_id_info_revoked_title">Tilbagekaldt</string>
   <!--Key trust-->
   <!--keybase proof stuff-->
   <string name="keybase_verify">Verificer</string>
   <!--Edit key-->
   <!--Create key-->
+  <string name="create_key_passphrases_not_equal">Adgangskoderne stemmer ikke overens</string>
   <!--View key-->
   <!--Add/Edit keyserver-->
   <!--Add/Edit SmartPGP authority-->
@@ -151,14 +162,20 @@
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
   <!--Edit Key (higher level than modify)-->
+  <string name="msg_ed_error_key_not_found">Krypteringsnøgle ikke fundet!</string>
   <!--Promote key-->
+  <string name="msg_pr_error_key_not_found">Krypteringsnøgle ikke fundet!</string>
   <!--Other messages used in OperationLogs-->
+  <string name="msg_ek_error_not_found">Krypteringsnøgle ikke fundet!</string>
   <!--Messages for DecryptVerify operation-->
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl_ok">OK</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
+  <string name="msg_crt_warn_not_found">Krypteringsnøgle ikke fundet!</string>
+  <string name="msg_import_fetch_error_not_found">Krypteringsnøgle ikke fundet!</string>
+  <string name="msg_upload_error_not_found">Krypteringsnøgle ikke fundet!</string>
   <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
@@ -169,6 +186,7 @@
   <!--unsorted-->
   <string name="label_user_id">Identitet</string>
   <string name="label_cert_type">Type</string>
+  <string name="error_key_not_found">Krypteringsnøgle ikke fundet!</string>
   <string name="key_unavailable">ikke tilgængelig</string>
   <string name="unknown">ukendt</string>
   <!--Android Account-->
@@ -202,6 +220,7 @@
   <string name="transfer_confirm_cancel">Annuller</string>
   <string name="transfer_confirm_ok">Send</string>
   <string name="token_reset_confirm_ok">Nulstille</string>
+  <string name="token_result_not_found">Krypteringsnøgle ikke fundet!</string>
   <string name="token_action_import">Importér</string>
   <string name="token_unlock_ok">Lås op</string>
   <string name="select_identity_cancel">Deaktivere</string>

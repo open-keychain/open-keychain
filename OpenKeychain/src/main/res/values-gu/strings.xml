@@ -204,6 +204,7 @@
   <string name="help_tab_changelog">નોંધણીઓ બદલો</string>
   <string name="help_tab_about">વિશે</string>
   <string name="help_about_version">Version:</string>
+  <string name="help_tab_donations">Donate</string>
   <!--Import-->
   <string name="import_tab_keyserver">ચાવી સર્વર</string>
   <string name="import_tab_cloud">ચાવી શોધો</string>

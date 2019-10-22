@@ -179,11 +179,14 @@
   <string name="label_keyservers_title">密钥服务器</string>
   <string name="label_keyserver_settings_hint">拖拽以改变次序，点击以编辑/删除</string>
   <string name="label_selected_keyserver_title">已选择的密钥服务器</string>
+  <string name="label_selected_smartpgp_authority_title">已选择的权限</string>
   <string name="label_preferred">优先</string>
   <string name="label_enable_compression">启用压缩</string>
+  <string name="label_enable_self_encrypt">为自己加密</string>
   <string name="label_encrypt_filenames">加密文件名</string>
   <string name="label_hidden_recipients">隐藏收件人</string>
   <string name="label_smartpgp_verify">SmartPGP：验证证书</string>
+  <string name="label_smartpgp_verify_summary">使用可信任机构验证存储于SmartPGP安全令牌上的证书</string>
   <string name="label_smartpgp_roots">智能PGP:可信任的权威机构</string>
   <string name="label_verify_keyserver_connection">连接测试</string>
   <string name="label_only_trusted_keyserver">只信任该密钥服务器</string>
@@ -251,6 +254,9 @@
   </plurals>
   <plurals name="n_keyservers">
     <item quantity="other">%d 个密钥服务器</item>
+  </plurals>
+  <plurals name="n_authorities">
+    <item quantity="other">%d权限</item>
   </plurals>
   <string name="secret_key">私钥:</string>
   <!--choice-->
@@ -366,6 +372,7 @@
   <string name="error_integrity_check_failed">完整性检查失败! 数据已被篡改!</string>
   <string name="error_wrong_passphrase">密码错误</string>
   <string name="error_could_not_extract_private_key">不能提取私钥</string>
+  <string name="error_wrong_security_token">此安全令牌不包含所需的密钥</string>
   <!--errors without preceding Error:-->
   <string name="error_jelly_bean_needed">只有 Android 4.1 及以上才支持 Android\'s NFC Beam 功能</string>
   <string name="error_nfc_needed">必须开启 NFC!</string>
@@ -435,7 +442,7 @@
   <string name="progress_preparing_streams">准备数据流…</string>
   <string name="progress_encrypting">加密数据中…</string>
   <string name="progress_prepare_decryption">开始解密…</string>
-  <string name="progress_decrypting">加密数据中…</string>
+  <string name="progress_decrypting">解密数据中…</string>
   <string name="progress_preparing_signature">准备签名中…</string>
   <string name="progress_processing_signature">处理签名中…</string>
   <string name="progress_generating_signature">产生签名中…</string>
@@ -560,6 +567,7 @@
   <string name="intent_import_key">OpenKeychain: 导入密钥</string>
   <string name="intent_send_encrypt">OpenKeychain: 加密</string>
   <string name="intent_send_decrypt">OpenKeychain: 解密</string>
+  <string name="intent_autocrypt_setup">导入自加密安装信息</string>
   <!--Remote API-->
   <string name="api_settings_show_info">显示高级信息</string>
   <string name="api_settings_hide_info">隐藏高级信息</string>
@@ -576,6 +584,7 @@
   <string name="api_settings_allowed_keys">允许的密钥</string>
   <string name="api_settings_settings">设置</string>
   <string name="api_register_title">允许到OpenKeyChain的访问吗？</string>
+  <string name="api_register_text">%s请要求使用 OpenKeychain 作为加密源。在这个应用程序使用你的密钥进行解密之前，我们将询问你是否授权。\n\n你也可以稍后在 OpenKeychain 的“Apps”界面内吊销授权</string>
   <string name="api_register_allow">允许访问</string>
   <string name="api_register_disallow">禁止访问</string>
   <string name="api_register_error_select_key">请选择一个密钥！</string>
@@ -693,12 +702,16 @@
   <string name="edit_key_error_add_identity">至少要有一个用户标识！</string>
   <string name="edit_key_error_add_subkey">至少要有一个子密钥！</string>
   <string name="edit_key_error_bad_security_token_algo">安全令牌不支持该算法！</string>
+  <string name="edit_key_error_bad_security_token_size">OpenPGP 3.x 规格的安全令牌不支持小于2048位的RSA密钥！</string>
+  <string name="edit_key_error_bad_security_token_curve">此安全令牌不支持椭圆曲线算法！</string>
+  <string name="edit_key_error_bad_security_token_stripped">无法将密钥写入至安全令牌（密钥先前已被剥离或者已经存在于安全令牌上）</string>
   <!--Create key-->
   <string name="create_key_upload">上传至密钥服务器</string>
   <string name="create_key_empty">该字段必填</string>
   <string name="create_key_passphrases_not_equal">密码不匹配</string>
   <string name="create_key_final_text">您输入了以下用户标识:</string>
   <string name="create_key_final_robot_text">生成密钥可能需要相当长的一段时间，您可以边喝咖啡边等待…</string>
+  <string name="create_key_final_email_valid_warning">提供仅包含有效电子邮件地址的密钥可以让许多应用更好的运行</string>
   <string name="create_key_rsa">(3个子密钥，RSA，4096位)</string>
   <string name="create_key_custom">（自定义密钥配置）</string>
   <string name="create_key_name_text">选择一个关联到此密钥的名字，可以是全名，例如‘John Doe’，或者一个妮称‘Johnny’。</string>
@@ -717,7 +730,11 @@
   <string name="create_key_yubi_key_pin_repeat">重复PIN</string>
   <string name="create_key_yubi_key_pin_not_correct">错误的PIN!</string>
   <string name="create_key_yubi_key_pin_too_short">PIN最少要求为6位数字!</string>
+  <string name="create_key_yubi_key_pin_insecure">请设置一个安全的PIN，不能是000000、123456或者类似的密码组合（最常见密码前20名均不被允许）</string>
+  <string name="create_key_yubi_key_algorithm_text">请为每一个密钥选择其对应的加密算法</string>
   <string name="create_key_yubi_key_algorithm_sign_text">签名密钥</string>
+  <string name="create_key_yubi_key_algorithm_dec_text">解密用密钥</string>
+  <string name="create_key_yubi_key_algorithm_auth_text">认证用密钥</string>
   <!--View key-->
   <string name="view_key_my_key">我的密钥</string>
   <string name="view_key_verified">已确认的密钥</string>
@@ -735,6 +752,7 @@
   <string name="keyserver_preference_cannot_delete_last">由于至少要有一个密钥服务器，所以不能删除最后一个密钥服务器</string>
   <!--Add/Edit SmartPGP authority-->
   <string name="add_smartpgp_authority_dialog_title">添加受信方</string>
+  <string name="show_smartpgp_authority_dialog_title">编辑权限</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">密钥</string>
   <string name="nav_encrypt_decrypt">加密/解密</string>
@@ -865,6 +883,7 @@
   <string name="msg_is_subkey_ok">标记子密钥私钥 %s 为可用</string>
   <string name="msg_is_subkey_empty">标记子密钥私钥 %s 为可用，空密码</string>
   <string name="msg_is_subkey_stripped">标记子密钥私钥 %s 为已剥离</string>
+  <string name="msg_is_subkey_divert">已将安全令牌上的密钥 %s 标记为子密钥</string>
   <string name="msg_is_success_identical">密钥环不包含任何新的数据，无动作</string>
   <string name="msg_is_success">成功导入私钥密钥环</string>
   <!--Keyring Canonicalization log entries-->
@@ -964,10 +983,14 @@
   <string name="msg_cr_error_flags_dsa">选择了一个错误的密钥标签，DSA不能用于加密！</string>
   <string name="msg_cr_error_flags_elgamal">选择了一个错误的密钥标签，ElGamal不能用于签名！</string>
   <string name="msg_cr_error_flags_ecdsa">选择了一个错误的密钥标签，ECDSA不能用于加密！</string>
+  <string name="msg_cr_error_flags_eddsa">密钥选项配置错误，EdDSA不能用于加密</string>
   <string name="msg_cr_error_flags_ecdh">选择了一个错误的密钥标签，ECDH不能用于签名！</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mr">变更密钥环中 %s</string>
+  <string name="msg_mf_divert">将使用安全令牌来执行密码学操作</string>
   <string name="msg_mf_error_all_keys_stripped">所有密钥已被剥离！</string>
+  <string name="msg_mf_error_divert_newsub">不支持为存储于安全令牌上的主密钥创建新的子密钥！</string>
+  <string name="msg_mf_error_divert_serial">安全令牌上的密钥序列号必须是16字节！这是一个编程错误，请发送错误报告！</string>
   <string name="msg_mf_error_encode">编码异常！</string>
   <string name="msg_mf_error_fingerprint">实际的密钥指纹与期望值不匹配！</string>
   <string name="msg_mf_error_keyid">无密钥ID。这是一个内部错误，请发送错误报告！</string>
@@ -986,6 +1009,7 @@
   <string name="msg_mf_error_sub_stripped">不能修改已移除的子密钥 %s！</string>
   <string name="msg_mf_error_subkey_missing">已尝试操作丢失的子密钥 %s！</string>
   <string name="msg_mf_error_conflicting_nfc_commands">不能在令牌内创建签名的过程中将密钥移动到安全令牌中。</string>
+  <string name="msg_mf_error_duplicate_keytocard_for_slot">安全令牌对于每种密钥类型只提供一个插槽。</string>
   <string name="msg_mf_error_invalid_flags_for_keytocard">安全令牌密钥的标签不正确。</string>
   <string name="msg_mf_master">正在修改主密钥认证</string>
   <string name="msg_mf_passphrase">正在更改密钥环密码</string>
@@ -998,6 +1022,7 @@
   <string name="msg_mf_primary_new">正在为新的主用户标识表示生成新的证书</string>
   <string name="msg_mf_restricted_mode">正在切换到受限操作模式</string>
   <string name="msg_mf_subkey_change">正在修改子密钥 %s</string>
+  <string name="msg_mf_require_divert">使用安全令牌执行密码学操作</string>
   <string name="msg_mf_require_passphrase">需要为操作提供密码</string>
   <string name="msg_mf_subkey_new">正在新建 %s 类型子密钥</string>
   <string name="msg_mf_subkey_new_id">新建子密钥ID：%s</string>
@@ -1043,6 +1068,8 @@
   <string name="msg_dc_asym">找到用 %s 密钥非对称加密的数据</string>
   <string name="msg_dc_charset">找到 charset 头部：\'%s\'</string>
   <string name="msg_dc_backup_version">找到 backupVersion 头部：\'%s\'</string>
+  <string name="msg_dc_passphrase_format">找到密码短语格式标头：“%s”</string>
+  <string name="msg_dc_passphrase_begin">找到密码短语起始标头：“%s”</string>
   <string name="msg_dc_clear_data">正在处理文字数据</string>
   <string name="msg_dc_clear_decompress">正在解压数据</string>
   <string name="msg_dc_clear_meta_file">文件名：%s</string>
@@ -1089,8 +1116,10 @@
   <string name="msg_dc_insecure_key">不安全的密钥：RSA/DSA/ElGamal 长度过短或ECC曲线/算法不安全！这可能由于使用了过时的程序，或源自一次攻击。</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl">开始签名检查</string>
+  <string name="msg_vl_error_no_siglist">签名文字数据包中没有签名！</string>
   <string name="msg_vl_error_wrong_key">消息没有用预期的密钥签名！</string>
   <string name="msg_vl_error_no_signature">缺失签名数据！</string>
+  <string name="msg_vl_error_missing_literal">签名文字数据包中无数据</string>
   <string name="msg_vl_clear_meta_file">文件名：%s</string>
   <string name="msg_vl_clear_meta_mime">MIME 类型：%s</string>
   <string name="msg_vl_clear_meta_time">修改日期：%s</string>
@@ -1120,6 +1149,7 @@
   <string name="msg_pse_error_pgp">OpenPGP 内部错误！</string>
   <string name="msg_pse_error_sig">遇到 OpenPGP 签名异常！</string>
   <string name="msg_pse_error_unlock">未知的密钥解锁错误！</string>
+  <string name="msg_pse_error_key_not_allowed">不允许选择此密钥用于加密</string>
   <string name="msg_pse_error_revoked_or_expired">吊销/过期的密钥不能用于签名或加密</string>
   <string name="msg_pse_key_ok">正在加密到密钥：%s</string>
   <string name="msg_pse_key_unknown">没有找到加密的密钥：%s</string>
@@ -1136,7 +1166,15 @@
   <!--Messages for Authentication operation-->
   <string name="msg_auth">正在开始验证操作</string>
   <string name="msg_auth_error_key_auth">无法找到已选的验证密钥</string>
+  <string name="msg_auth_error_key_not_allowed">不允许选择此密钥用于身份验证</string>
+  <string name="msg_auth_error_revoked_or_expired">吊销/过期的密钥不能用于身份验证</string>
   <string name="msg_auth_error_unlock">解锁密钥时出现未知错误！</string>
+  <string name="msg_auth_pending_nfc">需要NFC令牌，请扫描…</string>
+  <string name="msg_auth_pending_passphrase">需要输入您的密码…</string>
+  <string name="msg_auth_error_bad_passphrase">密码错误！</string>
+  <string name="msg_auth_error_nfc">NFC 数据错误！</string>
+  <string name="msg_auth_error_sig">出现OpenPGP签名异常！</string>
+  <string name="msg_auth_ok">身份验证操作成功！</string>
   <string name="msg_crt_certifying">正在生成证书</string>
   <plurals name="msg_crt_certify_uids">
     <item quantity="other">正在认证密钥 %2$s 的 %1$d 个用户标识。</item>
@@ -1256,6 +1294,7 @@
   <string name="msg_get_too_many_responses">密钥搜索返回太多符合条件的结果。请优化您的关键词！</string>
   <string name="msg_get_query_too_short">搜索条件过短。请优化您的关键词！</string>
   <string name="msg_get_query_too_short_or_too_many_responses">没有找到或找到过多结果。请优化您的关键词！</string>
+  <string name="msg_get_no_enabled_source">启用至少一个信息源用于下载！</string>
   <string name="msg_download_query_failed">搜索密钥时出错。</string>
   <!--Messages for Keybase Verification operation-->
   <string name="msg_keybase_verification">尝试使用 keybase 验证密钥 %s</string>
@@ -1311,6 +1350,7 @@
   <string name="error_key_not_found">未找到密钥</string>
   <string name="error_key_processing">处理密钥出现错误！</string>
   <string name="key_stripped">已剥离</string>
+  <string name="key_divert">存储于安全令牌上</string>
   <string name="key_no_passphrase">没有密码</string>
   <string name="key_unavailable">不可用</string>
   <string name="secret_cannot_multiple">只能逐个删除您的密钥！</string>
@@ -1333,6 +1373,7 @@
   <!--Android Account-->
   <string name="account_no_manual_account_creation">不能手动创建 OpenKeychain 账户。</string>
   <string name="account_privacy_title">隐私</string>
+  <string name="account_privacy_text">OpenKeychain 不会同步你的通讯录到互联网。它只会通过姓名和邮件地址来匹配密钥。这是在你的设备上离线完成的。</string>
   <string name="sync_notification_permission_required_title">需要访问联系人的权限</string>
   <string name="sync_notification_permission_required_text">点击以配置关联到联系人</string>
   <!--Passphrase wizard-->
@@ -1371,8 +1412,10 @@
   <string name="security_token_status_unbound">安全信息匹配并且可绑定到密钥</string>
   <string name="security_token_status_partly">安全信息匹配并且已部分绑定到密钥</string>
   <string name="security_token_create">请将安全令牌贴在您设备的背部</string>
+  <string name="security_token_reset_or_import">这枚安全令牌已经存储了一个密钥</string>
   <string name="btn_reset">重置</string>
   <string name="security_token_radio_use_existing">使用现存的密钥</string>
+  <string name="security_token_radio_reset">重置令牌</string>
   <string name="security_token_reset_warning">重置安全令牌将完全摧毁其内部的密钥。之后您将无法使用该密钥加解密消息或文件！</string>
   <string name="snack_security_token_other">安全令牌中存有不同的密钥！</string>
   <string name="security_token_error">错误： %s</string>
@@ -1386,10 +1429,14 @@
   <string name="security_token_error_authentication_blocked">由于太多的尝试，PIN已被阻止。</string>
   <string name="security_token_error_data_not_found">未找到密钥或对象。</string>
   <string name="security_token_error_unknown">未知错误</string>
+  <string name="security_token_error_bad_data">输入的PIN太短，PIN要求最少6位。\n(错误：无效数据)</string>
   <string name="security_token_error_chaining_error">安全令牌在等待最后一个命令。</string>
   <string name="security_token_error_header">安全令牌报告了无效的 %s 字节。</string>
   <string name="security_token_error_tag_lost">安全令牌被过早移除了。请将安全令牌贴在设备背部直到操作完成。</string>
+  <string name="security_token_error_iso_dep_not_supported">安全令牌不支持所需的通信标准（ISO-DEP, ISO 14443-4）</string>
+  <string name="security_token_error_generic">通信错误。最大的可能是安全令牌被过早的移开了。</string>
   <string name="security_token_error_try_again">重试</string>
+  <string name="security_token_not_supported">这枚安全令牌尚未被OpenKeychain支持</string>
   <string name="btn_delete_original">删除源文件？</string>
   <string name="snack_encrypt_filenames_on">文件名<b>将会</b> 被加密。</string>
   <string name="snack_encrypt_filenames_off">文件名<b>不会</b> 被加密。</string>
@@ -1397,6 +1444,8 @@
   <string name="snack_armor_off">编码输出为二进制</string>
   <string name="snack_compression_on">压缩 <b>启用</b>.</string>
   <string name="snack_compression_off">压缩 <b>禁用</b>.</string>
+  <string name="snack_self_encrypt_on">为自己加密<b>启用</b></string>
+  <string name="snack_self_encrypt_off">为自己加密<b>禁用</b></string>
   <string name="error_loading_keys">加载密钥出现错误！</string>
   <string name="error_empty_log">(错误，空日志)</string>
   <string name="error_reading_text">解密时无法读取输入！</string>
@@ -1418,6 +1467,7 @@
   <string name="file_delete_exception">无法删除原始文件！</string>
   <string name="error_clipboard_empty">剪贴板为空！</string>
   <string name="error_clipboard_copy">复制到剪贴板时出现错误！</string>
+  <string name="error_clipboard_bad">无法从剪贴板读取密钥！</string>
   <string name="error_scan_fp">扫描指纹时出错！</string>
   <string name="error_scan_match">指纹不匹配！</string>
   <string name="error_expiry_past">过期时间为过去！</string>
@@ -1478,15 +1528,22 @@
   <string name="redirect_import_key_yes">重新扫描</string>
   <string name="redirect_import_key_no">关闭</string>
   <string name="request_permission_title">允许到你的密钥的访问吗？</string>
+  <string name="request_permission_msg">%1$s请求访问你的某一个密钥，这将允许其解密发送到此密钥的信息。你可以稍后在OpenKeychain中吊销访问权限。</string>
+  <string name="requested_key_unavailable_warning">此密钥不可用。如需使用，请将其导入为自己的密钥！</string>
   <string name="button_allow">允许</string>
   <string name="button_cancel">取消</string>
   <string name="button_back">返回</string>
   <string name="button_got_it">知道了</string>
+  <string name="requested_key_label">所需的密钥：</string>
+  <string name="error_preselect_sign_key">选择签名密钥%s时出现问题！</string>
+  <string name="error_preselect_encrypt_key">选择加密密钥%s时出现问题！</string>
   <string name="title_key_status">密钥状态</string>
+  <string name="caption_secret_status">这是你的密钥。你可以使用它来：</string>
   <string name="cap_title_confirm">确认其他密钥</string>
   <string name="cap_cert_ok">此密钥可用于确认其他密钥。</string>
   <string name="cap_cert_divert">此密钥可在安全令牌的配合下确认其他密钥。</string>
   <string name="cap_cert_stripped">这个密钥已被剥离，它不能确认其他的密钥。</string>
+  <string name="cap_cert_unavailable">此密钥未配置为确认其他密钥的用途！</string>
   <string name="cap_title_sign">签名消息</string>
   <string name="cap_sign_ok">此密钥可用于签名/发送消息。</string>
   <string name="cap_sign_divert">此密钥可在安全令牌的配合下签名/发送消息。</string>
@@ -1507,6 +1564,7 @@
   <string name="key_health_ok_subtitle">未发现密钥有问题。</string>
   <string name="key_health_divert_title">正常（安全令牌）</string>
   <string name="key_health_divert_subtitle">未发现密钥有问题。</string>
+  <string name="key_health_divert_partial_title">正常（部分令牌）</string>
   <string name="key_health_divert_partial_subtitle">点击查看详情</string>
   <string name="key_health_expired_title">已过期</string>
   <string name="key_health_expired_subtitle">此密钥不应再被使用。</string>
@@ -1514,6 +1572,7 @@
   <string name="key_health_revoked_subtitle">此密钥已无法再被使用。</string>
   <string name="key_health_insecure_title">不安全</string>
   <string name="key_health_insecure_subtitle">此密钥已不再安全！</string>
+  <string name="key_health_broken_title">缺陷</string>
   <string name="key_health_broken_subtitle">点击查看详情</string>
   <string name="key_health_sign_only_title">正常（签名密钥）</string>
   <string name="key_health_sign_only_subtitle">点击查看详情</string>
@@ -1526,14 +1585,35 @@
   <string name="keyserver_title_unknown">密钥服务器状态：未知</string>
   <string name="keyserver_last_updated">上一次检查：%s</string>
   <string name="keyserver_last_updated_never">上一次检查：无</string>
+  <string name="key_insecure_bitstrength_2048_problem">此密钥使用长度为<b>%2$s位</b>的<b>%1$s</b>加密算法。要保证安全，密钥至少需要2048位</string>
+  <string name="key_insecure_bitstrength_2048_solution">此密钥不能升级。为了通信安全，密钥持有者必须重新生成新的密钥</string>
+  <string name="key_insecure_unknown_curve_problem">此密钥使用的<b>%1$s</b>算法不在白名单中。</string>
+  <string name="key_insecure_unknown_curve_solution">此密钥不能升级。为了通信安全，密钥持有者必须重新生成新的密钥</string>
+  <string name="key_insecure_unidentified_problem">此密钥出现了一个尚未定义的问题</string>
   <string name="key_insecure_unidentified_solution">请发送一个缺陷报告。</string>
   <string name="key_expiry_text">该密钥已于 <b>%1$s</b> 过期</string>
   <string name="dialog_insecure_title">安全警告</string>
   <string name="dialog_insecure_recommend_title">建议的操作</string>
+  <string name="insecure_encrypt_bitstrength">你选择用于接收（解密）信息的密钥已经过时！\n\n你配置的小于等于1024位的（%s）算法密钥，早在2006年就被认为在一般使用中不安全了。</string>
   <string name="insecure_encrypt_bitstrength_suggestion">正在使用的密钥是不安全的，并且无法被升级。为了更安全地通信，你必须创建一个新的密钥！</string>
+  <string name="insecure_sign_bitstrength">你选择用于发送（签名）信息的密钥已经过时！\n\n你配置的小于等于1024位的（%s）算法密钥，早在2006年就被认为在一般使用中不安全了。</string>
   <string name="insecure_sign_bitstrength_suggestion">正在使用的密钥是不安全的，并且无法被升级。为了更安全地通信，发送者必须创建一个新的密钥！</string>
+  <string name="insecure_encrypt_not_whitelisted_curve">用于接收（解密）此消息的密钥使用的椭圆曲线算法不在白名单中！OID：%1$s</string>
+  <string name="insecure_sign_not_whitelisted_curve">用于发送（签名）此消息的密钥使用的椭圆曲线算法不在白名单中！OID：%1$s</string>
+  <string name="insecure_encrypt_unidentified">用于接收（解密）此信息的密钥包含一个尚未定义的安全问题！</string>
+  <string name="insecure_sign_unidentified">用于发送（签名）此信息的密钥包含一个尚未定义的安全问题！</string>
+  <string name="insecure_report_suggestion">OpenKeychain也许出现了一个问题，请上传一份报告到我们的问题追踪服务器！</string>
+  <string name="insecure_mdc">此信息未签名，也不包含修改检测码（MDC）。它也许已经被攻击者修改！</string>
+  <string name="insecure_mdc_suggestion">MDC 缺失也许是发信方软件的故障，也许是由于遭受了攻击。为了安全的端到端通信，信息也应该被发信方签名！</string>
+  <string name="insecure_symmetric_algo">这条信息使用%s算法加密。这被认为是不安全的，或者至少是不主流的</string>
+  <string name="insecure_hash_algo">这条信息使用%s哈希算法签名，这被认为是不安全的，或者至少是不主流的</string>
+  <string name="dialog_insecure_override">如果你不想再收到此类安全问题的警告，你可以禁用此警告</string>
   <string name="dialog_insecure_override_title">忽略此警告</string>
   <string name="dialog_insecure_override_ok_title">警告已忽略</string>
+  <string name="dialog_insecure_override_ok">针对（此密钥/信息）的安全警告将不会再次出现。</string>
+  <string name="dialog_insecure_button_override">覆盖</string>
+  <string name="dialog_insecure_button_override_confirm">覆盖（%d）</string>
+  <string name="dialog_insecure_button_undo">不覆盖</string>
   <string name="dialog_insecure_button_view_key">查看密钥</string>
   <string name="dialog_insecure_button_ok">知道了</string>
   <string name="usage_authentication">认证</string>
@@ -1569,22 +1649,138 @@
   <string name="transfer_error_wifi_text_instructions_ssid">请确保两设备均在“%s”网络上，然后重新扫描。</string>
   <string name="status_check_key">正在检查密钥状态......</string>
   <string name="status_search_local">正在于密钥列表中搜索......</string>
+  <string name="status_search_uri">在令牌URL上搜索…</string>
   <string name="status_search_keyserver">正在于密钥服务器中搜索......</string>
   <string name="status_import">正在导入密钥......</string>
+  <string name="status_token_promote">正在配置密钥…</string>
+  <string name="status_token_check">正在检查密钥配置…</string>
+  <string name="status_content_uri">正在读取文件…</string>
+  <string name="token_reset_confirm_title">确认重置安全令牌？</string>
+  <string name="token_reset_confirm_message">这将不可恢复的清除存储于安全令牌上的密钥。此后你将不可能再次使用此密钥解密！你确定吗？</string>
   <string name="token_reset_confirm_ok">重置</string>
+  <string name="token_status_title">为安全令牌搜集信息…</string>
   <string name="token_result_not_found">未找到密钥</string>
+  <string name="token_result_key_found">发现密钥！</string>
+  <string name="token_result_token_ok">准备就绪！</string>
+  <string name="token_result_empty">令牌为空</string>
+  <string name="token_put_key_unsupported">请使用 GnuPG 配置你的安全令牌，OpenKeychain目前只支持使用此类安全令牌进行签名/解密。</string>
+  <string name="token_action_retry">重试搜索</string>
+  <string name="token_action_load_from_file">从文件加载</string>
   <string name="token_action_reset">重置安全令牌</string>
   <string name="token_action_import">导入</string>
   <string name="token_action_view_key">查看密钥</string>
+  <string name="token_action_setup">使用新密钥进行设置</string>
+  <string name="token_action_unlock">使用管理员PIN来解锁</string>
+  <string name="token_unlock_attempts_none">尝试解锁次数已用完</string>
+  <plurals name="token_unlock_attempts">
+    <item quantity="other">还有%d次尝试机会</item>
+  </plurals>
+  <string name="token_error_locked_indefinitely">尝试重置次数过多，令牌将不能被解锁！</string>
+  <string name="token_error_cannot_reset_gnuk_old">1.2.5以下版本的 Gnuk Token/Nitrokey Start 不支持重置操作</string>
+  <string name="token_error_cannot_reset">此安全令牌不支持重置操作</string>
+  <string name="token_menu_change_pin">修改PIN</string>
+  <string name="token_menu_view_log">查看日志</string>
   <string name="token_unlock_ok">解锁</string>
   <string name="token_hint_admin_pin">Admin PIN</string>
+  <string name="token_hint_new_pin">新PIN</string>
+  <string name="token_hint_new_pin_repeat">再次输入新PIN</string>
+  <string name="token_error_admin_min8">管理员PIN至少需要8位！</string>
+  <string name="token_error_pin_min6">新的PIN必须至少6位！</string>
+  <string name="token_error_pin_repeat">两次输入的PIN不匹配！</string>
+  <string name="msg_ret_curi_error_io">读取数据时出错！</string>
+  <string name="msg_ret_curi_error_no_match">未找到匹配的密钥</string>
+  <string name="msg_ret_curi_error_not_found">无法打开文件！</string>
+  <string name="msg_ret_curi_found">找到密钥：%s</string>
+  <string name="msg_ret_curi_mismatch">密钥不匹配</string>
+  <string name="msg_ret_curi_ok">找到密钥</string>
+  <string name="msg_ret_curi_open">公开URL：%s</string>
+  <string name="msg_ret_curi_start">从文件或文本中加载密钥…</string>
+  <string name="msg_ret_ks_error">搜索密钥时发生未知错误！</string>
+  <string name="msg_ret_ks_error_not_found">未找到密钥</string>
+  <string name="msg_ret_ks_fp_match">检索密钥指纹的匹配性</string>
+  <string name="msg_ret_ks_fp_mismatch">检索出密钥指纹不匹配！</string>
+  <string name="msg_ret_ks_ok">找到密钥</string>
+  <string name="msg_ret_ks_start">搜索服务器上的密钥…</string>
+  <string name="msg_ret_local_search">寻找密钥：%s</string>
+  <string name="msg_ret_local_fp_match">本地密钥指纹匹配</string>
+  <string name="msg_ret_local_fp_mismatch">本地密钥指纹不匹配！</string>
+  <string name="msg_ret_local_not_found">未找到密钥</string>
+  <string name="msg_ret_local_none_found">未找到匹配的密钥</string>
+  <string name="msg_ret_local_ok">找到密钥</string>
+  <string name="msg_ret_local_secret">本地密钥包含私钥部分</string>
+  <string name="msg_ret_local_start">在本地密钥列表中寻找密钥…</string>
+  <string name="msg_ret_uri_error_fetch">获取URL时发生未知错误！</string>
+  <string name="msg_ret_uri_error_parse">标记符 Uri 异常！</string>
+  <string name="msg_ret_uri_error_no_match">在URL中未发现匹配的密钥</string>
+  <string name="msg_ret_uri_fetching">获取URL：%s</string>
+  <string name="msg_ret_uri_ok">找到密钥</string>
+  <string name="msg_ret_uri_start">寻找安全令牌URL上的密钥</string>
+  <string name="msg_ret_uri_null">安全令牌上没有存储任何URL</string>
+  <string name="msg_ret_uri_test">检查找到的密钥是否匹配：%s</string>
+  <string name="msg_trust">更新信任信息…</string>
+  <string name="msg_trust_ok">更新操作完成！</string>
+  <string name="msg_trust_initialize">正在初始化密钥签名缓存</string>
+  <string name="msg_trust_key">正在更新被%s签名的密钥</string>
+  <string name="msg_trust_count_none">没有密钥需要更新</string>
+  <plurals name="msg_trust_count">
+    <item quantity="other">更新%d密钥</item>
+  </plurals>
+  <string name="button_locate_nfc">我的NFC传感器在哪里？</string>
   <string name="label_usb_untested_summary">若启用，则可以使用未被测试过的 USB 读卡器。</string>
   <string name="label_usb_untested">允许未经测试的 USB 设备</string>
+  <string name="use_key">使用密钥：%s</string>
+  <string name="use_key_no_name">使用密钥：<![CDATA[<no name>]]></string>
+  <string name="title_select_key">%s想要设置端到端加密到这个地址：</string>
+  <string name="select_identity_cancel">禁用</string>
+  <string name="select_identity_create">为我生成一个密钥</string>
+  <string name="error_save_key_internal">保存密钥时发生内部错误！</string>
+  <string name="menu_list_unrelated_keys">列出无关密钥</string>
+  <string name="no_keys_gen_title">这是一个新地址</string>
+  <string name="no_keys_gen_subtitle">在OpenKeychain中生成一个新的端到端密钥</string>
+  <string name="no_keys_import_title">我已经有一个密钥了</string>
+  <string name="no_keys_import_subtitle">从另一台设备导入端到端密钥</string>
+  <string name="key_list_import">使用另一个密钥</string>
   <string name="key_gen_progress">请稍候...</string>
   <string name="key_gen_back">返回</string>
   <string name="key_gen_finish">完成</string>
+  <string name="key_gen_done">已生成端到端密钥！</string>
+  <string name="key_gen_finishing">完成安装…</string>
+  <string name="key_import_text">要使用端到端密钥，请先将其导入到 OpenKeychain。</string>
+  <string name="key_import_text_autocrypt_setup_msg">要从其他设备导入你现有的配置，你也可以在这里：%s打开自加密安装信息。</string>
+  <string name="button_goto_openkeychain">前往OpenKeychain</string>
+  <string name="backup_code_checkbox">我已经抄写了备份密码。如果没有密码，我就不能从备份中恢复数据</string>
+  <string name="msg_get_query_not_implemented">此服务器不支持当前的查询！有些服务器只接受电子邮件地址查询。请重新定义关键词或者尝试使用另一个服务器。</string>
+  <string name="snack_keylist_clipboard_title">在剪贴板中发现密钥数据！</string>
   <string name="snack_keylist_clipboard_action">查看</string>
+  <string name="notify_channel_keysync">密钥服务器升级</string>
+  <string name="notify_channel_permission">权限请求</string>
+  <string name="notify_channel_passcache">密码短语缓存</string>
+  <string name="notify_channel_orbot">Orbot 状态</string>
   <string name="notify_title_keysync">更新密钥中…</string>
+  <string name="notify_title_keysync_finished">已完成%d个密钥的更新</string>
+  <string name="notify_content_keysync">密钥%d/%d</string>
+  <string name="snack_keysync_start">开始更新所有密钥…</string>
+  <string name="snack_keysync_finished">成功更新密钥</string>
+  <string name="snack_keysync_error">更新密钥时出现问题</string>
+  <string name="keychoice_cannot_encrypt">此密钥不能被用于加密！</string>
+  <string name="keychoice_cannot_sign">此密钥不能被用于签名！</string>
+  <string name="keychoice_insecure">此密钥不安全，无法使用！</string>
+  <string name="keychoice_revoked">此密钥已被吊销，无法使用！</string>
+  <string name="keychoice_expired">此密钥已过期，无法使用！</string>
   <string name="keylist_item_key_id">密钥 ID：%s</string>
+  <string name="keylist_header_anonymous">匿名</string>
+  <string name="keylist_header_special">#</string>
+  <string name="dialog_analytics_consent">为改善所有用户的使用体验，允许OpenKeychain匿名搜集一些使用统计信息吗？\n\n想知道更多，查阅我们的<a href="https://openkeychain.org/help/privacy-policy">隐私政策</a></string>
+  <string name="button_analytics_yes">是的，我愿意帮忙！</string>
+  <string name="button_analytics_no">不用了，谢谢</string>
+  <string name="snack_analytics_accept">感谢帮助！你可以在设置中更改这些偏好。</string>
+  <string name="snack_analytics_reject">没问题，我们不会再次打扰你。如果改变了想法，你可以在设置中更改。</string>
   <string name="snackbutton_analytics_settings">设置</string>
+  <string name="subkey_action_create">将创建子密钥</string>
+  <string name="subkey_action_revoke">将吊销子密钥</string>
+  <string name="subkey_action_strip">将剥离子密钥</string>
+  <string name="subkey_action_expiry_never">将更改为永不过期</string>
+  <string name="subkey_action_expiry_date">过期时间将更改为%s</string>
+  <string name="share_key_clipboard">通过剪贴板共享</string>
+  <string name="share_key">共享密钥</string>
 </resources>

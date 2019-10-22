@@ -1,7 +1,11 @@
 [//]: # (Observe: ¡Por favor ingrese cada enunciado en su propia línea, Transifex coloca cada línea en su propio campo de traducción!)
 
+## 5.4
+  * Add WKD Advanced method
+  * Add COTECH Security Key Shop
+
 ## 5.3
-  * Usw keys.openpgp.org as default keyserver
+  * Use keys.openpgp.org as default keyserver
 
 ## 5.2
   * Improved key import from clipboard
@@ -16,7 +20,7 @@
 
 ## 4.9
 
-  * Curve25519 support
+  * Compatibilidad con Curve25519
   * Improved support for security tokens
 
 ## 4.8
@@ -40,8 +44,8 @@
 
   * Detailed description of security problems
   * Display keyserver status per key
-  * Support for EdDSA
-  * Fix pgp.mit.edu (new certificate)
+  * Compatibilidad para EdDSA
+  * Corrije pgp.mit.edu (certificado nuevo)
 
 
 ## 4.4
@@ -210,7 +214,7 @@
 ## 2.9
 
   * Fixing crashes introduced in v2.8
-  * Experimental ECC support
+  * Compatibilidad experimental con ECC
   * Experimental YubiKey support: Only signing with imported keys
 
 

@@ -363,7 +363,7 @@
   <string name="error_file_delete_failed">zijn niet verwijderd. Verwijder ze handmatig!</string>
   <string name="error_file_added_already">%s is al toegevoegd.</string>
   <string name="error_file_not_found">bestand niet gevonden</string>
-  <string name="error_bad_data">Foutieve data!</string>
+  <string name="error_bad_data">Foutieve gegevens!</string>
   <string name="error_no_secret_key_found">geen geschikte privésleutel gevonden</string>
   <string name="error_external_storage_not_ready">externe opslag niet gereed</string>
   <string name="error_key_size_minimum512bit">sleutelgrootte moet minstens 512-bits zijn</string>
@@ -373,7 +373,7 @@
   <string name="error_no_signature_passphrase">geen wachtwoord opgegeven</string>
   <string name="error_no_signature_key">geen ondertekeningssleutel opgegeven</string>
   <string name="error_invalid_data">Geen geldige versleutelde of ondertekende OpenPGP-inhoud!</string>
-  <string name="error_integrity_check_failed">integriteitscontrole niet geslaagd! Data is bewerkt!</string>
+  <string name="error_integrity_check_failed">integriteitscontrole niet geslaagd! Gegevens zijn bewerkt!</string>
   <string name="error_wrong_passphrase">wachtwoord verkeerd</string>
   <string name="error_could_not_extract_private_key">kan privésleutel niet uitpakken</string>
   <string name="error_wrong_security_token">dit security token bevat de gevraagde sleutel niet</string>
@@ -799,17 +799,17 @@
   <string name="msg_ip_apply_batch">Bezig met toepassen van invoeg-batchbewerking.</string>
   <string name="msg_ip_bad_type_secret">Geprobeerd een geheime sleutel als publieke sleutel te importeren. Dit is een bug, gelieve een verslag in te dienen!</string>
   <string name="msg_ip_delete_old_fail">Geen oude sleutel verwijderd (een nieuwe aan het aanmaken?)</string>
-  <string name="msg_ip_delete_old_ok">Oude sleutel van database verwijderd</string>
+  <string name="msg_ip_delete_old_ok">Oude sleutel van gegevensbank verwijderd</string>
   <string name="msg_ip_encode_fail">Bewerking mislukt door coderingsfout</string>
   <string name="msg_ip_error_io_exc">Bewerking mislukt door i/o-fout</string>
-  <string name="msg_ip_error_op_exc">Bewerking mislukt door databasefout</string>
+  <string name="msg_ip_error_op_exc">Bewerking mislukt door gegevensbankfout</string>
   <string name="msg_ip_error_remote_ex">Bewerking mislukt door interne fout</string>
   <string name="msg_ip">Bezig met importeren van publieke sleutelbos %s</string>
   <string name="msg_ip_fingerprint_error">Vingerafdruk van geïmporteerde sleutel komt niet overeen zoals verwacht!</string>
   <string name="msg_ip_fingerprint_ok">Vingerafdrukcontrole oké</string>
   <string name="msg_ip_insert_keyring">Bezig met coderen van sleutelbosgegevens</string>
   <string name="msg_ip_insert_keys">Bezig met analyseren van sleutels</string>
-  <string name="msg_ip_prepare">Bezig met voorbereiden van databasebewerkingen</string>
+  <string name="msg_ip_prepare">Bezig met voorbereiden van gegevensbankbewerkingen</string>
   <string name="msg_ip_master">Bezig met verwerken van hoofdsleutel %s</string>
   <string name="msg_ip_master_expired">Sleutelbos is verlopen op %s</string>
   <string name="msg_ip_master_expires">Sleutelbos verloopt op %s</string>
@@ -893,7 +893,7 @@
   <string name="msg_is_bad_type_uncanon">Geprobeerd een sleutelbos zonder standaardisatie te importeren. Dit is een bug, gelieve een verslag in te dienen!</string>
   <!--Import Secret log entries-->
   <string name="msg_is">Bezig met importeren van geheime sleutel %s</string>
-  <string name="msg_is_db_exception">Databasefout!</string>
+  <string name="msg_is_db_exception">Gegevensbankfout!</string>
   <string name="msg_is_importing_subkeys">Bezig met verwerken van geheime subsleutels</string>
   <string name="msg_is_error_io_exc">Fout bij coderen van sleutelbos</string>
   <string name="msg_is_merge_public">Bezig met samenvoegen van geïmporteerde gegevens in bestaande publieke sleutelbos</string>
@@ -1119,7 +1119,7 @@
   <string name="msg_dc_error_no_signature">Handtekening gegevens ontbreken!</string>
   <string name="msg_dc_error_pgp_exception">OpenPGP-uitzondering tegengekomen tijdens bewerking!</string>
   <string name="msg_dc_integrity_check_ok">Integriteitscontrole OKÉ!</string>
-  <string name="msg_dc_ok_meta_only">Enkel metadata opgevraagd, ontsleutelen wordt overgeslagen</string>
+  <string name="msg_dc_ok_meta_only">Enkel metagegevens opgevraagd, ontsleutelen wordt overgeslagen</string>
   <string name="msg_dc_ok">Ontsleuteling/verificatie voltooid</string>
   <string name="msg_dc_pass_cached">Wachtwoord wordt uit cache gebruikt</string>
   <string name="msg_dc_pending_nfc">NFC-token vereist, gebruikersinvoer wordt gevraagd…</string>
@@ -1251,7 +1251,7 @@
   <string name="msg_backup_public">Bezig met maken van back-up van publieke sleutel %s</string>
   <string name="msg_backup_secret">Bezig met maken van back-up van geheime sleutel %s</string>
   <string name="msg_backup_error_uri_open">Fout bij openen van URI-stream!</string>
-  <string name="msg_backup_error_db">Databasefout!</string>
+  <string name="msg_backup_error_db">Gegevensbankfout!</string>
   <string name="msg_backup_error_io">Invoer-/uitvoerfout!</string>
   <string name="msg_backup_success">Back-up geslaagd</string>
   <string name="msg_upload">Bezig met uploaden van publieke sleutel</string>

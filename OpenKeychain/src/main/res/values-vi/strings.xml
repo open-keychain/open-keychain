@@ -210,6 +210,7 @@
   <string name="orbot_start_dialog_cancel">Hủy</string>
   <!--choice-->
   <string name="choice_none">Không có</string>
+  <string name="usage_sign">Chữ ký</string>
   <string name="usage_encrypt">Mã hóa</string>
   <string name="error">Lỗi</string>
   <!--sentences-->
@@ -226,6 +227,7 @@
   <string name="progress_cancel">Hủy</string>
   <!--action strings-->
   <!--key bit length selections-->
+  <string name="key_size_2048">2048</string>
   <!--elliptic curve names-->
   <!--not in for now, see SaveKeyringParcel
     <string name="key_curve_bp_p256">"Brainpool P-256"</string>
@@ -291,6 +293,7 @@
   <!--hints-->
   <!--certs-->
   <string name="cert_none">không có</string>
+  <string name="cert_revoke">đã hủy bỏ</string>
   <string name="cert_verify_ok">OK</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->

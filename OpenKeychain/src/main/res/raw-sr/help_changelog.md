@@ -1,7 +1,11 @@
 [//]: #
 
+## 5.4
+  * Add WKD Advanced method
+  * Add COTECH Security Key Shop
+
 ## 5.3
-  * Usw keys.openpgp.org as default keyserver
+  * Use keys.openpgp.org as default keyserver
 
 ## 5.2
   * Improved key import from clipboard

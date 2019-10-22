@@ -961,7 +961,9 @@
   <string name="msg_pse_error_pgp">Errore interno di PGP!</string>
   <string name="msg_pse_error_unlock">Errore sconosciuto durante apertura chiave!</string>
   <!--Messages for Authentication operation-->
+  <string name="msg_auth_error_unlock">Errore sconosciuto durante apertura chiave!</string>
   <string name="msg_auth_error_bad_passphrase">Password errata!</string>
+  <string name="msg_auth_error_nfc">Errore dati NFC!</string>
   <string name="msg_crt_error_master_not_found">Chiave principale non trovata!</string>
   <string name="msg_crt_error_nothing">Nessuna chiave certificata!</string>
   <string name="msg_crt_saving">Salvataggio portachiavi in corso</string>

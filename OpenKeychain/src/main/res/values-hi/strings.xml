@@ -24,6 +24,7 @@
   <string name="title_advanced_key_info">उन्नत</string>
   <!--section-->
   <string name="section_keys">उपकुंजियाँ</string>
+  <string name="section_certify">पुष्टि करें</string>
   <string name="section_share_key">कुंजी</string>
   <string name="section_encrypt">एन्क्रिप्ट</string>
   <!--button-->
@@ -54,6 +55,7 @@
   <string name="label_message">पाठ्यांश</string>
   <string name="label_passphrase">पासवर्ड</string>
   <string name="label_pin">पिन</string>
+  <string name="label_unlock">अनलॉकिंग</string>
   <string name="label_name">नाम</string>
   <string name="label_email">ईमेल</string>
   <string name="label_enter_keyserver_url">यूआरएल</string>
@@ -123,6 +125,7 @@
   <string name="api_settings_settings">सेटिंग</string>
   <!--Share-->
   <!--retry upload dialog-->
+  <string name="retry_up_dialog_title">अपलोड विफ़ल रहा।</string>
   <!--Delete or revoke private key dialog-->
   <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->

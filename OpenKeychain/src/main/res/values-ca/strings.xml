@@ -3,18 +3,27 @@
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
+  <string name="title_encrypt_text">Xifra</string>
+  <string name="title_encrypt_files">Xifra</string>
   <string name="title_decrypt">Desxifra</string>
   <string name="title_preferences">Configuració</string>
   <string name="title_api_registered_apps">Apps</string>
+  <string name="title_import_keys">Importa claus</string>
+  <string name="title_key_details">Detalls de les claus</string>
   <string name="title_help">Ajuda</string>
   <string name="title_log_display">Registre</string>
   <string name="title_advanced_key_info">Avançat</string>
   <!--section-->
   <string name="section_user_ids">Identitats</string>
+  <string name="section_keys">Subclaus</string>
   <string name="section_certify">Confirma</string>
+  <string name="section_actions">Accions</string>
   <string name="section_share_key">Clau</string>
+  <string name="section_key_server">Servidor de claus</string>
   <string name="section_fingerprint">Empremta</string>
+  <string name="section_encrypt">Xifra</string>
   <!--button-->
+  <string name="btn_save_file">Desa el fitxer</string>
   <string name="btn_save">Desa</string>
   <string name="btn_view_log">Mostra els registre</string>
   <string name="btn_do_not_save">Cancel·la</string>
@@ -37,6 +46,8 @@
   <string name="menu_help">Ajuda</string>
   <string name="menu_search">Cerca</string>
   <string name="menu_open">Obre</string>
+  <string name="menu_select_all">Selecciona-ho tot</string>
+  <string name="menu_change_password">Canvia la contrasenya</string>
   <string name="menu_advanced">Avançat</string>
   <string name="menu_keyserver_add">Afegeix</string>
   <!--label-->
@@ -44,8 +55,11 @@
   <string name="label_file">Fitxer</string>
   <string name="label_passphrase">Contrasenya</string>
   <string name="label_unlock">Desbloquejar</string>
+  <string name="label_algorithm">Algorisme</string>
   <string name="label_key_id">ID de la Clau</string>
+  <string name="label_key_id_colon">Id. clau:</string>
   <string name="label_key_type">Tipus</string>
+  <string name="label_creation">Creació</string>
   <string name="label_revoked">revocat</string>
   <string name="label_name">Nom</string>
   <string name="label_email">Correu electrònic</string>
@@ -54,10 +68,14 @@
   <string name="label_enter_keyserver_url">URL</string>
   <string name="label_theme">Tema</string>
   <string name="label_enter_smartpgp_authority_name">Nom</string>
+  <string name="pref_facebook">Facebook</string>
   <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">Advertència</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Activa Tor</string>
+  <string name="pref_proxy_host_title">Amfitrió del servidor intermediari</string>
+  <string name="pref_proxy_port_title">Port del servidor intermediari</string>
+  <string name="pref_proxy_type_title">Tipus de Servidor intermediari</string>
   <!--proxy type choices and values-->
   <string name="pref_proxy_type_choice_http">HTTP</string>
   <!--OrbotHelper strings-->
@@ -69,15 +87,19 @@
   <!--choice-->
   <string name="choice_none">Cap</string>
   <string name="choice_1hour">1 houra</string>
+  <string name="usage_encrypt">Xifra</string>
   <string name="error">Error</string>
   <string name="theme_dark">Fosc</string>
   <string name="theme_light">Clar</string>
   <!--sentences-->
+  <string name="passphrase_for">Introdueixi la contrassenya per a \'%s\'</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
   <!--errors without preceding Error:-->
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_no_signature">Sense Signar</string>
+  <string name="decrypt_result_encrypted">Xifrat</string>
   <string name="decrypt_result_action_show">Mostra</string>
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
@@ -94,14 +116,17 @@
   <string name="help_tab_start">Inicia</string>
   <string name="help_tab_faq">Preguntes més freqüents</string>
   <string name="help_tab_changelog">Registre de canvis</string>
+  <string name="help_tab_license">Llicències</string>
   <string name="help_tab_about">Quant a</string>
   <string name="help_about_version">Versió</string>
   <string name="help_tab_donations">Fes una donació</string>
   <!--Import-->
+  <string name="import_tab_keyserver">Servidor de claus</string>
   <string name="import_qr_code_button">Escaneja el codi QR</string>
   <string name="btn_import">Subscriu-me</string>
   <string name="btn_refresh">Refresca</string>
   <!--Generic result toast-->
+  <string name="snackbar_details">Detalls</string>
   <!--Import result toast-->
   <!--Delete result toast-->
   <!--Revoke result toast (snackbar)-->
@@ -114,6 +139,7 @@
   <string name="api_settings_settings">Configuració</string>
   <!--Share-->
   <!--retry upload dialog-->
+  <string name="retry_up_dialog_title">Ha fallat la pujada</string>
   <!--Delete or revoke private key dialog-->
   <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
@@ -122,6 +148,8 @@
   <string name="key_view_action_edit">Editar</string>
   <string name="key_view_tab_start">Inicia</string>
   <string name="key_view_tab_share">Compartir</string>
+  <string name="key_view_tab_keys">Subclaus</string>
+  <string name="user_id_info_revoked_title">revocat</string>
   <!--Key trust-->
   <!--keybase proof stuff-->
   <string name="keybase_verify">Verifica</string>
@@ -139,6 +167,7 @@
   <!--hints-->
   <!--certs-->
   <string name="cert_none">Cap</string>
+  <string name="cert_revoke">revocat</string>
   <string name="cert_verify_ok">OK</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
@@ -164,6 +193,7 @@
   <string name="msg_import_fetch_error_not_found">No s’ha trobat la clau.</string>
   <string name="msg_upload_error_not_found">No s’ha trobat la clau.</string>
   <!--Messages for Keybase Verification operation-->
+  <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_keys">Contrasenyes desades</string>
@@ -171,6 +201,7 @@
   <!--Keyserver sync-->
   <!--First Time-->
   <!--unsorted-->
+  <string name="label_user_id">Identitat</string>
   <string name="label_cert_type">Tipus</string>
   <string name="error_key_not_found">No s’ha trobat la clau.</string>
   <string name="key_unavailable">no disponible</string>
@@ -200,9 +231,12 @@
   <string name="button_cancel">Cancel·la</string>
   <string name="button_back">Enrera</string>
   <string name="button_got_it">D\'acord</string>
+  <string name="key_health_revoked_title">revocat</string>
   <string name="dialog_insecure_button_ok">Entesos</string>
   <string name="usage_authentication">Autenticació</string>
   <string name="button_import">Subscriu-me</string>
+  <string name="transfer_status_connected">Connectat</string>
+  <string name="transfer_connecting">S\'està connectant...</string>
   <string name="transfer_confirm_cancel">Cancel·la</string>
   <string name="transfer_confirm_ok">Envia</string>
   <string name="token_reset_confirm_ok">Reinicia</string>

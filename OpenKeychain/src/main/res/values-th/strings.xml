@@ -19,6 +19,7 @@
   <string name="section_encrypt">การเข้ารหัสลับของข้อความ</string>
   <!--button-->
   <string name="btn_save">บันทึก</string>
+  <string name="btn_view_log">ดูปูม</string>
   <string name="btn_do_not_save">ยกเลิก</string>
   <string name="btn_delete">ลบ</string>
   <string name="btn_okay">ตกลง</string>
@@ -38,6 +39,7 @@
   <string name="menu_help">ช่วยเหลือ</string>
   <string name="menu_search">ค้นหา</string>
   <string name="menu_open">เปิด</string>
+  <string name="menu_select_all">เลือกทั้งหมด</string>
   <string name="menu_change_password">เปลี่ยนรหัสผ่าน</string>
   <string name="menu_advanced">ขั้นสูง</string>
   <string name="menu_keyserver_add">เพิ่ม</string>
@@ -50,6 +52,7 @@
   <string name="label_key_id">รหัสระบุกุญแจ</string>
   <string name="label_key_id_colon">รหัสระบุกุญแจ</string>
   <string name="label_key_type">ชนิด</string>
+  <string name="label_creation">การสร้าง</string>
   <string name="label_name">ชื่อเอกสาร</string>
   <string name="label_email">อีเมล</string>
   <string name="label_fingerprint">ลายนิ้วมือ</string>
@@ -99,6 +102,7 @@
   <string name="btn_import">นำเข้า</string>
   <string name="btn_refresh">แสดงใหม่</string>
   <!--Generic result toast-->
+  <string name="snackbar_details">รายละเอียด</string>
   <!--Import result toast-->
   <!--Delete result toast-->
   <!--Revoke result toast (snackbar)-->
@@ -165,7 +169,9 @@
   <!--First Time-->
   <string name="first_time_import_key">นำเข้ากุญแจจากไฟล์</string>
   <string name="backup_section">สำรอง</string>
+  <string name="restore_section">คืนค่า</string>
   <!--unsorted-->
+  <string name="label_user_id">เอกลักษณ์</string>
   <string name="label_cert_type">ชนิด</string>
   <string name="error_key_not_found">ไม่พบกุญแจ</string>
   <string name="unknown">ไม่ทราบ</string>
@@ -192,6 +198,7 @@
   <string name="button_cancel">ยกเลิก</string>
   <string name="button_back">ย้อนกลับ</string>
   <string name="button_got_it">ได้รับมัน</string>
+  <string name="dialog_insecure_title">คำเตือนด้านความปลอดภัย</string>
   <string name="dialog_insecure_button_ok">ได้รับมัน</string>
   <string name="button_import">นำเข้า</string>
   <string name="transfer_status_connected">เชื่อมต่อสำเร็จ</string>

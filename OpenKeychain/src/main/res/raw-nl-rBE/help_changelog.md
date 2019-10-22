@@ -1,10 +1,14 @@
 [//]: # (Ter info: Zet iedere zin op een eigen regel, Transifex zet iedere regel in zijn eigen vertalingsveld!)
 
+## 5.4
+  * Add WKD Advanced method
+  * Add COTECH Security Key Shop
+
 ## 5.3
-  * Usw keys.openpgp.org as default keyserver
+  * keys.openpgp.org wordt nu gebruikt als standaardsleutelserver
 
 ## 5.2
-  * Improved key import from clipboard
+  * Verbeterde ondersteuning voor importeren van sleutels uit klembord
 
 ## 5.1
   * Ondersteuning voor Ledger Nano S
