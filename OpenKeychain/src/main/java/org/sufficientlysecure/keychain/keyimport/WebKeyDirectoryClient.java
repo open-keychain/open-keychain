@@ -55,7 +55,7 @@ public class WebKeyDirectoryClient implements KeyserverClient {
     @Override
     public List<ImportKeysListEntry> search(String name, ParcelableProxy proxy)
             throws QueryFailedException {
-        URL webKeyDirectoryURL = WebKeyDirectoryUtil.toWebKeyDirectoryURL(name);
+        URL webKeyDirectoryURL = WebKeyDirectoryUtil.toWebKeyDirectoryURL(name, true);
 
         if (webKeyDirectoryURL == null) {
             Timber.d("Name not supported by Web Key Directory Client: " + name);
@@ -64,11 +64,22 @@ public class WebKeyDirectoryClient implements KeyserverClient {
 
         Timber.d("Web Key Directory import: " + name + " using Proxy: " + proxy.getProxy());
 
+        Timber.d("Query Web Key Directory Advanced method for: " + name);
         byte[] data = query(webKeyDirectoryURL, proxy.getProxy());
 
         if (data == null) {
-            Timber.d("No Web Key Directory endpoint for: " + name);
-            return Collections.emptyList();
+            // Retry with direct mode
+            URL webKeyDirectoryURLDirect = WebKeyDirectoryUtil.toWebKeyDirectoryURL(name, false);
+
+            Timber.d("Query Web Key Directory fallback Direct method for: " + name);
+            byte[] dataDirect = query(webKeyDirectoryURLDirect, proxy.getProxy());
+
+            if (dataDirect == null) {
+                Timber.d("No Web Key Directory endpoint for: " + name);
+                return Collections.emptyList();
+            } else {
+                data = dataDirect;
+            }
         }
 
         // if we're here that means key retrieval succeeded,
