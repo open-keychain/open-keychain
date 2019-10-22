@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -56,6 +57,7 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
     public static final int ID_TRANSFER = 5;
     static final int ID_SETTINGS = 6;
     static final int ID_HELP = 7;
+    static final int ID_SHOP = 8;
 
     // both of these are used for instrumentation testing only
     public static final String EXTRA_SKIP_FIRST_TIME = "skip_first_time";
@@ -81,6 +83,8 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                 .withHeader(R.layout.main_drawer_header)
                 .withToolbar(mToolbar)
                 .addDrawerItems(
+                        new PrimaryDrawerItem().withName(R.string.nav_shop).withIcon(CommunityMaterial.Icon.cmd_shopping)
+                                .withIdentifier(ID_SHOP).withSelectable(false).withTypeface(Typeface.DEFAULT_BOLD),
                         new PrimaryDrawerItem().withName(R.string.nav_keys).withIcon(CommunityMaterial.Icon.cmd_key)
                                 .withIdentifier(ID_KEYS).withSelectable(false),
                         new PrimaryDrawerItem().withName(R.string.nav_encrypt_decrypt).withIcon(FontAwesome.Icon.faw_lock)
@@ -125,6 +129,9 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                                     break;
                                 case ID_HELP:
                                     intent = new Intent(MainActivity.this, HelpActivity.class);
+                                    break;
+                                case ID_SHOP:
+                                    onShopSelected();
                                     break;
                             }
                             if (intent != null) {
@@ -250,6 +257,13 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
             Fragment frag = new TransferFragment();
             setFragment(frag);
         }
+    }
+
+    private void onShopSelected() {
+        mToolbar.setTitle("Cotech Security Keys");
+        mDrawer.setSelection(ID_SHOP, false);
+        Fragment frag = new SecurityKeyShopFragment();
+        setFragment(frag);
     }
 
     @Override
