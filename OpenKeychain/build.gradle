@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'jacoco'
 apply plugin: 'com.squareup.sqldelight'
 // apply plugin: 'com.github.kt3k.coveralls'
 
@@ -285,34 +284,6 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/NOTICE'
         exclude '.readme'
-    }
-}
-
-task jacocoTestReport(type:JacocoReport, dependsOn: "testFdroidDebugWithTestCoverageUnitTest") {
-    group = "Reporting"
-    description = "Generate Jacoco coverage reports"
-
-    classDirectories = fileTree(
-            dir: "${buildDir}/intermediates/classes/fdroid/debugWithTestCoverage",
-            excludes: ['**/R.class',
-                       '**/R$*.class',
-                       '**/*$ViewInjector*.*',
-                       '**/BuildConfig.*',
-                       '**/Manifest*.*',
-                       '**/*Activity*.*',
-                       '**/*Fragment*.*']
-    )
-
-    sourceDirectories = files("${buildDir.parent}/src/main/java")
-    additionalSourceDirs = files([
-            "${buildDir}/generated/source/buildConfig/fdroid/debugWithTestCoverage",
-            "${buildDir}/generated/source/r/fdroid/debugWithTestCoverage"
-    ])
-    executionData = fileTree(dir: "${buildDir}/jacoco", include: "**/*.exec")
-
-    reports {
-        xml.enabled true
-        html.enabled true
     }
 }
 
