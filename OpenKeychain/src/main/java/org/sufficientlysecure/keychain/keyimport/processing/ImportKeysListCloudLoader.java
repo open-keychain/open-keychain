@@ -51,8 +51,7 @@ public class ImportKeysListCloudLoader
      *
      * @param loaderState     state containing the string to search on servers for (if it is a
      *                        fingerprint, will enforce fingerprint check) and the keyserver to
-     *                        search on (whether to search on the keyserver, and whether to search
-     *                        keybase.io)
+     *                        search on (whether to search on the keyserver)
      * @param parcelableProxy explicit proxy to use. If null, will retrieve from preferences
      */
     public ImportKeysListCloudLoader(Context context, CloudLoaderState loaderState,
@@ -84,7 +83,7 @@ public class ImportKeysListCloudLoader
         for (ImportKeysListEntry e : mEntryList) {
             if (e.getParcelableKeyRing() == null) {
                 e.setParcelableKeyRing(ParcelableKeyRing.createFromReference(e.getFingerprint(), e.getKeyIdHex(),
-                        e.getKeybaseName(), e.getFbUsername()));
+                        e.getFbUsername()));
             }
         }
 

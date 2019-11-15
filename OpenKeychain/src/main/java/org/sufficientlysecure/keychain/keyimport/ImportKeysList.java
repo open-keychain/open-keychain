@@ -77,14 +77,8 @@ public class ImportKeysList extends ArrayList<ImportKeysListEntry> {
 
         if (incoming.getKeyserver() != null) {
             existing.setKeyserver(incoming.getKeyserver());
-            // Mail addresses returned by HKP servers are preferred over keybase.io IDs
             existing.setPrimaryUserId(incoming.getPrimaryUserId());
 
-            modified = true;
-        } else if (incoming.getKeybaseName() != null) {
-            // to work properly, Keybase-sourced/Facebook-sourced entries need to pass along the
-            // identifying name/id
-            existing.setKeybaseName(incoming.getKeybaseName());
             modified = true;
         } else if (incoming.getFbUsername() != null) {
             existing.setFbUsername(incoming.getFbUsername());

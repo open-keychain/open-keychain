@@ -769,7 +769,7 @@ public class DecryptListFragment
 
         {
             ParcelableKeyRing keyEntry = ParcelableKeyRing.createFromReference(null,
-                    KeyFormattingUtils.convertKeyIdToHex(unknownKeyId), null, null);
+                    KeyFormattingUtils.convertKeyIdToHex(unknownKeyId), null);
             ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
             selectedEntries.add(keyEntry);
 

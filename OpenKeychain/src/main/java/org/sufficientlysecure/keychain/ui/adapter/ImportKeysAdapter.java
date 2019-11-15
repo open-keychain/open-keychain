@@ -24,15 +24,16 @@ import java.util.Date;
 import java.util.List;
 
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.RecyclerView;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.databinding.ImportKeysListItemBinding;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
@@ -45,7 +46,6 @@ import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
-import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
@@ -308,10 +308,7 @@ public class ImportKeysAdapter extends RecyclerView.Adapter<ImportKeysAdapter.Vi
             throw new AssertionError("Creation date doesn't match the expected one");
         }
         entry.setKeyId(keyRing.getMasterKeyId());
-
-        ArrayList<String> realUserIdsPlusKeybase = keyRing.getUnorderedUserIds();
-        realUserIdsPlusKeybase.addAll(entry.getKeybaseUserIds());
-        entry.setUserIds(realUserIdsPlusKeybase);
+        entry.setUserIds(keyRing.getUnorderedUserIds());
     }
 
     private class KeyState {

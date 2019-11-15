@@ -92,7 +92,6 @@ import org.sufficientlysecure.keychain.ui.MainActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.QrCodeViewActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyAdvActivity;
-import org.sufficientlysecure.keychain.ui.ViewKeyKeybaseFragment;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
@@ -289,11 +288,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
 
         ViewKeyFragment frag = ViewKeyFragment.newInstance();
         manager.beginTransaction().replace(R.id.view_key_fragment, frag, "view_key_fragment").commit();
-
-        if (Preferences.getPreferences(this).getExperimentalEnableKeybase()) {
-            final ViewKeyKeybaseFragment keybaseFrag = ViewKeyKeybaseFragment.newInstance();
-            manager.beginTransaction().replace(R.id.view_key_keybase_fragment, keybaseFrag).commit();
-        }
     }
 
     @Override
@@ -890,7 +884,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
             HkpKeyserverAddress preferredKeyserver = Preferences.getPreferences(getApplicationContext()).getPreferredKeyserver();
 
             ParcelableKeyRing keyEntry =
-                    ParcelableKeyRing.createFromReference(unifiedKeyInfo.fingerprint(), null, null, null);
+                    ParcelableKeyRing.createFromReference(unifiedKeyInfo.fingerprint(), null, null);
 
             return ImportKeyringParcel
                     .createImportKeyringParcel(Collections.singletonList(keyEntry), preferredKeyserver);

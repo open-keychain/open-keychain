@@ -132,7 +132,6 @@ public final class Constants {
         public static final String FIRST_TIME_APP = "firstTimeApp";
         public static final String CACHED_CONSOLIDATE = "cachedConsolidate";
         public static final String SEARCH_KEYSERVER = "search_keyserver_pref";
-        public static final String SEARCH_KEYBASE = "search_keybase_pref";
         public static final String SEARCH_WEB_KEY_DIRECTORY = "search_wkd_pref";
         public static final String USE_NUMKEYPAD_FOR_SECURITY_TOKEN_PIN = "useNumKeypadForYubikeyPin";
         public static final String ENCRYPT_FILENAMES = "encryptFilenames";
@@ -154,7 +153,6 @@ public final class Constants {
         public static final String ENABLE_WIFI_SYNC_ONLY = "enableWifiSyncOnly";
         public static final String SYNC_WORK_UUID = "syncWorkUuid";
         // other settings
-        public static final String EXPERIMENTAL_ENABLE_KEYBASE = "experimentalEnableKeybase";
         public static final String EXPERIMENTAL_USB_ALLOW_UNTESTED = "experimentalUsbAllowUntested";
         public static final String EXPERIMENTAL_SMARTPGP_VERIFY_AUTHORITY = "smartpgp_authorities_pref";
         public static final String EXPERIMENTAL_SMARTPGP_AUTHORITIES = "smartpgp_authorities";
@@ -178,9 +176,9 @@ public final class Constants {
 
         // we generally only track booleans. never snoop around in the user's string settings!!
         public static final List<String> ANALYTICS_PREFS = Arrays.asList(USE_NORMAL_PROXY, USE_TOR_PROXY,
-                SYNC_CONTACTS, SYNC_KEYSERVER, ENABLE_WIFI_SYNC_ONLY, EXPERIMENTAL_ENABLE_KEYBASE,
+                SYNC_CONTACTS, SYNC_KEYSERVER, ENABLE_WIFI_SYNC_ONLY,
                 EXPERIMENTAL_USB_ALLOW_UNTESTED,
-                PASSPHRASE_CACHE_SUBS, SEARCH_KEYSERVER, SEARCH_KEYBASE, SEARCH_WEB_KEY_DIRECTORY,
+                PASSPHRASE_CACHE_SUBS, SEARCH_KEYSERVER, SEARCH_WEB_KEY_DIRECTORY,
                 TEXT_USE_COMPRESSION, TEXT_SELF_ENCRYPT, FILE_USE_COMPRESSION, FILE_SELF_ENCRYPT, USE_ARMOR,
                 USE_NUMKEYPAD_FOR_SECURITY_TOKEN_PIN, ENCRYPT_FILENAMES);
     }
