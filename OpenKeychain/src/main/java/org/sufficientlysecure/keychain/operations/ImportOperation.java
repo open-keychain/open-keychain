@@ -41,7 +41,6 @@ import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.keyimport.FacebookKeyserverClient;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverClient;
-import org.sufficientlysecure.keychain.keyimport.KeybaseKeyserverClient;
 import org.sufficientlysecure.keychain.keyimport.KeyserverClient;
 import org.sufficientlysecure.keychain.keyimport.KeyserverClient.QueryNotFoundException;
 import org.sufficientlysecure.keychain.keyimport.ParcelableKeyRing;
@@ -76,8 +75,7 @@ import timber.log.Timber;
  * all steps for this import.
  * For the import operation, the only valid source is an Iterator of
  * ParcelableKeyRing, each of which must contain either a single
- * keyring encoded as bytes, or a unique reference to a keyring
- * on keyservers and/or keybase.io.
+ * keyring encoded as bytes, or a unique reference to a keyring on keyservers.
  * It is important to note that public keys should generally be imported before
  * secret keys, because some implementations (notably Symantec PGP Desktop) do
  * not include self certificates for user ids in the secret keyring. The import
@@ -93,7 +91,6 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
     private final KeyMetadataDao keyMetadataDao;
 
     private FacebookKeyserverClient facebookServer;
-    private KeybaseKeyserverClient keybaseServer;
 
     public ImportOperation(Context context, KeyWritableRepository databaseInteractor, Progressable progressable) {
         super(context, databaseInteractor, progressable);
@@ -355,14 +352,6 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
             }
         }
 
-        boolean hasKeybaseName = entry.getKeybaseName() != null;
-        if (hasKeybaseName) {
-            UncachedKeyRing keybaseKey = fetchKeyFromKeybase(proxy, log, entry);
-            if (keybaseKey != null) {
-                key = mergeKeysOrUseEither(log, 3, key, keybaseKey);
-            }
-        }
-
         boolean hasFacebookName = entry.getFbUsername() != null;
         if (hasFacebookName) {
             UncachedKeyRing facebookKey = fetchKeyFromFacebook(proxy, log, entry);
@@ -409,32 +398,6 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
             throw e;
         } catch (KeyserverClient.QueryFailedException e) {
             Timber.d(e, "query failed");
-            log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER, 3, e.getMessage());
-            return null;
-        }
-    }
-
-    private UncachedKeyRing fetchKeyFromKeybase(@NonNull ParcelableProxy proxy, OperationLog log, ParcelableKeyRing entry)
-            throws PgpGeneralException, IOException {
-        if (keybaseServer == null) {
-            keybaseServer = KeybaseKeyserverClient.getInstance();
-        }
-
-        try {
-            log.add(LogType.MSG_IMPORT_FETCH_KEYBASE, 2, entry.getKeybaseName());
-            byte[] data = keybaseServer.get(entry.getKeybaseName(), proxy).getBytes();
-            UncachedKeyRing keybaseKey = UncachedKeyRing.decodeFromData(data);
-
-            if (keybaseKey != null) {
-                log.add(LogType.MSG_IMPORT_FETCH_KEYSERVER_OK, 3);
-            } else {
-                log.add(LogType.MSG_IMPORT_FETCH_ERROR_DECODE, 3);
-            }
-
-            return keybaseKey;
-        } catch (KeyserverClient.QueryFailedException e) {
-            // download failed, too bad. just proceed
-            Timber.e(e, "query failed");
             log.add(LogType.MSG_IMPORT_FETCH_ERROR_KEYSERVER, 3, e.getMessage());
             return null;
         }

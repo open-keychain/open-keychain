@@ -41,7 +41,6 @@ import org.sufficientlysecure.keychain.operations.ImportOperation;
 import org.sufficientlysecure.keychain.operations.InputDataOperation;
 import org.sufficientlysecure.keychain.operations.KeySyncOperation;
 import org.sufficientlysecure.keychain.operations.KeySyncParcel;
-import org.sufficientlysecure.keychain.operations.KeybaseVerificationOperation;
 import org.sufficientlysecure.keychain.operations.PromoteKeyOperation;
 import org.sufficientlysecure.keychain.operations.RevokeOperation;
 import org.sufficientlysecure.keychain.operations.SignEncryptOperation;
@@ -114,8 +113,6 @@ public class KeychainServiceTask {
                         } else if (inputParcel instanceof UploadKeyringParcel) {
                             op = new UploadOperation(context, keyRepository, asyncProgressable,
                                     operationCancelledBoolean);
-                        } else if (inputParcel instanceof KeybaseVerificationParcel) {
-                            op = new KeybaseVerificationOperation(context, keyRepository, asyncProgressable);
                         } else if (inputParcel instanceof InputDataParcel) {
                             op = new InputDataOperation(context, keyRepository, asyncProgressable);
                         } else if (inputParcel instanceof BenchmarkInputParcel) {

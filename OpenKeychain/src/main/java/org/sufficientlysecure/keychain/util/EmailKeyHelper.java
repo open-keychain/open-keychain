@@ -65,7 +65,8 @@ public class EmailKeyHelper {
             // Put them in a list and import
             ArrayList<ParcelableKeyRing> keys = new ArrayList<>(entries.size());
             for (ImportKeysListEntry entry : entries) {
-                keys.add(ParcelableKeyRing.createFromReference(entry.getFingerprint(), entry.getKeyIdHex(), null, null));
+                keys.add(ParcelableKeyRing.createFromReference(entry.getFingerprint(), entry.getKeyIdHex(),
+                        null));
             }
             mKeyList = keys;
             mKeyserver = keyserver;

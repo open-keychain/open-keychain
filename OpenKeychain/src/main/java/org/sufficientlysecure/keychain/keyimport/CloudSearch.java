@@ -45,9 +45,6 @@ public class CloudSearch {
         if (cloudPrefs.isKeyserverEnabled()) {
             servers.add(HkpKeyserverClient.fromHkpKeyserverAddress(cloudPrefs.getKeyserver()));
         }
-        if (cloudPrefs.isKeybaseEnabled()) {
-            servers.add(KeybaseKeyserverClient.getInstance());
-        }
         if (cloudPrefs.isFacebookEnabled()) {
             servers.add(FacebookKeyserverClient.getInstance());
         }

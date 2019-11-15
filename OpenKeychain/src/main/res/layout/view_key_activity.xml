@@ -205,11 +205,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-            <FrameLayout
-                android:id="@+id/view_key_keybase_fragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
             <!--
                 placeholder to improve the scrolling.
                 Somehow the content must be large enough to enable scrolling on NestedScrollView
