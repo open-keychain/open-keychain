@@ -584,7 +584,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onPause();
 
             Activity activity = getActivity();
-            ((KeychainApplication) activity.getApplication()).getAnalyticsManager().refreshSettings(activity);
         }
 
         @Override

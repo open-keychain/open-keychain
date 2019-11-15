@@ -22,17 +22,9 @@ import java.util.List;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Transformations;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.StringRes;
-import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
-import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,16 +33,22 @@ import android.view.View;
 import android.view.ViewPropertyAnimator;
 import android.view.animation.OvershootInterpolator;
 
+import androidx.annotation.StringRes;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 import com.astuetz.PagerSlidingTabStrip;
-import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.livedata.GenericLiveData;
 import org.sufficientlysecure.keychain.model.SubKey;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.model.UserPacket.UserId;
-import org.sufficientlysecure.keychain.analytics.AnalyticsManager;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
@@ -89,8 +87,6 @@ public class ViewKeyAdvActivity extends BaseActivity implements OnPageChangeList
         }
     }
 
-    private AnalyticsManager analyticsManager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,7 +94,6 @@ public class ViewKeyAdvActivity extends BaseActivity implements OnPageChangeList
         setFullScreenDialogClose(v -> finish());
 
         keyRepository = KeyRepository.create(this);
-        analyticsManager = ((KeychainApplication) getApplication()).getAnalyticsManager();
 
         viewPager = findViewById(R.id.pager);
         slidingTabLayout = findViewById(R.id.sliding_tab_layout);
@@ -302,7 +297,6 @@ public class ViewKeyAdvActivity extends BaseActivity implements OnPageChangeList
         invalidateOptionsMenu();
 
         String fragmentName = tabAdapter.getItem(position).getClass().getSimpleName();
-        analyticsManager.trackFragmentImpression(getClass().getSimpleName(), fragmentName);
     }
 
     @Override
