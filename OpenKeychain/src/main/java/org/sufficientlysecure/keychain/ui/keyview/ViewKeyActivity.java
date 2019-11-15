@@ -305,46 +305,38 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home: {
-                Intent homeIntent = new Intent(this, MainActivity.class);
-                homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(homeIntent);
-                return true;
-            }
-            case R.id.menu_key_change_password: {
-                changePassword();
-                return true;
-            }
-            case R.id.menu_key_view_backup: {
-                startPassphraseActivity(REQUEST_BACKUP);
-                return true;
-            }
-            case R.id.menu_key_view_skt: {
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra(MainActivity.EXTRA_INIT_FRAG, MainActivity.ID_TRANSFER);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                return true;
-            }
-            case R.id.menu_key_view_delete: {
-                deleteKey();
-                return true;
-            }
-            case R.id.menu_key_view_advanced: {
-                Intent advancedIntent = new Intent(this, ViewKeyAdvActivity.class);
-                advancedIntent.putExtra(ViewKeyAdvActivity.EXTRA_MASTER_KEY_ID, unifiedKeyInfo.master_key_id());
-                startActivity(advancedIntent);
-                return true;
-            }
-            case R.id.menu_key_view_refresh: {
-                updateFromKeyserver();
-                return true;
-            }
-            case R.id.menu_key_view_certify_fingerprint: {
-                certifyFingerprint();
-                return true;
-            }
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            Intent homeIntent = new Intent(this, MainActivity.class);
+            homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(homeIntent);
+            return true;
+        } else if (itemId == R.id.menu_key_change_password) {
+            changePassword();
+            return true;
+        } else if (itemId == R.id.menu_key_view_backup) {
+            startPassphraseActivity(REQUEST_BACKUP);
+            return true;
+        } else if (itemId == R.id.menu_key_view_skt) {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra(MainActivity.EXTRA_INIT_FRAG, MainActivity.ID_TRANSFER);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            return true;
+        } else if (itemId == R.id.menu_key_view_delete) {
+            deleteKey();
+            return true;
+        } else if (itemId == R.id.menu_key_view_advanced) {
+            Intent advancedIntent = new Intent(this, ViewKeyAdvActivity.class);
+            advancedIntent.putExtra(ViewKeyAdvActivity.EXTRA_MASTER_KEY_ID, unifiedKeyInfo.master_key_id());
+            startActivity(advancedIntent);
+            return true;
+        } else if (itemId == R.id.menu_key_view_refresh) {
+            updateFromKeyserver();
+            return true;
+        } else if (itemId == R.id.menu_key_view_certify_fingerprint) {
+            certifyFingerprint();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

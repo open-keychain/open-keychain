@@ -22,7 +22,7 @@ allprojects {
 }
 
 // Ignore tests for external bouncycastle
-project(':extern:bouncycastle') {
+project(':openkeychain:extern:bouncycastle') {
     subprojects {
         // Need to re-apply the plugin here otherwise the test property below can't be set.
         apply plugin: 'java'

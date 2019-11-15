@@ -350,54 +350,37 @@ public class EncryptFilesFragment
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.encrypt_save: {
-                hideKeyboard();
-                mAfterEncryptAction = AfterEncryptAction.SAVE;
-                cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
-                break;
-            }
-            case R.id.encrypt_share: {
-                hideKeyboard();
-                mAfterEncryptAction = AfterEncryptAction.SHARE;
-                cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
-                break;
-            }
-            case R.id.encrypt_copy: {
-                hideKeyboard();
-                mAfterEncryptAction = AfterEncryptAction.COPY;
-                cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
-                break;
-            }
-            case R.id.check_use_armor: {
-                toggleUseArmor(item, !item.isChecked());
-                break;
-            }
-            case R.id.check_delete_after_encrypt: {
-                item.setChecked(!item.isChecked());
-                mDeleteAfterEncrypt = item.isChecked();
-                break;
-            }
-            case R.id.check_enable_compression: {
-                toggleEnableCompression(item, !item.isChecked());
-                break;
-            }
-            case R.id.check_enable_self_encrypt: {
-                toggleEnableSelfEncrypt(item, !item.isChecked());
-                break;
-            }
-            case R.id.check_encrypt_filenames: {
-                toggleEncryptFilenamesCheck(item, !item.isChecked());
-                break;
-            }
+        int itemId = item.getItemId();
+        if (itemId == R.id.encrypt_save) {
+            hideKeyboard();
+            mAfterEncryptAction = AfterEncryptAction.SAVE;
+            cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
+        } else if (itemId == R.id.encrypt_share) {
+            hideKeyboard();
+            mAfterEncryptAction = AfterEncryptAction.SHARE;
+            cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
+        } else if (itemId == R.id.encrypt_copy) {
+            hideKeyboard();
+            mAfterEncryptAction = AfterEncryptAction.COPY;
+            cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
+        } else if (itemId == R.id.check_use_armor) {
+            toggleUseArmor(item, !item.isChecked());
+        } else if (itemId == R.id.check_delete_after_encrypt) {
+            item.setChecked(!item.isChecked());
+            mDeleteAfterEncrypt = item.isChecked();
+        } else if (itemId == R.id.check_enable_compression) {
+            toggleEnableCompression(item, !item.isChecked());
+        } else if (itemId == R.id.check_enable_self_encrypt) {
+            toggleEnableSelfEncrypt(item, !item.isChecked());
+        } else if (itemId == R.id.check_encrypt_filenames) {
+            toggleEncryptFilenamesCheck(item, !item.isChecked());
 //            case R.id.check_hidden_recipients: {
 //                mHiddenRecipients = item.isChecked();
 //                notifyUpdate();
 //                break;
 //            }
-            default: {
-                return super.onOptionsItemSelected(item);
-            }
+        } else {
+            return super.onOptionsItemSelected(item);
         }
         return true;
     }

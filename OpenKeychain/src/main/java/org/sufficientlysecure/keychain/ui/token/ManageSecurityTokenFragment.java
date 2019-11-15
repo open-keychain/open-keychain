@@ -160,19 +160,15 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.view_log: {
-                presenter.onMenuClickViewLog();
-                return true;
-            }
-            case R.id.change_pin: {
-                presenter.onMenuClickChangePin();
-                return true;
-            }
-            default: {
-                return super.onOptionsItemSelected(item);
-            }
+        int itemId = item.getItemId();
+        if (itemId == R.id.view_log) {
+            presenter.onMenuClickViewLog();
+            return true;
+        } else if (itemId == R.id.change_pin) {
+            presenter.onMenuClickChangePin();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -421,45 +417,23 @@ public class ManageSecurityTokenFragment extends Fragment implements ManageSecur
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.button_import: {
-                presenter.onClickImport();
-                break;
-            }
-            case R.id.button_retry: {
-                presenter.onClickRetry();
-                break;
-            }
-            case R.id.button_view_key: {
-                presenter.onClickViewKey();
-                break;
-            }
-            case R.id.button_load_file: {
-                presenter.onClickLoadFile();
-                break;
-            }
-            case R.id.button_reset_token_1:
-            case R.id.button_reset_token_2:
-            case R.id.button_reset_token_3:
-            case R.id.button_reset_token_4:
-            case R.id.button_reset_token_5: {
-                presenter.onClickResetToken();
-                break;
-            }
-
-            case R.id.button_unlock: {
-                presenter.onClickUnlockToken();
-                break;
-            }
-            case R.id.button_unlock_impossible: {
-                presenter.onClickUnlockTokenImpossible();
-                break;
-            }
-
-            case R.id.button_setup: {
-                presenter.onClickSetupToken();
-                break;
-            }
+        int id = v.getId();
+        if (id == R.id.button_import) {
+            presenter.onClickImport();
+        } else if (id == R.id.button_retry) {
+            presenter.onClickRetry();
+        } else if (id == R.id.button_view_key) {
+            presenter.onClickViewKey();
+        } else if (id == R.id.button_load_file) {
+            presenter.onClickLoadFile();
+        } else if (id == R.id.button_reset_token_1 || id == R.id.button_reset_token_2 || id == R.id.button_reset_token_3 || id == R.id.button_reset_token_4 || id == R.id.button_reset_token_5) {
+            presenter.onClickResetToken();
+        } else if (id == R.id.button_unlock) {
+            presenter.onClickUnlockToken();
+        } else if (id == R.id.button_unlock_impossible) {
+            presenter.onClickUnlockTokenImpossible();
+        } else if (id == R.id.button_setup) {
+            presenter.onClickSetupToken();
         }
     }
 

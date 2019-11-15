@@ -1,4 +1,4 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 apply plugin: 'com.squareup.sqldelight'
 // apply plugin: 'com.github.kt3k.coveralls'
 
@@ -52,13 +52,15 @@ dependencies {
     implementation 'org.piwik.sdk:piwik-sdk:3.0.3'
 
     // libs as submodules
-    implementation project(':openpgp-api-lib')
-    implementation project(':nfcsweetspot')
-    implementation project(':sshauthentication-api')
-    implementation project(':extern:bouncycastle:core')
-    implementation project(':extern:bouncycastle:pg')
-    implementation project(':extern:bouncycastle:prov')
-    implementation project(':extern:MaterialChipsInput')
+//    implementation project(':openkeychain:openpgp-api-lib')
+    implementation project(':plugins:openpgp-api-lib:openpgp-api')
+
+    implementation project(':openkeychain:nfcsweetspot')
+    implementation project(':openkeychain:sshauthentication-api')
+    implementation project(':openkeychain:extern:bouncycastle:core')
+    implementation project(':openkeychain:extern:bouncycastle:pg')
+    implementation project(':openkeychain:extern:bouncycastle:prov')
+    implementation project(':openkeychain:extern:MaterialChipsInput')
 
     implementation 'androidx.work:work-runtime:2.2.0'
 
@@ -107,14 +109,13 @@ dependencies {
 }
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdkVersion 28
 
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 28
         versionCode 54000
         versionName "5.4"
-        applicationId "org.sufficientlysecure.keychain"
         // the androidjunitrunner is broken regarding coverage, see here:
         // https://code.google.com/p/android/issues/detail?id=170607
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -138,7 +139,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
+//            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                           'proguard-rules-base.pro',
                           'proguard-rules-bouncycastle.pro',
@@ -157,18 +158,26 @@ android {
             // Github API
             buildConfigField "String", "GITHUB_CLIENT_ID", "\"c942cd81844d94e7e41b\""
             buildConfigField "String", "GITHUB_CLIENT_SECRET", "\"f1dd17e70a0614abbd9310b00a310e23c6c8edff\""
+
+
+            // TODO: moved from flavors to build types
+            buildConfigField "boolean", "DONATIONS_GOOGLE", "true"
+            buildConfigField "String", "GOOGLE_PLAY_PUBKEY", "\"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwX9SOQ/EL4u5pvbYmYMagN5DDenuSaMaVs2cVPzqxMaIHp6/9/nGuzj2/CpcB4ASd2vvfLlE9tZRkPmFTULWc4Sp4OR+JenQufZZr7Y8WGPkFyqd+dOxhIqKKLtH1QuqSyhby3gEMlWzydJY3rHXlH2Bpu65Uroawq76nynnELXNlzsCM231XWgj4HA87qxv9hSWLCpu16wKxZIX3d6mwZLZmGF+xYJAzVr291oDYYl+h6BDoIcAfmQFsv5MexNwBFO+TLVrvL0e5qdGHZxwwD1/68VSY8FxAEfM+yq7jovdVSdcXlJQjZrV5TRDdFWrtEB6njGA3YZWXP6B6MMMoQIDAQAB\""
+            buildConfigField "String", "PAYPAL_USER", "null"
+            buildConfigField "String", "PAYPAL_CURRENCY_CODE", "null"
+            buildConfigField "String", "BITCOIN_ADDRESS", "null"
+            buildConfigField "String", "FLATTR_PROJECT_URL", "null"
+            buildConfigField "String", "FLATTR_URL", "null"
         }
 
         debug {
             // ProGuard disabled for debug builds, instead multidex is enabled!
             // faster consecutive build times for developing, https://github.com/open-keychain/open-keychain/pull/2247
-            minifyEnabled false
+//            minifyEnabled false
             //proguardFiles = buildTypes.release.proguardFiles
             //testProguardFiles 'proguard-rules-test.pro'
 
-            multiDexEnabled true
-
-            applicationIdSuffix ".debug"
+//            multiDexEnabled true
 
             // Reference them in the java files with e.g. BuildConfig.ACCOUNT_TYPE.
             buildConfigField "String", "ACCOUNT_TYPE", "\"org.sufficientlysecure.keychain.debug.account\""
@@ -181,22 +190,8 @@ android {
             // Github API
             buildConfigField "String", "GITHUB_CLIENT_ID", "\"c942cd81844d94e7e41b\""
             buildConfigField "String", "GITHUB_CLIENT_SECRET", "\"f1dd17e70a0614abbd9310b00a310e23c6c8edff\""
-        }
 
-        // Workaround for http://stackoverflow.com/questions/27909613/cannot-see-parameter-value-in-android-studio-when-breakpoint-is-in-first-line-of
-        debugWithTestCoverage.initWith(debug)
-        debugWithTestCoverage {
-            // Enable code coverage (Jacoco)
-            testCoverageEnabled true
-            matchingFallbacks = ['debug']    // instead use this
-        }
-    }
-
-    flavorDimensions("freedom")
-
-    productFlavors {
-        google {
-            dimension "freedom"
+            // TODO: moved from flavors to build types
             buildConfigField "boolean", "DONATIONS_GOOGLE", "true"
             buildConfigField "String", "GOOGLE_PLAY_PUBKEY", "\"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwX9SOQ/EL4u5pvbYmYMagN5DDenuSaMaVs2cVPzqxMaIHp6/9/nGuzj2/CpcB4ASd2vvfLlE9tZRkPmFTULWc4Sp4OR+JenQufZZr7Y8WGPkFyqd+dOxhIqKKLtH1QuqSyhby3gEMlWzydJY3rHXlH2Bpu65Uroawq76nynnELXNlzsCM231XWgj4HA87qxv9hSWLCpu16wKxZIX3d6mwZLZmGF+xYJAzVr291oDYYl+h6BDoIcAfmQFsv5MexNwBFO+TLVrvL0e5qdGHZxwwD1/68VSY8FxAEfM+yq7jovdVSdcXlJQjZrV5TRDdFWrtEB6njGA3YZWXP6B6MMMoQIDAQAB\""
             buildConfigField "String", "PAYPAL_USER", "null"
@@ -205,23 +200,46 @@ android {
             buildConfigField "String", "FLATTR_PROJECT_URL", "null"
             buildConfigField "String", "FLATTR_URL", "null"
         }
-        fdroid {
-            dimension "freedom"
-            buildConfigField "boolean", "DONATIONS_GOOGLE", "false"
-            buildConfigField "String", "GOOGLE_PLAY_PUBKEY", "null"
-            buildConfigField "String", "PAYPAL_USER", "\"android@schuermann.eu\""
-            buildConfigField "String", "PAYPAL_CURRENCY_CODE", "\"EUR\""
-            buildConfigField "String", "BITCOIN_ADDRESS", "\"1LY6Hs6SurATjfxnihzLMDUMUuMxvQ4aEi\""
-            buildConfigField "String", "FLATTR_PROJECT_URL", "\"https://www.openkeychain.org\""
-            buildConfigField "String", "FLATTR_URL", "\"flattr.com/submit/auto?fid=4vzg0p&url=https%3A%2F%2Fwww.openkeychain.org\""
-        }
+
+        // Workaround for http://stackoverflow.com/questions/27909613/cannot-see-parameter-value-in-android-studio-when-breakpoint-is-in-first-line-of
+//        debugWithTestCoverage.initWith(debug)
+//        debugWithTestCoverage {
+//            // Enable code coverage (Jacoco)
+//            testCoverageEnabled true
+//            matchingFallbacks = ['debug']    // instead use this
+//        }
     }
 
-    variantFilter { variant ->
-        if(variant.buildType.name.equals('debug') && variant.getFlavors().get(0).name.equals('google')) {
-            variant.setIgnore(true)
-        }
-    }
+//    flavorDimensions("freedom")
+//
+//    productFlavors {
+//        google {
+//            dimension "freedom"
+//            buildConfigField "boolean", "DONATIONS_GOOGLE", "true"
+//            buildConfigField "String", "GOOGLE_PLAY_PUBKEY", "\"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwX9SOQ/EL4u5pvbYmYMagN5DDenuSaMaVs2cVPzqxMaIHp6/9/nGuzj2/CpcB4ASd2vvfLlE9tZRkPmFTULWc4Sp4OR+JenQufZZr7Y8WGPkFyqd+dOxhIqKKLtH1QuqSyhby3gEMlWzydJY3rHXlH2Bpu65Uroawq76nynnELXNlzsCM231XWgj4HA87qxv9hSWLCpu16wKxZIX3d6mwZLZmGF+xYJAzVr291oDYYl+h6BDoIcAfmQFsv5MexNwBFO+TLVrvL0e5qdGHZxwwD1/68VSY8FxAEfM+yq7jovdVSdcXlJQjZrV5TRDdFWrtEB6njGA3YZWXP6B6MMMoQIDAQAB\""
+//            buildConfigField "String", "PAYPAL_USER", "null"
+//            buildConfigField "String", "PAYPAL_CURRENCY_CODE", "null"
+//            buildConfigField "String", "BITCOIN_ADDRESS", "null"
+//            buildConfigField "String", "FLATTR_PROJECT_URL", "null"
+//            buildConfigField "String", "FLATTR_URL", "null"
+//        }
+//        fdroid {
+//            dimension "freedom"
+//            buildConfigField "boolean", "DONATIONS_GOOGLE", "false"
+//            buildConfigField "String", "GOOGLE_PLAY_PUBKEY", "null"
+//            buildConfigField "String", "PAYPAL_USER", "\"android@schuermann.eu\""
+//            buildConfigField "String", "PAYPAL_CURRENCY_CODE", "\"EUR\""
+//            buildConfigField "String", "BITCOIN_ADDRESS", "\"1LY6Hs6SurATjfxnihzLMDUMUuMxvQ4aEi\""
+//            buildConfigField "String", "FLATTR_PROJECT_URL", "\"https://www.openkeychain.org\""
+//            buildConfigField "String", "FLATTR_URL", "\"flattr.com/submit/auto?fid=4vzg0p&url=https%3A%2F%2Fwww.openkeychain.org\""
+//        }
+//    }
+//
+//    variantFilter { variant ->
+//        if(variant.buildType.name.equals('debug') && variant.getFlavors().get(0).name.equals('google')) {
+//            variant.setIgnore(true)
+//        }
+//    }
 
     /*
      * To sign release build, create file gradle.properties in ~/.gradle/ with this content:

@@ -118,19 +118,16 @@ public class AppSettingsActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_api_save: {
-                save();
-                return true;
-            }
-            case R.id.menu_api_settings_revoke: {
-                revokeAccess();
-                return true;
-            }
-            case R.id.menu_api_settings_advanced: {
-                showAdvancedInfo();
-                return true;
-            }
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_api_save) {
+            save();
+            return true;
+        } else if (itemId == R.id.menu_api_settings_revoke) {
+            revokeAccess();
+            return true;
+        } else if (itemId == R.id.menu_api_settings_advanced) {
+            showAdvancedInfo();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

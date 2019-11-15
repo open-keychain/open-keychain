@@ -197,13 +197,12 @@ public class ImportKeysSearchFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-        switch (itemId) {
-            case R.id.menu_import_keys_cloud_settings:
-                Intent intent = new Intent(mActivity, SettingsActivity.class);
-                intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT,
-                        SettingsActivity.CloudSearchPrefsFragment.class.getName());
-                startActivity(intent);
-                return true;
+        if (itemId == R.id.menu_import_keys_cloud_settings) {
+            Intent intent = new Intent(mActivity, SettingsActivity.class);
+            intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT,
+                    SettingsActivity.CloudSearchPrefsFragment.class.getName());
+            startActivity(intent);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
