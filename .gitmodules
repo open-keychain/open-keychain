@@ -2,10 +2,6 @@
 	path = extern/openpgp-api-lib
 	url = https://github.com/open-keychain/openpgp-api.git
 	ignore = dirty
-[submodule "extern/minidns"]
-	path = extern/minidns
-	url = https://github.com/open-keychain/minidns.git
-	ignore = dirty
 [submodule "OpenKeychain/src/test/resources/openpgp-interop"]
 	path = OpenKeychain/src/test/resources/openpgp-interop
 	url = https://github.com/google/openpgp-interop
