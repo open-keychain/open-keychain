@@ -116,21 +116,16 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
 
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.menu_key_list_multi_encrypt: {
-                    long[] keyIds = getSelectedMasterKeyIds();
-                    multiSelectEncrypt(keyIds);
-                    mode.finish();
-                    break;
-                }
-
-                case R.id.menu_key_list_multi_delete: {
-                    long[] keyIds = getSelectedMasterKeyIds();
-                    boolean hasSecret = isAnySecretKeySelected();
-                    multiSelectDelete(keyIds, hasSecret);
-                    mode.finish();
-                    break;
-                }
+            int itemId = item.getItemId();
+            if (itemId == R.id.menu_key_list_multi_encrypt) {
+                long[] keyIds = getSelectedMasterKeyIds();
+                multiSelectEncrypt(keyIds);
+                mode.finish();
+            } else if (itemId == R.id.menu_key_list_multi_delete) {
+                long[] keyIds = getSelectedMasterKeyIds();
+                boolean hasSecret = isAnySecretKeySelected();
+                multiSelectDelete(keyIds, hasSecret);
+                mode.finish();
             }
             return false;
         }
@@ -474,57 +469,48 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_key_list_create: {
-                createKey();
-                return true;
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_key_list_create) {
+            createKey();
+            return true;
+        } else if (itemId == R.id.menu_key_list_update_all_keys) {
+            updateAllKeys();
+            return true;
+        } else if (itemId == R.id.menu_key_list_debug_read) {
+            try {
+                KeychainDatabase.debugBackup(getActivity(), true);
+                Notify.create(getActivity(), "Restored debug_backup.db", Style.OK).show();
+                DatabaseNotifyManager.create(requireContext()).notifyAllKeysChange();
+            } catch (IOException e) {
+                Timber.e(e, "IO Error");
+                Notify.create(getActivity(), "IO Error " + e.getMessage(), Style.ERROR).show();
             }
-            case R.id.menu_key_list_update_all_keys: {
-                updateAllKeys();
-                return true;
+            return true;
+        } else if (itemId == R.id.menu_key_list_debug_write) {
+            try {
+                KeychainDatabase.debugBackup(getActivity(), false);
+                Notify.create(getActivity(), "Backup to debug_backup.db completed", Style.OK).show();
+            } catch (IOException e) {
+                Timber.e(e, "IO Error");
+                Notify.create(getActivity(), "IO Error: " + e.getMessage(), Style.ERROR).show();
             }
-            case R.id.menu_key_list_debug_read: {
-                try {
-                    KeychainDatabase.debugBackup(getActivity(), true);
-                    Notify.create(getActivity(), "Restored debug_backup.db", Notify.Style.OK).show();
-                    DatabaseNotifyManager.create(requireContext()).notifyAllKeysChange();
-                } catch (IOException e) {
-                    Timber.e(e, "IO Error");
-                    Notify.create(getActivity(), "IO Error " + e.getMessage(), Notify.Style.ERROR).show();
-                }
-                return true;
-            }
-            case R.id.menu_key_list_debug_write: {
-                try {
-                    KeychainDatabase.debugBackup(getActivity(), false);
-                    Notify.create(getActivity(), "Backup to debug_backup.db completed", Notify.Style.OK).show();
-                } catch (IOException e) {
-                    Timber.e(e, "IO Error");
-                    Notify.create(getActivity(), "IO Error: " + e.getMessage(), Notify.Style.ERROR).show();
-                }
-                return true;
-            }
-            case R.id.menu_key_list_debug_first_time: {
-                Preferences prefs = Preferences.getPreferences(getActivity());
-                prefs.setFirstTime(true);
-                Intent intent = new Intent(getActivity(), CreateKeyActivity.class);
-                intent.putExtra(CreateKeyActivity.EXTRA_FIRST_TIME, true);
-                startActivity(intent);
-                getActivity().finish();
-                return true;
-            }
-            case R.id.menu_key_list_debug_bgsync: {
-                KeyserverSyncManager.debugRunSyncNow(requireContext());
-                return true;
-            }
-            case R.id.menu_key_list_debug_bench: {
-                benchmark();
-                return true;
-            }
-            default: {
-                return super.onOptionsItemSelected(item);
-            }
+            return true;
+        } else if (itemId == R.id.menu_key_list_debug_first_time) {
+            Preferences prefs = Preferences.getPreferences(getActivity());
+            prefs.setFirstTime(true);
+            Intent intent = new Intent(getActivity(), CreateKeyActivity.class);
+            intent.putExtra(CreateKeyActivity.EXTRA_FIRST_TIME, true);
+            startActivity(intent);
+            getActivity().finish();
+            return true;
+        } else if (itemId == R.id.menu_key_list_debug_bgsync) {
+            KeyserverSyncManager.debugRunSyncNow(requireContext());
+            return true;
+        } else if (itemId == R.id.menu_key_list_debug_bench) {
+            benchmark();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

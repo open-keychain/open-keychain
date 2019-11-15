@@ -68,23 +68,19 @@ public class CreateSecurityTokenWaitFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_token_debug_uri:
-                mCreateKeyActivity.loadFragment(ManageSecurityTokenFragment.newInstance(
-                        SecurityTokenInfo.newInstanceDebugUri()), FragAction.TO_RIGHT);
-                break;
-            case R.id.menu_token_debug_keyserver:
-                mCreateKeyActivity.loadFragment(ManageSecurityTokenFragment.newInstance(
-                        SecurityTokenInfo.newInstanceDebugKeyserver()), FragAction.TO_RIGHT);
-                break;
-            case R.id.menu_token_debug_locked:
-                mCreateKeyActivity.loadFragment(ManageSecurityTokenFragment.newInstance(
-                        SecurityTokenInfo.newInstanceDebugLocked()), FragAction.TO_RIGHT);
-                break;
-            case R.id.menu_token_debug_locked_hard:
-                mCreateKeyActivity.loadFragment(ManageSecurityTokenFragment.newInstance(
-                        SecurityTokenInfo.newInstanceDebugLockedHard()), FragAction.TO_RIGHT);
-                break;
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_token_debug_uri) {
+            mCreateKeyActivity.loadFragment(ManageSecurityTokenFragment.newInstance(
+                    SecurityTokenInfo.newInstanceDebugUri()), FragAction.TO_RIGHT);
+        } else if (itemId == R.id.menu_token_debug_keyserver) {
+            mCreateKeyActivity.loadFragment(ManageSecurityTokenFragment.newInstance(
+                    SecurityTokenInfo.newInstanceDebugKeyserver()), FragAction.TO_RIGHT);
+        } else if (itemId == R.id.menu_token_debug_locked) {
+            mCreateKeyActivity.loadFragment(ManageSecurityTokenFragment.newInstance(
+                    SecurityTokenInfo.newInstanceDebugLocked()), FragAction.TO_RIGHT);
+        } else if (itemId == R.id.menu_token_debug_locked_hard) {
+            mCreateKeyActivity.loadFragment(ManageSecurityTokenFragment.newInstance(
+                    SecurityTokenInfo.newInstanceDebugLockedHard()), FragAction.TO_RIGHT);
         }
         return super.onOptionsItemSelected(item);
     }

@@ -177,15 +177,13 @@ public class BackupRestoreFragment extends CryptoOperationFragment<BackupKeyring
         PopupMenu popupMenu = new PopupMenu(getContext(), backupPublicKeys);
         popupMenu.inflate(R.menu.export_public);
         popupMenu.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.menu_export_file:
-                    shareNotSave = false;
-                    exportContactKeysToFileOrShare();
-                    break;
-                case R.id.menu_export_share:
-                    shareNotSave = true;
-                    exportContactKeysToFileOrShare();
-                    break;
+            int itemId = item.getItemId();
+            if (itemId == R.id.menu_export_file) {
+                shareNotSave = false;
+                exportContactKeysToFileOrShare();
+            } else if (itemId == R.id.menu_export_share) {
+                shareNotSave = true;
+                exportContactKeysToFileOrShare();
             }
             return false;
         });

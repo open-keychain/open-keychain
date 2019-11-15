@@ -497,17 +497,13 @@ public class DecryptListFragment
         }
 
         new BottomSheet.Builder(activity).sheet(R.menu.decrypt_bottom_sheet).listener(item -> {
-            switch (item.getItemId()) {
-                case R.id.decrypt_open:
-                    displayWithViewIntent(result, index, false, true);
-                    break;
-                case R.id.decrypt_share:
-                    displayWithViewIntent(result, index, true, true);
-                    break;
-                case R.id.decrypt_save:
-                    // only inside the menu xml for Android >= 4.4
-                    saveFileDialog(result, index);
-                    break;
+            int itemId = item.getItemId();
+            if (itemId == R.id.decrypt_open) {
+                displayWithViewIntent(result, index, false, true);
+            } else if (itemId == R.id.decrypt_share) {
+                displayWithViewIntent(result, index, true, true);
+            } else if (itemId == R.id.decrypt_save) {// only inside the menu xml for Android >= 4.4
+                saveFileDialog(result, index);
             }
             return false;
         }).grid().show();
@@ -746,15 +742,15 @@ public class DecryptListFragment
         }
 
         ViewModel model = mAdapter.mMenuClickedModel;
-        switch (menuItem.getItemId()) {
-            case R.id.view_log:
-                Intent intent = new Intent(activity, LogDisplayActivity.class);
-                intent.putExtra(LogDisplayFragment.EXTRA_RESULT, model.mResult);
-                activity.startActivity(intent);
-                return true;
-            case R.id.decrypt_delete:
-                deleteFile(activity, model.mInputUri);
-                return true;
+        int itemId = menuItem.getItemId();
+        if (itemId == R.id.view_log) {
+            Intent intent = new Intent(activity, LogDisplayActivity.class);
+            intent.putExtra(LogDisplayFragment.EXTRA_RESULT, model.mResult);
+            activity.startActivity(intent);
+            return true;
+        } else if (itemId == R.id.decrypt_delete) {
+            deleteFile(activity, model.mInputUri);
+            return true;
         }
         return false;
     }

@@ -97,16 +97,14 @@ public class ImportKeysFileFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-        switch (itemId) {
-            case R.id.menu_import_keys_file_open:
-                // open .asc or .gpg files
-                // setting it to text/plain prevents Cyanogenmod's file manager from selecting asc
-                // or gpg types!
-                FileHelper.openDocument(ImportKeysFileFragment.this, "*/*", false, REQUEST_CODE_FILE);
-                return true;
-            case R.id.menu_import_keys_file_paste:
-                importFromClipboard();
-                return true;
+        if (itemId == R.id.menu_import_keys_file_open) {// open .asc or .gpg files
+            // setting it to text/plain prevents Cyanogenmod's file manager from selecting asc
+            // or gpg types!
+            FileHelper.openDocument(ImportKeysFileFragment.this, "*/*", false, REQUEST_CODE_FILE);
+            return true;
+        } else if (itemId == R.id.menu_import_keys_file_paste) {
+            importFromClipboard();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

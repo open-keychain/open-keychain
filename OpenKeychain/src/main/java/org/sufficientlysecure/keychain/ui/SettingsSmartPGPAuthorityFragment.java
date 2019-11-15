@@ -122,15 +122,11 @@ public class SettingsSmartPGPAuthorityFragment extends Fragment implements Recyc
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-
-            case R.id.menu_add_smartpgp_authority:
-                startAddAuthorityDialog();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.menu_add_smartpgp_authority) {
+            startAddAuthorityDialog();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private void startAddAuthorityDialog() {

@@ -178,40 +178,29 @@ public class EncryptTextFragment
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.check_enable_compression: {
-                toggleEnableCompression(item, !item.isChecked());
-                break;
-            }
-            case R.id.check_enable_self_encrypt: {
-                toggleEnableSelfEncrypt(item, !item.isChecked());
-                break;
-            }
+        int itemId = item.getItemId();
+        if (itemId == R.id.check_enable_compression) {
+            toggleEnableCompression(item, !item.isChecked());
+        } else if (itemId == R.id.check_enable_self_encrypt) {
+            toggleEnableSelfEncrypt(item, !item.isChecked());
 //            case R.id.check_hidden_recipients: {
 //                mHiddenRecipients = item.isChecked();
 //                notifyUpdate();
 //                break;
 //            }
-            case R.id.encrypt_copy: {
-                hideKeyboard();
-                mShareAfterEncrypt = false;
-                cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
-                break;
-            }
-            case R.id.encrypt_share: {
-                hideKeyboard();
-                mShareAfterEncrypt = true;
-                cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
-                break;
-            }
-            case R.id.encrypt_paste: {
-                hideKeyboard();
-                cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
-                break;
-            }
-            default: {
-                return super.onOptionsItemSelected(item);
-            }
+        } else if (itemId == R.id.encrypt_copy) {
+            hideKeyboard();
+            mShareAfterEncrypt = false;
+            cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
+        } else if (itemId == R.id.encrypt_share) {
+            hideKeyboard();
+            mShareAfterEncrypt = true;
+            cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
+        } else if (itemId == R.id.encrypt_paste) {
+            hideKeyboard();
+            cryptoOperation(CryptoInputParcel.createCryptoInputParcel(new Date()));
+        } else {
+            return super.onOptionsItemSelected(item);
         }
         return true;
     }

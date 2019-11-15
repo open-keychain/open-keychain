@@ -155,23 +155,16 @@ public class DisplayTextFragment extends DecryptFragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.decrypt_share: {
-                startActivity(Intent.createChooser(createSendIntent(mText.getText().toString()),
-                        getString(R.string.title_share_message)));
-                break;
-            }
-            case R.id.decrypt_copy: {
-                copyToClipboard(mText.getText().toString());
-                break;
-            }
-            case R.id.decrypt_view_log: {
-                startDisplayLogActivity();
-                break;
-            }
-            default: {
-                return super.onOptionsItemSelected(item);
-            }
+        int itemId = item.getItemId();
+        if (itemId == R.id.decrypt_share) {
+            startActivity(Intent.createChooser(createSendIntent(mText.getText().toString()),
+                    getString(R.string.title_share_message)));
+        } else if (itemId == R.id.decrypt_copy) {
+            copyToClipboard(mText.getText().toString());
+        } else if (itemId == R.id.decrypt_view_log) {
+            startDisplayLogActivity();
+        } else {
+            return super.onOptionsItemSelected(item);
         }
 
         return true;
