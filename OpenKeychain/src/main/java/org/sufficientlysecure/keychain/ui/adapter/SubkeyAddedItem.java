@@ -18,27 +18,20 @@
 package org.sufficientlysecure.keychain.ui.adapter;
 
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
-import android.content.Context;
-import android.graphics.Typeface;
-import android.text.format.DateFormat;
 import android.view.View;
 
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 import eu.davidea.flexibleadapter.items.IFlexible;
-import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 import org.sufficientlysecure.keychain.ui.SubKeyItem.SubkeyViewHolder;
 import org.sufficientlysecure.keychain.ui.ViewKeyAdvSubkeysFragment;
 import org.sufficientlysecure.keychain.ui.ViewKeyAdvSubkeysFragment.SubkeyEditViewModel;
-import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 
 public class SubkeyAddedItem extends AbstractFlexibleItem<SubkeyViewHolder> {

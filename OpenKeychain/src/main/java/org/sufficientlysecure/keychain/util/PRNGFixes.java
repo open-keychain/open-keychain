@@ -12,7 +12,6 @@ package org.sufficientlysecure.keychain.util;
 
 import android.os.Build;
 import android.os.Process;
-import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;

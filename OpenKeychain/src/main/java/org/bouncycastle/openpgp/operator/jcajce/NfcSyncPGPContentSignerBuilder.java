@@ -16,8 +16,6 @@ import org.bouncycastle.openpgp.operator.PGPDigestCalculator;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.security.Provider;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 

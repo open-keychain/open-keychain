@@ -17,7 +17,7 @@
 
 package org.sufficientlysecure.keychain.util;
 
-import org.sufficientlysecure.keychain.LibConstants;
+import org.sufficientlysecure.keychain.Constants;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -49,7 +49,7 @@ public class Utf8Util {
         try {
             return charsetDecoder.decode(ByteBuffer.wrap(input)).toString();
         } catch (CharacterCodingException e) {
-            Log.e(LibConstants.TAG, "Decoding failed!", e);
+            Log.e(Constants.TAG, "Decoding failed!", e);
             return charsetDecoder.replacement();
         }
     }
