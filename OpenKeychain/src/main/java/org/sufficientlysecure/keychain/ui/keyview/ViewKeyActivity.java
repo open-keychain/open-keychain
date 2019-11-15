@@ -91,7 +91,6 @@ import org.sufficientlysecure.keychain.ui.ImportKeysProxyActivity;
 import org.sufficientlysecure.keychain.ui.MainActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.QrCodeViewActivity;
-import org.sufficientlysecure.keychain.ui.SafeSlingerActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyAdvActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyKeybaseFragment;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
@@ -267,11 +266,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
         actionShareClipboard.setOnClickListener(v -> ShareKeyHelper.shareKeyToClipboard(this, masterKeyId));
 
         floatingActionButton.setOnClickListener(v -> {
-            if (unifiedKeyInfo.has_any_secret()) {
-                startSafeSlinger();
-            } else {
-                scanQrCode();
-            }
+            scanQrCode();
         });
 
         qrCodeLayout.setOnClickListener(v -> showQrCodeDialog());
@@ -592,12 +587,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
         startActivityForResult(intent, 0);
     }
 
-    private void startSafeSlinger() {
-        Intent safeSlingerIntent = new Intent(this, SafeSlingerActivity.class);
-        safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, unifiedKeyInfo.master_key_id());
-        startActivityForResult(safeSlingerIntent, 0);
-    }
-
     /**
      * Load QR Code asynchronously and with a fade in animation
      */
@@ -778,8 +767,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
             actionShare.setVisibility(View.VISIBLE);
             actionShareClipboard.setVisibility(View.VISIBLE);
 
-            showFab();
-            floatingActionButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_white_24dp));
+            hideFab();
         } else {
             actionEncryptFile.setVisibility(View.VISIBLE);
             actionEncryptText.setVisibility(View.VISIBLE);
