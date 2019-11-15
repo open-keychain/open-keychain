@@ -40,6 +40,8 @@ import org.openintents.ssh.authentication.response.PublicKeyResponse;
 import org.openintents.ssh.authentication.response.SigningResponse;
 import org.openintents.ssh.authentication.response.SshPublicKeyResponse;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.KeychainApplication;
+import org.sufficientlysecure.keychain.analytics.AnalyticsManager;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
@@ -65,6 +67,8 @@ public class SshAuthenticationService extends Service {
     private ApiAppDao mApiAppDao;
     private ApiPendingIntentFactory mApiPendingIntentFactory;
 
+    private AnalyticsManager analyticsManager;
+
     private static final List<Integer> SUPPORTED_VERSIONS = Collections.unmodifiableList(Collections.singletonList(1));
     private static final int INVALID_API_VERSION = -1;
 
@@ -78,6 +82,8 @@ public class SshAuthenticationService extends Service {
         mApiAppDao = ApiAppDao.getInstance(this);
 
         mApiPendingIntentFactory = new ApiPendingIntentFactory(getBaseContext());
+
+        analyticsManager = ((KeychainApplication) getApplication()).getAnalyticsManager();
     }
 
     private final ISshAuthenticationService.Stub mSSHAgent = new ISshAuthenticationService.Stub() {
@@ -103,6 +109,8 @@ public class SshAuthenticationService extends Service {
     }
 
     private Intent executeInternal(Intent intent) {
+        analyticsManager.trackApiServiceCall(intent.getAction(), mApiPermissionHelper.getCurrentCallingPackage());
+
         switch (intent.getAction()) {
             case SshAuthenticationApi.ACTION_SIGN:
                 return authenticate(intent);
