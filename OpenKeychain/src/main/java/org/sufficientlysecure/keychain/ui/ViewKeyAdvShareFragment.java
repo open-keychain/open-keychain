@@ -28,7 +28,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,15 +39,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.livedata.GenericLiveData;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.ui.ViewKeyAdvActivity.ViewKeyAdvViewModel;
-import org.sufficientlysecure.keychain.ui.util.FormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
@@ -99,12 +97,9 @@ public class ViewKeyAdvShareFragment extends Fragment {
         View vFingerprintClipboardButton = view.findViewById(R.id.view_key_action_fingerprint_clipboard);
         View vKeyShareButton = view.findViewById(R.id.view_key_action_key_share);
         View vKeyClipboardButton = view.findViewById(R.id.view_key_action_key_clipboard);
-        ImageButton vKeySafeSlingerButton = view.findViewById(R.id.view_key_action_key_safeslinger);
         View vKeySshShareButton = view.findViewById(R.id.view_key_action_key_ssh_share);
         View vKeySshClipboardButton = view.findViewById(R.id.view_key_action_key_ssh_clipboard);
         View vKeyUploadButton = view.findViewById(R.id.view_key_action_upload);
-        vKeySafeSlingerButton.setColorFilter(FormattingUtils.getColorFromAttr(requireContext(), R.attr.colorTertiaryText),
-                PorterDuff.Mode.SRC_IN);
 
         vFingerprintShareButton.setOnClickListener(v -> shareFingerprint(false));
         vFingerprintClipboardButton.setOnClickListener(v -> shareFingerprint(true));
@@ -113,19 +108,12 @@ public class ViewKeyAdvShareFragment extends Fragment {
 
         vKeyClipboardButton.setOnClickListener(v -> ShareKeyHelper.shareKeyToClipboard(getActivity(), unifiedKeyInfo.master_key_id()));
 
-        vKeySafeSlingerButton.setOnClickListener(v -> startSafeSlinger());
         vKeySshShareButton.setOnClickListener(v -> ShareKeyHelper.shareSshKey(getActivity(), unifiedKeyInfo.master_key_id()));
 
         vKeySshClipboardButton.setOnClickListener(v -> ShareKeyHelper.shareSshKeyToClipboard(getActivity(), unifiedKeyInfo.master_key_id()));
         vKeyUploadButton.setOnClickListener(v -> uploadToKeyserver());
 
         return view;
-    }
-
-    private void startSafeSlinger() {
-        Intent safeSlingerIntent = new Intent(getActivity(), SafeSlingerActivity.class);
-        safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, unifiedKeyInfo.master_key_id());
-        startActivityForResult(safeSlingerIntent, 0);
     }
 
     private void shareFingerprint(boolean toClipboard) {
