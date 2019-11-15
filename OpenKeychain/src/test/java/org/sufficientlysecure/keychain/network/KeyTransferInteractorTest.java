@@ -4,7 +4,7 @@ package org.sufficientlysecure.keychain.network;
 import java.net.URISyntaxException;
 
 import android.os.Build.VERSION_CODES;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 
 import junit.framework.Assert;
 import org.robolectric.shadows.ShadowLog;

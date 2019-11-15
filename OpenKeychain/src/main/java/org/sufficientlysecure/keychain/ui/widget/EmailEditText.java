@@ -18,7 +18,7 @@
 package org.sufficientlysecure.keychain.ui.widget;
 
 import android.content.Context;
-import android.support.v7.widget.AppCompatAutoCompleteTextView;
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;

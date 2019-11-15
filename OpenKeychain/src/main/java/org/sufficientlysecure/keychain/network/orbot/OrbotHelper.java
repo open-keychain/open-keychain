@@ -61,8 +61,8 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 import android.text.TextUtils;
 
 import org.sufficientlysecure.keychain.R;

@@ -19,7 +19,7 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 
 public final class CountingOutputStream extends FilterOutputStream {

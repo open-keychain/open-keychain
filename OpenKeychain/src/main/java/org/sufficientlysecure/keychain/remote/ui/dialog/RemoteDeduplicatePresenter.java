@@ -20,9 +20,9 @@ package org.sufficientlysecure.keychain.remote.ui.dialog;
 
 import java.util.List;
 
-import android.arch.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LifecycleOwner;
 import android.content.Context;
-import android.support.v7.widget.RecyclerView.Adapter;
+import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;

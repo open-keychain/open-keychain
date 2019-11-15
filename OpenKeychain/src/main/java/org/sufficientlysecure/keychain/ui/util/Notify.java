@@ -18,8 +18,8 @@
 package org.sufficientlysecure.keychain.ui.util;
 
 import android.app.Activity;
-import android.support.annotation.CheckResult;
-import android.support.v4.app.Fragment;
+import androidx.annotation.CheckResult;
+import androidx.fragment.app.Fragment;
 import android.view.View;
 import android.view.ViewGroup;
 

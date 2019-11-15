@@ -25,7 +25,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Parcelable;
-import android.support.v4.os.CancellationSignal;
+import androidx.core.os.CancellationSignal;
 
 import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.analytics.AnalyticsManager;

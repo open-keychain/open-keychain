@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import android.arch.lifecycle.LifecycleOwner;
-import android.arch.lifecycle.LiveData;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
@@ -34,8 +34,8 @@ import android.net.wifi.WifiManager;
 import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Parcelable;
-import android.support.annotation.RequiresApi;
-import android.support.v7.widget.RecyclerView.Adapter;
+import androidx.annotation.RequiresApi;
+import androidx.recyclerview.widget.RecyclerView.Adapter;
 import android.view.LayoutInflater;
 
 import org.openintents.openpgp.util.OpenPgpUtils;

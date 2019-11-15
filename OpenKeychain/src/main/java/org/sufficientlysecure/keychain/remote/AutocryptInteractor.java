@@ -2,15 +2,13 @@ package org.sufficientlysecure.keychain.remote;
 
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.format.DateUtils;
 
 import org.openintents.openpgp.AutocryptPeerUpdate;

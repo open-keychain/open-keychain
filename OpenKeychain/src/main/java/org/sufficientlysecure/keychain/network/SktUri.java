@@ -21,8 +21,8 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 
 import android.annotation.SuppressLint;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 import org.bouncycastle.util.encoders.DecoderException;

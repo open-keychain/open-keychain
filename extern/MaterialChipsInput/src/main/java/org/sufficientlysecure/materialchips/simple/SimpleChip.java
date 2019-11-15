@@ -1,8 +1,8 @@
 package org.sufficientlysecure.materialchips.simple;
 
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.sufficientlysecure.materialchips.model.ChipInterface;
 

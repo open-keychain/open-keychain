@@ -1,6 +1,6 @@
 package org.sufficientlysecure.keychain.util;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.net.MalformedURLException;
 import java.net.URL;

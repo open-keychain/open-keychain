@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 import android.net.Uri;
 import android.os.Parcel;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.openintents.openpgp.OpenPgpMetadata;
 

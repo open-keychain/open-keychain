@@ -9,7 +9,7 @@
     android:paddingRight="16dp"
     android:paddingTop="16dp">
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/subkey_status_card"
         android:layout_gravity="center"
         android:layout_width="match_parent"
@@ -50,7 +50,7 @@
 
         </LinearLayout>
 
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
     <org.sufficientlysecure.keychain.ui.keyview.view.IdentitiesCardView
         android:id="@+id/card_identities"

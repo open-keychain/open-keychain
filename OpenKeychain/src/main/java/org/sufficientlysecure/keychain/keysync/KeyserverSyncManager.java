@@ -19,22 +19,22 @@ package org.sufficientlysecure.keychain.keysync;
 
 
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
-import android.support.annotation.WorkerThread;
 
+import androidx.annotation.WorkerThread;
 import androidx.work.Constraints.Builder;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
-import androidx.work.State;
-import androidx.work.SynchronousWorkManager;
+import androidx.work.WorkInfo;
+import androidx.work.WorkInfo.State;
 import androidx.work.WorkManager;
-import androidx.work.WorkStatus;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
 
@@ -58,30 +58,26 @@ public class KeyserverSyncManager {
     @WorkerThread
     private static void updateKeyserverSyncSchedule(Context context, boolean forceReschedule) {
         Preferences prefs = Preferences.getPreferences(context);
-        WorkManager workManager = WorkManager.getInstance();
-        if (workManager == null) {
-            Timber.e("WorkManager unavailable!");
-            return;
-        }
-        SynchronousWorkManager synchronousWorkManager = workManager.synchronous();
-        if (synchronousWorkManager == null) {
-            Timber.e("WorkManager unavailable!");
-            return;
-        }
+        WorkManager workManager = WorkManager.getInstance(context);
 
         UUID workUuid = prefs.getKeyserverSyncWorkUuid();
-        WorkStatus status = workUuid != null ? synchronousWorkManager.getStatusByIdSync(workUuid) : null;
-        boolean workIsScheduled = status != null && status.getState() != State.CANCELLED;
-        if (workIsScheduled == prefs.isKeyserverSyncEnabled()) {
-            if (!forceReschedule) {
-                Timber.d("Key sync already scheduled, no changes necessary");
-                return;
+        try {
+            WorkInfo info = workUuid != null ? workManager.getWorkInfoById(workUuid).get() : null;
+
+            boolean workIsScheduled = info != null && info.getState() != State.CANCELLED;
+            if (workIsScheduled == prefs.isKeyserverSyncEnabled()) {
+                if (!forceReschedule) {
+                    Timber.d("Key sync already scheduled, no changes necessary");
+                    return;
+                }
+                Timber.d("Key sync already scheduled, but forcing reschedule");
             }
-            Timber.d("Key sync already scheduled, but forcing reschedule");
+        } catch (ExecutionException | InterruptedException e) {
+            Timber.e(e, "Error getting info for scheduled key sync work?");
         }
 
         Timber.d("Cancelling sync tasks…");
-        synchronousWorkManager.cancelAllWorkByTagSync(PERIODIC_WORK_TAG);
+        workManager.cancelAllWorkByTag(PERIODIC_WORK_TAG);
 
         if (!prefs.isKeyserverSyncEnabled()) {
             Timber.d("Key sync disabled");
@@ -102,14 +98,17 @@ public class KeyserverSyncManager {
                         .setConstraints(constraints.build())
                         .addTag(PERIODIC_WORK_TAG)
                         .build();
-        synchronousWorkManager.enqueueSync(workRequest);
-
-        Timber.d("Work id: %s", workRequest.getId());
-        prefs.setKeyserverSyncScheduled(workRequest.getId());
+        try {
+            workManager.enqueue(workRequest).getResult().get();
+            Timber.d("Work id: %s", workRequest.getId());
+            prefs.setKeyserverSyncScheduled(workRequest.getId());
+        } catch (InterruptedException | ExecutionException e) {
+            Timber.e(e, "Error enqueueing job!");
+        }
     }
 
-    public static void debugRunSyncNow() {
-        WorkManager workManager = WorkManager.getInstance();
+    public static void debugRunSyncNow(Context context) {
+        WorkManager workManager = WorkManager.getInstance(context);
         OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(KeyserverSyncWorker.class).build();
         workManager.enqueue(workRequest);
     }

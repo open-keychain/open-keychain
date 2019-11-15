@@ -9,7 +9,7 @@ buildscript {
         classpath 'com.android.tools.build:gradle:3.5.2'
         // bintray dependency to satisfy dependency of openpgp-api lib
         classpath 'com.novoda:bintray-release:0.8.0'
-        classpath 'com.squareup.sqldelight:gradle-plugin:0.7.0'
+        classpath 'com.squareup.sqldelight:gradle-plugin:0.8.0'
     }
 }
 

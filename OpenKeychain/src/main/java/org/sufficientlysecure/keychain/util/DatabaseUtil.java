@@ -18,7 +18,7 @@
 package org.sufficientlysecure.keychain.util;
 
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 import android.database.Cursor;
 import android.text.TextUtils;
 

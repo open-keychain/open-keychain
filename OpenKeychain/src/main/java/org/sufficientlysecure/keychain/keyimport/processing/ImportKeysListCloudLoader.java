@@ -18,8 +18,8 @@
 package org.sufficientlysecure.keychain.keyimport.processing;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.v4.content.AsyncTaskLoader;
+import androidx.annotation.Nullable;
+import androidx.loader.content.AsyncTaskLoader;
 import org.sufficientlysecure.keychain.keyimport.CloudSearch;
 import org.sufficientlysecure.keychain.keyimport.ImportKeysListEntry;
 import org.sufficientlysecure.keychain.keyimport.KeyserverClient;

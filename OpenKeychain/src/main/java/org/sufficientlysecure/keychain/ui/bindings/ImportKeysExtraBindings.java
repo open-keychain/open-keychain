@@ -19,7 +19,7 @@ package org.sufficientlysecure.keychain.ui.bindings;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.databinding.BindingAdapter;
+import androidx.databinding.BindingAdapter;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
 import android.widget.LinearLayout;

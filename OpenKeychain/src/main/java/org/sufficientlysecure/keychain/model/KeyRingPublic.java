@@ -1,11 +1,10 @@
 package org.sufficientlysecure.keychain.model;
 
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.google.auto.value.AutoValue;
 import org.sufficientlysecure.keychain.KeyRingsPublicModel;
-import org.sufficientlysecure.keychain.KeysModel.InsertKey;
 
 
 @AutoValue

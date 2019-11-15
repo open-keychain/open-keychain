@@ -41,8 +41,8 @@ import java.util.Set;
 import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;

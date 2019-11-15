@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import android.content.ClipDescription;
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 

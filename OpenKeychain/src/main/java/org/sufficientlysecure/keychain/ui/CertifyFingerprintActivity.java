@@ -17,7 +17,7 @@
 
 package org.sufficientlysecure.keychain.ui;
 
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 
 import org.sufficientlysecure.keychain.R;

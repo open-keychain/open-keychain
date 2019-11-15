@@ -4,7 +4,7 @@ package org.sufficientlysecure.keychain;
 import java.lang.reflect.Method;
 
 import android.os.Bundle;
-import android.support.test.runner.AndroidJUnitRunner;
+import androidx.test.runner.AndroidJUnitRunner;
 
 
 public class JacocoWorkaroundJUnitRunner extends AndroidJUnitRunner {

@@ -18,7 +18,7 @@
 package org.sufficientlysecure.keychain.securitytoken.usb.tpdu;
 
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.bouncycastle.util.Arrays;
 import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransceiver;

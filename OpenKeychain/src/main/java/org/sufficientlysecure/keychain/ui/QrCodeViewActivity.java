@@ -18,12 +18,12 @@
 package org.sufficientlysecure.keychain.ui;
 
 
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProviders;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.widget.CardView;
+import androidx.core.app.ActivityCompat;
+import androidx.cardview.widget.CardView;
 import android.widget.ImageView;
 
 import org.sufficientlysecure.keychain.Constants;

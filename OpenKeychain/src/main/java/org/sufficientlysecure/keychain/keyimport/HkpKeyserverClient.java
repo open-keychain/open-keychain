@@ -18,7 +18,7 @@
 package org.sufficientlysecure.keychain.keyimport;
 
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;

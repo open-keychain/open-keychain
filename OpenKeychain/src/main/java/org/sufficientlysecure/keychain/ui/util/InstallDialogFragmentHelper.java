@@ -25,7 +25,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 import android.view.ContextThemeWrapper;
 
 import org.sufficientlysecure.keychain.R;

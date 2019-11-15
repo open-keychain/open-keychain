@@ -6,8 +6,8 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
-import android.support.annotation.RequiresApi;
-import android.support.annotation.StringRes;
+import androidx.annotation.RequiresApi;
+import androidx.annotation.StringRes;
 
 
 public class NotificationChannelManager {
