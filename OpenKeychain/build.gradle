@@ -58,7 +58,6 @@ dependencies {
     implementation project(':extern:bouncycastle:core')
     implementation project(':extern:bouncycastle:pg')
     implementation project(':extern:bouncycastle:prov')
-    implementation project(':extern:minidns')
     implementation project(':extern:MaterialChipsInput')
 
     implementation "android.arch.work:work-runtime:1.0.0-alpha02"
