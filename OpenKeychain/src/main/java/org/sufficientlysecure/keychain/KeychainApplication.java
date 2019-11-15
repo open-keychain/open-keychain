@@ -26,7 +26,7 @@ import android.accounts.AccountManager;
 import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.widget.Toast;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -106,7 +106,7 @@ public class KeychainApplication extends Application {
 
         KeyserverSyncManager.updateKeyserverSyncScheduleAsync(this, false);
 
-        TemporaryFileProvider.scheduleCleanupImmediately();
+        TemporaryFileProvider.scheduleCleanupImmediately(getApplicationContext());
 
         analyticsManager = AnalyticsManager.getInstance(getApplicationContext());
         analyticsManager.initialize(this);

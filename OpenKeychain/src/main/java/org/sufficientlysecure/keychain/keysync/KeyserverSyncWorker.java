@@ -5,11 +5,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.app.NotificationManager;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationCompat.Builder;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationCompat.Builder;
 import androidx.work.Worker;
+import androidx.work.WorkerParameters;
 import org.sufficientlysecure.keychain.Constants.NotificationIds;
 import org.sufficientlysecure.keychain.NotificationChannelManager;
 import org.sufficientlysecure.keychain.R;
@@ -28,9 +29,13 @@ import timber.log.Timber;
 public class KeyserverSyncWorker extends Worker {
     private AtomicBoolean cancellationSignal = new AtomicBoolean(false);
 
+    public KeyserverSyncWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
+        super(context, workerParams);
+    }
+
     @NonNull
     @Override
-    public WorkerResult doWork() {
+    public Result doWork() {
         KeyWritableRepository keyWritableRepository = KeyWritableRepository.create(getApplicationContext());
 
         Timber.d("Starting key sync…");
@@ -47,7 +52,7 @@ public class KeyserverSyncWorker extends Worker {
      * @param result
      *         result of keyserver sync
      */
-    private WorkerResult handleUpdateResult(ImportKeyResult result) {
+    private Result handleUpdateResult(ImportKeyResult result) {
         if (result.isPending()) {
             Timber.d("Orbot required for sync but not running, attempting to start");
             // result is pending due to Orbot not being started
@@ -62,13 +67,13 @@ public class KeyserverSyncWorker extends Worker {
                     OrbotRequiredDialogActivity.showOrbotRequiredNotification(getApplicationContext());
                 }
             }.startOrbotAndListen(getApplicationContext(), false);
-            return WorkerResult.RETRY;
+            return Result.retry();
         } else if (isStopped()) {
             Timber.d("Keyserver sync cancelled");
-            return WorkerResult.FAILURE;
+            return Result.failure();
         } else {
             Timber.d("Keyserver sync completed: Updated: %d, Failed: %d", result.mUpdatedKeys, result.mBadKeys);
-            return WorkerResult.SUCCESS;
+            return Result.success();
         }
     }
 

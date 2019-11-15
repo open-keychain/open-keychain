@@ -1,16 +1,16 @@
 package org.sufficientlysecure.keychain.ui.keyview.loader;
 
 
-import android.arch.lifecycle.LiveData;
+import androidx.lifecycle.LiveData;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.os.CancellationSignal;
-import android.support.v4.os.OperationCanceledException;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.os.CancellationSignal;
+import androidx.core.os.OperationCanceledException;
 
 public abstract class AsyncTaskLiveData<T> extends LiveData<T> {
     @NonNull

@@ -17,7 +17,7 @@
 
 package org.sufficientlysecure.keychain.keyimport;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;

@@ -19,7 +19,7 @@ package org.sufficientlysecure.keychain.keyimport;
 
 
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 

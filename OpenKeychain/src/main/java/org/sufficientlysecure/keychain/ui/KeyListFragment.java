@@ -23,17 +23,9 @@ import java.util.List;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.WorkerThread;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -44,6 +36,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ViewAnimator;
 
+import androidx.annotation.WorkerThread;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuItemCompat;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import eu.davidea.fastscroller.FastScroller;
@@ -514,7 +514,7 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
                 return true;
             }
             case R.id.menu_key_list_debug_bgsync: {
-                KeyserverSyncManager.debugRunSyncNow();
+                KeyserverSyncManager.debugRunSyncNow(requireContext());
                 return true;
             }
             case R.id.menu_key_list_debug_bench: {

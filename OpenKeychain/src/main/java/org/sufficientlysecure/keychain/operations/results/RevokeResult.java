@@ -21,7 +21,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;

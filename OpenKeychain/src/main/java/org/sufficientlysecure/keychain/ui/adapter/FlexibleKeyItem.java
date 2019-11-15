@@ -1,7 +1,7 @@
 package org.sufficientlysecure.keychain.ui.adapter;
 
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 import eu.davidea.flexibleadapter.items.ISectionable;

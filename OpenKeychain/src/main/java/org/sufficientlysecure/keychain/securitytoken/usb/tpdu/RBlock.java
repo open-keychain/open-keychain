@@ -17,7 +17,7 @@
 
 package org.sufficientlysecure.keychain.securitytoken.usb.tpdu;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 

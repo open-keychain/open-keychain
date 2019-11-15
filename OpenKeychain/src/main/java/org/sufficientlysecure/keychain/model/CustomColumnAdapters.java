@@ -3,7 +3,7 @@ package org.sufficientlysecure.keychain.model;
 
 import java.util.Date;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.squareup.sqldelight.ColumnAdapter;
 import org.sufficientlysecure.keychain.model.AutocryptPeer.GossipOrigin;

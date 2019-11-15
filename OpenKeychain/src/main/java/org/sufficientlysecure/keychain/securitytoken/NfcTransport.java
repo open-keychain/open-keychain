@@ -18,7 +18,7 @@
 package org.sufficientlysecure.keychain.securitytoken;
 
 import android.nfc.Tag;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;

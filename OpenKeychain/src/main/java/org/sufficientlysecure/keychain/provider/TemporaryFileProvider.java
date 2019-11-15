@@ -38,11 +38,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 
+import androidx.annotation.NonNull;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.Worker;
+import androidx.work.WorkerParameters;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.util.DatabaseUtil;
 import timber.log.Timber;
@@ -314,18 +315,21 @@ public class TemporaryFileProvider extends ContentProvider {
         WorkManager.getInstance().enqueue(cleanupWork);
     }
 
-    public static void scheduleCleanupImmediately() {
+    public static void scheduleCleanupImmediately(Context context) {
         OneTimeWorkRequest cleanupWork = new OneTimeWorkRequest.Builder(CleanupWorker.class).build();
-        WorkManager workManager = WorkManager.getInstance();
-        if (workManager != null) { // it's possible this is null, if this is called in onCreate of secondary processes
-            workManager.enqueue(cleanupWork);
-        }
+        WorkManager workManager = WorkManager.getInstance(context);
+        workManager.enqueue(cleanupWork);
     }
 
     public static class CleanupWorker extends Worker {
+        public CleanupWorker(@NonNull Context context,
+                @NonNull WorkerParameters workerParams) {
+            super(context, workerParams);
+        }
+
         @NonNull
         @Override
-        public WorkerResult doWork() {
+        public Result doWork() {
             Timber.d("Cleaning up temporary files…");
 
             ContentResolver contentResolver = getApplicationContext().getContentResolver();
@@ -335,7 +339,7 @@ public class TemporaryFileProvider extends ContentProvider {
                     new String[]{Long.toString(System.currentTimeMillis() - Constants.TEMPFILE_TTL)}
             );
 
-            return WorkerResult.SUCCESS;
+            return Result.success();
         }
     }
 }

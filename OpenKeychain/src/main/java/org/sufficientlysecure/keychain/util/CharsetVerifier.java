@@ -26,8 +26,8 @@ import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 
 import android.content.ClipDescription;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /** This class can be used to guess whether a stream of data is encoded in a given
  * charset or not.

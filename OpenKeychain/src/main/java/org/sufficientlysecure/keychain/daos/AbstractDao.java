@@ -4,8 +4,8 @@ package org.sufficientlysecure.keychain.daos;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
-import android.arch.persistence.db.SupportSQLiteQuery;
+import androidx.sqlite.db.SupportSQLiteDatabase;
+import androidx.sqlite.db.SupportSQLiteQuery;
 import android.database.Cursor;
 
 import com.squareup.sqldelight.RowMapper;

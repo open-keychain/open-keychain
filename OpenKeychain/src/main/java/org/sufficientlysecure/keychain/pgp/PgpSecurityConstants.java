@@ -21,7 +21,7 @@ package org.sufficientlysecure.keychain.pgp;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.bouncycastle.asn1.nist.NISTNamedCurves;
 import org.bouncycastle.asn1.teletrust.TeleTrusTNamedCurves;

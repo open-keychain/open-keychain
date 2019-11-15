@@ -20,22 +20,21 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.test.rule.ActivityTestRule;
-import android.support.v7.widget.RecyclerView;
+import androidx.test.rule.ActivityTestRule;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.runners.MethodSorters;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.KeychainDatabase;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.contrib.RecyclerViewActions.actionOnHolderItem;
-import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnHolderItem;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.sufficientlysecure.keychain.AndroidTestHelpers.checkSnackbar;
 import static org.sufficientlysecure.keychain.AndroidTestHelpers.importKeysFromResource;

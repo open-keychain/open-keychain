@@ -26,7 +26,7 @@ xmlns:tools="http://schemas.android.com/tools">
             android:layout_marginTop="8dp"
             android:text="@string/section_keys" />
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/view_key_subkeys"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -48,7 +48,7 @@ xmlns:tools="http://schemas.android.com/tools">
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/view_key_subkey_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

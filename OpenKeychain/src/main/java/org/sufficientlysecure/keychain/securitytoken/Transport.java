@@ -22,7 +22,7 @@ import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.Transport
 
 import java.io.IOException;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 
 /**

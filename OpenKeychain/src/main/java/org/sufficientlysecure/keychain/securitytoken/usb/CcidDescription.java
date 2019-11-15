@@ -21,8 +21,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import com.google.auto.value.AutoValue;
 import org.sufficientlysecure.keychain.securitytoken.usb.tpdu.T0ShortApduProtocol;

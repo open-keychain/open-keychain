@@ -35,7 +35,7 @@
                 android:hint="@string/label_email"
                 android:ems="10" />
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/create_key_emails"
                 android:scrollbars="vertical"
                 android:layout_width="match_parent"
