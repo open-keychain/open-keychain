@@ -16,6 +16,7 @@ import org.openintents.openpgp.util.OpenPgpApi.IOpenPgpCallback;
 import org.openintents.openpgp.util.OpenPgpProviderUtil;
 import org.openintents.openpgp.util.OpenPgpServiceConnection;
 import org.openintents.openpgp.util.OpenPgpServiceConnection.OnBound;
+import org.sufficientlysecure.keychain.remote.OpenPgpService;
 import timber.log.Timber;
 
 
@@ -79,7 +80,7 @@ public class OpenPgpApiManager implements LifecycleObserver {
         setOpenPgpProviderState(OpenPgpProviderState.UNINITIALIZED);
         openPgpServiceConnection = new OpenPgpServiceConnection(context, openPgpProvider, new OnBound() {
             @Override
-            public void onBound(IOpenPgpService2 service) {
+            public void onBound(OpenPgpService service) {
                 openPgpApi = new OpenPgpApi(context, service);
                 refreshConnection();
             }

@@ -17,18 +17,19 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.view.View;
+
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.widget.Toolbar;
-import android.view.View;
-
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -37,10 +38,7 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-
-import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.analytics.AnalyticsManager;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.remote.ui.AppsListFragment;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
@@ -67,7 +65,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
 
     public Drawer mDrawer;
     private Toolbar mToolbar;
-    private AnalyticsManager analyticsManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,8 +74,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
         mToolbar = findViewById(R.id.toolbar);
         mToolbar.setTitle(R.string.app_name);
         setSupportActionBar(mToolbar);
-
-        analyticsManager = ((KeychainApplication) getApplication()).getAnalyticsManager();
 
         mDrawer = new DrawerBuilder()
                 .withActivity(this)
@@ -218,8 +213,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
 
     private void setFragment(Fragment frag) {
         FragmentManager fragmentManager = getSupportFragmentManager();
-
-        analyticsManager.trackFragmentImpression(getClass().getSimpleName(), frag.getClass().getSimpleName());
 
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.replace(R.id.main_fragment_container, frag);

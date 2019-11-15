@@ -29,22 +29,18 @@ import java.util.HashSet;
 import java.util.List;
 
 import android.app.PendingIntent;
-import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
-import android.os.SystemClock;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.openintents.openpgp.AutocryptPeerUpdate;
-import org.openintents.openpgp.IOpenPgpService;
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.OpenPgpMetadata;
@@ -52,9 +48,12 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.OpenPgpSignatureResult.AutocryptPeerResult;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.daos.ApiAppDao;
+import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
+import org.sufficientlysecure.keychain.daos.OverriddenWarningsDao;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
-import org.sufficientlysecure.keychain.KeychainApplication;
-import org.sufficientlysecure.keychain.analytics.AnalyticsManager;
 import org.sufficientlysecure.keychain.operations.BackupOperation;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
@@ -69,12 +68,7 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem;
-import org.sufficientlysecure.keychain.daos.ApiAppDao;
-import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
-import org.sufficientlysecure.keychain.daos.KeyRepository;
-import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
-import org.sufficientlysecure.keychain.daos.OverriddenWarningsDao;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResult;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResultStatus;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
@@ -86,7 +80,7 @@ import org.sufficientlysecure.keychain.util.Passphrase;
 import timber.log.Timber;
 
 
-public class OpenPgpService extends Service {
+public class OpenPgpService {
     public static final int API_VERSION_WITH_KEY_INVALID_INSECURE = 8;
     public static final int API_VERSION_WITHOUT_SIGNATURE_ONLY_FLAG = 8;
     public static final int API_VERSION_WITH_DECRYPTION_RESULT = 8;
@@ -101,18 +95,16 @@ public class OpenPgpService extends Service {
     private ApiAppDao mApiAppDao;
     private OpenPgpServiceKeyIdExtractor mKeyIdExtractor;
     private ApiPendingIntentFactory mApiPendingIntentFactory;
-    private AnalyticsManager analyticsManager;
+    private final Context mContext;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        mKeyRepository = KeyRepository.create(this);
-        mApiAppDao = ApiAppDao.getInstance(this);
-        mApiPermissionHelper = new ApiPermissionHelper(this, mApiAppDao);
-        mApiPendingIntentFactory = new ApiPendingIntentFactory(getBaseContext());
-        mKeyIdExtractor = OpenPgpServiceKeyIdExtractor.getInstance(getContentResolver(), mApiPendingIntentFactory);
-
-        analyticsManager = ((KeychainApplication) getApplication()).getAnalyticsManager();
+    public OpenPgpService(Context context) {
+        context = context.getApplicationContext();
+        mContext = context;
+        mKeyRepository = KeyRepository.create(context);
+        mApiAppDao = ApiAppDao.getInstance(context);
+        mApiPermissionHelper = new ApiPermissionHelper(context, mApiAppDao);
+        mApiPendingIntentFactory = new ApiPendingIntentFactory(context);
+        mKeyIdExtractor = OpenPgpServiceKeyIdExtractor.getInstance(context.getContentResolver(), mApiPendingIntentFactory);
     }
 
     private Intent signImpl(Intent data, InputStream inputStream,
@@ -160,7 +152,7 @@ public class OpenPgpService extends Service {
             long inputLength = inputStream.available();
             InputData inputData = new InputData(inputStream, inputLength);
 
-            CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
+            CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(mContext, data);
             if (inputParcel == null) {
                 inputParcel = CryptoInputParcel.createCryptoInputParcel(new Date());
             }
@@ -171,7 +163,7 @@ public class OpenPgpService extends Service {
             }
 
             // execute PGP operation!
-            PgpSignEncryptOperation pse = new PgpSignEncryptOperation(this, mKeyRepository, null);
+            PgpSignEncryptOperation pse = new PgpSignEncryptOperation(mContext, mKeyRepository, null);
             PgpSignEncryptResult pgpResult = pse.execute(pgpData.build(), inputParcel, inputData, outputStream);
 
             if (pgpResult.isPending()) {
@@ -195,7 +187,7 @@ public class OpenPgpService extends Service {
                 return result;
             } else {
                 LogEntryParcel errorMsg = pgpResult.getLog().getLast();
-                throw new Exception(getString(errorMsg.mType.getMsgId()));
+                throw new Exception(mContext.getString(errorMsg.mType.getMsgId()));
             }
         } catch (Exception e) {
             Timber.d(e, "signImpl");
@@ -274,7 +266,7 @@ public class OpenPgpService extends Service {
             pgpData.setEncryptionMasterKeyIds(keyIdResult.getKeyIds());
             pgpData.setAllowedSigningKeyIds(getAllowedKeyIds());
 
-            CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
+            CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(mContext, data);
             if (inputParcel == null) {
                 inputParcel = CryptoInputParcel.createCryptoInputParcel(new Date());
             }
@@ -289,7 +281,7 @@ public class OpenPgpService extends Service {
             InputData inputData = new InputData(inputStream, inputLength, originalFilename);
 
             // execute PGP operation!
-            PgpSignEncryptOperation op = new PgpSignEncryptOperation(this, mKeyRepository, null);
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(mContext, mKeyRepository, null);
             PgpSignEncryptResult pgpResult = op.execute(pgpData.build(), inputParcel, inputData, outputStream);
 
             if (pgpResult.isPending()) {
@@ -308,7 +300,7 @@ public class OpenPgpService extends Service {
                 return result;
             } else {
                 LogEntryParcel errorMsg = pgpResult.getLog().getLast();
-                throw new Exception(getString(errorMsg.mType.getMsgId()));
+                throw new Exception(mContext.getString(errorMsg.mType.getMsgId()));
             }
         } catch (Exception e) {
             Timber.d(e, "encryptAndSignImpl");
@@ -379,7 +371,7 @@ public class OpenPgpService extends Service {
 
             int targetApiVersion = data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1);
 
-            CryptoInputParcel cryptoInput = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
+            CryptoInputParcel cryptoInput = CryptoInputParcelCacheService.getCryptoInputParcel(mContext, data);
             if (cryptoInput == null) {
                 cryptoInput = CryptoInputParcel.createCryptoInputParcel();
             }
@@ -401,7 +393,7 @@ public class OpenPgpService extends Service {
 
             updateAutocryptPeerImpl(data);
 
-            PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(this, mKeyRepository, progressable);
+            PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(mContext, mKeyRepository, progressable);
 
             long inputLength = data.getLongExtra(OpenPgpApi.EXTRA_DATA_LENGTH, InputData.UNKNOWN_FILESIZE);
             InputData inputData = new InputData(inputStream, inputLength);
@@ -453,7 +445,7 @@ public class OpenPgpService extends Service {
                     return result;
                 }
 
-                String errorMsg = getString(pgpResult.getLog().getLast().mType.getMsgId());
+                String errorMsg = mContext.getString(pgpResult.getLog().getLast().mType.getMsgId());
                 return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, errorMsg);
             }
 
@@ -475,7 +467,7 @@ public class OpenPgpService extends Service {
             SecurityProblem prioritySecurityProblem = securityProblem.getPrioritySecurityProblem();
             if (prioritySecurityProblem.isIdentifiable()) {
                 String identifier = prioritySecurityProblem.getIdentifier();
-                boolean isOverridden = OverriddenWarningsDao.create(this)
+                boolean isOverridden = OverriddenWarningsDao.create(mContext)
                         .isWarningOverridden(identifier);
                 result.putExtra(OpenPgpApi.RESULT_OVERRIDE_CRYPTO_WARNING, isOverridden);
             }
@@ -589,7 +581,7 @@ public class OpenPgpService extends Service {
         }
 
         AutocryptPeerDao autocryptPeerentityDao =
-                AutocryptPeerDao.getInstance(getBaseContext());
+                AutocryptPeerDao.getInstance(mContext);
         Long autocryptPeerMasterKeyId = autocryptPeerentityDao.getMasterKeyIdForAutocryptPeer(autocryptPeerId);
 
         long masterKeyId = signatureResult.getKeyId();
@@ -600,7 +592,7 @@ public class OpenPgpService extends Service {
                 effectiveTime = now;
             }
             AutocryptInteractor autocryptInteractor =
-                    AutocryptInteractor.getInstance(this, mApiPermissionHelper.getCurrentCallingPackage());
+                    AutocryptInteractor.getInstance(mContext, mApiPermissionHelper.getCurrentCallingPackage());
             autocryptInteractor.updateKeyGossipFromSignature(autocryptPeerId, effectiveTime, masterKeyId);
             return signatureResult.withAutocryptPeerResult(AutocryptPeerResult.NEW);
         } else  if (masterKeyId == autocryptPeerMasterKeyId) {
@@ -787,7 +779,7 @@ public class OpenPgpService extends Service {
             boolean backupSecret = data.getBooleanExtra(OpenPgpApi.EXTRA_BACKUP_SECRET, false);
             boolean enableAsciiArmorOutput = data.getBooleanExtra(OpenPgpApi.EXTRA_REQUEST_ASCII_ARMOR, true);
 
-            CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
+            CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(mContext, data);
             if (inputParcel == null) {
                 Intent result = new Intent();
                 result.putExtra(OpenPgpApi.RESULT_INTENT, mApiPendingIntentFactory.createBackupPendingIntent(data, masterKeyIds, backupSecret));
@@ -799,7 +791,7 @@ public class OpenPgpService extends Service {
 
             BackupKeyringParcel input = BackupKeyringParcel
                     .create(masterKeyIds, backupSecret, true, enableAsciiArmorOutput, null);
-            BackupOperation op = new BackupOperation(this, mKeyRepository, null);
+            BackupOperation op = new BackupOperation(mContext, mKeyRepository, null);
             ExportResult pgpResult = op.execute(input, inputParcel, outputStream);
 
             if (pgpResult.success()) {
@@ -808,7 +800,7 @@ public class OpenPgpService extends Service {
                 return result;
             } else {
                 // should not happen normally...
-                String errorMsg = getString(pgpResult.getLog().getLast().mType.getMsgId());
+                String errorMsg = mContext.getString(pgpResult.getLog().getLast().mType.getMsgId());
                 return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, errorMsg);
             }
         } catch (Exception e) {
@@ -840,7 +832,7 @@ public class OpenPgpService extends Service {
             CryptoInputParcel inputParcel = CryptoInputParcel.createCryptoInputParcel(autocryptTransferCode);
 
             BackupKeyringParcel input = BackupKeyringParcel.createExportAutocryptSetupMessage(masterKeyIds, headerLines);
-            BackupOperation op = new BackupOperation(this, mKeyRepository, null);
+            BackupOperation op = new BackupOperation(mContext, mKeyRepository, null);
             ExportResult pgpResult = op.execute(input, inputParcel, outputStream);
 
             PendingIntent displayTransferCodePendingIntent =
@@ -853,7 +845,7 @@ public class OpenPgpService extends Service {
                 return result;
             } else {
                 // should not happen normally...
-                String errorMsg = getString(pgpResult.getLog().getLast().mType.getMsgId());
+                String errorMsg = mContext.getString(pgpResult.getLog().getLast().mType.getMsgId());
                 return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, errorMsg);
             }
         } catch (Exception e) {
@@ -865,7 +857,7 @@ public class OpenPgpService extends Service {
     private Intent updateAutocryptPeerImpl(Intent data) {
         try {
             AutocryptInteractor autocryptInteractor = AutocryptInteractor.getInstance(
-                    getBaseContext(), mApiPermissionHelper.getCurrentCallingPackage());
+                    mContext, mApiPermissionHelper.getCurrentCallingPackage());
 
             if (data.hasExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_ID) &&
                     data.hasExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_UPDATE)) {
@@ -966,73 +958,16 @@ public class OpenPgpService extends Service {
         return null;
     }
 
-    private final IOpenPgpService.Stub mBinder = new IOpenPgpService.Stub() {
-        @Override
-        public Intent execute(Intent data, ParcelFileDescriptor input, ParcelFileDescriptor output) {
-            Timber.w(
-                    "You are using a deprecated service which may lead to truncated data on return, please use IOpenPgpService2!");
-            return executeInternal(data, input, output);
-        }
-
-    };
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mBinder;
-    }
-
     @Nullable
-    protected Intent executeInternal(
-            @NonNull Intent data,
-            @Nullable ParcelFileDescriptor input,
-            @Nullable ParcelFileDescriptor output) {
-
-        OutputStream outputStream =
-                (output != null) ? new ParcelFileDescriptor.AutoCloseOutputStream(output) : null;
-        InputStream inputStream =
-                (input != null) ? new ParcelFileDescriptor.AutoCloseInputStream(input) : null;
-
-        try {
-            long startTime = SystemClock.elapsedRealtime();
-            Timber.i("API call: %s", data.getAction());
-            Intent result = executeInternalWithStreams(data, inputStream, outputStream);
-            long elapsedTime = SystemClock.elapsedRealtime() - startTime;
-            Timber.i("Elapsed time: %d", elapsedTime);
-            return result;
-        } finally {
-            // always close input and output file descriptors even in createErrorPendingIntent cases
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    Timber.e(e, "IOException when closing input ParcelFileDescriptor");
-                }
-            }
-            if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException e) {
-                    Timber.e(e, "IOException when closing output ParcelFileDescriptor");
-                }
-            }
-        }
-    }
-
-    @Nullable
-    protected Intent executeInternalWithStreams(
+    public Intent executeApi(
             @NonNull Intent data,
             @Nullable InputStream inputStream,
             @Nullable OutputStream outputStream) {
-
-        // We need to be able to load our own parcelables
-        data.setExtrasClassLoader(getClassLoader());
 
         Intent errorResult = checkRequirements(data);
         if (errorResult != null) {
             return errorResult;
         }
-
-        analyticsManager.trackApiServiceCall(data.getAction(), mApiPermissionHelper.getCurrentCallingPackage());
 
         Progressable progressable = null;
         if (data.hasExtra(OpenPgpApi.EXTRA_PROGRESS_MESSENGER)) {

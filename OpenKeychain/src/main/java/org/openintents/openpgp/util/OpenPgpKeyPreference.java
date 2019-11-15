@@ -24,19 +24,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.res.TypedArray;
-import androidx.fragment.app.Fragment;
-import androidx.preference.Preference;
 import android.text.format.DateUtils;
 import android.util.AttributeSet;
 
+import androidx.fragment.app.Fragment;
+import androidx.preference.Preference;
 import org.openintents.openpgp.OpenPgpApiManager;
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpApiManagerCallback;
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderError;
 import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderState;
 import org.openintents.openpgp.OpenPgpError;
-import org.openintents.openpgp.R;
 import org.openintents.openpgp.util.OpenPgpApi.IOpenPgpCallback;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
+import org.sufficientlysecure.keychain.R;
 import timber.log.Timber;
 
 
