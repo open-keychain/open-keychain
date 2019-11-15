@@ -26,7 +26,6 @@ import android.support.v7.widget.RecyclerView.AdapterDataObserver;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter;

@@ -53,7 +53,6 @@ dependencies {
     implementation 'org.piwik.sdk:piwik-sdk:3.0.3'
 
     // libs as submodules
-    implementation project(':libkeychain')
     implementation project(':openpgp-api-lib')
     implementation project(':nfcsweetspot')
     implementation project(':sshauthentication-api')

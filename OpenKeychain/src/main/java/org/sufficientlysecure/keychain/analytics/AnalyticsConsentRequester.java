@@ -13,7 +13,6 @@ import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.BuildConfig;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.SettingsActivity;

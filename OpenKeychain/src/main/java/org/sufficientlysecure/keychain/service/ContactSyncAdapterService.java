@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.service;
 
 
-import android.Manifest;
 import android.accounts.Account;
 import android.app.PendingIntent;
 import android.app.Service;

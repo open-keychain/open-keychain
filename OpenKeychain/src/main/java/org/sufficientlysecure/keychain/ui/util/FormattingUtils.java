@@ -19,9 +19,6 @@ package org.sufficientlysecure.keychain.ui.util;
 
 import android.content.Context;
 import android.content.res.Resources.Theme;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.StrikethroughSpan;
 import android.util.TypedValue;
 
 public class FormattingUtils {
