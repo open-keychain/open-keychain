@@ -23,13 +23,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import android.app.PendingIntent;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
@@ -58,16 +57,16 @@ class OpenPgpServiceKeyIdExtractor {
 
 
     private final ApiPendingIntentFactory apiPendingIntentFactory;
-    private final ContentResolver contentResolver;
+    private final AutocryptStatusProvider autocryptStatusProvider;
 
 
-    static OpenPgpServiceKeyIdExtractor getInstance(ContentResolver contentResolver, ApiPendingIntentFactory apiPendingIntentFactory) {
-        return new OpenPgpServiceKeyIdExtractor(contentResolver, apiPendingIntentFactory);
+    static OpenPgpServiceKeyIdExtractor getInstance(AutocryptStatusProvider autocryptStatusProvider, ApiPendingIntentFactory apiPendingIntentFactory) {
+        return new OpenPgpServiceKeyIdExtractor(autocryptStatusProvider, apiPendingIntentFactory);
     }
 
-    private OpenPgpServiceKeyIdExtractor(ContentResolver contentResolver,
+    private OpenPgpServiceKeyIdExtractor(AutocryptStatusProvider autocryptStatusProvider,
             ApiPendingIntentFactory apiPendingIntentFactory) {
-        this.contentResolver = contentResolver;
+        this.autocryptStatusProvider = autocryptStatusProvider;
         this.apiPendingIntentFactory = apiPendingIntentFactory;
     }
 
@@ -191,7 +190,8 @@ class OpenPgpServiceKeyIdExtractor {
     private HashMap<String, AddressQueryResult> getStatusMapForQueriedAddresses(String[] encryptionUserIds, String callingPackageName) {
         HashMap<String,AddressQueryResult> keyRows = new HashMap<>();
         Uri queryUri = AutocryptStatus.CONTENT_URI.buildUpon().appendPath(callingPackageName).build();
-        Cursor cursor = contentResolver.query(queryUri, PROJECTION_MAIL_STATUS, null, encryptionUserIds, null);
+        Cursor cursor = autocryptStatusProvider
+                .query(queryUri, PROJECTION_MAIL_STATUS, null, encryptionUserIds, null);
         if (cursor == null) {
             throw new IllegalStateException("Internal error, received null cursor!");
         }

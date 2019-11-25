@@ -47,7 +47,7 @@ import static org.robolectric.Shadows.shadowOf;
 
 @SuppressWarnings("WeakerAccess")
 @RunWith(KeychainTestRunner.class)
-public class KeychainExternalProviderTest {
+public class AutocryptStatusProviderTest {
     static final String PACKAGE_NAME = "test.package";
     static final byte[] PACKAGE_SIGNATURE = new byte[] { 1, 2, 3 };
     static final String MAIL_ADDRESS_1 = "twi@openkeychain.org";

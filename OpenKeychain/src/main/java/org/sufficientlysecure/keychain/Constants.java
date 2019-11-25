@@ -51,7 +51,7 @@ public final class Constants {
     public static final String ACCOUNT_TYPE = BuildConfig.ACCOUNT_TYPE;
     public static final String CUSTOM_CONTACT_DATA_MIME_TYPE = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.key";
 
-    public static final String PROVIDER_AUTHORITY = BuildConfig.PROVIDER_CONTENT_AUTHORITY;
+    public static final String PROVIDER_AUTHORITY = "com.fsck.k9.debug.provider";
     public static final String TEMP_FILE_PROVIDER_AUTHORITY = BuildConfig.APPLICATION_ID + ".tempstorage";
 
     public static final String CLIPBOARD_LABEL = "Keychain";
