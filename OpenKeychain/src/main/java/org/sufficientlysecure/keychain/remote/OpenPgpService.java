@@ -418,19 +418,6 @@ public class OpenPgpService {
                 result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
                 return result;
             } else {
-                long[] skippedDisallowedEncryptionKeys = pgpResult.getSkippedDisallowedKeys();
-                if (pgpResult.isKeysDisallowed() &&
-                        skippedDisallowedEncryptionKeys != null && skippedDisallowedEncryptionKeys.length > 0) {
-                    // allow user to select allowed keys
-                    Intent result = new Intent();
-                    String packageName = mApiPermissionHelper.getCurrentCallingPackage();
-                    result.putExtra(OpenPgpApi.RESULT_INTENT,
-                            mApiPendingIntentFactory.createRequestKeyPermissionPendingIntent(
-                                    data, packageName, skippedDisallowedEncryptionKeys));
-                    result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
-                    return result;
-                }
-
                 String errorMsg = mContext.getString(pgpResult.getLog().getLast().mType.getMsgId());
                 return createErrorResultIntent(OpenPgpError.GENERIC_ERROR, errorMsg);
             }
