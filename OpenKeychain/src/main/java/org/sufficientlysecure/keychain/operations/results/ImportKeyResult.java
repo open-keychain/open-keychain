@@ -135,7 +135,7 @@ public class ImportKeyResult extends InputPendingResult {
         dest.writeLongArray(mImportedMasterKeyIds);
     }
 
-    public static Creator<ImportKeyResult> CREATOR = new Creator<ImportKeyResult>() {
+    public static final Creator<ImportKeyResult> CREATOR = new Creator<ImportKeyResult>() {
         public ImportKeyResult createFromParcel(final Parcel source) {
             return new ImportKeyResult(source);
         }

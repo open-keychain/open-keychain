@@ -69,7 +69,7 @@ public class CertifyResult extends InputPendingResult {
         dest.writeInt(mUploadError);
     }
 
-    public static Creator<CertifyResult> CREATOR = new Creator<CertifyResult>() {
+    public static final Creator<CertifyResult> CREATOR = new Creator<CertifyResult>() {
         public CertifyResult createFromParcel(final Parcel source) {
             return new CertifyResult(source);
         }

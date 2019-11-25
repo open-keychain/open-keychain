@@ -38,7 +38,7 @@ public class ExportResult extends InputPendingResult {
         super.writeToParcel(dest, flags);
     }
 
-    public static Creator<ExportResult> CREATOR = new Creator<ExportResult>() {
+    public static final Creator<ExportResult> CREATOR = new Creator<ExportResult>() {
         public ExportResult createFromParcel(final Parcel source) {
             return new ExportResult(source);
         }

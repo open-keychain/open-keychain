@@ -58,7 +58,7 @@ public class PgpEditKeyResult extends InputPendingResult {
         dest.writeLong(mRingMasterKeyId);
     }
 
-    public static Creator<PgpEditKeyResult> CREATOR = new Creator<PgpEditKeyResult>() {
+    public static final Creator<PgpEditKeyResult> CREATOR = new Creator<PgpEditKeyResult>() {
         public PgpEditKeyResult createFromParcel(final Parcel source) {
             return new PgpEditKeyResult(source);
         }

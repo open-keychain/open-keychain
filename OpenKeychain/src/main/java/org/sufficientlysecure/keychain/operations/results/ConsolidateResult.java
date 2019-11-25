@@ -35,7 +35,7 @@ public class ConsolidateResult extends OperationResult {
         super.writeToParcel(dest, flags);
     }
 
-    public static Creator<ConsolidateResult> CREATOR = new Creator<ConsolidateResult>() {
+    public static final Creator<ConsolidateResult> CREATOR = new Creator<ConsolidateResult>() {
         public ConsolidateResult createFromParcel(final Parcel source) {
             return new ConsolidateResult(source);
         }

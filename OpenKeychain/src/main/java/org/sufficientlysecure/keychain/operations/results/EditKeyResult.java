@@ -58,7 +58,7 @@ public class EditKeyResult extends InputPendingResult {
         }
     }
 
-    public static Creator<EditKeyResult> CREATOR = new Creator<EditKeyResult>() {
+    public static final Creator<EditKeyResult> CREATOR = new Creator<EditKeyResult>() {
         public EditKeyResult createFromParcel(final Parcel source) {
             return new EditKeyResult(source);
         }

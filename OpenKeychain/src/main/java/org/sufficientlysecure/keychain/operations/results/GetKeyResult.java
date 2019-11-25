@@ -61,7 +61,7 @@ public class GetKeyResult extends InputPendingResult {
         super.writeToParcel(dest, flags);
     }
 
-    public static Creator<GetKeyResult> CREATOR = new Creator<GetKeyResult>() {
+    public static final Creator<GetKeyResult> CREATOR = new Creator<GetKeyResult>() {
         public GetKeyResult createFromParcel(final Parcel source) {
             return new GetKeyResult(source);
         }
