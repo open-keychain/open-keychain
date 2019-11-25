@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -32,7 +31,6 @@ import android.net.Uri;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import org.sufficientlysecure.keychain.daos.DatabaseNotifyManager;
 import org.sufficientlysecure.keychain.daos.UserIdDao;
 import org.sufficientlysecure.keychain.model.UserPacket.UidStatus;
@@ -71,7 +69,7 @@ public class AutocryptStatusProvider {
         this.context = context;
         uriMatcher = buildUriMatcher();
 
-        apiPermissionHelper = new ApiPermissionHelper(context, ApiAppDao.getInstance(context));
+        apiPermissionHelper = new ApiPermissionHelper(context);
     }
 
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs,

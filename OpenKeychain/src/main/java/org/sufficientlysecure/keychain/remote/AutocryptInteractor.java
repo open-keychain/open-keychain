@@ -48,7 +48,7 @@ public class AutocryptInteractor {
     }
 
     void updateAutocryptPeerState(String autocryptPeerId, AutocryptPeerUpdate autocryptPeerUpdate) {
-        AutocryptPeer currentAutocryptPeer = autocryptPeerDao.getAutocryptPeer(packageName, autocryptPeerId);
+        AutocryptPeer currentAutocryptPeer = autocryptPeerDao.getAutocryptPeer(autocryptPeerId);
         Date effectiveDate = autocryptPeerUpdate.getEffectiveDate();
 
         // 1. If the message’s effective date is older than the peers[from-addr].autocrypt_timestamp value, then no changes are required, and the update process terminates.
@@ -60,7 +60,7 @@ public class AutocryptInteractor {
         // 2. If the message’s effective date is more recent than peers[from-addr].last_seen then set peers[from-addr].last_seen to the message’s effective date.
         Date lastSeen = currentAutocryptPeer != null ? currentAutocryptPeer.last_seen() : null;
         if (lastSeen == null || effectiveDate.after(lastSeen)) {
-            autocryptPeerDao.insertOrUpdateLastSeen(packageName, autocryptPeerId, effectiveDate);
+            autocryptPeerDao.insertOrUpdateLastSeen(autocryptPeerId, effectiveDate);
         }
 
         // 3. If the Autocrypt header is unavailable, no further changes are required and the update process terminates.
@@ -79,11 +79,11 @@ public class AutocryptInteractor {
         // 6. Set peers[from-addr].prefer_encrypt to the corresponding prefer-encrypt value of the Autocrypt header.
         boolean isMutual = autocryptPeerUpdate.getPreferEncrypt() == PreferEncrypt.MUTUAL;
 
-        autocryptPeerDao.updateKey(packageName, autocryptPeerId, effectiveDate, newMasterKeyId, isMutual);
+        autocryptPeerDao.updateKey(autocryptPeerId, effectiveDate, newMasterKeyId, isMutual);
     }
 
     void updateAutocryptPeerGossipState(String autocryptPeerId, AutocryptPeerUpdate autocryptPeerUpdate) {
-        AutocryptPeer currentAutocryptPeer = autocryptPeerDao.getAutocryptPeer(packageName, autocryptPeerId);
+        AutocryptPeer currentAutocryptPeer = autocryptPeerDao.getAutocryptPeer(autocryptPeerId);
         Date effectiveDate = autocryptPeerUpdate.getEffectiveDate();
 
         // 1. If gossip-addr does not match any recipient in the mail’s To or Cc header, the update process terminates (i.e., header is ignored).
@@ -108,7 +108,7 @@ public class AutocryptInteractor {
         // 4. Set peers[gossip-addr].gossip_key to the value of the keydata attribute.
         Long newMasterKeyId = saveKeyringResult.savedMasterKeyId;
 
-        autocryptPeerDao.updateKeyGossip(packageName, autocryptPeerId, effectiveDate, newMasterKeyId,
+        autocryptPeerDao.updateKeyGossip(autocryptPeerId, effectiveDate, newMasterKeyId,
                 GossipOrigin.GOSSIP_HEADER);
     }
 
@@ -150,7 +150,8 @@ public class AutocryptInteractor {
     public Map<String,AutocryptRecommendationResult> determineAutocryptRecommendations(String... autocryptIds) {
         Map<String,AutocryptRecommendationResult> result = new HashMap<>(autocryptIds.length);
 
-        for (AutocryptKeyStatus autocryptKeyStatus : autocryptPeerDao.getAutocryptKeyStatus(packageName, autocryptIds)) {
+        for (AutocryptKeyStatus autocryptKeyStatus : autocryptPeerDao.getAutocryptKeyStatus(
+                autocryptIds)) {
             AutocryptRecommendationResult peerResult = determineAutocryptRecommendation(autocryptKeyStatus);
             result.put(peerResult.peerId, peerResult);
         }
@@ -216,11 +217,11 @@ public class AutocryptInteractor {
     }
 
     public void updateKeyGossipFromSignature(String autocryptId, Date effectiveDate, long masterKeyId) {
-        autocryptPeerDao.updateKeyGossip(packageName, autocryptId, effectiveDate, masterKeyId, GossipOrigin.SIGNATURE);
+        autocryptPeerDao.updateKeyGossip(autocryptId, effectiveDate, masterKeyId, GossipOrigin.SIGNATURE);
     }
 
     public void updateKeyGossipFromDedup(String autocryptId, long masterKeyId) {
-        autocryptPeerDao.updateKeyGossip(packageName, autocryptId, new Date(), masterKeyId, GossipOrigin.DEDUP);
+        autocryptPeerDao.updateKeyGossip(autocryptId, new Date(), masterKeyId, GossipOrigin.DEDUP);
     }
 
     public static class AutocryptRecommendationResult {

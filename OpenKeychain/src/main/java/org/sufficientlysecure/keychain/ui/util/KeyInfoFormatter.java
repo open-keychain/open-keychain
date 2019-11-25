@@ -135,18 +135,7 @@ public class KeyInfoFormatter {
     }
 
     public void formatTrustIcon(ImageView trustIdIcon) {
-        if (!keyInfo.has_any_secret() && !keyInfo.autocrypt_package_names().isEmpty()) {
-            String packageName = keyInfo.autocrypt_package_names().get(0);
-            Drawable drawable = PackageIconGetter.getInstance(context).getDrawableForPackageName(packageName);
-            if (drawable != null) {
-                trustIdIcon.setImageDrawable(drawable);
-                trustIdIcon.setVisibility(View.VISIBLE);
-            } else {
-                trustIdIcon.setVisibility(View.GONE);
-            }
-        } else {
-            trustIdIcon.setVisibility(View.GONE);
-        }
+        trustIdIcon.setVisibility(View.GONE);
     }
 
     @NonNull

@@ -22,15 +22,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import androidx.sqlite.db.SupportSQLiteDatabase;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
-import androidx.annotation.Nullable;
 
+import androidx.annotation.Nullable;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.google.auto.value.AutoValue;
 import com.squareup.sqldelight.SqlDelightQuery;
 import org.openintents.openpgp.util.OpenPgpApi;
@@ -76,21 +75,17 @@ public class IdentityDao {
 
     private void correlateOrAddAutocryptPeers(ArrayList<IdentityInfo> identities, long masterKeyId) {
         for (AutocryptPeer autocryptPeer : autocryptPeerDao.getAutocryptPeersForKey(masterKeyId)) {
-            String packageName = autocryptPeer.package_name();
             String autocryptId = autocryptPeer.identifier();
-
-            Drawable drawable = packageIconGetter.getDrawableForPackageName(packageName);
-            Intent autocryptPeerIntent = getAutocryptPeerActivityIntentIfResolvable(packageName, autocryptId);
 
             UserIdInfo associatedUserIdInfo = findUserIdMatchingAutocryptPeer(identities, autocryptId);
             if (associatedUserIdInfo != null) {
                 int position = identities.indexOf(associatedUserIdInfo);
                 AutocryptPeerInfo autocryptPeerInfo = AutocryptPeerInfo
-                        .create(masterKeyId, associatedUserIdInfo, autocryptId, packageName, drawable, autocryptPeerIntent);
+                        .create(masterKeyId, associatedUserIdInfo, autocryptId);
                 identities.set(position, autocryptPeerInfo);
             } else {
                 AutocryptPeerInfo autocryptPeerInfo = AutocryptPeerInfo
-                        .create(masterKeyId, autocryptId, packageName, drawable, autocryptPeerIntent);
+                        .create(masterKeyId, autocryptId);
                 identities.add(autocryptPeerInfo);
             }
         }
@@ -173,22 +168,16 @@ public class IdentityDao {
         public abstract boolean isPrimary();
 
         public abstract String getIdentity();
-        public abstract String getPackageName();
-        @Nullable
-        public abstract Drawable getAppIcon();
         @Nullable
         public abstract UserIdInfo getUserIdInfo();
-        @Nullable
-        public abstract Intent getAutocryptPeerIntent();
 
-        static AutocryptPeerInfo create(long masterKeyId, UserIdInfo userIdInfo, String autocryptPeer, String packageName,
-                Drawable appIcon, Intent autocryptPeerIntent) {
+        static AutocryptPeerInfo create(long masterKeyId, UserIdInfo userIdInfo, String autocryptPeer) {
             return new AutoValue_IdentityDao_AutocryptPeerInfo(masterKeyId, userIdInfo.getRank(), userIdInfo.isVerified(),
-                    userIdInfo.isPrimary(), autocryptPeer, packageName, appIcon, userIdInfo, autocryptPeerIntent);
+                    userIdInfo.isPrimary(), autocryptPeer, userIdInfo);
         }
 
-        static AutocryptPeerInfo create(long masterKeyId, String autocryptPeer, String packageName, Drawable appIcon, Intent autocryptPeerIntent) {
-            return new AutoValue_IdentityDao_AutocryptPeerInfo(masterKeyId,0, false, false, autocryptPeer, packageName, appIcon, null, autocryptPeerIntent);
+        static AutocryptPeerInfo create(long masterKeyId, String autocryptPeer) {
+            return new AutoValue_IdentityDao_AutocryptPeerInfo(masterKeyId,0, false, false, autocryptPeer, null);
         }
     }
 

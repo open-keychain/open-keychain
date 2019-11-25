@@ -103,13 +103,6 @@
                 <action android:name="org.torproject.android.intent.action.STATUS"/>
             </intent-filter>
         </receiver>
-        <!-- broadcast receiver for listening to package uninstalls -->
-        <receiver android:name=".remote.PackageUninstallReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />
-                <data android:scheme="package"/>
-            </intent-filter>
-        </receiver>
         <!-- singleTop for NFC dispatch, see SecurityTokenOperationActivity -->
         <activity
             android:name=".ui.MainActivity"
@@ -873,11 +866,6 @@
         <activity
             android:name=".remote.ui.RemoteErrorActivity"
             android:exported="false"
-            android:label="@string/app_name" />
-        <activity
-            android:name=".remote.ui.RemoteRegisterActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Keychain.Transparent"
             android:label="@string/app_name" />
         <activity
             android:name=".remote.ui.RemoteSecurityProblemDialogActivity"

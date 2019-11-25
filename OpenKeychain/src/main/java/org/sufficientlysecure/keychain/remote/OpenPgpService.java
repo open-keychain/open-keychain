@@ -44,7 +44,6 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.OpenPgpSignatureResult.AutocryptPeerResult;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
@@ -79,7 +78,6 @@ import timber.log.Timber;
 public class OpenPgpService {
     private ApiPermissionHelper mApiPermissionHelper;
     private KeyRepository mKeyRepository;
-    private ApiAppDao mApiAppDao;
     private OpenPgpServiceKeyIdExtractor mKeyIdExtractor;
     private ApiPendingIntentFactory mApiPendingIntentFactory;
     private final Context mContext;
@@ -88,8 +86,7 @@ public class OpenPgpService {
         context = context.getApplicationContext();
         mContext = context;
         mKeyRepository = KeyRepository.create(context);
-        mApiAppDao = ApiAppDao.getInstance(context);
-        mApiPermissionHelper = new ApiPermissionHelper(context, mApiAppDao);
+        mApiPermissionHelper = new ApiPermissionHelper(context);
         mApiPendingIntentFactory = new ApiPendingIntentFactory(context);
         AutocryptStatusProvider autocryptStatusProvider = new AutocryptStatusProvider(context);
         mKeyIdExtractor = OpenPgpServiceKeyIdExtractor.getInstance(

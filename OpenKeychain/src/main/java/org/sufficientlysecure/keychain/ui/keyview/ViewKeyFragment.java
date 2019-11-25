@@ -242,10 +242,7 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
         if (info instanceof UserIdInfo) {
             showUserIdInfo((UserIdInfo) info);
         } else if (info instanceof AutocryptPeerInfo) {
-            Intent autocryptPeerIntent = ((AutocryptPeerInfo) info).getAutocryptPeerIntent();
-            if (autocryptPeerIntent != null) {
-                startActivity(autocryptPeerIntent);
-            }
+            // TODO something?
         }
     }
 
@@ -267,7 +264,7 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
             return;
         }
 
-        AutocryptPeerDao.getInstance(requireContext()).deleteByIdentifier(info.getPackageName(), info.getIdentity());
+        AutocryptPeerDao.getInstance(requireContext()).deleteByIdentifier(info.getIdentity());
     }
 
     private void onLoadIdentityInfo(List<IdentityInfo> identityInfos) {

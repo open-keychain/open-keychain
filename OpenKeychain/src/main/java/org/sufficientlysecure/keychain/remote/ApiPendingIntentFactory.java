@@ -31,7 +31,6 @@ import org.sufficientlysecure.keychain.remote.ui.RemoteDisplayTransferCodeActivi
 import org.sufficientlysecure.keychain.remote.ui.RemoteErrorActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteImportKeysActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemotePassphraseDialogActivity;
-import org.sufficientlysecure.keychain.remote.ui.RemoteRegisterActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityProblemDialogActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSelectPubKeyActivity;
@@ -208,25 +207,6 @@ public class ApiPendingIntentFactory {
             return PendingIntent.getActivity(mContext, 0,
                     intent,
                     PendingIntent.FLAG_CANCEL_CURRENT);
-        }
-    }
-
-    public PendingIntent createRegisterPendingIntent(Intent data, String packageName, byte[] packageCertificate) {
-        Intent intent = new Intent(mContext, RemoteRegisterActivity.class);
-        intent.putExtra(RemoteRegisterActivity.EXTRA_PACKAGE_NAME, packageName);
-        intent.putExtra(RemoteRegisterActivity.EXTRA_PACKAGE_SIGNATURE, packageCertificate);
-        intent.putExtra(RemoteRegisterActivity.EXTRA_DATA, data);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            //noinspection ResourceType, looks like lint is missing FLAG_IMMUTABLE
-            return PendingIntent.getActivity(mContext, 0,
-                    intent,
-                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT
-                            | PendingIntent.FLAG_IMMUTABLE);
-        } else {
-            return PendingIntent.getActivity(mContext, 0,
-                    intent,
-                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
         }
     }
 }

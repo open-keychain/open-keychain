@@ -61,7 +61,6 @@ CREATE VIEW unifiedKeyView AS
         (SELECT key_id FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_encrypt != 0 LIMIT 1) AS has_encrypt_key_int,
         (SELECT key_id FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_sign != 0 LIMIT 1) AS has_sign_key_int,
         (SELECT key_id FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_authenticate != 0 LIMIT 1) AS has_auth_key_int,
-        GROUP_CONCAT(DISTINCT aTI.package_name) AS autocrypt_package_names_csv,
         GROUP_CONCAT(user_packets.user_id, '|||') AS user_id_list
     FROM keys
          INNER JOIN user_packets ON ( keys.master_key_id = user_packets.master_key_id AND user_packets.type IS NULL AND (user_packets.rank = 0 OR user_packets.is_revoked = 0))
