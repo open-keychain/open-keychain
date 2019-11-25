@@ -29,10 +29,6 @@ import android.util.AttributeSet;
 
 import androidx.fragment.app.Fragment;
 import androidx.preference.Preference;
-import org.openintents.openpgp.OpenPgpApiManager;
-import org.openintents.openpgp.OpenPgpApiManager.OpenPgpApiManagerCallback;
-import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderError;
-import org.openintents.openpgp.OpenPgpApiManager.OpenPgpProviderState;
 import org.openintents.openpgp.OpenPgpError;
 import org.openintents.openpgp.util.OpenPgpApi.IOpenPgpCallback;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
@@ -40,11 +36,11 @@ import org.sufficientlysecure.keychain.R;
 import timber.log.Timber;
 
 
-public class OpenPgpKeyPreference extends Preference implements OpenPgpApiManagerCallback {
+public class OpenPgpKeyPreference extends Preference {
     private long keyId;
     private String defaultUserId;
     private boolean showAutocryptHint;
-    private OpenPgpApiManager openPgpApiManager;
+    private OpenPgpApi openPgpApi;
     private Intent cachedActivityResultData;
     private Fragment intentSenderFragment;
 
@@ -63,9 +59,8 @@ public class OpenPgpKeyPreference extends Preference implements OpenPgpApiManage
         super(context, attrs);
     }
 
-    public void setOpenPgpProvider(OpenPgpApiManager openPgpApiManager, String openPgpProvider) {
-        this.openPgpApiManager = openPgpApiManager;
-        this.openPgpApiManager.setOpenPgpProvider(openPgpProvider, this);
+    public void setOpenPgpProvider(OpenPgpApi openPgpApi) {
+        this.openPgpApi = openPgpApi;
         refreshTitleAndSummary();
     }
 
@@ -83,40 +78,7 @@ public class OpenPgpKeyPreference extends Preference implements OpenPgpApiManage
 
     @Override
     protected void onClick() {
-        switch (openPgpApiManager.getOpenPgpProviderState()) {
-            // The GET_SIGN_KEY action is special, in that it can be used as an implicit registration
-            // to the API. Therefore, we can ignore the UI_REQUIRED here. If it comes up regardless,
-            // it will also work as a regular pending intent.
-            case UI_REQUIRED:
-            case OK: {
-                apiGetOrStartPendingIntent();
-                break;
-            }
-            default: {
-                refreshTitleAndSummary();
-                openPgpApiManager.refreshConnection();
-                break;
-            }
-        }
-    }
-
-    @Override
-    public void onOpenPgpProviderStatusChanged() {
-        if (openPgpApiManager.getOpenPgpProviderState() == OpenPgpProviderState.OK) {
-            apiRetrievePendingIntentAndKeyInfo();
-        } else {
-            pendingIntentSelectKey = null;
-            pendingIntentRunImmediately = false;
-            cachedActivityResultData = null;
-            refreshTitleAndSummary();
-        }
-    }
-
-    @Override
-    public void onOpenPgpProviderError(OpenPgpProviderError error) {
-        if (error == OpenPgpProviderError.ConnectionLost) {
-            openPgpApiManager.refreshConnection();
-        }
+        apiGetOrStartPendingIntent();
     }
 
     private void apiRetrievePendingIntentAndKeyInfo() {
@@ -135,8 +97,7 @@ public class OpenPgpKeyPreference extends Preference implements OpenPgpApiManage
         data.putExtra(OpenPgpApi.EXTRA_USER_ID, defaultUserId);
         data.putExtra(OpenPgpApi.EXTRA_PRESELECT_KEY_ID, keyId);
         data.putExtra(OpenPgpApi.EXTRA_SHOW_AUTOCRYPT_HINT, showAutocryptHint);
-        OpenPgpApi api = openPgpApiManager.getOpenPgpApi();
-        api.executeApiAsync(data, null, null, openPgpCallback);
+        openPgpApi.executeApiAsync(data, null, null, openPgpCallback);
     }
 
     private IOpenPgpCallback openPgpCallback = new IOpenPgpCallback() {
@@ -228,10 +189,6 @@ public class OpenPgpKeyPreference extends Preference implements OpenPgpApiManage
     }
 
     private void refreshTitleAndSummary() {
-        boolean isConfigured = openPgpApiManager != null &&
-                openPgpApiManager.getOpenPgpProviderState() != OpenPgpProviderState.UNCONFIGURED;
-        setEnabled(isConfigured);
-
         if (this.keyId == NO_KEY) {
             setTitle(R.string.openpgp_key_title);
             setSummary(R.string.openpgp_no_key_selected);
@@ -312,19 +269,10 @@ public class OpenPgpKeyPreference extends Preference implements OpenPgpApiManage
 
     public boolean handleOnActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case REQUEST_CODE_API_MANAGER:
-                openPgpApiManager.onUserInteractionResult();
-                return true;
             case REQUEST_CODE_KEY_PREFERENCE:
                 if (resultCode == Activity.RESULT_OK) {
                     cachedActivityResultData = data;
-                    // this might happen early in the lifecycle (e.g. before onResume). if the provider isn't connected
-                    // here, apiRetrievePendingIntentAndKeyInfo() will be called as soon as it is.
-                    OpenPgpProviderState openPgpProviderState = openPgpApiManager.getOpenPgpProviderState();
-                    if (openPgpProviderState == OpenPgpProviderState.OK ||
-                            openPgpProviderState == OpenPgpProviderState.UI_REQUIRED) {
-                        apiRetrievePendingIntentAndKeyInfo();
-                    }
+                    apiRetrievePendingIntentAndKeyInfo();
                 }
                 return true;
         }

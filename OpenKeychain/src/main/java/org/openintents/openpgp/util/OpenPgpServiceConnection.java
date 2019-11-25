@@ -34,33 +34,26 @@ public class OpenPgpServiceConnection {
     private Context mApplicationContext;
 
     private OpenPgpService mService;
-    private String mProviderPackageName;
 
     private OnBound mOnBoundListener;
 
     /**
      * Create new connection
+     *  @param context
      *
-     * @param context
-     * @param providerPackageName specify package name of OpenPGP provider,
-     *                            e.g., "org.sufficientlysecure.keychain"
      */
-    public OpenPgpServiceConnection(Context context, String providerPackageName) {
+    public OpenPgpServiceConnection(Context context) {
         this.mApplicationContext = context.getApplicationContext();
-        this.mProviderPackageName = providerPackageName;
     }
 
     /**
      * Create new connection with callback
      *
      * @param context
-     * @param providerPackageName specify package name of OpenPGP provider,
-     *                            e.g., "org.sufficientlysecure.keychain"
      * @param onBoundListener     callback, executed when connection to service has been established
      */
-    public OpenPgpServiceConnection(Context context, String providerPackageName,
-                                    OnBound onBoundListener) {
-        this(context, providerPackageName);
+    public OpenPgpServiceConnection(Context context, OnBound onBoundListener) {
+        this(context);
         this.mOnBoundListener = onBoundListener;
     }
 
