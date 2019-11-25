@@ -36,7 +36,7 @@ public class BenchmarkResult extends OperationResult {
         super.writeToParcel(dest, flags);
     }
 
-    public static Creator<BenchmarkResult> CREATOR = new Creator<BenchmarkResult>() {
+    public static final Creator<BenchmarkResult> CREATOR = new Creator<BenchmarkResult>() {
         public BenchmarkResult createFromParcel(final Parcel source) {
             return new BenchmarkResult(source);
         }

@@ -39,7 +39,7 @@ public class SingletonResult extends OperationResult {
         super.writeToParcel(dest, flags);
     }
 
-    public static Creator<SingletonResult> CREATOR = new Creator<SingletonResult>() {
+    public static final Creator<SingletonResult> CREATOR = new Creator<SingletonResult>() {
         public SingletonResult createFromParcel(final Parcel source) {
             return new SingletonResult(source);
         }

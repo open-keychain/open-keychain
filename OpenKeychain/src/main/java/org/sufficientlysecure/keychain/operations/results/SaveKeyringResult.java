@@ -60,7 +60,7 @@ public class SaveKeyringResult extends OperationResult {
         }
     }
 
-    public static Creator<SaveKeyringResult> CREATOR = new Creator<SaveKeyringResult>() {
+    public static final Creator<SaveKeyringResult> CREATOR = new Creator<SaveKeyringResult>() {
         public SaveKeyringResult createFromParcel(final Parcel source) {
             return new SaveKeyringResult(source);
         }

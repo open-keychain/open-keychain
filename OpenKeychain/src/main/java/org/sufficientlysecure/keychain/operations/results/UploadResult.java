@@ -61,7 +61,7 @@ public class UploadResult extends InputPendingResult {
         dest.writeInt(mOkSecret);
     }
 
-    public static Creator<UploadResult> CREATOR = new Creator<UploadResult>() {
+    public static final Creator<UploadResult> CREATOR = new Creator<UploadResult>() {
         public UploadResult createFromParcel(final Parcel source) {
             return new UploadResult(source);
         }

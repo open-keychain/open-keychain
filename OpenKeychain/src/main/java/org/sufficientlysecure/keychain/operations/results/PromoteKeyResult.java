@@ -44,7 +44,7 @@ public class PromoteKeyResult extends OperationResult {
         }
     }
 
-    public static Creator<PromoteKeyResult> CREATOR = new Creator<PromoteKeyResult>() {
+    public static final Creator<PromoteKeyResult> CREATOR = new Creator<PromoteKeyResult>() {
         public PromoteKeyResult createFromParcel(final Parcel source) {
             return new PromoteKeyResult(source);
         }

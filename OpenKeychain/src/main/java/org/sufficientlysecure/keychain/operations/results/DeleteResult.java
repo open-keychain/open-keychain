@@ -69,7 +69,7 @@ public class DeleteResult extends InputPendingResult {
         dest.writeInt(mFail);
     }
 
-    public static Creator<DeleteResult> CREATOR = new Creator<DeleteResult>() {
+    public static final Creator<DeleteResult> CREATOR = new Creator<DeleteResult>() {
         public DeleteResult createFromParcel(final Parcel source) {
             return new DeleteResult(source);
         }

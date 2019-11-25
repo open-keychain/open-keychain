@@ -36,7 +36,7 @@ public class UpdateTrustResult extends OperationResult {
         super.writeToParcel(dest, flags);
     }
 
-    public static Creator<UpdateTrustResult> CREATOR = new Creator<UpdateTrustResult>() {
+    public static final Creator<UpdateTrustResult> CREATOR = new Creator<UpdateTrustResult>() {
         public UpdateTrustResult createFromParcel(final Parcel source) {
             return new UpdateTrustResult(source);
         }

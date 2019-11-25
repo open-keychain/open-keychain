@@ -23,7 +23,7 @@ import androidx.annotation.NonNull;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 
-public class InputPendingResult extends OperationResult {
+public abstract class InputPendingResult extends OperationResult {
 
     // the fourth bit indicates a "data pending" result! (it's also a form of non-success)
     public static final int RESULT_PENDING = RESULT_ERROR + 8;
