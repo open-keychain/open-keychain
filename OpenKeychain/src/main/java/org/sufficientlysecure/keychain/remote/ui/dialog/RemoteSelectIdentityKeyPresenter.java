@@ -217,14 +217,12 @@ class RemoteSelectIdentityKeyPresenter {
 
     void onHighlightFinished() {
         apiAppDao.insertApiApp(apiApp);
-        apiAppDao.addAllowedKeyIdForApp(apiApp.package_name(), Objects.requireNonNull(selectedMasterKeyId));
         view.finishAndReturn(selectedMasterKeyId);
     }
 
     void onImportOpSuccess(ImportKeyResult result) {
         long importedMasterKeyId = result.getImportedMasterKeyIds()[0];
         apiAppDao.insertApiApp(apiApp);
-        apiAppDao.addAllowedKeyIdForApp(apiApp.package_name(), importedMasterKeyId);
         view.finishAndReturn(importedMasterKeyId);
     }
 

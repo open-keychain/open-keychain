@@ -123,12 +123,7 @@ public class RemoteSelectAuthenticationKeyActivity extends FragmentActivity {
         Intent callingIntent = getIntent();
         Intent originalIntent = callingIntent.getParcelableExtra(
                 RemoteSecurityTokenOperationActivity.EXTRA_DATA);
-
-        ApiAppDao apiAppDao = ApiAppDao.getInstance(getBaseContext());
-        apiAppDao.addAllowedKeyIdForApp(packageName, masterKeyId);
-
         originalIntent.putExtra(SshAuthenticationApi.EXTRA_KEY_ID, String.valueOf(masterKeyId));
-
         setResult(RESULT_OK, originalIntent);
         finish();
     }

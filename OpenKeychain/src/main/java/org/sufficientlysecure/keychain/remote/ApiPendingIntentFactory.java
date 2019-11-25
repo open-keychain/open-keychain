@@ -35,7 +35,6 @@ import org.sufficientlysecure.keychain.remote.ui.RemoteRegisterActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityProblemDialogActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSelectPubKeyActivity;
-import org.sufficientlysecure.keychain.remote.ui.RequestKeyPermissionActivity;
 import org.sufficientlysecure.keychain.remote.ui.SelectSignKeyIdActivity;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteDeduplicateActivity;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectAuthenticationKeyActivity;
@@ -118,14 +117,6 @@ public class ApiPendingIntentFactory {
         Intent intent = new Intent(mContext, RemoteImportKeysActivity.class);
         intent.setAction(RemoteImportKeysActivity.ACTION_IMPORT_KEY_FROM_KEYSERVER_AND_RETURN_RESULT);
         intent.putExtra(RemoteImportKeysActivity.EXTRA_KEY_ID, masterKeyId);
-
-        return createInternal(data, intent);
-    }
-
-    public PendingIntent createRequestKeyPermissionPendingIntent(Intent data, String packageName, long... masterKeyIds) {
-        Intent intent = new Intent(mContext, RequestKeyPermissionActivity.class);
-        intent.putExtra(RequestKeyPermissionActivity.EXTRA_PACKAGE_NAME, packageName);
-        intent.putExtra(RequestKeyPermissionActivity.EXTRA_REQUESTED_KEY_IDS, masterKeyIds);
 
         return createInternal(data, intent);
     }

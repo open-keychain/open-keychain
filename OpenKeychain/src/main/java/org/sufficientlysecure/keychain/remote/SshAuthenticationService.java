@@ -22,7 +22,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
 import android.app.PendingIntent;
@@ -40,15 +39,15 @@ import org.openintents.ssh.authentication.response.PublicKeyResponse;
 import org.openintents.ssh.authentication.response.SigningResponse;
 import org.openintents.ssh.authentication.response.SshPublicKeyResponse;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.daos.ApiAppDao;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogEntryParcel;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.SshPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
-import org.sufficientlysecure.keychain.daos.ApiAppDao;
-import org.sufficientlysecure.keychain.daos.KeyRepository;
-import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ssh.AuthenticationData;
@@ -160,9 +159,6 @@ public class SshAuthenticationService extends Service {
         }
 
         authData.setAuthenticationSubKeyId(authSubKeyId);
-
-        authData.setAllowedAuthenticationKeyIds(getAllowedKeyIds());
-
         authData.setHashAlgorithm(hashAlgorithmTag);
 
         CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
@@ -380,11 +376,6 @@ public class SshAuthenticationService extends Service {
         description += " (" + Long.toHexString(authSubKeyId) + ")";
 
         return description;
-    }
-
-    private HashSet<Long> getAllowedKeyIds() {
-        String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
-        return mApiAppDao.getAllowedKeyIdsForApp(currentPkg);
     }
 
     /**

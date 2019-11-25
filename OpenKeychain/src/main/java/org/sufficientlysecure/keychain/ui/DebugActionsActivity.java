@@ -120,12 +120,6 @@ public class DebugActionsActivity extends Activity {
                     new Intent(), BuildConfig.APPLICATION_ID, getPackageSig(), "test@openkeychain.org", true);
             startPendingIntent(pendingIntent);
         });
-        addButtonToLayout(context, verticalLayout, "Request Permission (first secret key)").setOnClickListener((v) -> {
-            long firstMasterKeyId = keyRepository.getAllUnifiedKeyInfoWithSecret().get(0).master_key_id();
-            PendingIntent pendingIntent = pendingIntentFactory.createRequestKeyPermissionPendingIntent(
-                    new Intent(), BuildConfig.APPLICATION_ID, firstMasterKeyId);
-            startPendingIntent(pendingIntent);
-        });
         addButtonToLayout(context, verticalLayout, "Deduplicate (dupl@mugenguild.com)").setOnClickListener((v) -> {
             ArrayList<String> duplicateEmails = new ArrayList<>();
             duplicateEmails.add("dupl@mugenguild.com");

@@ -157,7 +157,6 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<KeyChoiceAdapt
     private void onSelectKeyItemClicked(UnifiedKeyInfo keyInfo) {
         ApiApp apiApp = ApiApp.create(packageName, packageSignature);
         apiAppDao.insertApiApp(apiApp);
-        apiAppDao.addAllowedKeyIdForApp(packageName, keyInfo.master_key_id());
         resultIntent.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, keyInfo.master_key_id());
 
         Activity activity = requireActivity();
