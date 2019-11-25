@@ -21,9 +21,7 @@ package org.sufficientlysecure.keychain.remote.ui.dialog;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import androidx.lifecycle.LifecycleOwner;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -31,15 +29,14 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
+import androidx.lifecycle.LifecycleOwner;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.model.ApiApp;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectIdKeyActivity.RemoteSelectIdViewModel;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -58,14 +55,11 @@ class RemoteSelectIdentityKeyPresenter {
     private UserId userId;
     private Long selectedMasterKeyId;
     private byte[] generatedKeyData;
-    private ApiAppDao apiAppDao;
-    private ApiApp apiApp;
 
 
     RemoteSelectIdentityKeyPresenter(Context context, LifecycleOwner lifecycleOwner) {
         this.context = context;
         this.lifecycleOwner = lifecycleOwner;
-        this.apiAppDao = ApiAppDao.getInstance(context);
 
         packageManager = context.getPackageManager();
     }
@@ -97,8 +91,6 @@ class RemoteSelectIdentityKeyPresenter {
         ApplicationInfo applicationInfo = packageManager.getApplicationInfo(packageName, 0);
         Drawable appIcon = packageManager.getApplicationIcon(applicationInfo);
         CharSequence appLabel = packageManager.getApplicationLabel(applicationInfo);
-
-        apiApp = ApiApp.create(packageName, packageSignature);
 
         view.setTitleClientIconAndName(appIcon, appLabel);
     }
@@ -216,13 +208,11 @@ class RemoteSelectIdentityKeyPresenter {
     }
 
     void onHighlightFinished() {
-        apiAppDao.insertApiApp(apiApp);
         view.finishAndReturn(selectedMasterKeyId);
     }
 
     void onImportOpSuccess(ImportKeyResult result) {
         long importedMasterKeyId = result.getImportedMasterKeyIds()[0];
-        apiAppDao.insertApiApp(apiApp);
         view.finishAndReturn(importedMasterKeyId);
     }
 

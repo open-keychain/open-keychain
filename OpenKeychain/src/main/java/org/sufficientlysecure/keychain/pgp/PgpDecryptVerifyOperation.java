@@ -33,10 +33,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
+import androidx.annotation.NonNull;
 import org.bouncycastle.bcpg.ArmoredInputStream;
 import org.bouncycastle.openpgp.PGPCompressedData;
 import org.bouncycastle.openpgp.PGPDataValidationException;
@@ -61,6 +61,8 @@ import org.openintents.openpgp.OpenPgpMetadata;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -71,8 +73,6 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem.EncryptionAlgorithmPr
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.MissingMdc;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.daos.KeyRepository;
-import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequireAnyDecryptPassphraseBuilder;
@@ -864,8 +864,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
                 long[] skippedDisallowedEncryptionKeys =
                         KeyFormattingUtils.getUnboxedLongArray(result.skippedDisallowedEncryptionKeys);
-                return result.with(new DecryptVerifyResult(
-                        DecryptVerifyResult.RESULT_KEY_DISALLOWED, log, skippedDisallowedEncryptionKeys));
+                return result.with(new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log));
             }
             // no packet has been found where we have the corresponding secret key in our db
             log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);

@@ -20,22 +20,15 @@ package org.sufficientlysecure.keychain.remote;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 import android.annotation.SuppressLint;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.os.Binder;
 
-import org.openintents.openpgp.OpenPgpError;
-import org.openintents.openpgp.util.OpenPgpApi;
-import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import timber.log.Timber;
 
 
@@ -45,13 +38,11 @@ import timber.log.Timber;
 public class ApiPermissionHelper {
 
     private final Context mContext;
-    private final ApiAppDao mApiAppDao;
     private PackageManager mPackageManager;
 
-    public ApiPermissionHelper(Context context, ApiAppDao apiAppDao) {
+    public ApiPermissionHelper(Context context) {
         mContext = context;
         mPackageManager = context.getPackageManager();
-        mApiAppDao = apiAppDao;
     }
 
     public static class WrongPackageCertificateException extends Exception {
@@ -59,68 +50,6 @@ public class ApiPermissionHelper {
 
         public WrongPackageCertificateException(String message) {
             super(message);
-        }
-    }
-
-    /** Returns true iff the caller is allowed, or false on any type of problem.
-     * This method should only be used in cases where error handling is dealt with separately.
-     */
-    public boolean isAllowedIgnoreErrors() {
-        try {
-            return isCallerAllowed();
-        } catch (WrongPackageCertificateException e) {
-            return false;
-        }
-    }
-
-    /**
-     * Checks if caller is allowed to access the API
-     *
-     * @return null if caller is allowed, or a Bundle with a PendingIntent
-     */
-    protected Intent isAllowedOrReturnIntent(Intent data) {
-        ApiPendingIntentFactory piFactory = new ApiPendingIntentFactory(mContext);
-        try {
-            if (isCallerAllowed()) {
-                return null;
-            } else {
-                String packageName = getCurrentCallingPackage();
-                Timber.d("isAllowed packageName: " + packageName);
-
-                byte[] packageCertificate;
-                try {
-                    packageCertificate = getPackageCertificate(packageName);
-                } catch (NameNotFoundException e) {
-                    Timber.e(e, "Should not happen, returning!");
-                    // return error
-                    Intent result = new Intent();
-                    result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
-                    result.putExtra(OpenPgpApi.RESULT_ERROR,
-                            new OpenPgpError(OpenPgpError.GENERIC_ERROR, e.getMessage()));
-                    return result;
-                }
-                Timber.e("Not allowed to use service! return PendingIntent for registration!");
-
-                PendingIntent pi = piFactory.createRegisterPendingIntent(data, packageName, packageCertificate);
-
-                // return PendingIntent to be executed by client
-                Intent result = new Intent();
-                result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
-                result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
-
-                return result;
-            }
-        } catch (WrongPackageCertificateException e) {
-            Timber.e(e, "wrong signature!");
-
-            PendingIntent pi = piFactory.createErrorPendingIntent(data, mContext.getString(R.string.api_error_wrong_signature));
-
-            // return PendingIntent to be executed by client
-            Intent result = new Intent();
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
-            result.putExtra(OpenPgpApi.RESULT_INTENT, pi);
-
-            return result;
         }
     }
 
@@ -169,66 +98,6 @@ public class ApiPermissionHelper {
         Timber.d("currentPkg: " + currentPkg);
 
         return currentPkg;
-    }
-
-    /**
-     * Checks if process that binds to this service (i.e. the package name corresponding to the
-     * process) is in the list of allowed package names.
-     *
-     * @return true if process is allowed to use this service
-     * @throws WrongPackageCertificateException
-     */
-    private boolean isCallerAllowed() throws WrongPackageCertificateException {
-        return isUidAllowed(Binder.getCallingUid());
-    }
-
-    private boolean isUidAllowed(int uid)
-            throws WrongPackageCertificateException {
-
-        String[] callingPackages = mPackageManager.getPackagesForUid(uid);
-
-        // is calling package allowed to use this service?
-        for (String currentPkg : callingPackages) {
-            if (isPackageAllowed(currentPkg)) {
-                return true;
-            }
-        }
-
-        Timber.e("Uid is NOT allowed!");
-        return false;
-    }
-
-    /**
-     * Checks if packageName is a registered app for the API. Does not return true for own package!
-     *
-     * @throws WrongPackageCertificateException
-     */
-    public boolean isPackageAllowed(String packageName) throws WrongPackageCertificateException {
-        Timber.d("isPackageAllowed packageName: " + packageName);
-
-        byte[] storedPackageCert = mApiAppDao.getApiAppCertificate(packageName);
-
-        boolean isKnownPackage = storedPackageCert != null;
-        if (!isKnownPackage) {
-            Timber.d("Package is NOT allowed! packageName: " + packageName);
-            return false;
-        }
-        Timber.d("Package is allowed! packageName: " + packageName);
-
-        byte[] currentPackageCert;
-        try {
-            currentPackageCert = getPackageCertificate(packageName);
-        } catch (NameNotFoundException e) {
-            throw new WrongPackageCertificateException(e.getMessage());
-        }
-
-        boolean packageCertMatchesStored = Arrays.equals(currentPackageCert, storedPackageCert);
-        if (packageCertMatchesStored) {
-            Timber.d("Package certificate matches expected.");
-            return true;
-        }
-
-        throw new WrongPackageCertificateException("PACKAGE NOT ALLOWED DUE TO CERTIFICATE MISMATCH!");
     }
 
 }

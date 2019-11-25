@@ -32,8 +32,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -42,10 +40,11 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.remote.ApiPendingIntentFactory;
 import org.sufficientlysecure.keychain.ui.util.Notify;
@@ -57,7 +56,6 @@ import timber.log.Timber;
 public class DebugActionsActivity extends Activity {
 
     private ApiPendingIntentFactory pendingIntentFactory;
-    private ApiAppDao apiAppDao;
     private KeyRepository keyRepository;
 
     @Override
@@ -69,7 +67,6 @@ public class DebugActionsActivity extends Activity {
         }
 
         pendingIntentFactory = new ApiPendingIntentFactory(getBaseContext());
-        apiAppDao = ApiAppDao.getInstance(getBaseContext());
         keyRepository = KeyRepository.create(getBaseContext());
 
         setContentView(createView());
@@ -86,15 +83,6 @@ public class DebugActionsActivity extends Activity {
         toolbar.setTitle("Debug Actions");
         verticalLayout.addView(toolbar, new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
-        addButtonToLayout(context, verticalLayout, "Register ApiApp").setOnClickListener((v) -> {
-            PendingIntent pendingIntent = pendingIntentFactory.createRegisterPendingIntent(
-                    new Intent(), BuildConfig.APPLICATION_ID, getPackageSig());
-            startPendingIntent(pendingIntent);
-        });
-        addButtonToLayout(context, verticalLayout, "Unregister ApiApp").setOnClickListener((v) -> {
-            apiAppDao.deleteApiApp(BuildConfig.APPLICATION_ID);
-            Notify.create(DebugActionsActivity.this, "Ok", Style.OK).show();
-        });
         addButtonToLayout(context, verticalLayout, "Select Public Key").setOnClickListener((v) -> {
             PendingIntent pendingIntent = pendingIntentFactory.createSelectPublicKeyPendingIntent(
                     new Intent(), new long[] {}, new ArrayList<>(), new ArrayList<>(), false);

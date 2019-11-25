@@ -39,7 +39,6 @@ import org.openintents.ssh.authentication.response.PublicKeyResponse;
 import org.openintents.ssh.authentication.response.SigningResponse;
 import org.openintents.ssh.authentication.response.SshPublicKeyResponse;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
@@ -61,7 +60,6 @@ import timber.log.Timber;
 public class SshAuthenticationService extends Service {
     private ApiPermissionHelper mApiPermissionHelper;
     private KeyRepository mKeyRepository;
-    private ApiAppDao mApiAppDao;
     private ApiPendingIntentFactory mApiPendingIntentFactory;
 
     private static final List<Integer> SUPPORTED_VERSIONS = Collections.unmodifiableList(Collections.singletonList(1));
@@ -72,9 +70,8 @@ public class SshAuthenticationService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        mApiPermissionHelper = new ApiPermissionHelper(this, ApiAppDao.getInstance(this));
+        mApiPermissionHelper = new ApiPermissionHelper(this);
         mKeyRepository = KeyRepository.create(this);
-        mApiAppDao = ApiAppDao.getInstance(this);
 
         mApiPendingIntentFactory = new ApiPendingIntentFactory(getBaseContext());
     }
@@ -93,12 +90,7 @@ public class SshAuthenticationService extends Service {
     }
 
     private Intent checkIntent(Intent intent) {
-        Intent errorResult = checkRequirements(intent);
-        if (errorResult == null) {
-            return executeInternal(intent);
-        } else {
-            return errorResult;
-        }
+        return executeInternal(intent);
     }
 
     private Intent executeInternal(Intent intent) {
@@ -376,33 +368,6 @@ public class SshAuthenticationService extends Service {
         description += " (" + Long.toHexString(authSubKeyId) + ")";
 
         return description;
-    }
-
-    /**
-     * @return null if basic requirements are met
-     */
-    private Intent checkRequirements(Intent data) {
-        if (data == null) {
-            return createErrorResult(SshAuthenticationApiError.GENERIC_ERROR, "No parameter bundle");
-        }
-
-        // check version
-        int apiVersion = data.getIntExtra(SshAuthenticationApi.EXTRA_API_VERSION, INVALID_API_VERSION);
-        if (!SUPPORTED_VERSIONS.contains(apiVersion)) {
-            String errorMsg = "Incompatible API versions:\n"
-                    + "used : " + data.getIntExtra(SshAuthenticationApi.EXTRA_API_VERSION, INVALID_API_VERSION) + "\n"
-                    + "supported : " + SUPPORTED_VERSIONS;
-
-            return createErrorResult(SshAuthenticationApiError.INCOMPATIBLE_API_VERSIONS, errorMsg);
-        }
-
-        // check if caller is allowed to access OpenKeychain
-        Intent result = mApiPermissionHelper.isAllowedOrReturnIntent(data);
-        if (result != null) {
-            return result; // disallowed, redirect to registration
-        }
-
-        return null;
     }
 
     private Intent createErrorResult(int errorCode, String errorMessage) {

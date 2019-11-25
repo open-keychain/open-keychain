@@ -81,15 +81,6 @@ public abstract class SubKey implements KeysModel {
             return has_duplicate_int() != 0;
         }
 
-        public List<String> autocrypt_package_names() {
-            if (autocryptPackageNames == null) {
-                String csv = autocrypt_package_names_csv();
-                autocryptPackageNames = csv == null ? Collections.emptyList() :
-                        Arrays.asList(csv.split(","));
-            }
-            return autocryptPackageNames;
-        }
-
         public boolean has_auth_key() {
             return has_auth_key_int() != 0;
         }

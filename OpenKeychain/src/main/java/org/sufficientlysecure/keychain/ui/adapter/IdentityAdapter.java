@@ -22,14 +22,14 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter.ViewHolder;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.AutocryptPeerInfo;
@@ -142,12 +142,8 @@ public class IdentityAdapter extends RecyclerView.Adapter<ViewHolder> {
                 vAddress.setTypeface(null, Typeface.NORMAL);
             }
 
-            vIcon.setImageDrawable(info.getAppIcon());
-
             vIcon.setVisibility(View.VISIBLE);
             vMore.setVisibility(View.VISIBLE);
-
-            itemView.setClickable(info.getAutocryptPeerIntent() != null);
         }
 
         public void bind(UserIdInfo info) {

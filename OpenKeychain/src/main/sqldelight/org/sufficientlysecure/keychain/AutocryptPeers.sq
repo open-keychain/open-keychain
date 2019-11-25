@@ -2,7 +2,6 @@ import java.util.Date;
 import org.sufficientlysecure.keychain.model.AutocryptPeer.GossipOrigin;
 
 CREATE TABLE IF NOT EXISTS autocrypt_peers (
-    package_name TEXT NOT NULL,
     identifier TEXT NOT NULL,
     last_seen INTEGER AS Date NULL,
     last_seen_key INTEGER AS Date NULL,
@@ -11,14 +10,13 @@ CREATE TABLE IF NOT EXISTS autocrypt_peers (
     gossip_master_key_id INTEGER NULL,
     gossip_last_seen_key INTEGER AS Date NULL,
     gossip_origin INTEGER AS GossipOrigin NULL,
-    PRIMARY KEY(package_name, identifier),
-    FOREIGN KEY(package_name) REFERENCES api_apps (package_name) ON DELETE CASCADE
+    PRIMARY KEY(identifier)
 );
 
 selectByIdentifiers:
 SELECT *
     FROM  autocrypt_peers
-    WHERE package_name = ? AND identifier IN ?;
+    WHERE identifier IN ?;
 
 selectByMasterKeyId:
 SELECT *
@@ -32,23 +30,23 @@ SELECT master_key_id
 
 deleteByIdentifier:
 DELETE FROM autocrypt_peers
-    WHERE package_name = ? AND identifier = ?;
+    WHERE identifier = ?;
 
 deleteByMasterKeyId:
 DELETE FROM autocrypt_peers
     WHERE master_key_id = ?;
 
 updateLastSeen:
-UPDATE autocrypt_peers SET last_seen = ?3 WHERE package_name = ?1 AND identifier = ?2;
+UPDATE autocrypt_peers SET last_seen = ?2 WHERE identifier = ?1;
 
 updateKey:
-UPDATE autocrypt_peers SET last_seen_key = ?3, master_key_id = ?4, is_mutual = ?5 WHERE package_name = ?1 AND identifier = ?2;
+UPDATE autocrypt_peers SET last_seen_key = ?2, master_key_id = ?3, is_mutual = ?4 WHERE identifier = ?1;
 
 updateGossipKey:
-UPDATE autocrypt_peers SET gossip_last_seen_key = ?3, gossip_master_key_id = ?4, gossip_origin = ?5 WHERE package_name = ?1 AND identifier = ?2;
+UPDATE autocrypt_peers SET gossip_last_seen_key = ?2, gossip_master_key_id = ?3, gossip_origin = ?4 WHERE identifier = ?1;
 
 insertPeer:
-INSERT OR IGNORE INTO autocrypt_peers (package_name, identifier) VALUES (?, ?);
+INSERT OR IGNORE INTO autocrypt_peers (identifier) VALUES (?);
 
 selectAutocryptKeyStatus:
 SELECT autocryptPeer.*,
@@ -61,4 +59,4 @@ SELECT autocryptPeer.*,
     FROM autocrypt_peers AS autocryptPeer
         LEFT JOIN keys AS ac_key ON (ac_key.master_key_id = autocryptPeer.master_key_id AND ac_key.rank = 0)
         LEFT JOIN keys AS gossip_key ON (gossip_key.master_key_id = gossip_master_key_id AND gossip_key.rank = 0)
-    WHERE package_name = ?1 AND identifier IN ?2;
+    WHERE identifier IN ?1;

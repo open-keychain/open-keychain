@@ -40,7 +40,6 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
-import org.sufficientlysecure.keychain.remote.ui.AppsListFragment;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.ui.transfer.view.TransferFragment;
 import org.sufficientlysecure.keychain.ui.transfer.view.TransferNotAvailableFragment;
@@ -51,7 +50,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
 
     static final int ID_KEYS = 1;
     static final int ID_ENCRYPT_DECRYPT = 2;
-    static final int ID_APPS = 3;
     static final int ID_BACKUP = 4;
     public static final int ID_TRANSFER = 5;
     static final int ID_SETTINGS = 6;
@@ -86,8 +84,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                                 .withIdentifier(ID_KEYS).withSelectable(false),
                         new PrimaryDrawerItem().withName(R.string.nav_encrypt_decrypt).withIcon(FontAwesome.Icon.faw_lock)
                                 .withIdentifier(ID_ENCRYPT_DECRYPT).withSelectable(false),
-                        new PrimaryDrawerItem().withName(R.string.title_api_registered_apps).withIcon(CommunityMaterial.Icon.cmd_apps)
-                                .withIdentifier(ID_APPS).withSelectable(false),
                         new PrimaryDrawerItem().withName(R.string.nav_backup).withIcon(CommunityMaterial.Icon.cmd_backup_restore)
                                 .withIdentifier(ID_BACKUP).withSelectable(false),
                         new PrimaryDrawerItem().withName(R.string.nav_transfer)
@@ -114,9 +110,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                                     break;
                                 case ID_ENCRYPT_DECRYPT:
                                     onEnDecryptSelected();
-                                    break;
-                                case ID_APPS:
-                                    onAppsSelected();
                                     break;
                                 case ID_BACKUP:
                                     onBackupSelected();
@@ -179,9 +172,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                 case ID_ENCRYPT_DECRYPT:
                     onEnDecryptSelected();
                     break;
-                case ID_APPS:
-                    onAppsSelected();
-                    break;
                 case ID_TRANSFER:
                     onTransferSelected();
                     break;
@@ -200,9 +190,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
             switch (data.getIntExtra(EXTRA_INIT_FRAG, -1)) {
                 case ID_ENCRYPT_DECRYPT:
                     onEnDecryptSelected();
-                    break;
-                case ID_APPS:
-                    onAppsSelected();
                     break;
                 case ID_TRANSFER:
                     onTransferSelected();
@@ -231,13 +218,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
         mToolbar.setTitle(R.string.nav_encrypt_decrypt);
         mDrawer.setSelection(ID_ENCRYPT_DECRYPT, false);
         Fragment frag = new EncryptDecryptFragment();
-        setFragment(frag);
-    }
-
-    private void onAppsSelected() {
-        mToolbar.setTitle(R.string.nav_apps);
-        mDrawer.setSelection(ID_APPS, false);
-        Fragment frag = new AppsListFragment();
         setFragment(frag);
     }
 

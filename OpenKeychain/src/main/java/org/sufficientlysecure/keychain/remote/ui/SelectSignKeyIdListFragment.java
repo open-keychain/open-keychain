@@ -21,24 +21,22 @@ package org.sufficientlysecure.keychain.remote.ui;
 import java.util.List;
 
 import android.app.Activity;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.model.ApiApp;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.daos.ApiAppDao;
-import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 import org.sufficientlysecure.keychain.ui.adapter.KeyChoiceAdapter;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
@@ -51,7 +49,6 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<KeyChoiceAdapt
     private static final String ARG_PREF_UID = "pref_uid";
     public static final String ARG_DATA = "data";
 
-    private ApiAppDao apiAppDao;
     private KeyRepository keyRepository;
 
     private KeyChoiceAdapter keyChoiceAdapter;
@@ -79,7 +76,6 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<KeyChoiceAdapt
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        apiAppDao = ApiAppDao.getInstance(requireContext());
         keyRepository = KeyRepository.create(requireContext());
     }
 
@@ -155,8 +151,6 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<KeyChoiceAdapt
     }
 
     private void onSelectKeyItemClicked(UnifiedKeyInfo keyInfo) {
-        ApiApp apiApp = ApiApp.create(packageName, packageSignature);
-        apiAppDao.insertApiApp(apiApp);
         resultIntent.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, keyInfo.master_key_id());
 
         Activity activity = requireActivity();
