@@ -21,11 +21,7 @@ package org.sufficientlysecure.keychain.remote;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
 import android.app.PendingIntent;
@@ -81,15 +77,6 @@ import timber.log.Timber;
 
 
 public class OpenPgpService {
-    public static final int API_VERSION_WITH_KEY_INVALID_INSECURE = 8;
-    public static final int API_VERSION_WITHOUT_SIGNATURE_ONLY_FLAG = 8;
-    public static final int API_VERSION_WITH_DECRYPTION_RESULT = 8;
-    public static final int API_VERSION_WITH_RESULT_NO_SIGNATURE = 8;
-    public static final int API_VERSION_WITH_AUTOCRYPT = 12;
-
-    public static final List<Integer> SUPPORTED_VERSIONS =
-            Collections.unmodifiableList(Arrays.asList(7, 8, 9, 10, 11, 12));
-
     private ApiPermissionHelper mApiPermissionHelper;
     private KeyRepository mKeyRepository;
     private ApiAppDao mApiAppDao;
@@ -104,7 +91,9 @@ public class OpenPgpService {
         mApiAppDao = ApiAppDao.getInstance(context);
         mApiPermissionHelper = new ApiPermissionHelper(context, mApiAppDao);
         mApiPendingIntentFactory = new ApiPendingIntentFactory(context);
-        mKeyIdExtractor = OpenPgpServiceKeyIdExtractor.getInstance(context.getContentResolver(), mApiPendingIntentFactory);
+        AutocryptStatusProvider autocryptStatusProvider = new AutocryptStatusProvider(context);
+        mKeyIdExtractor = OpenPgpServiceKeyIdExtractor.getInstance(
+                autocryptStatusProvider, mApiPendingIntentFactory);
     }
 
     private Intent signImpl(Intent data, InputStream inputStream,
@@ -141,7 +130,6 @@ public class OpenPgpService {
                     throw new Exception("signing subkey not found!", e);
                 }
             }
-            pgpData.setAllowedSigningKeyIds(getAllowedKeyIds());
 
             // Get Input- and OutputStream from ParcelFileDescriptor
             if (!cleartextSign) {
@@ -264,7 +252,6 @@ public class OpenPgpService {
                 return result;
             }
             pgpData.setEncryptionMasterKeyIds(keyIdResult.getKeyIds());
-            pgpData.setAllowedSigningKeyIds(getAllowedKeyIds());
 
             CryptoInputParcel inputParcel = CryptoInputParcelCacheService.getCryptoInputParcel(mContext, data);
             if (inputParcel == null) {
@@ -402,7 +389,6 @@ public class OpenPgpService {
             // no support for symmetric encryption
             PgpDecryptVerifyInputParcel input = PgpDecryptVerifyInputParcel.builder()
                     .setAllowSymmetricDecryption(false)
-                    .setAllowedKeyIds(new ArrayList<>(getAllowedKeyIds()))
                     .setDecryptMetadataOnly(decryptMetadataOnly)
                     .setDetachedSignature(detachedSignature)
                     .setSenderAddress(senderAddress)
@@ -480,36 +466,9 @@ public class OpenPgpService {
 
     private void processDecryptionResultForResultIntent(int targetApiVersion, Intent result,
             OpenPgpDecryptionResult decryptionResult) {
-        if (targetApiVersion < API_VERSION_WITH_DECRYPTION_RESULT) {
-            return;
-        }
-
         if (decryptionResult != null) {
             result.putExtra(OpenPgpApi.RESULT_DECRYPTION, decryptionResult);
         }
-    }
-
-    private OpenPgpSignatureResult getSignatureResultWithApiCompatibilityFallbacks(
-            int targetApiVersion, DecryptVerifyResult pgpResult) {
-        OpenPgpSignatureResult signatureResult = pgpResult.getSignatureResult();
-
-        if (targetApiVersion < API_VERSION_WITH_KEY_INVALID_INSECURE) {
-            // RESULT_INVALID_INSECURE has been added in version 8, fallback to RESULT_INVALID_SIGNATURE
-            if (signatureResult.getResult() == OpenPgpSignatureResult.RESULT_INVALID_KEY_INSECURE) {
-                signatureResult = OpenPgpSignatureResult.createWithInvalidSignature();
-            }
-        }
-
-        if (targetApiVersion < API_VERSION_WITHOUT_SIGNATURE_ONLY_FLAG) {
-            // this info was kept in OpenPgpSignatureResult, so put it there for compatibility
-            OpenPgpDecryptionResult decryptionResult = pgpResult.getDecryptionResult();
-            boolean signatureOnly = decryptionResult.getResult() == OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED
-                    && signatureResult.getResult() != OpenPgpSignatureResult.RESULT_NO_SIGNATURE;
-            // noinspection deprecation, this is for backwards compatibility
-            signatureResult = signatureResult.withSignatureOnlyFlag(signatureOnly);
-        }
-
-        return signatureResult;
     }
 
     private void processMetadataForResultIntent(Intent result, OpenPgpMetadata metadata) {
@@ -525,8 +484,7 @@ public class OpenPgpService {
 
     private void processSignatureResultForResultIntent(int targetApiVersion, Intent data,
             Intent result, DecryptVerifyResult pgpResult) {
-        OpenPgpSignatureResult signatureResult =
-                getSignatureResultWithApiCompatibilityFallbacks(targetApiVersion, pgpResult);
+        OpenPgpSignatureResult signatureResult = pgpResult.getSignatureResult();
 
         switch (signatureResult.getResult()) {
             case OpenPgpSignatureResult.RESULT_KEY_MISSING: {
@@ -548,10 +506,6 @@ public class OpenPgpService {
             }
             default:
             case OpenPgpSignatureResult.RESULT_NO_SIGNATURE: {
-                if (targetApiVersion < API_VERSION_WITH_RESULT_NO_SIGNATURE) {
-                    // RESULT_NO_SIGNATURE has been added in version 8, before the signatureResult was null
-                    signatureResult = null;
-                }
                 // otherwise, no pending intent
             }
 
@@ -562,9 +516,6 @@ public class OpenPgpService {
 
         String autocryptPeerentity = data.getStringExtra(OpenPgpApi.EXTRA_AUTOCRYPT_PEER_ID);
         if (autocryptPeerentity != null) {
-            if (targetApiVersion < API_VERSION_WITH_AUTOCRYPT) {
-                throw new IllegalStateException("API version conflict, autocrypt is supported v12 and up!");
-            }
             signatureResult = processAutocryptPeerInfoToSignatureResult(signatureResult, autocryptPeerentity);
         }
 
@@ -813,19 +764,6 @@ public class OpenPgpService {
         try {
             long[] masterKeyIds = data.getLongArrayExtra(OpenPgpApi.EXTRA_KEY_IDS);
 
-            HashSet<Long> allowedKeyIds = getAllowedKeyIds();
-            for (long masterKeyId : masterKeyIds) {
-                if (!allowedKeyIds.contains(masterKeyId)) {
-                    Intent result = new Intent();
-                    String packageName = mApiPermissionHelper.getCurrentCallingPackage();
-                    result.putExtra(OpenPgpApi.RESULT_INTENT,
-                            mApiPendingIntentFactory.createRequestKeyPermissionPendingIntent(
-                                    data, packageName, masterKeyId));
-                    result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_USER_INTERACTION_REQUIRED);
-                    return result;
-                }
-            }
-
             List<String> headerLines = data.getStringArrayListExtra(OpenPgpApi.EXTRA_CUSTOM_HEADERS);
 
             Passphrase autocryptTransferCode = Numeric9x4PassphraseUtil.generateNumeric9x4Passphrase();
@@ -890,10 +828,6 @@ public class OpenPgpService {
     }
 
     private Intent checkPermissionImpl(@NonNull Intent data) {
-        Intent permissionIntent = mApiPermissionHelper.isAllowedOrReturnIntent(data);
-        if (permissionIntent != null) {
-            return permissionIntent;
-        }
         Intent result = new Intent();
         result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_SUCCESS);
         return result;
@@ -906,11 +840,6 @@ public class OpenPgpService {
         }
 
         return data;
-    }
-
-    private HashSet<Long> getAllowedKeyIds() {
-        String currentPkg = mApiPermissionHelper.getCurrentCallingPackage();
-        return mApiAppDao.getAllowedKeyIdsForApp(currentPkg);
     }
 
     /**
@@ -931,28 +860,9 @@ public class OpenPgpService {
             return result;
         }
 
-        // version code is required and needs to correspond to version code of service!
-        // History of versions in openpgp-api's CHANGELOG.md
-        if (!SUPPORTED_VERSIONS.contains(data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1))) {
-            Intent result = new Intent();
-            OpenPgpError error = new OpenPgpError
-                    (OpenPgpError.INCOMPATIBLE_API_VERSIONS, "Incompatible API versions!\n"
-                            + "used API version: " + data.getIntExtra(OpenPgpApi.EXTRA_API_VERSION, -1) + "\n"
-                            + "supported API versions: " + SUPPORTED_VERSIONS);
-            result.putExtra(OpenPgpApi.RESULT_ERROR, error);
-            result.putExtra(OpenPgpApi.RESULT_CODE, OpenPgpApi.RESULT_CODE_ERROR);
-            return result;
-        }
-
         // special exception: getting a sign key id will also register the app
         if (OpenPgpApi.ACTION_GET_SIGN_KEY_ID.equals(data.getAction())) {
             return null;
-        }
-
-        // check if caller is allowed to access OpenKeychain
-        Intent result = mApiPermissionHelper.isAllowedOrReturnIntent(data);
-        if (result != null) {
-            return result;
         }
 
         return null;

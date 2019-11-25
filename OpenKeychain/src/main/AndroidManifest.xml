@@ -869,11 +869,6 @@
             android:authorities="${applicationId}.provider"
             android:exported="false" />
 
-        <provider
-            android:name=".remote.KeychainExternalProvider"
-            android:authorities="${applicationId}.provider.exported"
-            android:exported="true" />
-
         <!-- Internal classes of the remote APIs (not exported) -->
         <activity
             android:name=".remote.ui.RemoteErrorActivity"

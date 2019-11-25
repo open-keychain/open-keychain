@@ -18,23 +18,20 @@
 package org.sufficientlysecure.keychain.remote;
 
 
-import java.security.AccessControlException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
-import androidx.annotation.NonNull;
 import android.widget.Toast;
 
-import org.sufficientlysecure.keychain.BuildConfig;
+import androidx.annotation.NonNull;
 import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import org.sufficientlysecure.keychain.daos.DatabaseNotifyManager;
 import org.sufficientlysecure.keychain.daos.UserIdDao;
@@ -47,21 +44,21 @@ import org.sufficientlysecure.keychain.remote.AutocryptInteractor.AutocryptState
 import timber.log.Timber;
 
 
-public class KeychainExternalProvider extends ContentProvider {
+public class AutocryptStatusProvider {
     private static final int EMAIL_STATUS = 101;
 
     private static final int AUTOCRYPT_STATUS = 201;
     private static final int AUTOCRYPT_STATUS_INTERNAL = 202;
 
 
-    private UriMatcher uriMatcher;
-    private ApiPermissionHelper apiPermissionHelper;
+    private final Context context;
+    private final UriMatcher uriMatcher;
+    private final ApiPermissionHelper apiPermissionHelper;
 
-
-    protected UriMatcher buildUriMatcher() {
+    private UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
 
-        String authority = KeychainExternalContract.CONTENT_AUTHORITY_EXTERNAL;
+        String authority = "*";
 
         matcher.addURI(authority, KeychainExternalContract.BASE_EMAIL_STATUS, EMAIL_STATUS);
         matcher.addURI(authority, KeychainExternalContract.BASE_AUTOCRYPT_STATUS, AUTOCRYPT_STATUS);
@@ -70,28 +67,16 @@ public class KeychainExternalProvider extends ContentProvider {
         return matcher;
     }
 
-    @Override
-    public boolean onCreate() {
+    public AutocryptStatusProvider(Context context) {
+        this.context = context;
         uriMatcher = buildUriMatcher();
 
-        Context context = getContext();
-        if (context == null) {
-            throw new NullPointerException("Context can't be null during onCreate!");
-        }
-
-        apiPermissionHelper = new ApiPermissionHelper(context, ApiAppDao.getInstance(getContext()));
-        return true;
+        apiPermissionHelper = new ApiPermissionHelper(context, ApiAppDao.getInstance(context));
     }
 
-    @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs,
                         String sortOrder) {
         Timber.v("query(uri=" + uri + ", proj=" + Arrays.toString(projection) + ")");
-        Context context = getContext();
-        if (context == null) {
-            throw new IllegalStateException();
-        }
-
         String callingPackageName = apiPermissionHelper.getCurrentCallingPackage();
 
         int match = uriMatcher.match(uri);
@@ -102,19 +87,11 @@ public class KeychainExternalProvider extends ContentProvider {
             }
 
             case AUTOCRYPT_STATUS_INTERNAL:
-                if (!BuildConfig.APPLICATION_ID.equals(callingPackageName)) {
-                    throw new AccessControlException("This URI can only be called internally!");
-                }
 
                 // override package name to use any external
                  callingPackageName = uri.getLastPathSegment();
 
             case AUTOCRYPT_STATUS: {
-                boolean callerIsAllowed = (match == AUTOCRYPT_STATUS_INTERNAL) || apiPermissionHelper.isAllowedIgnoreErrors();
-                if (!callerIsAllowed) {
-                    throw new AccessControlException("An application must register before use of KeychainExternalProvider!");
-                }
-
                 if (projection == null) {
                     throw new IllegalArgumentException("Please provide a projection!");
                 }
@@ -227,7 +204,7 @@ public class KeychainExternalProvider extends ContentProvider {
     }
 
     private Map<String, UidStatus> loadUidStatusMap(String[] selectionArgs, boolean isWildcardSelector) {
-        UserIdDao userIdDao = UserIdDao.getInstance(getContext());
+        UserIdDao userIdDao = UserIdDao.getInstance(context);
         if (isWildcardSelector) {
             UidStatus uidStatus = userIdDao.getUidStatusByEmailLike(selectionArgs[0]);
             return Collections.singletonMap(selectionArgs[0], uidStatus);
@@ -238,7 +215,7 @@ public class KeychainExternalProvider extends ContentProvider {
 
     private Map<String, AutocryptRecommendationResult> loadAutocryptRecommendationMap(
             String[] selectionArgs, String callingPackageName) {
-        AutocryptInteractor autocryptInteractor = AutocryptInteractor.getInstance(getContext(), callingPackageName);
+        AutocryptInteractor autocryptInteractor = AutocryptInteractor.getInstance(context, callingPackageName);
         return autocryptInteractor.determineAutocryptRecommendations(selectionArgs);
     }
 
@@ -252,25 +229,4 @@ public class KeychainExternalProvider extends ContentProvider {
         }
         throw new IllegalStateException("Unhandled case!");
     }
-
-    @Override
-    public String getType(@NonNull Uri uri) {
-        throw new UnsupportedOperationException("Unknown uri: " + uri);
-    }
-
-    @Override
-    public Uri insert(@NonNull Uri uri, ContentValues values) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        throw new UnsupportedOperationException();
-    }
-
 }
