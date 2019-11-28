@@ -55,7 +55,6 @@ dependencies {
     implementation project(':openkeychain:extern:bouncycastle:core')
     implementation project(':openkeychain:extern:bouncycastle:pg')
     implementation project(':openkeychain:extern:bouncycastle:prov')
-    implementation project(':openkeychain:extern:MaterialChipsInput')
 
     implementation 'androidx.work:work-runtime:2.2.0'
 

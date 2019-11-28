@@ -28,7 +28,6 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -41,16 +40,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.provider.ContactsContract;
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.core.content.ContextCompat;
-import androidx.cardview.widget.CardView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -65,6 +54,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProviders;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
@@ -85,8 +85,6 @@ import org.sufficientlysecure.keychain.ui.BackupActivity;
 import org.sufficientlysecure.keychain.ui.CertifyFingerprintActivity;
 import org.sufficientlysecure.keychain.ui.CertifyKeyActivity;
 import org.sufficientlysecure.keychain.ui.DeleteKeyDialogActivity;
-import org.sufficientlysecure.keychain.ui.EncryptFilesActivity;
-import org.sufficientlysecure.keychain.ui.EncryptTextActivity;
 import org.sufficientlysecure.keychain.ui.ImportKeysProxyActivity;
 import org.sufficientlysecure.keychain.ui.MainActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
@@ -259,8 +257,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
             throw new IllegalArgumentException("Missing required extra master_key_id or contact uri");
         }
 
-        actionEncryptFile.setOnClickListener(v -> encrypt(false));
-        actionEncryptText.setOnClickListener(v -> encrypt(true));
         actionShare.setOnClickListener(v -> ShareKeyHelper.shareKey(this, masterKeyId));
         actionShareClipboard.setOnClickListener(v -> ShareKeyHelper.shareKeyToClipboard(this, masterKeyId));
 
@@ -550,27 +546,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
     protected void onSecurityTokenPostExecute(SecurityTokenConnection stConnection) {
         super.onSecurityTokenPostExecute(stConnection);
         finish();
-    }
-
-    private void encrypt(boolean text) {
-        // If there is no encryption key, don't bother.
-        if (!unifiedKeyInfo.has_encrypt_key()) {
-            Notify.create(this, R.string.error_no_encrypt_subkey, Notify.Style.ERROR).show();
-            return;
-        }
-        long[] encryptionKeyIds = new long[] { unifiedKeyInfo.master_key_id() };
-        Intent intent;
-        if (text) {
-            intent = new Intent(this, EncryptTextActivity.class);
-            intent.setAction(EncryptTextActivity.ACTION_ENCRYPT_TEXT);
-            intent.putExtra(EncryptTextActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
-        } else {
-            intent = new Intent(this, EncryptFilesActivity.class);
-            intent.setAction(EncryptFilesActivity.ACTION_ENCRYPT_DATA);
-            intent.putExtra(EncryptFilesActivity.EXTRA_ENCRYPTION_KEY_IDS, encryptionKeyIds);
-        }
-        // used instead of startActivity set actionbar based on callingPackage
-        startActivityForResult(intent, 0);
     }
 
     /**

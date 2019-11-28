@@ -43,7 +43,6 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.EncryptFilesFragment;
 import org.sufficientlysecure.keychain.util.FileHelper;
 import timber.log.Timber;
 
@@ -122,7 +121,7 @@ public class AddEditSmartPGPAuthorityDialogFragment extends DialogFragment imple
             @Override
             public void onClick(View view) {
                 FileHelper.openDocument(AddEditSmartPGPAuthorityDialogFragment.this, "*/*", false,
-                                        EncryptFilesFragment.REQUEST_CODE_INPUT);
+                        0x00007003);
             }
         });
 
@@ -201,7 +200,7 @@ public class AddEditSmartPGPAuthorityDialogFragment extends DialogFragment imple
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case EncryptFilesFragment.REQUEST_CODE_INPUT:
+            case 0x00007003:
                 if (data != null) {
                     mURI = data.getData();
                 } else {
