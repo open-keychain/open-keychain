@@ -36,7 +36,6 @@ import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationAct
 import org.sufficientlysecure.keychain.remote.ui.RemoteSelectPubKeyActivity;
 import org.sufficientlysecure.keychain.remote.ui.SelectSignKeyIdActivity;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteDeduplicateActivity;
-import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectAuthenticationKeyActivity;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectIdKeyActivity;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -143,13 +142,6 @@ public class ApiPendingIntentFactory {
         intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_PACKAGE_SIGNATURE, packageSignature);
         intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_USER_ID, preferredUserId);
         intent.putExtra(RemoteSelectIdKeyActivity.EXTRA_SHOW_AUTOCRYPT_HINT, showAutocryptHint);
-
-        return createInternal(data, intent);
-    }
-
-    public PendingIntent createSelectAuthenticationKeyIdPendingIntent(Intent data, String packageName) {
-        Intent intent = new Intent(mContext, RemoteSelectAuthenticationKeyActivity.class);
-        intent.putExtra(RemoteSelectAuthenticationKeyActivity.EXTRA_PACKAGE_NAME, packageName);
 
         return createInternal(data, intent);
     }

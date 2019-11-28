@@ -7,5 +7,3 @@ include ':extern:MaterialChipsInput:library'
 //include ':extern:openpgp-api-lib:openpgp-api'
 include ':openpgp-api-lib'
 project(':openpgp-api-lib').projectDir = new File('extern/openpgp-api-lib/openpgp-api')
-include ':sshauthentication-api'
-project(':sshauthentication-api').projectDir = new File('sshauthentication-api')

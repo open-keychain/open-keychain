@@ -98,11 +98,6 @@ public class DebugActionsActivity extends Activity {
                     new Intent(), BuildConfig.APPLICATION_ID, getPackageSig(), "test@openkeychain.org", false);
             startPendingIntent(pendingIntent);
         });
-        addButtonToLayout(context, verticalLayout, "Select Authentication Key").setOnClickListener((v) -> {
-            PendingIntent pendingIntent = pendingIntentFactory.createSelectAuthenticationKeyIdPendingIntent(
-                    new Intent(), BuildConfig.APPLICATION_ID);
-            startPendingIntent(pendingIntent);
-        });
         addButtonToLayout(context, verticalLayout, "Select Signing Key (Autocrypt)").setOnClickListener((v) -> {
             PendingIntent pendingIntent = pendingIntentFactory.createSelectSignKeyIdPendingIntent(
                     new Intent(), BuildConfig.APPLICATION_ID, getPackageSig(), "test@openkeychain.org", true);
