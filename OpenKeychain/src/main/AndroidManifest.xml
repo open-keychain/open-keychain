@@ -885,11 +885,6 @@
             android:exported="false"
             android:label="@string/app_name" />
         <activity
-            android:name=".remote.ui.dialog.RemoteSelectAuthenticationKeyActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Keychain.Transparent"
-            android:label="@string/app_name" />
-        <activity
             android:name=".remote.ui.RemotePassphraseDialogActivity"
             android:theme="@style/Theme.Keychain.Transparent" />
         <!-- see SecurityTokenOperationActivity for reasons why
@@ -936,19 +931,6 @@
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
         </activity>
-
-        <!-- SSHAuthentication Remote API, this service has explicitly no permission requirements
-                     because we are using our own package based allow/disallow system -->
-        <service
-            android:name=".remote.SshAuthenticationService"
-            android:enabled="true"
-            android:exported="true"
-            android:process=":remote_ssh_api"
-            tools:ignore="ExportedService">
-            <intent-filter>
-                <action android:name="org.openintents.ssh.authentication.ISshAuthenticationService" />
-            </intent-filter>
-        </service>
 
         <!-- Contact Sync services -->
         <service
