@@ -53,7 +53,6 @@ dependencies {
     // piwik
     implementation 'org.piwik.sdk:piwik-sdk:3.0.3'
 
-    implementation project(':openkeychain:nfcsweetspot')
     implementation project(':openkeychain:sshauthentication-api')
     implementation project(':openkeychain:extern:bouncycastle:core')
     implementation project(':openkeychain:extern:MaterialChipsInput')

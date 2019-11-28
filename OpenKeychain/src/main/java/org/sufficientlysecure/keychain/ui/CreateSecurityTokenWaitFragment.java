@@ -21,19 +21,17 @@ package org.sufficientlysecure.keychain.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 
-import de.cotech.sweetspot.NfcSweetspotData;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
@@ -89,19 +87,7 @@ public class CreateSecurityTokenWaitFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.create_security_token_wait_fragment, container, false);
 
-        boolean showLocateSweetspot = NfcSweetspotData.hasSweetspotData();
-        View buttonLocateSweetspot = view.findViewById(R.id.button_locate_nfc);
-        buttonLocateSweetspot.setVisibility(showLocateSweetspot ? View.VISIBLE : View.GONE);
-        buttonLocateSweetspot.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ShowNfcSweetspotActivity.class);
-                startActivityForResult(intent, REQUEST_CODE_SWEETSPOT);
-            }
-        });
-
         mBackButton = view.findViewById(R.id.create_key_back_button);
-
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,8 +103,8 @@ public class CreateSecurityTokenWaitFragment extends Fragment {
         if (requestCode == REQUEST_CODE_SWEETSPOT) {
             FragmentActivity activity = getActivity();
             if (activity instanceof BaseSecurityTokenActivity && data != null &&
-                    data.hasExtra(ShowNfcSweetspotActivity.EXTRA_TOKEN_INFO)) {
-                SecurityTokenInfo tokenInfo = data.getParcelableExtra(ShowNfcSweetspotActivity.EXTRA_TOKEN_INFO);
+                    data.hasExtra(BaseSecurityTokenActivity.EXTRA_TOKEN_INFO)) {
+                SecurityTokenInfo tokenInfo = data.getParcelableExtra(BaseSecurityTokenActivity.EXTRA_TOKEN_INFO);
                 ((CreateKeyActivity) activity).handleTokenInfo(tokenInfo);
             }
 
