@@ -60,27 +60,9 @@ public class EncryptDecryptFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.encrypt_decrypt_fragment, container, false);
 
-        View mEncryptFile = view.findViewById(R.id.encrypt_files);
-        View mEncryptText = view.findViewById(R.id.encrypt_text);
         View mDecryptFile = view.findViewById(R.id.decrypt_files);
         View mDecryptFromClipboard = view.findViewById(R.id.decrypt_from_clipboard);
         mClipboardIcon = view.findViewById(R.id.clipboard_icon);
-
-        mEncryptFile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent encrypt = new Intent(getActivity(), EncryptFilesActivity.class);
-                startActivity(encrypt);
-            }
-        });
-
-        mEncryptText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent encrypt = new Intent(getActivity(), EncryptTextActivity.class);
-                startActivity(encrypt);
-            }
-        });
 
         mDecryptFile.setOnClickListener(new View.OnClickListener() {
             @Override

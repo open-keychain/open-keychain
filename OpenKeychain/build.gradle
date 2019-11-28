@@ -53,9 +53,6 @@ dependencies {
     // piwik
     implementation 'org.piwik.sdk:piwik-sdk:3.0.3'
 
-    implementation project(':openkeychain:extern:bouncycastle:core')
-    implementation project(':openkeychain:extern:MaterialChipsInput')
-
     // implementation project(':openkeychain:extern:bouncycastle:core')
     implementation 'org.bouncycastle:bcprov-jdk15on:1.65.01'
     implementation project(':openkeychain:extern:bouncycastle:pg')

@@ -116,11 +116,7 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             int itemId = item.getItemId();
-            if (itemId == R.id.menu_key_list_multi_encrypt) {
-                long[] keyIds = getSelectedMasterKeyIds();
-                multiSelectEncrypt(keyIds);
-                mode.finish();
-            } else if (itemId == R.id.menu_key_list_multi_delete) {
+            if (itemId == R.id.menu_key_list_multi_delete) {
                 long[] keyIds = getSelectedMasterKeyIds();
                 boolean hasSecret = isAnySecretKeySelected();
                 multiSelectDelete(keyIds, hasSecret);
@@ -148,14 +144,6 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
                     Preferences.getPreferences(getActivity()).getPreferredKeyserver());
         }
         startActivityForResult(intent, REQUEST_DELETE);
-    }
-
-    private void multiSelectEncrypt(long[] keyIds) {
-        Intent intent = new Intent(getActivity(), EncryptFilesActivity.class);
-        intent.setAction(EncryptFilesActivity.ACTION_ENCRYPT_DATA);
-        intent.putExtra(EncryptFilesActivity.EXTRA_ENCRYPTION_KEY_IDS, keyIds);
-
-        startActivityForResult(intent, REQUEST_ACTION);
     }
 
     private long[] getSelectedMasterKeyIds() {
