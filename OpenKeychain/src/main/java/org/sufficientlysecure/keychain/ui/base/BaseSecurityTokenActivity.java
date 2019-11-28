@@ -56,6 +56,8 @@ import timber.log.Timber;
 
 
 public abstract class BaseSecurityTokenActivity extends BaseActivity {
+    public static final String EXTRA_TOKEN_INFO = "token_info";
+
     public static final int REQUEST_CODE_PIN = 1;
 
     public static final String EXTRA_TAG_HANDLING_ENABLED = "tag_handling_enabled";

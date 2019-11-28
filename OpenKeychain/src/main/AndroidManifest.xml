@@ -841,12 +841,6 @@
             android:name=".ui.PanicExitActivity"
             android:theme="@android:style/Theme.NoDisplay" />
 
-        <activity
-            android:name="org.sufficientlysecure.keychain.ui.ShowNfcSweetspotActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Keychain.AppCompat.Transparent.Fullscreen"
-            />
-
         <!-- Internal services/content providers (not exported) -->
         <service
             android:name=".service.PassphraseCacheService"
