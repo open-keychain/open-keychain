@@ -37,15 +37,6 @@ dependencies {
     implementation 'eu.davidea:flexible-adapter-ui:1.0.0-b5'
     implementation 'eu.davidea:flexible-adapter-livedata:1.0.0-b2'
 
-    // Material Drawer
-    implementation 'com.mikepenz:materialdrawer:6.1.1@aar'
-    implementation 'com.mikepenz:fastadapter:3.3.1'
-    implementation 'com.mikepenz:materialize:1.2.0'
-    implementation 'com.mikepenz:iconics-core:3.1.0@aar'
-    implementation 'com.mikepenz:google-material-typeface:2.2.0.3.original@aar'
-    implementation 'com.mikepenz:fontawesome-typeface:5.3.1.1@aar'
-    implementation 'com.mikepenz:community-material-typeface:1.5.54.2@aar'
-
     // Nordpol
     implementation 'com.fidesmo:nordpol-android:0.1.22'
 

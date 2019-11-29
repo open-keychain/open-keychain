@@ -251,14 +251,6 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
         if (mFirstTime) {
             Preferences prefs = Preferences.getPreferences(this);
             prefs.setFirstTime(false);
-
-            TaskStackBuilder taskStackBuilder = TaskStackBuilder.create(this);
-            Intent mainActivityIntent = new Intent(this, MainActivity.class);
-            taskStackBuilder.addNextIntent(mainActivityIntent);
-            if (intentToLaunch != null) {
-                taskStackBuilder.addNextIntent(intentToLaunch);
-            }
-            taskStackBuilder.startActivities();
         } else if (intentToLaunch != null) {
             startActivity(intentToLaunch);
         }

@@ -56,9 +56,9 @@ public class KeyserverStatusView extends FrameLayout {
     }
 
     private enum KeyserverDisplayStatus {
-        PUBLISHED (R.string.keyserver_title_published, R.drawable.ic_cloud_black_24dp, R.color.md_grey_900),
-        NOT_PUBLISHED (R.string.keyserver_title_not_published, R.drawable.ic_cloud_off_24dp, R.color.md_grey_900),
-        UNKNOWN (R.string.keyserver_title_unknown, R.drawable.ic_cloud_unknown_24dp, R.color.md_grey_900);
+        PUBLISHED (R.string.keyserver_title_published, R.drawable.ic_cloud_black_24dp, R.color.key_flag_gray),
+        NOT_PUBLISHED (R.string.keyserver_title_not_published, R.drawable.ic_cloud_off_24dp, R.color.key_flag_gray),
+        UNKNOWN (R.string.keyserver_title_unknown, R.drawable.ic_cloud_unknown_24dp, R.color.key_flag_gray);
 
         @StringRes
         private final int title;

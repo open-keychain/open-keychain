@@ -33,7 +33,6 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
-import org.sufficientlysecure.keychain.ui.transfer.view.TransferFragment;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
 
@@ -96,14 +95,7 @@ public class CreateKeyStartFragment extends Fragment {
             startActivityForResult(intent, REQUEST_CODE_IMPORT_KEY);
         });
 
-        if (Build.VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-            mSecureDeviceSetup.setOnClickListener(v -> {
-                TransferFragment frag = new TransferFragment();
-                mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
-            });
-        } else {
-            mSecureDeviceSetup.setVisibility(View.GONE);
-        }
+        mSecureDeviceSetup.setVisibility(View.GONE);
 
         mSkipOrCancel.setOnClickListener(v -> {
             if (!mCreateKeyActivity.mFirstTime) {

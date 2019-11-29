@@ -230,7 +230,6 @@ class RemoteSelectIdentityKeyPresenter {
     }
 
     public void onClickGoToOpenKeychain() {
-        view.showOpenKeychainIntent();
     }
 
     interface RemoteSelectIdentityKeyView {
@@ -258,7 +257,5 @@ class RemoteSelectIdentityKeyPresenter {
         void showImportInternalError();
 
         void displayOverflowMenu();
-
-        void showOpenKeychainIntent();
     }
 }

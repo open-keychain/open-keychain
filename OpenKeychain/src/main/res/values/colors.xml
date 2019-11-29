@@ -3,6 +3,8 @@
 
     <color name="primary">#7bad45</color>
 
+    <color name="black">#000000</color>
+
     <color name="icons">#ffffff</color>
     <color name="transparent">#00ffffff</color>
 

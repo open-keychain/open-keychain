@@ -43,7 +43,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mikepenz.materialdrawer.util.KeyboardUtil;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.livedata.GenericLiveData;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
@@ -68,8 +67,6 @@ public class RemoteDeduplicateActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
 
         presenter = new RemoteDeduplicatePresenter(getBaseContext(), this);
-
-        KeyboardUtil.hideKeyboard(this);
 
         if (savedInstanceState == null) {
             RemoteDeduplicateDialogFragment frag = new RemoteDeduplicateDialogFragment();

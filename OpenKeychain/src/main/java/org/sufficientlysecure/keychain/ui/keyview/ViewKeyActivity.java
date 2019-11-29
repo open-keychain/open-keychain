@@ -86,7 +86,6 @@ import org.sufficientlysecure.keychain.ui.CertifyFingerprintActivity;
 import org.sufficientlysecure.keychain.ui.CertifyKeyActivity;
 import org.sufficientlysecure.keychain.ui.DeleteKeyDialogActivity;
 import org.sufficientlysecure.keychain.ui.ImportKeysProxyActivity;
-import org.sufficientlysecure.keychain.ui.MainActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.QrCodeViewActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyAdvActivity;
@@ -302,22 +301,11 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-        if (itemId == android.R.id.home) {
-            Intent homeIntent = new Intent(this, MainActivity.class);
-            homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(homeIntent);
-            return true;
-        } else if (itemId == R.id.menu_key_change_password) {
+        if (itemId == R.id.menu_key_change_password) {
             changePassword();
             return true;
         } else if (itemId == R.id.menu_key_view_backup) {
             startPassphraseActivity(REQUEST_BACKUP);
-            return true;
-        } else if (itemId == R.id.menu_key_view_skt) {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra(MainActivity.EXTRA_INIT_FRAG, MainActivity.ID_TRANSFER);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
             return true;
         } else if (itemId == R.id.menu_key_view_delete) {
             deleteKey();
