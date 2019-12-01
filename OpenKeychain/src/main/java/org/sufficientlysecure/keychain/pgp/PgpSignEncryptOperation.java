@@ -270,10 +270,8 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
                     case PASSPHRASE: {
                         Passphrase localPassphrase = cryptoInput.getPassphrase();
                         if (localPassphrase == null) {
-                            try {
-                                localPassphrase = getCachedPassphrase(signingMasterKeyId, signingKey.getKeyId());
-                            } catch (PassphraseCacheInterface.NoSecretKeyException ignored) {
-                            }
+                            localPassphrase = passphraseCacheInterface.getCachedPassphrase(
+                                    signingMasterKeyId, signingKey.getKeyId());
                         }
                         if (localPassphrase == null) {
                             log.add(LogType.MSG_PSE_PENDING_PASSPHRASE, indent + 1);

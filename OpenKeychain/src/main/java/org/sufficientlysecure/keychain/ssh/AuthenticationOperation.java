@@ -26,15 +26,14 @@ import android.support.annotation.NonNull;
 import org.bouncycastle.openpgp.AuthenticationSignatureGenerator;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
-import org.sufficientlysecure.keychain.pgp.PassphraseCacheInterface;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.daos.KeyRepository;
-import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -172,10 +171,7 @@ public class AuthenticationOperation extends BaseOperation<AuthenticationParcel>
             case PASSPHRASE: {
                 Passphrase localPassphrase = cryptoInput.getPassphrase();
                 if (localPassphrase == null) {
-                    try {
-                        localPassphrase = getCachedPassphrase(authMasterKeyId, authKey.getKeyId());
-                    } catch (PassphraseCacheInterface.NoSecretKeyException ignored) {
-                    }
+                    localPassphrase = passphraseCacheInterface.getCachedPassphrase(authMasterKeyId, authKey.getKeyId());
                 }
                 if (localPassphrase == null) {
                     log.add(LogType.MSG_AUTH_PENDING_PASSPHRASE, indent + 1);

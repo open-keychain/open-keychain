@@ -679,18 +679,11 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                     } else if (cryptoInput.hasPassphraseForSubkey(subKeyId)) {
                         passphrase = cryptoInput.getPassphrase();
                     } else {
-                        // if no passphrase was explicitly set try to get it from the cache service
-                        try {
-                            // returns "" if key has no passphrase
-                            passphrase = getCachedPassphrase(subKeyId);
+                        // returns "" if key has no passphrase
+                        passphrase = passphraseCacheInterface.getCachedPassphrase(subKeyId);
+                        if (passphrase != null) {
                             log.add(LogType.MSG_DC_PASS_CACHED, indent + 1);
-                        } catch (PassphraseCacheInterface.NoSecretKeyException e) {
-                            log.add(LogType.MSG_DC_ERROR_NO_KEY, indent + 1);
-                            return result.with(new DecryptVerifyResult(DecryptVerifyResult.RESULT_ERROR, log));
-                        }
-
-                        // if passphrase was not cached, return here indicating that a passphrase is missing!
-                        if (passphrase == null) {
+                        } else {
                             log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
                             requirePassphraseBuilder.add(masterKeyId, subKeyId);
                             continue;
@@ -741,14 +734,10 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
                 // indicating that a passphrase is missing!
                 if (!cryptoInput.hasPassphraseForSymmetric()) {
 
-                    try {
-                        passphrase = getCachedPassphrase(key.symmetric);
+                    passphrase = passphraseCacheInterface.getCachedPassphrase(key.symmetric);
+                    if (passphrase != null) {
                         log.add(LogType.MSG_DC_PASS_CACHED, indent + 1);
-                    } catch (PassphraseCacheInterface.NoSecretKeyException e) {
-                        // nvm
-                    }
-
-                    if (passphrase == null) {
+                    } else {
                         log.add(LogType.MSG_DC_PENDING_PASSPHRASE, indent + 1);
                         RequiredInputParcel requiredInputParcel = customRequiredInputParcel != null ?
                                 customRequiredInputParcel : RequiredInputParcel.createRequiredSymmetricPassphrase();
