@@ -32,9 +32,13 @@ import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class SecurityKeyShopFragment extends Fragment {
 
     public static final String webShopURL = "https://shop.cotech.de/";
+    public static final String referer = "https://openkeychain.shop.cotech.de";
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.security_key_shop_fragment, container, false);
@@ -45,7 +49,9 @@ public class SecurityKeyShopFragment extends Fragment {
                 view.findViewById(R.id.shop_progressbar_label)
         ));
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.loadUrl(webShopURL);
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Referer", referer);
+        webView.loadUrl(webShopURL, headers);
         return view;
     }
 
