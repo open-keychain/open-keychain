@@ -21,6 +21,9 @@ package org.sufficientlysecure.keychain.ui;
 import java.util.regex.Matcher;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -39,6 +42,7 @@ import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.SubtleAttentionSeeker;
 import org.sufficientlysecure.keychain.util.FileHelper;
+import timber.log.Timber;
 
 public class EncryptDecryptFragment extends Fragment {
 
@@ -108,7 +112,20 @@ public class EncryptDecryptFragment extends Fragment {
             return;
         }
 
+        ClipboardManager clipMan = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipMan == null) {
+            Timber.e("Couldn't get ClipboardManager instance!");
+            return;
+        }
+
+        ClipData clip = clipMan.getPrimaryClip();
+        if (clip == null) {
+            Timber.e("Couldn't get clipboard data!");
+            return;
+        }
+
         Intent clipboardDecrypt = new Intent(getActivity(), DecryptActivity.class);
+        clipboardDecrypt.putExtra(DecryptActivity.EXTRA_CLIPDATA, clip);
         clipboardDecrypt.setAction(DecryptActivity.ACTION_DECRYPT_FROM_CLIPBOARD);
         startActivityForResult(clipboardDecrypt, 0);
     }
