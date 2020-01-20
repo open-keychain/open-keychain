@@ -378,6 +378,7 @@
   <!--Navigation Drawer-->
   <string name="nav_keys">Anahtarlar</string>
   <string name="nav_apps">Uygulamalar</string>
+  <string name="drawer_open">Gezinti çekmecesini aç</string>
   <string name="drawer_close">Gezinme çekmecesini kapat</string>
   <string name="my_keys">Anahtarlarım</string>
   <!--hints-->

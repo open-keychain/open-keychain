@@ -1,8 +1,11 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 5.5
+  * Fix decryption from clipboard on Android 10
+
 ## 5.4
-  * Add WKD Advanced method
-  * Add COTECH Security Key Shop
+  * WKD 詳細な方法の追加
+  * COTECH セキュリティ鍵ショップの追加
 
 ## 5.3
   * keys.openpgp.orgをデフォルトのキーサーバーとして使用

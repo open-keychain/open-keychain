@@ -2,8 +2,8 @@
 
 Potvrzení klíče
 Bez potvrzení si nemůžete být jisti, zda se klíč vskutku vztahuje k jisté osobě.
-Nejjednodušší způsob potvrzení klíče je sken QR kódu nebo výměna skrze NFC.
-K potvrzení klíče mezi více než dvěma osobami navrhujeme použít metodu výměny klíčů dostupnou pro Vaše klíče.
+Nejjednodušší způsob potvrzení klíče je sken QR kódu nebo směna skrze NFC.
+K potvrzení klíče mezi více než dvěma osobami navrhujeme použít metodu směny klíčů dostupnou pro Vaše klíče.
 
 ## Stav klíče
 
@@ -24,5 +24,5 @@ Toto osvědčení ["obecné osvědčení (0x10)"](http://tools.ietf.org/html/rfc
 Tradičně se osvědčení (také s vyšší certifikační úrovní, např. "pozitivní osvědčení" (0x13)) organizují v OpenPGP Web of Trust.
 Náš model potvrzení klíče je mnohem jednodušší koncept, a to abychom se vyhnuli běžným problémům užitnosti související s Web of Trust.
 Předpokládáme, že klíče jsou ověřeny jen do jisté míry, která je stále dost praktická, aby byla provedena "v chodu".
-Navíc neimplementujeme (potenciálně přechodné) podpisy důvěry nebo databázi důvěry k vlastníkovi jako GnuPG.
+Ani neimplementujeme (potenciálně přechodné) podpisy důvěry nebo databázi důvěry k vlastníkovi jako GnuPG.
 Navíc klíče, které obsahují nejméně jedno uživatelské ID osvědčené důvěryhodným klíčem, budou označeny jako "potvrzené" v seznamech klíčů.

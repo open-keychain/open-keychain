@@ -1,8 +1,11 @@
 [//]: # (注意：请把每个句子放在单独一行中， Transifex 将把每一行放置在独立的翻译表单内！)
 
+## 5.5
+  * Fix decryption from clipboard on Android 10
+
 ## 5.4
-  * Add WKD Advanced method
-  * Add COTECH Security Key Shop
+  * 添加 WKD 高级模式
+  * 添加 COTECH 安全密钥商店
 
 ## 5.3
   * 将 keys.openpgp.org 设置为默认密钥服务器

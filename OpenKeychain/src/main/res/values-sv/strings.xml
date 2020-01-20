@@ -776,6 +776,8 @@
   <string name="my_keys">Mina nycklar</string>
   <string name="nav_backup">Säkerhetskopiera/återställa</string>
   <string name="nav_transfer">Säker Wi-Fi-överföring</string>
+  <string name="nav_shop">Butik</string>
+  <string name="nav_autocrypt">Prova Autocrypt med Thunderbird</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Skriv text</string>
   <!--certs-->
@@ -893,7 +895,7 @@
   <string name="msg_is_importing_subkeys">Bearbetar hemliga undernycklar</string>
   <string name="msg_is_error_io_exc">Fel vid kodning av nyckelring</string>
   <string name="msg_is_merge_public">Slår ihop importerade data med befintlig publik nyckelring</string>
-  <string name="msg_is_merge_secret">Sammanfoga importerad data till befintlig hemlig nyckelring</string>
+  <string name="msg_is_merge_secret">Sammanfoga importerade data till befintlig hemlig nyckelring</string>
   <string name="msg_is_merge_special">Sammanfoga i självcertifikatdata från offentlig nyckelring</string>
   <string name="msg_is_pubring_generate">Genererar publik nyckelring från privat nyckelring</string>
   <string name="msg_is_subkey_nonexistent">Undernyckel %s inte tillgänglig i privat nyckelring</string>
@@ -901,7 +903,7 @@
   <string name="msg_is_subkey_empty">Märkt hemlig undernyckel %s  som tillgänglig, med tomt lösenord</string>
   <string name="msg_is_subkey_stripped">Märkt hemlig undernyckel %s som avskalad</string>
   <string name="msg_is_subkey_divert">Märkt hemlig undernyckel %s som nyckel på Säkerhetstoken</string>
-  <string name="msg_is_success_identical">Nyckelringen innehåller ingen ny information, inget att göra</string>
+  <string name="msg_is_success_identical">Nyckelringen innehåller inga nya data inget att göra</string>
   <string name="msg_is_success">Importerade privat nyckelring</string>
   <!--Keyring Canonicalization log entries-->
   <string name="msg_kc_error_v3">Den här nyckeln är skapad med OpenPGP version 3, vilken är en föråldrad version som inte längre stöds!</string>
@@ -918,6 +920,9 @@
   <string name="msg_kc_revoke_dup">Tar bort överflödigt återkallelsecertifikat för nyckelring</string>
   <string name="msg_kc_notation_empty">Ta bort tomt notationscertifikat</string>
   <string name="msg_kc_sub">Bearbetar undernyckel %s</string>
+  <string name="msg_kc_sub_bad">Tar bort ogiltigt bindningscertifikat för undernyckeln</string>
+  <string name="msg_kc_sub_bad_err">Tar bort dåligt bindningscertifikat för undernyckel</string>
+  <string name="msg_kc_sub_bad_local">Tar bort bindningscertifikat för undernyckel med \"lokal\" flagga</string>
   <string name="msg_kc_sub_bad_time">Tar bort undernyckelbindningscertifikat med framtida tidsstämpel</string>
   <string name="msg_kc_sub_bad_time_early">Undernyckelbindningscertifikatet har tidigare tidsstämpel än dess nyckel!</string>
   <string name="msg_kc_sub_bad_type">Okänd undernyckel certifikattyp: %s</string>
@@ -932,6 +937,7 @@
   <string name="msg_kc_uid_bad_type">Tar bort användar-ID-certifikat av okänd typ (%s)</string>
   <string name="msg_kc_uid_bad">Tar bort dåligt eget-certifikat för användar-ID \'%s\'</string>
   <string name="msg_kc_uid_cert_dup">Tar bort föråldrat eget-certifikat för användar-ID \'%s\'</string>
+  <string name="msg_kc_uid_foreign">Tar bort certifikat för främmande användar-ID med \"%s\"</string>
   <string name="msg_kc_uid_revoke_dup">Tar bort överflödigt återkallelsecertifikat för användar-ID \'%s\'</string>
   <string name="msg_kc_uid_revoke_old">Tar bort föråldrat återkallelsecertifikat för användar-ID \'%s\'</string>
   <string name="msg_kc_uid_no_cert">Inget giltigt eget-certifikat hittades för användar-ID \'%s\', tar bort från nyckelring</string>
@@ -962,12 +968,14 @@
   <string name="msg_cr_error_no_user_id">Nyckelringar måste skapas med minst ett användar-ID!</string>
   <string name="msg_cr_error_no_certify">Huvudnyckel måste ha en certifieringsflagga!</string>
   <string name="msg_cr_error_keysize_2048">Nyckelstorleken måste vara större eller lika med 2048!</string>
+  <string name="msg_cr_error_no_curve">Ingen nyckelstorlek specificerad! Detta är ett programmeringsfel, vänligen lämna in en felrapport!</string>
   <string name="msg_cr_error_no_keysize">Ingen elliptisk kurva specificerad! Detta är ett programmeringsfel, vänligen lämna in en felrapport!</string>
   <string name="msg_cr_error_internal_pgp">Internt OpenPGP-fel!</string>
   <string name="msg_cr_error_unknown_algo">Okänd algoritm vald. Detta är ett programmeringsfel, skicka en felrapport!</string>
   <string name="msg_cr_error_flags_dsa">Dåliga nyckelflaggor valda, DSA kan inte användas för kryptering!</string>
   <string name="msg_cr_error_flags_elgamal">Dåliga nyckelflaggor valda, ElGamal kan inte användas för signering!</string>
   <string name="msg_cr_error_flags_ecdsa">Dåliga nyckelflaggor valda, ECDSA kan inte användas för kryptering!</string>
+  <string name="msg_cr_error_flags_eddsa">Dåliga nyckelflaggor valda, EdDSA kan inte användas för kryptering!</string>
   <string name="msg_cr_error_flags_ecdh">Dåliga nyckelflaggor valda, ECDH kan inte användas för signering!</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mr">Modifierar nyckelring %s</string>
@@ -1044,8 +1052,8 @@
   <string name="msg_dc_askip_unavailable">Nyckeln är inte tillgänglig, hoppar över...</string>
   <string name="msg_dc_askip_no_key">Data inte krypterade med känd nyckel, hoppar över…</string>
   <string name="msg_dc_askip_not_allowed">Data inte krypterade med tillåten nyckel, hoppar över…</string>
-  <string name="msg_dc_asym">Hittade block med asymmetriskt krypterad data för nyckel %s</string>
-  <string name="msg_dc_clear_decompress">Packar upp komprimerad data</string>
+  <string name="msg_dc_asym">Hittade block med asymmetriskt krypterade data för nyckel %s</string>
+  <string name="msg_dc_clear_decompress">Packar upp komprimerade data</string>
   <string name="msg_dc_clear_meta_file">Filnamn: %s</string>
   <string name="msg_dc_clear_meta_mime">MIME-typ: %s</string>
   <string name="msg_dc_clear_meta_size">Filstorlek: %s</string>
@@ -1061,12 +1069,12 @@
   <string name="msg_dc_error_corrupt_data">Data är korrupt!</string>
   <string name="msg_dc_error_extract_key">Okänt fel vid upplåsning av nyckel</string>
   <string name="msg_dc_error_integrity_check">Fel vid integritetskontroll!</string>
-  <string name="msg_dc_error_invalid_data">Ingen giltig OpenPGP krypterad eller signerad data hittad!</string>
+  <string name="msg_dc_error_invalid_data">Ingen giltig OpenPGP krypterad eller signerade data hittad!</string>
   <string name="msg_dc_error_io">Stötte på ett fel vid läsning av inmatningsdata!</string>
   <string name="msg_dc_error_input">Fel vid öppning av inmatningsdataström!</string>
   <string name="msg_dc_error_input_denied">Fel vid öppning av inmatningsdataström: åtkomst nekad!</string>
-  <string name="msg_dc_error_no_data">Ingen krypterad data hittad i strömmen!</string>
-  <string name="msg_dc_error_no_key">Ingen krypterad data med känd hemlig nyckel hittad i strömmen!</string>
+  <string name="msg_dc_error_no_data">Inga krypterade data hittad i strömmen!</string>
+  <string name="msg_dc_error_no_key">Inga krypterade data med känd hemlig nyckel hittad i strömmen!</string>
   <string name="msg_dc_error_no_signature">Saknar signaturdata!</string>
   <string name="msg_dc_error_pgp_exception">Stötte på OpenPGP-undantag under drift!</string>
   <string name="msg_dc_integrity_check_ok">Integritetskontroll OK!</string>
@@ -1077,8 +1085,8 @@
   <string name="msg_dc_pending_passphrase">Lösenord krävs, begär användarinmatning…</string>
   <string name="msg_dc_prep_streams">Förbereder strömmar för dekryptering</string>
   <string name="msg_dc">Startar dekrypteringsoperation…</string>
-  <string name="msg_dc_sym_skip">Symmetrisk data inte tillåten, hoppar över…</string>
-  <string name="msg_dc_sym">Hittade block med symmetriskt krypterad data</string>
+  <string name="msg_dc_sym_skip">Symmetriska data inte tillåten, hoppar över…</string>
+  <string name="msg_dc_sym">Hittade block med symmetriskt krypterade data</string>
   <string name="msg_dc_unlocking">Låser upp hemlig nyckel</string>
   <string name="msg_dc_insecure_encryption_key">Osäker krypteringsnyckel användes! Detta kan hända för att nyckeln är gammal, eller från en attack.</string>
   <string name="msg_dc_insecure_symmetric_encryption_algo">Osäker krypteringsalgoritm har använts! Detta kan hända för att applikationen har gått ur datumet, eller från en attack.</string>
@@ -1107,7 +1115,7 @@
   <string name="msg_pse_error_bad_passphrase">Dåligt lösenord!</string>
   <string name="msg_pse_error_key_sign">Den valda signeringsnyckeln kan inte signera data!</string>
   <string name="msg_pse_error_sign_key">Fel vid hämtning av signeringsnyckeln!</string>
-  <string name="msg_pse_error_nfc">NFC datafel!</string>
+  <string name="msg_pse_error_nfc">NFC-datafel!</string>
   <string name="msg_pse_error_no_passphrase">Inget lösenord angivet!</string>
   <string name="msg_pse_error_pgp">Internt OpenPGP-fel!</string>
   <string name="msg_pse_error_sig">Stötte på OpenPGP-signatur undantag!</string>
@@ -1177,7 +1185,7 @@
   <string name="msg_import_fetch_keyserver_ok">Nyckelhämtning lyckades</string>
   <string name="msg_import_keyserver">Använder nyckelserver %s</string>
   <string name="msg_import_merge">Slår ihop data som tagits emot</string>
-  <string name="msg_import_merge_error">Fel vid sammanslagning av hämtad data!</string>
+  <string name="msg_import_merge_error">Fel vid sammanslagning av hämtade data!</string>
   <string name="msg_import_error">Importoperation misslyckades!</string>
   <string name="msg_import_error_io">Importeringsoperationen misslyckades på grund av i/o-fel!</string>
   <string name="msg_import_partial">Importoperation lyckades, med fel!</string>
@@ -1199,7 +1207,7 @@
   <string name="msg_upload_proxy">Använder proxy: %s</string>
   <string name="msg_upload_server">Server: %s</string>
   <string name="msg_upload_key">Nyckel-ID: %s</string>
-  <string name="msg_upload_error_key">Fel vid förbehandling av viktig data!</string>
+  <string name="msg_upload_error_key">Fel vid förbehandling av viktiga data!</string>
   <string name="msg_upload_error_not_found">Nyckel hittades inte!</string>
   <string name="msg_upload_error_upload">Fel vid sändning av nyckel till server! Kontrollera din internetanslutning</string>
   <string name="msg_upload_success">Sändning till nyckelserver lyckades</string>
@@ -1231,7 +1239,7 @@
   <string name="msg_bench_s2k_for_it">Tid för %1$s SHA1 S2K-iterationer: %2$sms</string>
   <string name="msg_data">Bearbetar inmatningsdata</string>
   <string name="msg_data_openpgp">Försöker att behandla OpenPGP-data</string>
-  <string name="msg_data_detached_clear">Rensar tidigare, osignerad data!</string>
+  <string name="msg_data_detached_clear">Rensar tidigare, osignerade data!</string>
   <string name="msg_data_detached_trailing">Hoppa över efterföljande data efter signerad del!</string>
   <string name="msg_data_mime_filename">Filnamn: \'%s\'</string>
   <string name="msg_data_mime_from_extension">Gissar MIME-typ från utökning</string>
@@ -1384,6 +1392,7 @@
   <string name="error_loading_keys">Fel vid inläsning av nycklar!</string>
   <string name="error_empty_log">(fel, tom logg)</string>
   <string name="error_reading_text">Kunde inte läsa indata för att dekryptera!</string>
+  <string name="error_reading_aosp">Det gick inte att läsa data, det här är ett fel i Android-e-postklienten! (Problem #290)</string>
   <string name="error_reading_k9">Mottog ofullständiga data, försök att trycka \"Hämta komplett meddelande\" i K-9 Mail!</string>
   <string name="filename_unknown">Okänt filnamn (tryck för att öppna)</string>
   <string name="filename_unknown_text">Text (tryck för att visa)</string>
@@ -1392,7 +1401,7 @@
   <string name="intent_share">Dela krypterat/signerat innehåll</string>
   <string name="view_internal">Visa i OpenKeychain</string>
   <string name="error_preparing_data">Fel vid förberedning av data!</string>
-  <string name="label_clip_title">Krypterad data</string>
+  <string name="label_clip_title">Krypterade data</string>
   <string name="progress_processing">Bearbetar...</string>
   <string name="error_saving_file">Fil vid sparande av fil!</string>
   <string name="file_saved">Fil sparad!</string>
@@ -1533,27 +1542,33 @@
   <string name="insecure_mdc_suggestion">En saknad MDC är ett problem i sändningsprogrammet, eller en attack. För säker end-to-end kommunikation, ska meddelanden också signeras av avsändaren!</string>
   <string name="dialog_insecure_button_view_key">Visa nyckel</string>
   <string name="dialog_insecure_button_ok">Förstått</string>
+  <string name="usage_authentication">Autentisering</string>
   <string name="identity_context_forget">Glöm</string>
   <string name="button_scan">Skanna</string>
   <string name="button_more_info">Mer info</string>
   <string name="transfer_scan_explanation">För att dela eller importera din nyckelinställning, skapa en säker anslutning genom att skanna med endera enhet.</string>
   <string name="transfer_scan_warning">Använd endast med dina egna enheter!</string>
   <string name="connection_status">Anslutningsstatus:</string>
+  <string name="section_transfer_keys">Tillgängliga nycklar för överföring</string>
   <string name="section_received_keys">Mottagna nycklar</string>
   <string name="transfer_scan_only_wifi">Den här funktionen kan endast användas över Wi-Fi.</string>
   <string name="button_import">Importera</string>
   <string name="transfer_status_connected">Ansluten</string>
   <string name="transfer_status_disconnected">Frånkopplad!</string>
+  <string name="transfer_error_read_incoming">Det gick inte att läsa inkommande nyckel!</string>
   <string name="transfer_error_connect">Anslutningen misslyckades!</string>
   <string name="transfer_error_listen">Fel väntar på anslutning!</string>
   <string name="transfer_error_generic">Okänt kommunikationsfel!</string>
   <string name="transfer_error_generic_msg">Kommunikationsfel: %s</string>
+  <string name="transfer_not_available">Tyvärr kan den här funktionen endast användas på Android 5 eller nyare :(</string>
+  <string name="transfer_list_empty">Inga nycklar på den här enheten som kan skickas. Väntar på inkommande nycklar…</string>
   <string name="transfer_connecting">Ansluter...</string>
   <string name="first_time_secure_wifi_transfer">Säker Wi-Fi-överföring</string>
   <string name="menu_secure_wifi_transfer">Säker Wi-Fi-överföring</string>
   <string name="transfer_confirm_cancel">Avbryt</string>
   <string name="transfer_confirm_ok">Skicka</string>
   <string name="transfer_confirm_title">Skicka din nyckel?</string>
+  <string name="transfer_confirm_text">Detta kommer att överföra full tillgång till din nyckel till den anslutna enheten. Du bör aldrig skicka dina egna nycklar till enheter som du inte äger!</string>
   <string name="button_scan_again">Skanna igen</string>
   <string name="transfer_error_wifi_text">Anslutningen misslyckades!</string>
   <string name="transfer_error_wifi_text_instructions">Kontrollera att du är på samma nätverk och skanna sedan igen.</string>
@@ -1567,11 +1582,15 @@
   <string name="status_token_check">Kontrollera nyckelinställningar…</string>
   <string name="status_content_uri">Läser fil...</string>
   <string name="token_reset_confirm_title">Återställ säkerhetstoken?</string>
+  <string name="token_reset_confirm_message">Detta tar oåterkalleligt bort nyckeln som lagras på denna säkerhetstoken. Du kommer inte längre att kunna använda den här nyckeln för dekryptering! Är du säker?</string>
   <string name="token_reset_confirm_ok">Återställ</string>
+  <string name="token_status_title">Samlar information för säkerhetstoken…</string>
   <string name="token_result_not_found">Nyckel hittades inte!</string>
   <string name="token_result_key_found">Nyckel hittad!</string>
   <string name="token_result_token_ok">Klar för användning!</string>
   <string name="token_result_empty">Token är tom</string>
+  <string name="token_put_key_unsupported">Vänligen ställ in denna säkerhetstoken med GnuPG. OpenKeychain stöder för närvarande endast signering/dekryptering med denna säkerhetstoken.</string>
+  <string name="token_action_retry">Försök söka igen</string>
   <string name="token_action_load_from_file">Läs in från fil</string>
   <string name="token_action_reset">Återställ säkerhetstoken</string>
   <string name="token_action_import">Importera</string>
@@ -1583,7 +1602,9 @@
     <item quantity="one">1 försök kvar</item>
     <item quantity="other">%d försök kvar</item>
   </plurals>
+  <string name="token_error_locked_indefinitely">För många återställningsförsök. Token kan inte låsas upp!</string>
   <string name="token_error_cannot_reset_gnuk_old">Gnuk Token/Nitrokey Start stöder inte återställning före version 1.2.5</string>
+  <string name="token_error_cannot_reset">Denna säkerhetstoken stöder inte återställning</string>
   <string name="token_menu_change_pin">Ändra PIN-kod</string>
   <string name="token_menu_view_log">Visa logg</string>
   <string name="token_unlock_ok">Lås upp</string>
@@ -1593,6 +1614,7 @@
   <string name="token_error_admin_min8">Adminstratör-PIN-kod måste vara 8 tecken eller längre!</string>
   <string name="token_error_pin_min6">Ny PIN-kod måste vara 6 tecken eller längre!</string>
   <string name="token_error_pin_repeat">PIN-koderna matchar inte!</string>
+  <string name="msg_ret_curi_error_io">Det gick inte att läsa data!</string>
   <string name="msg_ret_curi_error_no_match">Ingen matchande nyckel hittades</string>
   <string name="msg_ret_curi_error_not_found">Kunde inte öppna filen!</string>
   <string name="msg_ret_curi_found">Hittade nyckel: %s</string>
@@ -1628,7 +1650,7 @@
   <string name="key_gen_back">Tillbaka</string>
   <string name="key_gen_finish">Avsluta</string>
   <string name="button_goto_openkeychain">Gå till OpenKeychain</string>
-  <string name="snack_keylist_clipboard_title">Hittade nyckel data i urklipp!</string>
+  <string name="snack_keylist_clipboard_title">Hittade nyckeldata i urklipp!</string>
   <string name="snack_keylist_clipboard_action">Visa</string>
   <string name="notify_channel_keysync">Nyckelserver uppdatering</string>
   <string name="notify_channel_permission">Tillståndsbegäran</string>

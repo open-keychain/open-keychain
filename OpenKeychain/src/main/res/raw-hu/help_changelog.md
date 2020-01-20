@@ -1,11 +1,14 @@
 [//]: # (MEGJEGYZÉS: minden mondatot külön sorba írjon, a Transifex minden sort a saját fordítási mezőjébe tesz!)
 
+## 5.5
+  * Fix decryption from clipboard on Android 10
+
 ## 5.4
-  * Add WKD Advanced method
-  * Add COTECH Security Key Shop
+  * A WKD Advanced metódus hozzáadása
+  * A COTECH Security Key Shop hozzáadása
 
 ## 5.3
-  * Use keys.openpgp.org as default keyserver
+  * A keys.openpgp.org alapértelmezett kulcsszerverként használata
 
 ## 5.2
   * Továbbfejlesztett kulcsimportálás a vágólapról

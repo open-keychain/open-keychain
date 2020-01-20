@@ -501,7 +501,7 @@
   <string name="import_tab_qr_code">Code QR/CCP</string>
   <string name="import_found_keys">%1$d clés trouvées</string>
   <string name="import_qr_code_wrong">Le format du code QR n’est pas pris en charge (spécification de format : https://github.com/open-keychain/open-keychain/wiki/QR-Codes)</string>
-  <string name="import_qr_code_fp">L’empreinte est mal formée ou trop courte</string>
+  <string name="import_qr_code_fp">L’empreinte est malformée ou trop courte</string>
   <string name="import_qr_code_too_short_fingerprint">L’empreinte est trop courte</string>
   <string name="import_qr_code_button">Balayer un code QR</string>
   <string name="import_qr_code_text">Placez votre appareil photo au-dessus du code QR</string>
@@ -780,6 +780,8 @@
   <string name="my_keys">Mes clés</string>
   <string name="nav_backup">Sauvegarder/Restaurer</string>
   <string name="nav_transfer">Transfert Wi-Fi sécurisé</string>
+  <string name="nav_shop">Boutique</string>
+  <string name="nav_autocrypt">Essayer Autocrypt avec Thunderbird</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Saisir le texte</string>
   <!--certs-->
@@ -913,7 +915,7 @@
   <string name="msg_kc_error_v3">Ceci est une clé OpenPGP version 3, qui a été déprécié et n’est plus pris en charge</string>
   <string name="msg_kc_error_no_uid">Le trousseau n’a pas d’ID utilisateur valide</string>
   <string name="msg_kc_error_master_algo">La clé maîtresse utilise un algorithme (%s) inconnu</string>
-  <string name="msg_kc_error_dup_key">La sous-clé %s se présente deux fois dans le trousseau. Le trousseau est mal formé, pas d’importation</string>
+  <string name="msg_kc_error_dup_key">La sous-clé %s se présente deux fois dans le trousseau. Le trousseau est malformé, pas d’importation</string>
   <string name="msg_kc_master">Traitement de la clé maîtresse</string>
   <string name="msg_kc_master_bad_type">Suppression du certificat de clé maîtresse de type inconnu (%s)</string>
   <string name="msg_kc_master_bad_local">Suppression du certificat de clé maîtresse ayant le drapeau « local »</string>
@@ -1743,7 +1745,7 @@
   <string name="msg_ret_local_secret">La clé locale contient du contenu de clé secrète</string>
   <string name="msg_ret_local_start">Recherche de la clé dans la liste locale de clés…</string>
   <string name="msg_ret_uri_error_fetch">Erreur inconnue de récupération de l’URL</string>
-  <string name="msg_ret_uri_error_parse">L’URI du jeton est mal formée</string>
+  <string name="msg_ret_uri_error_parse">L’URI du jeton est malformée</string>
   <string name="msg_ret_uri_error_no_match">Aucune clé correspondante n’a été trouvée sur l’URL</string>
   <string name="msg_ret_uri_fetching">Récupération de l’URL : %s</string>
   <string name="msg_ret_uri_ok">La clé a été trouvée</string>
@@ -1817,4 +1819,6 @@
   <string name="subkey_action_expiry_date">La date d’expiration sera changé à %s</string>
   <string name="share_key_clipboard">Partager la clé avec le presse-papiers</string>
   <string name="share_key">Partager la clé</string>
+  <string name="shop_loading_label">Chargement de la boutique…</string>
+  <string name="shop_title">Clés de sécurité COTECH</string>
 </resources>

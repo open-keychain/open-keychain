@@ -214,7 +214,7 @@
   <!--label shown in Android settings under the OpenKeychain account-->
   <string name="keyserver_sync_settings_title">自动更新密钥</string>
   <string name="label_experimental_settings_desc_title">警告</string>
-  <string name="label_experimental_settings_desc_summary">这些功能目前尚未完成或者缺少用户经验性/安全性的研究结果。所以，不保证他们是安全的，请不要对我们发牢骚！</string>
+  <string name="label_experimental_settings_desc_summary">这些功能目前尚未完成或者缺少用户经验性/安全性的研究结果。所以，不保证他们是安全的，请不要报告遇到的问题！</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io 证明</string>
   <string name="label_experimental_settings_keybase_summary">每次展示密钥时自动从keybase.io获取证明并显示它们</string>
   <string name="label_experimental_settings_theme_summary">（图标和某些界面还未根据深色主题进行调整）</string>
@@ -762,6 +762,8 @@
   <string name="my_keys">我的密钥</string>
   <string name="nav_backup">备份/恢复</string>
   <string name="nav_transfer">安全 Wifi 传输</string>
+  <string name="nav_shop">商店</string>
+  <string name="nav_autocrypt">尝试在 Thunderbird 中自动加密</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">此处输入要加密的内容</string>
   <!--certs-->
@@ -1783,4 +1785,6 @@
   <string name="subkey_action_expiry_date">过期时间将更改为%s</string>
   <string name="share_key_clipboard">通过剪贴板共享</string>
   <string name="share_key">共享密钥</string>
+  <string name="shop_loading_label">加载商店</string>
+  <string name="shop_title">COTECH 安全密钥</string>
 </resources>

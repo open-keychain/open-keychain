@@ -1,5 +1,8 @@
 [//]: # (CHÚ Ý: Xin hãy để mỗi câu văn bản trên một dòng, Transifex sẽ chuyển từng dòng vào cho từng trường đã được dịch sang các ngôn ngữ!)
 
+## 5.5
+  * Fix decryption from clipboard on Android 10
+
 ## 5.4
   * Add WKD Advanced method
   * Add COTECH Security Key Shop

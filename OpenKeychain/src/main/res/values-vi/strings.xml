@@ -245,6 +245,7 @@
   <!--Import-->
   <string name="import_tab_keyserver">Máy chủ lưu khóa</string>
   <string name="import_tab_cloud">Tìm kiếm kháo</string>
+  <string name="import_qr_code_button">Quét mã QR</string>
   <string name="btn_import">Nhập</string>
   <string name="btn_refresh">Nạp lại</string>
   <!--Generic result toast-->
@@ -264,6 +265,7 @@
   <!--Delete or revoke private key dialog-->
   <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
+  <string name="key_list_fab_qr_code">Quét mã QR</string>
   <string name="key_list_fab_search">Tìm kiếm kháo</string>
   <!--Key view-->
   <string name="key_view_action_edit">Chỉnh sửa</string>

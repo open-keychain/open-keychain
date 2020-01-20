@@ -1,32 +1,35 @@
 [//]: # (Poznámka: Prosím, vložte každou větu na zvláštní řádek, Transifex vkládá každý řádek do vlastního překladového pole!)
 
+## 5.5
+  * Fix decryption from clipboard on Android 10
+
 ## 5.4
-  * Add WKD Advanced method
-  * Add COTECH Security Key Shop
+  * Přidej metodu WKD Advanced 
+  * Přidej obchod COTECH Security Key
 
 ## 5.3
-  * Use keys.openpgp.org as default keyserver
+  *  Použij keys.openpgp.org jako výchozí keyserver
 
 ## 5.2
-  * Improved key import from clipboard
+  * Vylepšen import klíčů ze schránky
 
 ## 5.1
-  * Support for Ledger Nano S
-  * Support Web Key Directory (WKD) search
-  * Fixed potential API security issue
+  * Podpora pro Ledger Nano S
+  * Podpora hledání v Web Key Directory (WKD)
+  * Opraven potenciální problém s bezpečností API
 
 ## 5.0
-  * Improved Autocrypt support
+  * Vylepšena podpora Autocrypt
 
 ## 4.9
 
-  * Curve25519 support
-  * Improved support for security tokens
+  * Podpora Curve25519
+  * Vylepšena podpora pro bezpečnostní tokeny
 
 ## 4.8
 
-  * Improved support for USB tokens: Gnuk, Nitrokey models, YubiKey 4 models
-  * Feature to find the position of the device's NFC reader
+  * Vylepšena podpora pro USB tokeny: Gnuk Nitrokey modely, YubiKey 4 modely
+  * Funkce k nalezení pozice NFC snímače zařízení
 
 ## 4.7
 
@@ -136,23 +139,23 @@
 ## 3.2
 
   * First version with full YubiKey support available from the user interface: Edit keys, bind YubiKey to keys,...
-  * Material design
+  * Materiální téma
   * Integration of QR Code Scanning (New permissions required)
-  * Improved key creation wizard
-  * Fix missing contacts after sync
-  * Requires Android 4
-  * Redesigned key screen
-  * Simplify crypto preferences, better selection of secure ciphers
-  * API: Detached signatures, free selection of signing key,...
-  * Fix: Some valid keys were shown revoked or expired
-  * Don't accept signatures by expired or revoked subkeys
-  * Keybase.io support in advanced view
+  * Vylepšen průvodce založení klíče
+  * Oprava chybějícího kontaktu po synchronizaci
+  * Vyžaduje se Android 4
+  * Přepracován panel klíčů
+  * Zjednodušit krypto volby, lepší výběr bezpečných šifer 
+  * API: Oddělené podpisy, volný výběr podpisového klíče,...
+  * Oprava: Některé platné klíče byly zobrazeny jako zrušené nebo za lhůtou platnosti
+  * Nepřijímat podpisy zrušenými klíči nebo klíči za lhůtou platnosti
+  * Podpora Keybase.io v panelu pokročilé
   * Method to update all keys at once
 
 
 ## 3.1.2
 
-  * Fix key export to files (now for real)
+  * Opraven export klíčů do souboru (nyní skutečně)
 
 
 ## 3.1.1

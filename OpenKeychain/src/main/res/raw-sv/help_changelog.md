@@ -1,5 +1,8 @@
 [//]: # (NOTERING: Var vänlig och sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
 
+## 5.5
+  * Fix decryption from clipboard on Android 10
+
 ## 5.4
   * Add WKD Advanced method
   * Add COTECH Security Key Shop
@@ -214,7 +217,7 @@
 ## 2.9
 
   * Fixing crashes introduced in v2.8
-  * Experimental ECC support
+  * Experimentellt ECC-stöd
   * Experimental YubiKey support: Only signing with imported keys
 
 

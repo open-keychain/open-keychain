@@ -1,5 +1,8 @@
 [//]: # (Ter info: Zet iedere zin op een eigen regel, Transifex zet iedere regel in zijn eigen vertalingsveld!)
 
+## 5.5
+  * Fix decryption from clipboard on Android 10
+
 ## 5.4
   * Add WKD Advanced method
   * Add COTECH Security Key Shop
