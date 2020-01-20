@@ -47,6 +47,8 @@ public class DecryptActivity extends BaseActivity {
     /* Intents */
     public static final String ACTION_DECRYPT_FROM_CLIPBOARD = "DECRYPT_DATA_CLIPBOARD";
 
+    public static final String EXTRA_CLIPDATA = "DECRYPT_DATA_CLIPBOARD_DATA";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,12 +125,10 @@ public class DecryptActivity extends BaseActivity {
                 }
 
                 case ACTION_DECRYPT_FROM_CLIPBOARD: {
-                    ClipboardManager clipMan = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                    if (clipMan == null) {
-                        break;
+                    ClipData clip = null;
+                    if (intent.hasExtra(EXTRA_CLIPDATA)) {
+                        clip = intent.getParcelableExtra(EXTRA_CLIPDATA);
                     }
-
-                    ClipData clip = clipMan.getPrimaryClip();
                     if (clip == null) {
                         break;
                     }
@@ -149,6 +149,7 @@ public class DecryptActivity extends BaseActivity {
                         String text = clip.getItemAt(0).coerceToText(this).toString();
                         uri = readToTempFile(text);
                     }
+
                     if (uri != null) {
                         uris.add(uri);
                     }
