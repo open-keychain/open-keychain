@@ -2,7 +2,6 @@ include ':OpenKeychain'
 include ':nfcsweetspot'
 include ':extern:bouncycastle:core'
 include ':extern:bouncycastle:pg'
-include ':extern:bouncycastle:prov'
 include ':extern:minidns'
 include ':extern:MaterialChipsInput:library'
 

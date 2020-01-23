@@ -1,17 +1,19 @@
 package org.bouncycastle.openpgp.operator.jcajce;
 
-import org.bouncycastle.jcajce.provider.asymmetric.eddsa.EdDSAEngine;
-import org.bouncycastle.jcajce.provider.asymmetric.eddsa.spec.EdDSANamedCurveTable;
-import org.bouncycastle.jcajce.provider.asymmetric.eddsa.spec.EdDSAParameterSpec;
+import org.bouncycastle.jcajce.util.DefaultJcaJceHelper;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPrivateKey;
 import org.bouncycastle.openpgp.PGPRuntimeOperationException;
 import org.bouncycastle.openpgp.operator.PGPContentSigner;
 import org.bouncycastle.openpgp.operator.PGPContentSignerBuilder;
+import org.bouncycastle.openpgp.operator.PGPDigestCalculator;
 
-import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.security.*;
+import java.security.InvalidKeyException;
+import java.security.PrivateKey;
+import java.security.Provider;
+import java.security.Signature;
+import java.security.SignatureException;
 
 public class EdDsaAuthenticationContentSignerBuilder implements PGPContentSignerBuilder {
     private JcaPGPKeyConverter keyConverter = new JcaPGPKeyConverter();
@@ -33,9 +35,8 @@ public class EdDsaAuthenticationContentSignerBuilder implements PGPContentSigner
         return this;
     }
 
-    private Signature createSignature() throws NoSuchAlgorithmException {
-        EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName("Ed25519");
-        return new EdDSAEngine(MessageDigest.getInstance(spec.getHashAlgorithm()));
+    private Signature createSignature() throws PGPException {
+        return new OperatorHelper(new DefaultJcaJceHelper()).createSignature(keyAlgorithm, hashAlgorithm);
     }
 
     public PGPContentSigner build(final int signatureType, final long keyID, final PrivateKey privateKey)
@@ -43,12 +44,12 @@ public class EdDsaAuthenticationContentSignerBuilder implements PGPContentSigner
         Signature signatureEdDsa;
         try {
             signatureEdDsa = createSignature();
-        } catch (NoSuchAlgorithmException e) {
+        } catch (PGPException e) {
             throw new PGPException("unable to create Signature.", e);
         }
         final Signature signature = signatureEdDsa;
 
-        final ByteArrayOutputStream dataOutputStream = new ByteArrayOutputStream();
+        final PGPDigestCalculator digestCalculator = new JcaPGPDigestCalculatorProviderBuilder().build().get(hashAlgorithm);
 
         try {
             signature.initSign(privateKey);
@@ -74,11 +75,12 @@ public class EdDsaAuthenticationContentSignerBuilder implements PGPContentSigner
             }
 
             public OutputStream getOutputStream() {
-                return new SignatureOutputStream(signature);
+                return digestCalculator.getOutputStream();
             }
 
             public byte[] getSignature() {
                 try {
+                    signature.update(digestCalculator.getDigest());
                     return signature.sign();
                 } catch (SignatureException e) {
                     throw new PGPRuntimeOperationException("Unable to create signature: " + e.getMessage(), e);
@@ -86,7 +88,7 @@ public class EdDsaAuthenticationContentSignerBuilder implements PGPContentSigner
             }
 
             public byte[] getDigest() {
-                return null;
+                return digestCalculator.getDigest();
             }
         };
     }

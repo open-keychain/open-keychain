@@ -56,10 +56,12 @@ dependencies {
     implementation project(':openpgp-api-lib')
     implementation project(':nfcsweetspot')
     implementation project(':sshauthentication-api')
-    implementation project(':extern:bouncycastle:core')
-    implementation project(':extern:bouncycastle:pg')
-    implementation project(':extern:bouncycastle:prov')
     implementation project(':extern:MaterialChipsInput')
+
+    // implementation project(':openkeychain:extern:bouncycastle:core')
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.65'
+    implementation project(':extern:bouncycastle:pg')
+    // implementation project(':openkeychain:extern:bouncycastle:prov')
 
     implementation 'androidx.work:work-runtime:2.2.0'
 

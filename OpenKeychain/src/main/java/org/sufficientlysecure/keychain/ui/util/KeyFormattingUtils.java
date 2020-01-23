@@ -39,7 +39,7 @@ import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.bouncycastle.bcpg.SymmetricKeyAlgorithmTags;
 import org.bouncycastle.crypto.ec.CustomNamedCurves;
 import org.bouncycastle.openpgp.PGPException;
-import org.bouncycastle.openpgp.operator.jcajce.PGPUtil;
+import org.bouncycastle.openpgp.PGPUtil;
 import org.bouncycastle.util.encoders.Hex;
 import org.openintents.openpgp.OpenPgpDecryptionResult;
 import org.openintents.openpgp.OpenPgpSignatureResult;

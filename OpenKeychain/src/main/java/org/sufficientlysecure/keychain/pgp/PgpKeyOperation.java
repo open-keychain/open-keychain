@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -46,7 +47,11 @@ import org.bouncycastle.bcpg.S2K;
 import org.bouncycastle.bcpg.sig.Features;
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.bouncycastle.bcpg.sig.RevocationReasonTags;
-import org.bouncycastle.jcajce.provider.asymmetric.eddsa.spec.EdDSAGenParameterSpec;
+import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+import org.bouncycastle.crypto.generators.Ed25519KeyPairGenerator;
+import org.bouncycastle.crypto.params.Ed25519KeyGenerationParameters;
+import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
+import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import org.bouncycastle.jce.spec.ElGamalParameterSpec;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPKeyFlags;
@@ -250,10 +255,8 @@ public class PgpKeyOperation {
                         return null;
                     }
                     progress(R.string.progress_generating_eddsa, 30);
-                    EdDSAGenParameterSpec edParamSpec =
-                            new EdDSAGenParameterSpec("ed25519");
-                    keyGen = KeyPairGenerator.getInstance("EdDSA", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-                    keyGen.initialize(edParamSpec, new SecureRandom());
+                    keyGen = KeyPairGenerator.getInstance("ED25519", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+                    keyGen.initialize(256, new SecureRandom());
 
                     algorithm = PGPPublicKey.EDDSA;
                     break;
@@ -281,7 +284,8 @@ public class PgpKeyOperation {
             }
 
             // build new key pair
-            return new JcaPGPKeyPair(algorithm, keyGen.generateKeyPair(), creationTime);
+            KeyPair keyPair = keyGen.generateKeyPair();
+            return new JcaPGPKeyPair(algorithm, keyPair, creationTime);
 
         } catch(NoSuchProviderException | InvalidAlgorithmParameterException e) {
             throw new RuntimeException(e);
