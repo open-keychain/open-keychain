@@ -52,9 +52,10 @@ dependencies {
     // piwik
     implementation 'org.piwik.sdk:piwik-sdk:3.0.3'
 
-    implementation project(':openkeychain:extern:bouncycastle:core')
+    // implementation project(':openkeychain:extern:bouncycastle:core')
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.64'
     implementation project(':openkeychain:extern:bouncycastle:pg')
-    implementation project(':openkeychain:extern:bouncycastle:prov')
+    // implementation project(':openkeychain:extern:bouncycastle:prov')
 
     implementation 'androidx.work:work-runtime:2.2.0'
 
