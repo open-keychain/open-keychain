@@ -21,15 +21,6 @@ allprojects {
     }
 }
 
-// Ignore tests for external bouncycastle
-project(':openkeychain:extern:bouncycastle') {
-    subprojects {
-        // Need to re-apply the plugin here otherwise the test property below can't be set.
-        apply plugin: 'java'
-        test.enabled = false
-    }
-}
-
 // SDK Version and Build Tools used by all subprojects
 // See http://tools.android.com/tech-docs/new-build-system/tips#TOC-Controlling-Android-properties-of-all-your-modules-from-the-main-project.
 ext {

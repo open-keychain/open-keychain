@@ -1,11 +1,7 @@
 package org.sufficientlysecure.keychain.remote;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import android.app.PendingIntent;
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.MatrixCursor;
 import android.net.Uri;
@@ -19,11 +15,15 @@ import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResult;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResultStatus;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -35,16 +35,16 @@ public class OpenPgpServiceKeyIdExtractorTest {
     private static final long[] KEY_IDS = new long[] { 123L, 234L };
     private static final String[] USER_IDS = new String[] { "user1@example.org", "User 2 <user2@example.org>" };
     private OpenPgpServiceKeyIdExtractor openPgpServiceKeyIdExtractor;
-    private ContentResolver contentResolver;
+    private AutocryptStatusProvider autocryptStatusProvider;
     private ApiPendingIntentFactory apiPendingIntentFactory;
 
     @Before
     public void setUp() throws Exception {
-        contentResolver = mock(ContentResolver.class);
+        autocryptStatusProvider = mock(AutocryptStatusProvider.class);
         apiPendingIntentFactory = mock(ApiPendingIntentFactory.class);
 
-        openPgpServiceKeyIdExtractor = OpenPgpServiceKeyIdExtractor.getInstance(contentResolver,
-                apiPendingIntentFactory);
+        openPgpServiceKeyIdExtractor = OpenPgpServiceKeyIdExtractor.getInstance(
+                autocryptStatusProvider, apiPendingIntentFactory);
     }
 
     @Test
@@ -201,7 +201,7 @@ public class OpenPgpServiceKeyIdExtractorTest {
 
     private void setupContentResolverResult() {
         MatrixCursor resultCursor = new MatrixCursor(OpenPgpServiceKeyIdExtractor.PROJECTION_MAIL_STATUS);
-        when(contentResolver.query(
+        when(autocryptStatusProvider.query(
                 any(Uri.class), any(String[].class), any(String.class), any(String[].class), any(String.class)))
                 .thenReturn(resultCursor);
     }
@@ -212,8 +212,8 @@ public class OpenPgpServiceKeyIdExtractorTest {
             resultCursor.addRow(new Object[] { userIds[i], resultKeyIds[i], verified[i], candidates[i], null, null, null });
         }
 
-        when(contentResolver.query(
-                any(Uri.class), any(String[].class), any(String.class), any(String[].class), any(String.class)))
+        when(autocryptStatusProvider.query(
+                any(Uri.class), any(String[].class), isNull(), any(String[].class), isNull()))
                 .thenReturn(resultCursor);
     }
 

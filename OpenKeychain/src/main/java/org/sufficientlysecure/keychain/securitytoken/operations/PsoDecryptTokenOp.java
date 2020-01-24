@@ -18,21 +18,12 @@
 package org.sufficientlysecure.keychain.securitytoken.operations;
 
 
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
+import org.bouncycastle.asn1.cryptlib.CryptlibObjectIdentifiers;
 import org.bouncycastle.asn1.x9.ECNamedCurveTable;
 import org.bouncycastle.asn1.x9.X9ECParameters;
-import org.bouncycastle.crypto.ec.CustomNamedCurves;
 import org.bouncycastle.jcajce.util.MessageDigestUtils;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.openpgp.PGPException;
@@ -47,6 +38,16 @@ import org.sufficientlysecure.keychain.securitytoken.ECKeyFormat;
 import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
 import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
+
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 
 
 /** This class implements the PSO:DECIPHER operation, as specified in OpenPGP card spec / 7.2.11 (p52 in v3.0.1).
@@ -196,7 +197,8 @@ public class PsoDecryptTokenOp {
     }
 
     private byte[] getEcDecipherPayload(ECKeyFormat eckf, byte[] encryptedPoint) throws CardException {
-        if (CustomNamedCurves.CV25519.equals(eckf.getCurveOID())) {
+        // TODO is this the right curve?
+        if (CryptlibObjectIdentifiers.curvey25519.equals(eckf.getCurveOID())) {
             return Arrays.copyOfRange(encryptedPoint, 1, 33);
         } else {
             X9ECParameters x9Params = ECNamedCurveTable.getByOID(eckf.getCurveOID());

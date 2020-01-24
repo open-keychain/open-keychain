@@ -1,11 +1,6 @@
 package org.sufficientlysecure.keychain.remote;
 
 
-import java.security.AccessControlException;
-import java.util.Collections;
-import java.util.Date;
-
-import android.content.ContentResolver;
 import android.content.pm.PackageInfo;
 import android.content.pm.Signature;
 import android.database.Cursor;
@@ -33,6 +28,9 @@ import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyActio
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.ProgressScaler;
 
+import java.util.Collections;
+import java.util.Date;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -55,7 +53,7 @@ public class AutocryptStatusProviderTest {
 
     KeyWritableRepository databaseInteractor =
             KeyWritableRepository.create(RuntimeEnvironment.application);
-    ContentResolver contentResolver = RuntimeEnvironment.application.getContentResolver();
+    AutocryptStatusProvider autocryptStatusProvider = new AutocryptStatusProvider(RuntimeEnvironment.application);
     ApiPermissionHelper apiPermissionHelper;
     AutocryptPeerDao autocryptPeerDao;
 
@@ -85,7 +83,7 @@ public class AutocryptStatusProviderTest {
         autocryptPeerDao.insertOrUpdateLastSeen("tid", new Date());
         autocryptPeerDao.updateKey(AUTOCRYPT_PEER, new Date(), KEY_ID_PUBLIC, false);
 
-        Cursor cursor = contentResolver.query(
+        Cursor cursor = autocryptStatusProvider.query(
                 AutocryptStatus.CONTENT_URI, new String[] {
                         AutocryptStatus.ADDRESS, AutocryptStatus.UID_KEY_STATUS, AutocryptStatus.UID_ADDRESS,
                         AutocryptStatus.AUTOCRYPT_PEER_STATE,
@@ -113,7 +111,7 @@ public class AutocryptStatusProviderTest {
         autocryptPeerDao.insertOrUpdateLastSeen("tid", new Date());
         autocryptPeerDao.updateKey(AUTOCRYPT_PEER, new Date(), KEY_ID_PUBLIC, true);
 
-        Cursor cursor = contentResolver.query(
+        Cursor cursor = autocryptStatusProvider.query(
                 AutocryptStatus.CONTENT_URI, new String[] {
                         AutocryptStatus.ADDRESS, AutocryptStatus.UID_KEY_STATUS, AutocryptStatus.UID_ADDRESS,
                         AutocryptStatus.AUTOCRYPT_PEER_STATE,
@@ -142,7 +140,7 @@ public class AutocryptStatusProviderTest {
         autocryptPeerDao.updateKey(AUTOCRYPT_PEER, new Date(), KEY_ID_PUBLIC, false);
         certifyKey(KEY_ID_SECRET, KEY_ID_PUBLIC, USER_ID_1);
 
-        Cursor cursor = contentResolver.query(
+        Cursor cursor = autocryptStatusProvider.query(
                 AutocryptStatus.CONTENT_URI, new String[] {
                         AutocryptStatus.ADDRESS, AutocryptStatus.UID_KEY_STATUS, AutocryptStatus.UID_ADDRESS,
                         AutocryptStatus.AUTOCRYPT_PEER_STATE, AutocryptStatus.AUTOCRYPT_KEY_STATUS },
@@ -161,7 +159,7 @@ public class AutocryptStatusProviderTest {
 
     @Test
     public void testAutocryptStatus_noData() throws Exception {
-        Cursor cursor = contentResolver.query(
+        Cursor cursor = autocryptStatusProvider.query(
                 AutocryptStatus.CONTENT_URI, new String[] {
                         AutocryptStatus.ADDRESS, AutocryptStatus.UID_KEY_STATUS, AutocryptStatus.UID_ADDRESS,
                         AutocryptStatus.AUTOCRYPT_PEER_STATE, AutocryptStatus.AUTOCRYPT_KEY_STATUS },
@@ -187,7 +185,7 @@ public class AutocryptStatusProviderTest {
         autocryptPeerDao.updateKeyGossip("tid", new Date(), KEY_ID_PUBLIC, GossipOrigin.GOSSIP_HEADER);
         autocryptPeerDao.deleteByIdentifier("tid");
 
-        Cursor cursor = contentResolver.query(
+        Cursor cursor = autocryptStatusProvider.query(
                 AutocryptStatus.CONTENT_URI, new String[] {
                         AutocryptStatus.ADDRESS, AutocryptStatus.UID_KEY_STATUS, AutocryptStatus.UID_ADDRESS,
                         AutocryptStatus.AUTOCRYPT_PEER_STATE, AutocryptStatus.AUTOCRYPT_KEY_STATUS },
@@ -213,7 +211,7 @@ public class AutocryptStatusProviderTest {
         autocryptPeerDao.updateKeyGossip(AUTOCRYPT_PEER, new Date(), KEY_ID_PUBLIC, GossipOrigin.GOSSIP_HEADER);
         certifyKey(KEY_ID_SECRET, KEY_ID_PUBLIC, USER_ID_1);
 
-        Cursor cursor = contentResolver.query(
+        Cursor cursor = autocryptStatusProvider.query(
                 AutocryptStatus.CONTENT_URI, new String[] {
                         AutocryptStatus.ADDRESS, AutocryptStatus.UID_KEY_STATUS, AutocryptStatus.UID_ADDRESS,
                         AutocryptStatus.AUTOCRYPT_PEER_STATE, AutocryptStatus.AUTOCRYPT_KEY_STATUS },
@@ -264,7 +262,7 @@ public class AutocryptStatusProviderTest {
 
         certifyKey(KEY_ID_SECRET, KEY_ID_PUBLIC, USER_ID_1);
 
-        Cursor cursor = contentResolver.query(
+        Cursor cursor = autocryptStatusProvider.query(
                 AutocryptStatus.CONTENT_URI, new String[] {
                         AutocryptStatus.ADDRESS, AutocryptStatus.UID_KEY_STATUS, AutocryptStatus.UID_ADDRESS,
                         AutocryptStatus.AUTOCRYPT_PEER_STATE },
@@ -278,16 +276,6 @@ public class AutocryptStatusProviderTest {
         assertEquals(USER_ID_1, cursor.getString(2));
         assertEquals(AutocryptStatus.AUTOCRYPT_PEER_DISABLED, cursor.getInt(3));
         assertFalse(cursor.moveToNext());
-    }
-
-
-    @Test(expected = AccessControlException.class)
-    public void testPermission__withExplicitPackage() throws Exception {
-        contentResolver.query(
-                AutocryptStatus.CONTENT_URI.buildUpon().appendPath("fake_pkg").build(),
-                new String[] { AutocryptStatus.ADDRESS },
-                null, new String [] { }, null
-        );
     }
 
     private void certifyKey(long secretMasterKeyId, long publicMasterKeyId, String userId) {

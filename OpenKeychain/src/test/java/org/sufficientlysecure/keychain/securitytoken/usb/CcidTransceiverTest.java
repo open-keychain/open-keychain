@@ -1,8 +1,6 @@
 package org.sufficientlysecure.keychain.securitytoken.usb;
 
 
-import java.util.LinkedList;
-
 import android.annotation.TargetApi;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
@@ -13,11 +11,12 @@ import org.bouncycastle.util.encoders.Hex;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransceiver.CcidDataBlock;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException.UsbCcidErrorException;
+
+import java.util.LinkedList;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -60,27 +59,24 @@ public class CcidTransceiverTest {
         expectRepliesVerify = new LinkedList<>();
         when(usbConnection.bulkTransfer(same(usbBulkIn), any(byte[].class), any(Integer.class), any(Integer.class)))
                 .thenAnswer(
-                        new Answer<Integer>() {
-                            @Override
-                            public Integer answer(InvocationOnMock invocation) throws Throwable {
-                                byte[] reply = expectReplies.poll();
-                                if (reply == null) {
-                                    return -1;
-                                }
-
-                                byte[] buf = invocation.getArgumentAt(1, byte[].class);
-                                assertEquals(buf.length, MAX_PACKET_LENGTH_IN);
-
-                                int len = Math.min(buf.length, reply.length);
-                                System.arraycopy(reply, 0, buf, 0, len);
-
-                                if (len < reply.length) {
-                                    byte[] rest = Arrays.copyOfRange(reply, len, reply.length);
-                                    expectReplies.addFirst(rest);
-                                }
-
-                                return len;
+                        (Answer<Integer>) invocation -> {
+                            byte[] reply = expectReplies.poll();
+                            if (reply == null) {
+                                return -1;
                             }
+
+                            byte[] buf = invocation.getArgument(1);
+                            assertEquals(buf.length, MAX_PACKET_LENGTH_IN);
+
+                            int len = Math.min(buf.length, reply.length);
+                            System.arraycopy(reply, 0, buf, 0, len);
+
+                            if (len < reply.length) {
+                                byte[] rest = Arrays.copyOfRange(reply, len, reply.length);
+                                expectReplies.addFirst(rest);
+                            }
+
+                            return len;
                         });
 
     }

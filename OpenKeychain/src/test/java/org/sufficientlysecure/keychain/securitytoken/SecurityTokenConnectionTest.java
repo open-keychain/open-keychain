@@ -1,13 +1,10 @@
 package org.sufficientlysecure.keychain.securitytoken;
 
 
-import java.util.LinkedList;
-
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLog;
@@ -15,6 +12,8 @@ import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TransportType;
 import org.sufficientlysecure.keychain.util.Passphrase;
+
+import java.util.LinkedList;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -42,21 +41,18 @@ public class SecurityTokenConnectionTest {
 
         expectCommands = new LinkedList<>();
         expectReplies = new LinkedList<>();
-        when(transport.transceive(any(CommandApdu.class))).thenAnswer(new Answer<ResponseApdu>() {
-            @Override
-            public ResponseApdu answer(InvocationOnMock invocation) throws Throwable {
-                CommandApdu commandApdu = invocation.getArgumentAt(0, CommandApdu.class);
-                System.out.println("<< " + commandApdu);
-                System.out.println("<< " + Hex.toHexString(commandApdu.toBytes()));
+        when(transport.transceive(any(CommandApdu.class))).thenAnswer((Answer<ResponseApdu>) invocation -> {
+            CommandApdu commandApdu = invocation.getArgument(0);
+            System.out.println("<< " + commandApdu);
+            System.out.println("<< " + Hex.toHexString(commandApdu.toBytes()));
 
-                CommandApdu expectedApdu = expectCommands.poll();
-                assertEquals(expectedApdu, commandApdu);
+            CommandApdu expectedApdu = expectCommands.poll();
+            assertEquals(expectedApdu, commandApdu);
 
-                ResponseApdu responseApdu = expectReplies.poll();
-                System.out.println(">> " + responseApdu);
-                System.out.println(">> " + Hex.toHexString(responseApdu.toBytes()));
-                return responseApdu;
-            }
+            ResponseApdu responseApdu = expectReplies.poll();
+            System.out.println(">> " + responseApdu);
+            System.out.println(">> " + Hex.toHexString(responseApdu.toBytes()));
+            return responseApdu;
         });
     }
 
