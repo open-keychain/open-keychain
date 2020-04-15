@@ -59,19 +59,19 @@ public class PgpSecurityConstants {
     private static HashSet<Integer> sSymmetricAlgorithmsWhitelist = new HashSet<>(Arrays.asList(
             // General remarks: We try to keep the whitelist short to reduce attack surface
             // TODO: block IDEA?: Bad key schedule (weak keys), implementation difficulties (easy to make errors)
-            SymmetricKeyAlgorithmTags.IDEA,
-            SymmetricKeyAlgorithmTags.TRIPLE_DES, // a MUST in RFC
-            SymmetricKeyAlgorithmTags.CAST5, // default in many gpg, pgp versions, 128 bit key
+            // IDEA: max 128 bit key, block size 64 bit
+            // TRIPLE_DES: a MUST in RFC, max 168 bit key, block size 64 bit
+            // CAST5: default in many gpg, pgp versions, 128 bit key, block size 64 bit
             // BLOWFISH: Twofish is the successor
             // SAFER: not used widely
             // DES: < 128 bit security
             SymmetricKeyAlgorithmTags.AES_128,
             SymmetricKeyAlgorithmTags.AES_192,
             SymmetricKeyAlgorithmTags.AES_256,
-            SymmetricKeyAlgorithmTags.TWOFISH // 128 bit
-            // CAMELLIA_128: not used widely
-            // CAMELLIA_192: not used widely
-            // CAMELLIA_256: not used widely
+            SymmetricKeyAlgorithmTags.TWOFISH, // 128 bit
+            SymmetricKeyAlgorithmTags.CAMELLIA_128, // not used widely
+            SymmetricKeyAlgorithmTags.CAMELLIA_192, // not used widely
+            SymmetricKeyAlgorithmTags.CAMELLIA_256 // not used widely
     ));
 
     public static EncryptionAlgorithmProblem checkSecureSymmetricAlgorithm(int id, byte[] sessionKey) {
