@@ -601,12 +601,12 @@
   <string name="api_settings_allowed_keys">Erlaubte Schlüssel</string>
   <string name="api_settings_settings">Einstellungen</string>
   <string name="api_register_title">Zugriff auf OpenKeyChain erlauben?</string>
-  <string name="api_register_text">%smöchte OpenKeychain also Krypto-Provider verwenden. Sie werden weiterhin um Erlaubnis gefragt bevor die App einen Ihrer Schlüssel zur Entschlüsselung verwendet.\n\nSie können diesen Zugriff später im \'Apps\' Menü in OpenKeychain widerrufen.</string>
+  <string name="api_register_text">%s möchte OpenKeychain als Krypto-Provider verwenden. Sie werden weiterhin um Erlaubnis gefragt bevor die App einen Ihrer Schlüssel zur Entschlüsselung verwendet.\n\nSie können diesen Zugriff später im \'Apps\' Menü in OpenKeychain widerrufen.</string>
   <string name="api_register_allow">Zugriff erlauben</string>
   <string name="api_register_disallow">Zugriff verbieten</string>
   <string name="api_register_error_select_key">Bitte einen Schlüssel auswählen!</string>
   <string name="api_select_pub_keys_missing_text">Für diese E-Mail-Adressen wurden keine Schlüssel gefunden:</string>
-  <string name="api_select_pub_keys_dublicates_text">Es exisitert mehr als ein Schlüssel für diese E-Mail-Adressen:</string>
+  <string name="api_select_pub_keys_dublicates_text">Es existiert mehr als ein Schlüssel für diese E-Mail-Adressen:</string>
   <string name="api_select_pub_keys_text">Bitte die Liste der Empfänger überprüfen!</string>
   <string name="api_select_pub_keys_text_no_user_ids">Bitte die Empfänger auswählen!</string>
   <string name="api_error_wrong_signature">Signaturverifikation fehlgeschlagen! Wurde diese App aus einer anderen Quelle installiert? Wenn du eine Attacke ausschließen kannst, solltest du die Registrierung der App in OpenKeychain widerrufen und die App erneut registrieren.</string>
