@@ -53,17 +53,7 @@ public class KeychainApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        /*
-         * Sets our own Bouncy Castle library as preferred security provider
-         *
-         * because Android's default provider config has BC at position 3,
-         * we need to remove it and insert BC again at position 1 (above OpenSSLProvider!)
-         *
-         * (insertProviderAt() position starts from 1)
-         */
-        Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME);
-        Security.insertProviderAt(new BouncyCastleProvider(), 1);
+        injectBouncyCastleProvider();
 
         /*
          * apply RNG fixes
@@ -116,6 +106,19 @@ public class KeychainApplication extends Application {
         TemporaryFileProvider.scheduleCleanupImmediately(getApplicationContext());
     }
 
+    public static void injectBouncyCastleProvider() {
+        /*
+         * Sets our own Bouncy Castle library as preferred security provider
+         *
+         * because Android's default provider config has BC at position 3,
+         * we need to remove it and insert BC again at position 1 (above OpenSSLProvider!)
+         *
+         * (insertProviderAt() position starts from 1)
+         */
+        Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME);
+        Security.insertProviderAt(new BouncyCastleProvider(), 1);
+    }
+
     /**
      * @return the OpenKeychain contact/keyserver sync account if it exists or was successfully
      * created, null otherwise
@@ -154,7 +157,7 @@ public class KeychainApplication extends Application {
         }
     }
 
-    private void updateLoggingStatus() {
+    public static void updateLoggingStatus() {
         Timber.uprootAll();
         boolean enableDebugLogging = Constants.DEBUG;
         if (enableDebugLogging) {
