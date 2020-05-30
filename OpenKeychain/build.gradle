@@ -75,22 +75,6 @@ dependencies {
     }
     testImplementation 'org.mockito:mockito-core:2.18.0'
 
-    // UI testing with Espresso
-    // Force usage of support libs in the test app, since they are internally used by the runner module.
-    // https://github.com/googlesamples/android-testing/blob/master/ui/espresso/BasicSample/app/build.gradle#L28
-    androidTestImplementation 'androidx.annotation:annotation:1.1.0'
-    androidTestImplementation 'androidx.appcompat:appcompat:1.1.0'
-    androidTestImplementation 'com.google.android.material:material:1.1.0'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test:rules:1.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
-    androidTestCompile ('androidx.test.espresso:espresso-contrib:3.1.0') {
-        exclude group: 'com.android.support', module: 'appcompat'
-        exclude group: 'com.android.support', module: 'support-v4'
-        exclude module: 'recyclerview-v7'
-    }
-
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
     implementation 'org.glassfish:javax.annotation:10.0-b28'

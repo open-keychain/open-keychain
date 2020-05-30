@@ -1,8 +1,6 @@
 include ':OpenKeychain'
 include ':nfcsweetspot'
-include ':extern:bouncycastle:core'
 include ':extern:bouncycastle:pg'
-include ':extern:minidns'
 include ':extern:MaterialChipsInput:library'
 
 // Workaround for Android Gradle Plugin 2.0, as described in http://stackoverflow.com/a/36544850
