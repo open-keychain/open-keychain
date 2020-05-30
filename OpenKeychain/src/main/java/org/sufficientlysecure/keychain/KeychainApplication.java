@@ -18,23 +18,27 @@
 package org.sufficientlysecure.keychain;
 
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.Security;
 import java.util.HashMap;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
-import androidx.annotation.Nullable;
+import android.os.Build;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.analytics.AnalyticsManager;
+import org.sufficientlysecure.keychain.keysync.KeyserverSyncManager;
 import org.sufficientlysecure.keychain.network.TlsCertificatePinning;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
-import org.sufficientlysecure.keychain.keysync.KeyserverSyncManager;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
@@ -104,6 +108,11 @@ public class KeychainApplication extends Application {
         TlsCertificatePinning.addPinnedCertificate("pgp.mit.edu", getAssets(), "pgp.mit.edu.cer");
         TlsCertificatePinning.addPinnedCertificate("keyserver.ubuntu.com", getAssets(), "LetsEncryptCA.cer");
 
+        // only set up the rest on our main process
+        if (!BuildConfig.APPLICATION_ID.equals(getProcessName())) {
+            return;
+        }
+
         KeyserverSyncManager.updateKeyserverSyncScheduleAsync(this, false);
 
         TemporaryFileProvider.scheduleCleanupImmediately(getApplicationContext());
@@ -160,5 +169,33 @@ public class KeychainApplication extends Application {
 
     public AnalyticsManager getAnalyticsManager() {
         return analyticsManager;
+    }
+
+    public static String getProcessName() {
+        if (Build.VERSION.SDK_INT >= 28)
+            return Application.getProcessName();
+
+        // Using the same technique as Application.getProcessName() for older devices
+        // Using reflection since ActivityThread is an internal API
+
+        try {
+            @SuppressLint("PrivateApi")
+            Class<?> activityThread = Class.forName("android.app.ActivityThread");
+
+            // Before API 18, the method was incorrectly named "currentPackageName", but it still returned the process name
+            // See https://github.com/aosp-mirror/platform_frameworks_base/commit/b57a50bd16ce25db441da5c1b63d48721bb90687
+            String methodName = Build.VERSION.SDK_INT >= 18 ? "currentProcessName" : "currentPackageName";
+
+            Method getProcessName = activityThread.getDeclaredMethod(methodName);
+            return (String) getProcessName.invoke(null);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

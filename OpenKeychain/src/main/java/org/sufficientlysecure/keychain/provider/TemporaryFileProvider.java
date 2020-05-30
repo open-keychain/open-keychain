@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.app.Application;
 import android.content.ClipDescription;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
@@ -44,7 +45,9 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+import org.sufficientlysecure.keychain.BuildConfig;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.util.DatabaseUtil;
 import timber.log.Timber;
 
@@ -96,7 +99,7 @@ public class TemporaryFileProvider extends ContentProvider {
         contentValues.put(TemporaryFileColumns.COLUMN_TIME, System.currentTimeMillis());
         Uri resultUri = contentResolver.insert(CONTENT_URI, contentValues);
 
-        scheduleCleanupAfterTtl();
+        scheduleCleanupAfterTtl(context);
         return resultUri;
     }
 
@@ -309,16 +312,23 @@ public class TemporaryFileProvider extends ContentProvider {
         return openFileHelper(uri, mode);
     }
 
-    public static void scheduleCleanupAfterTtl() {
+    public static void scheduleCleanupAfterTtl(Context context) {
         OneTimeWorkRequest cleanupWork = new OneTimeWorkRequest.Builder(CleanupWorker.class)
                 .setInitialDelay(Constants.TEMPFILE_TTL, TimeUnit.MILLISECONDS).build();
-        WorkManager.getInstance().enqueue(cleanupWork);
+        workManagerEnqueue(context, cleanupWork);
     }
 
     public static void scheduleCleanupImmediately(Context context) {
         OneTimeWorkRequest cleanupWork = new OneTimeWorkRequest.Builder(CleanupWorker.class).build();
-        WorkManager workManager = WorkManager.getInstance(context);
-        workManager.enqueue(cleanupWork);
+        workManagerEnqueue(context, cleanupWork);
+    }
+
+    private static void workManagerEnqueue(Context context, OneTimeWorkRequest cleanupWork) {
+        // work manager is only available on the main thread
+        if (!BuildConfig.APPLICATION_ID.equals(KeychainApplication.getProcessName())) {
+            return;
+        }
+        WorkManager.getInstance(context).enqueue(cleanupWork);
     }
 
     public static class CleanupWorker extends Worker {
