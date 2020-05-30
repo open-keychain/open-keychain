@@ -19,9 +19,6 @@
 package org.sufficientlysecure.keychain.provider;
 
 
-import java.util.Arrays;
-import java.util.Iterator;
-
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Assert;
@@ -30,7 +27,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLog;
-import org.sufficientlysecure.keychain.KeychainDatabase;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
@@ -43,6 +39,10 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 
+import java.util.Arrays;
+import java.util.Iterator;
+
+@SuppressWarnings("WeakerAccess")
 @RunWith(KeychainTestRunner.class)
 public class KeyRepositorySaveTest {
 
@@ -50,7 +50,7 @@ public class KeyRepositorySaveTest {
             KeyWritableRepository.create(RuntimeEnvironment.application);
 
     @BeforeClass
-    public static void setUpOnce() throws Exception {
+    public static void setUpOnce() {
         ShadowLog.stream = System.out;
     }
 
@@ -200,8 +200,8 @@ public class KeyRepositorySaveTest {
 
     }
 
-    @Test public void testImportBadEncodedUserId() throws Exception {
-
+    @Test
+    public void testImportBadEncodedUserId() throws Exception {
         UncachedKeyRing key = readRingFromResource("/test-keys/bad_user_id_encoding.asc");
         long keyId = key.getMasterKeyId();
 
@@ -213,7 +213,7 @@ public class KeyRepositorySaveTest {
         CanonicalizedPublicKeyRing ring = mDatabaseInteractor.getCanonicalizedPublicKeyRing(keyId);
         boolean found = false;
         byte[] badUserId = Hex.decode("436c61757320467261656e6b656c203c436c6175732e4672e46e6b656c4068616c696661782e727774682d61616368656e2e64653e");
-        for (byte[] rawUserId : new IterableIterator<byte[]>(
+        for (byte[] rawUserId : new IterableIterator<>(
                 ring.getUnorderedRawUserIds().iterator())) {
             if (Arrays.equals(rawUserId, badUserId)) {
                 found = true;
@@ -224,7 +224,7 @@ public class KeyRepositorySaveTest {
     }
 
     @Test
-    /** Tests a master key which may sign, but is stripped. In this case, if there is a different
+    /* Tests a master key which may sign, but is stripped. In this case, if there is a different
      * subkey available which can sign, that one should be selected.
      */
     public void testImportStrippedFlags() throws Exception {

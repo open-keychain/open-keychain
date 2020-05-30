@@ -20,6 +20,8 @@ package org.sufficientlysecure.keychain.provider;
 
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import android.app.Application;
@@ -120,6 +122,8 @@ public class EddsaTest {
         DecryptVerifyResult result2 = decryptVerifyOperation.execute(pgpDecryptVerifyInputParcel, null);
 
         assertTrue(result2.success());
+        assertEquals(OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED, result2.getSignatureResult().getResult());
+        assertEquals(ring.getMasterKeyId(), result2.getSignatureResult().getKeyId());
     }
 
     @Test
@@ -132,11 +136,19 @@ public class EddsaTest {
         PgpKeyOperation op = new PgpKeyOperation(null);
         PgpEditKeyResult result = op.createSecretKeyRing(builder.build());
 
+        writetoFile("/tmp/test.sec", result.getRing().getEncoded());
+
         assertTrue("initial test key creation must succeed", result.success());
         assertNotNull("initial test key creation must succeed", result.getRing());
 
         CanonicalizedKeyRing canonicalizedKeyRing = result.getRing().canonicalize(new OperationLog(), 0);
         assertNotNull(canonicalizedKeyRing);
+    }
+
+    private void writetoFile(String name, byte[] encoded) throws IOException {
+        FileOutputStream fos = new FileOutputStream(name);
+        fos.write(encoded);
+        fos.close();
     }
 
     private UncachedKeyRing loadPubkeyFromResource(String name) throws Exception {

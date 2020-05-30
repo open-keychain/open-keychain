@@ -638,9 +638,6 @@ public class PgpKeyOperationTest {
             // for this check, it is relevant that we DON'T use the unsafe one!
             assertNull("key must not expire anymore",
                     modified.canonicalize(new OperationLog(), 0).getPublicKey().getExpiryTime());
-            // make sure the unsafe one behaves incorrectly as expected
-            Assert.assertNotNull("unsafe expiry must yield wrong result from revoked user id",
-                    modified.getPublicKey(keyId).getUnsafeExpiryTimeForTesting());
         }
 
         { // if we revoke everything, nothing is left to properly sign...
