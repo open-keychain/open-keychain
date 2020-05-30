@@ -733,7 +733,7 @@
   <string name="msg_ip_master_expires">L\'anell de claus expira a %s</string>
   <string name="msg_ip_reinsert_secret">Inserint de nou la clau secreta</string>
   <string name="msg_ip_uid_cert_good">S\'ha trobat un certificat correcte per %1$s</string>
-  <string name="msg_ip_uat_cert_good">S\\'ha trobat un certificat correcte per %1$s</string>
+  <string name="msg_ip_uat_cert_good">S\'ha trobat un certificat correcte per %1$s</string>
   <!--Import Secret log entries-->
   <!--Keyring Canonicalization log entries-->
   <!--Keyring merging log entries-->
