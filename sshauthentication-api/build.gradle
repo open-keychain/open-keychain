@@ -7,7 +7,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.android.tools.build:gradle:3.5.3'
         classpath 'com.novoda:bintray-release:0.8.0'
     }
 }
@@ -16,18 +16,13 @@ android {
     if (project.hasProperty('rootProject.ext.compileSdkVersion')) {
         compileSdkVersion rootProject.ext.compileSdkVersion
     } else {
-        compileSdkVersion 27
-    }
-    if (project.hasProperty('rootProject.ext.buildToolsVersion')) {
-        buildToolsVersion rootProject.ext.buildToolsVersion
-    } else {
-        buildToolsVersion '27.0.3'
+        compileSdkVersion 28
     }
 
 
     defaultConfig {
-        minSdkVersion 9
-        targetSdkVersion 25
+        minSdkVersion 14
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
     }
