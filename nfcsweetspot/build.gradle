@@ -1,8 +1,5 @@
 apply plugin: 'com.android.library'
 
-dependencies {
-}
-
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
