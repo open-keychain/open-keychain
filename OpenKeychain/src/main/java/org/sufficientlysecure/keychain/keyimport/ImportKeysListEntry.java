@@ -17,6 +17,18 @@
 
 package org.sufficientlysecure.keychain.keyimport;
 
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
 import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -26,18 +38,6 @@ import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.UncachedPublicKey;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 
 public class ImportKeysListEntry implements Serializable, Parcelable {
     private static final long serialVersionUID = -7797972103284992662L;
@@ -64,7 +64,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
 
     private UserId mPrimaryUserId;
     private HkpKeyserverAddress mKeyserver;
-    private String mKeybaseName;
     private String mFbUsername;
 
     private String mQuery;
@@ -197,14 +196,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         mKeyserver = keyserver;
     }
 
-    public String getKeybaseName() {
-        return mKeybaseName;
-    }
-
-    public void setKeybaseName(String keybaseName) {
-        mKeybaseName = keybaseName;
-    }
-
     public String getFbUsername() {
         return mFbUsername;
     }
@@ -257,20 +248,11 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         return modified;
     }
 
-    public ArrayList<String> getKeybaseUserIds() {
-        ArrayList<String> keybaseUserIds = new ArrayList<>();
-        for (String s : mUserIds) {
-            if (s.contains(":"))
-                keybaseUserIds.add(s);
-        }
-        return keybaseUserIds;
-    }
-
     /**
      * Constructor for later querying from keyserver
      */
     public ImportKeysListEntry() {
-        // keys from keyserver are always public keys; from keybase too
+        // keys from keyserver are always public keys
         mSecretKey = false;
 
         mUserIds = new ArrayList<>();
@@ -339,20 +321,8 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
     private void sortMergedUserIds() {
         mSortedUserIds = new ArrayList<>(mMergedUserIds.entrySet());
 
-        Collections.sort(mSortedUserIds, new Comparator<Map.Entry<String, HashSet<String>>>() {
-            @Override
-            public int compare(Map.Entry<String, HashSet<String>> entry1,
-                               Map.Entry<String, HashSet<String>> entry2) {
-
-                // sort keybase UserIds after non-Keybase
-                boolean e1IsKeybase = entry1.getKey().contains(":");
-                boolean e2IsKeybase = entry2.getKey().contains(":");
-                if (e1IsKeybase != e2IsKeybase) {
-                    return (e1IsKeybase) ? 1 : -1;
-                }
-                return entry1.getKey().compareTo(entry2.getKey());
-            }
-        });
+        Collections.sort(mSortedUserIds,
+                (entry1, entry2) -> entry1.getKey().compareTo(entry2.getKey()));
     }
 
     @Override
@@ -377,7 +347,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
         dest.writeString(mAlgorithm);
         dest.writeByte((byte) (mSecretKey ? 1 : 0));
         dest.writeParcelable(mKeyserver, flags);
-        dest.writeString(mKeybaseName);
         dest.writeString(mFbUsername);
     }
 
@@ -400,7 +369,6 @@ public class ImportKeysListEntry implements Serializable, Parcelable {
             vr.mAlgorithm = source.readString();
             vr.mSecretKey = source.readByte() == 1;
             vr.mKeyserver = source.readParcelable(HkpKeyserverAddress.class.getClassLoader());
-            vr.mKeybaseName = source.readString();
             vr.mFbUsername = source.readString();
 
             return vr;

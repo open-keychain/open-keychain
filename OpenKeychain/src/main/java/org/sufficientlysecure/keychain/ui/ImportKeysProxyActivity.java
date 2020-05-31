@@ -25,7 +25,7 @@ import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v4.app.FragmentActivity;
+import androidx.fragment.app.FragmentActivity;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -223,7 +223,7 @@ public class ImportKeysProxyActivity extends FragmentActivity
     }
 
     public void importKeysFromFingerprint(byte[] fingerprint) {
-        ParcelableKeyRing keyEntry = ParcelableKeyRing.createFromReference(fingerprint, null, null, null);
+        ParcelableKeyRing keyEntry = ParcelableKeyRing.createFromReference(fingerprint, null, null);
         ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
         selectedEntries.add(keyEntry);
 

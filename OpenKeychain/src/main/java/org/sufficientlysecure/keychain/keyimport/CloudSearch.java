@@ -17,7 +17,7 @@
 
 package org.sufficientlysecure.keychain.keyimport;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -44,9 +44,6 @@ public class CloudSearch {
 
         if (cloudPrefs.isKeyserverEnabled()) {
             servers.add(HkpKeyserverClient.fromHkpKeyserverAddress(cloudPrefs.getKeyserver()));
-        }
-        if (cloudPrefs.isKeybaseEnabled()) {
-            servers.add(KeybaseKeyserverClient.getInstance());
         }
         if (cloudPrefs.isFacebookEnabled()) {
             servers.add(FacebookKeyserverClient.getInstance());

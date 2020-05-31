@@ -21,7 +21,7 @@ package org.sufficientlysecure.keychain.ssh;
 import java.util.Collection;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.bouncycastle.openpgp.AuthenticationSignatureGenerator;
 import org.bouncycastle.openpgp.PGPException;

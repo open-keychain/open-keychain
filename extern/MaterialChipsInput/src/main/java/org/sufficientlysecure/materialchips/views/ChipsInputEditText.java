@@ -3,11 +3,10 @@ package org.sufficientlysecure.materialchips.views;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 
-public class ChipsInputEditText extends android.support.v7.widget.AppCompatEditText {
+public class ChipsInputEditText extends androidx.appcompat.widget.AppCompatEditText {
 
     private View filterableListView;
 

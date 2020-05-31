@@ -32,7 +32,7 @@
         android:measureAllChildren="true"
         custom:initialView="1">
 
-        <android.support.v4.widget.Space
+        <androidx.legacy.widget.Space
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

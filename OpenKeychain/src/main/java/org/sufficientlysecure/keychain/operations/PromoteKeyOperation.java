@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;

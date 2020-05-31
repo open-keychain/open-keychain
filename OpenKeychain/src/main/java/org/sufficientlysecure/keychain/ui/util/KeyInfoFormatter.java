@@ -2,8 +2,8 @@ package org.sufficientlysecure.keychain.ui.util;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.ImageView;

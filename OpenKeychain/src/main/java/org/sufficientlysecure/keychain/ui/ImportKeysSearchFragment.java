@@ -24,12 +24,12 @@ import android.database.MatrixCursor;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.provider.BaseColumns;
-import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.MenuItemCompat.OnActionExpandListener;
-import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.support.v7.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.core.view.MenuItemCompat;
+import androidx.core.view.MenuItemCompat.OnActionExpandListener;
+import androidx.cursoradapter.widget.CursorAdapter;
+import androidx.cursoradapter.widget.SimpleCursorAdapter;
+import androidx.appcompat.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -48,8 +48,8 @@ import org.sufficientlysecure.keychain.util.Preferences.CloudSearchPrefs;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.support.v7.widget.SearchView.OnQueryTextListener;
-import static android.support.v7.widget.SearchView.OnSuggestionListener;
+import static androidx.appcompat.widget.SearchView.OnQueryTextListener;
+import static androidx.appcompat.widget.SearchView.OnSuggestionListener;
 
 /**
  * Consists of the search bar, search button, and search settings button

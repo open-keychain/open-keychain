@@ -44,11 +44,11 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -769,7 +769,7 @@ public class DecryptListFragment
 
         {
             ParcelableKeyRing keyEntry = ParcelableKeyRing.createFromReference(null,
-                    KeyFormattingUtils.convertKeyIdToHex(unknownKeyId), null, null);
+                    KeyFormattingUtils.convertKeyIdToHex(unknownKeyId), null);
             ArrayList<ParcelableKeyRing> selectedEntries = new ArrayList<>();
             selectedEntries.add(keyEntry);
 

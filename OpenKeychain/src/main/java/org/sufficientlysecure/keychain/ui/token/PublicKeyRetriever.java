@@ -24,7 +24,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.auto.value.AutoValue;

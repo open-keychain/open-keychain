@@ -46,12 +46,11 @@
     <string name="section_user_ids">"Identities"</string>
     <string name="section_security_token">"Security Token"</string>
     <string name="section_linked_system_contact">"Linked System Contact"</string>
-    <string name="section_keybase_proofs">"Keybase.io Proofs"</string>
     <string name="section_should_you_trust">"Should you trust this key?"</string>
     <string name="section_proof_details">Proof verification</string>
     <string name="section_keys">"Subkeys"</string>
     <string name="section_cloud_search">"Key Search"</string>
-    <string name="section_cloud_search_summary">"Keyserver, keybase.io"</string>
+    <string name="section_cloud_search_summary">"Keyserver"</string>
     <string name="section_passphrase_cache">"Passwords and PINs"</string>
     <string name="section_passphrase_cache_summary">"Handling"</string>
     <string name="section_proxy_settings">"Network Anonymity"</string>
@@ -212,8 +211,6 @@
 
     <string name="pref_keyserver">"OpenPGP keyservers"</string>
     <string name="pref_keyserver_summary">"Search keys on selected OpenPGP keyservers (HKP protocol)"</string>
-    <string name="pref_keybase">"keybase.io"</string>
-    <string name="pref_keybase_summary">"Search keys on keybase.io"</string>
     <string name="pref_facebook">"Facebook"</string>
     <string name="pref_facebook_summary">"Search keys on Facebook by username"</string>
     <string name="pref_wkd">"Web Key Directory"</string>
@@ -232,8 +229,6 @@
     <string name="label_experimental_settings_desc_title">"Warning"</string>
     <string name="label_experimental_settings_desc_summary">"These features are not yet finished or results of user experience/security research. Thus, don't rely on their security and please don't report issues you encounter!"</string>
 
-    <string name="label_experimental_settings_keybase_title">"Keybase.io proofs"</string>
-    <string name="label_experimental_settings_keybase_summary">"Contact keybase.io for key proofs and show them every time a key is displayed"</string>
     <string name="label_experimental_settings_theme_summary">"(The icons and many screens are not yet adjusted accordingly for the dark theme)"</string>
 
     <string name="label_settings_analytics_title">Allow anonymous usage statistics</string>
@@ -724,7 +719,6 @@
     <string name="key_view_tab_share">"Share"</string>
     <string name="key_view_tab_keys">"Subkeys"</string>
     <string name="key_view_tab_certs">"Certificates"</string>
-    <string name="key_view_tab_keybase">"Keybase.io"</string>
     <string name="user_id_info_revoked_title">"Revoked"</string>
     <string name="user_id_info_revoked_text">"This identity has been revoked by the key owner. It is no longer valid."</string>
     <string name="user_id_info_certified_title">"Confirmed"</string>
@@ -735,37 +729,6 @@
     <!-- Key trust -->
     <string name="key_trust_no_cloud_evidence">"No proof from the Internet on this key’s trustworthiness."</string>
     <string name="key_trust_start_cloud_search">"Start search"</string>
-    <string name="key_trust_results_prefix">"Keybase.io offers “proofs” which assert that the owner of this key: "</string>
-
-    <!-- keybase proof stuff -->
-    <string name="keybase_narrative_twitter">"Posts to Twitter as %s"</string>
-    <string name="keybase_narrative_github">"Is known on GitHub as %s"</string>
-    <string name="keybase_narrative_dns">"Controls the domain name(s) %s"</string>
-    <string name="keybase_narrative_web_site">"Can post to the Web site(s) %s"</string>
-    <string name="keybase_narrative_reddit">"Posts to Reddit as %s"</string>
-    <string name="keybase_narrative_coinbase">"Is known on Coinbase as %s"</string>
-    <string name="keybase_narrative_hackernews">"Posts to Hacker News as %s"</string>
-    <string name="keybase_narrative_unknown">"Unknown proof type %s"</string>
-    <string name="keybase_proof_failure">"Unfortunately this proof cannot be verified."</string>
-    <string name="keybase_unknown_proof_failure">"Unrecognized problem with proof checker"</string>
-    <string name="keybase_problem_fetching_evidence">"Problem with proof"</string>
-    <string name="keybase_key_mismatch">"Key fingerprint doesn’t match that in proof post"</string>
-    <string name="keybase_dns_query_failure">"DNS TXT Record retrieval failed"</string>
-    <string name="keybase_no_prover_found">"No proof checker found for"</string>
-    <string name="keybase_message_payload_mismatch">"Decrypted proof post does not match expected value"</string>
-    <string name="keybase_message_fetching_data">"Fetching proof"</string>
-    <string name="keybase_proof_succeeded">"This proof has been verified!"</string>
-    <string name="keybase_a_post">"A post"</string>
-    <string name="keybase_fetched_from">"fetched from"</string>
-    <string name="keybase_for_the_domain">"for the domain"</string>
-    <string name="keybase_contained_signature">"contains a message which could only have been created by the owner of this key."</string>
-    <string name="keybase_twitter_proof">"A tweet"</string>
-    <string name="keybase_dns_proof">"A DNS TXT record"</string>
-    <string name="keybase_web_site_proof">"A text file"</string>
-    <string name="keybase_github_proof">"A gist"</string>
-    <string name="keybase_reddit_proof">"A JSON file"</string>
-    <string name="keybase_reddit_attribution">"attributed by Reddit to"</string>
-    <string name="keybase_verify">"Verify"</string>
 
     <!-- Edit key -->
     <string name="edit_key_action_change_passphrase">"Change Password"</string>
@@ -1334,7 +1297,6 @@
     <string name="msg_import_fetch_error_not_found">"Key not found!"</string>
     <string name="msg_import_fetch_error_keyserver">"Could not retrieve key from keyservers: %s"</string>
     <string name="msg_import_fetch_error_keyserver_secret">"Cannot import secret key from keyserver!"</string>
-    <string name="msg_import_fetch_keybase">"Retrieving from keybase.io: %s"</string>
     <string name="msg_import_fetch_facebook">"Retrieving from Facebook: %s"</string>
     <string name="msg_import_fetch_keyserver">"Retrieving from keyserver: %s"</string>
     <string name="msg_import_fetch_keyserver_ok">"Key retrieval successful"</string>
@@ -1436,15 +1398,6 @@
     <string name="msg_get_no_enabled_source">"Enable at least one source for downloading!"</string>
 
     <string name="msg_download_query_failed">"An error occurred when searching for keys."</string>
-
-    <!-- Messages for Keybase Verification operation -->
-    <string name="msg_keybase_verification">"Attempting keybase verification for %s"</string>
-    <string name="msg_keybase_error_no_prover">"No proof checker found for %s"</string>
-    <string name="msg_keybase_error_fetching_evidence">"Problem with fetching proof"</string>
-    <string name="msg_keybase_error_key_mismatch">"Key fingerprint doesn’t match that in proof post"</string>
-    <string name="msg_keybase_error_dns_fail">"DNS TXT Record retrieval failed"</string>
-    <string name="msg_keybase_error_specific">"%s"</string>
-    <string name="msg_keybase_error_msg_payload_mismatch">"Decrypted proof post does not match expected value"</string>
 
     <!-- Messages for Mime parsing operation -->
     <string name="msg_mime_parsing_start">"Parsing the MIME structure"</string>

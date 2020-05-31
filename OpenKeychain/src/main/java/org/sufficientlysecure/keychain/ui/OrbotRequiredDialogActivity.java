@@ -28,8 +28,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.NotificationCompat;
+import androidx.fragment.app.FragmentActivity;
+import androidx.core.app.NotificationCompat;
 import android.view.ContextThemeWrapper;
 
 import org.sufficientlysecure.keychain.Constants.NotificationIds;

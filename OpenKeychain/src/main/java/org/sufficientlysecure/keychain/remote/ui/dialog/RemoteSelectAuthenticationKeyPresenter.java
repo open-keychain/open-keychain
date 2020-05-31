@@ -20,7 +20,7 @@ package org.sufficientlysecure.keychain.remote.ui.dialog;
 
 import java.util.List;
 
-import android.arch.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LifecycleOwner;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;

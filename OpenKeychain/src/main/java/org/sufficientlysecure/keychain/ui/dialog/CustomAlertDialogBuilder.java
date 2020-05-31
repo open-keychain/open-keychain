@@ -18,7 +18,7 @@
 package org.sufficientlysecure.keychain.ui.dialog;
 
 import android.content.Context;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 
 /**
  * Uses support lib's dialog builder. We can apply a theme here later!

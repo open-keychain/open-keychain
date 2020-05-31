@@ -12,13 +12,6 @@
         android:summary="@string/label_settings_analytics_summary"
         android:title="@string/label_settings_analytics_title" />
 
-    <SwitchPreference
-        android:defaultValue="false"
-        android:key="experimentalEnableKeybase"
-        android:persistent="true"
-        android:summary="@string/label_experimental_settings_keybase_summary"
-        android:title="@string/label_experimental_settings_keybase_title" />
-
     <ListPreference
         android:defaultValue="light"
         android:dialogTitle="@string/label_theme"

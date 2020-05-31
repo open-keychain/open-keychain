@@ -1,8 +1,8 @@
 package org.sufficientlysecure.keychain.model;
 
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
-import android.support.annotation.NonNull;
+import androidx.sqlite.db.SupportSQLiteDatabase;
+import androidx.annotation.NonNull;
 
 import com.google.auto.value.AutoValue;
 import org.sufficientlysecure.keychain.UserPacketsModel;

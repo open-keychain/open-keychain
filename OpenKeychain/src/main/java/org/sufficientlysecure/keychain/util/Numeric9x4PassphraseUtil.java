@@ -23,7 +23,7 @@ import java.security.SecureRandom;
 import java.util.Random;
 import java.util.regex.Pattern;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 // see https://autocrypt.org/level1.html#setup-code
 public class Numeric9x4PassphraseUtil {

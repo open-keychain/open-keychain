@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:orientation="horizontal">
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/qr_code_image_layout"
             android:transitionName="qr_code"
             android:layout_gravity="center_vertical"
@@ -32,7 +32,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"/>
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
     </LinearLayout>
 </RelativeLayout>

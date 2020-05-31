@@ -23,11 +23,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
-import android.arch.persistence.db.SupportSQLiteOpenHelper;
-import android.arch.persistence.db.SupportSQLiteOpenHelper.Callback;
-import android.arch.persistence.db.SupportSQLiteOpenHelper.Configuration;
-import android.arch.persistence.db.framework.FrameworkSQLiteOpenHelperFactory;
+import androidx.sqlite.db.SupportSQLiteDatabase;
+import androidx.sqlite.db.SupportSQLiteOpenHelper;
+import androidx.sqlite.db.SupportSQLiteOpenHelper.Callback;
+import androidx.sqlite.db.SupportSQLiteOpenHelper.Configuration;
+import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;

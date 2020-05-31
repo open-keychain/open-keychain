@@ -21,7 +21,7 @@ package org.sufficientlysecure.keychain.operations;
 import java.util.Collections;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.operations.results.DeleteResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;

@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.daos.KeyMetadataDao;
@@ -72,7 +72,7 @@ public class KeySyncOperation extends BaseReadWriteOperation<KeySyncParcel> {
         ArrayList<ParcelableKeyRing> result = new ArrayList<>(staleKeyFingerprints.size());
         for (byte[] fingerprint : staleKeyFingerprints) {
             Timber.d("Keyserver sync: Updating %s", KeyFormattingUtils.beautifyKeyId(fingerprint));
-            result.add(ParcelableKeyRing.createFromReference(fingerprint, null, null, null));
+            result.add(ParcelableKeyRing.createFromReference(fingerprint, null, null));
         }
         return result;
     }

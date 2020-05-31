@@ -7,6 +7,15 @@
 package org.bouncycastle.openpgp.operator.jcajce;
 
 
+import org.bouncycastle.bcpg.S2K;
+import org.bouncycastle.jcajce.util.DefaultJcaJceHelper;
+import org.bouncycastle.jcajce.util.NamedJcaJceHelper;
+import org.bouncycastle.jcajce.util.ProviderJcaJceHelper;
+import org.bouncycastle.openpgp.PGPException;
+import org.bouncycastle.openpgp.PGPUtil;
+import org.bouncycastle.openpgp.operator.PBESecretKeyDecryptor;
+import org.bouncycastle.openpgp.operator.PGPDigestCalculatorProvider;
+
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Provider;
@@ -15,13 +24,6 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.spec.IvParameterSpec;
-import org.bouncycastle.bcpg.S2K;
-import org.bouncycastle.jcajce.util.DefaultJcaJceHelper;
-import org.bouncycastle.jcajce.util.NamedJcaJceHelper;
-import org.bouncycastle.jcajce.util.ProviderJcaJceHelper;
-import org.bouncycastle.openpgp.PGPException;
-import org.bouncycastle.openpgp.operator.PBESecretKeyDecryptor;
-import org.bouncycastle.openpgp.operator.PGPDigestCalculatorProvider;
 
 
 /** This is a builder for a special PBESecretKeyDecryptor which is parametrized by a
@@ -90,7 +92,7 @@ public class SessionKeySecretKeyDecryptorBuilder
                 {
                     Cipher c = helper.createCipher(PGPUtil.getSymmetricCipherName(encAlgorithm) + "/CFB/NoPadding");
 
-                    c.init(Cipher.DECRYPT_MODE, PGPUtil.makeSymmetricKey(encAlgorithm, key), new IvParameterSpec(iv));
+                    c.init(Cipher.DECRYPT_MODE, JcaJcePGPUtil.makeSymmetricKey(encAlgorithm, key), new IvParameterSpec(iv));
 
                     return c.doFinal(keyData, keyOff, keyLen);
                 }

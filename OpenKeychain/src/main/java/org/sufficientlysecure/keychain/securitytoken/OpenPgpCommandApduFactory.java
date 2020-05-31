@@ -21,7 +21,7 @@ package org.sufficientlysecure.keychain.securitytoken;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;

@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'jacoco'
 apply plugin: 'com.squareup.sqldelight'
 // apply plugin: 'com.github.kt3k.coveralls'
 
@@ -8,113 +7,94 @@ dependencies {
     // NOTE: libraries are pinned to a specific build, see below
 
     // from local Android SDK
-    compile 'com.android.support:support-v4:27.1.1'
-    compile 'com.android.support:appcompat-v7:27.1.1'
-    compile 'com.android.support:design:27.1.1'
-    compile 'com.android.support:recyclerview-v7:27.1.1'
-    compile 'com.android.support:cardview-v7:27.1.1'
-    compile 'com.android.support:support-annotations:27.1.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.annotation:annotation:1.1.0'
 
     // JCenter etc.
-    compile 'com.journeyapps:zxing-android-embedded:3.4.0'
-    compile 'com.google.zxing:core:3.3.0'
-    compile 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.1'
-    compile 'org.sufficientlysecure:donations:2.5'
-    compile 'com.squareup.okhttp3:okhttp:3.9.1'
-    compile 'com.squareup.okhttp3:okhttp-urlconnection:3.9.1'
-    compile 'org.apache.james:apache-mime4j-core:0.8.0'
-    compile 'org.apache.james:apache-mime4j-dom:0.8.0'
+    implementation 'com.journeyapps:zxing-android-embedded:3.4.0'
+    implementation 'com.google.zxing:core:3.3.0'
+    implementation 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.1'
+    implementation 'org.sufficientlysecure:donations:2.5'
+    implementation 'com.squareup.okhttp3:okhttp:3.13.1'
+    implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.9.1'
+    implementation 'org.apache.james:apache-mime4j-core:0.8.1'
+    implementation 'org.apache.james:apache-mime4j-dom:0.8.1'
 
     // UI
-    compile 'org.sufficientlysecure:html-textview:3.1'
-    compile 'com.jpardogo.materialtabstrip:library:1.1.1'
-    compile 'com.getbase:floatingactionbutton:1.10.1'
-    compile 'com.nispok:snackbar:2.11.0'
-    compile 'com.cocosw:bottomsheet:1.3.1@aar'
+    implementation 'org.sufficientlysecure:html-textview:3.1'
+    implementation 'com.jpardogo.materialtabstrip:library:1.1.1'
+    implementation 'com.getbase:floatingactionbutton:1.10.1'
+    implementation 'com.nispok:snackbar:2.11.0'
+    implementation 'com.cocosw:bottomsheet:1.5.0@aar'
 
     // RecyclerView
-    compile 'eu.davidea:flexible-adapter:5.0.5'
-    compile 'eu.davidea:flexible-adapter-ui:1.0.0-b5'
-    compile 'eu.davidea:flexible-adapter-livedata:1.0.0-b2'
+    implementation 'eu.davidea:flexible-adapter:5.1.0'
+    implementation 'eu.davidea:flexible-adapter-ui:1.0.0-b5'
+    implementation 'eu.davidea:flexible-adapter-livedata:1.0.0-b2'
 
     // Material Drawer
-    compile 'com.mikepenz:materialdrawer:5.6.0@aar'
-    compile 'com.mikepenz:fastadapter:1.8.2'
-    compile 'com.mikepenz:materialize:1.0.0'
-    compile 'com.mikepenz:iconics-core:2.8.1@aar'
-    compile 'com.mikepenz:google-material-typeface:2.2.0.3.original@aar'
-    compile 'com.mikepenz:fontawesome-typeface:4.6.0.3@aar'
-    compile 'com.mikepenz:community-material-typeface:1.5.54.2@aar'
+    implementation 'com.mikepenz:materialdrawer:6.1.2@aar'
+    implementation 'com.mikepenz:fastadapter:3.3.0'
+    implementation 'com.mikepenz:fastadapter-extensions-expandable:3.3.0'
+    implementation 'com.mikepenz:materialize:1.2.0'
+    implementation 'com.mikepenz:iconics-core:3.1.0@aar'
+    implementation 'com.mikepenz:google-material-typeface:2.2.0.3.original@aar'
+    implementation 'com.mikepenz:fontawesome-typeface:5.3.1.1@aar'
+    implementation 'com.mikepenz:community-material-typeface:1.5.54.2@aar'
 
     // Nordpol
-    compile 'com.fidesmo:nordpol-android:0.1.22'
+    implementation 'com.fidesmo:nordpol-android:0.1.22'
 
     // piwik
     implementation 'org.piwik.sdk:piwik-sdk:3.0.3'
 
     // libs as submodules
-    implementation project(':libkeychain')
     implementation project(':openpgp-api-lib')
     implementation project(':nfcsweetspot')
     implementation project(':sshauthentication-api')
-    implementation project(':extern:bouncycastle:core')
-    implementation project(':extern:bouncycastle:pg')
-    implementation project(':extern:bouncycastle:prov')
-    implementation project(':extern:minidns')
-    implementation project(':KeybaseLib')
-    implementation project(':safeslinger-exchange')
     implementation project(':extern:MaterialChipsInput')
 
-    implementation "android.arch.work:work-runtime:1.0.0-alpha02"
+    // implementation project(':openkeychain:extern:bouncycastle:core')
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.65.01'
+    implementation project(':extern:bouncycastle:pg')
+    // implementation project(':openkeychain:extern:bouncycastle:prov')
+
+    implementation 'androidx.work:work-runtime:2.3.4'
 
     // Unit tests in the local JVM with Robolectric
     // https://developer.android.com/training/testing/unit-testing/local-unit-tests.html
     // http://robolectric.org/getting-started/
     // http://www.vogella.com/tutorials/Robolectric/article.html
-    testCompile 'junit:junit:4.12'
-    testCompile ('org.robolectric:robolectric:3.6.1') {
+    testImplementation 'junit:junit:4.12'
+    testImplementation ('org.robolectric:robolectric:3.8') {
         exclude group: 'org.bouncycastle', module: 'bcprov-jdk16'
     }
-    testCompile 'org.mockito:mockito-core:1.10.19'
+    testImplementation 'org.mockito:mockito-core:2.18.0'
 
-    // UI testing with Espresso
-    // Force usage of support libs in the test app, since they are internally used by the runner module.
-    // https://github.com/googlesamples/android-testing/blob/master/ui/espresso/BasicSample/app/build.gradle#L28
-    androidTestCompile 'com.android.support:support-annotations:27.1.1'
-    androidTestCompile 'com.android.support:appcompat-v7:27.1.1'
-    androidTestCompile 'com.android.support:design:27.1.1'
-    androidTestCompile 'com.android.support.test:runner:0.5'
-    androidTestCompile 'com.android.support.test:rules:0.5'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
-    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
-    androidTestCompile ('com.android.support.test.espresso:espresso-contrib:2.2.2') {
-        exclude group: 'com.android.support', module: 'appcompat'
-        exclude group: 'com.android.support', module: 'support-v4'
-        exclude module: 'recyclerview-v7'
-    }
+    implementation 'com.jakewharton.timber:timber:4.7.1'
 
-    compile "com.jakewharton.timber:timber:4.5.1"
+    implementation 'org.glassfish:javax.annotation:10.0-b28'
+    api "com.google.auto.value:auto-value-annotations:1.6.5"
+    annotationProcessor "com.google.auto.value:auto-value:1.6.2"
+    implementation 'com.ryanharter.auto.value:auto-value-parcel-adapter:0.2.6'
+    annotationProcessor "com.ryanharter.auto.value:auto-value-parcel:0.2.6"
 
-    compile 'org.glassfish:javax.annotation:10.0-b28'
-    provided    "com.google.auto.value:auto-value:1.5"
-    annotationProcessor "com.google.auto.value:auto-value:1.5"
-    annotationProcessor "com.ryanharter.auto.value:auto-value-parcel:0.2.5"
-    compile 'com.ryanharter.auto.value:auto-value-parcel-adapter:0.2.5'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    annotationProcessor 'androidx.lifecycle:lifecycle-compiler:2.2.0'
 
-    compile "android.arch.lifecycle:extensions:1.0.0"
-    annotationProcessor "android.arch.lifecycle:compiler:1.0.0"
-
-    compile "android.arch.persistence:db-framework:1.0.0"
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'androidx.sqlite:sqlite-framework:2.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
     // for debugging the db. don't enable by default, this will expose the database no the network!
     // debugImplementation 'com.amitshekhar.android:debug-db:1.0.3'
 }
 
-
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion 15
@@ -124,7 +104,7 @@ android {
         applicationId "org.sufficientlysecure.keychain"
         // the androidjunitrunner is broken regarding coverage, see here:
         // https://code.google.com/p/android/issues/detail?id=170607
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         // this workaround runner fixes the coverage problem, BUT doesn't work
         // with android studio single test execution. use it to generate coverage
         // data, but keep the other one otherwis
@@ -225,7 +205,7 @@ android {
     }
 
     variantFilter { variant ->
-        if(variant.buildType.name.equals('debug') && variant.getFlavors().get(0).name.equals('google')) {
+        if(variant.buildType.name == 'debug' && variant.getFlavors().get(0).name == 'google') {
             variant.setIgnore(true)
         }
     }
@@ -289,34 +269,6 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/NOTICE'
         exclude '.readme'
-    }
-}
-
-task jacocoTestReport(type:JacocoReport, dependsOn: "testFdroidDebugWithTestCoverageUnitTest") {
-    group = "Reporting"
-    description = "Generate Jacoco coverage reports"
-
-    classDirectories = fileTree(
-            dir: "${buildDir}/intermediates/classes/fdroid/debugWithTestCoverage",
-            excludes: ['**/R.class',
-                       '**/R$*.class',
-                       '**/*$ViewInjector*.*',
-                       '**/BuildConfig.*',
-                       '**/Manifest*.*',
-                       '**/*Activity*.*',
-                       '**/*Fragment*.*']
-    )
-
-    sourceDirectories = files("${buildDir.parent}/src/main/java")
-    additionalSourceDirs = files([
-            "${buildDir}/generated/source/buildConfig/fdroid/debugWithTestCoverage",
-            "${buildDir}/generated/source/r/fdroid/debugWithTestCoverage"
-    ])
-    executionData = fileTree(dir: "${buildDir}/jacoco", include: "**/*.exec")
-
-    reports {
-        xml.enabled true
-        html.enabled true
     }
 }
 

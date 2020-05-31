@@ -1,16 +1,15 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion 28
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 114
         versionName "1.1.4"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
     }
     buildTypes {
@@ -22,15 +21,10 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile 'com.android.support:appcompat-v7:27.1.1'
-    testCompile 'junit:junit:4.12'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
 
     // recycler
-    compile 'com.android.support:recyclerview-v7:27.1.1'
-    compile 'com.beloo.widget:ChipsLayoutManager:0.3.7@aar'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'com.beloo.widget:ChipsLayoutManager:0.3.7@aar'
 }
 

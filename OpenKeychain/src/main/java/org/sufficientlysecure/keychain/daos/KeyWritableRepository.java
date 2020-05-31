@@ -25,10 +25,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.v4.util.LongSparseArray;
+import androidx.annotation.NonNull;
+import androidx.collection.LongSparseArray;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.KeyRingsPublicModel.DeleteByMasterKeyId;

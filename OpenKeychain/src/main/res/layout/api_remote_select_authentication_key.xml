@@ -81,7 +81,7 @@
                     android:text="These are the keys that could be used for authentication. Please choose from the list:"
                     />
 
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/authentication_key_list"

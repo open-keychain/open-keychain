@@ -22,8 +22,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.daos.KeyRepository;

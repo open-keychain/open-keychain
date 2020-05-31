@@ -3,7 +3,7 @@ package org.sufficientlysecure.keychain.daos;
 
 import java.util.List;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import org.sufficientlysecure.keychain.CertsModel.InsertCert;
 import org.sufficientlysecure.keychain.KeyRingsPublicModel.InsertKeyRingPublic;

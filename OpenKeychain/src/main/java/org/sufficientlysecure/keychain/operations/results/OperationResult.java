@@ -22,7 +22,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.LogDisplayActivity;
 import org.sufficientlysecure.keychain.ui.LogDisplayFragment;
@@ -756,7 +756,6 @@ public abstract class OperationResult implements Parcelable {
         MSG_IMPORT_FETCH_ERROR_NOT_FOUND (LogLevel.ERROR, R.string.msg_import_fetch_error_not_found),
         MSG_IMPORT_FETCH_ERROR_KEYSERVER(LogLevel.ERROR, R.string.msg_import_fetch_error_keyserver),
         MSG_IMPORT_FETCH_ERROR_KEYSERVER_SECRET (LogLevel.ERROR, R.string.msg_import_fetch_error_keyserver_secret),
-        MSG_IMPORT_FETCH_KEYBASE (LogLevel.INFO, R.string.msg_import_fetch_keybase),
         MSG_IMPORT_FETCH_FACEBOOK (LogLevel.INFO, R.string.msg_import_fetch_facebook),
         MSG_IMPORT_FETCH_KEYSERVER (LogLevel.INFO, R.string.msg_import_fetch_keyserver),
         MSG_IMPORT_FETCH_KEYSERVER_OK (LogLevel.DEBUG, R.string.msg_import_fetch_keyserver_ok),
@@ -819,18 +818,6 @@ public abstract class OperationResult implements Parcelable {
         MSG_REVOKE (LogLevel.DEBUG, R.string.msg_revoke_key),
         MSG_REVOKE_ERROR_KEY_FAIL (LogLevel.ERROR, R.string.msg_revoke_key_fail),
         MSG_REVOKE_OK (LogLevel.OK, R.string.msg_revoke_ok),
-
-        // keybase verification
-        MSG_KEYBASE_VERIFICATION(LogLevel.START, R.string.msg_keybase_verification),
-
-        MSG_KEYBASE_ERROR_NO_PROVER(LogLevel.ERROR, R.string.msg_keybase_error_no_prover),
-        MSG_KEYBASE_ERROR_FETCH_PROOF(LogLevel.ERROR, R.string.msg_keybase_error_fetching_evidence),
-        MSG_KEYBASE_ERROR_FINGERPRINT_MISMATCH(LogLevel.ERROR,
-                R.string.msg_keybase_error_key_mismatch),
-        MSG_KEYBASE_ERROR_DNS_FAIL(LogLevel.ERROR, R.string.msg_keybase_error_dns_fail),
-        MSG_KEYBASE_ERROR_SPECIFIC(LogLevel.ERROR, R.string.msg_keybase_error_specific),
-        MSG_KEYBASE_ERROR_PAYLOAD_MISMATCH(LogLevel.ERROR,
-                R.string.msg_keybase_error_msg_payload_mismatch),
 
         // InputData Operation
         MSG_DATA (LogLevel.START, R.string.msg_data),

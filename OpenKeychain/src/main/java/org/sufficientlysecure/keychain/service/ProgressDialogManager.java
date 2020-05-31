@@ -20,9 +20,9 @@ package org.sufficientlysecure.keychain.service;
 
 import android.app.ProgressDialog;
 import android.os.Handler;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.os.CancellationSignal;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.core.os.CancellationSignal;
 
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 

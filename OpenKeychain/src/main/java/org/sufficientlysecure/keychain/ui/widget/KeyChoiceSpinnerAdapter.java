@@ -2,7 +2,7 @@ package org.sufficientlysecure.keychain.ui.widget;
 
 
 import android.content.Context;
-import android.support.annotation.StringRes;
+import androidx.annotation.StringRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

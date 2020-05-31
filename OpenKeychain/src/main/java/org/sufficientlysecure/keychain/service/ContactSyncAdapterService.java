@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.service;
 
 
-import android.Manifest;
 import android.accounts.Account;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -28,14 +27,13 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SyncResult;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceActivity;
 import android.provider.ContactsContract;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.ContextCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.KeychainApplication;

@@ -2,8 +2,8 @@ package org.sufficientlysecure.materialchips.util;
 
 
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import android.view.ActionMode;
 import android.view.KeyEvent;
 import android.view.Menu;

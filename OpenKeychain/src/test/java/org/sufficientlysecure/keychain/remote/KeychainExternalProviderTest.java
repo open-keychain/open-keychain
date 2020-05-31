@@ -7,14 +7,17 @@ import java.util.Date;
 
 import android.content.ContentResolver;
 import android.content.pm.PackageInfo;
+import android.content.pm.ProviderInfo;
 import android.content.pm.Signature;
 import android.database.Cursor;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowBinder;
+import org.robolectric.shadows.ShadowContentResolver;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowPackageManager;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
@@ -75,6 +78,10 @@ public class KeychainExternalProviderTest {
         packageManager.addPackage(packageInfo);
 
         ShadowBinder.setCallingUid(PACKAGE_UID);
+
+        ProviderInfo info = new ProviderInfo();
+        info.authority = KeychainExternalContract.CONTENT_AUTHORITY_EXTERNAL;
+        Robolectric.buildContentProvider(KeychainExternalProvider.class).create(info);
 
         apiAppDao = ApiAppDao.getInstance(RuntimeEnvironment.application);
         apiPermissionHelper = new ApiPermissionHelper(RuntimeEnvironment.application, apiAppDao);

@@ -18,7 +18,7 @@
 package org.sufficientlysecure.keychain.ui.token;
 
 
-import android.arch.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LifecycleOwner;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;

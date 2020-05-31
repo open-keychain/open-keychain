@@ -6,7 +6,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
 import android.os.Build.VERSION_CODES;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;

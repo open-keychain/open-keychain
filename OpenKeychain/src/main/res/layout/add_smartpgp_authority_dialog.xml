@@ -9,7 +9,7 @@
     android:paddingRight="24dp"
     android:paddingTop="16dp">
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/smartpgp_authority_alias_edit_text_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
             android:imeOptions="actionDone"
             android:inputType="textUri" />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/smartpgp_authority_filename"

@@ -3,9 +3,9 @@ package org.sufficientlysecure.keychain.ui.keyview;
 
 import java.util.List;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Transformations;
-import android.arch.lifecycle.ViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
+import androidx.lifecycle.ViewModel;
 import android.content.Context;
 
 import org.sufficientlysecure.keychain.daos.KeyMetadataDao;

@@ -22,10 +22,8 @@ import java.io.IOException;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
+import androidx.fragment.app.FragmentTransaction;
 import android.widget.Toast;
 
 import org.apache.james.mime4j.util.MimeUtil;
@@ -34,7 +32,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.util.FileHelper;
-import timber.log.Timber;
 
 
 public class EncryptTextActivity extends EncryptActivity {

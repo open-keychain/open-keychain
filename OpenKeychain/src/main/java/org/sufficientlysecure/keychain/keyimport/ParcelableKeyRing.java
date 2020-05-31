@@ -19,14 +19,14 @@ package org.sufficientlysecure.keychain.keyimport;
 
 
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 
 
 /**
  * This class is a parcelable representation of either a keyring as raw data,
- * or a (unique) reference to one as a fingerprint, keyid, or keybase name.
+ * or a (unique) reference to one as a fingerprint, or keyid.
  */
 @AutoValue
 public abstract class ParcelableKeyRing implements Parcelable {
@@ -41,16 +41,14 @@ public abstract class ParcelableKeyRing implements Parcelable {
     @Nullable
     public abstract String getKeyIdHex();
     @Nullable
-    public abstract String getKeybaseName();
-    @Nullable
     public abstract String getFbUsername();
 
     public static ParcelableKeyRing createFromEncodedBytes(byte[] bytes) {
-        return new AutoValue_ParcelableKeyRing(bytes, null, null, null, null);
+        return new AutoValue_ParcelableKeyRing(bytes, null, null, null);
     }
 
     public static ParcelableKeyRing createFromReference(
-            byte[] expectedFingerprint, String keyIdHex, String keybaseName, String fbUsername) {
-        return new AutoValue_ParcelableKeyRing(null, expectedFingerprint, keyIdHex, keybaseName, fbUsername);
+            byte[] expectedFingerprint, String keyIdHex, String fbUsername) {
+        return new AutoValue_ParcelableKeyRing(null, expectedFingerprint, keyIdHex, fbUsername);
     }
 }

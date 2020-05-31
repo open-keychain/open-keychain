@@ -36,7 +36,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
@@ -672,7 +672,7 @@ public class UncachedKeyRing {
             }
 
             // If NO user ids remain, error out!
-            if (modified == null || !modified.getUserIDs().hasNext()) {
+            if (modified == null || !modified.getRawUserIDs().hasNext()) {
                 log.add(LogType.MSG_KC_ERROR_NO_UID, indent);
                 return null;
             }

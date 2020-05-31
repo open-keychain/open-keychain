@@ -28,7 +28,7 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -41,16 +41,16 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
 import android.provider.ContactsContract;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.CardView;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.core.content.ContextCompat;
+import androidx.cardview.widget.CardView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -91,9 +91,7 @@ import org.sufficientlysecure.keychain.ui.ImportKeysProxyActivity;
 import org.sufficientlysecure.keychain.ui.MainActivity;
 import org.sufficientlysecure.keychain.ui.PassphraseDialogActivity;
 import org.sufficientlysecure.keychain.ui.QrCodeViewActivity;
-import org.sufficientlysecure.keychain.ui.SafeSlingerActivity;
 import org.sufficientlysecure.keychain.ui.ViewKeyAdvActivity;
-import org.sufficientlysecure.keychain.ui.ViewKeyKeybaseFragment;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.ui.base.CryptoOperationHelper;
 import org.sufficientlysecure.keychain.ui.dialog.SetPassphraseDialogFragment;
@@ -267,11 +265,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
         actionShareClipboard.setOnClickListener(v -> ShareKeyHelper.shareKeyToClipboard(this, masterKeyId));
 
         floatingActionButton.setOnClickListener(v -> {
-            if (unifiedKeyInfo.has_any_secret()) {
-                startSafeSlinger();
-            } else {
-                scanQrCode();
-            }
+            scanQrCode();
         });
 
         qrCodeLayout.setOnClickListener(v -> showQrCodeDialog());
@@ -294,11 +288,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
 
         ViewKeyFragment frag = ViewKeyFragment.newInstance();
         manager.beginTransaction().replace(R.id.view_key_fragment, frag, "view_key_fragment").commit();
-
-        if (Preferences.getPreferences(this).getExperimentalEnableKeybase()) {
-            final ViewKeyKeybaseFragment keybaseFrag = ViewKeyKeybaseFragment.newInstance();
-            manager.beginTransaction().replace(R.id.view_key_keybase_fragment, keybaseFrag).commit();
-        }
     }
 
     @Override
@@ -592,12 +581,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
         startActivityForResult(intent, 0);
     }
 
-    private void startSafeSlinger() {
-        Intent safeSlingerIntent = new Intent(this, SafeSlingerActivity.class);
-        safeSlingerIntent.putExtra(SafeSlingerActivity.EXTRA_MASTER_KEY_ID, unifiedKeyInfo.master_key_id());
-        startActivityForResult(safeSlingerIntent, 0);
-    }
-
     /**
      * Load QR Code asynchronously and with a fade in animation
      */
@@ -778,8 +761,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
             actionShare.setVisibility(View.VISIBLE);
             actionShareClipboard.setVisibility(View.VISIBLE);
 
-            showFab();
-            floatingActionButton.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_repeat_white_24dp));
+            hideFab();
         } else {
             actionEncryptFile.setVisibility(View.VISIBLE);
             actionEncryptText.setVisibility(View.VISIBLE);
@@ -902,7 +884,7 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
             HkpKeyserverAddress preferredKeyserver = Preferences.getPreferences(getApplicationContext()).getPreferredKeyserver();
 
             ParcelableKeyRing keyEntry =
-                    ParcelableKeyRing.createFromReference(unifiedKeyInfo.fingerprint(), null, null, null);
+                    ParcelableKeyRing.createFromReference(unifiedKeyInfo.fingerprint(), null, null);
 
             return ImportKeyringParcel
                     .createImportKeyringParcel(Collections.singletonList(keyEntry), preferredKeyserver);

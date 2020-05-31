@@ -29,7 +29,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 import org.sufficientlysecure.keychain.Constants;
@@ -330,7 +330,6 @@ public class Preferences {
 
     public CloudSearchPrefs getCloudSearchPrefs() {
         return CloudSearchPrefs.create(mSharedPreferences.getBoolean(Pref.SEARCH_KEYSERVER, true),
-                mSharedPreferences.getBoolean(Pref.SEARCH_KEYBASE, true),
                 false,
                 mSharedPreferences.getBoolean(Pref.SEARCH_WEB_KEY_DIRECTORY, true),
                 getPreferredKeyserver());
@@ -387,7 +386,6 @@ public class Preferences {
     @AutoValue
     public static abstract class CloudSearchPrefs implements Parcelable {
         public abstract boolean isKeyserverEnabled();
-        public abstract boolean isKeybaseEnabled();
         public abstract boolean isFacebookEnabled();
         public abstract boolean isWebKeyDirectoryEnabled();
 
@@ -396,31 +394,29 @@ public class Preferences {
 
         /**
          * @param searchKeyserver       should passed keyserver be searched
-         * @param searchKeybase         should keybase.io be searched
          * @param searchFacebook        should Facebook be searched
          * @param searchWebKeyDirectory should WKD be searched
          * @param keyserver             the keyserver url authority to search on
          */
-        public static CloudSearchPrefs create(boolean searchKeyserver, boolean searchKeybase,
+        public static CloudSearchPrefs create(boolean searchKeyserver,
                                                        boolean searchFacebook, boolean searchWebKeyDirectory,
                                                        @Nullable HkpKeyserverAddress keyserver) {
             return new AutoValue_Preferences_CloudSearchPrefs(searchKeyserver,
-                    searchKeybase,
                     searchFacebook,
                     searchWebKeyDirectory,
                     keyserver);
         }
 
         public static CloudSearchPrefs createWebKeyDirectoryOnly() {
-            return create(false, false, false, true, null);
+            return create(false, false, true, null);
         }
 
         public static CloudSearchPrefs createKeyserverOnly(HkpKeyserverAddress keyserver) {
-            return create(true, false, false, false, keyserver);
+            return create(true, false, false, keyserver);
         }
 
         public static CloudSearchPrefs createSocialOnly() {
-            return create(false, true, true, false, null);
+            return create(false, true, false, null);
         }
     }
 
@@ -431,10 +427,6 @@ public class Preferences {
     }
 
     // experimental prefs
-
-    public boolean getExperimentalEnableKeybase() {
-        return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_ENABLE_KEYBASE, false);
-    }
 
     public boolean getExperimentalUsbAllowUntested() {
         return mSharedPreferences.getBoolean(Pref.EXPERIMENTAL_USB_ALLOW_UNTESTED, false);

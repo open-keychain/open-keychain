@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -79,8 +80,6 @@ public class OpenPgpServiceKeyIdExtractorTest {
         Intent intent = new Intent();
         intent.putExtra(OpenPgpApi.EXTRA_USER_IDS, USER_IDS);
 
-        setupContentResolverResult();
-
         PendingIntent pendingIntent = mock(PendingIntent.class);
         setupSelectPubkeyPendingIntentFactoryResult(pendingIntent);
 
@@ -126,8 +125,6 @@ public class OpenPgpServiceKeyIdExtractorTest {
     @Test
     public void returnKeyIdsFromIntent__withNoData__askIfNoData() throws Exception {
         Intent intent = new Intent();
-
-        setupContentResolverResult();
 
         PendingIntent pendingIntent = mock(PendingIntent.class);
         setupSelectPubkeyPendingIntentFactoryResult(pendingIntent);
@@ -199,13 +196,6 @@ public class OpenPgpServiceKeyIdExtractorTest {
         assertTrue(keyIdResult.hasKeySelectionPendingIntent());
     }
 
-    private void setupContentResolverResult() {
-        MatrixCursor resultCursor = new MatrixCursor(OpenPgpServiceKeyIdExtractor.PROJECTION_MAIL_STATUS);
-        when(contentResolver.query(
-                any(Uri.class), any(String[].class), any(String.class), any(String[].class), any(String.class)))
-                .thenReturn(resultCursor);
-    }
-
     private void setupContentResolverResult(String[] userIds, Long[] resultKeyIds, int[] verified, int[] candidates) {
         MatrixCursor resultCursor = new MatrixCursor(OpenPgpServiceKeyIdExtractor.PROJECTION_MAIL_STATUS);
         for (int i = 0; i < userIds.length; i++) {
@@ -213,7 +203,7 @@ public class OpenPgpServiceKeyIdExtractorTest {
         }
 
         when(contentResolver.query(
-                any(Uri.class), any(String[].class), any(String.class), any(String[].class), any(String.class)))
+                any(Uri.class), any(String[].class), nullable(String.class), any(String[].class), nullable(String.class)))
                 .thenReturn(resultCursor);
     }
 

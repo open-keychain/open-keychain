@@ -49,10 +49,9 @@ import android.os.Build.VERSION_CODES;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.OpenableColumns;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.widget.Toast;
 
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import timber.log.Timber;
 

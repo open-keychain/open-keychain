@@ -23,7 +23,7 @@ import java.net.Proxy;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * used to simply transport java.net.Proxy objects created using InetSockets between services/activities
