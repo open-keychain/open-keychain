@@ -178,8 +178,7 @@
   <string name="label_sync_settings_contacts_title">ربط المفاتيح بجهات الإتصال</string>
   <string name="label_sync_settings_contacts_summary_off">لن يتم ربط المفاتيح الجديدة بجهات الإتصال</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">تحديثات تلقائية للمفاتيح</string>
-  <string name="label_experimental_settings_desc_title">تحذير</string>
+    <string name="label_experimental_settings_desc_title">تحذير</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">فعّل تور</string>
   <string name="pref_proxy_tor_summary">يتطلب نتصيب تطبيق أوربوت</string>

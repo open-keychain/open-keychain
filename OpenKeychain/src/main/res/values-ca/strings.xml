@@ -208,7 +208,6 @@
   <string name="label_sync_settings_contacts_summary_on">Enllaça claus amb contactes basant-se amb noms i adreces de correu. Això succeeix completament fora de línia en el vostre dispositiu.</string>
   <string name="label_sync_settings_contacts_summary_off">Les noves claus no s\'enllaçaran amb els contactes</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Actualització de claus automàticament</string>
   <string name="label_experimental_settings_desc_title">Advertència</string>
   <string name="label_experimental_settings_keybase_title">Proves de Keybase.io</string>
   <string name="label_experimental_settings_keybase_summary">Contacta amb keybase.io per proves de clau i mostra-les cada vegada que es mostri una clau</string>

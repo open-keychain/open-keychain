@@ -212,7 +212,6 @@
   <string name="label_sync_settings_contacts_summary_on">Связывать ключи с контактами основываясь на именах и адресах электронной почты. Это происходит полностью в автономном режиме на вашем устройстве.</string>
   <string name="label_sync_settings_contacts_summary_off">Новые ключи не будут связаны с контактами</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Автообновление ключей</string>
   <string name="label_experimental_settings_desc_title">Предупреждение</string>
   <string name="label_experimental_settings_desc_summary">Эти новые возможности ещё не закончены и/или пока только изучаются. Проще говоря, не стоит полагаться на их безопасность. Пожалуйста, не сообщайте о связанных с ними проблемах!</string>
   <string name="label_experimental_settings_keybase_title">Подтверждение Keybase.io </string>

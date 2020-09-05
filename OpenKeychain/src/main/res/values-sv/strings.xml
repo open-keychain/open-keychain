@@ -212,7 +212,6 @@
   <string name="label_sync_settings_contacts_summary_on">Länka nycklar till kontakter baserade på namn och e-postadresser. Detta sker helt offline på enheten.</string>
   <string name="label_sync_settings_contacts_summary_off">Nya nycklar kommer inte att kopplas till kontakter</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Automatiska nyckeluppdateringar</string>
   <string name="label_experimental_settings_desc_title">Varning</string>
   <string name="label_experimental_settings_desc_summary">Dessa funktioner är ännu inte färdiga eller resultat av användarupplevelse/säkerhetsforskning. Lita därför inte på deras säkerhet och var snäll och rapportera inte problem du stöter på!</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io proofs</string>

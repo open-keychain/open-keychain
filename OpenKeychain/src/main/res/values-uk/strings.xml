@@ -212,8 +212,7 @@
   <string name="label_sync_settings_contacts_summary_on">Прив\'язувати ключі до контактів на основі імен та адрес електронної пошти. Це відбувається повністю локально на Вашому пристрої.</string>
   <string name="label_sync_settings_contacts_summary_off">Нові ключі не будуть прив\'язані до контактів</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Автоматичне оновлення ключів</string>
-  <string name="label_experimental_settings_desc_title">Попередження</string>
+    <string name="label_experimental_settings_desc_title">Попередження</string>
   <string name="label_experimental_settings_desc_summary">Ці можливості ще в розробці. Будь ласка, не сподівайтесь на їх безпеку та не повідомляйте про проблеми їхнього використання!</string>
   <string name="label_experimental_settings_keybase_title">Перевірки Keybase.io</string>
   <string name="label_experimental_settings_keybase_summary">Контактувати з keybase.io для підтвердження ключа та показувати дійсності щоразу, коли ключ відображено</string>

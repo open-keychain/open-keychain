@@ -212,7 +212,6 @@
   <string name="label_sync_settings_contacts_summary_on">Protojit klíče s kontakty na základě jmen a emailových adres. Odehrává se kompletně offline na vašem zařízení.</string>
   <string name="label_sync_settings_contacts_summary_off">Nové klíče nebudou propojeny s kontakty</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Automaticky aktualizovat klíč</string>
   <string name="label_experimental_settings_desc_title">Varovnání</string>
   <string name="label_experimental_settings_desc_summary">Tyto funkce nejsou ještě dokončené nebo neprošli uživatelským testováním/bezpečnostním auditem. Prosím, nespoléhejte na jejich zabezpečení a nehlašte problémy s nimi spojené, pokud na ně narazíte.</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io Proofs</string>

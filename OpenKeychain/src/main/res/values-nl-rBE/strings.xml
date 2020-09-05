@@ -212,8 +212,7 @@
   <string name="label_sync_settings_contacts_summary_on">Koppel sleutels aan contacten gebaseerd op namen en e-mailadressen. Dit gebeurt volledig offline op je apparaat.</string>
   <string name="label_sync_settings_contacts_summary_off">Nieuwe sleutels zullen niet worden gekoppeld aan contacten</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Automatische sleutelupdates</string>
-  <string name="label_experimental_settings_desc_title">Waarschuwing</string>
+    <string name="label_experimental_settings_desc_title">Waarschuwing</string>
   <string name="label_experimental_settings_desc_summary">Deze functies zijn nog niet afgewerkt of zijn resultaten van gebruikerservaringen/beveiligingsonderzoek. Vertrouw daarom niet op hun beveiliging en rapporteer geen problemen die je ervaart!</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io-bewijzen</string>
   <string name="label_experimental_settings_keybase_summary">Maak contact met keybase.io voor bevestigingen van sleutels en toon deze telkens wanneer een sleutel wordt weergegeven</string>

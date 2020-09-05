@@ -212,7 +212,6 @@
   <string name="label_sync_settings_contacts_summary_on">Schlüssel basierend auf Namen und E-Mail-Adressen mit Kontakten verknüpfen. Das alles findet komplett offline auf deinem Gerät statt.</string>
   <string name="label_sync_settings_contacts_summary_off">Neue Schlüssel werden nicht mit Kontakten verknüpft</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Automatische Schlüsselaktualisierung</string>
   <string name="label_experimental_settings_desc_title">Warnung</string>
   <string name="label_experimental_settings_desc_summary">Diese Funktionen sind noch nicht final oder das Ergebnis von Benutzererfahrungs-/Sicherheitsuntersuchungen. Verlasse dich daher nicht auf deren Sicherheit und melde uns bitte keine auftretenden Probleme!</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io-Nachweise</string>

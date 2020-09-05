@@ -212,8 +212,7 @@
   <string name="label_sync_settings_contacts_summary_on">Vincula claves con contactos basándose en nombres y direcciones de correo electrónico. Esto sucede con su dispositivo completamente desconectado.</string>
   <string name="label_sync_settings_contacts_summary_off">Las claves nuevas no se vincularán a contactos</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Actualizaciones automáticas de claves</string>
-  <string name="label_experimental_settings_desc_title">Advertencia</string>
+    <string name="label_experimental_settings_desc_title">Advertencia</string>
   <string name="label_experimental_settings_desc_summary">Estas características todavía no están finalizadas o no se han obtenido los resultados de experiencia del usuario y la investigación de seguridad. Por tanto, no confíe en su seguridad y, por favor, ¡no informe de los problemas que encuentre!</string>
   <string name="label_experimental_settings_keybase_title">Comprobantes de Keybase.io</string>
   <string name="label_experimental_settings_keybase_summary">Contacta con keybase.io para obtener comprobantes de clave y muestrelos cada vez que se muestra una clave</string>

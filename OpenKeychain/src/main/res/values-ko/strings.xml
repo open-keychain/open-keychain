@@ -202,8 +202,7 @@
   <string name="label_sync_settings_contacts_summary_on">이름과 이메일 주소에 기초해 키를 연락처에 연결합니다. 이 작업은 완전히 오프라인에서만 수행됩니다.</string>
   <string name="label_sync_settings_contacts_summary_off">새 키를 앞으로 연락처에 연결하지 않음</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">자동 키 갱신</string>
-  <string name="label_experimental_settings_desc_title">경고</string>
+    <string name="label_experimental_settings_desc_title">경고</string>
   <string name="label_experimental_settings_desc_summary">이 기능들은 아직 완성되지 않았거나 유저 경험/보안 연구의 결과가 아닙니다. 그러니 이 기능의 보안성에 의존하거나 겪는 문제를 보고하지 말아주세요!</string>
   <string name="label_experimental_settings_keybase_summary">keybase.io에 연결해서 키가 표시될 때 마다 키 증명을 표시</string>
   <string name="label_experimental_settings_theme_summary">(아이콘이나 많은 화면이 검은 테마에 알맞게 아직 조정되지 않았습니다)</string>

@@ -30,7 +30,6 @@ import org.sufficientlysecure.keychain.operations.results.OperationResult.Operat
 import org.sufficientlysecure.keychain.operations.results.UpdateTrustResult;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
-import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.DeleteKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
@@ -101,9 +100,6 @@ public class DeleteOperation extends BaseReadWriteOperation<DeleteKeyringParcel>
 
         int result = DeleteResult.RESULT_OK;
         if (success > 0) {
-            // make sure new data is synced into contacts
-            ContactSyncAdapterService.requestContactsSync();
-
             log.add(LogType.MSG_DEL_OK, 0, success);
         }
         if (fail > 0) {

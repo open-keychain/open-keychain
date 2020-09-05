@@ -38,7 +38,6 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKeyRing;
 import org.sufficientlysecure.keychain.pgp.PgpKeyOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
-import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -181,9 +180,6 @@ public class EditKeyOperation extends BaseReadWriteOperation<SaveKeyringParcel> 
         }
 
         updateProgress(R.string.progress_done, 100, 100);
-
-        // make sure new data is synced into contacts
-        ContactSyncAdapterService.requestContactsSync();
 
         log.add(LogType.MSG_ED_SUCCESS, 0);
         return new EditKeyResult(EditKeyResult.RESULT_OK, log, ring.getMasterKeyId());

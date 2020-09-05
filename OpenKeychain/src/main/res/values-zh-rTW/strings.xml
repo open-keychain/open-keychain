@@ -213,8 +213,7 @@
   <string name="label_sync_settings_contacts_summary_on">連接金鑰至聯絡人(基於姓名和電子郵件地址)。這只在您的裝置上離線進行。</string>
   <string name="label_sync_settings_contacts_summary_off">新的金鑰將不會與聯絡人連接</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">自動金鑰同步</string>
-  <string name="label_experimental_settings_desc_title">警告</string>
+    <string name="label_experimental_settings_desc_title">警告</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io 證明</string>
     <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">啟用洋蔥(Tor)網路</string>

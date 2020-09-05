@@ -212,7 +212,6 @@
   <string name="label_sync_settings_contacts_summary_on">根据名字和邮件地址将密钥关联到联系人。这是本地操作，不需要设备联网。</string>
   <string name="label_sync_settings_contacts_summary_off">新密钥将不会与联系人相关联</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">自动更新密钥</string>
   <string name="label_experimental_settings_desc_title">警告</string>
   <string name="label_experimental_settings_desc_summary">这些功能目前尚未完成或者缺少用户经验性/安全性的研究结果。所以，不保证他们是安全的，请不要报告遇到的问题！</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io 证明</string>

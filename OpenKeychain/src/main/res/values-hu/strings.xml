@@ -212,7 +212,6 @@
   <string name="label_sync_settings_contacts_summary_on">Kulcsok összekapcsolása partnerekkel a nevük és az e-mail címük alapján. Ez teljesen mértékben hálózati kapcsolat nélkül történik az ön eszközén.</string>
   <string name="label_sync_settings_contacts_summary_off">Az új kulcsok nem lesznek összekapcsolva partnerekkel</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Automatikus kulcsfrissítések</string>
   <string name="label_experimental_settings_desc_title">Figyelmeztetés</string>
   <string name="label_experimental_settings_desc_summary">Ezek a funkciók még nincsenek befejezve, vagy felhasználói élmény és biztonsági kutatást eredményei. Emiatt ne bízzon a biztonságukban, és ne jelentse a felmerülő hibákat!</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io igazolások</string>

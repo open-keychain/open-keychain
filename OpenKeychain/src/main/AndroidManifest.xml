@@ -54,21 +54,6 @@
 
     <!-- CAMERA permission requested by ZXing library -->
 
-    <!-- contact group -->
-    <!--
-        AUTHENTICATE_ACCOUNTS and MANAGE_ACCOUNTS removed in Android >= 6,
-        see https://code.google.com/p/android-developer-preview/issues/detail?id=2592
-        also READ_PROFILE, WRITE_PROFILE?
-    -->
-    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
-    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission android:name="android.permission.WRITE_PROFILE" />
-
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
-
     <!-- storage group -->
     <!--
         No need on >= Android 4.4 for WRITE_EXTERNAL_STORAGE, because we use Storage Access Framework,
@@ -1010,36 +995,6 @@
             <intent-filter>
                 <action android:name="org.openintents.ssh.authentication.ISshAuthenticationService" />
             </intent-filter>
-        </service>
-
-        <!-- Contact Sync services -->
-        <service
-            android:name=".service.DummyAccountService"
-            android:exported="true"
-            tools:ignore="ExportedService">
-            <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator" />
-            </intent-filter>
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/account_desc" />
-        </service>
-
-        <service
-            android:name=".service.ContactSyncAdapterService"
-            android:exported="true"
-            android:process=":sync"
-            tools:ignore="ExportedService">
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.content.SyncAdapter"
-                android:resource="@xml/sync_adapter_contacts" />
-            <meta-data
-                android:name="android.provider.CONTACTS_STRUCTURE"
-                android:resource="@xml/sync_adapter_contacts_structure" />
         </service>
 
         <!-- Storage Provider for temporary decrypted files.

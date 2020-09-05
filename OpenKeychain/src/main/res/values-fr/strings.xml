@@ -212,7 +212,6 @@
   <string name="label_sync_settings_contacts_summary_on">Relier les clés aux contacts d’après les noms et les adresses courriel. Cela se passe entièrement hors ligne sur votre appareil.</string>
   <string name="label_sync_settings_contacts_summary_off">Les nouvelles clés ne seront pas reliées aux contacts</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Mises à jour automatiques des clés</string>
   <string name="label_experimental_settings_desc_title">Avertissement</string>
   <string name="label_experimental_settings_desc_summary">Ces fonctions ne sont pas encore terminées et n’ont pas fait l’objet de recherche sur leur convivialité ni leur sécurité. Par conséquent, ne vous fiez pas à leur sécurité et veuillez ne pas signaler les problèmes que vous rencontrez.</string>
   <string name="label_experimental_settings_keybase_title">Preuves keybase.io</string>

@@ -212,8 +212,7 @@
   <string name="label_sync_settings_contacts_summary_on">Połącz klucze z kontaktami używając nazw i adresów e-mail. Ta operacja jest wykonywana offline wyłączenie na tym urządzeniu.</string>
   <string name="label_sync_settings_contacts_summary_off">Nowe klucze nie będą połączone z kontaktami</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Automatyczne aktualizacje kluczy</string>
-  <string name="label_experimental_settings_desc_title">Ostrzeżenie</string>
+    <string name="label_experimental_settings_desc_title">Ostrzeżenie</string>
   <string name="label_experimental_settings_desc_summary">Te funkcje nie są jeszcze skończone lub są wynikiem badań bezpieczeństwa / wrażeń użytkownika. Tak więc nie polegaj na ich bezpieczeństwie i nie zgłaszaj problemów z nimi związanych!</string>
   <string name="label_experimental_settings_keybase_title">Dowody keybase.io</string>
   <string name="label_experimental_settings_keybase_summary">Sprawdź keybase.io dla dowodów kluczy i pokaż je za każdym razem kiedy klucz jest wyświetlany</string>

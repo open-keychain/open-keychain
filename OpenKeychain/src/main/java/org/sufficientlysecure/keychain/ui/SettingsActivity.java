@@ -23,16 +23,9 @@ import java.security.KeyStoreException;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.Manifest;
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -40,17 +33,13 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
-import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.AppCompatPreferenceActivity;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
@@ -402,141 +391,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
             // Load the preferences from an XML resource
             addPreferencesFromResource(R.xml.sync_preferences);
-
             findPreference(Constants.Pref.SYNC_KEYSERVER).setOnPreferenceChangeListener(
-                    (preference, newValue) -> {
-                        return true;
-                    });
+                    (preference, newValue) -> true);
         }
 
         @Override
         public void onStop() {
             super.onStop();
             KeyserverSyncManager.updateKeyserverSyncScheduleAsync(getActivity(), true);
-        }
-
-        @Override
-        public void onResume() {
-            super.onResume();
-            // this needs to be done in onResume since the user can change sync values from Android
-            // settings and we need to reflect that change when the user navigates back
-            final Account account = KeychainApplication.createAccountIfNecessary(getActivity());
-            // for contacts sync
-            initializeSyncCheckBox(
-                    (SwitchPreference) findPreference(Constants.Pref.SYNC_CONTACTS),
-                    account,
-                    ContactsContract.AUTHORITY
-            );
-        }
-
-        private void initializeSyncCheckBox(final SwitchPreference syncCheckBox,
-                                            final Account account,
-                                            final String authority) {
-            // account is null if it could not be created for some reason
-            boolean syncEnabled =
-                    account != null
-                            && ContentResolver.getSyncAutomatically(account, authority)
-                            && checkContactsPermission(authority);
-            syncCheckBox.setChecked(syncEnabled);
-            setSummary(syncCheckBox, authority, syncEnabled);
-
-            syncCheckBox.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @TargetApi(Build.VERSION_CODES.M)
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    boolean syncEnabled = (Boolean) newValue;
-                    if (syncEnabled) {
-                        if (checkContactsPermission(authority)) {
-                            ContentResolver.setSyncAutomatically(account, authority, true);
-                            setSummary(syncCheckBox, authority, true);
-                            return true;
-                        } else {
-                            requestPermissions(
-                                    new String[]{Manifest.permission.READ_CONTACTS},
-                                    REQUEST_PERMISSION_READ_CONTACTS);
-                            // don't update preference
-                            return false;
-                        }
-                    } else {
-                        if (account == null) {
-                            // if account could not be created for some reason,
-                            // we can't have our sync
-                            return false;
-                        }
-                        // disable syncs
-                        ContentResolver.setSyncAutomatically(account, authority, false);
-                        // cancel any ongoing/pending syncs
-                        ContentResolver.cancelSync(account, authority);
-                        setSummary(syncCheckBox, authority, false);
-                        return true;
-                    }
-                }
-            });
-        }
-
-        private boolean checkContactsPermission(String authority) {
-            if (!ContactsContract.AUTHORITY.equals(authority)) {
-                // provides convenience of not using separate checks for keyserver and contact sync
-                // in initializeSyncCheckBox
-                return true;
-            }
-
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                return true;
-            }
-
-            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS)
-                    == PackageManager.PERMISSION_GRANTED) {
-                return true;
-            }
-
-            return false;
-        }
-
-        @Override
-        public void onRequestPermissionsResult(int requestCode,
-                                               @NonNull String[] permissions,
-                                               @NonNull int[] grantResults) {
-
-            if (requestCode != REQUEST_PERMISSION_READ_CONTACTS) {
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-                return;
-            }
-
-            boolean permissionWasGranted = grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED;
-
-            if (permissionWasGranted) {
-                // permission granted -> enable contact linking
-                AccountManager manager = AccountManager.get(getActivity());
-                final Account account = manager.getAccountsByType(Constants.ACCOUNT_TYPE)[0];
-                SwitchPreference pref = (SwitchPreference) findPreference(Constants.Pref.SYNC_CONTACTS);
-                ContentResolver.setSyncAutomatically(account, ContactsContract.AUTHORITY, true);
-                setSummary(pref, ContactsContract.AUTHORITY, true);
-                pref.setChecked(true);
-            }
-        }
-
-        private void setSummary(SwitchPreference syncCheckBox, String authority,
-                                boolean checked) {
-            switch (authority) {
-                case Constants.PROVIDER_AUTHORITY: {
-                    if (checked) {
-                        syncCheckBox.setSummary(R.string.label_sync_settings_keyserver_summary_on);
-                    } else {
-                        syncCheckBox.setSummary(R.string.label_sync_settings_keyserver_summary_off);
-                    }
-                    break;
-                }
-                case ContactsContract.AUTHORITY: {
-                    if (checked) {
-                        syncCheckBox.setSummary(R.string.label_sync_settings_contacts_summary_on);
-                    } else {
-                        syncCheckBox.setSummary(R.string.label_sync_settings_contacts_summary_off);
-                    }
-                    break;
-                }
-            }
         }
     }
 

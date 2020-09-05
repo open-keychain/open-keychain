@@ -211,8 +211,7 @@
   <string name="label_sync_settings_contacts_summary_on">Ligar chaves a contactos baseándose en nomes e enderezos de correo electrónico. Isto acontece sen precisar conexión a rede no seu dispositivo.</string>
   <string name="label_sync_settings_contacts_summary_off">As novas chaves non se ligarán aos contactos</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Actualización automática de chaves</string>
-  <string name="label_experimental_settings_desc_title">Aviso</string>
+    <string name="label_experimental_settings_desc_title">Aviso</string>
   <string name="label_experimental_settings_desc_summary">Estas características aínda non están rematadas ou son resultado da investigación da experiencia de usuaria e/ou seguridade. Xa que logo, non confíe na súa seguridade e por favor non informe sobre os fallos que poida atopar!</string>
   <string name="label_experimental_settings_keybase_title">probas de Keybase.io</string>
   <string name="label_experimental_settings_keybase_summary">Pedirlle probas de chave a keybase.io e expoñelas cada vez que se mostra a chave</string>

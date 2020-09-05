@@ -189,8 +189,7 @@
   <string name="label_sync_settings_contacts_summary_on">Liên kết khóa với danh bạ dựa trên tên và địa chỉ thư. Nó được thực hiện hoàn toàn ngoại tuyến trên thiết bị của bạn.</string>
   <string name="label_sync_settings_contacts_summary_off">Các khóa mới sẽ không được liên kết với danh bạ</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Cập nhật khóa tự động</string>
-  <string name="label_experimental_settings_desc_title">Cảnh báo</string>
+    <string name="label_experimental_settings_desc_title">Cảnh báo</string>
   <string name="label_experimental_settings_desc_summary">Tính năng này hiện chưa được hoàn thành hoặc chỉ mới là kết quả nghiên cứu/thử nghiệm. Do vậy, bạn đừng tin cậy vào tính an toàn của chúng cũng như không cần thiết phải thông báo với chúng tôi!</string>
   <string name="label_experimental_settings_keybase_summary">Liên hệ với keybase.io để minh chứng khóa và hiển thị chúng mỗi khi khóa được gọi</string>
   <string name="label_experimental_settings_theme_summary">(Các biểu tượng và nhiều màn hình không được thêm vào giao diện dạng tối)</string>

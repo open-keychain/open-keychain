@@ -202,8 +202,7 @@
   <string name="label_sync_settings_contacts_summary_on">Lenk nøkler til kontakter basert på navn og e-postadresser. Dette skjer helt frakoblet på din enhet.</string>
   <string name="label_sync_settings_contacts_summary_off">Nye nøkler vil ikke lenkes til kontakter</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Automatiske nøkkeloppdateringer</string>
-  <string name="label_experimental_settings_desc_title">Advarsel</string>
+    <string name="label_experimental_settings_desc_title">Advarsel</string>
   <string name="label_experimental_settings_desc_summary">Disse funksjonene er ikke ferdige enda, eller resultat av brukererfaring/sikkerhetsforskning. Som sådan, bør du ikke stole på at de er sikre, og ikke rapportere feil du kommer over!</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io-bevis</string>
   <string name="label_experimental_settings_keybase_summary">Kontakt keybase.io for nøkkelbevis og vis dem hver gang en nøkkel vises</string>
