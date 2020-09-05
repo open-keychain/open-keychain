@@ -213,8 +213,6 @@
   <string name="label_experimental_settings_keybase_title">Proves de Keybase.io</string>
   <string name="label_experimental_settings_keybase_summary">Contacta amb keybase.io per proves de clau i mostra-les cada vegada que es mostri una clau</string>
   <string name="label_experimental_settings_theme_summary">(Les icones i moltes pantalles no estan encara ben ajustades per aquest tema fosc)</string>
-  <string name="label_settings_analytics_title">Permet estadístiques d\'ús anònim</string>
-  <string name="label_settings_analytics_summary">Si està habilitat, envia estadístiques d\'ús anònim per ajudar en la millora de la app</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Activa Tor</string>
   <string name="pref_proxy_tor_summary">Requereix Orbot per a ser instal·lat</string>
@@ -822,6 +820,4 @@
   <string name="snack_keylist_clipboard_action">Visualitza</string>
   <string name="notify_title_keysync">Actualitzant claus...</string>
   <string name="keylist_header_anonymous">Anònim </string>
-  <string name="button_analytics_no">No, gràcies</string>
-  <string name="snackbutton_analytics_settings">Configuració</string>
 </resources>

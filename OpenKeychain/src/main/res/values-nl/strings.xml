@@ -218,8 +218,6 @@
   <string name="label_experimental_settings_keybase_title">Keybase.io-bewijzen</string>
   <string name="label_experimental_settings_keybase_summary">Maak contact met keybase.io voor bevestigingen van sleutels en weergeef dit elke keer als een sleutel wordt weer gegeven</string>
   <string name="label_experimental_settings_theme_summary">(De pictogrammen en veel schermen zijn nog niet geoptimaliseerd voor het donkere thema)</string>
-  <string name="label_settings_analytics_title">Sta anonieme gebruikersstatistieken toe</string>
-  <string name="label_settings_analytics_summary">Indien ingeschakeld worden er anonieme gebruikersstatistieken verzonden om de app te verbeteren</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Tor inschakelen</string>
   <string name="pref_proxy_tor_summary">Vereist dat Orbot geïnstalleerd is</string>
@@ -1806,12 +1804,6 @@
   <string name="keylist_item_key_id">Sleutel-ID: %s</string>
   <string name="keylist_header_anonymous">Anoniem</string>
   <string name="keylist_header_special">#</string>
-  <string name="dialog_analytics_consent">Mag OpenKeychain gebruikersstatistieken verzamelen om de ervaring voor alle gebruikers te verbeteren?\n\nVoor meer informatie, zie ons <a href="https://openkeychain.org/help/privacy-policy">privacybeleid</a>.</string>
-  <string name="button_analytics_yes">Ja, ik wil meehelpen!</string>
-  <string name="button_analytics_no">Nee, bedankt</string>
-  <string name="snack_analytics_accept">Bedankt voor de hulp! Je kan deze voorkeur veranderen in de instellingen.</string>
-  <string name="snack_analytics_reject">Geen probleem, we zullen het niet opnieuw vragen. Je kan van gedachten veranderen in de instellingen.</string>
-  <string name="snackbutton_analytics_settings">Instellingen</string>
   <string name="subkey_action_create">Subsleutel zal worden aangemaakt</string>
   <string name="subkey_action_revoke">Subsleutel zal worden ingetrokken</string>
   <string name="subkey_action_strip">Subsleutel zal worden gestript</string>

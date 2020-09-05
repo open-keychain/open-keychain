@@ -218,8 +218,6 @@
   <string name="label_experimental_settings_keybase_title">Keybase.io proofs</string>
   <string name="label_experimental_settings_keybase_summary">Kontakta keybase.io för nyckelbevis och visa dem varje gång en nyckel visas</string>
   <string name="label_experimental_settings_theme_summary">(Ikonerna och många skärmar är ännu inte justerade för mörkt tema)</string>
-  <string name="label_settings_analytics_title">Tillåt anonym användarstatistik</string>
-  <string name="label_settings_analytics_summary">Om den är aktiverad skickar du anonym användarstatistik för att förbättra appen</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Aktivera Tor</string>
   <string name="pref_proxy_tor_summary">Kräver att Orbot är installerad</string>
@@ -1670,12 +1668,6 @@
   <string name="keylist_item_key_id">Nyckel-ID: %s</string>
   <string name="keylist_header_anonymous">Anonym</string>
   <string name="keylist_header_special">#</string>
-  <string name="dialog_analytics_consent">För att förbättra upplevelsen för alla användare, kan OpenKeychain samla anonym användningsstatistik?\n\nFör mer information, se vår <a href="https://openkeychain.org/help/privacy-policy">integritetspolicy</a>.</string>
-  <string name="button_analytics_yes">Ja, jag vill hjälpa till!</string>
-  <string name="button_analytics_no">Nej tack</string>
-  <string name="snack_analytics_accept">Tack för hjälpen! Du kan ändra denna inställning i inställningarna.</string>
-  <string name="snack_analytics_reject">Det är okej, vi kommer inte att fråga igen. Du kan ändra dig i inställningarna.</string>
-  <string name="snackbutton_analytics_settings">Inställningar</string>
   <string name="subkey_action_create">Undernyckel kommer att skapas</string>
   <string name="subkey_action_revoke">Undernyckel kommer att återkallas</string>
   <string name="subkey_action_strip">Undernyckeln kommer att avskalas</string>

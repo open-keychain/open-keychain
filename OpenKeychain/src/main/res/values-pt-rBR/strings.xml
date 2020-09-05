@@ -218,8 +218,6 @@
   <string name="label_experimental_settings_keybase_title">Provas Keybase.io</string>
   <string name="label_experimental_settings_keybase_summary">Contate o keybase.io para as provas de chaves e mostre-as toda vez que uma chave for exibida</string>
   <string name="label_experimental_settings_theme_summary">(Os ícones e algumas telas ainda não foram adaptados para o tema escuro)</string>
-  <string name="label_settings_analytics_title">Permitir estatísticas anônimas de uso</string>
-  <string name="label_settings_analytics_summary">Se habilitado, envia estatísticas anônimas de uso para ajudar a melhorar a aplicação</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Ativar Tor</string>
   <string name="pref_proxy_tor_summary">Requer que o Orbot esteja instalado</string>
@@ -1804,12 +1802,6 @@
   <string name="keylist_item_key_id">ID da Chave: %s</string>
   <string name="keylist_header_anonymous">Anônimo</string>
   <string name="keylist_header_special">#</string>
-  <string name="dialog_analytics_consent">Para melhorar a experiência para todos os usuários, o OpenKeychain pode coletar estatísticas anônimas de uso?\n\nPara saber mais, consulte nossa <a href="https://openkeychain.org/help/privacy-policy">Política de Privacidade</a>.</string>
-  <string name="button_analytics_yes">Sim, eu quero ajudar!</string>
-  <string name="button_analytics_no">Não, obrigado</string>
-  <string name="snack_analytics_accept">Obrigado por nos ajudar! Você pode alterar esta preferência nas configurações.</string>
-  <string name="snack_analytics_reject">Sem problema, não iremos pedir de novo. Você pode mudar de ideia nas configurações.</string>
-  <string name="snackbutton_analytics_settings">Configurações</string>
   <string name="subkey_action_create">A subchave será criada</string>
   <string name="subkey_action_revoke">A subchave será revogada</string>
   <string name="subkey_action_strip">A subchave será extirpada</string>

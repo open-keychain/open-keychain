@@ -231,9 +231,6 @@
 
     <string name="label_experimental_settings_theme_summary">"(The icons and many screens are not yet adjusted accordingly for the dark theme)"</string>
 
-    <string name="label_settings_analytics_title">Allow anonymous usage statistics</string>
-    <string name="label_settings_analytics_summary">If enabled, sends anonymous usage statistics to help improve the app</string>
-
     <!-- Proxy Preferences -->
     <string name="pref_proxy_tor_title">"Enable Tor"</string>
     <string name="pref_proxy_tor_summary">"Requires Orbot to be installed"</string>
@@ -1908,13 +1905,6 @@
     <string name="keylist_header_anonymous">Anonymous</string>
     <string name="keylist_header_special">#</string>
 
-    <string name="dialog_analytics_consent">"To improve the experience for all users, may OpenKeychain collect anonymous usage statistics?\n\nTo find out more, see our <a href="https://openkeychain.org/help/privacy-policy">Privacy Policy</a>."</string>
-    <string name="button_analytics_yes">"Yes, I want to help!"</string>
-    <string name="button_analytics_no">"No, thanks"</string>
-
-    <string name="snack_analytics_accept">"Thanks for helping out! You can change this preference in the settings."</string>
-    <string name="snack_analytics_reject">"That's alright, we won't ask again. You can change your mind in the settings."</string>
-    <string name="snackbutton_analytics_settings">"Settings"</string>
     <string name="subkey_action_create">Subkey will be created</string>
     <string name="subkey_action_revoke">Subkey will be revoked</string>
     <string name="subkey_action_strip">Subkey will be stripped</string>

@@ -167,6 +167,4 @@
   <string name="transfer_confirm_ok">Kas</string>
   <string name="token_action_import">Emporzhiañ</string>
   <string name="keylist_header_anonymous">Anonymous</string>
-  <string name="button_analytics_no">Nann, avat</string>
-  <string name="snackbutton_analytics_settings">Arventennoù</string>
 </resources>

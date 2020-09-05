@@ -218,8 +218,6 @@
   <string name="label_experimental_settings_keybase_title">Keybase.io Proofs</string>
   <string name="label_experimental_settings_keybase_summary">Kontaktovat keybase.io pro proofs klíče a ukázat je pokaždé když je klíč zobrazen</string>
   <string name="label_experimental_settings_theme_summary">(Ikony a mnoho obrazovek ještě nejsou uzpůsobené pro temné téma vzhledu)</string>
-  <string name="label_settings_analytics_title">Povolit anonymní statistiku využití</string>
-  <string name="label_settings_analytics_summary">Pokud povoleno, odešle anonymní statistiku o využívání za účelem vylepšení applikace</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Zapnout Tor</string>
   <string name="pref_proxy_tor_summary">Vyžaduje instalovaný Orbot </string>
@@ -1874,12 +1872,6 @@
   <string name="keylist_item_key_id">Klíč ID: %s</string>
   <string name="keylist_header_anonymous">Anonymní</string>
   <string name="keylist_header_special">#</string>
-  <string name="dialog_analytics_consent">K zlepšení zkušenosti všech uživatelů, smí OpenKeychain sbírat anonymní statistiku o používání?\n\nVíce informací v <a href="https://openkeychain.org/help/privacy-policy">Ochraně údajů</a>.</string>
-  <string name="button_analytics_yes">Ano, chci pomoci!</string>
-  <string name="button_analytics_no">Ne, děkuji</string>
-  <string name="snack_analytics_accept">Díky za pomoc! Tuto volbu můžete změnit v nastavení.</string>
-  <string name="snack_analytics_reject">To je v pořádku, už se nezeptáme. Své rozhodnutí mužete změnit v nastavení.</string>
-  <string name="snackbutton_analytics_settings">Nastavení</string>
   <string name="subkey_action_create">Založím podklíč</string>
   <string name="subkey_action_revoke">Podklíč bude zrušen</string>
   <string name="subkey_action_strip">Podklíč bude vyjmut</string>

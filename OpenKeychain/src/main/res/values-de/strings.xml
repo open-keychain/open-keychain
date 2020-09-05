@@ -218,8 +218,6 @@
   <string name="label_experimental_settings_keybase_title">Keybase.io-Nachweise</string>
   <string name="label_experimental_settings_keybase_summary">Keybase.io für Schlüsselnachweise kontaktieren und diese jedesmal zeigen, wenn ein Schlüssel angezeigt wird</string>
   <string name="label_experimental_settings_theme_summary">(Die Symbole und viele Bildschirme sind noch nicht an das dunkle Design angepasst)</string>
-  <string name="label_settings_analytics_title">Erlaube anonyme Benutzungsstatistiken</string>
-  <string name="label_settings_analytics_summary">Wenn aktiviert, sendet anonyme Benutzungsstatistiken, um dabei zu helfen, die App zu verbessern</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Tor aktivieren</string>
   <string name="pref_proxy_tor_summary">Orbot muss installiert sein</string>
@@ -1807,12 +1805,6 @@ Ein sicherer Schlüssel sollte eine Stärke von 2048 Bits besitzen.</string>
   <string name="keylist_item_key_id">Key ID: %s</string>
   <string name="keylist_header_anonymous">Anonym</string>
   <string name="keylist_header_special">#</string>
-  <string name="dialog_analytics_consent">Um die Erfahrung aller Benutzer zu verbessen, soll OpenKeychain anonyme Benutzungsstatistiken sammeln dürfen?\n\nUm mehr zu erfahren, schau in unsere<a href="https://openkeychain.org/help/privacy-policy">Privatsphärenrichtlinien</a>.</string>
-  <string name="button_analytics_yes">Ja, ich möchte helfen!</string>
-  <string name="button_analytics_no">Nein, danke</string>
-  <string name="snack_analytics_accept">Vielen Dank für die Hilfe! Du kannst deine Entscheidung in den Einstellungen ändern.</string>
-  <string name="snack_analytics_reject">Das ist in Ordnung, wir werden nicht erneut fragen. Du kannst deine Entscheidung in den Einstellungen ändern.</string>
-  <string name="snackbutton_analytics_settings">Einstellungen</string>
   <string name="subkey_action_create">Teilschlüssel wird erstellt werden</string>
   <string name="subkey_action_revoke">Teilschlüssel wird widerrufen werden</string>
   <string name="subkey_action_strip">Teilschlüssel wird entfernt werden</string>

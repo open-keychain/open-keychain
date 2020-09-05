@@ -218,9 +218,7 @@
   <string name="label_experimental_settings_keybase_title">Перевірки Keybase.io</string>
   <string name="label_experimental_settings_keybase_summary">Контактувати з keybase.io для підтвердження ключа та показувати дійсності щоразу, коли ключ відображено</string>
   <string name="label_experimental_settings_theme_summary">(Піктограми та більшість екранів не налаштовані для темної теми)</string>
-  <string name="label_settings_analytics_title">Дозволити анонімну статистику про використання</string>
-  <string name="label_settings_analytics_summary">Якщо увімкнено, надсилає анонімну статистику про використання, щоби допомогти покращити цей застосунок</string>
-  <!--Proxy Preferences-->
+    <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Увімкнути Tor</string>
   <string name="pref_proxy_tor_summary">Потребує інсталяції Orbot</string>
   <string name="pref_proxy_normal_title">Увімкнути інше проксі</string>
@@ -1876,13 +1874,7 @@
   <string name="keylist_item_key_id">Ідентифікатор ключа: %s</string>
   <string name="keylist_header_anonymous">Анонімно</string>
   <string name="keylist_header_special">#</string>
-  <string name="dialog_analytics_consent">Щоб покращити досвід для всіх користувачів, чи може OpenKeychain збирати анонімну статистику про використання?\n\nЩоби дізнатися більше, див. нашу <a href="https://openkeychain.org/help/privacy-policy">Політику конфіденційності</a>.</string>
-  <string name="button_analytics_yes">Так, я хочу допомогти!</string>
-  <string name="button_analytics_no">Ні, дякую</string>
-  <string name="snack_analytics_accept">Дякуємо за допомогу! Ви можете змінити цей параметр у налаштуваннях.</string>
-  <string name="snack_analytics_reject">Усе добре, ми не будемо запитувати вас знову. Ви можете змінити свою думку в налаштуваннях.</string>
-  <string name="snackbutton_analytics_settings">Налаштування</string>
-  <string name="subkey_action_create">Підключ буде створено</string>
+    <string name="subkey_action_create">Підключ буде створено</string>
   <string name="subkey_action_revoke">Підключ буде відкликано</string>
   <string name="subkey_action_strip">Підключ буде відділено</string>
   <string name="subkey_action_expiry_never">Термін дії буде змінено на ніколи</string>

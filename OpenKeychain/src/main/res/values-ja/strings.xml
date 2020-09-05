@@ -218,8 +218,6 @@
   <string name="label_experimental_settings_keybase_title">Keybase.io 検証</string>
   <string name="label_experimental_settings_keybase_summary">鍵の検証のためkeybase.ioに連絡し、鍵が表示されるたびに表示します</string>
   <string name="label_experimental_settings_theme_summary">(アイコンおよび多くの画面は、まだダークテーマに応じて調整されていません)</string>
-  <string name="label_settings_analytics_title">匿名の使用統計データの送信を許可する</string>
-  <string name="label_settings_analytics_summary">有効にすると、アプリの改善に役立つ匿名の使用統計データが送信されます</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Torを有効</string>
   <string name="pref_proxy_tor_summary">Orbotのインストールが要求されます</string>
@@ -1776,12 +1774,6 @@
   <string name="keylist_item_key_id">鍵 ID: %s</string>
   <string name="keylist_header_anonymous">匿名</string>
   <string name="keylist_header_special">#</string>
-  <string name="dialog_analytics_consent">すべてのユーザーのエクスペリエンスを改善するために、OpenKeychainの匿名の使用統計データを送信していただけますか？\n\n詳細については、<a href="https://openkeychain.org/help/privacy-policy">プライバシーポリシー</a>をご覧ください。</string>
-  <string name="button_analytics_yes">はい、匿名の使用統計データを送信して応援します！</string>
-  <string name="button_analytics_no">いいえ、使用統計データを送信しません。</string>
-  <string name="snack_analytics_accept">応援をありがとうございます！ この設定は「設定」で変更できます。</string>
-  <string name="snack_analytics_reject">大丈夫です、今後お尋ねしないようにします。「設定」でこの設定を変更できます。</string>
-  <string name="snackbutton_analytics_settings">設定</string>
   <string name="subkey_action_create">サブキーが作成されます</string>
   <string name="subkey_action_revoke">サブキーは取り消されます</string>
   <string name="subkey_action_strip">サブキーは削除されます</string>

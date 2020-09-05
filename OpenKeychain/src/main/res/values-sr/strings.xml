@@ -1449,5 +1449,4 @@
   <string name="notify_channel_passcache">Кеширај лозинку</string>
   <string name="notify_title_keysync">Ажурирам кључеве…</string>
   <string name="keylist_item_key_id">ИД кључа: %s</string>
-  <string name="snackbutton_analytics_settings">Podešavanja</string>
 </resources>

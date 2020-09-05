@@ -34,7 +34,6 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.sufficientlysecure.keychain.analytics.AnalyticsManager;
 import org.sufficientlysecure.keychain.keysync.KeyserverSyncManager;
 import org.sufficientlysecure.keychain.network.TlsCertificatePinning;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
@@ -46,8 +45,6 @@ import timber.log.Timber.DebugTree;
 
 
 public class KeychainApplication extends Application {
-    AnalyticsManager analyticsManager;
-
     /**
      * Called when the application is starting, before any activity, service, or receiver objects
      * (excluding content providers) have been created.
@@ -116,9 +113,6 @@ public class KeychainApplication extends Application {
         KeyserverSyncManager.updateKeyserverSyncScheduleAsync(this, false);
 
         TemporaryFileProvider.scheduleCleanupImmediately(getApplicationContext());
-
-        analyticsManager = AnalyticsManager.getInstance(getApplicationContext());
-        analyticsManager.initialize(this);
     }
 
     /**
@@ -165,10 +159,6 @@ public class KeychainApplication extends Application {
         if (enableDebugLogging) {
             Timber.plant(new DebugTree());
         }
-    }
-
-    public AnalyticsManager getAnalyticsManager() {
-        return analyticsManager;
     }
 
     public static String getProcessName() {

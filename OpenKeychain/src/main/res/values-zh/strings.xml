@@ -218,8 +218,6 @@
   <string name="label_experimental_settings_keybase_title">Keybase.io 证明</string>
   <string name="label_experimental_settings_keybase_summary">每次展示密钥时自动从keybase.io获取证明并显示它们</string>
   <string name="label_experimental_settings_theme_summary">（图标和某些界面还未根据深色主题进行调整）</string>
-  <string name="label_settings_analytics_title">允许使用匿名统计数据</string>
-  <string name="label_settings_analytics_summary">如果开启，发送匿名的统计数据来帮助我们改进此软件</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">启用 Tor 代理</string>
   <string name="pref_proxy_tor_summary">必需已安装 Orbot</string>
@@ -1772,12 +1770,6 @@
   <string name="keylist_item_key_id">密钥 ID：%s</string>
   <string name="keylist_header_anonymous">匿名</string>
   <string name="keylist_header_special">#</string>
-  <string name="dialog_analytics_consent">为改善所有用户的使用体验，允许OpenKeychain匿名搜集一些使用统计信息吗？\n\n想知道更多，查阅我们的<a href="https://openkeychain.org/help/privacy-policy">隐私政策</a></string>
-  <string name="button_analytics_yes">是的，我愿意帮忙！</string>
-  <string name="button_analytics_no">不用了，谢谢</string>
-  <string name="snack_analytics_accept">感谢帮助！你可以在设置中更改这些偏好。</string>
-  <string name="snack_analytics_reject">没问题，我们不会再次打扰你。如果改变了想法，你可以在设置中更改。</string>
-  <string name="snackbutton_analytics_settings">设置</string>
   <string name="subkey_action_create">将创建子密钥</string>
   <string name="subkey_action_revoke">将吊销子密钥</string>
   <string name="subkey_action_strip">将剥离子密钥</string>

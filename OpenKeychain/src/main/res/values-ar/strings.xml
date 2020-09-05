@@ -686,7 +686,5 @@
   <string name="notify_content_keysync">مفتاح %d / %d</string>
   <string name="keylist_header_anonymous">مجهول</string>
   <string name="keylist_header_special">#</string>
-  <string name="button_analytics_no">لا، شكراً</string>
-  <string name="snackbutton_analytics_settings">الإعدادات</string>
   <string name="share_key">شارك المفتاح</string>
 </resources>

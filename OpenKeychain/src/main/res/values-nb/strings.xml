@@ -869,6 +869,4 @@
   <string name="notify_title_keysync">oppdaterer nøkler…</string>
   <string name="keylist_item_key_id">Nøkkel-ID: %s</string>
   <string name="keylist_header_anonymous">Anonym</string>
-  <string name="button_analytics_no">Nei takk</string>
-  <string name="snackbutton_analytics_settings">Innstillinger</string>
 </resources>

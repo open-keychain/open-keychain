@@ -1177,6 +1177,4 @@
   <string name="keylist_item_key_id">ID chiave: %s</string>
   <string name="keylist_header_anonymous">Anonimo</string>
   <string name="keylist_header_special">#</string>
-  <string name="button_analytics_no">No, grazie</string>
-  <string name="snackbutton_analytics_settings">Impostazioni</string>
 </resources>

@@ -218,8 +218,6 @@
   <string name="label_experimental_settings_keybase_title">Keybase.io igazolások</string>
   <string name="label_experimental_settings_keybase_summary">Kapcsolatfelvétel a keybase.io-val a kulcsigazolásokért, és megtekintés minden alkalommal, amikor egy kulcs megjelenik</string>
   <string name="label_experimental_settings_theme_summary">(Az ikonok és számos képernyő még nem lett hozzáigazítva a sötét témához)</string>
-  <string name="label_settings_analytics_title">Névtelen használati statisztikák engedélyezése</string>
-  <string name="label_settings_analytics_summary">Ha engedélyezve van, akkor névtelen használati statisztikákat küld, hogy segítsen az alkalmazás továbbfejlesztésében </string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Tor engedélyezése</string>
   <string name="pref_proxy_tor_summary">Az Orbot telepítése szükséges</string>
@@ -743,9 +741,6 @@
   <string name="keylist_item_key_id">Kulcsazonosító: %s</string>
   <string name="keylist_header_anonymous">Anoním / Névtelen</string>
   <string name="keylist_header_special">#</string>
-  <string name="button_analytics_yes">Igen, szeretnék segíteni!</string>
-  <string name="button_analytics_no">Köszönöm, nem</string>
-  <string name="snackbutton_analytics_settings">Beállítások</string>
   <string name="subkey_action_create">Az alkulcs létrehozásra kerül</string>
   <string name="subkey_action_revoke">Az alkulcs visszavonásra kerül</string>
   <string name="subkey_action_expiry_never">A lejárat sohára változik</string>

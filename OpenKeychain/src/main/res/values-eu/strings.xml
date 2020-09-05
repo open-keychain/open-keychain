@@ -211,8 +211,7 @@
   <string name="label_experimental_settings_desc_summary">Ezaugarri hauek ez dute amaitu edo erabiltzaile jarduera/segurtasun emaitzak erdietsita. Honela, ez dira beren segurtasunean ohinarritzen eta mesedez ez jakinarazi aurkitzen dituzun arazoak!</string>
   <string name="label_experimental_settings_keybase_summary">Jarri harremanetan keybase.io giltzak probatzeko eta erakutsi hauek giltza bat erakusten den bakoitzean</string>
   <string name="label_experimental_settings_theme_summary">(Ikurrak eta ikusleiho asko oraindik ez daude azalgai ilunarekin zehaztuta)</string>
-  <string name="label_settings_analytics_title">Ahalbidetu izengabeko estatistika erabilpena</string>
-  <!--Proxy Preferences-->
+    <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Gaitu Tor</string>
   <string name="pref_proxy_tor_summary">Orbot ezarrita egotea behar du</string>
   <string name="pref_proxy_normal_title">Gaitu beste proxy bat</string>
@@ -1552,9 +1551,6 @@
   <string name="keylist_item_key_id">Giltza ID-a: %s</string>
   <string name="keylist_header_anonymous">Izengabe</string>
   <string name="keylist_header_special">#</string>
-  <string name="button_analytics_yes">Bai, laguntzea nahi dut!</string>
-  <string name="button_analytics_no">Ez, mila esker</string>
-  <string name="snackbutton_analytics_settings">Ezarpenak</string>
   <string name="subkey_action_create">Azpigiltza sortuko da</string>
   <string name="subkey_action_revoke">Azpigiltza ukatuko da</string>
   <string name="subkey_action_expiry_never">Epemuga inoiz ez-ra aldatuko da</string>
