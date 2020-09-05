@@ -18,7 +18,6 @@
 package org.sufficientlysecure.keychain.keysync;
 
 
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -29,11 +28,10 @@ import android.os.Build.VERSION_CODES;
 
 import androidx.annotation.WorkerThread;
 import androidx.work.Constraints.Builder;
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkInfo;
-import androidx.work.WorkInfo.State;
 import androidx.work.WorkManager;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
@@ -43,7 +41,8 @@ public class KeyserverSyncManager {
     private static final long SYNC_INTERVAL = 3;
     private static final TimeUnit SYNC_INTERVAL_UNIT = TimeUnit.DAYS;
 
-    private static final String PERIODIC_WORK_TAG = "keyserverSync";
+    private static final String LEGACY_PERIODIC_WORK_TAG = "keyserverSync";
+    private static final String WORK_UNIQUE_NAME = "periodicKeyserverSync";
 
     public static void updateKeyserverSyncScheduleAsync(Context context, boolean forceReschedule) {
         new AsyncTask<Void,Void,Void>() {
@@ -60,27 +59,12 @@ public class KeyserverSyncManager {
         Preferences prefs = Preferences.getPreferences(context);
         WorkManager workManager = WorkManager.getInstance(context);
 
-        UUID workUuid = prefs.getKeyserverSyncWorkUuid();
-        try {
-            WorkInfo info = workUuid != null ? workManager.getWorkInfoById(workUuid).get() : null;
-
-            boolean workIsScheduled = info != null && info.getState() != State.CANCELLED;
-            if (workIsScheduled == prefs.isKeyserverSyncEnabled()) {
-                if (!forceReschedule) {
-                    Timber.d("Key sync already scheduled, no changes necessary");
-                    return;
-                }
-                Timber.d("Key sync already scheduled, but forcing reschedule");
-            }
-        } catch (ExecutionException | InterruptedException e) {
-            Timber.e(e, "Error getting info for scheduled key sync work?");
-        }
-
-        Timber.d("Cancelling sync tasks…");
-        workManager.cancelAllWorkByTag(PERIODIC_WORK_TAG);
+        // Cancel work that was scheduled by tag, as we used to do.
+        workManager.cancelAllWorkByTag(LEGACY_PERIODIC_WORK_TAG);
 
         if (!prefs.isKeyserverSyncEnabled()) {
             Timber.d("Key sync disabled");
+            workManager.cancelUniqueWork(WORK_UNIQUE_NAME);
             return;
         }
 
@@ -96,10 +80,12 @@ public class KeyserverSyncManager {
         PeriodicWorkRequest workRequest =
                 new PeriodicWorkRequest.Builder(KeyserverSyncWorker.class, SYNC_INTERVAL, SYNC_INTERVAL_UNIT)
                         .setConstraints(constraints.build())
-                        .addTag(PERIODIC_WORK_TAG)
                         .build();
         try {
-            workManager.enqueue(workRequest).getResult().get();
+            ExistingPeriodicWorkPolicy policy = forceReschedule
+                    ? ExistingPeriodicWorkPolicy.REPLACE
+                    : ExistingPeriodicWorkPolicy.KEEP;
+            workManager.enqueueUniquePeriodicWork(WORK_UNIQUE_NAME, policy, workRequest).getResult().get();
             Timber.d("Work id: %s", workRequest.getId());
             prefs.setKeyserverSyncScheduled(workRequest.getId());
         } catch (InterruptedException | ExecutionException e) {
