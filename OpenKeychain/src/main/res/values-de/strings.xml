@@ -779,8 +779,7 @@
   <string name="nav_backup">Backup/Wiederherstellung</string>
   <string name="nav_transfer">Sichere WiFi Übertragung</string>
   <string name="nav_shop">Shop</string>
-  <string name="nav_autocrypt">Autocrypt mit Thunderbird probieren</string>
-  <!--hints-->
+    <!--hints-->
   <string name="encrypt_content_edit_text_hint">Text eingeben</string>
   <!--certs-->
   <string name="cert_default">normal</string>

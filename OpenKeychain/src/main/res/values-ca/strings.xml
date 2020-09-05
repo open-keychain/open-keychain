@@ -699,8 +699,7 @@
   <string name="nav_backup">Còpia de seguretat/Restaura</string>
   <string name="nav_transfer">Transferència Wifi segura</string>
   <string name="nav_shop">Botiga</string>
-  <string name="nav_autocrypt">Proveu Autocrypt amb Thunderbird</string>
-  <!--hints-->
+    <!--hints-->
   <string name="encrypt_content_edit_text_hint">Escriviu text</string>
   <!--certs-->
   <string name="cert_default">per defecte</string>

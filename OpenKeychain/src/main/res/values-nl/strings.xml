@@ -779,8 +779,7 @@
   <string name="nav_backup">Back-up/herstellen</string>
   <string name="nav_transfer">Beveiligde wifi-overdracht</string>
   <string name="nav_shop">Winkel</string>
-  <string name="nav_autocrypt">Probeer Autocrypt met Thunderbird</string>
-  <!--hints-->
+    <!--hints-->
   <string name="encrypt_content_edit_text_hint">Voer tekst in</string>
   <!--certs-->
   <string name="cert_default">standaard</string>

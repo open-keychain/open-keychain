@@ -765,8 +765,7 @@
   <string name="nav_backup">バックアップ/リストア</string>
   <string name="nav_transfer">安全な Wifi 転送</string>
   <string name="nav_shop">ショップ</string>
-  <string name="nav_autocrypt">Thunderbird と Autocrypt をお試しください</string>
-  <!--hints-->
+    <!--hints-->
   <string name="encrypt_content_edit_text_hint">テキストを入力</string>
   <!--certs-->
   <string name="cert_default">デフォルト</string>

@@ -20,7 +20,6 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
@@ -57,7 +56,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
     static final int ID_SETTINGS = 6;
     static final int ID_HELP = 7;
     static final int ID_SHOP = 8;
-    static final int ID_AUTOCRYPT = 9;
 
     // both of these are used for instrumentation testing only
     public static final String EXTRA_SKIP_FIRST_TIME = "skip_first_time";
@@ -97,10 +95,7 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                                 .withIdentifier(ID_TRANSFER).withSelectable(false),
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName(R.string.menu_preferences).withIcon(GoogleMaterial.Icon.gmd_settings).withIdentifier(ID_SETTINGS).withSelectable(false),
-                        new PrimaryDrawerItem().withName(R.string.menu_help).withIcon(CommunityMaterial.Icon.cmd_help_circle).withIdentifier(ID_HELP).withSelectable(false),
-                        new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName(R.string.nav_autocrypt).withIcon(GoogleMaterial.Icon.gmd_blur_on)
-                                .withTypeface(Typeface.DEFAULT_BOLD).withSelectable(false).withIdentifier(ID_AUTOCRYPT)
+                        new PrimaryDrawerItem().withName(R.string.menu_help).withIcon(CommunityMaterial.Icon.cmd_help_circle).withIdentifier(ID_HELP).withSelectable(false)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -132,9 +127,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                                     break;
                                 case ID_SHOP:
                                     onShopSelected();
-                                    break;
-                                case ID_AUTOCRYPT:
-                                    onAutocryptSelected();
                                     break;
                             }
                             if (intent != null) {
@@ -265,13 +257,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
         mDrawer.setSelection(ID_SHOP, false);
         Fragment frag = new SecurityKeyShopFragment();
         setFragment(frag);
-    }
-
-    private void onAutocryptSelected() {
-        String url = "https://addons.thunderbird.net/en-US/thunderbird/addon/autocrypt/";
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(url));
-        startActivity(intent);
     }
 
     @Override

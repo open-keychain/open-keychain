@@ -816,8 +816,7 @@
   <string name="nav_backup">Резервирование/Восстановление</string>
   <string name="nav_transfer">Безопасная передача по Wi-Fi</string>
   <string name="nav_shop">Магазин</string>
-  <string name="nav_autocrypt">Попробуйте Autocrypt с Thunderbird</string>
-  <!--hints-->
+    <!--hints-->
   <string name="encrypt_content_edit_text_hint">Напишите текст</string>
   <!--certs-->
   <string name="cert_default">по умолчанию</string>

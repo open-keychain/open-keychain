@@ -775,8 +775,7 @@
   <string name="nav_backup">Säkerhetskopiera/återställa</string>
   <string name="nav_transfer">Säker Wi-Fi-överföring</string>
   <string name="nav_shop">Butik</string>
-  <string name="nav_autocrypt">Prova Autocrypt med Thunderbird</string>
-  <!--hints-->
+    <!--hints-->
   <string name="encrypt_content_edit_text_hint">Skriv text</string>
   <!--certs-->
   <string name="cert_default">förval</string>

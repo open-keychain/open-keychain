@@ -815,8 +815,7 @@
   <string name="nav_backup">Záloha/Obnova</string>
   <string name="nav_transfer">Bezpečný přenos přes WiFi</string>
   <string name="nav_shop">Obchod</string>
-  <string name="nav_autocrypt">Vyzkoušejte Autocrypt s Thunderbird</string>
-  <!--hints-->
+    <!--hints-->
   <string name="encrypt_content_edit_text_hint">Napsat text</string>
   <!--certs-->
   <string name="cert_default">výchozí</string>

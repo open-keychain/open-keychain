@@ -818,7 +818,6 @@
     <string name="nav_backup">"Backup/Restore"</string>
     <string name="nav_transfer">"Secure Wifi Transfer"</string>
     <string name="nav_shop">Shop</string>
-    <string name="nav_autocrypt">Try Autocrypt with Thunderbird</string>
 
     <!-- hints -->
     <string name="encrypt_content_edit_text_hint">"Type text"</string>
