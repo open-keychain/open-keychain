@@ -20,25 +20,21 @@ package org.sufficientlysecure.keychain.ui.keyview;
 
 import java.util.List;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.provider.ContactsContract;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.appcompat.widget.PopupMenu.OnMenuItemClickListener;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.appcompat.widget.PopupMenu.OnMenuItemClickListener;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProvider;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
@@ -55,18 +51,15 @@ import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.UserIdInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.KeyHealthStatus;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.KeySubkeyStatus;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.SubKeyItem;
-import org.sufficientlysecure.keychain.ui.keyview.loader.SystemContactDao.SystemContactInfo;
 import org.sufficientlysecure.keychain.ui.keyview.view.IdentitiesCardView;
 import org.sufficientlysecure.keychain.ui.keyview.view.KeyHealthView;
 import org.sufficientlysecure.keychain.ui.keyview.view.KeyStatusList.KeyDisplayStatus;
 import org.sufficientlysecure.keychain.ui.keyview.view.KeyserverStatusView;
-import org.sufficientlysecure.keychain.ui.keyview.view.SystemContactCardView;
 import timber.log.Timber;
 
 
 public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener {
     private IdentitiesCardView identitiesCardView;
-    private SystemContactCardView systemContactCard;
     private KeyHealthView keyStatusHealth;
     private KeyserverStatusView keyserverStatusView;
     private View keyStatusCardView;
@@ -87,7 +80,6 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
         View view = inflater.inflate(R.layout.view_key_fragment, viewGroup, false);
 
         identitiesCardView = view.findViewById(R.id.card_identities);
-        systemContactCard = view.findViewById(R.id.linked_system_contact_card);
         keyStatusCardView = view.findViewById(R.id.subkey_status_card);
         keyStatusHealth = view.findViewById(R.id.key_status_health);
         keyserverStatusView = view.findViewById(R.id.key_status_keyserver);
@@ -118,17 +110,16 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
 
         Context context = requireContext();
 
-        UnifiedKeyInfoViewModel viewKeyViewModel = ViewModelProviders.of(requireActivity()).get(UnifiedKeyInfoViewModel.class);
+        UnifiedKeyInfoViewModel viewKeyViewModel = new ViewModelProvider(requireActivity()).get(UnifiedKeyInfoViewModel.class);
         LiveData<UnifiedKeyInfo> unifiedKeyInfoLiveData = viewKeyViewModel.getUnifiedKeyInfoLiveData(requireContext());
 
-        unifiedKeyInfoLiveData.observe(this, this::onLoadUnifiedKeyInfo);
+        unifiedKeyInfoLiveData.observe(getViewLifecycleOwner(), this::onLoadUnifiedKeyInfo);
 
-        KeyFragmentViewModel model = ViewModelProviders.of(this).get(KeyFragmentViewModel.class);
+        KeyFragmentViewModel model = new ViewModelProvider(this).get(KeyFragmentViewModel.class);
 
-        model.getIdentityInfo(context, unifiedKeyInfoLiveData).observe(this, this::onLoadIdentityInfo);
-        model.getKeyserverStatus(context, unifiedKeyInfoLiveData).observe(this, this::onLoadKeyMetadata);
-        model.getSystemContactInfo(context, unifiedKeyInfoLiveData).observe(this, this::onLoadSystemContact);
-        model.getSubkeyStatus(context, unifiedKeyInfoLiveData).observe(this, this::onLoadSubkeyStatus);
+        model.getIdentityInfo(context, unifiedKeyInfoLiveData).observe(getViewLifecycleOwner(), this::onLoadIdentityInfo);
+        model.getKeyserverStatus(context, unifiedKeyInfoLiveData).observe(getViewLifecycleOwner(), this::onLoadKeyMetadata);
+        model.getSubkeyStatus(context, unifiedKeyInfoLiveData).observe(getViewLifecycleOwner(), this::onLoadSubkeyStatus);
     }
 
     private void onLoadSubkeyStatus(KeySubkeyStatus subkeyStatus) {
@@ -274,16 +265,6 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
         identitiesAdapter.setData(identityInfos);
     }
 
-    private void onLoadSystemContact(SystemContactInfo systemContactInfo) {
-        if (systemContactInfo == null) {
-            systemContactCard.hideLinkedSystemContact();
-            return;
-        }
-
-        systemContactCard.showLinkedSystemContact(systemContactInfo.contactName, systemContactInfo.contactPicture);
-        systemContactCard.setSystemContactClickListener((v) -> launchAndroidContactActivity(systemContactInfo.contactId));
-    }
-
     private void onLoadKeyMetadata(KeyMetadata keyMetadata) {
         if (keyMetadata == null) {
             keyserverStatusView.setDisplayStatusUnknown();
@@ -299,14 +280,6 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
         }
     }
 
-    public void switchToFragment(final Fragment frag, final String backStackName) {
-        new Handler().post(() -> requireFragmentManager().beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .replace(R.id.view_key_fragment, frag)
-                .addToBackStack(backStackName)
-                .commit());
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // if a result has been returned, display a notify
@@ -320,7 +293,7 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
 
     public void showDialogFragment(final DialogFragment dialogFragment, final String tag) {
         DialogFragmentWorkaround.INTERFACE.runnableRunDelayed(
-                () -> dialogFragment.show(requireFragmentManager(), tag));
+                () -> dialogFragment.show(getParentFragmentManager(), tag));
     }
 
     public void showContextMenu(int position, View anchor) {
@@ -348,12 +321,5 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
         }
 
         return false;
-    }
-
-    private void launchAndroidContactActivity(long contactId) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, String.valueOf(contactId));
-        intent.setData(uri);
-        startActivity(intent);
     }
 }

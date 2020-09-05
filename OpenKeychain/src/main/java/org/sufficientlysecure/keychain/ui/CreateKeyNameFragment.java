@@ -20,20 +20,20 @@ package org.sufficientlysecure.keychain.ui;
 
 import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.fragment.app.Fragment;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
-import org.sufficientlysecure.keychain.ui.widget.NameEditText;
 
 public class CreateKeyNameFragment extends Fragment {
 
     CreateKeyActivity mCreateKeyActivity;
-    NameEditText mNameEdit;
+    AppCompatEditText mNameEdit;
     View mBackButton;
     View mNextButton;
 

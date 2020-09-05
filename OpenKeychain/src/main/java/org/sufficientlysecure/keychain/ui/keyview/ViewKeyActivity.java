@@ -28,11 +28,9 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -40,17 +38,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import android.provider.ContactsContract;
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.core.content.ContextCompat;
-import androidx.cardview.widget.CardView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -58,13 +45,22 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProviders;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
@@ -102,10 +98,8 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils.State;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
 import org.sufficientlysecure.keychain.ui.util.QrCodeUtils;
-import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.ShareKeyHelper;
-import timber.log.Timber;
 
 
 public class ViewKeyActivity extends BaseSecurityTokenActivity {
@@ -121,7 +115,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
 
     public static final String EXTRA_MASTER_KEY_ID = "master_key_id";
     public static final String EXTRA_DISPLAY_RESULT = "display_result";
-    public static final String EXTRA_LINKED_TRANSITION = "linked_transition";
 
     KeyRepository keyRepository;
 
@@ -140,8 +133,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
     private ImageButton actionShare;
     private ImageButton actionShareClipboard;
     private FloatingActionButton floatingActionButton;
-    private ImageView photoView;
-    private FrameLayout photoLayout;
     private ImageView qrCodeView;
     private CardView qrCodeLayout;
 
@@ -181,8 +172,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
         actionShare= findViewById(R.id.view_key_action_share);
         actionShareClipboard = findViewById(R.id.view_key_action_share_clipboard);
         floatingActionButton = findViewById(R.id.fab);
-        photoView = findViewById(R.id.view_key_photo);
-        photoLayout = findViewById(R.id.view_key_photo_layout);
         qrCodeView = findViewById(R.id.view_key_qr_code);
         qrCodeLayout = findViewById(R.id.view_key_qr_code_layout);
 
@@ -243,20 +232,10 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
 
         long masterKeyId;
         Intent intent = getIntent();
-        Uri dataUri = intent.getData();
         if (intent.hasExtra(EXTRA_MASTER_KEY_ID)) {
             masterKeyId = intent.getLongExtra(EXTRA_MASTER_KEY_ID, 0L);
-        } else if (dataUri != null && dataUri.getHost().equals(ContactsContract.AUTHORITY)) {
-            Long contactMasterKeyId = new ContactHelper(this).masterKeyIdFromContactsDataUri(dataUri);
-            if (contactMasterKeyId == null) {
-                Timber.e("Contact Data missing. Should be uri of key!");
-                Toast.makeText(this, R.string.error_contacts_key_id_missing, Toast.LENGTH_LONG).show();
-                finish();
-                return;
-            }
-            masterKeyId = contactMasterKeyId;
         } else {
-            throw new IllegalArgumentException("Missing required extra master_key_id or contact uri");
+            throw new IllegalArgumentException("Missing required extra master_key_id");
         }
 
         actionEncryptFile.setOnClickListener(v -> encrypt(false));
@@ -660,25 +639,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
             // this is done at the end of the animation otherwise
         }
 
-        AsyncTask<Long, Void, Bitmap> photoTask =
-                new AsyncTask<Long, Void, Bitmap>() {
-                    protected Bitmap doInBackground(Long... mMasterKeyId) {
-                        return new ContactHelper(ViewKeyActivity.this)
-                                .loadPhotoByMasterKeyId(mMasterKeyId[0], true);
-                    }
-
-                    protected void onPostExecute(Bitmap photo) {
-                        if (photo == null) {
-                            return;
-                        }
-
-                        photoView.setImageBitmap(photo);
-                        photoView.setColorFilter(ContextCompat.getColor(ViewKeyActivity.this, R.color.toolbar_photo_tint),
-                                PorterDuff.Mode.SRC_ATOP);
-                        photoLayout.setVisibility(View.VISIBLE);
-                    }
-                };
-
         boolean showStatusText = unifiedKeyInfo.is_secure() && !unifiedKeyInfo.is_expired() && !unifiedKeyInfo.is_revoked();
         if (showStatusText) {
             statusText.setVisibility(View.VISIBLE);
@@ -733,7 +693,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
             if (!Arrays.equals(unifiedKeyInfo.fingerprint(), qrCodeLoaded)) {
                 loadQrCode(unifiedKeyInfo.fingerprint());
             }
-            photoTask.execute(unifiedKeyInfo.master_key_id());
             qrCodeLayout.setVisibility(View.VISIBLE);
 
             // and place leftOf qr code
@@ -775,7 +734,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
                 KeyFormattingUtils.setStatusImage(this, statusImage, statusText,
                         State.VERIFIED, R.color.icons, true);
                 color = ContextCompat.getColor(this, R.color.key_flag_green);
-                photoTask.execute(unifiedKeyInfo.master_key_id());
 
                 hideFab();
             } else {

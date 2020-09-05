@@ -25,13 +25,14 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/create_key_email_text" />
 
-            <org.sufficientlysecure.keychain.ui.widget.EmailEditText
+            <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/create_key_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
                 android:imeOptions="actionNext"
+                android:inputType="textEmailAddress"
                 android:hint="@string/label_email"
                 android:ems="10" />
 

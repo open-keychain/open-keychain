@@ -27,6 +27,8 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.fragment.app.DialogFragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -38,7 +40,6 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
 import timber.log.Timber;
 
 
@@ -51,7 +52,7 @@ public class AddEmailDialogFragment extends DialogFragment implements OnEditorAc
     public static final String MESSAGE_DATA_EMAIL = "email";
 
     private Messenger mMessenger;
-    private EmailEditText mEmail;
+    private AppCompatEditText mEmail;
 
     public static AddEmailDialogFragment newInstance(Messenger messenger) {
 

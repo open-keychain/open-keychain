@@ -17,19 +17,13 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.database.MatrixCursor;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
-import android.provider.BaseColumns;
-import androidx.fragment.app.Fragment;
-import androidx.core.view.MenuItemCompat;
-import androidx.core.view.MenuItemCompat.OnActionExpandListener;
-import androidx.cursoradapter.widget.CursorAdapter;
-import androidx.cursoradapter.widget.SimpleCursorAdapter;
-import androidx.appcompat.widget.SearchView;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,18 +32,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 
+import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuItemCompat;
+import androidx.core.view.MenuItemCompat.OnActionExpandListener;
+import androidx.fragment.app.Fragment;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.processing.CloudLoaderState;
 import org.sufficientlysecure.keychain.keyimport.processing.ImportKeysListener;
-import org.sufficientlysecure.keychain.util.ContactHelper;
 import org.sufficientlysecure.keychain.util.Preferences;
 import org.sufficientlysecure.keychain.util.Preferences.CloudSearchPrefs;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static androidx.appcompat.widget.SearchView.OnQueryTextListener;
-import static androidx.appcompat.widget.SearchView.OnSuggestionListener;
 
 /**
  * Consists of the search bar, search button, and search settings button
@@ -59,15 +52,8 @@ public class ImportKeysSearchFragment extends Fragment {
     public static final String ARG_QUERY = "query";
     public static final String ARG_CLOUD_SEARCH_PREFS = "cloud_search_prefs";
 
-    private static final String CURSOR_SUGGESTION = "suggestion";
-
     private Activity mActivity;
     private ImportKeysListener mCallback;
-
-    private List<String> mNamesAndEmails;
-    private SimpleCursorAdapter mSearchAdapter;
-
-    private List<String> mCurrentSuggestions = new ArrayList<>();
 
     /**
      * Creates new instance of this fragment
@@ -92,14 +78,6 @@ public class ImportKeysSearchFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater i, ViewGroup c, Bundle savedInstanceState) {
-        ContactHelper contactHelper = new ContactHelper(mActivity);
-        mNamesAndEmails = contactHelper.getContactNames();
-        mNamesAndEmails.addAll(contactHelper.getContactMails());
-
-        mSearchAdapter = new SimpleCursorAdapter(mActivity,
-                R.layout.import_keys_cloud_suggestions_item, null, new String[]{CURSOR_SUGGESTION},
-                new int[]{android.R.id.text1}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-
         setHasOptionsMenu(true);
 
         // no view, just search view
@@ -126,21 +104,7 @@ public class ImportKeysSearchFragment extends Fragment {
 
         MenuItem searchItem = menu.findItem(R.id.menu_import_keys_cloud_search);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setSuggestionsAdapter(mSearchAdapter);
-
-        searchView.setOnSuggestionListener(new OnSuggestionListener() {
-            @Override
-            public boolean onSuggestionSelect(int position) {
-                searchView.setQuery(mCurrentSuggestions.get(position), true);
-                return true;
-            }
-
-            @Override
-            public boolean onSuggestionClick(int position) {
-                searchView.setQuery(mCurrentSuggestions.get(position), true);
-                return true;
-            }
-        });
+        searchView.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
 
         searchView.setOnQueryTextListener(new OnQueryTextListener() {
             @Override
@@ -152,7 +116,6 @@ public class ImportKeysSearchFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                updateAdapter(newText);
                 return false;
             }
         });
@@ -178,20 +141,6 @@ public class ImportKeysSearchFragment extends Fragment {
         }
 
         super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    private void updateAdapter(String query) {
-        mCurrentSuggestions.clear();
-        MatrixCursor c = new MatrixCursor(new String[]{BaseColumns._ID, CURSOR_SUGGESTION});
-        for (int i = 0; i < mNamesAndEmails.size(); i++) {
-            String s = mNamesAndEmails.get(i);
-            if (s.toLowerCase().startsWith(query.toLowerCase())) {
-                mCurrentSuggestions.add(s);
-                c.addRow(new Object[]{i, s});
-            }
-
-        }
-        mSearchAdapter.changeCursor(c);
     }
 
     @Override

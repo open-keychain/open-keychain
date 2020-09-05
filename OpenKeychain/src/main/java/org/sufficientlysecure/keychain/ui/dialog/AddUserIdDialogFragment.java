@@ -17,8 +17,8 @@
 
 package org.sufficientlysecure.keychain.ui.dialog;
 
+
 import android.app.Activity;
-import androidx.appcompat.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -27,7 +27,6 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import androidx.fragment.app.DialogFragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,11 +36,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatEditText;
+import androidx.fragment.app.DialogFragment;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.ui.widget.EmailEditText;
-import org.sufficientlysecure.keychain.ui.widget.NameEditText;
 import timber.log.Timber;
 
 
@@ -55,8 +55,8 @@ public class AddUserIdDialogFragment extends DialogFragment implements OnEditorA
     public static final String MESSAGE_DATA_USER_ID = "user_id";
 
     private Messenger mMessenger;
-    private NameEditText  mName;
-    private EmailEditText mEmail;
+    private AppCompatEditText mName;
+    private AppCompatEditText mEmail;
 
     public static AddUserIdDialogFragment newInstance(Messenger messenger, String predefinedName) {
 
