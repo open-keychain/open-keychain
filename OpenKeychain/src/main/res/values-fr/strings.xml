@@ -778,8 +778,7 @@
   <string name="my_keys">Mes clés</string>
   <string name="nav_backup">Sauvegarder/Restaurer</string>
   <string name="nav_transfer">Transfert Wi-Fi sécurisé</string>
-  <string name="nav_shop">Boutique</string>
-    <!--hints-->
+  <!--hints-->
   <string name="encrypt_content_edit_text_hint">Saisir le texte</string>
   <!--certs-->
   <string name="cert_default">valeur par défaut</string>
@@ -1810,6 +1809,4 @@
   <string name="subkey_action_expiry_date">La date d’expiration sera changé à %s</string>
   <string name="share_key_clipboard">Partager la clé avec le presse-papiers</string>
   <string name="share_key">Partager la clé</string>
-  <string name="shop_loading_label">Chargement de la boutique…</string>
-  <string name="shop_title">Clés de sécurité COTECH</string>
 </resources>

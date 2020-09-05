@@ -814,8 +814,7 @@
   <string name="my_keys">Moje Klíče</string>
   <string name="nav_backup">Záloha/Obnova</string>
   <string name="nav_transfer">Bezpečný přenos přes WiFi</string>
-  <string name="nav_shop">Obchod</string>
-    <!--hints-->
+  <!--hints-->
   <string name="encrypt_content_edit_text_hint">Napsat text</string>
   <!--certs-->
   <string name="cert_default">výchozí</string>
@@ -1878,6 +1877,4 @@
   <string name="subkey_action_expiry_date">Doba platnosti se změni do %s</string>
   <string name="share_key_clipboard">Sdílet klíč skrze schránku</string>
   <string name="share_key">Sdílet klíč</string>
-  <string name="shop_loading_label">Otevírám obchod...</string>
-  <string name="shop_title">COTECH Security Keys</string>
 </resources>

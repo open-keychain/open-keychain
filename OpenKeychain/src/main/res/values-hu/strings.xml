@@ -747,6 +747,4 @@
   <string name="subkey_action_expiry_date">A lejárat %s értékre változik</string>
   <string name="share_key_clipboard">Kulcs megosztása vágólappal</string>
   <string name="share_key">Kulcs megosztása</string>
-  <string name="shop_loading_label">Shop betöltése...</string>
-  <string name="shop_title">COTECH biztonsági kulcsok</string>
 </resources>

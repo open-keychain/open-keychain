@@ -778,8 +778,7 @@
   <string name="my_keys">Meine Schlüssel</string>
   <string name="nav_backup">Backup/Wiederherstellung</string>
   <string name="nav_transfer">Sichere WiFi Übertragung</string>
-  <string name="nav_shop">Shop</string>
-    <!--hints-->
+  <!--hints-->
   <string name="encrypt_content_edit_text_hint">Text eingeben</string>
   <!--certs-->
   <string name="cert_default">normal</string>
@@ -1811,6 +1810,4 @@ Ein sicherer Schlüssel sollte eine Stärke von 2048 Bits besitzen.</string>
   <string name="subkey_action_expiry_date">Ablauf wird geändert zu \"%s\"</string>
   <string name="share_key_clipboard">Schlüssel per Zwischenablage teilen</string>
   <string name="share_key">Schlüssel teilen</string>
-  <string name="shop_loading_label">Shop wird geladen...</string>
-  <string name="shop_title">COTECH Sicherheitsschlüssel</string>
 </resources>

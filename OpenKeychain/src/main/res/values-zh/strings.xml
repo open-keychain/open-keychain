@@ -760,8 +760,7 @@
   <string name="my_keys">我的密钥</string>
   <string name="nav_backup">备份/恢复</string>
   <string name="nav_transfer">安全 Wifi 传输</string>
-  <string name="nav_shop">商店</string>
-    <!--hints-->
+  <!--hints-->
   <string name="encrypt_content_edit_text_hint">此处输入要加密的内容</string>
   <!--certs-->
   <string name="cert_default">默认</string>
@@ -1776,6 +1775,4 @@
   <string name="subkey_action_expiry_date">过期时间将更改为%s</string>
   <string name="share_key_clipboard">通过剪贴板共享</string>
   <string name="share_key">共享密钥</string>
-  <string name="shop_loading_label">加载商店</string>
-  <string name="shop_title">COTECH 安全密钥</string>
 </resources>

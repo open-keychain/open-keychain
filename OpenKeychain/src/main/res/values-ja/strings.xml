@@ -764,8 +764,7 @@
   <string name="my_keys">自分の鍵</string>
   <string name="nav_backup">バックアップ/リストア</string>
   <string name="nav_transfer">安全な Wifi 転送</string>
-  <string name="nav_shop">ショップ</string>
-    <!--hints-->
+  <!--hints-->
   <string name="encrypt_content_edit_text_hint">テキストを入力</string>
   <!--certs-->
   <string name="cert_default">デフォルト</string>
@@ -1780,6 +1779,4 @@
   <string name="subkey_action_expiry_date">有効期限は%sに変更されます</string>
   <string name="share_key_clipboard">クリップボードでキーを共有する</string>
   <string name="share_key">鍵の共有</string>
-  <string name="shop_loading_label">ショップを読み込んでいます…</string>
-  <string name="shop_title">COTECH セキュリティ鍵</string>
 </resources>

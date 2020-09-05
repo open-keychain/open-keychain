@@ -778,8 +778,7 @@
   <string name="my_keys">Mijn sleutels</string>
   <string name="nav_backup">Back-up/herstellen</string>
   <string name="nav_transfer">Beveiligde wifi-overdracht</string>
-  <string name="nav_shop">Winkel</string>
-    <!--hints-->
+  <!--hints-->
   <string name="encrypt_content_edit_text_hint">Voer tekst in</string>
   <!--certs-->
   <string name="cert_default">standaard</string>
@@ -1810,6 +1809,4 @@
   <string name="subkey_action_expiry_date">Verloopdatum zal wijzigen naar %s</string>
   <string name="share_key_clipboard">Sleutel delen via klembord</string>
   <string name="share_key">Sleutel delen</string>
-  <string name="shop_loading_label">Winkel aan het laden…</string>
-  <string name="shop_title">COTECH-beveiligingssleutels</string>
 </resources>

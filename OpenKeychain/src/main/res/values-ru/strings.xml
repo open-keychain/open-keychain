@@ -815,8 +815,7 @@
   <string name="my_keys">Мои ключи</string>
   <string name="nav_backup">Резервирование/Восстановление</string>
   <string name="nav_transfer">Безопасная передача по Wi-Fi</string>
-  <string name="nav_shop">Магазин</string>
-    <!--hints-->
+  <!--hints-->
   <string name="encrypt_content_edit_text_hint">Напишите текст</string>
   <!--certs-->
   <string name="cert_default">по умолчанию</string>
@@ -1879,6 +1878,4 @@
   <string name="subkey_action_expiry_date">Срок годности будет изменён на %s</string>
   <string name="share_key_clipboard">Отправить ключ в буфер обмена</string>
   <string name="share_key">Отправить ключ</string>
-  <string name="shop_loading_label">Загрузка магазина...</string>
-  <string name="shop_title">Ключи безопасности COTECH</string>
 </resources>
