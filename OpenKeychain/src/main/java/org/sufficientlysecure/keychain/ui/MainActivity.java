@@ -17,18 +17,18 @@
 
 package org.sufficientlysecure.keychain.ui;
 
+
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.view.View;
+
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.appcompat.widget.Toolbar;
-import android.view.View;
-
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -37,10 +37,7 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-
-import org.sufficientlysecure.keychain.KeychainApplication;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.analytics.AnalyticsManager;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.remote.ui.AppsListFragment;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
@@ -58,8 +55,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
     public static final int ID_TRANSFER = 5;
     static final int ID_SETTINGS = 6;
     static final int ID_HELP = 7;
-    static final int ID_SHOP = 8;
-    static final int ID_AUTOCRYPT = 9;
 
     // both of these are used for instrumentation testing only
     public static final String EXTRA_SKIP_FIRST_TIME = "skip_first_time";
@@ -67,7 +62,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
 
     public Drawer mDrawer;
     private Toolbar mToolbar;
-    private AnalyticsManager analyticsManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,15 +72,11 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
         mToolbar.setTitle(R.string.app_name);
         setSupportActionBar(mToolbar);
 
-        analyticsManager = ((KeychainApplication) getApplication()).getAnalyticsManager();
-
         mDrawer = new DrawerBuilder()
                 .withActivity(this)
                 .withHeader(R.layout.main_drawer_header)
                 .withToolbar(mToolbar)
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.nav_shop).withIcon(CommunityMaterial.Icon.cmd_shopping)
-                                .withIdentifier(ID_SHOP).withSelectable(false).withTypeface(Typeface.DEFAULT_BOLD),
                         new PrimaryDrawerItem().withName(R.string.nav_keys).withIcon(CommunityMaterial.Icon.cmd_key)
                                 .withIdentifier(ID_KEYS).withSelectable(false),
                         new PrimaryDrawerItem().withName(R.string.nav_encrypt_decrypt).withIcon(FontAwesome.Icon.faw_lock)
@@ -102,10 +92,7 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                                 .withIdentifier(ID_TRANSFER).withSelectable(false),
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName(R.string.menu_preferences).withIcon(GoogleMaterial.Icon.gmd_settings).withIdentifier(ID_SETTINGS).withSelectable(false),
-                        new PrimaryDrawerItem().withName(R.string.menu_help).withIcon(CommunityMaterial.Icon.cmd_help_circle).withIdentifier(ID_HELP).withSelectable(false),
-                        new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName(R.string.nav_autocrypt).withIcon(GoogleMaterial.Icon.gmd_blur_on)
-                                .withTypeface(Typeface.DEFAULT_BOLD).withSelectable(false).withIdentifier(ID_AUTOCRYPT)
+                        new PrimaryDrawerItem().withName(R.string.menu_help).withIcon(CommunityMaterial.Icon.cmd_help_circle).withIdentifier(ID_HELP).withSelectable(false)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -134,12 +121,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                                     break;
                                 case ID_HELP:
                                     intent = new Intent(MainActivity.this, HelpActivity.class);
-                                    break;
-                                case ID_SHOP:
-                                    onShopSelected();
-                                    break;
-                                case ID_AUTOCRYPT:
-                                    onAutocryptSelected();
                                     break;
                             }
                             if (intent != null) {
@@ -219,8 +200,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
     private void setFragment(Fragment frag) {
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        analyticsManager.trackFragmentImpression(getClass().getSimpleName(), frag.getClass().getSimpleName());
-
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.replace(R.id.main_fragment_container, frag);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -265,20 +244,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
             Fragment frag = new TransferFragment();
             setFragment(frag);
         }
-    }
-
-    private void onShopSelected() {
-        mToolbar.setTitle(R.string.shop_title);
-        mDrawer.setSelection(ID_SHOP, false);
-        Fragment frag = new SecurityKeyShopFragment();
-        setFragment(frag);
-    }
-
-    private void onAutocryptSelected() {
-        String url = "https://addons.thunderbird.net/en-US/thunderbird/addon/autocrypt/";
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(url));
-        startActivity(intent);
     }
 
     @Override

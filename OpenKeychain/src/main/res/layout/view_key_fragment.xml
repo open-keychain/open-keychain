@@ -1,6 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -62,17 +61,5 @@
         card_view:cardElevation="2dp"
         card_view:cardUseCompatPadding="true"
         />
-
-    <org.sufficientlysecure.keychain.ui.keyview.view.SystemContactCardView
-        android:id="@+id/linked_system_contact_card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone"
-        card_view:cardBackgroundColor="?attr/colorCardViewBackground"
-        card_view:cardCornerRadius="4dp"
-        card_view:cardElevation="2dp"
-        card_view:cardUseCompatPadding="true"
-        tools:visibility="visible" />
 
 </LinearLayout>

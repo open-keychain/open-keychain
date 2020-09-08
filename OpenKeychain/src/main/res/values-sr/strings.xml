@@ -188,8 +188,7 @@
   <string name="label_sync_settings_contacts_summary_on">Повезивање кључева са контактима на основу имена и е-адреса. Одвија се у потпуности ван везе на вашем уређају.</string>
   <string name="label_sync_settings_contacts_summary_off">Нови кључеви неће бити повезани са контактима</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Аутоматско ажурирање кључева</string>
-  <string name="label_experimental_settings_desc_title">Упозорење</string>
+    <string name="label_experimental_settings_desc_title">Упозорење</string>
   <string name="label_experimental_settings_desc_summary">Ове функције још нису завршене или су резултат истраживања корисничког искуства и безбедности. Стога се не ослањајте на њихову безбедност и молимо вас да не пријављујете грешке на које наиђете!</string>
   <string name="label_experimental_settings_keybase_summary">Тражење доказа кључева на keybase.io и њихов приказ приликом приказивања кључа</string>
   <string name="label_experimental_settings_theme_summary">(Иконе и многи екрани још нису прилагођени за тамну тему)</string>
@@ -1449,5 +1448,4 @@
   <string name="notify_channel_passcache">Кеширај лозинку</string>
   <string name="notify_title_keysync">Ажурирам кључеве…</string>
   <string name="keylist_item_key_id">ИД кључа: %s</string>
-  <string name="snackbutton_analytics_settings">Podešavanja</string>
 </resources>

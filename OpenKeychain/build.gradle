@@ -49,9 +49,6 @@ dependencies {
     // Nordpol
     implementation 'com.fidesmo:nordpol-android:0.1.22'
 
-    // piwik
-    implementation 'org.piwik.sdk:piwik-sdk:3.0.3'
-
     // libs as submodules
     implementation project(':openpgp-api-lib')
     implementation project(':nfcsweetspot')

@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.app.Application;
 import android.content.ClipDescription;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
@@ -41,6 +40,7 @@ import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
+import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.Worker;
@@ -77,6 +77,7 @@ public class TemporaryFileProvider extends ContentProvider {
     public static final String AUTHORITY = Constants.TEMP_FILE_PROVIDER_AUTHORITY;
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
     private static final int DB_VERSION = 3;
+    public static final String WORK_NAME_CLEANUP = "cleanup";
 
     interface TemporaryFileColumns {
         String COLUMN_UUID = "id";
@@ -315,20 +316,22 @@ public class TemporaryFileProvider extends ContentProvider {
     public static void scheduleCleanupAfterTtl(Context context) {
         OneTimeWorkRequest cleanupWork = new OneTimeWorkRequest.Builder(CleanupWorker.class)
                 .setInitialDelay(Constants.TEMPFILE_TTL, TimeUnit.MILLISECONDS).build();
-        workManagerEnqueue(context, cleanupWork);
+        workManagerEnqueueCleanup(context, cleanupWork);
     }
 
     public static void scheduleCleanupImmediately(Context context) {
         OneTimeWorkRequest cleanupWork = new OneTimeWorkRequest.Builder(CleanupWorker.class).build();
-        workManagerEnqueue(context, cleanupWork);
+        workManagerEnqueueCleanup(context, cleanupWork);
     }
 
-    private static void workManagerEnqueue(Context context, OneTimeWorkRequest cleanupWork) {
+    private static void workManagerEnqueueCleanup(Context context, OneTimeWorkRequest cleanupWork) {
         // work manager is only available on the main thread
         if (!BuildConfig.APPLICATION_ID.equals(KeychainApplication.getProcessName())) {
             return;
         }
-        WorkManager.getInstance(context).enqueue(cleanupWork);
+        WorkManager
+                .getInstance(context)
+                .enqueueUniqueWork(TemporaryFileProvider.WORK_NAME_CLEANUP, ExistingWorkPolicy.REPLACE, cleanupWork);
     }
 
     public static class CleanupWorker extends Worker {

@@ -212,14 +212,11 @@
   <string name="label_sync_settings_contacts_summary_on">Vincula claves con contactos basándose en nombres y direcciones de correo electrónico. Esto sucede con su dispositivo completamente desconectado.</string>
   <string name="label_sync_settings_contacts_summary_off">Las claves nuevas no se vincularán a contactos</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Actualizaciones automáticas de claves</string>
-  <string name="label_experimental_settings_desc_title">Advertencia</string>
+    <string name="label_experimental_settings_desc_title">Advertencia</string>
   <string name="label_experimental_settings_desc_summary">Estas características todavía no están finalizadas o no se han obtenido los resultados de experiencia del usuario y la investigación de seguridad. Por tanto, no confíe en su seguridad y, por favor, ¡no informe de los problemas que encuentre!</string>
   <string name="label_experimental_settings_keybase_title">Comprobantes de Keybase.io</string>
   <string name="label_experimental_settings_keybase_summary">Contacta con keybase.io para obtener comprobantes de clave y muestrelos cada vez que se muestra una clave</string>
   <string name="label_experimental_settings_theme_summary">(Los iconos y algunas pantallas todavía no están ajustadas de acuerdo con el tema decorativo oscuro)</string>
-  <string name="label_settings_analytics_title">Permitir estadísticas de uso anónimas</string>
-  <string name="label_settings_analytics_summary">Si está habilitado, envía estadísticas de uso anónimas para ayudar a mejorar la app</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Habilitar Tor</string>
   <string name="pref_proxy_tor_summary">Requiere que Orbot esté instalado</string>
@@ -1804,12 +1801,6 @@
   <string name="keylist_item_key_id">Identificación de la clave: %s</string>
   <string name="keylist_header_anonymous">Anónimo</string>
   <string name="keylist_header_special">#</string>
-  <string name="dialog_analytics_consent">Para mejorar la experiencia de todos los usuarios, ¿puede OpenKeychain recopilar estadísticas de uso anónimas? \n\n Para saber más, mira nuestra <a href="https://openkeychain.org/help/privacy-policy">Política de Privacidad</a>.</string>
-  <string name="button_analytics_yes">Si, quiero ayudar!</string>
-  <string name="button_analytics_no">No, gracias!</string>
-  <string name="snack_analytics_accept">Gracias por ayudar! Puede cambiar esta preferencia en la configuración.</string>
-  <string name="snack_analytics_reject">Está bien, no volveremos a preguntar. Puedes cambiar de opinión en la configuración.</string>
-  <string name="snackbutton_analytics_settings">Configuración</string>
   <string name="subkey_action_create">La subclave será creada</string>
   <string name="subkey_action_revoke">La subclave será revocada</string>
   <string name="subkey_action_strip">La subclave será removida</string>

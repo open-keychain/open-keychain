@@ -30,15 +30,15 @@ import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.sufficientlysecure.keychain.analytics.AnalyticsManager;
 import org.sufficientlysecure.keychain.keysync.KeyserverSyncManager;
 import org.sufficientlysecure.keychain.network.TlsCertificatePinning;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
-import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
@@ -46,8 +46,6 @@ import timber.log.Timber.DebugTree;
 
 
 public class KeychainApplication extends Application {
-    AnalyticsManager analyticsManager;
-
     /**
      * Called when the application is starting, before any activity, service, or receiver objects
      * (excluding content providers) have been created.
@@ -88,15 +86,9 @@ public class KeychainApplication extends Application {
         }
         */
 
-        // Add OpenKeychain account to Android to link contacts with keys and keyserver sync
-        createAccountIfNecessary(this);
-
         Preferences preferences = Preferences.getPreferences(this);
         if (preferences.isAppExecutedFirstTime()) {
             preferences.setAppExecutedFirstTime(false);
-
-            ContactSyncAdapterService.enableContactsSync(this);
-
             preferences.setPrefVersionToCurrentVersion();
         }
 
@@ -116,36 +108,6 @@ public class KeychainApplication extends Application {
         KeyserverSyncManager.updateKeyserverSyncScheduleAsync(this, false);
 
         TemporaryFileProvider.scheduleCleanupImmediately(getApplicationContext());
-
-        analyticsManager = AnalyticsManager.getInstance(getApplicationContext());
-        analyticsManager.initialize(this);
-    }
-
-    /**
-     * @return the OpenKeychain contact/keyserver sync account if it exists or was successfully
-     * created, null otherwise
-     */
-    public static @Nullable Account createAccountIfNecessary(Context context) {
-        try {
-            AccountManager manager = AccountManager.get(context);
-            Account[] accounts = manager.getAccountsByType(Constants.ACCOUNT_TYPE);
-
-            Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
-            if (accounts.length == 0) {
-                if (!manager.addAccountExplicitly(account, null, null)) {
-                    Timber.d("error when adding account via addAccountExplicitly");
-                    return null;
-                } else {
-                    return account;
-                }
-            } else {
-                return accounts[0];
-            }
-        } catch (SecurityException e) {
-            Timber.e(e, "SecurityException when adding the account");
-            Toast.makeText(context, R.string.reinstall_openkeychain, Toast.LENGTH_LONG).show();
-            return null;
-        }
     }
 
     public static HashMap<String,Bitmap> qrCodeCache = new HashMap<>();
@@ -165,10 +127,6 @@ public class KeychainApplication extends Application {
         if (enableDebugLogging) {
             Timber.plant(new DebugTree());
         }
-    }
-
-    public AnalyticsManager getAnalyticsManager() {
-        return analyticsManager;
     }
 
     public static String getProcessName() {

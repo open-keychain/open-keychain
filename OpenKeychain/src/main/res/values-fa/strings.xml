@@ -430,6 +430,4 @@
   <string name="snack_keylist_clipboard_action">مشاهده</string>
   <string name="notify_title_keysync">درحال آپدیت‌کردن کلیدها...</string>
   <string name="keylist_header_anonymous">ناشناس</string>
-  <string name="button_analytics_no">نه، ممنون</string>
-  <string name="snackbutton_analytics_settings">تنظیمات</string>
 </resources>

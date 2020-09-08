@@ -24,7 +24,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="@string/create_key_name_text" />
 
-            <org.sufficientlysecure.keychain.ui.widget.NameEditText
+            <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/create_key_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

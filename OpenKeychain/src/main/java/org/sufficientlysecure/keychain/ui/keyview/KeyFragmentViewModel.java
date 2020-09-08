@@ -16,14 +16,11 @@ import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.IdentityInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.KeySubkeyStatus;
-import org.sufficientlysecure.keychain.ui.keyview.loader.SystemContactDao;
-import org.sufficientlysecure.keychain.ui.keyview.loader.SystemContactDao.SystemContactInfo;
 
 
 public class KeyFragmentViewModel extends ViewModel {
     private LiveData<List<IdentityInfo>> identityInfo;
     private LiveData<KeySubkeyStatus> subkeyStatus;
-    private LiveData<SystemContactInfo> systemContactInfo;
     private LiveData<KeyMetadata> keyserverStatus;
 
     LiveData<List<IdentityInfo>> getIdentityInfo(Context context, LiveData<UnifiedKeyInfo> unifiedKeyInfoLiveData) {
@@ -44,17 +41,6 @@ public class KeyFragmentViewModel extends ViewModel {
                             () -> subkeyStatusDao.getSubkeyStatus(unifiedKeyInfo.master_key_id())));
         }
         return subkeyStatus;
-    }
-
-    LiveData<SystemContactInfo> getSystemContactInfo(Context context, LiveData<UnifiedKeyInfo> unifiedKeyInfoLiveData) {
-        if (systemContactInfo == null) {
-            SystemContactDao systemContactDao = SystemContactDao.getInstance(context);
-            systemContactInfo = Transformations.switchMap(unifiedKeyInfoLiveData,
-                    (unifiedKeyInfo) -> unifiedKeyInfo == null ? null : new GenericLiveData<>(context,
-                            () -> systemContactDao.getSystemContactInfo(unifiedKeyInfo.master_key_id(),
-                                    unifiedKeyInfo.has_any_secret())));
-        }
-        return systemContactInfo;
     }
 
     LiveData<KeyMetadata> getKeyserverStatus(Context context, LiveData<UnifiedKeyInfo> unifiedKeyInfoLiveData) {

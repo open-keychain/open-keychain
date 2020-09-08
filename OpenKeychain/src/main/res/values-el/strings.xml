@@ -299,6 +299,4 @@
   <string name="snack_keylist_clipboard_action">Δείτε τα αποτελέσματα</string>
   <string name="keylist_header_anonymous">Ανώνυμος</string>
   <string name="keylist_header_special">#</string>
-  <string name="button_analytics_no">Όχι, ευχαριστώ</string>
-  <string name="snackbutton_analytics_settings">Ρυθμίσεις</string>
 </resources>

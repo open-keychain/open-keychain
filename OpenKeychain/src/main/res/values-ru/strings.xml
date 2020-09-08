@@ -212,14 +212,11 @@
   <string name="label_sync_settings_contacts_summary_on">Связывать ключи с контактами основываясь на именах и адресах электронной почты. Это происходит полностью в автономном режиме на вашем устройстве.</string>
   <string name="label_sync_settings_contacts_summary_off">Новые ключи не будут связаны с контактами</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Автообновление ключей</string>
   <string name="label_experimental_settings_desc_title">Предупреждение</string>
   <string name="label_experimental_settings_desc_summary">Эти новые возможности ещё не закончены и/или пока только изучаются. Проще говоря, не стоит полагаться на их безопасность. Пожалуйста, не сообщайте о связанных с ними проблемах!</string>
   <string name="label_experimental_settings_keybase_title">Подтверждение Keybase.io </string>
   <string name="label_experimental_settings_keybase_summary">Опрашивать keybase.io для подтверждения ключей и показывать это каждый раз при отображении ключей</string>
   <string name="label_experimental_settings_theme_summary">(Значки и многие экраны ещё не скорректированы для тёмной темы)</string>
-  <string name="label_settings_analytics_title">Отправлять анонимную статистику</string>
-  <string name="label_settings_analytics_summary">Если данная функция включена, приложение будет отправлять анонимную статистику для помощи разработчикам</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Использовать Tor</string>
   <string name="pref_proxy_tor_summary">Требуется установка Orbot</string>
@@ -817,8 +814,6 @@
   <string name="my_keys">Мои ключи</string>
   <string name="nav_backup">Резервирование/Восстановление</string>
   <string name="nav_transfer">Безопасная передача по Wi-Fi</string>
-  <string name="nav_shop">Магазин</string>
-  <string name="nav_autocrypt">Попробуйте Autocrypt с Thunderbird</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Напишите текст</string>
   <!--certs-->
@@ -1875,12 +1870,6 @@
   <string name="keylist_item_key_id">ID ключа: %s</string>
   <string name="keylist_header_anonymous">Аноним</string>
   <string name="keylist_header_special">#</string>
-  <string name="dialog_analytics_consent">Может ли OpenKeychain собирать анонимную статистику для улучшения работы приложения?\n\nЧтобы узнать больше, изучите нашу <a href="https://openkeychain.org/help/privacy-policy">Политику конфиденциальности</a>.</string>
-  <string name="button_analytics_yes">Да, я хочу помочь!</string>
-  <string name="button_analytics_no">Нет, спасибо</string>
-  <string name="snack_analytics_accept">Спасибо за помощь! Вы можете изменить данную функцию в настройках.</string>
-  <string name="snack_analytics_reject">Всё нормально, больше мы не будем спрашивать. Вы можете изменить своё мнение с помощью настроек.</string>
-  <string name="snackbutton_analytics_settings">Настройки</string>
   <string name="subkey_action_create">Доп. ключ будет создан</string>
   <string name="subkey_action_revoke">Доп. ключ будет отозван</string>
   <string name="subkey_action_strip">Доп. ключ будет отделён</string>
@@ -1888,6 +1877,4 @@
   <string name="subkey_action_expiry_date">Срок годности будет изменён на %s</string>
   <string name="share_key_clipboard">Отправить ключ в буфер обмена</string>
   <string name="share_key">Отправить ключ</string>
-  <string name="shop_loading_label">Загрузка магазина...</string>
-  <string name="shop_title">Ключи безопасности COTECH</string>
 </resources>

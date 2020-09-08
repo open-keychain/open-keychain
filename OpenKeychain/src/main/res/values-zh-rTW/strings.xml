@@ -213,11 +213,9 @@
   <string name="label_sync_settings_contacts_summary_on">連接金鑰至聯絡人(基於姓名和電子郵件地址)。這只在您的裝置上離線進行。</string>
   <string name="label_sync_settings_contacts_summary_off">新的金鑰將不會與聯絡人連接</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">自動金鑰同步</string>
-  <string name="label_experimental_settings_desc_title">警告</string>
+    <string name="label_experimental_settings_desc_title">警告</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io 證明</string>
-  <string name="label_settings_analytics_title">允許匿名的使用資料收集</string>
-  <!--Proxy Preferences-->
+    <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">啟用洋蔥(Tor)網路</string>
   <string name="pref_proxy_tor_summary">必須已安裝 Orbot</string>
   <string name="pref_proxy_normal_title">啟用其他代理伺服器</string>
@@ -967,9 +965,6 @@
   <string name="keylist_item_key_id">金鑰 ID: %s</string>
   <string name="keylist_header_anonymous">匿名</string>
   <string name="keylist_header_special">#</string>
-  <string name="button_analytics_yes">是的，我想協助！</string>
-  <string name="button_analytics_no">不用，謝謝</string>
-  <string name="snackbutton_analytics_settings">設定</string>
   <string name="subkey_action_create">子金鑰將被創建</string>
   <string name="subkey_action_revoke">子金鑰將被撤銷</string>
   <string name="subkey_action_strip">子金鑰將被分離</string>

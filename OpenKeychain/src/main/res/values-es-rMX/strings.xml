@@ -210,8 +210,7 @@
   <string name="label_sync_settings_contacts_summary_on">Vincular claves a contactos basándose en nombres y direcciones de correo electrónico. Esto ocurre sin conexión completamente en tu dispositivo.</string>
   <string name="label_sync_settings_contacts_summary_off">Nuevas claves no serán vinculadas a contactos</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Actualizaciones automáticas de claves</string>
-  <string name="label_experimental_settings_desc_title">Advertencia</string>
+    <string name="label_experimental_settings_desc_title">Advertencia</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Activar Tor</string>
   <string name="pref_proxy_tor_summary">Requiere Orbot instalado</string>
@@ -434,5 +433,4 @@
   <string name="select_identity_cancel">Desactivar</string>
   <string name="key_gen_back">Atrás</string>
   <string name="snack_keylist_clipboard_action">Ve</string>
-  <string name="snackbutton_analytics_settings">Ajustes</string>
 </resources>

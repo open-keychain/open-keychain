@@ -212,14 +212,11 @@
   <string name="label_sync_settings_contacts_summary_on">オフランで完結して、名前とメールアドレスに基づいて、鍵を連絡先にリンク</string>
   <string name="label_sync_settings_contacts_summary_off">新しい鍵は連絡先と関連付けしない</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">鍵の自動アップデート</string>
   <string name="label_experimental_settings_desc_title">注意</string>
   <string name="label_experimental_settings_desc_summary">これらの機能はまだ完成していないか、ユーザーエクスペリエンス/セキュリティ研究の結果ではありません。そのため、このセキュリティに依存したり、遭遇した問題を報告しないでください!</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io 検証</string>
   <string name="label_experimental_settings_keybase_summary">鍵の検証のためkeybase.ioに連絡し、鍵が表示されるたびに表示します</string>
   <string name="label_experimental_settings_theme_summary">(アイコンおよび多くの画面は、まだダークテーマに応じて調整されていません)</string>
-  <string name="label_settings_analytics_title">匿名の使用統計データの送信を許可する</string>
-  <string name="label_settings_analytics_summary">有効にすると、アプリの改善に役立つ匿名の使用統計データが送信されます</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Torを有効</string>
   <string name="pref_proxy_tor_summary">Orbotのインストールが要求されます</string>
@@ -766,8 +763,6 @@
   <string name="my_keys">自分の鍵</string>
   <string name="nav_backup">バックアップ/リストア</string>
   <string name="nav_transfer">安全な Wifi 転送</string>
-  <string name="nav_shop">ショップ</string>
-  <string name="nav_autocrypt">Thunderbird と Autocrypt をお試しください</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">テキストを入力</string>
   <!--certs-->
@@ -1776,12 +1771,6 @@
   <string name="keylist_item_key_id">鍵 ID: %s</string>
   <string name="keylist_header_anonymous">匿名</string>
   <string name="keylist_header_special">#</string>
-  <string name="dialog_analytics_consent">すべてのユーザーのエクスペリエンスを改善するために、OpenKeychainの匿名の使用統計データを送信していただけますか？\n\n詳細については、<a href="https://openkeychain.org/help/privacy-policy">プライバシーポリシー</a>をご覧ください。</string>
-  <string name="button_analytics_yes">はい、匿名の使用統計データを送信して応援します！</string>
-  <string name="button_analytics_no">いいえ、使用統計データを送信しません。</string>
-  <string name="snack_analytics_accept">応援をありがとうございます！ この設定は「設定」で変更できます。</string>
-  <string name="snack_analytics_reject">大丈夫です、今後お尋ねしないようにします。「設定」でこの設定を変更できます。</string>
-  <string name="snackbutton_analytics_settings">設定</string>
   <string name="subkey_action_create">サブキーが作成されます</string>
   <string name="subkey_action_revoke">サブキーは取り消されます</string>
   <string name="subkey_action_strip">サブキーは削除されます</string>
@@ -1789,6 +1778,4 @@
   <string name="subkey_action_expiry_date">有効期限は%sに変更されます</string>
   <string name="share_key_clipboard">クリップボードでキーを共有する</string>
   <string name="share_key">鍵の共有</string>
-  <string name="shop_loading_label">ショップを読み込んでいます…</string>
-  <string name="shop_title">COTECH セキュリティ鍵</string>
 </resources>

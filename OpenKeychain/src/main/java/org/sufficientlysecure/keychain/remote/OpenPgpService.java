@@ -38,10 +38,10 @@ import android.os.Messenger;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.openintents.openpgp.AutocryptPeerUpdate;
 import org.openintents.openpgp.IOpenPgpService;
@@ -52,9 +52,12 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.OpenPgpSignatureResult.AutocryptPeerResult;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.daos.ApiAppDao;
+import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
+import org.sufficientlysecure.keychain.daos.OverriddenWarningsDao;
 import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
-import org.sufficientlysecure.keychain.KeychainApplication;
-import org.sufficientlysecure.keychain.analytics.AnalyticsManager;
 import org.sufficientlysecure.keychain.operations.BackupOperation;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
@@ -69,12 +72,7 @@ import org.sufficientlysecure.keychain.pgp.PgpSignEncryptData;
 import org.sufficientlysecure.keychain.pgp.PgpSignEncryptOperation;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem;
-import org.sufficientlysecure.keychain.daos.ApiAppDao;
-import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
-import org.sufficientlysecure.keychain.daos.KeyRepository;
-import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
-import org.sufficientlysecure.keychain.daos.OverriddenWarningsDao;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResult;
 import org.sufficientlysecure.keychain.remote.OpenPgpServiceKeyIdExtractor.KeyIdResultStatus;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
@@ -101,7 +99,6 @@ public class OpenPgpService extends Service {
     private ApiAppDao mApiAppDao;
     private OpenPgpServiceKeyIdExtractor mKeyIdExtractor;
     private ApiPendingIntentFactory mApiPendingIntentFactory;
-    private AnalyticsManager analyticsManager;
 
     @Override
     public void onCreate() {
@@ -111,8 +108,6 @@ public class OpenPgpService extends Service {
         mApiPermissionHelper = new ApiPermissionHelper(this, mApiAppDao);
         mApiPendingIntentFactory = new ApiPendingIntentFactory(getBaseContext());
         mKeyIdExtractor = OpenPgpServiceKeyIdExtractor.getInstance(getContentResolver(), mApiPendingIntentFactory);
-
-        analyticsManager = ((KeychainApplication) getApplication()).getAnalyticsManager();
     }
 
     private Intent signImpl(Intent data, InputStream inputStream,
@@ -1031,8 +1026,6 @@ public class OpenPgpService extends Service {
         if (errorResult != null) {
             return errorResult;
         }
-
-        analyticsManager.trackApiServiceCall(data.getAction(), mApiPermissionHelper.getCurrentCallingPackage());
 
         Progressable progressable = null;
         if (data.hasExtra(OpenPgpApi.EXTRA_PROGRESS_MESSENGER)) {

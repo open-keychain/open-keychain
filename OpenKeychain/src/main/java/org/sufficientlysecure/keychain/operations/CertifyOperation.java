@@ -43,7 +43,6 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel.CertifyAction;
-import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.UploadKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -253,9 +252,6 @@ public class CertifyOperation extends BaseReadWriteOperation<CertifyActionsParce
             return new CertifyResult(CertifyResult.RESULT_ERROR, log, certifyOk, certifyError,
                     uploadOk, uploadError);
         }
-
-        // since only verified keys are synced to contacts, we need to initiate a sync now
-        ContactSyncAdapterService.requestContactsSync();
 
         log.add(LogType.MSG_CRT_SUCCESS, 0);
         if (uploadError != 0) {

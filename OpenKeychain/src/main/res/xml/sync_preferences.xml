@@ -3,15 +3,14 @@
         android:key="syncKeyserver"
         android:defaultValue="true"
         android:persistent="true"
-        android:title="@string/label_sync_settings_keyserver_title"/>
+        android:title="@string/label_sync_settings_keyserver_title"
+        android:summaryOn="@string/label_sync_settings_keyserver_summary_on"
+        android:summaryOff="@string/label_sync_settings_keyserver_summary_off"
+        />
     <SwitchPreference
         android:key="enableWifiSyncOnly"
         android:defaultValue="true"
         android:persistent="true"
         android:dependency="syncKeyserver"
         android:title="@string/label_sync_settings_wifi_title"/>
-    <SwitchPreference
-        android:key="syncContacts"
-        android:persistent="false"
-        android:title="@string/label_sync_settings_contacts_title" />
 </PreferenceScreen>

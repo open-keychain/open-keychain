@@ -523,6 +523,4 @@
   <string name="snack_keylist_clipboard_action">Göster</string>
   <string name="notify_channel_passcache">Parola önbelleği</string>
   <string name="keylist_header_anonymous">Anonim</string>
-  <string name="button_analytics_no">Hayır, teşekkürler</string>
-  <string name="snackbutton_analytics_settings">Ayarlar</string>
 </resources>

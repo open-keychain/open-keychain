@@ -202,13 +202,11 @@
   <string name="label_sync_settings_contacts_summary_on">이름과 이메일 주소에 기초해 키를 연락처에 연결합니다. 이 작업은 완전히 오프라인에서만 수행됩니다.</string>
   <string name="label_sync_settings_contacts_summary_off">새 키를 앞으로 연락처에 연결하지 않음</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">자동 키 갱신</string>
-  <string name="label_experimental_settings_desc_title">경고</string>
+    <string name="label_experimental_settings_desc_title">경고</string>
   <string name="label_experimental_settings_desc_summary">이 기능들은 아직 완성되지 않았거나 유저 경험/보안 연구의 결과가 아닙니다. 그러니 이 기능의 보안성에 의존하거나 겪는 문제를 보고하지 말아주세요!</string>
   <string name="label_experimental_settings_keybase_summary">keybase.io에 연결해서 키가 표시될 때 마다 키 증명을 표시</string>
   <string name="label_experimental_settings_theme_summary">(아이콘이나 많은 화면이 검은 테마에 알맞게 아직 조정되지 않았습니다)</string>
-  <string name="label_settings_analytics_title">익명 사용 통계 허가</string>
-  <!--Proxy Preferences-->
+    <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Tor 활성화</string>
   <string name="pref_proxy_tor_summary">Orbot이 설치되어 있어야 합니다.</string>
   <string name="pref_proxy_normal_title">다른 프록시 활성화</string>
@@ -896,10 +894,4 @@
   <string name="snack_keylist_clipboard_action">보기</string>
   <string name="notify_title_keysync">키를 업데이트 중...</string>
   <string name="keylist_header_anonymous">익명</string>
-  <string name="dialog_analytics_consent">모든 사용자의 경험을 개선하기 위해서 OpenKeychain가 익명 사용 데이터를 수집하는걸 허가 하시겠습니까?\n\n더 많은 정보는 저희의 <a href="https://openkeychain.org/help/privacy-policy">개인정보 보호정책</a>을 참고하십시오.</string>
-  <string name="button_analytics_yes">예, 돕겠습니다!</string>
-  <string name="button_analytics_no">아니요</string>
-  <string name="snack_analytics_accept">도와주셔서 감사합니다! 설정에서 언제든지 변경하실 수 있습니다.</string>
-  <string name="snack_analytics_reject">괜찮습니다. 이제 표시하지 않습니다. 마음이 바뀌신다면 설정에서 변경하실 수 있습니다.</string>
-  <string name="snackbutton_analytics_settings">설정</string>
 </resources>

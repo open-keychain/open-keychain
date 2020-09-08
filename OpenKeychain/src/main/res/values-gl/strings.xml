@@ -211,14 +211,11 @@
   <string name="label_sync_settings_contacts_summary_on">Ligar chaves a contactos baseándose en nomes e enderezos de correo electrónico. Isto acontece sen precisar conexión a rede no seu dispositivo.</string>
   <string name="label_sync_settings_contacts_summary_off">As novas chaves non se ligarán aos contactos</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Actualización automática de chaves</string>
-  <string name="label_experimental_settings_desc_title">Aviso</string>
+    <string name="label_experimental_settings_desc_title">Aviso</string>
   <string name="label_experimental_settings_desc_summary">Estas características aínda non están rematadas ou son resultado da investigación da experiencia de usuaria e/ou seguridade. Xa que logo, non confíe na súa seguridade e por favor non informe sobre os fallos que poida atopar!</string>
   <string name="label_experimental_settings_keybase_title">probas de Keybase.io</string>
   <string name="label_experimental_settings_keybase_summary">Pedirlle probas de chave a keybase.io e expoñelas cada vez que se mostra a chave</string>
   <string name="label_experimental_settings_theme_summary">(As iconas  e moitas pantallas non están aínda ben axustadas ao decorado oscuro)</string>
-  <string name="label_settings_analytics_title">Permitir estátisticas anónimas sobre o uso</string>
-  <string name="label_settings_analytics_summary">Se está habilitado, envía estatísticas anónimas sobre o uso para axudar a mellorar a app.</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Habilitar Tor</string>
   <string name="pref_proxy_tor_summary">Precisa instalar Orbot</string>
@@ -1487,5 +1484,4 @@
   <string name="keylist_item_key_id">ID da Chave: %s</string>
   <string name="keylist_header_anonymous">Anónimo</string>
   <string name="keylist_header_special">#</string>
-  <string name="snackbutton_analytics_settings">Axustes</string>
 </resources>

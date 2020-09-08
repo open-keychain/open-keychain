@@ -212,14 +212,11 @@
   <string name="label_sync_settings_contacts_summary_on">Schlüssel basierend auf Namen und E-Mail-Adressen mit Kontakten verknüpfen. Das alles findet komplett offline auf deinem Gerät statt.</string>
   <string name="label_sync_settings_contacts_summary_off">Neue Schlüssel werden nicht mit Kontakten verknüpft</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Automatische Schlüsselaktualisierung</string>
   <string name="label_experimental_settings_desc_title">Warnung</string>
   <string name="label_experimental_settings_desc_summary">Diese Funktionen sind noch nicht final oder das Ergebnis von Benutzererfahrungs-/Sicherheitsuntersuchungen. Verlasse dich daher nicht auf deren Sicherheit und melde uns bitte keine auftretenden Probleme!</string>
   <string name="label_experimental_settings_keybase_title">Keybase.io-Nachweise</string>
   <string name="label_experimental_settings_keybase_summary">Keybase.io für Schlüsselnachweise kontaktieren und diese jedesmal zeigen, wenn ein Schlüssel angezeigt wird</string>
   <string name="label_experimental_settings_theme_summary">(Die Symbole und viele Bildschirme sind noch nicht an das dunkle Design angepasst)</string>
-  <string name="label_settings_analytics_title">Erlaube anonyme Benutzungsstatistiken</string>
-  <string name="label_settings_analytics_summary">Wenn aktiviert, sendet anonyme Benutzungsstatistiken, um dabei zu helfen, die App zu verbessern</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Tor aktivieren</string>
   <string name="pref_proxy_tor_summary">Orbot muss installiert sein</string>
@@ -780,8 +777,6 @@
   <string name="my_keys">Meine Schlüssel</string>
   <string name="nav_backup">Backup/Wiederherstellung</string>
   <string name="nav_transfer">Sichere WiFi Übertragung</string>
-  <string name="nav_shop">Shop</string>
-  <string name="nav_autocrypt">Autocrypt mit Thunderbird probieren</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Text eingeben</string>
   <!--certs-->
@@ -1807,12 +1802,6 @@ Ein sicherer Schlüssel sollte eine Stärke von 2048 Bits besitzen.</string>
   <string name="keylist_item_key_id">Key ID: %s</string>
   <string name="keylist_header_anonymous">Anonym</string>
   <string name="keylist_header_special">#</string>
-  <string name="dialog_analytics_consent">Um die Erfahrung aller Benutzer zu verbessen, soll OpenKeychain anonyme Benutzungsstatistiken sammeln dürfen?\n\nUm mehr zu erfahren, schau in unsere<a href="https://openkeychain.org/help/privacy-policy">Privatsphärenrichtlinien</a>.</string>
-  <string name="button_analytics_yes">Ja, ich möchte helfen!</string>
-  <string name="button_analytics_no">Nein, danke</string>
-  <string name="snack_analytics_accept">Vielen Dank für die Hilfe! Du kannst deine Entscheidung in den Einstellungen ändern.</string>
-  <string name="snack_analytics_reject">Das ist in Ordnung, wir werden nicht erneut fragen. Du kannst deine Entscheidung in den Einstellungen ändern.</string>
-  <string name="snackbutton_analytics_settings">Einstellungen</string>
   <string name="subkey_action_create">Teilschlüssel wird erstellt werden</string>
   <string name="subkey_action_revoke">Teilschlüssel wird widerrufen werden</string>
   <string name="subkey_action_strip">Teilschlüssel wird entfernt werden</string>
@@ -1820,6 +1809,4 @@ Ein sicherer Schlüssel sollte eine Stärke von 2048 Bits besitzen.</string>
   <string name="subkey_action_expiry_date">Ablauf wird geändert zu \"%s\"</string>
   <string name="share_key_clipboard">Schlüssel per Zwischenablage teilen</string>
   <string name="share_key">Schlüssel teilen</string>
-  <string name="shop_loading_label">Shop wird geladen...</string>
-  <string name="shop_title">COTECH Sicherheitsschlüssel</string>
 </resources>

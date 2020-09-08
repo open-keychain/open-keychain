@@ -381,5 +381,4 @@
   <string name="snack_keylist_clipboard_action">Näkymä</string>
   <string name="notify_title_keysync">Päivitetään avaimia...</string>
   <string name="keylist_header_anonymous">Anonyymi</string>
-  <string name="snackbutton_analytics_settings">Asetukset</string>
 </resources>

@@ -32,9 +32,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.daos.KeyMetadataDao;
 import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
@@ -55,7 +55,6 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing;
 import org.sufficientlysecure.keychain.pgp.Progressable;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.service.ContactSyncAdapterService;
 import org.sufficientlysecure.keychain.service.ImportKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -134,9 +133,6 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
     }
 
     /**
-     * Since the introduction of multithreaded import, we expect calling functions to handle the
-     * contact-to-key sync i.e ContactSyncAdapterService.requestContactsSync()
-     *
      * @param entries      keys to import
      * @param numTotalKeys          number of keys to import
      * @param hkpKeyserver contains uri of keyserver to import from, if it is an import from cloud
@@ -273,11 +269,6 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
                 log.add(result, 1);
             }
         }
-
-        // Special: make sure new data is synced into contacts
-        // disabling sync right now since it reduces speed while multi-threading
-        // so, we expect calling functions to take care of it. KeychainService handles this
-        // ContactSyncAdapterService.requestContactsSync();
 
         // convert to long array
         long[] importedMasterKeyIdsArray = new long[importedMasterKeyIds.size()];
@@ -475,10 +466,6 @@ public class ImportOperation extends BaseReadWriteOperation<ImportKeyringParcel>
             }
 
             result = multiThreadedKeyImport(keyList, keyServer, proxy, skipSave, forceReinsert);
-        }
-
-        if (!skipSave) {
-            ContactSyncAdapterService.requestContactsSync();
         }
         return result;
     }

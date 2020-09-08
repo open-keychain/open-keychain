@@ -831,6 +831,5 @@
   <string name="key_gen_finish">Končaj</string>
   <string name="notify_channel_passcache">Hranjenje gesla v spominu</string>
   <string name="notify_title_keysync">Posodabljam ključe...</string>
-  <string name="snackbutton_analytics_settings">Nastavitve</string>
-  <string name="share_key">Deli ključ</string>
+    <string name="share_key">Deli ključ</string>
 </resources>

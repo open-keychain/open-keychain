@@ -194,8 +194,7 @@
   <string name="label_sync_settings_contacts_summary_on">Collega le chiavi ai contatti in base ai nomi e indirizzi email. Ciò avviene completamente offline sul tuo dispositivo.</string>
   <string name="label_sync_settings_contacts_summary_off">Le chiavi nuove non verranno collegate ai contatti</string>
   <!--label shown in Android settings under the OpenKeychain account-->
-  <string name="keyserver_sync_settings_title">Aggiornamenti automatici delle chiavi</string>
-  <string name="label_experimental_settings_desc_title">Attenzione</string>
+    <string name="label_experimental_settings_desc_title">Attenzione</string>
   <string name="label_experimental_settings_desc_summary">Queste funzioni non sono ancora finite o testate da utenti/ricerche di sicurezza. Perciò non contare sulla loro sicurezza e per favore non segnalare i problemi che riscontri!</string>
   <string name="label_experimental_settings_keybase_summary">Contatta keybase.io per avere prove e mostrale ogni volta che visualizzo una chiave</string>
   <string name="label_experimental_settings_theme_summary">(Le icone e molte schermate non sono ancora modificate correttamente per il tema scuro)</string>
@@ -1177,6 +1176,4 @@
   <string name="keylist_item_key_id">ID chiave: %s</string>
   <string name="keylist_header_anonymous">Anonimo</string>
   <string name="keylist_header_special">#</string>
-  <string name="button_analytics_no">No, grazie</string>
-  <string name="snackbutton_analytics_settings">Impostazioni</string>
 </resources>
