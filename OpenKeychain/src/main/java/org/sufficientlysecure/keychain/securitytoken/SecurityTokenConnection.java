@@ -20,6 +20,7 @@ package org.sufficientlysecure.keychain.securitytoken;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import android.content.Context;
@@ -37,7 +38,12 @@ import timber.log.Timber;
 /**
  * This class provides a communication interface to OpenPGP applications on ISO SmartCard compliant
  * devices.
- * For the full specs, see http://g10code.com/docs/openpgp-card-2.0.pdf
+ * For the full specs, see [0]
+ *
+ * References:
+ * [0] `Functional Specification of the OpenPGP application on ISO Smart Card Operating Systems`
+ *      version 3.4.1
+ *      https://gnupg.org/ftp/specs/OpenPGP-smart-card-application-3.4.1.pdf
  */
 public class SecurityTokenConnection {
     private static final int APDU_SW1_RESPONSE_AVAILABLE = 0x61;
@@ -55,6 +61,7 @@ public class SecurityTokenConnection {
     private TokenType tokenType;
     private CardCapabilities cardCapabilities;
     private OpenPgpCapabilities openPgpCapabilities;
+    private KdfParameters kdfParameters;
 
     private SecureMessaging secureMessaging;
 
@@ -304,6 +311,44 @@ public class SecurityTokenConnection {
 
     // region pin management
 
+    private byte[] calculateKdfIfNecessary(byte[] pin, KdfParameters.PasswordType type) throws IOException {
+        if (!this.openPgpCapabilities.isHasKdf()) {
+            // KDF-DO is not supported by token
+            return pin;
+        }
+        KdfParameters kdfParameters = retrieveKdfDo();
+        if (kdfParameters == null || !kdfParameters.isHasUsesKdf()) {
+            return pin;
+        } else {
+            return KdfCalculator.calculateKdf(kdfParameters.forType(type), pin);
+        }
+    }
+
+    private KdfParameters retrieveKdfDo() throws IOException {
+        if (this.kdfParameters != null) {
+            return this.kdfParameters;
+        }
+
+        // query token for KDF-DO
+        // see page 18 of [0]
+        CommandApdu getKdfDoCommand = commandFactory.createGetDataCommand(0x00, 0xf9);
+        ResponseApdu kdfDoResponse = communicate(getKdfDoCommand);
+        if (!kdfDoResponse.isSuccess()) {
+            throw new CardException("Couldn't get KDF.DO!", kdfDoResponse.getSw());
+        }
+        byte[] kdfDo = kdfDoResponse.getData();
+
+        // empty KDF-DO means plain UTF-8 password is being used
+        // see page 19 of [0]
+        if (kdfDo.length == 0) {
+            return null;
+        }
+
+        this.kdfParameters = KdfParameters.fromKdfDo(kdfDo);
+
+        return this.kdfParameters;
+    }
+
     public void verifyPinForSignature() throws IOException {
         if (isPw1ValidatedForSignature) {
             return;
@@ -314,7 +359,14 @@ public class SecurityTokenConnection {
 
         byte[] pin = cachedPin.toStringUnsafe().getBytes();
 
-        CommandApdu verifyPw1ForSignatureCommand = commandFactory.createVerifyPw1ForSignatureCommand(pin);
+        byte[] transformedPin = this.calculateKdfIfNecessary(pin, KdfParameters.PasswordType.PW1);
+
+        CommandApdu verifyPw1ForSignatureCommand = commandFactory.createVerifyPw1ForSignatureCommand(transformedPin);
+
+        // delete secrets from memory
+        Arrays.fill(pin, (byte) 0);
+        Arrays.fill(transformedPin, (byte) 0);
+
         ResponseApdu response = communicate(verifyPw1ForSignatureCommand);
         if (!response.isSuccess()) {
             throw new CardException("Bad PIN!", response.getSw());
@@ -333,7 +385,14 @@ public class SecurityTokenConnection {
 
         byte[] pin = cachedPin.toStringUnsafe().getBytes();
 
-        CommandApdu verifyPw1ForOtherCommand = commandFactory.createVerifyPw1ForOtherCommand(pin);
+        byte[] transformedPin = this.calculateKdfIfNecessary(pin, KdfParameters.PasswordType.PW1);
+
+        CommandApdu verifyPw1ForOtherCommand = commandFactory.createVerifyPw1ForOtherCommand(transformedPin);
+
+        // delete secrets from memory
+        Arrays.fill(pin, (byte) 0);
+        Arrays.fill(transformedPin, (byte) 0);
+
         ResponseApdu response = communicate(verifyPw1ForOtherCommand);
         if (!response.isSuccess()) {
             throw new CardException("Bad PIN!", response.getSw());
@@ -347,7 +406,16 @@ public class SecurityTokenConnection {
             return;
         }
 
-        CommandApdu verifyPw3Command = commandFactory.createVerifyPw3Command(adminPin.toStringUnsafe().getBytes());
+        byte[] pin = adminPin.toStringUnsafe().getBytes();
+        byte[] transformedPin = this.calculateKdfIfNecessary(pin, KdfParameters.PasswordType.PW3);
+
+        CommandApdu verifyPw3Command = commandFactory.createVerifyPw3Command(transformedPin);
+
+        // delete secrets from memory
+        Arrays.fill(pin, (byte) 0);
+        Arrays.fill(transformedPin, (byte) 0);
+        adminPin.removeFromMemory();
+
         ResponseApdu response = communicate(verifyPw3Command);
         if (!response.isSuccess()) {
             throw new CardException("Bad PIN!", response.getSw());
