@@ -26,12 +26,20 @@ import androidx.annotation.Nullable;
 import com.google.auto.value.AutoValue;
 
 
+/**
+ * References:
+ * [0] `Functional Specification of the OpenPGP application on ISO Smart Card Operating Systems`
+ *      version 3.4.1
+ *      https://gnupg.org/ftp/specs/OpenPGP-smart-card-application-3.4.1.pdf
+ */
 @SuppressWarnings("unused") // just expose all included data
 @AutoValue
 public abstract class OpenPgpCapabilities {
+    // Extended Capabilites flag bit offsets are defined on page 32 of [0]
     private final static int MASK_SM = 1 << 7;
     private final static int MASK_KEY_IMPORT = 1 << 5;
     private final static int MASK_ATTRIBUTES_CHANGABLE = 1 << 2;
+    private final static int MASK_KDF_DO = 1;
 
     private static final int MAX_PW1_LENGTH_INDEX = 1;
     private static final int MAX_PW3_LENGTH_INDEX = 3;
@@ -63,6 +71,7 @@ public abstract class OpenPgpCapabilities {
     abstract boolean isHasSM();
     abstract boolean isHasAesSm();
     abstract boolean isHasScp11bSm();
+    abstract boolean isHasKdf();
 
     @Nullable
     abstract Integer getMaxCmdLen();
@@ -135,6 +144,7 @@ public abstract class OpenPgpCapabilities {
         abstract Builder hasSM(boolean hasSm);
         abstract Builder hasAesSm(boolean hasAesSm);
         abstract Builder hasScp11bSm(boolean hasScp11bSm);
+        abstract Builder hasKdf(boolean hasKdf);
 
         abstract Builder maxCmdLen(Integer maxCommandLen);
         abstract Builder maxRspLen(Integer MaxResponseLen);
@@ -147,6 +157,7 @@ public abstract class OpenPgpCapabilities {
             hasSM(false);
             hasAesSm(false);
             hasScp11bSm(false);
+            hasKdf(false);
         }
 
         Builder updateWithTLV(Iso7816TLV[] tlvs) {
@@ -242,6 +253,8 @@ public abstract class OpenPgpCapabilities {
                  hasAesSm(smType == 1 || smType == 2);
                  hasScp11bSm(smType == 3);
              }
+
+             hasKdf((v[0] & MASK_KDF_DO) == 1);
 
              maxCmdLen((v[6] << 8) + v[7]);
              maxRspLen((v[8] << 8) + v[9]);
