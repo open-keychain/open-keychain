@@ -136,7 +136,20 @@ public class ImportKeysProxyActivity extends FragmentActivity
         }
     }
 
-    private static final Pattern VCARD_KEY_PATTERN = Pattern.compile("\nKEY:(.*)\n");
+// XXX : Bookmark for issues #2592 (https://github.com/open-keychain/open-keychain/issues/2592) @awbmilne
+/**
+ * ─── Regex Explaination ───
+ * (?<=\n)(?:KEY:OPENPGP4FPR:|KEY.*http.*search=0x)((?:[A-F]|[a-f]|\d){40})(?=\n)
+ * 
+ * Matches:
+ * KEY:OPENPGP4FPR:[HASH]
+ * KEY[anything]https[anything]search=0x[HASH]
+ * 
+ * Examples:
+ * KEY:OPENPGP4FPR:1234567890123456789012345678901234567890
+ * KEY;MEDIATYPE=application/pgp-keys:https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x1234567890123456789012345678901234567890
+ */
+    private static final Pattern VCARD_KEY_PATTERN = Pattern.compile("(?<=\n)(?:KEY:OPENPGP4FPR:|KEY.*http.*search=0x)((?:[A-F]|[a-f]|\d){40})(?=\n)");
 
     private void processScannedContent(String content) {
         // if a VCard was scanned try to extract the KEY field
