@@ -42,7 +42,7 @@ public class SecurityTokenUtils {
             byte[] oid = new ASN1ObjectIdentifier(secretKey.getCurveOid()).getEncoded();
             byte[] attrs = new byte[1 + (oid.length - 2) + 1];
 
-            if (slot.equals(KeyType.SIGN))
+            if (!slot.equals(KeyType.ENCRYPT))
                 attrs[0] = ECKeyFormat.ECAlgorithmFormat.ECDSA_WITH_PUBKEY.getValue();
             else {
                 attrs[0] = ECKeyFormat.ECAlgorithmFormat.ECDH_WITH_PUBKEY.getValue();
