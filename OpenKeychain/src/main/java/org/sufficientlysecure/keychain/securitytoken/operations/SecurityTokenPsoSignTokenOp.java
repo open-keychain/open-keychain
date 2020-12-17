@@ -134,11 +134,23 @@ public class SecurityTokenPsoSignTokenOp {
                 if (signature.length % 2 != 0) {
                     throw new IOException("Bad signature length!");
                 }
-                final byte[] br = new byte[signature.length / 2];
-                final byte[] bs = new byte[signature.length / 2];
+                byte[] br = new byte[signature.length / 2];
+                byte[] bs = new byte[signature.length / 2];
                 for (int i = 0; i < br.length; ++i) {
                     br[i] = signature[i];
                     bs[i] = signature[br.length + i];
+                }
+                if (br[0] < 0) {
+                    byte[] paddedBr = new byte[br.length + 1];
+                    paddedBr[0] = 0;
+                    System.arraycopy(br, 0, paddedBr, 1, br.length);
+                    br = paddedBr;
+                }
+                if (bs[0] < 0) {
+                    byte[] paddedBs = new byte[bs.length + 1];
+                    paddedBs[0] = 0;
+                    System.arraycopy(bs, 0, paddedBs, 1, bs.length);
+                    bs = paddedBs;
                 }
                 final ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 ASN1OutputStream out = new ASN1OutputStream(baos);
