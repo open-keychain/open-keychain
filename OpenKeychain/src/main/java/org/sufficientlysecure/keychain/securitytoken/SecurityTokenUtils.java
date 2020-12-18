@@ -74,6 +74,18 @@ public class SecurityTokenUtils {
         return attrs;
     }
 
+    private static byte[] generateLengthByteArray(int length) throws IOException {
+        if (length < 128) {
+            return new byte[]{(byte) length};
+        } else if (length < 256) {
+            return new byte[]{(byte) 0x81, (byte) length};
+        } else if (length < 65536) {
+            return new byte[]{(byte) 0x82, (byte) (length >> 8), (byte) (length & 0xFF)};
+        } else {
+            throw new IOException("Unsupported key length");
+        }
+    }
+
     public static byte[] createRSAPrivKeyTemplate(RSAPrivateCrtKey secretKey, KeyType slot,
             RSAKeyFormat format) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream(),
@@ -87,33 +99,40 @@ public class SecurityTokenUtils {
         writeBits(data, secretKey.getPublicExponent(), expLengthBytes);
 
         final int modLengthBytes = format.getModulusLength() / 8;
+        final byte[] lengthByteArray = generateLengthByteArray(modLengthBytes / 2);
 
         // Prime P, length modLengthBytes / 2
-        template.write(Hex.decode("928180"));
+        template.write(Hex.decode("92"));
+        template.write(lengthByteArray);
         writeBits(data, secretKey.getPrimeP(), modLengthBytes / 2);
 
         // Prime Q, length modLengthBytes / 2
-        template.write(Hex.decode("938180"));
+        template.write(Hex.decode("93"));
+        template.write(lengthByteArray);
         writeBits(data, secretKey.getPrimeQ(), modLengthBytes / 2);
 
 
         if (format.getAlgorithmFormat().isIncludeCrt()) {
             // Coefficient (1/q mod p), length modLengthBytes / 2
-            template.write(Hex.decode("948180"));
+            template.write(Hex.decode("94"));
+            template.write(lengthByteArray);
             writeBits(data, secretKey.getCrtCoefficient(), modLengthBytes / 2);
 
             // Prime exponent P (d mod (p - 1)), length modLengthBytes / 2
-            template.write(Hex.decode("958180"));
+            template.write(Hex.decode("95"));
+            template.write(lengthByteArray);
             writeBits(data, secretKey.getPrimeExponentP(), modLengthBytes / 2);
 
             // Prime exponent Q (d mod (1 - 1)), length modLengthBytes / 2
-            template.write(Hex.decode("968180"));
+            template.write(Hex.decode("96"));
+            template.write(lengthByteArray);
             writeBits(data, secretKey.getPrimeExponentQ(), modLengthBytes / 2);
         }
 
         if (format.getAlgorithmFormat().isIncludeModulus()) {
             // Modulus, length modLengthBytes, last item in private key template
-            template.write(Hex.decode("97820100"));
+            template.write(Hex.decode("97"));
+            template.write(generateLengthByteArray(modLengthBytes));
             writeBits(data, secretKey.getModulus(), modLengthBytes);
         }
 
