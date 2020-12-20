@@ -164,9 +164,15 @@ public class PsoDecryptTokenOp {
        */
         byte[] keyEncryptionKey = response.getData();
 
-        int xLen = (keyEncryptionKey.length - 1) / 2;
+        int xLen;
+        boolean isCurve25519 = CryptlibObjectIdentifiers.curvey25519.equals(eckf.getCurveOID());
+        if (isCurve25519) {
+            xLen = keyEncryptionKey.length;
+        } else {
+            xLen = (keyEncryptionKey.length - 1) / 2;
+        }
         final byte[] kekX = new byte[xLen];
-        System.arraycopy(keyEncryptionKey, 1, kekX, 0, xLen);
+        System.arraycopy(keyEncryptionKey, isCurve25519 ? 0 : 1, kekX, 0, xLen);
 
         final byte[] keyEnc = new byte[encryptedSessionKeyMpi[mpiLength + 2]];
 
