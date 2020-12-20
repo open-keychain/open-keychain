@@ -164,6 +164,10 @@ public class PsoDecryptTokenOp {
        */
         byte[] keyEncryptionKey = response.getData();
 
+        int xLen = (keyEncryptionKey.length - 1) / 2;
+        final byte[] kekX = new byte[xLen];
+        System.arraycopy(keyEncryptionKey, 1, kekX, 0, xLen);
+
         final byte[] keyEnc = new byte[encryptedSessionKeyMpi[mpiLength + 2]];
 
         System.arraycopy(encryptedSessionKeyMpi, 2 + mpiLength + 1, keyEnc, 0, keyEnc.length);
@@ -172,7 +176,7 @@ public class PsoDecryptTokenOp {
             final MessageDigest kdf = MessageDigest.getInstance(MessageDigestUtils.getDigestName(publicKey.getSecurityTokenHashAlgorithm()));
 
             kdf.update(new byte[]{(byte) 0, (byte) 0, (byte) 0, (byte) 1});
-            kdf.update(keyEncryptionKey);
+            kdf.update(kekX);
             kdf.update(publicKey.createUserKeyingMaterial(fingerprintCalculator));
 
             byte[] kek = kdf.digest();
