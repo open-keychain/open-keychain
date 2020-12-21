@@ -57,7 +57,7 @@ public abstract class KeyFormat {
                     throw new IllegalArgumentException("Bad length for EC attributes");
                 }
                 int len = bytes.length - 1;
-                if (bytes[bytes.length - 1] == (byte)0xff) {
+                if (bytes[len] >= (byte)0x80) {
                     len -= 1;
                 }
                 final byte[] boid = new byte[2 + len];
