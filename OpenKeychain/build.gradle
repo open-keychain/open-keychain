@@ -56,7 +56,7 @@ dependencies {
     implementation project(':extern:MaterialChipsInput')
 
     // implementation project(':openkeychain:extern:bouncycastle:core')
-    implementation 'org.bouncycastle:bcprov-jdk15on:1.65.01'
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.68'
     implementation project(':extern:bouncycastle:pg')
     // implementation project(':openkeychain:extern:bouncycastle:prov')
 
