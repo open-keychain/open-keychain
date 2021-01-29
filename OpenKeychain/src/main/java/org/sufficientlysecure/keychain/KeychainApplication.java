@@ -30,6 +30,7 @@ import android.os.Build;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.keysync.KeyserverSyncManager;
+import org.sufficientlysecure.keychain.network.TlsCertificatePinning;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -86,6 +87,8 @@ public class KeychainApplication extends Application {
 
         // Upgrade preferences as needed
         preferences.upgradePreferences();
+
+        TlsCertificatePinning.addPinnedCertificate("hkps.pool.sks-keyservers.net", getAssets(), "hkps.pool.sks-keyservers.net.CA.cer");
 
         // only set up the rest on our main process
         if (!BuildConfig.APPLICATION_ID.equals(getProcessName())) {
