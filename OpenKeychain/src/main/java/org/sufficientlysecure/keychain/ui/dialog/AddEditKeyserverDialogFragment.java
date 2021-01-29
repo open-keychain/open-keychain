@@ -33,10 +33,6 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import androidx.annotation.NonNull;
-import com.google.android.material.textfield.TextInputLayout;
-import androidx.fragment.app.DialogFragment;
-import androidx.appcompat.app.AlertDialog;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,17 +40,19 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
+import com.google.android.material.textfield.TextInputLayout;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import org.sufficientlysecure.keychain.network.OkHttpClientFactory;
-import org.sufficientlysecure.keychain.network.TlsCertificatePinning;
 import org.sufficientlysecure.keychain.network.orbot.OrbotHelper;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -84,7 +82,6 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
     private EditText mKeyserverEditOnionText;
     private TextInputLayout mKeyserverEditOnionTextLayout;
     private CheckBox mVerifyKeyserverCheckBox;
-    private CheckBox mOnlyTrustedKeyserverCheckBox;
 
     public enum DialogAction {
         ADD,
@@ -134,13 +131,6 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
         mKeyserverEditOnionText = view.findViewById(R.id.keyserver_onion_edit_text);
         mKeyserverEditOnionTextLayout = view.findViewById(R.id.keyserver_onion_edit_text_layout);
         mVerifyKeyserverCheckBox = view.findViewById(R.id.verify_connection_checkbox);
-        mOnlyTrustedKeyserverCheckBox = view.findViewById(R.id.only_trusted_keyserver_checkbox);
-        mVerifyKeyserverCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mOnlyTrustedKeyserverCheckBox.setEnabled(isChecked);
-            }
-        });
 
         switch (mDialogAction) {
             case ADD: {
@@ -243,20 +233,12 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
                         OrbotHelper.DialogActions dialogActions = new OrbotHelper.DialogActions() {
                             @Override
                             public void onOrbotStarted() {
-                                verifyConnection(
-                                        keyserver,
-                                        proxy,
-                                        mOnlyTrustedKeyserverCheckBox.isChecked()
-                                );
+                                verifyConnection(keyserver, proxy);
                             }
 
                             @Override
                             public void onNeutralButton() {
-                                verifyConnection(
-                                        keyserver,
-                                        null,
-                                        mOnlyTrustedKeyserverCheckBox.isChecked()
-                                );
+                                verifyConnection(keyserver, null);
                             }
 
                             @Override
@@ -266,11 +248,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
                         };
 
                         if (OrbotHelper.putOrbotInRequiredState(dialogActions, getActivity())) {
-                            verifyConnection(
-                                    keyserver,
-                                    proxy,
-                                    mOnlyTrustedKeyserverCheckBox.isChecked()
-                            );
+                            verifyConnection(keyserver, proxy);
                         }
                     } else {
                         dismiss();
@@ -327,7 +305,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
 
     }
 
-    public void verifyConnection(HkpKeyserverAddress keyserver, final ParcelableProxy proxy, final boolean onlyTrustedKeyserver) {
+    public void verifyConnection(HkpKeyserverAddress keyserver, ParcelableProxy proxy) {
 
         new AsyncTask<HkpKeyserverAddress, Void, VerifyReturn>() {
             ProgressDialog mProgressDialog;
@@ -345,7 +323,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
             protected VerifyReturn doInBackground(HkpKeyserverAddress... keyservers) {
                 mKeyserver = keyservers[0];
 
-                return verifyKeyserver(mKeyserver, proxy, onlyTrustedKeyserver);
+                return verifyKeyserver(mKeyserver, proxy);
             }
 
             @Override
@@ -360,19 +338,10 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
         }.execute(keyserver);
     }
 
-    private VerifyReturn verifyKeyserver(HkpKeyserverAddress keyserver, final ParcelableProxy proxy, final boolean onlyTrustedKeyserver) {
+    private VerifyReturn verifyKeyserver(HkpKeyserverAddress keyserver, ParcelableProxy proxy) {
         VerifyReturn reason = VerifyReturn.GOOD;
         try {
             URI keyserverUriHttp = keyserver.getUrlURI();
-
-            // check TLS pinning only for non-Tor keyservers
-            TlsCertificatePinning tlsCertificatePinning = new TlsCertificatePinning(keyserverUriHttp.toURL());
-            boolean isPinAvailable = tlsCertificatePinning.isPinAvailable();
-            if (onlyTrustedKeyserver && !isPinAvailable) {
-                Timber.w("No pinned certificate for this host in OpenKeychain's assets.");
-                reason = VerifyReturn.NO_PINNED_CERTIFICATE;
-                return reason;
-            }
 
             OkHttpClient client = OkHttpClientFactory.getClientPinnedIfAvailable(
                     keyserverUriHttp.toURL(), proxy.getProxy());

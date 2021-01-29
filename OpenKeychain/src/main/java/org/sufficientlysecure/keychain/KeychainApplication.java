@@ -23,21 +23,13 @@ import java.lang.reflect.Method;
 import java.security.Security;
 import java.util.HashMap;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
 import android.app.Application;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
-import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.keysync.KeyserverSyncManager;
-import org.sufficientlysecure.keychain.network.TlsCertificatePinning;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.util.PRNGFixes;
 import org.sufficientlysecure.keychain.util.Preferences;
@@ -94,11 +86,6 @@ public class KeychainApplication extends Application {
 
         // Upgrade preferences as needed
         preferences.upgradePreferences();
-
-        TlsCertificatePinning.addPinnedCertificate("keys.openpgp.org", getAssets(), "LetsEncryptCA.cer");
-        TlsCertificatePinning.addPinnedCertificate("hkps.pool.sks-keyservers.net", getAssets(), "hkps.pool.sks-keyservers.net.CA.cer");
-        TlsCertificatePinning.addPinnedCertificate("pgp.mit.edu", getAssets(), "pgp.mit.edu.cer");
-        TlsCertificatePinning.addPinnedCertificate("keyserver.ubuntu.com", getAssets(), "LetsEncryptCA.cer");
 
         // only set up the rest on our main process
         if (!BuildConfig.APPLICATION_ID.equals(getProcessName())) {
