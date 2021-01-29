@@ -180,7 +180,7 @@ public final class Constants {
     }
 
     public static final class Defaults {
-        public static final String KEY_SERVERS = "hkps://keyserver.ubuntu.com,hkps://hkps.pool.sks-keyservers.net;hkp://jirk5u4osbsr34t5.onion,hkps://pgp.mit.edu";
+        public static final String KEY_SERVERS = "hkps://keys.openpgp.org;hkp://zkaan2xfbuxia2wpf7ofnkbz6r5zdbbvxbunvp5g2iebopbfc4iqmbad.onion";
         public static final int PREF_CURRENT_VERSION = 10;
     }
 
