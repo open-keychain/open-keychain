@@ -21,19 +21,16 @@ package org.sufficientlysecure.keychain.ui;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity.FragAction;
-import org.sufficientlysecure.keychain.ui.transfer.view.TransferFragment;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
 
@@ -48,7 +45,6 @@ public class CreateKeyStartFragment extends Fragment {
     View mImportKey;
     View mSecurityToken;
     TextView mSkipOrCancel;
-    View mSecureDeviceSetup;
 
 
     /**
@@ -72,7 +68,6 @@ public class CreateKeyStartFragment extends Fragment {
         mImportKey = view.findViewById(R.id.create_key_import_button);
         mSecurityToken = view.findViewById(R.id.create_key_security_token_button);
         mSkipOrCancel = view.findViewById(R.id.create_key_cancel);
-        mSecureDeviceSetup = view.findViewById(R.id.create_key_secure_device_setup);
 
         if (mCreateKeyActivity.mFirstTime) {
             mSkipOrCancel.setText(R.string.first_time_skip);
@@ -95,15 +90,6 @@ public class CreateKeyStartFragment extends Fragment {
             intent.setAction(ImportKeysActivity.ACTION_IMPORT_KEY_FROM_FILE_AND_RETURN);
             startActivityForResult(intent, REQUEST_CODE_IMPORT_KEY);
         });
-
-        if (Build.VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-            mSecureDeviceSetup.setOnClickListener(v -> {
-                TransferFragment frag = new TransferFragment();
-                mCreateKeyActivity.loadFragment(frag, FragAction.TO_RIGHT);
-            });
-        } else {
-            mSecureDeviceSetup.setVisibility(View.GONE);
-        }
 
         mSkipOrCancel.setOnClickListener(v -> {
             if (!mCreateKeyActivity.mFirstTime) {

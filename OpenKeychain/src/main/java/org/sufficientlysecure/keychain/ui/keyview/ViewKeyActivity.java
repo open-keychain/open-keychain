@@ -299,13 +299,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
                 startPassphraseActivity(REQUEST_BACKUP);
                 return true;
             }
-            case R.id.menu_key_view_skt: {
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra(MainActivity.EXTRA_INIT_FRAG, MainActivity.ID_TRANSFER);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                return true;
-            }
             case R.id.menu_key_view_delete: {
                 deleteKey();
                 return true;
@@ -335,7 +328,6 @@ public class ViewKeyActivity extends BaseSecurityTokenActivity {
         }
         MenuItem backupKey = menu.findItem(R.id.menu_key_view_backup);
         backupKey.setVisible(unifiedKeyInfo.has_any_secret());
-        menu.findItem(R.id.menu_key_view_skt).setVisible(unifiedKeyInfo.has_any_secret());
         MenuItem changePassword = menu.findItem(R.id.menu_key_change_password);
         changePassword.setVisible(unifiedKeyInfo.has_any_secret());
 

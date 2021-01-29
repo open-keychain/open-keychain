@@ -19,9 +19,6 @@ package org.sufficientlysecure.keychain.ui;
 
 
 import android.content.Intent;
-import android.graphics.Typeface;
-import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.view.View;
 
@@ -41,8 +38,6 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.remote.ui.AppsListFragment;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
-import org.sufficientlysecure.keychain.ui.transfer.view.TransferFragment;
-import org.sufficientlysecure.keychain.ui.transfer.view.TransferNotAvailableFragment;
 import org.sufficientlysecure.keychain.util.FabContainer;
 import org.sufficientlysecure.keychain.util.Preferences;
 
@@ -52,7 +47,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
     static final int ID_ENCRYPT_DECRYPT = 2;
     static final int ID_APPS = 3;
     static final int ID_BACKUP = 4;
-    public static final int ID_TRANSFER = 5;
     static final int ID_SETTINGS = 6;
     static final int ID_HELP = 7;
 
@@ -85,11 +79,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                                 .withIdentifier(ID_APPS).withSelectable(false),
                         new PrimaryDrawerItem().withName(R.string.nav_backup).withIcon(CommunityMaterial.Icon.cmd_backup_restore)
                                 .withIdentifier(ID_BACKUP).withSelectable(false),
-                        new PrimaryDrawerItem().withName(R.string.nav_transfer)
-                                .withIcon(R.drawable.ic_wifi_lock_24dp)
-                                .withIconColorRes(R.color.md_grey_600)
-                                .withIconTintingEnabled(true)
-                                .withIdentifier(ID_TRANSFER).withSelectable(false),
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName(R.string.menu_preferences).withIcon(GoogleMaterial.Icon.gmd_settings).withIdentifier(ID_SETTINGS).withSelectable(false),
                         new PrimaryDrawerItem().withName(R.string.menu_help).withIcon(CommunityMaterial.Icon.cmd_help_circle).withIdentifier(ID_HELP).withSelectable(false)
@@ -112,9 +101,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                                     break;
                                 case ID_BACKUP:
                                     onBackupSelected();
-                                    break;
-                                case ID_TRANSFER:
-                                    onTransferSelected();
                                     break;
                                 case ID_SETTINGS:
                                     intent = new Intent(MainActivity.this, SettingsActivity.class);
@@ -168,9 +154,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                 case ID_APPS:
                     onAppsSelected();
                     break;
-                case ID_TRANSFER:
-                    onTransferSelected();
-                    break;
             }
         }
 
@@ -189,9 +172,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
                     break;
                 case ID_APPS:
                     onAppsSelected();
-                    break;
-                case ID_TRANSFER:
-                    onTransferSelected();
                     break;
             }
         }
@@ -232,18 +212,6 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
         mDrawer.setSelection(ID_BACKUP, false);
         Fragment frag = new BackupRestoreFragment();
         setFragment(frag);
-    }
-
-    private void onTransferSelected() {
-        mToolbar.setTitle(R.string.nav_transfer);
-        mDrawer.setSelection(ID_TRANSFER, false);
-        if (Build.VERSION.SDK_INT < VERSION_CODES.LOLLIPOP) {
-            Fragment frag = new TransferNotAvailableFragment();
-            setFragment(frag);
-        } else {
-            Fragment frag = new TransferFragment();
-            setFragment(frag);
-        }
     }
 
     @Override
