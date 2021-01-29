@@ -5,7 +5,7 @@
     <header
         android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$CloudSearchPrefsFragment"
         android:icon="@drawable/ic_cloud_black_24dp"
-        android:summary="Keyserver, keybase.io"
+        android:summary="Keyserver"
         android:title="@string/section_cloud_search" />
     <header
         android:fragment="org.sufficientlysecure.keychain.ui.SettingsActivity$PassphrasePrefsFragment"
