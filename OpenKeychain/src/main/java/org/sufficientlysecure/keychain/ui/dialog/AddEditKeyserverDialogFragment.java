@@ -359,7 +359,7 @@ public class AddEditKeyserverDialogFragment extends DialogFragment implements On
             Timber.w("Invalid keyserver URL entered by user.");
             reason = VerifyReturn.INVALID_URL;
         } catch (IOException e) {
-            Timber.w("Could not connect to entered keyserver url");
+            Timber.w(e, "Could not connect to entered keyserver url");
             reason = VerifyReturn.CONNECTION_FAILED;
         }
 
