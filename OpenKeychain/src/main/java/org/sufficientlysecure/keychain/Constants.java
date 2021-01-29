@@ -34,9 +34,6 @@ import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 public final class Constants {
 
     public static final boolean DEBUG = BuildConfig.DEBUG;
-    public static final boolean DEBUG_LOG_DB_QUERIES = false;
-    public static final boolean DEBUG_EXPLAIN_QUERIES = false;
-    public static final boolean DEBUG_SYNC_REMOVE_CONTACTS = false;
     public static final boolean DEBUG_KEYSERVER_SYNC = false;
 
     public static final boolean IS_RUNNING_UNITTEST = isRunningUnitTest();
@@ -45,10 +42,6 @@ public final class Constants {
 
     public static final String PACKAGE_NAME = "org.sufficientlysecure.keychain";
 
-    public static final String ACCOUNT_NAME = DEBUG ? "OpenKeychain D" : "OpenKeychain";
-    public static final String ACCOUNT_TYPE = BuildConfig.ACCOUNT_TYPE;
-    public static final String CUSTOM_CONTACT_DATA_MIME_TYPE = "vnd.android.cursor.item/vnd.org.sufficientlysecure.keychain.key";
-
     public static final String PROVIDER_AUTHORITY = BuildConfig.PROVIDER_CONTENT_AUTHORITY;
     public static final String TEMP_FILE_PROVIDER_AUTHORITY = BuildConfig.APPLICATION_ID + ".tempstorage";
 
@@ -56,15 +49,12 @@ public final class Constants {
 
     // as defined in http://tools.ietf.org/html/rfc3156
     public static final String MIME_TYPE_KEYS = "application/pgp-keys";
-    // NOTE: don't use application/pgp-encrypted It only holds the version number!
-    public static final String MIME_TYPE_ENCRYPTED = "application/octet-stream";
     // NOTE: Non-standard alternative, better use this, because application/octet-stream is too unspecific!
     // also see https://tools.ietf.org/html/draft-bray-pgp-message-00
     public static final String MIME_TYPE_ENCRYPTED_ALTERNATE = "application/pgp-message";
     public static final String MIME_TYPE_TEXT = "text/plain";
 
     public static final String FILE_EXTENSION_PGP_MAIN = ".pgp";
-    public static final String FILE_EXTENSION_PGP_ALTERNATE = ".gpg";
     public static final String FILE_EXTENSION_ASC = ".asc";
 
     public static final String FILE_BACKUP_PREFIX = "backup_";
@@ -78,9 +68,6 @@ public final class Constants {
     // used by QR Codes (Guardian Project, Monkeysphere compatibility)
     public static final String FINGERPRINT_SCHEME = "openpgp4fpr";
 
-    // used by openpgp-skt
-    public static final String SKT_SCHEME = "OPGPSKT";
-
     public static final String BOUNCY_CASTLE_PROVIDER_NAME = BouncyCastleProvider.PROVIDER_NAME;
 
     // prefix packagename for exported Intents
@@ -92,8 +79,6 @@ public final class Constants {
 
     // the maximal length of plaintext to read in encrypt/decrypt text activities
     public static final int TEXT_LENGTH_LIMIT = 1024 * 50;
-
-    public static final String SAFESLINGER_SERVER = "slinger-openpgp.appspot.com";
 
     // Intents API
     public static final String ENCRYPT_TEXT = INTENT_PREFIX + "ENCRYPT_TEXT";
@@ -146,7 +131,6 @@ public final class Constants {
         public static final String PROXY_TYPE = "proxyType";
         public static final String THEME = "theme";
         // keyserver sync settings
-        public static final String SYNC_CONTACTS = "syncContacts";
         public static final String SYNC_KEYSERVER = "syncKeyserver";
         public static final String ENABLE_WIFI_SYNC_ONLY = "enableWifiSyncOnly";
         public static final String SYNC_WORK_UUID = "syncWorkUuid";
@@ -187,7 +171,6 @@ public final class Constants {
     public static final class key {
         public static final long none = 0;
         public static final long symmetric = -1;
-        public static final long backup_code = -2;
     }
 
     /**
