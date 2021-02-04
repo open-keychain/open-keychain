@@ -13,11 +13,14 @@ buildscript {
 }
 
 android {
-    if (project.hasProperty('rootProject.ext.compileSdkVersion')) {
+    if (project.hasProperty('compileSdkVersion')) {
         compileSdkVersion rootProject.ext.compileSdkVersion
     } else {
         compileSdkVersion 28
     }
+    if (project.hasProperty('buildToolsVersion')) {
+        buildToolsVersion rootProject.ext.buildToolsVersion
+    } 
 
 
     defaultConfig {
