@@ -85,6 +85,7 @@ public abstract class KdfParameters {
                             case (byte)0x00:
                                 // no KDF, plain password
                                 hasUsesKdf(false);
+                                break;
                             case (byte)0x03:
                                 // using KDF
                                 hasUsesKdf(true);
