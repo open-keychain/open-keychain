@@ -64,8 +64,8 @@ public abstract class KdfParameters {
         abstract Builder digestAlgorithm(HashType digestAlgorithm);
         abstract Builder iterations(int iterations);
         abstract Builder saltPw1(byte[] saltPw1);
-        abstract Builder saltPw2(byte[] saltPw1);
-        abstract Builder saltPw3(byte[] saltPw1);
+        abstract Builder saltPw2(byte[] saltPw2);
+        abstract Builder saltPw3(byte[] saltPw3);
         abstract Builder hashUser(byte[] hashUser);
         abstract Builder hashAdmin(byte[] hashAdmin);
 
