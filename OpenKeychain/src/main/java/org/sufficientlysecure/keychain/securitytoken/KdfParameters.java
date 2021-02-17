@@ -75,6 +75,13 @@ public abstract class KdfParameters {
 
         public Builder() {
             hasUsesKdf(false);
+            digestAlgorithm(HashType.SHA256);
+            iterations(0);
+            saltPw1(new byte[0]);
+            saltPw2(new byte[0]);
+            saltPw3(new byte[0]);
+            hashUser(new byte[0]);
+            hashAdmin(new byte[0]);
         }
 
         Builder parseKdfTLVs(Iso7816TLV[] tlvs) throws IOException {
