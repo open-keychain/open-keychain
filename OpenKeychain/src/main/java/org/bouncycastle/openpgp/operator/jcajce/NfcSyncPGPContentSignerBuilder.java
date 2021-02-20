@@ -7,12 +7,14 @@
 
 package org.bouncycastle.openpgp.operator.jcajce;
 
+import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPrivateKey;
 import org.bouncycastle.openpgp.operator.PGPContentSigner;
 import org.bouncycastle.openpgp.operator.PGPContentSignerBuilder;
 import org.bouncycastle.openpgp.operator.PGPDigestCalculator;
 
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.security.Provider;
@@ -93,6 +95,10 @@ public class NfcSyncPGPContentSignerBuilder
     public PGPContentSigner build(final int signatureType, final long keyID)
         throws PGPException
     {
+        if (keyAlgorithm == PublicKeyAlgorithmTags.EDDSA) {
+            return buildEdDSASigner(signatureType, keyID);
+        }
+
         final PGPDigestCalculator digestCalculator = digestCalculatorProviderBuilder.build().get(hashAlgorithm);
 
         return new PGPContentSigner()
@@ -138,5 +144,57 @@ public class NfcSyncPGPContentSignerBuilder
                 return digestCalculator.getDigest();
             }
         };
+    }
+
+    public PGPContentSigner buildEdDSASigner(final int signatureType, final long keyID)
+        throws PGPException
+    {
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        return new PGPContentSigner()
+        {
+            public int getType()
+            {
+                return signatureType;
+            }
+
+            public int getHashAlgorithm()
+            {
+                return hashAlgorithm;
+            }
+
+            public int getKeyAlgorithm()
+            {
+                return keyAlgorithm;
+            }
+
+            public long getKeyID()
+            {
+                return keyID;
+            }
+
+            public OutputStream getOutputStream()
+            {
+                return outputStream;
+            }
+
+            public byte[] getSignature() {
+                byte[] rawData = outputStream.toByteArray();
+
+                ByteBuffer buf = ByteBuffer.wrap(rawData);
+                if (signedHashes.containsKey(buf)) {
+                    return (byte[]) signedHashes.get(buf);
+                }
+                // catch this when signatureGenerator.generate() is executed and divert to card,
+                // when doing the operation again reuse creationTimestamp (this will be hashed)
+                throw new NfcInteractionNeeded(rawData, getHashAlgorithm());
+            }
+
+            public byte[] getDigest()
+            {
+                return outputStream.toByteArray();
+            }
+        };
+
     }
 }
