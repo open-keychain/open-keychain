@@ -19,11 +19,13 @@ package org.sufficientlysecure.keychain.pgp;
 
 import org.bouncycastle.bcpg.DSAPublicBCPGKey;
 import org.bouncycastle.bcpg.ECPublicBCPGKey;
+import org.bouncycastle.bcpg.EdDSAPublicBCPGKey;
 import org.bouncycastle.bcpg.RSAPublicBCPGKey;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.ssh.key.SshDSAPublicKey;
 import org.sufficientlysecure.keychain.ssh.key.SshECDSAPublicKey;
+import org.sufficientlysecure.keychain.ssh.key.SshEd25519PublicKey;
 import org.sufficientlysecure.keychain.ssh.key.SshRSAPublicKey;
 import org.sufficientlysecure.keychain.ssh.utils.SshUtils;
 
@@ -46,9 +48,8 @@ public class SshPublicKey {
                 return encodeRSAKey(key);
             case PGPPublicKey.ECDSA:
                 return encodeECKey(key);
-            // TODO
-//            case PGPPublicKey.EDDSA:
-//                return encodeEdDSAKey(key);
+            case PGPPublicKey.EDDSA:
+                return encodeEdDSAKey(key);
             case PGPPublicKey.DSA:
                 return encodeDSAKey(key);
             default:
@@ -73,15 +74,13 @@ public class SshPublicKey {
         return sshECDSAPublicKey.getPublicKeyBlob();
     }
 
+    private String encodeEdDSAKey(PGPPublicKey publicKey) {
+        EdDSAPublicBCPGKey publicBCPGKey = (EdDSAPublicBCPGKey) publicKey.getPublicKeyPacket().getKey();
 
+        SshEd25519PublicKey pubkey = new SshEd25519PublicKey(publicBCPGKey.getEdDSAEncodedPoint());
 
-//    private String encodeEdDSAKey(PGPPublicKey publicKey) {
-//        EdDSAPublicBCPGKey publicBCPGKey = (EdDSAPublicBCPGKey) publicKey.getPublicKeyPacket().getKey();
-//
-//        SshEd25519PublicKey pubkey = new SshEd25519PublicKey(publicBCPGKey.getEdDSAEncodedPoint());
-//
-//        return pubkey.getPublicKeyBlob();
-//    }
+        return pubkey.getPublicKeyBlob();
+    }
 
     private String encodeDSAKey(PGPPublicKey publicKey) {
         DSAPublicBCPGKey publicBCPGKey = (DSAPublicBCPGKey) publicKey.getPublicKeyPacket().getKey();
