@@ -53,19 +53,7 @@ public abstract class KeyFormat {
 
             case PublicKeyAlgorithmTags.ECDH:
             case PublicKeyAlgorithmTags.ECDSA:
-                if (bytes.length < 2) {
-                    throw new IllegalArgumentException("Bad length for EC attributes");
-                }
-                int len = bytes.length - 1;
-                if (bytes[bytes.length - 1] == (byte)0xff) {
-                    len -= 1;
-                }
-                final byte[] boid = new byte[2 + len];
-                boid[0] = (byte)0x06;
-                boid[1] = (byte)len;
-                System.arraycopy(bytes, 1, boid, 2, len);
-                final ASN1ObjectIdentifier oid = ASN1ObjectIdentifier.getInstance(boid);
-                return new ECKeyFormat(oid, ECKeyFormat.ECAlgorithmFormat.from(bytes[0], bytes[bytes.length - 1]));
+                return ECKeyFormat.getInstanceFromBytes(bytes);
             case PublicKeyAlgorithmTags.EDDSA:
                 return new EdDSAKeyFormat();
 
@@ -87,11 +75,11 @@ public abstract class KeyFormat {
             case RSA_4096:
                 return new RSAKeyFormat(4096, elen, RSAKeyFormat.RSAAlgorithmFormat.CRT_WITH_MODULUS);
             case ECC_P256:
-                return new ECKeyFormat(NISTNamedCurves.getOID("P-256"), kf);
+                return ECKeyFormat.getInstance(NISTNamedCurves.getOID("P-256"), kf);
             case ECC_P384:
-                return new ECKeyFormat(NISTNamedCurves.getOID("P-384"), kf);
+                return ECKeyFormat.getInstance(NISTNamedCurves.getOID("P-384"), kf);
             case ECC_P521:
-                return new ECKeyFormat(NISTNamedCurves.getOID("P-521"), kf);
+                return ECKeyFormat.getInstance(NISTNamedCurves.getOID("P-521"), kf);
         }
 
         throw new IllegalArgumentException("Unsupported Algorithm id " + t);

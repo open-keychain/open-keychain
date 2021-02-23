@@ -198,10 +198,10 @@ public class PsoDecryptTokenOp {
 
     private byte[] getEcDecipherPayload(ECKeyFormat eckf, byte[] encryptedPoint) throws CardException {
         // TODO is this the right curve?
-        if (CryptlibObjectIdentifiers.curvey25519.equals(eckf.getCurveOID())) {
+        if (CryptlibObjectIdentifiers.curvey25519.equals(eckf.asn1ParseOid())) {
             return Arrays.copyOfRange(encryptedPoint, 1, 33);
         } else {
-            X9ECParameters x9Params = ECNamedCurveTable.getByOID(eckf.getCurveOID());
+            X9ECParameters x9Params = ECNamedCurveTable.getByOID(eckf.asn1ParseOid());
             ECPoint p = x9Params.getCurve().decodePoint(encryptedPoint);
             if (!p.isValid()) {
                 throw new CardException("Invalid EC point!");

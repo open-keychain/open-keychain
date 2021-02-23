@@ -43,9 +43,9 @@ public class SecurityTokenUtils {
             byte[] attrs = new byte[1 + (oid.length - 2) + 1];
 
             if (slot.equals(KeyType.SIGN))
-                attrs[0] = ECKeyFormat.ECAlgorithmFormat.ECDSA_WITH_PUBKEY.getValue();
+                attrs[0] = ECKeyFormat.ECAlgorithmFormat.ECDSA_WITH_PUBKEY.getAlgorithmId();
             else {
-                attrs[0] = ECKeyFormat.ECAlgorithmFormat.ECDH_WITH_PUBKEY.getValue();
+                attrs[0] = ECKeyFormat.ECAlgorithmFormat.ECDH_WITH_PUBKEY.getAlgorithmId();
             }
 
             System.arraycopy(oid, 2, attrs, 1, (oid.length - 2));
@@ -174,7 +174,7 @@ public class SecurityTokenUtils {
         template.write(Hex.decode("92"));
         template.write(encodeLength(data.size()));
 
-        if (format.getAlgorithmFormat().isWithPubkey()) {
+        if (format.ecAlgorithmFormat().isWithPubkey()) {
             data.write(Hex.decode("04"));
             writeBits(data, publicKey.getW().getAffineX(), csize);
             writeBits(data, publicKey.getW().getAffineY(), csize);
