@@ -69,7 +69,7 @@ public class SecurityTokenUtils {
         attrs[i++] = (byte) (modulusLength & 0xff);
         attrs[i++] = (byte) ((exponentLength >> 8) & 0xff);
         attrs[i++] = (byte) (exponentLength & 0xff);
-        attrs[i] = algorithmFormat.getValue();
+        attrs[i] = algorithmFormat.getImportFormat();
 
         return attrs;
     }

@@ -17,6 +17,7 @@
 
 package org.sufficientlysecure.keychain.securitytoken;
 
+import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 
@@ -44,37 +45,46 @@ public class RSAKeyFormat extends KeyFormat {
         return mExponentLength;
     }
 
+    public static KeyFormat fromBytes(byte[] bytes) {
+        if (bytes.length < 6) {
+            throw new IllegalArgumentException("Bad length for RSA attributes");
+        }
+        return new RSAKeyFormat(bytes[1] << 8 | bytes[2],
+                bytes[3] << 8 | bytes[4],
+                RSAKeyFormat.RSAAlgorithmFormat.from(bytes[5]));
+    }
+
     public RSAAlgorithmFormat getAlgorithmFormat() {
         return mRSAAlgorithmFormat;
     }
 
     public enum RSAAlgorithmFormat {
-        STANDARD((byte) 0, false, false),
-        STANDARD_WITH_MODULUS((byte) 1, false, true),
-        CRT((byte) 2, true, false),
-        CRT_WITH_MODULUS((byte) 3, true, true);
+        STANDARD((byte) 0x00, false, false),
+        STANDARD_WITH_MODULUS((byte) 0x01, false, true),
+        CRT((byte) 0x02, true, false),
+        CRT_WITH_MODULUS((byte) 0x03, true, true);
 
-        private byte mValue;
+        private byte mImportFormat;
         private boolean mIncludeModulus;
         private boolean mIncludeCrt;
 
-        RSAAlgorithmFormat(byte value, boolean includeCrt, boolean includeModulus) {
-            mValue = value;
+        RSAAlgorithmFormat(byte importFormat, boolean includeCrt, boolean includeModulus) {
+            mImportFormat = importFormat;
             mIncludeModulus = includeModulus;
             mIncludeCrt = includeCrt;
         }
 
-        public static RSAAlgorithmFormat from(byte b) {
+        public static RSAAlgorithmFormat from(byte importFormatByte) {
             for (RSAAlgorithmFormat format : values()) {
-                if (format.mValue == b) {
+                if (format.mImportFormat == importFormatByte) {
                     return format;
                 }
             }
             return null;
         }
 
-        public byte getValue() {
-            return mValue;
+        public byte getImportFormat() {
+            return mImportFormat;
         }
 
         public boolean isIncludeModulus() {

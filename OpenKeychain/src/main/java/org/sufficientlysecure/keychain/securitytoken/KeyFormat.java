@@ -17,7 +17,6 @@
 
 package org.sufficientlysecure.keychain.securitytoken;
 
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.nist.NISTNamedCurves;
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -44,13 +43,7 @@ public abstract class KeyFormat {
     public static KeyFormat fromBytes(byte[] bytes) {
         switch (bytes[0]) {
             case PublicKeyAlgorithmTags.RSA_GENERAL:
-                if (bytes.length < 6) {
-                    throw new IllegalArgumentException("Bad length for RSA attributes");
-                }
-                return new RSAKeyFormat(bytes[1] << 8 | bytes[2],
-                                        bytes[3] << 8 | bytes[4],
-                                        RSAKeyFormat.RSAAlgorithmFormat.from(bytes[5]));
-
+                return RSAKeyFormat.fromBytes(bytes);
             case PublicKeyAlgorithmTags.ECDH:
             case PublicKeyAlgorithmTags.ECDSA:
                 return ECKeyFormat.getInstanceFromBytes(bytes);
