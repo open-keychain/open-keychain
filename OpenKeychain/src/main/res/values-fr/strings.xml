@@ -1627,8 +1627,8 @@
   <string name="insecure_encrypt_bitstrength_suggestion">La clé utilisée n’est pas sécurisée et ne peut pas être mise à niveau. Pour communiquer de façon sécurisée, vous devez créer une nouvelle clé.</string>
   <string name="insecure_sign_bitstrength">La clé qui a envoyé (signé) ce message est périmée.\n\nL’algorithme (%s) est configuré avec une robustesse de 1024 bits ou moins, ce qui est considéré comme non sécurisé pour une utilisation normale depuis 2006.</string>
   <string name="insecure_sign_bitstrength_suggestion">La clé utilisée n’est pas sécurisée et ne peut pas être mise à niveau. Pour communiquer de façon sécurisée, l’expéditeur doit créer une nouvelle clé.</string>
-  <string name="insecure_encrypt_not_whitelisted_curve">La clé qui a reçu (déchiffré) ce message utilise la courbe elliptique dont l’OID est %1$s, qui ne fait pas partie de la liste blanche.</string>
-  <string name="insecure_sign_not_whitelisted_curve">La clé à partir de laquelle ce message a été envoyé (signé) utilise la courbe elliptique dont l’OID est %1$s, qui ne fait pas partie de la liste blanche.</string>
+  <string name="insecure_encrypt_not_secure_curve">La clé qui a reçu (déchiffré) ce message utilise la courbe elliptique dont l’OID est %1$s, qui ne fait pas partie de la liste blanche.</string>
+  <string name="insecure_sign_not_secure_curve">La clé à partir de laquelle ce message a été envoyé (signé) utilise la courbe elliptique dont l’OID est %1$s, qui ne fait pas partie de la liste blanche.</string>
   <string name="insecure_encrypt_unidentified">La clé utilisée pour recevoir (déchiffrer) ce message pose un problème de sécurité non identifié.</string>
   <string name="insecure_sign_unidentified">La clé utilisée pour envoyer (signer) ce message pose un problème de sécurité non identifié.</string>
   <string name="insecure_report_suggestion">Ce problème peut provenir d’OpenKeychain. Veuillez le signaler sur notre système de suivi des problèmes.</string>

@@ -1691,8 +1691,8 @@
   <string name="insecure_encrypt_bitstrength_suggestion">Ten klucz nie jest bezpieczny i nie może zostać zaktualizowany. Aby komunikować się bezpiecznie, musisz stworzyć nowy klucz!</string>
   <string name="insecure_sign_bitstrength">Klucz użyty do wysłania (podpisania) wiadomości jest przestarzały!\n\nAlgorytm (%s) używa siły 1024 lub mnie, co jest uznawane za słabe do ogólnego użytku od roku 2006.</string>
   <string name="insecure_sign_bitstrength_suggestion">Używany klucz jest słaby i nie może zostać ulepszony. Aby komunikować się bezpiecznie nadawca musi stworzyć nowy klucz!</string>
-  <string name="insecure_encrypt_not_whitelisted_curve">Klucz który odebrał (odszyfrował) tą wiadomość używa krzywej eliptycznej z OID %1$s, która nie jest zatwierdzona!</string>
-  <string name="insecure_sign_not_whitelisted_curve">Klucz który wysłał (podpisał) tą wiadomość używa krzywej eliptycznej z OID %1$s, która nie jest zatwierdzona!</string>
+  <string name="insecure_encrypt_not_secure_curve">Klucz który odebrał (odszyfrował) tą wiadomość używa krzywej eliptycznej z OID %1$s, która nie jest zatwierdzona!</string>
+  <string name="insecure_sign_not_secure_curve">Klucz który wysłał (podpisał) tą wiadomość używa krzywej eliptycznej z OID %1$s, która nie jest zatwierdzona!</string>
   <string name="insecure_encrypt_unidentified">Jest jakiś niezidentyfikowany problem bezpieczeństwa z kluczem używanym do odebrania (odszyfrowania) tej wiadomości!</string>
   <string name="insecure_sign_unidentified">Jest jakiś niezidentyfikowany problem bezpieczeństwa z kluczem używanym do wysłania (podpisania) tej wiadomości!</string>
   <string name="insecure_report_suggestion">To może być problem w OpenKeychain, proszę zgłosić to w naszym systemie śledzenia błędów!</string>

@@ -1595,8 +1595,8 @@
   <string name="insecure_encrypt_bitstrength_suggestion">正在使用的密钥是不安全的，并且无法被升级。为了更安全地通信，你必须创建一个新的密钥！</string>
   <string name="insecure_sign_bitstrength">你选择用于发送（签名）信息的密钥已经过时！\n\n你配置的小于等于1024位的（%s）算法密钥，早在2006年就被认为在一般使用中不安全了。</string>
   <string name="insecure_sign_bitstrength_suggestion">正在使用的密钥是不安全的，并且无法被升级。为了更安全地通信，发送者必须创建一个新的密钥！</string>
-  <string name="insecure_encrypt_not_whitelisted_curve">用于接收（解密）此消息的密钥使用的椭圆曲线算法不在白名单中！OID：%1$s</string>
-  <string name="insecure_sign_not_whitelisted_curve">用于发送（签名）此消息的密钥使用的椭圆曲线算法不在白名单中！OID：%1$s</string>
+  <string name="insecure_encrypt_not_secure_curve">用于接收（解密）此消息的密钥使用的椭圆曲线算法不在白名单中！OID：%1$s</string>
+  <string name="insecure_sign_not_secure_curve">用于发送（签名）此消息的密钥使用的椭圆曲线算法不在白名单中！OID：%1$s</string>
   <string name="insecure_encrypt_unidentified">用于接收（解密）此信息的密钥包含一个尚未定义的安全问题！</string>
   <string name="insecure_sign_unidentified">用于发送（签名）此信息的密钥包含一个尚未定义的安全问题！</string>
   <string name="insecure_report_suggestion">OpenKeychain也许出现了一个问题，请上传一份报告到我们的问题追踪服务器！</string>

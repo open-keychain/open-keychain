@@ -33,7 +33,7 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureSigningAlgori
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureEncryptionAlgorithm;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.MissingMdc;
-import org.sufficientlysecure.keychain.pgp.SecurityProblem.NotWhitelistedCurve;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.NotSecureCurve;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.EncryptionAlgorithmProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.UnidentifiedKeyProblem;
 import org.sufficientlysecure.keychain.daos.OverriddenWarningsDao;
@@ -105,9 +105,9 @@ class SecurityProblemPresenter {
         if (keySecurityProblem instanceof InsecureBitStrength) {
             InsecureBitStrength problem = (InsecureBitStrength) keySecurityProblem;
             view.showLayoutEncryptInsecureBitsize(problem.algorithm, problem.bitStrength);
-        } else if (keySecurityProblem instanceof NotWhitelistedCurve) {
-            NotWhitelistedCurve problem = (NotWhitelistedCurve) keySecurityProblem;
-            view.showLayoutEncryptNotWhitelistedCurve(problem.curveOid);
+        } else if (keySecurityProblem instanceof NotSecureCurve) {
+            NotSecureCurve problem = (NotSecureCurve) keySecurityProblem;
+            view.showLayoutEncryptNotSecureCurve(problem.curveOid);
         } else if (keySecurityProblem instanceof UnidentifiedKeyProblem) {
             view.showLayoutEncryptUnidentifiedKeyProblem();
         } else {
@@ -127,9 +127,9 @@ class SecurityProblemPresenter {
         if (keySecurityProblem instanceof InsecureBitStrength) {
             InsecureBitStrength problem = (InsecureBitStrength) keySecurityProblem;
             view.showLayoutSignInsecureBitsize(problem.algorithm, problem.bitStrength);
-        } else if (keySecurityProblem instanceof NotWhitelistedCurve) {
-            NotWhitelistedCurve problem = (NotWhitelistedCurve) keySecurityProblem;
-            view.showLayoutSignNotWhitelistedCurve(problem.curveOid);
+        } else if (keySecurityProblem instanceof NotSecureCurve) {
+            NotSecureCurve problem = (NotSecureCurve) keySecurityProblem;
+            view.showLayoutSignNotSecureCurve(problem.curveOid);
         } else if (keySecurityProblem instanceof UnidentifiedKeyProblem) {
             view.showLayoutSignUnidentifiedKeyProblem();
         } else {
@@ -239,10 +239,10 @@ class SecurityProblemPresenter {
         void setTitleClientIcon(Drawable drawable);
 
         void showLayoutEncryptInsecureBitsize(int algorithmId, int bitStrength);
-        void showLayoutEncryptNotWhitelistedCurve(String curveOid);
+        void showLayoutEncryptNotSecureCurve(String curveOid);
         void showLayoutEncryptUnidentifiedKeyProblem();
         void showLayoutSignInsecureBitsize(int algorithmId, int bitStrength);
-        void showLayoutSignNotWhitelistedCurve(String curveOid);
+        void showLayoutSignNotSecureCurve(String curveOid);
         void showLayoutSignUnidentifiedKeyProblem();
 
         void showLayoutMissingMdc();

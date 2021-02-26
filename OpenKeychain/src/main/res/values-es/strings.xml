@@ -1627,8 +1627,8 @@
   <string name="insecure_encrypt_bitstrength_suggestion">La clave en uso no es segura, y no se puede actualizar. ¡Para comunicarse de forma segura, tiene que crear una nueva clave!</string>
   <string name="insecure_sign_bitstrength">¡La clave que envió (firmó) este mensaje está desactualizada!\n\nEl algoritmo (%s) está configurado con una fortaleza de 1024 bits o menos, lo que ha sido considerado no seguro para uso general desde 2006.</string>
   <string name="insecure_sign_bitstrength_suggestion">La clave en uso no es segura, y no se puede actualizar. ¡Para comunicarse de forma segura, el remitente tiene que crear una nueva clave!</string>
-  <string name="insecure_encrypt_not_whitelisted_curve">¡La clave que recibió (descifró) este mensaje está usando la curva elíptica con OID %1$s, que no está en lista blanca!</string>
-  <string name="insecure_sign_not_whitelisted_curve">¡La clave desde la que se envío (firmó) este mensaje está usando la curva elíptica con OID %1$s, que no está en lista blanca!</string>
+  <string name="insecure_encrypt_not_secure_curve">¡La clave que recibió (descifró) este mensaje está usando la curva elíptica con OID %1$s, que no está en lista blanca!</string>
+  <string name="insecure_sign_not_secure_curve">¡La clave desde la que se envío (firmó) este mensaje está usando la curva elíptica con OID %1$s, que no está en lista blanca!</string>
   <string name="insecure_encrypt_unidentified">¡Hay un problema de seguridad no identificado con la clave usada para recibir (descifrar) este mensaje!</string>
   <string name="insecure_sign_unidentified">¡Hay un problema de seguridad no identificado con la clave usada para enviar (firmar) este mensaje!</string>
   <string name="insecure_report_suggestion">¡Esto podría ser un problema en OpenKeychain, por favor, informe en nuestro rastreador de problemas!</string>

@@ -92,10 +92,10 @@ public abstract class SecurityProblem implements Serializable {
         }
     }
 
-    public static class NotWhitelistedCurve extends KeySecurityProblem {
+    public static class NotSecureCurve extends KeySecurityProblem {
         public final String curveOid;
 
-        NotWhitelistedCurve(long masterKeyId, long subKeyId, String curveOid, int algorithm) {
+        NotSecureCurve(long masterKeyId, long subKeyId, String curveOid, int algorithm) {
             super(masterKeyId, subKeyId, algorithm);
             this.curveOid = curveOid;
         }

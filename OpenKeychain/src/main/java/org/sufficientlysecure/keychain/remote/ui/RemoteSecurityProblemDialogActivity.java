@@ -262,17 +262,17 @@ public class RemoteSecurityProblemDialogActivity extends FragmentActivity {
                 }
 
                 @Override
-                public void showLayoutEncryptNotWhitelistedCurve(String curveOid) {
+                public void showLayoutEncryptNotSecureCurve(String curveOid) {
                     showGenericWithRecommendation(
-                            getString(R.string.insecure_encrypt_not_whitelisted_curve, curveOid),
+                            getString(R.string.insecure_encrypt_not_secure_curve, curveOid),
                             R.string.insecure_report_suggestion
                     );
                 }
 
                 @Override
-                public void showLayoutSignNotWhitelistedCurve(String curveOid) {
+                public void showLayoutSignNotSecureCurve(String curveOid) {
                     showGenericWithRecommendation(
-                            getString(R.string.insecure_sign_not_whitelisted_curve, curveOid),
+                            getString(R.string.insecure_sign_not_secure_curve, curveOid),
                             R.string.insecure_report_suggestion
                     );
                 }

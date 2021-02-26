@@ -1691,8 +1691,8 @@
   <string name="insecure_encrypt_bitstrength_suggestion">Tento klíč není bezpečný, upgrade není možný. Pro bezpečnou komunikaci musíte založit nový klíč!</string>
   <string name="insecure_sign_bitstrength">Klíč, s nímž jste odeslali (podepsali) tuto zprávu, je zastaralý!\n\nJeho algoritmus (%s) je nastaven se sílou 1024 bitů nebo méně, jež je považována pro obecné užití za nedostatečnou od roku 2006.</string>
   <string name="insecure_sign_bitstrength_suggestion">Tento klíč není bezpečný, upgrade není možný. Pro bezpečnou komunikaci musí odesílatel založit nový klíč!</string>
-  <string name="insecure_encrypt_not_whitelisted_curve">Klíč, jímž byla tato zpráva přijata (dešifrována), používá eliptickou křivku s OID %1$s, které není uvedeno na bílé listině!</string>
-  <string name="insecure_sign_not_whitelisted_curve">Klíč, jímž byla tato zpráva odeslána (podepsána), používá eliptickou křivku s OID %1$s, které není uvedeno na bílé listině!</string>
+  <string name="insecure_encrypt_not_secure_curve">Klíč, jímž byla tato zpráva přijata (dešifrována), používá eliptickou křivku s OID %1$s, které není uvedeno na bílé listině!</string>
+  <string name="insecure_sign_not_secure_curve">Klíč, jímž byla tato zpráva odeslána (podepsána), používá eliptickou křivku s OID %1$s, které není uvedeno na bílé listině!</string>
   <string name="insecure_encrypt_unidentified">Nalezen neznámý bezpečnostní problém s klíčem, jímž byla tato zpráva přijata (dešifrována)!</string>
   <string name="insecure_sign_unidentified">Nalezen neznámý bezpečnostní problém s klíčem, jímž byla tato zpráva odeslána (podepsána)!</string>
   <string name="insecure_report_suggestion">Může se jednat o chybu v OpenKeychain, prosím, oznamte ji v našem issue tracker!</string>

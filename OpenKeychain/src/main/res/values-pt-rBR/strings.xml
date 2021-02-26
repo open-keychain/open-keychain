@@ -1627,8 +1627,8 @@
   <string name="insecure_encrypt_bitstrength_suggestion">Esta chave é insegura e não pode ser atualizada. Para se comunicar seguramente, você precisa criar uma nova chave!</string>
   <string name="insecure_sign_bitstrength">A chave que enviou (assinou) esta mensagem está desatualizada!\n\nO algoritmo (%s) está configurado com uma força de 1024 bits ou menos, o que foi considerado inseguro para uso geral desde 2006.</string>
   <string name="insecure_sign_bitstrength_suggestion">A chave em uso é insegura e não pode ser atualizada. Para se comunicar seguramente, o remetente precisa criar uma nova chave!</string>
-  <string name="insecure_encrypt_not_whitelisted_curve">A chave que recebeu (decriptou) esta mensagem está usando a curva elíptica com OID %1$s, que não está na lista permitida!</string>
-  <string name="insecure_sign_not_whitelisted_curve">A chave que enviou (assinou) esta mensagem está usando a curva elíptica com OID %1$s, que não está na lista permitida!</string>
+  <string name="insecure_encrypt_not_secure_curve">A chave que recebeu (decriptou) esta mensagem está usando a curva elíptica com OID %1$s, que não está na lista permitida!</string>
+  <string name="insecure_sign_not_secure_curve">A chave que enviou (assinou) esta mensagem está usando a curva elíptica com OID %1$s, que não está na lista permitida!</string>
   <string name="insecure_encrypt_unidentified">Há um problema não identificado de segurança com a chave usada para receber (decriptar) esta mensagem!</string>
   <string name="insecure_sign_unidentified">Há um problema não identificado de segurança com a chave usada para enviar (assinar) esta mensagem!</string>
   <string name="insecure_report_suggestion">Isto pode ser um problema no OpenKeychain, por favor reporte em nosso sistema de rastreamento de bugs!</string>

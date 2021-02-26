@@ -1599,8 +1599,8 @@
   <string name="insecure_encrypt_bitstrength_suggestion">使用中の鍵は安全ではなく、更新できません。 安全に通信するには、新しい鍵を作成する必要があります!</string>
   <string name="insecure_sign_bitstrength">このメッセージを送信 (署名) するために使用した鍵は古くなっています!\n\nアルゴリズム (%s) は、2006 年以降の一般的な使用では安全でないと考えられていた 1024 ビット以下の強度で構成されています。</string>
   <string name="insecure_sign_bitstrength_suggestion">使用中の鍵は安全ではなく、更新できません。 安全に通信するには、送信者は新しい鍵を作成する必要があります!</string>
-  <string name="insecure_encrypt_not_whitelisted_curve">このメッセージを受信 (復号化) した鍵は、ホワイトリストに登録されていない OID %1$s の楕円曲線を使用しています!</string>
-  <string name="insecure_sign_not_whitelisted_curve">このメッセージを送信 (署名) した鍵は、ホワイトリストに登録されていない OID %1$s の楕円曲線を使用しています!</string>
+  <string name="insecure_encrypt_not_secure_curve">このメッセージを受信 (復号化) した鍵は、ホワイトリストに登録されていない OID %1$s の楕円曲線を使用しています!</string>
+  <string name="insecure_sign_not_secure_curve">このメッセージを送信 (署名) した鍵は、ホワイトリストに登録されていない OID %1$s の楕円曲線を使用しています!</string>
   <string name="insecure_encrypt_unidentified">このメッセージを受信 (復号化) するのに使用した鍵は、未確認のセキュリティ問題があります!</string>
   <string name="insecure_sign_unidentified">このメッセージを送信 (署名) するのに使用した鍵は、未確認のセキュリティ問題があります!</string>
   <string name="insecure_report_suggestion">これは OpenKeychain の問題である可能性があります。 イシュートラッカーでご報告ください!</string>

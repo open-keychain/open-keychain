@@ -1627,8 +1627,8 @@
   <string name="insecure_encrypt_bitstrength_suggestion">De sleutel in gebruik is onveilig en kan niet bijgewerkt worden. Om veilig te communiceren heb je een nieuwe sleutel nodig!</string>
   <string name="insecure_sign_bitstrength">De sleutel die je hebt gebruikt om dit bericht te verzenden (ondertekenen) is verlopen!\n\nHet algoritme (%s) is geconfigureerd met een kracht van 1024 bits of minder, wat sinds 2006 als onveilig voor algemeen gebruik wordt beschouwd.</string>
   <string name="insecure_sign_bitstrength_suggestion">De sleutel in gebruik is onveilig en kan niet bijgewerkt worden. Om veilig te communiceren heeft de afzender een nieuwe sleutel nodig!</string>
-  <string name="insecure_encrypt_not_whitelisted_curve">De sleutel waarmee dit bericht ontvangen (ontsleuteld) is gebruikt de elliptische curve met OID %1$s, die niet op de witte lijst staat!</string>
-  <string name="insecure_sign_not_whitelisted_curve">De sleutel waarmee dit bericht verzonden (ondertekend) is gebruikt de elliptische curve met OID %1$s, die niet op de witte lijst staat!</string>
+  <string name="insecure_encrypt_not_secure_curve">De sleutel waarmee dit bericht ontvangen (ontsleuteld) is gebruikt de elliptische curve met OID %1$s, die niet op de witte lijst staat!</string>
+  <string name="insecure_sign_not_secure_curve">De sleutel waarmee dit bericht verzonden (ondertekend) is gebruikt de elliptische curve met OID %1$s, die niet op de witte lijst staat!</string>
   <string name="insecure_encrypt_unidentified">Er is een onbekend beveiligingsprobleem met de sleutel die gebruikt is om dit bericht te ontvangen (ontsleutelen)!</string>
   <string name="insecure_sign_unidentified">Er is een onbekend beveiligingsprobleem met de sleutel die gebruikt is om dit bericht te verzenden (ondertekenen)!</string>
   <string name="insecure_report_suggestion">Dit is mogelijk een probleem in OpenKeychain, meld het op onze bugtracker!</string>

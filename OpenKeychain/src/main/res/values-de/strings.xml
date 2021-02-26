@@ -1617,7 +1617,7 @@
   <string name="key_insecure_bitstrength_2048_problem">Dieser Schlüssel verwendet den <b>%1$s </b> Algorithmus mit einer Stärke von <b> %2$s </b> Bits. 
 Ein sicherer Schlüssel sollte eine Stärke von 2048 Bits besitzen.</string>
   <string name="key_insecure_bitstrength_2048_solution">Dieser Schlüssel kann nicht geupgraded werden. Zur sicheren Kommunikation muss der Besitzer einen neuen Schlüssel erzeugen.</string>
-  <string name="key_insecure_unknown_curve_problem">Dieser Schlüssel verwendet den <b>%1$s</b> Algorithmus, der nicht auf der Whitelist steht.</string>
+  <string name="key_insecure_unknown_curve_problem">Dieser Schlüssel verwendet den <b>%1$s</b> Algorithmus, der nicht auf der Liste steht.</string>
   <string name="key_insecure_unknown_curve_solution">Dieser Schlüssel kann nicht geupgraded werden. Zur sicheren Kommunikation muss der Besitzer einen neuen Schlüssel erzeugen.</string>
   <string name="key_insecure_unidentified_problem">Es liegt ein nicht identifizierbares Problem mit diesem Schlüssel vor.</string>
   <string name="key_insecure_unidentified_solution">Bitte erstellen Sie einen Bug-Report.</string>
@@ -1628,8 +1628,8 @@ Ein sicherer Schlüssel sollte eine Stärke von 2048 Bits besitzen.</string>
   <string name="insecure_encrypt_bitstrength_suggestion">Der verwendete Schlüssel ist unsicher und kann nicht geupgraded werden. Um sicher zu kommunizieren, müssen SIe einen neuen Schlüssel erzeugen!</string>
   <string name="insecure_sign_bitstrength">Der Schlüssel, der diese Nachricht gesendet (signiert) hat, ist veraltet!\n\nDer Algorithmus (%s) ist mit einer Schlüssellänge von 1024 Bits oder weniger konfiguriert. Dies gilt seit 2006 als unsicher für den allgemeinen Gebrauch.</string>
   <string name="insecure_sign_bitstrength_suggestion">Der verwendete Schlüssel ist unsicher und kann nicht geupgraded werden. Zur sicheren Kommunikation müss der Sender einen neuen Schlüssel erzeugen!</string>
-  <string name="insecure_encrypt_not_whitelisted_curve">Der Schlüssel, der diese Nachricht empfangen (entschlüsselt) hat, verwendet eine elliptische Kurve mit OID %1$s; diese steht nicht auf der Whitelist!</string>
-  <string name="insecure_sign_not_whitelisted_curve">Der Schlüssel, der diese Nachricht gesendet (signiert) hat, verwendet eine elliptische Kurve mit OID %1$s ; diese steht nicht auf der W</string>
+  <string name="insecure_encrypt_not_secure_curve">Der Schlüssel, der diese Nachricht empfangen (entschlüsselt) hat, verwendet eine elliptische Kurve mit OID %1$s; diese steht nicht auf der Liste!</string>
+  <string name="insecure_sign_not_secure_curve">Der Schlüssel, der diese Nachricht gesendet (signiert) hat, verwendet eine elliptische Kurve mit OID %1$s ; diese steht nicht auf der Liste</string>
   <string name="insecure_encrypt_unidentified">Es liegt ein nicht identifizierbares Sicherheitsproblem mit dem zum Empfangen (Entschlüsseln) der Nachricht verwendeten Schlüssel vor!</string>
   <string name="insecure_sign_unidentified">Es liegt ein unbekanntes Sicherheitsproblem bei den Schlüssel vor, der diese Nachricht gesendet (signiert) hat!</string>
   <string name="insecure_report_suggestion">Es liegt möglicherweise ein Problem in OpenKeychain vor; bitte melden Sie es in unserem Issue Tracker!</string>

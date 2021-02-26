@@ -34,7 +34,7 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureBitStrength;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureSigningAlgorithm;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureEncryptionAlgorithm;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
-import org.sufficientlysecure.keychain.pgp.SecurityProblem.NotWhitelistedCurve;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.NotSecureCurve;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.EncryptionAlgorithmProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.UnidentifiedKeyProblem;
 
@@ -53,11 +53,11 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem.UnidentifiedKeyProble
 public class PgpSecurityConstants {
 
     /**
-     * Whitelist of accepted symmetric encryption algorithms
+     * List of secure symmetric encryption algorithms
      * all other algorithms are rejected with OpenPgpDecryptionResult.RESULT_INSECURE
      */
-    private static HashSet<Integer> sSymmetricAlgorithmsWhitelist = new HashSet<>(Arrays.asList(
-            // General remarks: We try to keep the whitelist short to reduce attack surface
+    private static HashSet<Integer> sSecureSymmetricAlgorithms = new HashSet<>(Arrays.asList(
+            // General remarks: We try to keep the list short to reduce attack surface
             // TODO: block IDEA?: Bad key schedule (weak keys), implementation difficulties (easy to make errors)
             SymmetricKeyAlgorithmTags.IDEA,
             SymmetricKeyAlgorithmTags.TRIPLE_DES, // a MUST in RFC
@@ -75,14 +75,14 @@ public class PgpSecurityConstants {
     ));
 
     public static EncryptionAlgorithmProblem checkSecureSymmetricAlgorithm(int id, byte[] sessionKey) {
-        if (!sSymmetricAlgorithmsWhitelist.contains(id)) {
+        if (!sSecureSymmetricAlgorithms.contains(id)) {
             return new InsecureEncryptionAlgorithm(sessionKey, id);
         }
         return null;
     }
 
     /**
-     * Whitelist of accepted hash algorithms
+     * List of secure hash algorithms
      * all other algorithms are rejected with OpenPgpSignatureResult.RESULT_INSECURE
      *
      * coorus:
@@ -93,7 +93,7 @@ public class PgpSecurityConstants {
      * ((collision resistance of 112-bits))
      * Implementations SHOULD NOT sign SHA-256 hashes. They MUST NOT default to signing SHA-256 hashes.
      */
-    private static HashSet<Integer> sHashAlgorithmsWhitelist = new HashSet<>(Arrays.asList(
+    private static HashSet<Integer> sSecureHashAlgorithms = new HashSet<>(Arrays.asList(
             // MD5: broken
             HashAlgorithmTags.SHA1, // TODO: disable when SHA256 is widely deployed
             HashAlgorithmTags.RIPEMD160, // same security properties as SHA1, TODO: disable when SHA256 is widely deployed
@@ -108,14 +108,14 @@ public class PgpSecurityConstants {
     ));
 
     static InsecureSigningAlgorithm checkSignatureAlgorithmForSecurityProblems(int hashAlgorithm) {
-        if (!sHashAlgorithmsWhitelist.contains(hashAlgorithm)) {
+        if (!sSecureHashAlgorithms.contains(hashAlgorithm)) {
             return new InsecureSigningAlgorithm(hashAlgorithm);
         }
         return null;
     }
 
     /**
-     * Whitelist of accepted asymmetric algorithms in switch statement
+     * List of secure asymmetric algorithms in switch statement
      * all other algorithms are rejected with OpenPgpSignatureResult.RESULT_INSECURE or
      * OpenPgpDecryptionResult.RESULT_INSECURE
      *
@@ -124,7 +124,7 @@ public class PgpSecurityConstants {
      * bitlength less than 1023 bits.
      * Implementations MUST NOT accept any RSA keys with bitlength less than 2047 bits after January 1, 2016.
      */
-    private static HashSet<String> sCurveWhitelist = new HashSet<>(Arrays.asList(
+    private static HashSet<String> sSecureCurves = new HashSet<>(Arrays.asList(
             NISTNamedCurves.getOID("P-256").getId(),
             NISTNamedCurves.getOID("P-384").getId(),
             NISTNamedCurves.getOID("P-521").getId(),
@@ -170,8 +170,8 @@ public class PgpSecurityConstants {
             }
             case PublicKeyAlgorithmTags.ECDH:
             case PublicKeyAlgorithmTags.ECDSA: {
-                if (!PgpSecurityConstants.sCurveWhitelist.contains(curveOid)) {
-                    return new NotWhitelistedCurve(masterKeyId, subKeyId, curveOid, algorithm);
+                if (!PgpSecurityConstants.sSecureCurves.contains(curveOid)) {
+                    return new NotSecureCurve(masterKeyId, subKeyId, curveOid, algorithm);
                 }
                 return null;
             }
@@ -191,7 +191,7 @@ public class PgpSecurityConstants {
      * Other implementations may choose to honor this selection.
      * (Most preferred is first)
      *
-     * REASON: See corresponding whitelist. AES received most cryptanalysis over the years
+     * REASON: See corresponding list. AES received most cryptanalysis over the years
      * and is still secure!
      */
     public static final int[] PREFERRED_SYMMETRIC_ALGORITHMS = new int[]{
@@ -205,7 +205,7 @@ public class PgpSecurityConstants {
      * Other implementations may choose to honor this selection.
      * (Most preferred is first)
      *
-     * REASON: See corresponding whitelist. If possible use SHA-512, this is state of the art!
+     * REASON: See corresponding list. If possible use SHA-512, this is state of the art!
      */
     public static final int[] PREFERRED_HASH_ALGORITHMS = new int[]{
             HashAlgorithmTags.SHA512,

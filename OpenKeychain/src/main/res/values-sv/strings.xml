@@ -1533,7 +1533,7 @@
   <string name="insecure_encrypt_bitstrength_suggestion">Nyckeln som används är osäker och kan inte uppgraderas. För att kommunicera säkert måste du skapa en ny nyckel!</string>
   <string name="insecure_sign_bitstrength">Nyckeln du använde för att skicka (signera) detta meddelande är föråldrad!\n\nAlgoritmen (%s) är konfigurerad med en styrka på 1024 bitar eller mindre, vilket har ansetts vara osäkert för allmänt bruk sedan 2006.</string>
   <string name="insecure_sign_bitstrength_suggestion">Nyckeln som används är osäker och kan inte uppgraderas. För att kommunicera säkert måste avsändaren skapa en ny nyckel!</string>
-  <string name="insecure_encrypt_not_whitelisted_curve">Nyckeln som mottog (dekrypterade) detta meddelande använder den elliptiska kurvan med OID %1$s, som inte är vitlistad!</string>
+  <string name="insecure_encrypt_not_secure_curve">Nyckeln som mottog (dekrypterade) detta meddelande använder den elliptiska kurvan med OID %1$s, som inte är vitlistad!</string>
   <string name="insecure_mdc_suggestion">En saknad MDC är ett problem i sändningsprogrammet, eller en attack. För säker end-to-end kommunikation, ska meddelanden också signeras av avsändaren!</string>
   <string name="dialog_insecure_button_view_key">Visa nyckel</string>
   <string name="dialog_insecure_button_ok">Förstått</string>

@@ -37,7 +37,7 @@ import android.widget.TextView;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureBitStrength;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
-import org.sufficientlysecure.keychain.pgp.SecurityProblem.NotWhitelistedCurve;
+import org.sufficientlysecure.keychain.pgp.SecurityProblem.NotSecureCurve;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.UnidentifiedKeyProblem;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.KeyHealthStatus;
 import org.sufficientlysecure.keychain.ui.keyview.view.KeyStatusList.KeyDisplayStatus;
@@ -171,10 +171,10 @@ public class KeyHealthView extends LinearLayout implements OnClickListener {
                     KeyFormattingUtils.getAlgorithmInfo(insecureBitStrength.algorithm),
                     Integer.toString(insecureBitStrength.bitStrength)));
             vInsecureSolution.setText(R.string.key_insecure_bitstrength_2048_solution);
-        } else if (securityProblem instanceof NotWhitelistedCurve) {
-            NotWhitelistedCurve notWhitelistedCurve = (NotWhitelistedCurve) securityProblem;
+        } else if (securityProblem instanceof NotSecureCurve) {
+            NotSecureCurve notSecureCurve = (NotSecureCurve) securityProblem;
 
-            String curveName = KeyFormattingUtils.getCurveInfo(getContext(), notWhitelistedCurve.curveOid);
+            String curveName = KeyFormattingUtils.getCurveInfo(getContext(), notSecureCurve.curveOid);
             vInsecureProblem.setText(getResources().getString(R.string.key_insecure_unknown_curve_problem, curveName));
             vInsecureSolution.setText(R.string.key_insecure_unknown_curve_solution);
         } else if (securityProblem instanceof UnidentifiedKeyProblem) {

@@ -1692,7 +1692,7 @@
     <string name="key_insecure_bitstrength_2048_problem">"This key uses the <b>%1$s</b> algorithm with a strength of <b>%2$s bits</b>. A secure key should have a strength of 2048 bits."</string>
     <string name="key_insecure_bitstrength_2048_solution">"This key can\'t be upgraded. For secure communication, the owner must generate a new key."</string>
 
-    <string name="key_insecure_unknown_curve_problem">"This key uses the <b>%1$s</b> algorithm, which is not whitelisted."</string>
+    <string name="key_insecure_unknown_curve_problem">"This key uses the <b>%1$s</b> algorithm, which is not in the allowlist."</string>
     <string name="key_insecure_unknown_curve_solution">"This key can\'t be upgraded. For secure communication, the owner must generate a new key."</string>
 
     <string name="key_insecure_unidentified_problem">"There is an unidentified problem with this key."</string>
@@ -1706,8 +1706,8 @@
     <string name="insecure_encrypt_bitstrength_suggestion">The key in use is insecure, and cannot be upgraded. To communicate securely, you must create a new key!</string>
     <string name="insecure_sign_bitstrength">"The key that sent (signed) this message is outdated!\n\nThe algorithm (%s) is configured with a strength of 1024 bits or less, which has been considered insecure for general use since 2006."</string>
     <string name="insecure_sign_bitstrength_suggestion">The key in use is insecure, and cannot be upgraded. To communicate securely, the sender must create a new key!</string>
-    <string name="insecure_encrypt_not_whitelisted_curve">"The key that received (decrypted) this message is using the elliptic curve with OID %1$s, which is not whitelisted!"</string>
-    <string name="insecure_sign_not_whitelisted_curve">"The key this message was sent (signed) from is using the elliptic curve with OID %1$s, which is not whitelisted!"</string>
+    <string name="insecure_encrypt_not_secure_curve">"The key that received (decrypted) this message is using the elliptic curve with OID %1$s, which is not in the list of secure curves!"</string>
+    <string name="insecure_sign_not_secure_curve">"The key this message was sent (signed) from is using the elliptic curve with OID %1$s, which is not in the list of secure curves!"</string>
     <string name="insecure_encrypt_unidentified">"There is an unidentified security problem with the key used to receive (decrypt) this message!"</string>
     <string name="insecure_sign_unidentified">"There is an unidentified security problem with the key used to send (sign) this message!"</string>
     <string name="insecure_report_suggestion">"This might be a problem in OpenKeychain, please report on our issue tracker!"</string>
