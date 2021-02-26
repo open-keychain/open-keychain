@@ -13,7 +13,7 @@
     <string name="title_encrypt_files">"Encrypt"</string>
     <string name="title_decrypt">"Decrypt"</string>
     <string name="title_add_subkey">"Add subkey"</string>
-    <string name="title_change_master_key">Change master key</string>
+    <string name="title_change_master_key">Change primary key</string>
     <string name="title_edit_key">"Edit Key"</string>
     <string name="title_preferences">"Settings"</string>
     <string name="title_api_registered_apps">"Apps"</string>
@@ -444,7 +444,7 @@
     <string name="progress_exporting">"exporting…"</string>
     <string name="progress_uploading">"uploading…"</string>
     <string name="progress_building_key">"building key…"</string>
-    <string name="progress_building_master_key">"building master ring…"</string>
+    <string name="progress_building_master_key">"building primary ring…"</string>
     <string name="progress_generating_rsa">"generating new RSA key…"</string>
     <string name="progress_generating_dsa">"generating new DSA key…"</string>
     <string name="progress_generating_elgamal">"generating new ElGamal key…"</string>
@@ -846,26 +846,26 @@
     <string name="msg_ip_insert_keyring">"Encoding keyring data"</string>
     <string name="msg_ip_insert_keys">"Parsing keys"</string>
     <string name="msg_ip_prepare">"Preparing database operations"</string>
-    <string name="msg_ip_master">"Processing master key %s"</string>
+    <string name="msg_ip_master">"Processing primary key %s"</string>
     <string name="msg_ip_master_expired">"Keyring expired on %s"</string>
     <string name="msg_ip_master_expires">"Keyring expires on %s"</string>
-    <string name="msg_ip_master_flags_unspecified">"Master flags: unspecified (assuming all)"</string>
-    <string name="msg_ip_master_flags_cesa">"Master flags: certify, encrypt, sign, authenticate"</string>
-    <string name="msg_ip_master_flags_cesx">"Master flags: certify, encrypt, sign"</string>
-    <string name="msg_ip_master_flags_cexa">"Master flags: certify, encrypt, authenticate"</string>
-    <string name="msg_ip_master_flags_cexx">"Master flags: certify, encrypt"</string>
-    <string name="msg_ip_master_flags_cxsa">"Master flags: certify, sign, authenticate"</string>
-    <string name="msg_ip_master_flags_cxsx">"Master flags: certify, sign"</string>
-    <string name="msg_ip_master_flags_cxxa">"Master flags: certify, authenticate"</string>
-    <string name="msg_ip_master_flags_cxxx">"Master flags: certify"</string>
-    <string name="msg_ip_master_flags_xesa">"Master flags: encrypt, sign, authenticate"</string>
-    <string name="msg_ip_master_flags_xesx">"Master flags: encrypt, sign"</string>
-    <string name="msg_ip_master_flags_xexa">"Master flags: encrypt, authenticate"</string>
-    <string name="msg_ip_master_flags_xexx">"Master flags: encrypt"</string>
-    <string name="msg_ip_master_flags_xxsa">"Master flags: sign, authenticate"</string>
-    <string name="msg_ip_master_flags_xxsx">"Master flags: sign"</string>
-    <string name="msg_ip_master_flags_xxxa">"Master flags: authenticate"</string>
-    <string name="msg_ip_master_flags_xxxx">"Master flags: none"</string>
+    <string name="msg_ip_master_flags_unspecified">"Primary flags: unspecified (assuming all)"</string>
+    <string name="msg_ip_master_flags_cesa">"Primary flags: certify, encrypt, sign, authenticate"</string>
+    <string name="msg_ip_master_flags_cesx">"Primary flags: certify, encrypt, sign"</string>
+    <string name="msg_ip_master_flags_cexa">"Primary flags: certify, encrypt, authenticate"</string>
+    <string name="msg_ip_master_flags_cexx">"Primary flags: certify, encrypt"</string>
+    <string name="msg_ip_master_flags_cxsa">"Primary flags: certify, sign, authenticate"</string>
+    <string name="msg_ip_master_flags_cxsx">"Primary flags: certify, sign"</string>
+    <string name="msg_ip_master_flags_cxxa">"Primary flags: certify, authenticate"</string>
+    <string name="msg_ip_master_flags_cxxx">"Primary flags: certify"</string>
+    <string name="msg_ip_master_flags_xesa">"Primary flags: encrypt, sign, authenticate"</string>
+    <string name="msg_ip_master_flags_xesx">"Primary flags: encrypt, sign"</string>
+    <string name="msg_ip_master_flags_xexa">"Primary flags: encrypt, authenticate"</string>
+    <string name="msg_ip_master_flags_xexx">"Primary flags: encrypt"</string>
+    <string name="msg_ip_master_flags_xxsa">"Primary flags: sign, authenticate"</string>
+    <string name="msg_ip_master_flags_xxsx">"Primary flags: sign"</string>
+    <string name="msg_ip_master_flags_xxxa">"Primary flags: authenticate"</string>
+    <string name="msg_ip_master_flags_xxxx">"Primary flags: none"</string>
     <string name="msg_ip_merge_public">"Merging imported data into existing public keyring"</string>
     <string name="msg_ip_merge_secret">"Merging imported data into existing secret keyring"</string>
     <string name="msg_ip_subkey">"Processing subkey %s"</string>
@@ -952,16 +952,16 @@
     <string name="msg_kc_secret">"Canonicalizing secret keyring %s"</string>
     <string name="msg_kc_error_v3">"This is an OpenPGP version 3 key, which has been deprecated and is no longer supported!"</string>
     <string name="msg_kc_error_no_uid">"Keyring has no valid user IDs!"</string>
-    <string name="msg_kc_error_master_algo">"The master key uses an unknown (%s) algorithm!"</string>
+    <string name="msg_kc_error_master_algo">"The primary key uses an unknown (%s) algorithm!"</string>
     <string name="msg_kc_error_dup_key">"Subkey %s occurs twice in keyring. Keyring is malformed, not importing!"</string>
-    <string name="msg_kc_master">"Processing master key"</string>
-    <string name="msg_kc_master_bad_type">"Removing master key certificate of unknown type (%s)"</string>
-    <string name="msg_kc_master_bad_local">"Removing master key certificate with 'local' flag"</string>
-    <string name="msg_kc_master_bad_err">"Removing bad master key certificate"</string>
+    <string name="msg_kc_master">"Processing primary key"</string>
+    <string name="msg_kc_master_bad_type">"Removing primary key certificate of unknown type (%s)"</string>
+    <string name="msg_kc_master_bad_local">"Removing primary key certificate with 'local' flag"</string>
+    <string name="msg_kc_master_bad_err">"Removing bad primary key certificate"</string>
     <string name="msg_kc_master_bad_time">"Removing keyring revocation certificate with future timestamp"</string>
     <string name="msg_kc_master_bad_type_uid">"Removing user ID certificate in bad position"</string>
-    <string name="msg_kc_master_bad">"Removing bad master key certificate"</string>
-    <string name="msg_kc_master_local">"Removing master key certificate with 'local' flag"</string>
+    <string name="msg_kc_master_bad">"Removing bad primary key certificate"</string>
+    <string name="msg_kc_master_local">"Removing primary key certificate with 'local' flag"</string>
     <string name="msg_kc_revoke_dup">"Removing redundant keyring revocation certificate"</string>
     <string name="msg_kc_notation_dup">"Removing redundant notation certificate"</string>
     <string name="msg_kc_notation_empty">"Removing empty notation certificate"</string>
@@ -1035,10 +1035,10 @@
     <string name="msg_mg_unchanged">"Nothing to merge"</string>
 
     <!-- createSecretKeyRing -->
-    <string name="msg_cr">"Generating new master key"</string>
-    <string name="msg_cr_error_no_master">"No master key options specified!"</string>
+    <string name="msg_cr">"Generating new primary key"</string>
+    <string name="msg_cr_error_no_master">"No primary key options specified!"</string>
     <string name="msg_cr_error_no_user_id">"Keyrings must be created with at least one user ID!"</string>
-    <string name="msg_cr_error_no_certify">"Master key must have certify flag!"</string>
+    <string name="msg_cr_error_no_certify">"Primary key must have certify flag!"</string>
     <string name="msg_cr_error_null_expiry">"Expiry time cannot be 'same as before' on key creation. This is a programming error, please file a bug report!"</string>
     <string name="msg_cr_error_keysize_2048">"Key size must be greater or equal 2048!"</string>
     <string name="msg_cr_error_no_curve">"No key size specified! This is a programming error, please file a bug report!"</string>
@@ -1061,14 +1061,14 @@
     <string name="msg_mf_error_fingerprint">"Actual key fingerprint does not match the expected one!"</string>
     <string name="msg_mf_error_keyid">"No key ID. This is an internal error, please file a bug report!"</string>
     <string name="msg_mf_error_integrity">"Internal error, integrity check failed!"</string>
-    <string name="msg_mf_error_master_none">"No master certificate found to operate on! (All revoked?)"</string>
+    <string name="msg_mf_error_master_none">"No primary certificate found to operate on! (All revoked?)"</string>
     <string name="msg_mf_error_noexist_primary">"Bad primary user ID specified!"</string>
     <string name="msg_mf_error_noexist_revoke">"Bad user ID for revocation specified!"</string>
     <string name="msg_mf_error_restricted">"Tried to execute restricted operation without password! This is a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_revoked_primary">"Revoked user IDs cannot be primary!"</string>
     <string name="msg_mf_error_null_expiry">"Expiry time cannot be "same as before" on subkey creation. This is a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_noop">"Nothing to do!"</string>
-    <string name="msg_mf_error_passphrase_master">"Fatal error decrypting master key! This is likely a programming error, please file a bug report!"</string>
+    <string name="msg_mf_error_passphrase_master">"Fatal error decrypting primary key! This is likely a programming error, please file a bug report!"</string>
     <string name="msg_mf_error_passphrases_unchanged">"No password changed!"</string>
     <string name="msg_mf_error_pgp">"Internal OpenPGP error!"</string>
     <string name="msg_mf_error_sig">"Signature exception!"</string>
@@ -1077,7 +1077,7 @@
     <string name="msg_mf_error_conflicting_nfc_commands">"Cannot move key to Security Token in same operation that creates an on-card signature."</string>
     <string name="msg_mf_error_duplicate_keytocard_for_slot">"Security Token supports only one slot per key type."</string>
     <string name="msg_mf_error_invalid_flags_for_keytocard">"Inappropriate key flags for Security Token key."</string>
-    <string name="msg_mf_master">"Modifying master certifications"</string>
+    <string name="msg_mf_master">"Modifying primary certifications"</string>
     <string name="msg_mf_passphrase">"Changing password for keyring"</string>
     <string name="msg_mf_pin">"Changing PIN on card"</string>
     <string name="msg_mf_admin_pin">"Changing Admin PIN on card"</string>
@@ -1127,7 +1127,7 @@
     <string name="msg_pr_success">"Key successfully promoted"</string>
 
     <!-- Other messages used in OperationLogs -->
-    <string name="msg_ek_error_dummy">"Cannot edit keyring with stripped master key!"</string>
+    <string name="msg_ek_error_dummy">"Cannot edit keyring with stripped primary key!"</string>
     <string name="msg_ek_error_not_found">"Key not found!"</string>
 
     <!-- Messages for DecryptVerify operation -->
@@ -1260,15 +1260,15 @@
         <item quantity="other">"Certifying %1$d user attributes for key %2$s"</item>
     </plurals>
     <string name="msg_crt_error_self">"Cannot issue self-certificate like this!"</string>
-    <string name="msg_crt_error_master_not_found">"Master key not found!"</string>
+    <string name="msg_crt_error_master_not_found">"Primary key not found!"</string>
     <string name="msg_crt_error_nothing">"No keys certified!"</string>
-    <string name="msg_crt_error_unlock">"Error unlocking master key!"</string>
+    <string name="msg_crt_error_unlock">"Error unlocking primary key!"</string>
     <string name="msg_crt">"Certifying keyrings"</string>
-    <string name="msg_crt_master_fetch">"Fetching certifying master key"</string>
+    <string name="msg_crt_master_fetch">"Fetching certifying primary key"</string>
     <string name="msg_crt_nfc_return">"Returning to NFC screen"</string>
     <string name="msg_crt_save">"Saving certified key %s"</string>
     <string name="msg_crt_saving">"Saving keyrings"</string>
-    <string name="msg_crt_unlock">"Unlocking master key"</string>
+    <string name="msg_crt_unlock">"Unlocking primary key"</string>
     <string name="msg_crt_success">"Successfully certified identities"</string>
     <string name="msg_crt_warn_not_found">"Key not found!"</string>
     <string name="msg_crt_warn_cert_failed">"Certificate generation failed!"</string>
