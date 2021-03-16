@@ -39,17 +39,6 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem.EncryptionAlgorithmPr
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.UnidentifiedKeyProblem;
 
 
-/**
- * NIST requirements for 2011-2030 (http://www.keylength.com/en/4/):
- * - RSA: 2048 bit
- * - ECC: 224 bit
- * - Symmetric: 3TDEA
- * - Digital Signature (hash A): SHA-224 - SHA-512
- *
- * Extreme Decisions for Yahoo's End-to-End:
- * https://github.com/yahoo/end-to-end/issues/31
- * https://gist.github.com/coruus/68a8c65571e2b4225a69
- */
 public class PgpSecurityConstants {
 
     /**
@@ -58,10 +47,9 @@ public class PgpSecurityConstants {
      */
     private static HashSet<Integer> sSecureSymmetricAlgorithms = new HashSet<>(Arrays.asList(
             // General remarks: We try to keep the list short to reduce attack surface
-            // TODO: block IDEA?: Bad key schedule (weak keys), implementation difficulties (easy to make errors)
-            SymmetricKeyAlgorithmTags.IDEA,
-            SymmetricKeyAlgorithmTags.TRIPLE_DES, // a MUST in RFC
-            SymmetricKeyAlgorithmTags.CAST5, // default in many gpg, pgp versions, 128 bit key
+            // SymmetricKeyAlgorithmTags.IDEA, // Bad key schedule (weak keys), implementation difficulties (easy to make errors)
+            SymmetricKeyAlgorithmTags.TRIPLE_DES, // RFC4880: "MUST implement TripleDES"
+            SymmetricKeyAlgorithmTags.CAST5, // default in many gpg, pgp versions, 128 bit key, RFC4880: "SHOULD implement AES-128 and CAST5"
             // BLOWFISH: Twofish is the successor
             // SAFER: not used widely
             // DES: < 128 bit security
@@ -84,27 +72,19 @@ public class PgpSecurityConstants {
     /**
      * List of secure hash algorithms
      * all other algorithms are rejected with OpenPgpSignatureResult.RESULT_INSECURE
-     *
-     * coorus:
-     * Implementations SHOULD use SHA-512 for RSA or DSA signatures. They SHOULD NOT use SHA-384.
-     * ((cite to affine padding attacks; unproven status of RSA-PKCSv15))
-     *
-     * Implementations MUST NOT sign SHA-224 hashes. They SHOULD NOT accept signatures over SHA-224 hashes.
-     * ((collision resistance of 112-bits))
-     * Implementations SHOULD NOT sign SHA-256 hashes. They MUST NOT default to signing SHA-256 hashes.
      */
     private static HashSet<Integer> sSecureHashAlgorithms = new HashSet<>(Arrays.asList(
             // MD5: broken
-            HashAlgorithmTags.SHA1, // TODO: disable when SHA256 is widely deployed
+            HashAlgorithmTags.SHA1, //  RFC4880: "MUST implement SHA-1", TODO: disable when SHA256 is widely deployed
             HashAlgorithmTags.RIPEMD160, // same security properties as SHA1, TODO: disable when SHA256 is widely deployed
             // DOUBLE_SHA: not used widely
             // MD2: not used widely
             // TIGER_192: not used widely
             // HAVAL_5_160: not used widely
             HashAlgorithmTags.SHA256, // compatibility for old Mailvelope versions
-            HashAlgorithmTags.SHA384,
+            HashAlgorithmTags.SHA384, // affine padding attacks; unproven status of RSA-PKCSv15
             HashAlgorithmTags.SHA512
-            // SHA224: Not used widely, Yahoo argues against it
+            // SHA224: issues with collision resistance of 112-bits, Not used widely
     ));
 
     static InsecureSigningAlgorithm checkSignatureAlgorithmForSecurityProblems(int hashAlgorithm) {
@@ -118,11 +98,6 @@ public class PgpSecurityConstants {
      * List of secure asymmetric algorithms in switch statement
      * all other algorithms are rejected with OpenPgpSignatureResult.RESULT_INSECURE or
      * OpenPgpDecryptionResult.RESULT_INSECURE
-     *
-     * coorus:
-     * Implementations MUST NOT accept, or treat any signature as valid, by an RSA key with
-     * bitlength less than 1023 bits.
-     * Implementations MUST NOT accept any RSA keys with bitlength less than 2047 bits after January 1, 2016.
      */
     private static HashSet<String> sSecureCurves = new HashSet<>(Arrays.asList(
             NISTNamedCurves.getOID("P-256").getId(),
@@ -147,7 +122,7 @@ public class PgpSecurityConstants {
 
     @Nullable
     public static KeySecurityProblem getKeySecurityProblem(long masterKeyId, long subKeyId, int algorithm,
-            Integer bitStrength, String curveOid) {
+                                                           Integer bitStrength, String curveOid) {
         switch (algorithm) {
             case PublicKeyAlgorithmTags.RSA_GENERAL: {
                 if (bitStrength < 2048) {
@@ -179,8 +154,7 @@ public class PgpSecurityConstants {
                 return null;
             }
             // ELGAMAL_GENERAL: deprecated in RFC 4880, use ELGAMAL_ENCRYPT
-            // DIFFIE_HELLMAN: unsure
-            // TODO specialize all cases!
+            // DIFFIE_HELLMAN: deprecated
             default:
                 return new UnidentifiedKeyProblem(masterKeyId, subKeyId, algorithm);
         }
@@ -190,12 +164,9 @@ public class PgpSecurityConstants {
      * These array is written as a list of preferred encryption algorithms into keys created by us.
      * Other implementations may choose to honor this selection.
      * (Most preferred is first)
-     *
-     * REASON: See corresponding list. AES received most cryptanalysis over the years
-     * and is still secure!
      */
     public static final int[] PREFERRED_SYMMETRIC_ALGORITHMS = new int[]{
-            SymmetricKeyAlgorithmTags.AES_256,
+            SymmetricKeyAlgorithmTags.AES_256, // AES received most cryptanalysis over the years and is still secure!
             SymmetricKeyAlgorithmTags.AES_192,
             SymmetricKeyAlgorithmTags.AES_128,
     };
@@ -204,22 +175,22 @@ public class PgpSecurityConstants {
      * These array is written as a list of preferred hash algorithms into keys created by us.
      * Other implementations may choose to honor this selection.
      * (Most preferred is first)
-     *
-     * REASON: See corresponding list. If possible use SHA-512, this is state of the art!
      */
     public static final int[] PREFERRED_HASH_ALGORITHMS = new int[]{
-            HashAlgorithmTags.SHA512,
+            HashAlgorithmTags.SHA512, // If possible use SHA-512, this is state of the art!
     };
 
     /**
      * These array is written as a list of preferred compression algorithms into keys created by us.
      * Other implementations may choose to honor this selection.
      * (Most preferred is first)
-     *
+     * <p>
      * REASON: See DEFAULT_COMPRESSION_ALGORITHM
      */
     public static final int[] PREFERRED_COMPRESSION_ALGORITHMS = new int[]{
             CompressionAlgorithmTags.ZIP,
+            // ZLIB: the format provides no benefits over DEFLATE, and is more malleable
+            // BZIP2: very slow
     };
 
     /**
@@ -229,14 +200,8 @@ public class PgpSecurityConstants {
 
 
     /**
-     * Always use AES-256! We always ignore the preferred encryption algos of the recipient!
-     *
-     * coorus:
-     * Implementations SHOULD ignore the symmetric algorithm preferences of a recipient's public key;
-     * in particular, implementations MUST NOT choose an algorithm forbidden by this
-     * document because a recipient prefers it.
-     *
-     * NEEDCITE downgrade attacks on TLS, other protocols
+     * Always use AES-256!
+     * We always ignore the preferred encryption algos of the recipient!
      */
     public static final int DEFAULT_SYMMETRIC_ALGORITHM = SymmetricKeyAlgorithmTags.AES_256;
 
@@ -245,18 +210,8 @@ public class PgpSecurityConstants {
     }
 
     /**
-     * Always use SHA-512!  We always ignore the preferred hash algos of the recipient!
-     *
-     * coorus:
-     * Implementations MUST ignore the hash algorithm preferences of a recipient when signing
-     * a message to a recipient. The difficulty of forging a signature under a given key,
-     * using generic attacks on hash functions, is the difficulty of the weakest hash signed by that key.
-     *
-     * Implementations MUST default to using SHA-512 for RSA signatures,
-     *
-     * and either SHA-512 or the matched instance of SHA-2 for ECDSA signatures.
-     * TODO: Ed25519
-     * CITE: zooko's hash function table CITE: distinguishers on SHA-256
+     * Always use SHA-512!
+     * We always ignore the preferred hash algos of the recipient!
      */
     public static final int DEFAULT_HASH_ALGORITHM = HashAlgorithmTags.SHA512;
 
@@ -266,16 +221,13 @@ public class PgpSecurityConstants {
 
     /**
      * Compression is disabled by default.
-     *
+     * <p>
      * The default compression algorithm is only used if explicitly enabled in the activity's
      * overflow menu or via the OpenPGP API's extra OpenPgpApi.EXTRA_ENABLE_COMPRESSION
-     *
+     * <p>
      * REASON: Enabling compression can lead to a sidechannel. Consider a voting that is done via
      * OpenPGP. Compression can lead to different ciphertext lengths based on the user's voting.
      * This has happened in a voting done by Wikipedia (Google it).
-     *
-     * ZLIB: the format provides no benefits over DEFLATE, and is more malleable
-     * BZIP2: very slow
      */
     public static final int DEFAULT_COMPRESSION_ALGORITHM = CompressionAlgorithmTags.ZIP;
 
@@ -296,7 +248,7 @@ public class PgpSecurityConstants {
      * or about 1 million iterations. The maximum you can go to is
      * 0xff, or about 2 million iterations.
      * from http://kbsriram.com/2013/01/generating-rsa-keys-with-bouncycastle.html
-     *
+     * <p>
      * Bouncy Castle default: 0x60
      * kbsriram proposes: 0xc0
      * Yahoo's End-to-End: 96=0x60 (65536 iterations) (https://github.com/yahoo/end-to-end/blob/master/src/javascript/crypto/e2e/openpgp/keyring.js)
