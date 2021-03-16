@@ -17,62 +17,44 @@
 
 package org.sufficientlysecure.keychain.securitytoken;
 
-import org.bouncycastle.asn1.nist.NISTNamedCurves;
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.CreateSecurityTokenAlgorithmFragment;
 
 public abstract class KeyFormat {
 
-    public enum KeyFormatType {
-        RSAKeyFormatType,
-        ECKeyFormatType,
-        EdDSAKeyFormatType
-    }
-
-    private final KeyFormatType mKeyFormatType;
-
-    KeyFormat(final KeyFormatType keyFormatType) {
-        mKeyFormatType = keyFormatType;
-    }
-
-    public final KeyFormatType keyFormatType() {
-        return mKeyFormatType;
-    }
-
     public static KeyFormat fromBytes(byte[] bytes) {
         switch (bytes[0]) {
             case PublicKeyAlgorithmTags.RSA_GENERAL:
-                return RSAKeyFormat.fromBytes(bytes);
+                return RsaKeyFormat.getInstanceFromBytes(bytes);
             case PublicKeyAlgorithmTags.ECDH:
             case PublicKeyAlgorithmTags.ECDSA:
-                return ECKeyFormat.getInstanceFromBytes(bytes);
             case PublicKeyAlgorithmTags.EDDSA:
-                return new EdDSAKeyFormat();
-
+                return EcKeyFormat.getInstanceFromBytes(bytes);
             default:
                 throw new IllegalArgumentException("Unsupported Algorithm id " + bytes[0]);
         }
     }
 
+    public abstract byte[] toBytes(KeyType slot);
+
     public static KeyFormat fromCreationKeyType(CreateSecurityTokenAlgorithmFragment.SupportedKeyType t, boolean forEncryption) {
         final int elen = 17; //65537
-        final ECKeyFormat.ECAlgorithmFormat kf =
-                forEncryption ? ECKeyFormat.ECAlgorithmFormat.ECDH_WITH_PUBKEY : ECKeyFormat.ECAlgorithmFormat.ECDSA_WITH_PUBKEY;
+        final int algorithmId = forEncryption ? PublicKeyAlgorithmTags.ECDH : PublicKeyAlgorithmTags.ECDSA;
 
         switch (t) {
             case RSA_2048:
-                return new RSAKeyFormat(2048, elen, RSAKeyFormat.RSAAlgorithmFormat.CRT_WITH_MODULUS);
+                return RsaKeyFormat.getInstance(2048, elen, RsaKeyFormat.RsaImportFormat.CRT_WITH_MODULUS);
             case RSA_3072:
-                return new RSAKeyFormat(3072, elen, RSAKeyFormat.RSAAlgorithmFormat.CRT_WITH_MODULUS);
+                return RsaKeyFormat.getInstance(3072, elen, RsaKeyFormat.RsaImportFormat.CRT_WITH_MODULUS);
             case RSA_4096:
-                return new RSAKeyFormat(4096, elen, RSAKeyFormat.RSAAlgorithmFormat.CRT_WITH_MODULUS);
+                return RsaKeyFormat.getInstance(4096, elen, RsaKeyFormat.RsaImportFormat.CRT_WITH_MODULUS);
             case ECC_P256:
-                return ECKeyFormat.getInstance(NISTNamedCurves.getOID("P-256"), kf);
+                return EcKeyFormat.getInstance(algorithmId, EcObjectIdentifiers.NIST_P_256, true);
             case ECC_P384:
-                return ECKeyFormat.getInstance(NISTNamedCurves.getOID("P-384"), kf);
+                return EcKeyFormat.getInstance(algorithmId, EcObjectIdentifiers.NIST_P_384, true);
             case ECC_P521:
-                return ECKeyFormat.getInstance(NISTNamedCurves.getOID("P-521"), kf);
+                return EcKeyFormat.getInstance(algorithmId, EcObjectIdentifiers.NIST_P_521, true);
         }
 
         throw new IllegalArgumentException("Unsupported Algorithm id " + t);

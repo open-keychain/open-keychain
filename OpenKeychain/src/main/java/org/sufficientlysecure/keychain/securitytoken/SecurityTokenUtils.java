@@ -18,11 +18,10 @@
 package org.sufficientlysecure.keychain.securitytoken;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
-import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.securitytoken.RSAKeyFormat.RSAAlgorithmFormat;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -37,15 +36,15 @@ public class SecurityTokenUtils {
             KeyFormat formatForKeyType)
             throws IOException {
         if (secretKey.isRSA()) {
-            return attributesForRsaKey(secretKey.getBitStrength(), (RSAKeyFormat) formatForKeyType);
+            return attributesForRsaKey(secretKey.getBitStrength(), (RsaKeyFormat) formatForKeyType);
         } else if (secretKey.isEC()) {
             byte[] oid = new ASN1ObjectIdentifier(secretKey.getCurveOid()).getEncoded();
             byte[] attrs = new byte[1 + (oid.length - 2) + 1];
 
             if (slot.equals(KeyType.ENCRYPT))
-                attrs[0] = ECKeyFormat.ECAlgorithmFormat.ECDH_WITH_PUBKEY.getAlgorithmId();
+                attrs[0] = PublicKeyAlgorithmTags.ECDH;
             else { // SIGN and AUTH is ECDSA
-                attrs[0] = ECKeyFormat.ECAlgorithmFormat.ECDSA_WITH_PUBKEY.getAlgorithmId();
+                attrs[0] = PublicKeyAlgorithmTags.ECDSA;
             }
 
             System.arraycopy(oid, 2, attrs, 1, (oid.length - 2));
@@ -58,13 +57,13 @@ public class SecurityTokenUtils {
         }
     }
 
-    private static byte[] attributesForRsaKey(int modulusLength, RSAKeyFormat formatForKeyType) {
-        RSAAlgorithmFormat algorithmFormat = formatForKeyType.getAlgorithmFormat();
-        int exponentLength = formatForKeyType.getExponentLength();
+    private static byte[] attributesForRsaKey(int modulusLength, RsaKeyFormat formatForKeyType) {
+        RsaKeyFormat.RsaImportFormat algorithmFormat = formatForKeyType.rsaImportFormat();
+        int exponentLength = formatForKeyType.exponentLength();
 
         int i = 0;
         byte[] attrs = new byte[6];
-        attrs[i++] = (byte) 0x01;
+        attrs[i++] = (byte) RsaKeyFormat.ALGORITHM_ID;
         attrs[i++] = (byte) ((modulusLength >> 8) & 0xff);
         attrs[i++] = (byte) (modulusLength & 0xff);
         attrs[i++] = (byte) ((exponentLength >> 8) & 0xff);
@@ -87,18 +86,18 @@ public class SecurityTokenUtils {
     }
 
     public static byte[] createRSAPrivKeyTemplate(RSAPrivateCrtKey secretKey, KeyType slot,
-            RSAKeyFormat format) throws IOException {
+            RsaKeyFormat format) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream(),
                 template = new ByteArrayOutputStream(),
                 data = new ByteArrayOutputStream(),
                 res = new ByteArrayOutputStream();
 
-        int expLengthBytes = (format.getExponentLength() + 7) / 8;
+        int expLengthBytes = (format.exponentLength() + 7) / 8;
         // Public exponent
         template.write(new byte[]{(byte) 0x91, (byte) expLengthBytes});
         writeBits(data, secretKey.getPublicExponent(), expLengthBytes);
 
-        final int modLengthBytes = format.getModulusLength() / 8;
+        final int modLengthBytes = format.modulusLength() / 8;
         final byte[] lengthByteArray = generateLengthByteArray(modLengthBytes / 2);
 
         // Prime P, length modLengthBytes / 2
@@ -112,7 +111,7 @@ public class SecurityTokenUtils {
         writeBits(data, secretKey.getPrimeQ(), modLengthBytes / 2);
 
 
-        if (format.getAlgorithmFormat().isIncludeCrt()) {
+        if (format.rsaImportFormat().isIncludeCrt()) {
             // Coefficient (1/q mod p), length modLengthBytes / 2
             template.write(Hex.decode("94"));
             template.write(lengthByteArray);
@@ -129,7 +128,7 @@ public class SecurityTokenUtils {
             writeBits(data, secretKey.getPrimeExponentQ(), modLengthBytes / 2);
         }
 
-        if (format.getAlgorithmFormat().isIncludeModulus()) {
+        if (format.rsaImportFormat().isIncludeModulus()) {
             // Modulus, length modLengthBytes, last item in private key template
             template.write(Hex.decode("97"));
             template.write(generateLengthByteArray(modLengthBytes));
@@ -162,7 +161,7 @@ public class SecurityTokenUtils {
     }
 
     public static byte[] createECPrivKeyTemplate(ECPrivateKey secretKey, ECPublicKey publicKey, KeyType slot,
-            ECKeyFormat format) throws IOException {
+            EcKeyFormat format) throws IOException {
         ByteArrayOutputStream stream = new ByteArrayOutputStream(),
                 template = new ByteArrayOutputStream(),
                 data = new ByteArrayOutputStream(),
@@ -174,7 +173,7 @@ public class SecurityTokenUtils {
         template.write(Hex.decode("92"));
         template.write(encodeLength(data.size()));
 
-        if (format.ecAlgorithmFormat().isWithPubkey()) {
+        if (format.withPubkey()) {
             data.write(Hex.decode("04"));
             writeBits(data, publicKey.getW().getAffineX(), csize);
             writeBits(data, publicKey.getW().getAffineY(), csize);

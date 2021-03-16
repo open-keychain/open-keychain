@@ -26,7 +26,7 @@ import android.os.Environment;
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
-import org.sufficientlysecure.keychain.securitytoken.RSAKeyFormat;
+import org.sufficientlysecure.keychain.securitytoken.RsaKeyFormat;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyAdd;
 
@@ -187,9 +187,9 @@ public final class Constants {
      * Default key format for OpenPGP smart cards v2: 2048 bit RSA (sign+certify, decrypt, auth)
      */
     private static final int ELEN = 17; //65537
-    public static final KeyFormat SECURITY_TOKEN_V2_SIGN = new RSAKeyFormat(2048, ELEN, RSAKeyFormat.RSAAlgorithmFormat.CRT_WITH_MODULUS);
-    public static final KeyFormat SECURITY_TOKEN_V2_DEC = new RSAKeyFormat(2048, ELEN, RSAKeyFormat.RSAAlgorithmFormat.CRT_WITH_MODULUS);
-    public static final KeyFormat SECURITY_TOKEN_V2_AUTH = new RSAKeyFormat(2048, ELEN, RSAKeyFormat.RSAAlgorithmFormat.CRT_WITH_MODULUS);
+    public static final KeyFormat SECURITY_TOKEN_V2_SIGN = RsaKeyFormat.getInstance(2048, ELEN, RsaKeyFormat.RsaImportFormat.CRT_WITH_MODULUS);
+    public static final KeyFormat SECURITY_TOKEN_V2_DEC = RsaKeyFormat.getInstance(2048, ELEN, RsaKeyFormat.RsaImportFormat.CRT_WITH_MODULUS);
+    public static final KeyFormat SECURITY_TOKEN_V2_AUTH = RsaKeyFormat.getInstance(2048, ELEN, RsaKeyFormat.RsaImportFormat.CRT_WITH_MODULUS);
 
     private static boolean isRunningUnitTest() {
         try {

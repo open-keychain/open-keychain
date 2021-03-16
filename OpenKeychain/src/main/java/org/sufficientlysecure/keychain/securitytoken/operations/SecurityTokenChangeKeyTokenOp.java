@@ -32,11 +32,11 @@ import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.securitytoken.CardException;
 import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
-import org.sufficientlysecure.keychain.securitytoken.ECKeyFormat;
+import org.sufficientlysecure.keychain.securitytoken.EcKeyFormat;
 import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
 import org.sufficientlysecure.keychain.securitytoken.KeyType;
 import org.sufficientlysecure.keychain.securitytoken.OpenPgpCapabilities;
-import org.sufficientlysecure.keychain.securitytoken.RSAKeyFormat;
+import org.sufficientlysecure.keychain.securitytoken.RsaKeyFormat;
 import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenUtils;
@@ -107,37 +107,32 @@ public class SecurityTokenChangeKeyTokenOp {
 
             OpenPgpCapabilities openPgpCapabilities = connection.getOpenPgpCapabilities();
             KeyFormat formatForKeyType = openPgpCapabilities.getFormatForKeyType(slot);
-            switch (formatForKeyType.keyFormatType()) {
-                case RSAKeyFormatType:
-                    if (!secretKey.isRSA()) {
-                        throw new IOException("Security Token not configured for RSA key.");
-                    }
-                    crtSecretKey = secretKey.getSecurityTokenRSASecretKey();
+            if (formatForKeyType instanceof RsaKeyFormat) {
+                if (!secretKey.isRSA()) {
+                    throw new IOException("Security Token not configured for RSA key.");
+                }
+                crtSecretKey = secretKey.getSecurityTokenRSASecretKey();
 
-                    // Should happen only rarely; all GnuPG keys since 2006 use public exponent 65537.
-                    if (!crtSecretKey.getPublicExponent().equals(new BigInteger("65537"))) {
-                        throw new IOException("Invalid public exponent for smart Security Token.");
-                    }
+                // Should happen only rarely; all GnuPG keys since 2006 use public exponent 65537.
+                if (!crtSecretKey.getPublicExponent().equals(new BigInteger("65537"))) {
+                    throw new IOException("Invalid public exponent for smart Security Token.");
+                }
 
-                    keyBytes = SecurityTokenUtils.createRSAPrivKeyTemplate(crtSecretKey, slot,
-                            (RSAKeyFormat) formatForKeyType);
-                    break;
+                keyBytes = SecurityTokenUtils.createRSAPrivKeyTemplate(crtSecretKey, slot,
+                        (RsaKeyFormat) formatForKeyType);
+            } else if (formatForKeyType instanceof EcKeyFormat) {
+                if (!secretKey.isEC()) {
+                    throw new IOException("Security Token not configured for EC key.");
+                }
 
-                case ECKeyFormatType:
-                    if (!secretKey.isEC()) {
-                        throw new IOException("Security Token not configured for EC key.");
-                    }
+                secretKey.unlock(passphrase);
+                ecSecretKey = secretKey.getSecurityTokenECSecretKey();
+                ecPublicKey = secretKey.getSecurityTokenECPublicKey();
 
-                    secretKey.unlock(passphrase);
-                    ecSecretKey = secretKey.getSecurityTokenECSecretKey();
-                    ecPublicKey = secretKey.getSecurityTokenECPublicKey();
-
-                    keyBytes = SecurityTokenUtils.createECPrivKeyTemplate(ecSecretKey, ecPublicKey, slot,
-                            (ECKeyFormat) formatForKeyType);
-                    break;
-
-                default:
-                    throw new IOException("Key type unsupported by security token.");
+                keyBytes = SecurityTokenUtils.createECPrivKeyTemplate(ecSecretKey, ecPublicKey, slot,
+                        (EcKeyFormat) formatForKeyType);
+            } else {
+                throw new IOException("Key type unsupported by security token.");
             }
         } catch (PgpGeneralException e) {
             throw new IOException(e.getMessage());

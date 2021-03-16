@@ -30,9 +30,10 @@ import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.securitytoken.CardException;
 import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
+import org.sufficientlysecure.keychain.securitytoken.EcKeyFormat;
 import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
 import org.sufficientlysecure.keychain.securitytoken.OpenPgpCapabilities;
-import org.sufficientlysecure.keychain.securitytoken.RSAKeyFormat;
+import org.sufficientlysecure.keychain.securitytoken.RsaKeyFormat;
 import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import timber.log.Timber;
@@ -102,56 +103,56 @@ public class SecurityTokenPsoSignTokenOp {
     }
 
     private byte[] prepareData(byte[] hash, int hashAlgo, KeyFormat keyFormat) throws IOException {
-        byte[] data;
-        switch (keyFormat.keyFormatType()) {
-            case RSAKeyFormatType:
-                data = prepareDsi(hash, hashAlgo);
-                break;
-            case ECKeyFormatType:
-            case EdDSAKeyFormatType:
-                data = hash;
-                break;
-            default:
-                throw new IOException("Not supported key type!");
+        if (keyFormat instanceof RsaKeyFormat) {
+            return prepareDsi(hash, hashAlgo);
+        } else if (keyFormat instanceof EcKeyFormat) {
+            return hash;
+        } else {
+            throw new IOException("Not supported key type!");
         }
-        return data;
     }
 
     private byte[] encodeSignature(byte[] signature, KeyFormat keyFormat) throws IOException {
         // Make sure the signature we received is actually the expected number of bytes long!
-        switch (keyFormat.keyFormatType()) {
-            case RSAKeyFormatType:
-                // no encoding necessary
-                int modulusLength = ((RSAKeyFormat) keyFormat).getModulusLength();
-                if (signature.length != (modulusLength / 8)) {
-                    throw new IOException("Bad signature length! Expected " + (modulusLength / 8) +
-                            " bytes, got " + signature.length);
-                }
-                break;
-
-            case ECKeyFormatType: {
-                // "plain" encoding, see https://github.com/open-keychain/open-keychain/issues/2108
-                if (signature.length % 2 != 0) {
-                    throw new IOException("Bad signature length!");
-                }
-                final byte[] br = new byte[signature.length / 2];
-                final byte[] bs = new byte[signature.length / 2];
-                for (int i = 0; i < br.length; ++i) {
-                    br[i] = signature[i];
-                    bs[i] = signature[br.length + i];
-                }
-                final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ASN1OutputStream out = new ASN1OutputStream(baos);
-                out.writeObject(new DERSequence(new ASN1Encodable[] { new ASN1Integer(br), new ASN1Integer(bs) }));
-                out.flush();
-                signature = baos.toByteArray();
-                break;
+        if (keyFormat instanceof RsaKeyFormat) {
+            // no encoding necessary
+            int modulusLength = ((RsaKeyFormat) keyFormat).modulusLength();
+            if (signature.length != (modulusLength / 8)) {
+                throw new IOException("Bad signature length! Expected " + (modulusLength / 8) +
+                        " bytes, got " + signature.length);
             }
 
-            case EdDSAKeyFormatType:
-                break;
+            return signature;
+        } else if (keyFormat instanceof EcKeyFormat) {
+            EcKeyFormat ecKeyFormat = (EcKeyFormat) keyFormat;
+            if (ecKeyFormat.isEdDsa()) {
+                return signature;
+            }
+
+            // "plain" encoding, see https://github.com/open-keychain/open-keychain/issues/2108
+            if (signature.length % 2 != 0) {
+                throw new IOException("Bad signature length!");
+            }
+            byte[] br = new byte[signature.length / 2];
+            byte[] bs = new byte[signature.length / 2];
+            for (int i = 0; i < br.length; ++i) {
+                br[i] = signature[i];
+                bs[i] = signature[br.length + i];
+            }
+            if (br[0] == 0x00 && (br[1] & 0x80) == 0) {
+                br = Arrays.copyOfRange(br, 1, br.length);
+            }
+            if (bs[0] == 0x00 && (bs[1] & 0x80) == 0) {
+                bs = Arrays.copyOfRange(bs, 1, bs.length);
+            }
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ASN1OutputStream out = ASN1OutputStream.create(baos);
+            out.writeObject(new DERSequence(new ASN1Encodable[]{new ASN1Integer(br), new ASN1Integer(bs)}));
+            out.flush();
+            return baos.toByteArray();
+        } else {
+            throw new IOException("Not supported key format!");
         }
-        return signature;
     }
 
     /**

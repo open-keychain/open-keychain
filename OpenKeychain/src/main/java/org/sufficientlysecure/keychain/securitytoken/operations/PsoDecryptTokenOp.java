@@ -21,7 +21,6 @@ package org.sufficientlysecure.keychain.securitytoken.operations;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.bouncycastle.asn1.cryptlib.CryptlibObjectIdentifiers;
 import org.bouncycastle.asn1.x9.ECNamedCurveTable;
 import org.bouncycastle.asn1.x9.X9ECParameters;
 import org.bouncycastle.jcajce.util.MessageDigestUtils;
@@ -34,9 +33,10 @@ import org.bouncycastle.util.encoders.Hex;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.securitytoken.CardException;
 import org.sufficientlysecure.keychain.securitytoken.CommandApdu;
-import org.sufficientlysecure.keychain.securitytoken.ECKeyFormat;
+import org.sufficientlysecure.keychain.securitytoken.EcKeyFormat;
 import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
 import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
+import org.sufficientlysecure.keychain.securitytoken.RsaKeyFormat;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 
 import java.io.IOException;
@@ -73,15 +73,12 @@ public class PsoDecryptTokenOp {
         connection.verifyPinForOther();
 
         KeyFormat kf = connection.getOpenPgpCapabilities().getEncryptKeyFormat();
-        switch (kf.keyFormatType()) {
-            case RSAKeyFormatType:
-                return decryptSessionKeyRsa(encryptedSessionKeyMpi);
-
-            case ECKeyFormatType:
-                return decryptSessionKeyEcdh(encryptedSessionKeyMpi, (ECKeyFormat) kf, publicKey);
-
-            default:
-                throw new CardException("Unknown encryption key type!");
+        if (kf instanceof RsaKeyFormat) {
+            return decryptSessionKeyRsa(encryptedSessionKeyMpi);
+        } else if (kf instanceof EcKeyFormat) {
+            return decryptSessionKeyEcdh(encryptedSessionKeyMpi, (EcKeyFormat) kf, publicKey);
+        } else {
+            throw new CardException("Unknown encryption key type!");
         }
     }
 
@@ -112,7 +109,7 @@ public class PsoDecryptTokenOp {
         return psoDecipherPayload;
     }
 
-    private byte[] decryptSessionKeyEcdh(byte[] encryptedSessionKeyMpi, ECKeyFormat eckf, CanonicalizedPublicKey publicKey)
+    private byte[] decryptSessionKeyEcdh(byte[] encryptedSessionKeyMpi, EcKeyFormat eckf, CanonicalizedPublicKey publicKey)
             throws IOException {
         int mpiLength = getMpiLength(encryptedSessionKeyMpi);
         byte[] encryptedPoint = Arrays.copyOfRange(encryptedSessionKeyMpi, 2, mpiLength + 2);
@@ -165,14 +162,13 @@ public class PsoDecryptTokenOp {
         byte[] keyEncryptionKey = response.getData();
 
         int xLen;
-        boolean isCurve25519 = CryptlibObjectIdentifiers.curvey25519.equals(eckf.asn1ParseOid());
-        if (isCurve25519) {
+        if (eckf.isX25519()) {
             xLen = keyEncryptionKey.length;
         } else {
             xLen = (keyEncryptionKey.length - 1) / 2;
         }
         final byte[] kekX = new byte[xLen];
-        System.arraycopy(keyEncryptionKey, isCurve25519 ? 0 : 1, kekX, 0, xLen);
+        System.arraycopy(keyEncryptionKey, eckf.isX25519() ? 0 : 1, kekX, 0, xLen);
 
         final byte[] keyEnc = new byte[encryptedSessionKeyMpi[mpiLength + 2]];
 
@@ -206,12 +202,11 @@ public class PsoDecryptTokenOp {
         }
     }
 
-    private byte[] getEcDecipherPayload(ECKeyFormat eckf, byte[] encryptedPoint) throws CardException {
-        // TODO is this the right curve?
-        if (CryptlibObjectIdentifiers.curvey25519.equals(eckf.asn1ParseOid())) {
+    private byte[] getEcDecipherPayload(EcKeyFormat eckf, byte[] encryptedPoint) throws CardException {
+        if (eckf.isX25519()) {
             return Arrays.copyOfRange(encryptedPoint, 1, 33);
         } else {
-            X9ECParameters x9Params = ECNamedCurveTable.getByOID(eckf.asn1ParseOid());
+            X9ECParameters x9Params = ECNamedCurveTable.getByOID(eckf.curveOid());
             ECPoint p = x9Params.getCurve().decodePoint(encryptedPoint);
             if (!p.isValid()) {
                 throw new CardException("Invalid EC point!");

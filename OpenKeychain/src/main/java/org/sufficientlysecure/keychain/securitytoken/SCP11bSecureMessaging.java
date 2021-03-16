@@ -150,24 +150,24 @@ class SCP11bSecureMessaging implements SecureMessaging {
                 && (mMacChaining != null);
     }
 
-    private static ECParameterSpec getAlgorithmParameterSpec(final ECKeyFormat kf)
+    private static ECParameterSpec getAlgorithmParameterSpec(final EcKeyFormat kf)
             throws NoSuchProviderException, NoSuchAlgorithmException, InvalidParameterSpecException {
         final AlgorithmParameters algoParams = AlgorithmParameters.getInstance(SCP11B_KEY_AGREEMENT_KEY_ALGO, PROVIDER);
 
-        algoParams.init(new ECGenParameterSpec(ECNamedCurveTable.getName(kf.asn1ParseOid())));
+        algoParams.init(new ECGenParameterSpec(ECNamedCurveTable.getName(kf.curveOid())));
 
         return algoParams.getParameterSpec(ECParameterSpec.class);
     }
 
 
-    private static ECPublicKey newECDHPublicKey(final ECKeyFormat kf, byte[] data)
+    private static ECPublicKey newECDHPublicKey(final EcKeyFormat kf, byte[] data)
             throws InvalidKeySpecException, NoSuchAlgorithmException,
                    InvalidParameterSpecException, NoSuchProviderException {
         if (ecdhFactory == null) {
             ecdhFactory = KeyFactory.getInstance(SCP11B_KEY_AGREEMENT_KEY_TYPE, PROVIDER);
         }
 
-        final X9ECParameters params = NISTNamedCurves.getByOID(kf.asn1ParseOid());
+        final X9ECParameters params = NISTNamedCurves.getByOID(kf.curveOid());
         if (params == null) {
             throw new InvalidParameterSpecException("unsupported curve");
         }
@@ -185,7 +185,7 @@ class SCP11bSecureMessaging implements SecureMessaging {
         return (ECPublicKey)(ecdhFactory.generatePublic(pk));
     }
 
-    private static KeyPair generateECDHKeyPair(final ECKeyFormat kf)
+    private static KeyPair generateECDHKeyPair(final EcKeyFormat kf)
             throws NoSuchProviderException, NoSuchAlgorithmException,
                    InvalidParameterSpecException, InvalidAlgorithmParameterException {
         final KeyPairGenerator gen = KeyPairGenerator.getInstance(SCP11B_KEY_AGREEMENT_KEY_ALGO, PROVIDER);
@@ -200,7 +200,7 @@ class SCP11bSecureMessaging implements SecureMessaging {
     }
 
     private static ECPublicKey verifyCertificate(final Context ctx,
-                                                 final ECKeyFormat kf,
+                                                 final EcKeyFormat kf,
                                                  final byte[] data) throws IOException {
         try {
 
@@ -299,13 +299,13 @@ class SCP11bSecureMessaging implements SecureMessaging {
 
         final KeyFormat kf = KeyFormat.fromBytes(tlvs[0].mV);
 
-        if (kf.keyFormatType() != KeyFormat.KeyFormatType.ECKeyFormatType) {
+        if (!(kf instanceof EcKeyFormat)) {
             throw new SecureMessagingException("invalid format of secure messaging key");
         }
 
-        final ECKeyFormat eckf = (ECKeyFormat)kf;
+        final EcKeyFormat eckf = (EcKeyFormat)kf;
 
-        if (eckf.asn1ParseOid() == null) {
+        if (eckf.curveOid() == null) {
             throw new SecureMessagingException("unsupported curve");
         }
 
