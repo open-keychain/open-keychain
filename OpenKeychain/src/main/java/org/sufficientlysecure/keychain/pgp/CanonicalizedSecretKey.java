@@ -255,7 +255,9 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
 
     private PGPContentSignerBuilder getAuthenticationContentSignerBuilder(int hashAlgorithm, Map<ByteBuffer,
             byte[]> signedHashes) {
-        if (getAlgorithm() == PublicKeyAlgorithmTags.EDDSA) {
+        if (
+            getAlgorithm() == PublicKeyAlgorithmTags.EDDSA
+                && mPrivateKeyState != PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
             // content signer feeding the input directly into the signature engine,
             // since EdDSA hashes the input anyway
             return new EdDsaAuthenticationContentSignerBuilder(
