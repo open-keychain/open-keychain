@@ -12,10 +12,6 @@ For a more detailed description and installation instructions go to https://www.
 * The development of OpenKeychain happens in the "master" branch.
 * For every release a new branch, e.g., "3.2-fixes" is created to backport fixes from "master"
 
-### Travis CI Build Status of master branch
-
-[![Build Status](https://travis-ci.org/open-keychain/open-keychain.svg?branch=master)](https://travis-ci.org/open-keychain/open-keychain)
-
 ## How to help the project?
 
 ### Translate the application
