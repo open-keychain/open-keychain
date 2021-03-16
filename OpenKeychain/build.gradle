@@ -1,11 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.squareup.sqldelight'
-// apply plugin: 'com.github.kt3k.coveralls'
 
 dependencies {
-    // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
-    // NOTE: libraries are pinned to a specific build, see below
-
     // from local Android SDK
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
@@ -16,7 +12,7 @@ dependencies {
 
     // JCenter etc.
     implementation 'com.journeyapps:zxing-android-embedded:3.4.0'
-    implementation 'com.google.zxing:core:3.3.0'
+    implementation 'com.google.zxing:core:3.4.0'
     implementation 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.1'
     implementation 'org.sufficientlysecure:donations:2.5'
     implementation 'com.squareup.okhttp3:okhttp:3.13.1'
@@ -40,7 +36,7 @@ dependencies {
     implementation 'com.mikepenz:materialdrawer:6.1.2@aar'
     implementation 'com.mikepenz:fastadapter:3.3.0'
     implementation 'com.mikepenz:fastadapter-extensions-expandable:3.3.0'
-    implementation 'com.mikepenz:materialize:1.2.0'
+    implementation 'com.mikepenz:materialize:1.2.1'
     implementation 'com.mikepenz:iconics-core:3.1.0@aar'
     implementation 'com.mikepenz:google-material-typeface:2.2.0.3.original@aar'
     implementation 'com.mikepenz:fontawesome-typeface:5.3.1.1@aar'
@@ -66,7 +62,7 @@ dependencies {
     // https://developer.android.com/training/testing/unit-testing/local-unit-tests.html
     // http://robolectric.org/getting-started/
     // http://www.vogella.com/tutorials/Robolectric/article.html
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
     testImplementation ('org.robolectric:robolectric:3.8') {
         exclude group: 'org.bouncycastle', module: 'bcprov-jdk16'
     }
@@ -266,18 +262,6 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/NOTICE'
         exclude '.readme'
-    }
-}
-
-// Fix for: No report file available: [/home/travis/build/open-keychain/open-keychain/OpenKeychain/build/reports/cobertura/coverage.xml, /home/travis/build/open-keychain/open-keychain/OpenKeychain/build/reports/jacoco/test/jacocoTestReport.xml]
-// coveralls {
-    // jacocoReportPath 'build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml'
-// }
-
-// NOTE: This disables Lint!
-tasks.whenTaskAdded { task ->
-    if (task.name.contains('lint')) {
-        task.enabled = false
     }
 }
 
