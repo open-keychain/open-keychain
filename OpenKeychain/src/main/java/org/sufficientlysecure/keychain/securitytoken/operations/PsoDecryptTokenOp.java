@@ -165,7 +165,7 @@ public class PsoDecryptTokenOp {
         byte[] keyEncryptionKey = response.getData();
 
         int xLen;
-        boolean isCurve25519 = CryptlibObjectIdentifiers.curvey25519.equals(eckf.getCurveOID());
+        boolean isCurve25519 = CryptlibObjectIdentifiers.curvey25519.equals(eckf.asn1ParseOid());
         if (isCurve25519) {
             xLen = keyEncryptionKey.length;
         } else {
