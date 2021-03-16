@@ -250,8 +250,8 @@ android {
         javaMaxHeapSize "2g"
     }
 
-    dataBinding {
-        enabled true
+    buildFeatures {
+        dataBinding true
     }
 
     packagingOptions {
