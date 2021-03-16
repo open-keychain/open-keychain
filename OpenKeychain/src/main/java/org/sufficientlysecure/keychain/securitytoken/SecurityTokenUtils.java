@@ -42,10 +42,10 @@ public class SecurityTokenUtils {
             byte[] oid = new ASN1ObjectIdentifier(secretKey.getCurveOid()).getEncoded();
             byte[] attrs = new byte[1 + (oid.length - 2) + 1];
 
-            if (slot.equals(KeyType.SIGN))
-                attrs[0] = ECKeyFormat.ECAlgorithmFormat.ECDSA_WITH_PUBKEY.getAlgorithmId();
-            else {
+            if (slot.equals(KeyType.ENCRYPT))
                 attrs[0] = ECKeyFormat.ECAlgorithmFormat.ECDH_WITH_PUBKEY.getAlgorithmId();
+            else { // SIGN and AUTH is ECDSA
+                attrs[0] = ECKeyFormat.ECAlgorithmFormat.ECDSA_WITH_PUBKEY.getAlgorithmId();
             }
 
             System.arraycopy(oid, 2, attrs, 1, (oid.length - 2));
