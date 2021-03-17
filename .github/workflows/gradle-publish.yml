@@ -1,15 +1,12 @@
 name: Publish package to GitHub Packages
 
-#on:
-  #release:
-    #types: [created]
 on:
-  push:
-    branches:
-      - master
+  release:
+    types: [created]
 
 jobs:
   publish:
+    if: false # job disabled. currently it is not possible to create public Maven repos: https://github.community/t/how-to-allow-unauthorised-read-access-to-github-packages-maven-repository/115517/8
     runs-on: ubuntu-latest
     strategy:
       matrix:
