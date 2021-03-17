@@ -4,11 +4,9 @@ on:
   push:
     branches:
       - master
-      - cleanup-bc
   pull_request:
     branches:
       - master
-      - cleanup-bc
 
 jobs:
   BuildAndTest:

@@ -1,8 +1,12 @@
 name: Publish package to GitHub Packages
 
+#on:
+  #release:
+    #types: [created]
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+      - master
 
 jobs:
   publish:
