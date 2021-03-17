@@ -22,8 +22,3 @@ dependencies {
     compile 'org.sufficientlysecure:sshauthentication-api:1.0'
 }
 ```
-
-### Build library
-1. Go to root dir of OpenKeychain repo
-2. Build: ``./gradlew :sshauthentication-api:assemble``
-2. Release on bintray: ``./gradlew :sshauthentication-api:bintrayUpload -PbintrayUser=sufficientlysecure -PbintrayKey=INSERT-KEY -PdryRun=false``

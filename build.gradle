@@ -7,8 +7,6 @@ buildscript {
     dependencies {
         // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
         classpath 'com.android.tools.build:gradle:4.1.2'
-        // bintray dependency to satisfy dependency of openpgp-api lib
-        classpath 'com.novoda:bintray-release:0.8.0'
         classpath 'com.squareup.sqldelight:gradle-plugin:0.8.0'
     }
 }

@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'bintray-release' // must be applied after your artifact generating plugin (eg. java / com.android.library)
+apply plugin: 'maven-publish'
 
 android {
     if (project.hasProperty('rootProject.ext.compileSdkVersion')) {
@@ -12,8 +12,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "2.0"
     }
 
     // Do not abort build if lint finds errors
@@ -22,11 +22,43 @@ android {
     }
 }
 
-publish {
-    userOrg = 'sufficientlysecure'
-    groupId = 'org.sufficientlysecure'
-    artifactId = 'sshauthentication-api'
-    version = '1.0'
-    description = 'The SSH authentication API library provides an interface to using an external authentication provider, such as OpenKeychain, in the SSH authentication layer.'
-    website = 'https://github.com/open-keychain/open-keychain'
+// https://developer.android.com/studio/build/maven-publish-plugin
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+
+                groupId = 'org.sufficientlysecure'
+                artifactId = 'sshauthentication-api'
+                version = android.defaultConfig.versionName
+
+                pom {
+                    url = 'https://github.com/open-keychain'
+                    licenses {
+                        license {
+                            name = 'The Apache Software License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            distribution = 'repo'
+                        }
+                    }
+                    organization {
+                        name = 'Confidential Technologies GmbH'
+                        url = 'https://www.cotech.de'
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = "https://maven.pkg.github.com/open-keychain/open-keychain"
+                credentials {
+                    username = System.getenv("GITHUB_ACTOR")
+                    password = System.getenv("GITHUB_TOKEN")
+                }
+            }
+        }
+    }
 }
