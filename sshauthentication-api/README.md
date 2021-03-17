@@ -15,10 +15,10 @@ Add this to your build.gradle:
 
 ```gradle
 repositories {
-    jcenter()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-    compile 'org.sufficientlysecure:sshauthentication-api:1.0'
+    implementation 'com.github.open-keychain.open-keychain:sshauthentication-api:-SNAPSHOT'
 }
 ```
