@@ -57,7 +57,7 @@ jobs:
       - name: Build project
         run: ./gradlew lint
   Espresso:
-    runs-on: ubuntu-latest
+    runs-on: macOS-latest # required for KVM support of emulator
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
