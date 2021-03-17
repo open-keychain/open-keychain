@@ -1,2 +1,0 @@
-install:
-  - ./gradlew clean :sshauthentication-api:assemble :sshauthentication-api:publishToMavenLocal :openpgp-api-lib:assemble :openpgp-api-lib:publishToMavenLocal
