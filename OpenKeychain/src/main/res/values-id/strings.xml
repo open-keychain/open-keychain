@@ -8,7 +8,6 @@
   <string name="title_encrypt_files">Enkripsi</string>
   <string name="title_decrypt">Dekripsi</string>
   <string name="title_add_subkey">Tambah kunci tambahan</string>
-  <string name="title_change_master_key">Ubah kunci master</string>
   <string name="title_edit_key">Edit kunci</string>
   <string name="title_preferences">Pengaturan</string>
   <string name="title_api_registered_apps">Aplikasi</string>
@@ -20,6 +19,7 @@
   <string name="title_advanced_key_info">Advanced </string>
   <!--section-->
   <string name="section_user_ids">Identitas</string>
+  <string name="section_cloud_search_summary">Keyserver</string>
   <string name="section_gui">Interface </string>
   <string name="section_sync_settings">Sinkronisasi</string>
   <string name="section_certify">Konfirmasi</string>
@@ -30,6 +30,7 @@
   <string name="section_encrypt">Enkripsi</string>
   <!--button-->
   <string name="btn_save">Simpan</string>
+  <string name="btn_view_log">Lihat log</string>
   <string name="btn_do_not_save">Batalkan</string>
   <string name="btn_delete">Hapus</string>
   <string name="btn_okay">Oke</string>
@@ -59,6 +60,7 @@
   <string name="label_file_colon">File:</string>
   <string name="label_passphrase">Password </string>
   <string name="label_unlock">Membuka kunci...</string>
+  <string name="label_algorithm">Algoritma</string>
   <string name="label_key_id">ID Kunci</string>
   <string name="label_key_type">Tipe</string>
   <string name="label_expiry">Waktu kadarluarsa</string>
@@ -73,7 +75,6 @@
   <string name="label_enter_smartpgp_authority_name">Nama</string>
   <string name="pref_keyserver">Server kunci OpenPGP</string>
   <string name="pref_facebook">Facebook</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">Peringatan</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Aktifkan Tor</string>
@@ -146,6 +147,7 @@
   <string name="api_settings_settings">Pengaturan</string>
   <!--Share-->
   <!--retry upload dialog-->
+  <string name="retry_up_dialog_title">Gagal mengunggah</string>
   <!--Delete or revoke private key dialog-->
   <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
@@ -156,8 +158,6 @@
   <string name="key_view_tab_certs">Sertifikat</string>
   <string name="user_id_info_revoked_title">Dicabut</string>
   <!--Key trust-->
-  <!--keybase proof stuff-->
-  <string name="keybase_verify">Verifikasi</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Ubah kata sandi</string>
   <!--Create key-->
@@ -168,6 +168,8 @@
   <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
   <string name="nav_apps">Aplikasi</string>
+  <string name="drawer_open">Buka laci navigasi</string>
+  <string name="drawer_close">Tutup laci navigasi</string>
   <!--hints-->
   <!--certs-->
   <string name="cert_default">default </string>
@@ -182,16 +184,20 @@
   <!--createSecretKeyRing-->
   <!--modifySecretKeyRing-->
   <!--Edit Key (higher level than modify)-->
+  <string name="msg_ed_error_key_not_found">Kunci tidak ditemukan!</string>
   <!--Promote key-->
+  <string name="msg_pr_error_key_not_found">Kunci tidak ditemukan!</string>
   <!--Other messages used in OperationLogs-->
+  <string name="msg_ek_error_not_found">Kunci tidak ditemukan!</string>
   <!--Messages for DecryptVerify operation-->
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl_ok">OKE</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_error_specific">%s</string>
+  <string name="msg_crt_warn_not_found">Kunci tidak ditemukan!</string>
+  <string name="msg_import_fetch_error_not_found">Kunci tidak ditemukan!</string>
+  <string name="msg_upload_error_not_found">Kunci tidak ditemukan!</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_pwd">Password </string>
@@ -202,6 +208,7 @@
   <!--unsorted-->
   <string name="label_user_id">Identitas</string>
   <string name="label_cert_type">Tipe</string>
+  <string name="error_key_not_found">Kunci tidak ditemukan!</string>
   <string name="key_unavailable">tidak tersedia</string>
   <string name="unknown">tidak diketahui</string>
   <!--Android Account-->
@@ -240,6 +247,7 @@
   <string name="transfer_confirm_cancel">Batalkan</string>
   <string name="transfer_confirm_ok">Kirim</string>
   <string name="token_reset_confirm_ok">Reset</string>
+  <string name="token_result_not_found">Kunci tidak ditemukan!</string>
   <string name="token_action_import">impor</string>
   <string name="token_unlock_ok">Tidak terkunci</string>
   <string name="select_identity_cancel">Non Aktifkan</string>

@@ -8,7 +8,6 @@
   <string name="title_encrypt_files">Titkosítás</string>
   <string name="title_decrypt">Visszafejtés</string>
   <string name="title_add_subkey">Alkulcs hozzáadása</string>
-  <string name="title_change_master_key">Mesterkulcs megváltoztatása</string>
   <string name="title_edit_key">Kulcs szerkesztése</string>
   <string name="title_preferences">Beállítások</string>
   <string name="title_api_registered_apps">Alkalmazások</string>
@@ -40,12 +39,11 @@
   <string name="section_user_ids">Személyazonosságok</string>
   <string name="section_security_token">Biztonsági token</string>
   <string name="section_linked_system_contact">Kapcsolt rendszerpartner</string>
-  <string name="section_keybase_proofs">Keybase.io bizonyítékok</string>
   <string name="section_should_you_trust">Meg kellene bíznia ebben a kulcsban?</string>
   <string name="section_proof_details">Bizonyíték ellenőrzése</string>
   <string name="section_keys">Alkulcsok</string>
   <string name="section_cloud_search">Kulcskeresés</string>
-  <string name="section_cloud_search_summary">Kulcskiszolgáló, keybase.io</string>
+  <string name="section_cloud_search_summary">Kulcskiszolgáló</string>
   <string name="section_passphrase_cache">Jelszavak és PIN-kódok</string>
   <string name="section_passphrase_cache_summary">Kezelés</string>
   <string name="section_proxy_settings">Hálózati anonimitás</string>
@@ -198,8 +196,6 @@
   <string name="label_smartpgp_authority_dialog_delete">Szolgáltató törlése</string>
   <string name="pref_keyserver">OpenPGP kulcskiszolgálók</string>
   <string name="pref_keyserver_summary">Kulcsok keresése a kiválasztott OpenPGP kulcskiszolgálókon (HKP protokoll)</string>
-  <string name="pref_keybase">keybase.io</string>
-  <string name="pref_keybase_summary">Kulcsok keresése a keybase.io-n</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">Kulcsok keresése a Facebookon felhasználónév alapján</string>
   <string name="pref_wkd">Web Key Directory</string>
@@ -208,14 +204,8 @@
   <string name="label_sync_settings_keyserver_summary_on">A kulcsok háromnaponta frissülnek az előnyben részesített kulcskiszolgálóról</string>
   <string name="label_sync_settings_keyserver_summary_off">A kulcsok nem frissülnek automatikusan</string>
   <string name="label_sync_settings_wifi_title">Szinkronizálás csak Wi-Fi esetén</string>
-  <string name="label_sync_settings_contacts_title">Kulcsok összekapcsolása partnerekkel</string>
-  <string name="label_sync_settings_contacts_summary_on">Kulcsok összekapcsolása partnerekkel a nevük és az e-mail címük alapján. Ez teljesen mértékben hálózati kapcsolat nélkül történik az ön eszközén.</string>
-  <string name="label_sync_settings_contacts_summary_off">Az új kulcsok nem lesznek összekapcsolva partnerekkel</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">Figyelmeztetés</string>
   <string name="label_experimental_settings_desc_summary">Ezek a funkciók még nincsenek befejezve, vagy felhasználói élmény és biztonsági kutatást eredményei. Emiatt ne bízzon a biztonságukban, és ne jelentse a felmerülő hibákat!</string>
-  <string name="label_experimental_settings_keybase_title">Keybase.io igazolások</string>
-  <string name="label_experimental_settings_keybase_summary">Kapcsolatfelvétel a keybase.io-val a kulcsigazolásokért, és megtekintés minden alkalommal, amikor egy kulcs megjelenik</string>
   <string name="label_experimental_settings_theme_summary">(Az ikonok és számos képernyő még nem lett hozzáigazítva a sötét témához)</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Tor engedélyezése</string>
@@ -412,7 +402,6 @@
   <string name="progress_exporting">exportálás…</string>
   <string name="progress_uploading">feltöltés…</string>
   <string name="progress_building_key">kulcs építése...</string>
-  <string name="progress_building_master_key">mester kulcstár létrehozása...</string>
   <string name="progress_generating_rsa">új RSA kulcs generálása...</string>
   <string name="progress_generating_dsa">új DSA kulcs generálása...</string>
   <string name="progress_generating_elgamal">új ElGamal kulcs generálása...</string>
@@ -565,7 +554,6 @@
   <string name="key_view_tab_share">Megoszt</string>
   <string name="key_view_tab_keys">Alkulcsok</string>
   <string name="key_view_tab_certs">Tanúsítványok</string>
-  <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">Visszavont</string>
   <string name="user_id_info_certified_title">Megerősített</string>
   <string name="user_id_info_certified_text">Ezt az a személyazonosságot Ön erősítette meg.</string>
@@ -574,18 +562,6 @@
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">Nincs bizonyíték az internetről ennek a kulcsnak a megbízhatóságáról.</string>
   <string name="key_trust_start_cloud_search">Keresés indítása</string>
-  <string name="key_trust_results_prefix">A Keybase.io “bizonyítékokat” kínál, amik megerősítik, hogy a kulcs tulajdonosa: </string>
-  <!--keybase proof stuff-->
-  <string name="keybase_narrative_twitter">Twitter-re postol, mint %s</string>
-  <string name="keybase_narrative_github">A GitHub-on ismert, mint %s</string>
-  <string name="keybase_narrative_dns">Kontrollálja a domain nev(ek)et %s</string>
-  <string name="keybase_narrative_web_site">Képes postolni Weboldal(ak)ra %s</string>
-  <string name="keybase_dns_query_failure">DNS TXT Record lekérdezés sikertelen</string>
-  <string name="keybase_no_prover_found">Nem található bizonyíték ellenőrző ehhez</string>
-  <string name="keybase_message_payload_mismatch">A dekódolt bizonyíték válasz nem a várt értéket adja</string>
-  <string name="keybase_message_fetching_data">Bizonyíték lekérdezése</string>
-  <string name="keybase_proof_succeeded">Ez a bizonyíték ellenőrzött!</string>
-  <string name="keybase_verify">Megerősít</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Jelszó megváltoztatása</string>
   <!--Create key-->
@@ -601,7 +577,6 @@
   <string name="nav_apps">Alkalmazások</string>
   <string name="drawer_open">Navigációs fiók megnyitása</string>
   <string name="drawer_close">Navigációs fiók bezárása</string>
-  <string name="nav_transfer">Biztonságos Wi-Fi átvitel</string>
   <!--hints-->
   <!--certs-->
   <string name="cert_none">semmi</string>
@@ -645,9 +620,6 @@
   <string name="msg_upload_proxy">Proxy használata: %s</string>
   <string name="msg_upload_key">Kulcsazonosító: %s</string>
   <string name="msg_bench_dec_time_avg">Átlagos idő 5MB visszafejtéséhez: %ss</string>
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_error_dns_fail">DNS TXT Record lekérdezés sikertelen</string>
-  <string name="msg_keybase_error_msg_payload_mismatch">A dekódolt bizonyíték válasz nem a várt értéket adja</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_pwd">Jelszó</string>

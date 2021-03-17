@@ -2,28 +2,28 @@
 
 [https://www.openkeychain.org](https://www.openkeychain.org)
 
-[OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
+[OpenKeychain](https://www.openkeychain.org), Android için bir OpenPGP uygulamasıdır.
 
 Lisans: GPLv3+
 
 [//]: # (NOTE: Alphabetic ordering)
 
-## Main Developers
-  * Dominik Schürmann (Maintainer)
+## Ana Geliştiriciler
+  * Dominik Schürmann (Sürdürücü)
   * Vincent Breitmoser
 
-## Top Contributors
+## En Çok Katkıda Bulunanlar
   * Adithya Abraham Philip
   * Andrea Torlaschi
   * Arnaud Fontaine
   * Ash Hughes
   * 'mar-v-in'
   * Nikita Mikhailov
-  * 'Thialfihar' (APG developer)
+  * 'Thialfihar' (APG geliştiricisi)
   * Tim Bray
   * Tobias Erthal
 
-## Occasional Contributors
+## Ara Sıra Katkıda Bulunanlar
   * Alex Fong Jie Wen
   * Andrea Torlaschi
   * Art O Cathain

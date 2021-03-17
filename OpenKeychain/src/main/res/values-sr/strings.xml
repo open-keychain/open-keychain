@@ -8,7 +8,6 @@
   <string name="title_encrypt_files">Шифровање</string>
   <string name="title_decrypt">Дешифровање</string>
   <string name="title_add_subkey">Додај поткључ</string>
-  <string name="title_change_master_key">Измени главни кључ</string>
   <string name="title_edit_key">Уреди кључ</string>
   <string name="title_preferences">Поставке</string>
   <string name="title_api_registered_apps">Апликације</string>
@@ -38,12 +37,11 @@
   <!--section-->
   <string name="section_user_ids">Идентитети</string>
   <string name="section_linked_system_contact">Повезани контакт</string>
-  <string name="section_keybase_proofs">Keybase.io докази</string>
   <string name="section_should_you_trust">Смете ли да се поуздате у овај кључ?</string>
   <string name="section_proof_details">Провера доказа</string>
   <string name="section_keys">Поткључеви</string>
   <string name="section_cloud_search">Претрага кључа</string>
-  <string name="section_cloud_search_summary">Сервер кључева, keybase.io</string>
+  <string name="section_cloud_search_summary">Сервер кључева</string>
   <string name="section_passphrase_cache">Лозинке и пинови</string>
   <string name="section_proxy_settings">Анонимност на мрежи</string>
   <string name="section_proxy_settings_summary">Тор, поставке проксија</string>
@@ -176,21 +174,14 @@
   <string name="label_enter_smartpgp_authority_name">Име</string>
   <string name="pref_keyserver">Сервери ОпенПГП кључева</string>
   <string name="pref_keyserver_summary">Тражи кључеве на изабраним ОпенПГП серверима кључева (ХКП протокол)</string>
-  <string name="pref_keybase">keybase.io</string>
-  <string name="pref_keybase_summary">Тражи кључеве на keybase.io</string>
   <string name="pref_facebook">Фејсбук</string>
   <string name="pref_facebook_summary">Тражи кључеве на Фејсбуку по корисничком имену</string>
   <string name="label_sync_settings_keyserver_title">Аутоматско ажурирање кључева</string>
   <string name="label_sync_settings_keyserver_summary_on">Кључеви се ажурирају са пожељног сервера кључева свака три дана</string>
   <string name="label_sync_settings_keyserver_summary_off">Кључеви се не ажурирају аутоматски</string>
   <string name="label_sync_settings_wifi_title">Синхронизација само на бежичном</string>
-  <string name="label_sync_settings_contacts_title">Повежи кључеве са контактима</string>
-  <string name="label_sync_settings_contacts_summary_on">Повезивање кључева са контактима на основу имена и е-адреса. Одвија се у потпуности ван везе на вашем уређају.</string>
-  <string name="label_sync_settings_contacts_summary_off">Нови кључеви неће бити повезани са контактима</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
-    <string name="label_experimental_settings_desc_title">Упозорење</string>
+  <string name="label_experimental_settings_desc_title">Упозорење</string>
   <string name="label_experimental_settings_desc_summary">Ове функције још нису завршене или су резултат истраживања корисничког искуства и безбедности. Стога се не ослањајте на њихову безбедност и молимо вас да не пријављујете грешке на које наиђете!</string>
-  <string name="label_experimental_settings_keybase_summary">Тражење доказа кључева на keybase.io и њихов приказ приликом приказивања кључа</string>
   <string name="label_experimental_settings_theme_summary">(Иконе и многи екрани још нису прилагођени за тамну тему)</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Омогући Тор</string>
@@ -368,7 +359,6 @@
   <string name="progress_exporting">извозим…</string>
   <string name="progress_uploading">отпремам…</string>
   <string name="progress_building_key">градим кључ…</string>
-  <string name="progress_building_master_key">градим главни прстен…</string>
   <string name="progress_generating_rsa">генеришем нови РСА кључ…</string>
   <string name="progress_generating_dsa">генеришем нови ДСА кључ…</string>
   <string name="progress_generating_elgamal">генеришем нови Елгамал кључ…</string>
@@ -595,7 +585,6 @@
   <string name="key_view_tab_share">Дељење</string>
   <string name="key_view_tab_keys">Поткључеви</string>
   <string name="key_view_tab_certs">Сертификати</string>
-  <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">Опозван</string>
   <string name="user_id_info_revoked_text">Власник кључа је опозвао овај идентитет. Више није исправан.</string>
   <string name="user_id_info_certified_title">Потврђен</string>
@@ -605,36 +594,6 @@
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">Нема доказа на интернету о веродостојности овог кључа.</string>
   <string name="key_trust_start_cloud_search">Почни претрагу</string>
-  <string name="key_trust_results_prefix">Keybase.io даје „доказе“ који потврђују да власник овог кључа: </string>
-  <!--keybase proof stuff-->
-  <string name="keybase_narrative_twitter">Објављује на Твитеру као %s</string>
-  <string name="keybase_narrative_github">Познат је на Гитхабу као %s</string>
-  <string name="keybase_narrative_dns">Управља доменима %s</string>
-  <string name="keybase_narrative_web_site">Може да објављује на вебсајтовима %s</string>
-  <string name="keybase_narrative_reddit">Објављује на Редиту као %s</string>
-  <string name="keybase_narrative_coinbase">Познат на Коинбејсу као %s</string>
-  <string name="keybase_narrative_hackernews">Објављује на Хакер Њуз као %s</string>
-  <string name="keybase_narrative_unknown">Непознат тип доказа %s</string>
-  <string name="keybase_proof_failure">Нажалост, овај доказ не може бити проверен.</string>
-  <string name="keybase_unknown_proof_failure">Непрепознат проблем са провером доказа</string>
-  <string name="keybase_problem_fetching_evidence">Проблем са доказом</string>
-  <string name="keybase_key_mismatch">Отисак кључа се не поклапа са оним у објави доказа</string>
-  <string name="keybase_dns_query_failure">Добављање ДНС ТЕКСТ записа није успело</string>
-  <string name="keybase_no_prover_found">Нема провере доказа за</string>
-  <string name="keybase_message_payload_mismatch">Дешифрована објава доказа се не поклапа са очекиваном вредношћу</string>
-  <string name="keybase_message_fetching_data">Добављам доказ</string>
-  <string name="keybase_proof_succeeded">Овај доказ је проверен!</string>
-  <string name="keybase_a_post">Објава</string>
-  <string name="keybase_fetched_from">добављен/а са</string>
-  <string name="keybase_for_the_domain">за домен</string>
-  <string name="keybase_contained_signature">садржи поруку коју је могао да направи само власник овог кључа:</string>
-  <string name="keybase_twitter_proof">Твит</string>
-  <string name="keybase_dns_proof">ДНС ТЕКСТ запис</string>
-  <string name="keybase_web_site_proof">текстуални фајл</string>
-  <string name="keybase_github_proof">гист</string>
-  <string name="keybase_reddit_proof">ЈСОН фајл</string>
-  <string name="keybase_reddit_attribution">приписује Редит за</string>
-  <string name="keybase_verify">Провери</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Измени лозинку</string>
   <string name="edit_key_action_add_identity">Додај идентитет</string>
@@ -733,26 +692,8 @@
   <string name="msg_ip_insert_keyring">Кодирам податке привеска</string>
   <string name="msg_ip_insert_keys">Рашчлањујем кључеве</string>
   <string name="msg_ip_prepare">Припремам радње на бази података</string>
-  <string name="msg_ip_master">Обрађујем главни кључ %s</string>
   <string name="msg_ip_master_expired">Привезак је истекао %s</string>
   <string name="msg_ip_master_expires">Привезак истиче %s</string>
-  <string name="msg_ip_master_flags_unspecified">Заставице главног: нису наведене (претпостављам све)</string>
-  <string name="msg_ip_master_flags_cesa">Заставице главног: овера, шифровање, потпис, аутентификовање</string>
-  <string name="msg_ip_master_flags_cesx">Заставице главног: овера, шифровање, потпис</string>
-  <string name="msg_ip_master_flags_cexa">Заставице главног: овера, шифровање, аутентификовање</string>
-  <string name="msg_ip_master_flags_cexx">Заставице главног: овера, шифровање</string>
-  <string name="msg_ip_master_flags_cxsa">Заставице главног: овера, потпис, аутентификовање</string>
-  <string name="msg_ip_master_flags_cxsx">Заставице главног: овера, потпис</string>
-  <string name="msg_ip_master_flags_cxxa">Заставице главног: овера, аутентификовање</string>
-  <string name="msg_ip_master_flags_cxxx">Заставице главног: овера</string>
-  <string name="msg_ip_master_flags_xesa">Заставице главног: шифровање, потпис, аутентификовање</string>
-  <string name="msg_ip_master_flags_xesx">Заставице главног: шифровање, потпис</string>
-  <string name="msg_ip_master_flags_xexa">Заставице главног: шифровање, аутентификовање</string>
-  <string name="msg_ip_master_flags_xexx">Заставице главног: шифровање</string>
-  <string name="msg_ip_master_flags_xxsa">Заставице главног: потпис, аутентификовање</string>
-  <string name="msg_ip_master_flags_xxsx">Заставице главног: потпис</string>
-  <string name="msg_ip_master_flags_xxxa">Заставице главног: аутентификовање</string>
-  <string name="msg_ip_master_flags_xxxx">Заставице главног: ниједна</string>
   <string name="msg_ip_merge_public">Спајам увезене податке у постојећи јавни привезак</string>
   <string name="msg_ip_merge_secret">Спајам увезене податке у постојећи тајни привезак</string>
   <string name="msg_ip_subkey">Обрађујем поткључ %s</string>
@@ -837,16 +778,9 @@
   <string name="msg_kc_secret">Каноникализујем тајни привезак %s</string>
   <string name="msg_kc_error_v3">Ово је кључ издања 3 ОпенПГП-а, које је застарело и више није подржано!</string>
   <string name="msg_kc_error_no_uid">Привезак нема исправних корисничких ИД-ова!</string>
-  <string name="msg_kc_error_master_algo">Главни кључ користи непознат алгоритам (%s)!</string>
   <string name="msg_kc_error_dup_key">Поткључ %s се појављује два пута у привеску. Привезак је деформисан, не увозим!</string>
-  <string name="msg_kc_master">Обрађујем главни кључ</string>
-  <string name="msg_kc_master_bad_type">Уклањам сертификат главног кључа непознатог типа (%s)</string>
-  <string name="msg_kc_master_bad_local">Уклањам сертификат главног кључа са заставицом „локални“</string>
-  <string name="msg_kc_master_bad_err">Уклањам лош сертификат главног кључа</string>
   <string name="msg_kc_master_bad_time">Уклањам сертификат опозива привеска са временском ознаком у будућности</string>
   <string name="msg_kc_master_bad_type_uid">Уклањам сертификат корисничког ИД-а са погрешног места</string>
-  <string name="msg_kc_master_bad">Уклањам лош сертификат главног кључа</string>
-  <string name="msg_kc_master_local">Уклањам сертификат главног кључа са заставицом „локални“</string>
   <string name="msg_kc_revoke_dup">Уклањам сувишни сертификат опозива привеска</string>
   <string name="msg_kc_notation_dup">Уклањам сувишни сертификат нотације</string>
   <string name="msg_kc_notation_empty">Уклањам празни сертификат нотације</string>
@@ -920,10 +854,7 @@
   <string name="msg_mg_found_new">Пронађено %s нових сертификата у привеску</string>
   <string name="msg_mg_unchanged">Нема ништа за спајање</string>
   <!--createSecretKeyRing-->
-  <string name="msg_cr">Генеришем нови главни кључ</string>
-  <string name="msg_cr_error_no_master">Нису наведени аргументи за главни кључ!</string>
   <string name="msg_cr_error_no_user_id">Привесци морају садржати бар један кориснички ИД!</string>
-  <string name="msg_cr_error_no_certify">Главни кључ мора имати заставицу овере!</string>
   <string name="msg_cr_error_null_expiry">Датум истицања не може бити „исти као пре“ на стварању кључа. Ово је грешка у програмирању, поднесите извештај о грешци!</string>
   <string name="msg_cr_error_keysize_2048">Величина кључа мора бити већа или једнака 2048!</string>
   <string name="msg_cr_error_no_curve">Није наведена величина кључа! Ово је грешка у програмирању, поднесите извештај о грешци!</string>
@@ -940,19 +871,16 @@
   <string name="msg_mf_error_fingerprint">Стварни отисак кључа не одговара очекиваном!</string>
   <string name="msg_mf_error_keyid">Нема ИД-а кључа. Ово је унутрашња грешка, поднесите извештај о грешци!</string>
   <string name="msg_mf_error_integrity">Унутрашња грешка, провера интегритета није успела!</string>
-  <string name="msg_mf_error_master_none">Нема главног сертификата на којем треба да се изврши радња! (Сви су опозвани?)</string>
   <string name="msg_mf_error_noexist_primary">Наведен је лош примарни кориснички ИД!</string>
   <string name="msg_mf_error_noexist_revoke">Наведен је лош кориснички ИД за опозив!</string>
   <string name="msg_mf_error_restricted">Покушај извршења ограничене радње без лозинке! Ово је грешка у програмирању, поднесите извештај о грешци!</string>
   <string name="msg_mf_error_revoked_primary">Опозвани кориснички ИД-ови не могу бити примарни!</string>
   <string name="msg_mf_error_null_expiry">Датум истицања не може бити „исти као пре“ на стварању поткључа. Ово је грешка у програмирању, поднесите извештај о грешци!</string>
   <string name="msg_mf_error_noop">Нема ништа за радити!</string>
-  <string name="msg_mf_error_passphrase_master">Кобна грешка дешифровања главног кључа! Ово је вероватно грешка у програмирању, поднесите извештај о грешци!</string>
   <string name="msg_mf_error_pgp">Унутрашња ОпенПГП грешка!</string>
   <string name="msg_mf_error_sig">Изузетак потписа!</string>
   <string name="msg_mf_error_sub_stripped">Не могу да модификујем огољени поткључ %s!</string>
   <string name="msg_mf_error_subkey_missing">Покушај радње на недостајућем поткључу %s!</string>
-  <string name="msg_mf_master">Модификујем главне сертификате</string>
   <string name="msg_mf_passphrase">Мењам лозинку за привезак</string>
   <string name="msg_mf_pin">Мењам ПИН на картици</string>
   <string name="msg_mf_admin_pin">Мењам администраторски ПИН на картици</string>
@@ -995,7 +923,6 @@
   <string name="msg_pr_subkey_match">Унапређујем поткључ: %s</string>
   <string name="msg_pr_success">Кључ успешно унапређен</string>
   <!--Other messages used in OperationLogs-->
-  <string name="msg_ek_error_dummy">Не могу да уредим кључ са огољеним главним кључем!</string>
   <string name="msg_ek_error_not_found">Кључ није нађен!</string>
   <!--Messages for DecryptVerify operation-->
   <string name="msg_dc_askip_bad_flags">Кључ није кључ за шифровање, прескачем…</string>
@@ -1110,15 +1037,11 @@
     <item quantity="other">Потврђујем %1$d корисничких атрибута за кључ %2$s</item>
   </plurals>
   <string name="msg_crt_error_self">Не могу да издам овакав самопотписани сертификат!</string>
-  <string name="msg_crt_error_master_not_found">Главни кључ није нађен!</string>
   <string name="msg_crt_error_nothing">Нема оверених кључева!</string>
-  <string name="msg_crt_error_unlock">Грешка откључавања главног кључа!</string>
   <string name="msg_crt">Оверавам привеске</string>
-  <string name="msg_crt_master_fetch">Добављам главни кључ за оверавање</string>
   <string name="msg_crt_nfc_return">Враћам на НФЦ екран</string>
   <string name="msg_crt_save">Уписујем оверени кључ %s</string>
   <string name="msg_crt_saving">Уписујем привеске</string>
-  <string name="msg_crt_unlock">Откључавам главни кључ</string>
   <string name="msg_crt_success">Идентитети успешно оверени</string>
   <string name="msg_crt_warn_not_found">Кључ није нађен!</string>
   <string name="msg_crt_warn_cert_failed">Генерисање сертификата није успело!</string>
@@ -1135,7 +1058,6 @@
   <string name="msg_import_fetch_error_not_found">Кључ није нађен!</string>
   <string name="msg_import_fetch_error_keyserver">Не могох да добавим кључ са сервера кључева: %s</string>
   <string name="msg_import_fetch_error_keyserver_secret">Не могу да увезем тајни кључ са сервера кључева!</string>
-  <string name="msg_import_fetch_keybase">Добављам са keybase.io: %s</string>
   <string name="msg_import_fetch_facebook">Добављам са Фејсбука: %s</string>
   <string name="msg_import_fetch_keyserver">Добављам са сервера кључева: %s</string>
   <string name="msg_import_fetch_keyserver_ok">Добављање кључева је успело</string>
@@ -1232,14 +1154,6 @@
   <string name="msg_get_query_too_short">Упит за претрагу је прекратак. Прецизирајте упит!</string>
   <string name="msg_get_query_too_short_or_too_many_responses">Или није нађен ниједан кључ или их је нађено превише. Побољшајте ваш упит!</string>
   <string name="msg_download_query_failed">Дошло је до грешке приликом претраге кључева.</string>
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_verification">Проверавам %s на keybase.io</string>
-  <string name="msg_keybase_error_no_prover">Нема провере доказа за %s</string>
-  <string name="msg_keybase_error_fetching_evidence">Проблем са добављањем доказа</string>
-  <string name="msg_keybase_error_key_mismatch">Отисак кључа се не поклапа са оним у објави доказа</string>
-  <string name="msg_keybase_error_dns_fail">Добављање ДНС ТЕКСТ записа није успело</string>
-  <string name="msg_keybase_error_specific">%s</string>
-  <string name="msg_keybase_error_msg_payload_mismatch">Дешифрована објава доказа се не поклапа са очекиваном вредношћу</string>
   <!--Messages for Mime parsing operation-->
   <string name="msg_mime_parsing_start">Рашчлањујем МИМЕ структуру</string>
   <string name="msg_mime_parsing_error">Рашчлањивање МИМЕ-а није успело</string>

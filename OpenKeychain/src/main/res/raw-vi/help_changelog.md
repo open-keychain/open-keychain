@@ -1,5 +1,9 @@
 [//]: # (CHÚ Ý: Xin hãy để mỗi câu văn bản trên một dòng, Transifex sẽ chuyển từng dòng vào cho từng trường đã được dịch sang các ngôn ngữ!)
 
+## 5.6
+  * Compatibility with Android 10 and higher
+  * Several bug fixes
+
 ## 5.5
   * Fix decryption from clipboard on Android 10
 

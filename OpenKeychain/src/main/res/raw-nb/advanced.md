@@ -2,7 +2,7 @@
 
 Avansert-skjermen lar deg
 * dele nøkler på uanbefalte måter
-* slette identiteter
+* redigere identiteter
 * rediger undernøkler
 * undersøk sertifikatdetaljer
 

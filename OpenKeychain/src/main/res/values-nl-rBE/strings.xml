@@ -8,7 +8,6 @@
   <string name="title_encrypt_files">Versleutelen</string>
   <string name="title_decrypt">Ontsleutelen</string>
   <string name="title_add_subkey">Subsleutel toevoegen</string>
-  <string name="title_change_master_key">Hoofdsleutel veranderen</string>
   <string name="title_edit_key">Sleutel bewerken</string>
   <string name="title_preferences">Instellingen</string>
   <string name="title_api_registered_apps">Apps</string>
@@ -40,12 +39,11 @@
   <string name="section_user_ids">Identiteiten</string>
   <string name="section_security_token">Beveiligingscode</string>
   <string name="section_linked_system_contact">Verbonden systeemcontact</string>
-  <string name="section_keybase_proofs">Keybase.io-bewijzen</string>
   <string name="section_should_you_trust">Zou je deze sleutel vertrouwen?</string>
   <string name="section_proof_details">Bewijs van verificatie</string>
   <string name="section_keys">Subsleutels</string>
   <string name="section_cloud_search">Sleutels zoeken</string>
-  <string name="section_cloud_search_summary">Keyserver, keybase.io</string>
+  <string name="section_cloud_search_summary">Sleutelserver</string>
   <string name="section_passphrase_cache">Wachtwoorden en pincodes</string>
   <string name="section_passphrase_cache_summary">Verwerking</string>
   <string name="section_proxy_settings">Netwerkanonimiteit</string>
@@ -198,8 +196,6 @@
   <string name="label_smartpgp_authority_dialog_delete">Autoriteit verwijderen</string>
   <string name="pref_keyserver">OpenPGP-sleutelservers</string>
   <string name="pref_keyserver_summary">Zoek sleutels op geselecteerde OpenPGP-sleutelservers (HKP-protocol)</string>
-  <string name="pref_keybase">keybase.io</string>
-  <string name="pref_keybase_summary">Zoek sleutels op keybase.io</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">Zoek naar sleutels op Facebook op basis van gebruikersnaam</string>
   <string name="pref_wkd">Websleutelmap</string>
@@ -208,14 +204,8 @@
   <string name="label_sync_settings_keyserver_summary_on">Sleutels worden elke drie dagen vanaf de gekozen sleutelserver bijgewerkt</string>
   <string name="label_sync_settings_keyserver_summary_off">Sleutels worden niet automatisch bijgewerkt</string>
   <string name="label_sync_settings_wifi_title">Alleen synchroniseren via wifi</string>
-  <string name="label_sync_settings_contacts_title">Sleutels koppelen aan contacten</string>
-  <string name="label_sync_settings_contacts_summary_on">Koppel sleutels aan contacten gebaseerd op namen en e-mailadressen. Dit gebeurt volledig offline op je apparaat.</string>
-  <string name="label_sync_settings_contacts_summary_off">Nieuwe sleutels zullen niet worden gekoppeld aan contacten</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
-    <string name="label_experimental_settings_desc_title">Waarschuwing</string>
+  <string name="label_experimental_settings_desc_title">Waarschuwing</string>
   <string name="label_experimental_settings_desc_summary">Deze functies zijn nog niet afgewerkt of zijn resultaten van gebruikerservaringen/beveiligingsonderzoek. Vertrouw daarom niet op hun beveiliging en rapporteer geen problemen die je ervaart!</string>
-  <string name="label_experimental_settings_keybase_title">Keybase.io-bewijzen</string>
-  <string name="label_experimental_settings_keybase_summary">Maak contact met keybase.io voor bevestigingen van sleutels en toon deze telkens wanneer een sleutel wordt weergegeven</string>
   <string name="label_experimental_settings_theme_summary">(De pictogrammen en veel schermen zijn nog niet geoptimaliseerd voor het donkere thema)</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Tor inschakelen</string>
@@ -415,7 +405,6 @@
   <string name="progress_exporting">exporteren…</string>
   <string name="progress_uploading">bezig met uploaden…</string>
   <string name="progress_building_key">sleutel maken…</string>
-  <string name="progress_building_master_key">hoofdsleutelbos maken…</string>
   <string name="progress_generating_rsa">bezig met genereren van nieuwe RSA-sleutel…</string>
   <string name="progress_generating_dsa">bezig met genereren van nieuwe DSA-sleutel…</string>
   <string name="progress_generating_elgamal">bezig met genereren van nieuwe ElGamal-sleutel…</string>
@@ -653,7 +642,6 @@
   <string name="key_view_tab_share">Delen</string>
   <string name="key_view_tab_keys">Subsleutels</string>
   <string name="key_view_tab_certs">Certificaten</string>
-  <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">Ingetrokken</string>
   <string name="user_id_info_revoked_text">Deze identiteit is door de sleuteleigenaar ingetrokken. Ze is niet langer geldig.</string>
   <string name="user_id_info_certified_title">Bevestigd</string>
@@ -663,36 +651,6 @@
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">Geen bewijs van het internet over de betrouwbaarheid van deze sleutel.</string>
   <string name="key_trust_start_cloud_search">Zoeken starten</string>
-  <string name="key_trust_results_prefix">Keybase.io geeft ‘bewijzen’ die stellen dat de eigenaar van deze sleutel:</string>
-  <!--keybase proof stuff-->
-  <string name="keybase_narrative_twitter">Actief op Twitter als %s</string>
-  <string name="keybase_narrative_github">Bekend bij GitHub als %s</string>
-  <string name="keybase_narrative_dns">Beheert de domeinnaam/-namen %s</string>
-  <string name="keybase_narrative_web_site">Kan reacties plaatsen op de website(s) %s</string>
-  <string name="keybase_narrative_reddit">Actief op Reddit als %s</string>
-  <string name="keybase_narrative_coinbase">Bekend bij Coinbase als %s</string>
-  <string name="keybase_narrative_hackernews">Actief op Hacker News als %s</string>
-  <string name="keybase_narrative_unknown">Onbekend bewijstype %s</string>
-  <string name="keybase_proof_failure">Helaas kan dit bewijs niet worden geverifieerd.</string>
-  <string name="keybase_unknown_proof_failure">Niet-herkend probleem met de bewijschecker</string>
-  <string name="keybase_problem_fetching_evidence">Probleem met bewijs</string>
-  <string name="keybase_key_mismatch">Sleutelvingerafdruk komt niet overeen met die in bewijspost</string>
-  <string name="keybase_dns_query_failure">DNS TXT-record ophalen mislukt</string>
-  <string name="keybase_no_prover_found">Geen bewijschecker gevonden voor</string>
-  <string name="keybase_message_payload_mismatch">Ontsleuteld bewijs komt niet overeen met verwachte waarde</string>
-  <string name="keybase_message_fetching_data">Bezig met ophalen van bewijs</string>
-  <string name="keybase_proof_succeeded">Dit bewijs is geverifieerd!</string>
-  <string name="keybase_a_post">Een post</string>
-  <string name="keybase_fetched_from">opgehaald van</string>
-  <string name="keybase_for_the_domain">voor het domein</string>
-  <string name="keybase_contained_signature">bevat een bericht dat enkel gemaakt kan zijn door de eigenaar van deze sleutel.</string>
-  <string name="keybase_twitter_proof">Een tweet</string>
-  <string name="keybase_dns_proof">Een DNS TXT-record</string>
-  <string name="keybase_web_site_proof">Een tekstbestand</string>
-  <string name="keybase_github_proof">Een gist</string>
-  <string name="keybase_reddit_proof">Een JSON-bestand</string>
-  <string name="keybase_reddit_attribution">door Reddit toegeschreven aan</string>
-  <string name="keybase_verify">Verifiëren</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Wachtwoord wijzigen</string>
   <string name="edit_key_action_add_identity">Identiteit toevoegen</string>
@@ -776,7 +734,6 @@
   <string name="drawer_close">Navigatiemenu sluiten</string>
   <string name="my_keys">Mijn sleutels</string>
   <string name="nav_backup">Back-up/herstellen</string>
-  <string name="nav_transfer">Beveiligde wifi-overdracht</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Typ tekst</string>
   <!--certs-->
@@ -807,26 +764,8 @@
   <string name="msg_ip_insert_keyring">Bezig met coderen van sleutelbosgegevens</string>
   <string name="msg_ip_insert_keys">Bezig met analyseren van sleutels</string>
   <string name="msg_ip_prepare">Bezig met voorbereiden van databasebewerkingen</string>
-  <string name="msg_ip_master">Bezig met verwerken van hoofdsleutel %s</string>
   <string name="msg_ip_master_expired">Sleutelbos is verlopen op %s</string>
   <string name="msg_ip_master_expires">Sleutelbos verloopt op %s</string>
-  <string name="msg_ip_master_flags_unspecified">Hoofdvlaggen: niet gespecificeerd (alle worden verondersteld)</string>
-  <string name="msg_ip_master_flags_cesa">Hoofdvlaggen: certificeren, versleutelen, ondertekenen, authenticeren</string>
-  <string name="msg_ip_master_flags_cesx">Hoofdvlaggen: certificeren, versleutelen, ondertekenen</string>
-  <string name="msg_ip_master_flags_cexa">Hoofdvlaggen: certificeren, versleutelen, authenticeren</string>
-  <string name="msg_ip_master_flags_cexx">Hoofdvlaggen: certificeren, versleutelen</string>
-  <string name="msg_ip_master_flags_cxsa">Hoofdvlaggen: certificeren, versleutelen, authenticeren</string>
-  <string name="msg_ip_master_flags_cxsx">Hoofdvlaggen: certificeren, ondertekenen</string>
-  <string name="msg_ip_master_flags_cxxa">Hoofdvlaggen: certificeren, authenticeren</string>
-  <string name="msg_ip_master_flags_cxxx">Hoofdvlaggen: certificeren</string>
-  <string name="msg_ip_master_flags_xesa">Hoofdvlaggen: versleutelen, ondertekenen, authenticeren</string>
-  <string name="msg_ip_master_flags_xesx">Hoofdvlaggen: versleutelen, ondertekenen</string>
-  <string name="msg_ip_master_flags_xexa">Hoofdvlaggen: versleutelen, authenticeren</string>
-  <string name="msg_ip_master_flags_xexx">Hoofdvlaggen: versleutelen</string>
-  <string name="msg_ip_master_flags_xxsa">Hoofdvlaggen: ondertekenen, authenticeren</string>
-  <string name="msg_ip_master_flags_xxsx">Hoofdvlaggen: ondertekenen</string>
-  <string name="msg_ip_master_flags_xxxa">Hoofdvlaggen: authenticeren</string>
-  <string name="msg_ip_master_flags_xxxx">Hoofdvlaggen: geen</string>
   <string name="msg_ip_merge_public">Bezig met samenvoegen van geïmporteerde gegevens in bestaande publieke sleutelbos</string>
   <string name="msg_ip_merge_secret">Bezig met samenvoegen van geïmporteerde gegevens in bestaande geheime sleutelbos</string>
   <string name="msg_ip_subkey">Bezig met verwerken van subsleutel %s</string>
@@ -909,16 +848,9 @@
   <string name="msg_kc_secret">Bezig met standaardiseren van geheime sleutelbos %s</string>
   <string name="msg_kc_error_v3">Dit is een OpenPGP versie 3-sleutel, deze is verouderd en wordt niet meer ondersteund!</string>
   <string name="msg_kc_error_no_uid">Sleutelbos bevat geen geldige gebruikers-ID’s!</string>
-  <string name="msg_kc_error_master_algo">De hoofdsleutel gebruikt een onbekend (%s) algoritme!</string>
   <string name="msg_kc_error_dup_key">Subsleutel %s komt tweemaal voor in sleutelbos. Sleutelbos is misvormd en wordt niet geïmporteerd!</string>
-  <string name="msg_kc_master">Bezig met verwerken van hoofdsleutel</string>
-  <string name="msg_kc_master_bad_type">Bezig met verwijderen van hoofdsleutelcertificaat van onbekend type (%s)</string>
-  <string name="msg_kc_master_bad_local">Bezig met verwijderen van hoofdsleutelcertificaat met vlag ‘lokaal’</string>
-  <string name="msg_kc_master_bad_err">Bezig met verwijderen van slecht hoofdsleutelcertificaat</string>
   <string name="msg_kc_master_bad_time">Bezig met verwijderen van sleutelbosintrekkingscertificaat met toekomstige tijdstempel</string>
   <string name="msg_kc_master_bad_type_uid">Bezig met verwijderen van gebruikers-ID-certificaat in slechte positie</string>
-  <string name="msg_kc_master_bad">Bezig met verwijderen van slecht hoofdsleutelcertificaat</string>
-  <string name="msg_kc_master_local">Bezig met verwijderen van hoofdsleutelcertificaat met vlag ‘lokaal’</string>
   <string name="msg_kc_revoke_dup">Bezig met verwijderen van overbodig sleutelbosintrekkingscertificaat</string>
   <string name="msg_kc_notation_dup">Bezig met verwijderen van overbodig notatiecertificaat</string>
   <string name="msg_kc_notation_empty">Bezig met verwijderen van leeg notatiecertificaat</string>
@@ -990,10 +922,7 @@
   <string name="msg_mg_found_new">%s nieuwe certificaten in sleutelbos gevonden</string>
   <string name="msg_mg_unchanged">Niets om samen te voegen</string>
   <!--createSecretKeyRing-->
-  <string name="msg_cr">Bezig met aanmaken van nieuwe hoofdsleutel</string>
-  <string name="msg_cr_error_no_master">Geen hoofdsleutel-opties opgegeven!</string>
   <string name="msg_cr_error_no_user_id">Sleutelbossen moeten met minstens een gebruikers-ID aangemaakt worden!</string>
-  <string name="msg_cr_error_no_certify">Hoofdsleutel moet certificeer-vlag hebben!</string>
   <string name="msg_cr_error_null_expiry">Verloopdatum kan niet hetzelfde als voordien zijn bij aanmaken van een sleutel. Dit is een bug, gelieve een verslag in te dienen!</string>
   <string name="msg_cr_error_keysize_2048">Sleutel grootte moet groter of gelijk zijn dan 2048!</string>
   <string name="msg_cr_error_no_curve">Geen sleutelgrootte opgegeven! Dit is een bug, gelieve een verslag in te dienen!</string>
@@ -1015,14 +944,12 @@
   <string name="msg_mf_error_fingerprint">Eigenlijke vingerafdruk van sleutel komt niet overeen met verwachte vingerafdruk!</string>
   <string name="msg_mf_error_keyid">Geen sleutel-ID. Dit is een bug, gelieve een verslag in te dienen!</string>
   <string name="msg_mf_error_integrity">Interne fout, integriteitscontrole mislukt!</string>
-  <string name="msg_mf_error_master_none">Geen hoofdcertificaat gevonden om mee te werken! (Allemaal ingetrokken?)</string>
   <string name="msg_mf_error_noexist_primary">Slechte primaire gebruikers-ID opgegeven!</string>
   <string name="msg_mf_error_noexist_revoke">Slechte gebruikers-ID voor intrekking opgegeven!</string>
   <string name="msg_mf_error_restricted">Geprobeerd een beperkte bewerking uit te voeren zonder wachtwoord! Dit is een programmeerfout, gelieve een verslag in te dienen!</string>
   <string name="msg_mf_error_revoked_primary">Ingetrokken gebruikers-ID’s kunnen niet primair zijn!</string>
   <string name="msg_mf_error_null_expiry">Verloopdatum kan niet hetzelfde als voordien zijn bij aanmaken van een subsleutel. Dit is een bug, gelieve een verslag in te dienen!</string>
   <string name="msg_mf_error_noop">Niets om te doen!</string>
-  <string name="msg_mf_error_passphrase_master">Fatale fout bij ontsleutelen van hoofdsleutel. Dit is waarschijnlijk een bug, gelieve een verslag in te dienen!</string>
   <string name="msg_mf_error_passphrases_unchanged">Geen wachtwoord gewijzigd!</string>
   <string name="msg_mf_error_pgp">Interne OpenPGP-fout!</string>
   <string name="msg_mf_error_sig">Ondertekeningsuitzondering!</string>
@@ -1031,7 +958,6 @@
   <string name="msg_mf_error_conflicting_nfc_commands">Kan sleutel niet verplaatsen naar Security Token in hetzelfde proces dat een handtekening op de kaart maakt.</string>
   <string name="msg_mf_error_duplicate_keytocard_for_slot">Security Token ondersteunt slechts één slot per sleuteltype.</string>
   <string name="msg_mf_error_invalid_flags_for_keytocard">Ongeschikte sleutelkenmerken voor Security Token-sleutel.</string>
-  <string name="msg_mf_master">Bezig met wijzigen van hoofdcertificaten</string>
   <string name="msg_mf_passphrase">Bezig met wijzigen van wachtwoord voor sleutelbos</string>
   <string name="msg_mf_pin">Bezig met veranderen van pincode op kaart</string>
   <string name="msg_mf_admin_pin">Bezig met veranderen van administrator-pincode op kaart</string>
@@ -1078,7 +1004,6 @@
   <string name="msg_pr_subkey_nomatch">Subkey bestaat niet op Security Token: %s</string>
   <string name="msg_pr_success">Sleutel gepromoveerd</string>
   <!--Other messages used in OperationLogs-->
-  <string name="msg_ek_error_dummy">Kan sleutelbos niet bewerken met gestripte hoofdsleutel!</string>
   <string name="msg_ek_error_not_found">Sleutel niet gevonden!</string>
   <!--Messages for DecryptVerify operation-->
   <string name="msg_dc_askip_bad_flags">Sleutel is geen versleutelingssleutel, bewerking wordt overgeslagen…</string>
@@ -1205,15 +1130,11 @@
     <item quantity="other">Bezig met certificeren van %1$d gebruikersattributen voor sleutel %2$s</item>
   </plurals>
   <string name="msg_crt_error_self">Kan self-certificaat zo niet uitgeven!</string>
-  <string name="msg_crt_error_master_not_found">Hoofdsleutel niet gevonden!</string>
   <string name="msg_crt_error_nothing">Geen sleutels gecertificeerd!</string>
-  <string name="msg_crt_error_unlock">Fout bij ontgrendelen van hoofdsleutel!</string>
   <string name="msg_crt">Bezig met certificeren van sleutelbossen</string>
-  <string name="msg_crt_master_fetch">Bezig met ophalen van gecertificeerde hoofdsleutel</string>
   <string name="msg_crt_nfc_return">Terugkeren naar NFC-scherm</string>
   <string name="msg_crt_save">Bezig met opslaan van gecertificeerde sleutel %s</string>
   <string name="msg_crt_saving">Bezig met opslaan van sleutelbossen</string>
-  <string name="msg_crt_unlock">Bezig met ontgrendelen van hoofdsleutel</string>
   <string name="msg_crt_success">Identiteiten gecertificeerd</string>
   <string name="msg_crt_warn_not_found">Sleutel niet gevonden!</string>
   <string name="msg_crt_warn_cert_failed">Aanmaken van certificaat mislukt!</string>
@@ -1229,7 +1150,6 @@
   <string name="msg_import_fetch_error_not_found">Sleutel niet gevonden!</string>
   <string name="msg_import_fetch_error_keyserver">Kon sleutel niet ophalen van sleutelservers: %s</string>
   <string name="msg_import_fetch_error_keyserver_secret">Kon geheime sleutel niet ophalen van sleutelserver!</string>
-  <string name="msg_import_fetch_keybase">Bezig met ophalen van keybase.io: %s</string>
   <string name="msg_import_fetch_facebook">Bezig met ophalen van Facebook: %s</string>
   <string name="msg_import_fetch_keyserver">Bezig met ophalen van sleutelserver: %s</string>
   <string name="msg_import_fetch_keyserver_ok">Ophalen van sleutel geslaagd!</string>
@@ -1323,14 +1243,6 @@
   <string name="msg_get_query_too_short_or_too_many_responses">Er zijn geen of te veel sleutels gevonden. Verbeter je zoekopdracht!</string>
   <string name="msg_get_no_enabled_source">Schakel minstens één bron in om te downloaden!</string>
   <string name="msg_download_query_failed">Er trad een fout op bij het zoeken naar sleutels.</string>
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_verification">Keybaseverificatie voor %s wordt geprobeerd</string>
-  <string name="msg_keybase_error_no_prover">Geen bewijscontrole gevonden voor %s</string>
-  <string name="msg_keybase_error_fetching_evidence">Probleem bij ophalen van bewijs</string>
-  <string name="msg_keybase_error_key_mismatch">Sleutelvingerafdruk komt niet overeen met die in bewijspost</string>
-  <string name="msg_keybase_error_dns_fail">DNS TXT-record ophalen mislukt</string>
-  <string name="msg_keybase_error_specific">%s</string>
-  <string name="msg_keybase_error_msg_payload_mismatch">Ontsleuteld bewijs komt niet overeen met verwachte waarde</string>
   <!--Messages for Mime parsing operation-->
   <string name="msg_mime_parsing_start">Bezig met ontleden van de MIME-structuur</string>
   <string name="msg_mime_parsing_error">MIME-ontleding mislukt</string>
@@ -1616,7 +1528,6 @@
   <string name="keyserver_last_updated_never">Laatst gecontroleerd: nooit</string>
   <string name="key_insecure_bitstrength_2048_problem">Deze sleutel gebruikt het <b>%1$s</b>-algoritme met een kracht van <b>%2$s bits</b>. Een veilige sleutel heeft een kracht van 2048 bits nodig.</string>
   <string name="key_insecure_bitstrength_2048_solution">Deze sleutel kan niet worden bijgewerkt. Voor beveiligde communicatie moet de gebruiker een nieuwe sleutel aanmaken.</string>
-  <string name="key_insecure_unknown_curve_problem">Deze sleutel gebruikt het <b>%1$s</b>-algoritme, dat niet op de witte lijst staat.</string>
   <string name="key_insecure_unknown_curve_solution">Deze sleutel kan niet worden bijgewerkt. Voor beveiligde communicatie moet de gebruiker een nieuwe sleutel aanmaken.</string>
   <string name="key_insecure_unidentified_problem">Er is een onbekend probleem met deze sleutel.</string>
   <string name="key_insecure_unidentified_solution">Dien een bugmelding in.</string>
@@ -1627,8 +1538,6 @@
   <string name="insecure_encrypt_bitstrength_suggestion">De sleutel in gebruik is onveilig en kan niet bijgewerkt worden. Om veilig te communiceren heb je een nieuwe sleutel nodig!</string>
   <string name="insecure_sign_bitstrength">De sleutel die je hebt gebruikt om dit bericht te verzenden (ondertekenen) is verlopen!\n\nHet algoritme (%s) is geconfigureerd met een kracht van 1024 bits of minder, wat sinds 2006 als onveilig voor algemeen gebruik wordt beschouwd.</string>
   <string name="insecure_sign_bitstrength_suggestion">De sleutel in gebruik is onveilig en kan niet bijgewerkt worden. Om veilig te communiceren heeft de afzender een nieuwe sleutel nodig!</string>
-  <string name="insecure_encrypt_not_secure_curve">De sleutel waarmee dit bericht ontvangen (ontsleuteld) is gebruikt de elliptische curve met OID %1$s, die niet op de witte lijst staat!</string>
-  <string name="insecure_sign_not_secure_curve">De sleutel waarmee dit bericht verzonden (ondertekend) is gebruikt de elliptische curve met OID %1$s, die niet op de witte lijst staat!</string>
   <string name="insecure_encrypt_unidentified">Er is een onbekend beveiligingsprobleem met de sleutel die gebruikt is om dit bericht te ontvangen (ontsleutelen)!</string>
   <string name="insecure_sign_unidentified">Er is een onbekend beveiligingsprobleem met de sleutel die gebruikt is om dit bericht te verzenden (ondertekenen)!</string>
   <string name="insecure_report_suggestion">Dit is mogelijk een probleem in OpenKeychain, meld het op onze bugtracker!</string>

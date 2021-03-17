@@ -8,7 +8,6 @@
   <string name="title_encrypt_files">加密</string>
   <string name="title_decrypt">解密</string>
   <string name="title_add_subkey">新增子金鑰</string>
-  <string name="title_change_master_key">修改主密匙</string>
   <string name="title_edit_key">編輯金鑰</string>
   <string name="title_preferences">設定</string>
   <string name="title_api_registered_apps">應用程式</string>
@@ -41,12 +40,11 @@
   <string name="section_user_ids">身份</string>
   <string name="section_security_token">安全口令</string>
   <string name="section_linked_system_contact">已關聯帳戶</string>
-  <string name="section_keybase_proofs">Keybase.io 證明</string>
   <string name="section_should_you_trust">您信任這把金鑰嗎？</string>
   <string name="section_proof_details">驗證</string>
   <string name="section_keys">子金鑰</string>
   <string name="section_cloud_search">金鑰搜尋</string>
-  <string name="section_cloud_search_summary">金鑰伺服器, keybase.io</string>
+  <string name="section_cloud_search_summary">金鑰伺服器</string>
   <string name="section_passphrase_cache">密碼與 PIN 碼</string>
   <string name="section_passphrase_cache_summary">處理中</string>
   <string name="section_proxy_settings">網路匿名</string>
@@ -199,8 +197,6 @@
   <string name="label_smartpgp_authority_dialog_delete">刪除許可權</string>
   <string name="pref_keyserver">OpenPGP金鑰伺服器</string>
   <string name="pref_keyserver_summary">透過已選擇的金鑰伺服器搜尋金鑰(HKP 協定)</string>
-  <string name="pref_keybase">keybase.io</string>
-  <string name="pref_keybase_summary">在keybase.io上搜尋金鑰</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">在 Facebook 上以使用者名稱搜尋金鑰</string>
   <string name="pref_wkd">網路金鑰目錄</string>
@@ -209,13 +205,8 @@
   <string name="label_sync_settings_keyserver_summary_on">每三天更新金鑰至喜好的 keyserver 一次</string>
   <string name="label_sync_settings_keyserver_summary_off">金鑰不會自動更新</string>
   <string name="label_sync_settings_wifi_title">只以 Wi-Fi 同步</string>
-  <string name="label_sync_settings_contacts_title">關聯金鑰至聯絡人</string>
-  <string name="label_sync_settings_contacts_summary_on">連接金鑰至聯絡人(基於姓名和電子郵件地址)。這只在您的裝置上離線進行。</string>
-  <string name="label_sync_settings_contacts_summary_off">新的金鑰將不會與聯絡人連接</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
-    <string name="label_experimental_settings_desc_title">警告</string>
-  <string name="label_experimental_settings_keybase_title">Keybase.io 證明</string>
-    <!--Proxy Preferences-->
+  <string name="label_experimental_settings_desc_title">警告</string>
+  <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">啟用洋蔥(Tor)網路</string>
   <string name="pref_proxy_tor_summary">必須已安裝 Orbot</string>
   <string name="pref_proxy_normal_title">啟用其他代理伺服器</string>
@@ -384,7 +375,6 @@
   <string name="progress_exporting">匯出中…</string>
   <string name="progress_uploading">正在上傳…</string>
   <string name="progress_building_key">正在建立金鑰...</string>
-  <string name="progress_building_master_key">正在建立主環...</string>
   <string name="progress_generating_rsa">正在產生新的RSA金鑰…</string>
   <string name="progress_generating_dsa">正在產生新的DSA金鑰…</string>
   <string name="progress_generating_elgamal">正在產生新的ElGamal金鑰…</string>
@@ -583,28 +573,11 @@
   <string name="key_view_tab_share">分享</string>
   <string name="key_view_tab_keys">子金鑰</string>
   <string name="key_view_tab_certs">簽署</string>
-  <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">已撤銷</string>
   <string name="user_id_info_revoked_text">這個身分識別被金鑰持有人撤銷，已不再有效。</string>
   <string name="user_id_info_certified_title">已確認</string>
   <!--Key trust-->
   <string name="key_trust_start_cloud_search">開始搜尋</string>
-  <string name="key_trust_results_prefix">Keybase.io提供“證據”證明這把金鑰的持有人：</string>
-  <!--keybase proof stuff-->
-  <string name="keybase_narrative_twitter">用下列身分在Twitter參與討論：%s</string>
-  <string name="keybase_proof_failure">很不幸地我們沒法驗證這些證據。</string>
-  <string name="keybase_unknown_proof_failure">檢查證據的過程遇到無法辨識的問題</string>
-  <string name="keybase_message_fetching_data">取得證據中</string>
-  <string name="keybase_proof_succeeded">這項證據已通過驗證！</string>
-  <string name="keybase_a_post">一則文章</string>
-  <string name="keybase_fetched_from">取得自</string>
-  <string name="keybase_for_the_domain">從域名</string>
-  <string name="keybase_contained_signature">包含一則只有金鑰持有人才能建立的訊息。</string>
-  <string name="keybase_twitter_proof">一則推文</string>
-  <string name="keybase_dns_proof">一筆DNS TXT記錄</string>
-  <string name="keybase_web_site_proof">一個文字檔案</string>
-  <string name="keybase_reddit_proof">一個JSON檔案</string>
-  <string name="keybase_verify">驗證</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">變更金鑰密碼</string>
   <string name="edit_key_action_add_identity">新增身分識別</string>
@@ -696,23 +669,6 @@
   <string name="msg_ip_insert_keyring">編碼鑰匙圈資料</string>
   <string name="msg_ip_insert_keys">正在解析金鑰</string>
   <string name="msg_ip_prepare">正在準備資料庫</string>
-  <string name="msg_ip_master_flags_unspecified">主要標記：未指定(全用途)</string>
-  <string name="msg_ip_master_flags_cesa">主要標記：認證、加密、簽署、驗證</string>
-  <string name="msg_ip_master_flags_cesx">主要標記：認證、加密、簽署</string>
-  <string name="msg_ip_master_flags_cexa">主要標記：認證、加密、驗證</string>
-  <string name="msg_ip_master_flags_cexx">主要標記：認證、加密</string>
-  <string name="msg_ip_master_flags_cxsa">主要標記：認證、簽署、驗證</string>
-  <string name="msg_ip_master_flags_cxsx">主要標記：認證、簽署</string>
-  <string name="msg_ip_master_flags_cxxa">主要標記：認證、驗證</string>
-  <string name="msg_ip_master_flags_cxxx">主要標記：認證</string>
-  <string name="msg_ip_master_flags_xesa">主要標記：加密、簽署、驗證</string>
-  <string name="msg_ip_master_flags_xesx">主要標記：加密、簽署</string>
-  <string name="msg_ip_master_flags_xexa">主要標記：加密、驗證</string>
-  <string name="msg_ip_master_flags_xexx">主要標記：加密</string>
-  <string name="msg_ip_master_flags_xxsa">主要標記：簽署、驗證</string>
-  <string name="msg_ip_master_flags_xxsx">主要標記：簽署</string>
-  <string name="msg_ip_master_flags_xxxa">主要標記：驗證</string>
-  <string name="msg_ip_master_flags_xxxx">主要標記：無</string>
   <string name="msg_ip_merge_public">將匯入的資料合併至公鑰鑰匙圈</string>
   <string name="msg_ip_subkey">正在處理子金鑰%s</string>
   <string name="msg_ip_subkey_expired">子金鑰已於%s過期</string>
@@ -799,7 +755,6 @@
   <string name="msg_crt_upload_success">成功上傳金鑰到伺服器</string>
   <string name="msg_import_fetch_error">無法取得金鑰！(網路問題？)</string>
   <string name="msg_import_fetch_error_not_found">找不到金鑰！</string>
-  <string name="msg_import_fetch_keybase">從keybase.io取回：%s</string>
   <string name="msg_import_fetch_keyserver">從金鑰伺服器取回：%s</string>
   <string name="msg_import_fetch_keyserver_ok">成功取得金鑰</string>
   <string name="msg_import_keyserver">使用金鑰伺服器%s</string>
@@ -827,8 +782,6 @@
   <string name="msg_get_success">下載成功！</string>
   <string name="msg_get_no_valid_keys">在檔案/剪貼簿中找不到有效的金鑰！</string>
   <string name="msg_download_query_failed">查詢金鑰的時候發生錯誤。</string>
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_pwd">密碼</string>
@@ -918,9 +871,11 @@
   <string name="button_allow">同意</string>
   <string name="button_cancel">取消</string>
   <string name="button_back">返回</string>
+  <string name="button_got_it">收到！</string>
   <string name="key_health_revoked_title">撒銷</string>
   <string name="key_health_insecure_title">不安全</string>
   <string name="keyserver_title_published">釋出</string>
+  <string name="dialog_insecure_button_ok">收到！</string>
   <string name="button_import">匯入</string>
   <string name="transfer_status_connected">已連接</string>
   <string name="transfer_status_disconnected">已斷線！</string>

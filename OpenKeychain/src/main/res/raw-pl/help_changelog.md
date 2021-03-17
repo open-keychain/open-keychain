@@ -1,7 +1,11 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 5.6
+  * Compatibility with Android 10 and higher
+  * Several bug fixes
+
 ## 5.5
-  * Fix decryption from clipboard on Android 10
+  * Naprawiono odszyfrowywanie ze schowka na Androidzie 10
 
 ## 5.4
   * Add WKD Advanced method
@@ -48,7 +52,7 @@
   * Detailed description of security problems
   * Display keyserver status per key
   * Support for EdDSA
-  * Fix pgp.mit.edu (new certificate)
+  * Naprawiono pgp.mit.edu (nowy certyfikat)
 
 
 ## 4.4
@@ -103,7 +107,7 @@
 
 ## 3.6
 
-  * Encrypted backups
+  * Zaszyfrowane kopie zapasowe
   * Security fixes based on external security audit
   * YubiKey NEO key creation wizard
   * Basic internal MIME support
@@ -143,7 +147,7 @@
   * Integration of QR Code Scanning (New permissions required)
   * Improved key creation wizard
   * Fix missing contacts after sync
-  * Requires Android 4
+  * Wymaga Androida 4
   * Redesigned key screen
   * Simplify crypto preferences, better selection of secure ciphers
   * API: Detached signatures, free selection of signing key,...

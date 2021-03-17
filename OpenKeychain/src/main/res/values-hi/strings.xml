@@ -8,7 +8,6 @@
   <string name="title_encrypt_files">एन्क्रिप्ट</string>
   <string name="title_decrypt">डिक्रिप्ट </string>
   <string name="title_add_subkey">उपकुंजी जोड़ें</string>
-  <string name="title_change_master_key">मास्टर कुंजी बदले</string>
   <string name="title_edit_key">संपादित कुंजी</string>
   <string name="title_preferences">सेटिंग</string>
   <string name="title_api_registered_apps">एप्लिकेशन</string>
@@ -53,16 +52,17 @@
   <string name="menu_keyserver_add">डालो</string>
   <!--label-->
   <string name="label_message">पाठ्यांश</string>
+  <string name="label_file">फाइल</string>
   <string name="label_passphrase">पासवर्ड</string>
   <string name="label_pin">पिन</string>
   <string name="label_unlock">अनलॉकिंग</string>
+  <string name="label_key_type">प्रकार</string>
   <string name="label_name">नाम</string>
   <string name="label_email">ईमेल</string>
   <string name="label_enter_keyserver_url">यूआरएल</string>
   <string name="label_theme">विषय</string>
   <string name="label_enter_smartpgp_authority_name">नाम</string>
   <string name="pref_facebook">फेसबुक</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">चेतावनी</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">टॉर सक्षम करें</string>
@@ -130,11 +130,11 @@
   <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
   <!--Key view-->
+  <string name="key_view_action_edit">बदलें</string>
   <string name="key_view_tab_start">प्रारंभ</string>
   <string name="key_view_tab_share">शेयर</string>
   <string name="key_view_tab_keys">उपकुंजियाँ</string>
   <!--Key trust-->
-  <!--keybase proof stuff-->
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">पासवर्ड परिवर्तन </string>
   <!--Create key-->
@@ -162,18 +162,20 @@
   <!--Promote key-->
   <!--Other messages used in OperationLogs-->
   <!--Messages for DecryptVerify operation-->
+  <string name="msg_dc_clear_meta_size">फ़ाइल का आकार: %s</string>
   <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl_clear_meta_size">फ़ाइल का आकार: %s</string>
   <string name="msg_vl_ok">ठीक</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_pwd">पासवर्ड</string>
   <!--Keyserver sync-->
   <!--First Time-->
   <!--unsorted-->
+  <string name="label_cert_type">प्रकार</string>
   <!--Android Account-->
   <string name="account_privacy_title">एकांत</string>
   <!--Passphrase wizard-->

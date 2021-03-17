@@ -1,5 +1,9 @@
 [//]: # (NOTA: Si prega di mettere ogni frase in una propria linea, Transifex mette ogni riga nel proprio campo di traduzione!)
 
+## 5.6
+  * Compatibility with Android 10 and higher
+  * Several bug fixes
+
 ## 5.5
   * Fix decryption from clipboard on Android 10
 

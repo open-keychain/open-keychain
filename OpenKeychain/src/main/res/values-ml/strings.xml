@@ -13,9 +13,11 @@
   <string name="btn_save">സംരക്ഷിക്കുക</string>
   <string name="btn_do_not_save">വേണ്ടെന്നു വയ്ക്കുക</string>
   <string name="btn_delete">നീക്കം ചെയ്യുക</string>
+  <string name="btn_okay">ശരി</string>
   <string name="btn_next">അടുത്തത്</string>
   <string name="btn_back">പിന്നോട്ട്</string>
   <string name="btn_no">വേണ്ട</string>
+  <string name="btn_share_decrypted_text">പങ്കുവയ്ക്കുക</string>
   <string name="btn_unlock">അൺലോക്കുചെയ്യുക</string>
   <string name="btn_add_keyserver">ചേര്‍ക്കുക</string>
   <!--Shortcut Strings-->
@@ -27,6 +29,7 @@
   <string name="menu_advanced">പുരോഗമിച്ച</string>
   <string name="menu_keyserver_add">ചേര്‍ക്കുക</string>
   <!--label-->
+  <string name="label_file">ഫയൽ</string>
   <string name="label_passphrase">രഹസ്യവാക്കു്</string>
   <string name="label_unlock">അൺലോക്കുചെയ്യുന്നു…</string>
   <string name="label_key_id">കീ ഐഡി</string>
@@ -36,7 +39,6 @@
   <string name="label_email">ഇ-മെയിൽ </string>
   <string name="label_hidden_recipients">സ്വീകർത്താക്കളെ മറയ്‌ക്കുക</string>
   <string name="label_enter_smartpgp_authority_name">Name</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">താക്കീത്</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Enable Tor</string>
@@ -49,6 +51,7 @@
   <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_cancel">വേണ്ടെന്നു വയ്ക്കുക</string>
   <!--choice-->
+  <string name="choice_none">ഒന്നുമില്ല</string>
   <string name="error">പിശക്</string>
   <!--sentences-->
   <!--errors
@@ -57,6 +60,7 @@
   <!--errors without preceding Error:-->
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">ഒപ്പിട്ടിട്ടില്ല</string>
+  <string name="decrypt_result_action_show">കാണിക്കുക</string>
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_cancel">വേണ്ടെന്നു വയ്ക്കുക</string>
@@ -70,6 +74,7 @@
   <!--compression-->
   <!--Help-->
   <string name="help_tab_start">ആരംഭിക്കുക</string>
+  <string name="help_tab_faq">(FAQ)പൊതുവായുള്ള സംശയങ്ങള്‍</string>
   <string name="help_tab_changelog">മാറ്റ വിവരപ്പട്ടിക </string>
   <string name="help_tab_about">വിവരം</string>
   <string name="help_about_version">Version:</string>
@@ -94,9 +99,9 @@
   <!--Key list-->
   <!--Key view-->
   <string name="key_view_tab_start">ആരംഭിക്കുക</string>
+  <string name="key_view_tab_share">പങ്കുവയ്ക്കുക</string>
   <string name="user_id_info_revoked_title">പിന്‍വലിക്കപ്പെട്ടു</string>
   <!--Key trust-->
-  <!--keybase proof stuff-->
   <!--Edit key-->
   <!--Create key-->
   <string name="create_key_empty">ഈ ഫീൽഡ് പൂരിപ്പിക്കേണ്ടതുണ്ട്</string>
@@ -120,12 +125,13 @@
   <!--Promote key-->
   <!--Other messages used in OperationLogs-->
   <!--Messages for DecryptVerify operation-->
+  <string name="msg_dc_clear_meta_size">ഫയല്‍ വലുപ്പം: %s</string>
   <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl_clear_meta_size">ഫയല്‍ വലുപ്പം: %s</string>
   <string name="msg_vl_ok">ശരി</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_pwd">രഹസ്യവാക്കു്</string>
@@ -144,7 +150,10 @@
   <string name="nfc_settings">സെറ്റിംഗ്സ് </string>
   <string name="snack_security_token_view">കാണുക</string>
   <string name="snack_security_token_import">ഇറക്കുമതി ചെയ്യുക</string>
+  <string name="btn_reset">പുനസജ്ജമാക്കുക</string>
+  <string name="security_token_error_try_again">വീണ്ടും ശ്രമിക്കുക</string>
   <!--Other Linked Identity strings-->
+  <string name="share_log_dialog_share_button">പങ്കുവയ്ക്കുക</string>
   <string name="share_log_dialog_cancel_button">വേണ്ടെന്നു വയ്ക്കുക</string>
   <string name="menu_uids_save">സംരക്ഷിക്കുക</string>
   <string name="prompt_fidesmo_pgp_install_button_positive">ഇൻസ്റ്റോൾ </string>
@@ -157,8 +166,11 @@
   <string name="key_health_expired_title">കാലഹരണപ്പെട്ടതു്</string>
   <string name="key_health_revoked_title">പിന്‍വലിക്കപ്പെട്ടു</string>
   <string name="button_import">ഇറക്കുമതി ചെയ്യുക</string>
+  <string name="transfer_status_connected">ബന്ധിപ്പിച്ചു</string>
+  <string name="transfer_connecting">കണ്ണെക്റ്റിംഗ് / ബന്ധിപ്പിക്കുന്നു ..</string>
   <string name="transfer_confirm_cancel">വേണ്ടെന്നു വയ്ക്കുക</string>
   <string name="transfer_confirm_ok">അയയ്‌ക്കുക</string>
+  <string name="token_reset_confirm_ok">പുനസജ്ജമാക്കുക</string>
   <string name="token_action_import">ഇറക്കുമതി ചെയ്യുക</string>
   <string name="token_unlock_ok">അൺലോക്കുചെയ്യുക</string>
   <string name="select_identity_cancel">പ്രവർത്തനരഹിതമാക്കു </string>

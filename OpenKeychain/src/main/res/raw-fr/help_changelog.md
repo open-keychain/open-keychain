@@ -1,7 +1,11 @@
 [//]: # (NOTE : veuillez mettre chaque phrase sur sa propre ligne. Transifex met chaque ligne dans son propre champ de traduction !)
 
+## 5.6
+  * Compatibilité avec Android 10 et versions ultérieures
+  * Plusieurs correctifs de bogues
+
 ## 5.5
-  * Fix decryption from clipboard on Android 10
+  * Correctif – Déchiffrement à partir du presse-papiers sur Android 10
 
 ## 5.4
   * Ajouter la méthode WKD avancé
@@ -48,7 +52,7 @@
   * Description détaillée des problèmes de sécurité
   * Affiche l’état du serveur de clés par clé
   * Prise en charge d’EdDSA
-  * Correctif - pgp.mit.edu (nouveau certificat)
+  * Correctif – pgp.mit.edu (nouveau certificat)
 
 
 ## 4.4
@@ -59,7 +63,7 @@
 ## 4.3
 
   * Meilleure prise en charge des clé de grande taille
-  * Correctif - Importation des fichiers Gpg4win avec des encodages brisés
+  * Correctif – Importation des fichiers Gpg4win avec des encodages brisés
 
 
 ## 4.2
@@ -118,7 +122,7 @@
 
   * révocation de la clé lors de la suppression de la clé
   * Vérifications améliorées à la recherche d’une cryptographie non fiable
-  * Correctif - Ne pas fermer OpenKeychain après une réussite de l’assistant de première utilisation
+  * Correctif – Ne pas fermer OpenKeychain après une réussite de l’assistant de première utilisation
   * API : version 8
 
 
@@ -142,12 +146,12 @@
   * Conception matérielle
   * Intégration du balayage de codes QR (de nouvelles autorisations sont exigées)
   * Amélioration de l’assistant de création de clé
-  * Correctif - Contacts manquants après la synchro
-  * Android 4 exigé
+  * Correctif – Contacts manquants après la synchro
+  * Android 4 est exigé
   * Nouvelle conception de l’écran des clés
   * Simplification des préférences cryptographiques, meilleure sélection de codes de chiffrement sécurisés
   * API : signatures détachées, sélection libre de la clé de signature…
-  * Correctif - Certaines clés valides apparaissaient comme révoquées ou expirées
+  * Correctif – Certaines clés valides apparaissaient comme révoquées ou expirées
   * Ne pas accepter de signatures par des sous-clés expirées ou révoquées
   * Prise en charge de keybase.io dans la vue avancée
   * Méthode pour mettre toutes les clés à jour en même temps
@@ -155,18 +159,18 @@
 
 ## 3.1.2
 
-  * Correctif - Exportation des clés vers des fichiers (vraiment, maintenant)
+  * Correctif – Exportation des clés vers des fichiers (vraiment, maintenant)
 
 
 ## 3.1.1
 
-  * Correctif - Exportation des clés vers des fichiers (elles n’étaient écrites que partiellement)
-  * Correctif - Plantage sur Android 2.3
+  * Correctif – Exportation des clés vers des fichiers (elles n’étaient écrites que partiellement)
+  * Correctif – Plantage sur Android 2.3
 
 
 ## 3.1
 
-  * Correctif - Plantage sur Android 5
+  * Correctif – Plantage sur Android 5
   * Nouvel écran de certification
   * Échange sécurisé directement de la liste des clés (bibliothèque SafeSlinger)
   * Nouveau flux de programme pour les codes QR
@@ -189,7 +193,7 @@
   * Nombreux correctifs d’importation des clés, corrigent aussi les clés dépouillées
   * Accepter et afficher les drapeaux d’authentification des clés
   * Interface utilisateur pour générer des clés personnalisées
-  * Corrigé - Certificats de révocation des ID utilisateurs
+  * Corrigé – Certificats de révocation des ID utilisateurs
   * Nouvelle recherche nuagique (sur les serveurs de clés habituels et dans keybase.io)
   * Prise en charge du dépouillement des clés dans OpenKeychain
   * Prise en charge expérimentale de la YubiKey : prise en charge de la génération de signature et le déchiffrement
@@ -197,18 +201,18 @@
 
 ## 2.9.2
 
-  * Correctif - Clés brisées dans 2.9.1
+  * Correctif – Clés brisées dans 2.9.1
   * Prise en charge expérimentale de la YubiKey : le déchiffrement fonctionne maintenant avec l’API
 
 
 ## 2.9.1
 
   * Partage de l’écran de chiffrement en deux
-  * Correctif - Gestion des drapeaux de clés (prend maintenant en charge les clés Mailvelope 0.7)
+  * Correctif – Gestion des drapeaux de clés (prend maintenant en charge les clés Mailvelope 0.7)
   * Gestion des phrases de passe améliorée
   * Partage de clés par SafeSlinger
   * Prise en charge expérimentale de la YubiKey : préférence pour permettre d’autres NIP, seule la signature par l’API OpenPGP fonctionne actuellement, mais pas dans OpenKeychain
-  * Correctif - Utilisation de clés dépouillées
+  * Correctif – Utilisation de clés dépouillées
   * SHA256 par défaut pour la compatibilité
   * L’API des intentions a changé, voir https://github.com/open-keychain/open-keychain/wiki/Intent-API
   * L’API d’OpenPGP gère maintenant les clés révoquées/expirées et retourne tous les ID utilisateurs
@@ -256,12 +260,12 @@ Cette version ne serait pas possible sans le travail de Vincent Breitmoser (GSoC
   * Prise en charge clés secrètes partielles de GnuPG (merci à Vincent Breitmoser)
   * Nouvelle conception de la vérification de signatures
   * Longueur de clé personnalisée (merci à Greg Witczak)
-  * Correctif - Fonctionnalités partagées d’autres applis
+  * Correctif – Fonctionnalités partagées d’autres applis
 
 
 ## 2.5
 
-  * Correctif - Déchiffrement des messages/fichiers symétriques OpenPGP
+  * Correctif – Déchiffrement des messages/fichiers symétriques OpenPGP
   * Écran de modification des clés remanié (merci à Ash Hughes)
   * Nouvelle conception moderne pour les écrans de chiffrement/déchiffrement
   * API OpenPGP version 3 (comptes multiples d’api, correctifs internes, recherche de clés)
@@ -293,14 +297,14 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 ## 2.3
 
   * Suppressions de l’exportation non nécessaire des clés publiques lors de l’exportation de clés secrètes (merci à Ash Hughes)
-  * Correctif - Définition de la date de péremption des clés (merci à Ash Hughes)
+  * Correctif – Définition de la date de péremption des clés (merci à Ash Hughes)
   * Plus de correctifs internes affectant la modifications des clés (merci à Ash hughes)
   * Interrogation des serveurs de clés directement de l’écran d’importation
-  * Correctif - Mise en page et du style des fenêtres de dialogue sur Android 2.2-3.0
-  * Correctif - Plantage pour les clés avec des ID utilisateur vides
-  * Correctif - Plantage et listes vides en revenant de l’écran de signature
+  * Correctif – Mise en page et du style des fenêtres de dialogue sur Android 2.2–3.0
+  * Correctif – Plantage pour les clés avec des ID utilisateur vides
+  * Correctif – Plantage et listes vides en revenant de l’écran de signature
   * Bouncy Castle (bibliothèque cryptographique) mise à jour de 1.47 à 1.50 et compilée de la source
-  * Correctif - Téléversement d’une clé de l’écran de signature
+  * Correctif – Téléversement d’une clé de l’écran de signature
 
 
 ## 2.2
@@ -323,7 +327,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
 ## 2.1
 
-  * Beaucoup de bogues corrigés
+  * De nombreux correctifs de bogues
   * Nouvelle API pour les développeurs
   * Correctif du blogue PRNG par Google
 
@@ -356,7 +360,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
 ## 1.0.6
 
-  * Correctif - Plantage lors de l’ajout de compte sur Froyo
+  * Correctif – Plantage lors de l’ajout de compte sur Froyo
   * Suppression sécurisée de fichiers
   * Option de suppression du fichier de clé après importation
   * Chiffrement/déchiffrement de flux (galerie, etc.)
@@ -389,7 +393,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
   * Listes de clés filtrables
   * Présélection plus intelligente des clés de chiffrement
   * Nouvelle gestion des intentions pour VIEW et SEND, permet le chiffrement/déchiffrement des fichiers du gestionnaires de fichiers
-  * Correctifs et fonctions additionnelles (présélection des clés) pour Courriel K-9 Mail, nouvelle version bêta proposée
+  * Correctifs et fonctions additionnelles (présélection des clés) pour Courriel K–9 Mail, nouvelle version bêta proposée
 
 
 ## 1.0.1

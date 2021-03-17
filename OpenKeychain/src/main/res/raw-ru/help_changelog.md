@@ -1,7 +1,11 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 5.6
+  * Совместимость с Android 10 и выше
+  * Исправлено несколько ошибок
+
 ## 5.5
-  * Fix decryption from clipboard on Android 10
+  * Исправлена расшифровка из буфера обмена на Android 10
 
 ## 5.4
   * Добавлен улучшенный метод WKD

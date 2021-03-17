@@ -1,7 +1,11 @@
 [//]: # (Beachte: Bitte schreibe jeden Satz in eine eigene Zeile, Transifex wird jede Zeile in ein eigenes Übesetzungsfeld setzen!)
 
+## 5.6
+  * Kompatibilität mit Android 10 und höher
+  * Einige Fehlerbehebungen
+
 ## 5.5
-  * Fix decryption from clipboard on Android 10
+  * Entschlüsselung aus der Zwischenablage unter Android 10 behoben
 
 ## 5.4
   * WKD Advanced-Methode hinzugefügt

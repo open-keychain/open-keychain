@@ -8,7 +8,6 @@
   <string name="title_encrypt_files">Cifrar</string>
   <string name="title_decrypt">Descifrar</string>
   <string name="title_add_subkey">Agregar subclave</string>
-  <string name="title_change_master_key">Cambiar clave maestra</string>
   <string name="title_edit_key">Editar clave</string>
   <string name="title_preferences">Ajustes</string>
   <string name="title_api_registered_apps">Apps</string>
@@ -38,12 +37,11 @@
   <!--section-->
   <string name="section_user_ids">Identidades</string>
   <string name="section_security_token">Token de seguridad</string>
-  <string name="section_keybase_proofs">Pruebas Keybase.io</string>
   <string name="section_should_you_trust">¿Debería confiar en esta clave?</string>
   <string name="section_proof_details">Prueba de verificación</string>
   <string name="section_keys">Subclave</string>
   <string name="section_cloud_search">Búsqueda de clave</string>
-  <string name="section_cloud_search_summary">Servidor de clave, keybase.io</string>
+  <string name="section_cloud_search_summary">Servidor de claves</string>
   <string name="section_passphrase_cache">Contraseñas y NIPs</string>
   <string name="section_passphrase_cache_summary">Manejo</string>
   <string name="section_proxy_settings">Anonimato de red</string>
@@ -196,8 +194,6 @@
   <string name="label_smartpgp_authority_dialog_delete">Eliminar autoridad</string>
   <string name="pref_keyserver">Servidores OpenPGP</string>
   <string name="pref_keyserver_summary">Buscar claves en servidores de claves OpenPGP seleccionados (protocolo HKP)</string>
-  <string name="pref_keybase">keybase.io</string>
-  <string name="pref_keybase_summary">Buscar claves en keybase.io</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">Buscar claves por nombre de usuario en Facebook</string>
   <string name="pref_wkd">Directorio de claves web </string>
@@ -206,11 +202,7 @@
   <string name="label_sync_settings_keyserver_summary_on">Cada tres días, las claves son actualizadas desde el servidor de claves preferido</string>
   <string name="label_sync_settings_keyserver_summary_off">Claves no están actualizadas automáticamente</string>
   <string name="label_sync_settings_wifi_title">Sincronizar sólo con Wi-Fi</string>
-  <string name="label_sync_settings_contacts_title">Vincular claves con contactos</string>
-  <string name="label_sync_settings_contacts_summary_on">Vincular claves a contactos basándose en nombres y direcciones de correo electrónico. Esto ocurre sin conexión completamente en tu dispositivo.</string>
-  <string name="label_sync_settings_contacts_summary_off">Nuevas claves no serán vinculadas a contactos</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
-    <string name="label_experimental_settings_desc_title">Advertencia</string>
+  <string name="label_experimental_settings_desc_title">Advertencia</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Activar Tor</string>
   <string name="pref_proxy_tor_summary">Requiere Orbot instalado</string>
@@ -342,8 +334,6 @@
   <string name="key_view_tab_keys">Subclave</string>
   <string name="user_id_info_revoked_title">Revocado</string>
   <!--Key trust-->
-  <!--keybase proof stuff-->
-  <string name="keybase_verify">Verificar</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Cambiar contraseña</string>
   <!--Create key-->
@@ -373,8 +363,6 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <plurals name="passp_cache_notif_n_keys">
@@ -426,6 +414,7 @@
   <string name="key_health_revoked_title">Revocado</string>
   <string name="key_health_insecure_title">Inseguro</string>
   <string name="button_import">Importar</string>
+  <string name="transfer_status_connected">Conectado</string>
   <string name="transfer_confirm_cancel">Cancelar</string>
   <string name="transfer_confirm_ok">Enviar</string>
   <string name="token_action_import">Importar</string>

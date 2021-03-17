@@ -1,9 +1,9 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
-Advanced screen allows you to
-* share key in non-recommended ways
-* edit identities
-* edit subkeys
-* examine certificates in detail
+Pagina Avansat vă permite
+* să partajați cheia in moduri nerecomandate
+* să modificați identitățile
+* să modificați sub-cheile
+* să examinați în detaliu certificate
 
-Only proceed if you know what you are doing!
+Continuați doar dacă știți ce faceți!

@@ -1,5 +1,9 @@
 [//]: # (Ter info: Zet iedere zin op een eigen regel, Transifex zet iedere regel in zijn eigen vertalingsveld!)
 
+## 5.6
+  * Compatibility with Android 10 and higher
+  * Several bug fixes
+
 ## 5.5
   * Fix decryption from clipboard on Android 10
 

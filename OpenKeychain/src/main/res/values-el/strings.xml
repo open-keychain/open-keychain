@@ -8,7 +8,6 @@
   <string name="title_encrypt_files">Κρυπτογράφηση</string>
   <string name="title_decrypt">Αποκρυπτογράφηση</string>
   <string name="title_add_subkey">Προσθήκη υποκλειδιού</string>
-  <string name="title_change_master_key">Αλλαγή κύριου κλειδιού</string>
   <string name="title_edit_key">Επεξεργασία Κλειδιού</string>
   <string name="title_preferences">Ρυθμίσεις</string>
   <string name="title_api_registered_apps">Εφαρμογές</string>
@@ -39,12 +38,11 @@
   <string name="section_user_ids">Ταυτότητες</string>
   <string name="section_security_token">Security Token</string>
   <string name="section_linked_system_contact">Συνδεδεμένη Επαφή Συστήματος</string>
-  <string name="section_keybase_proofs">Αποδείξεις Keybase.io</string>
   <string name="section_should_you_trust">Θα πρέπει να εμπιστευτείς αυτό το κλειδί;</string>
   <string name="section_proof_details">Επιβεβαίωση απόδειξης</string>
   <string name="section_keys">Υποκλειδιά</string>
   <string name="section_cloud_search">Αναζήτηση Κλειδιών</string>
-  <string name="section_cloud_search_summary">Διακομιστής κλειδιών, keybase.io</string>
+  <string name="section_cloud_search_summary">Διακομιστής Κλειδιών</string>
   <string name="section_passphrase_cache">Κωδικοί πρόσβασης και PINs</string>
   <string name="section_passphrase_cache_summary">Διαχείριση</string>
   <string name="section_proxy_settings">Δικτυακή Ανωνυμία</string>
@@ -117,12 +115,12 @@
   <string name="label_enter_smartpgp_authority_name">Όνομα</string>
   <string name="pref_keyserver">Διακομιστές κλειδιών OpenPGP</string>
   <string name="pref_facebook">Facebook</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">Προειδοποίηση</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Ενεργοποίηση του Tor</string>
   <string name="pref_proxy_host_title">Διαμεσολαβητής υποδοχής</string>
   <string name="pref_proxy_port_title">Υποδοχη διακομιστη μεσολαβησης</string>
+  <string name="pref_proxy_type_title">Τύπος διακομιστή μεσολάβησης</string>
   <!--proxy type choices and values-->
   <string name="pref_proxy_type_choice_http">HTTP</string>
   <!--OrbotHelper strings-->
@@ -148,6 +146,7 @@
          they will be put after "error_message", e.g. "Error: file not found"-->
   <!--errors without preceding Error:-->
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_encrypted">Κρυπτογραφημένο</string>
   <string name="decrypt_result_action_show">Εμφάνιση</string>
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
@@ -202,8 +201,6 @@
   <string name="key_view_tab_keys">Υποκλειδιά</string>
   <string name="user_id_info_revoked_title">Ανακλημένο</string>
   <!--Key trust-->
-  <!--keybase proof stuff-->
-  <string name="keybase_verify">Επιβεβαίωση</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Αλλαγή Κωδικού</string>
   <!--Create key-->
@@ -218,6 +215,7 @@
   <string name="drawer_close">Κλείσιμο συρταριού πλοήγησης</string>
   <!--hints-->
   <!--certs-->
+  <string name="cert_default">default</string>
   <string name="cert_none">κανένα</string>
   <string name="cert_verify_ok">OK</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
@@ -236,8 +234,6 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_pwd">Κωδικός Πρόσβασης</string>

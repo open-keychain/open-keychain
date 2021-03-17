@@ -37,6 +37,7 @@
   <string name="section_proof_details">Overba dokazila</string>
   <string name="section_keys">Podključi</string>
   <string name="section_cloud_search">Iskanje ključev</string>
+  <string name="section_cloud_search_summary">Strežnik</string>
   <string name="section_certify">Potrdi</string>
   <string name="section_actions">Ravnanja</string>
   <string name="section_share_key">Ključ</string>
@@ -127,7 +128,6 @@
   <string name="label_encrypt_filenames">Šifriraj imena datotek</string>
   <string name="label_hidden_recipients">Skrij prejemnike</string>
   <string name="label_enter_smartpgp_authority_name">ime</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">Opozorilo</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Vključi anonimizacijo</string>
@@ -259,7 +259,6 @@
   <string name="progress_exporting">izvažam...</string>
   <string name="progress_uploading">pošiljanje...</string>
   <string name="progress_building_key">ustvarjam ključ...</string>
-  <string name="progress_building_master_key">ustvarjam glavni prstan...</string>
   <string name="progress_generating_rsa">ustvarjanje novega RSA ključa...</string>
   <string name="progress_generating_dsa">ustvarjanje novega DSA ključa...</string>
   <string name="progress_generating_elgamal">ustvarjanje novega ElGamal ključa...</string>
@@ -452,29 +451,10 @@
   <string name="key_view_tab_share">Deli</string>
   <string name="key_view_tab_keys">Podključi</string>
   <string name="key_view_tab_certs">Potrdila</string>
-  <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">Preklican</string>
   <string name="user_id_info_revoked_text">Lastnik ključa je preklical to identiteto. Ta ni več veljavna.</string>
   <!--Key trust-->
   <string name="key_trust_start_cloud_search">Začni iskanje</string>
-  <string name="key_trust_results_prefix">Keybase.io ponuja \"dokazilo\", da je lastnik tega kluča:</string>
-  <!--keybase proof stuff-->
-  <string name="keybase_proof_failure">Dokazila se žal ne da preveriti.</string>
-  <string name="keybase_unknown_proof_failure">Neznan problem pri pregledovalniku dokazil</string>
-  <string name="keybase_problem_fetching_evidence">Problem z dokazilom</string>
-  <string name="keybase_key_mismatch">Prstni odtis ključa ne ustreza tistemu v dokazilu</string>
-  <string name="keybase_message_payload_mismatch">Dešifrirano dokazilo ne ustreza pričakovani vrednosti</string>
-  <string name="keybase_message_fetching_data">Pridobivam dokazilo</string>
-  <string name="keybase_proof_succeeded">To dokazilo je bilo overjeno!</string>
-  <string name="keybase_a_post">Objava</string>
-  <string name="keybase_fetched_from">pridobljeno od</string>
-  <string name="keybase_for_the_domain">za domeno</string>
-  <string name="keybase_contained_signature">vsebuje sporočilo, ki ga je lahko ustvaril samo lastnik tega ključa.</string>
-  <string name="keybase_twitter_proof">Čivk</string>
-  <string name="keybase_web_site_proof">Datoteka z besedilom</string>
-  <string name="keybase_github_proof">Gist</string>
-  <string name="keybase_reddit_proof">Datoteka JSON</string>
-  <string name="keybase_verify">Overi</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Spremeni geslo</string>
   <string name="edit_key_action_add_identity">Dodaj identiteto</string>
@@ -551,26 +531,8 @@
   <string name="msg_ip_insert_keyring">Šifriram podatke zbirke klučev</string>
   <string name="msg_ip_insert_keys">Razčlenjujem ključe</string>
   <string name="msg_ip_prepare">Pripravljam </string>
-  <string name="msg_ip_master">Obdelujem glavni ključ %s</string>
   <string name="msg_ip_master_expired">Zbirka ključev je potekla %s</string>
   <string name="msg_ip_master_expires">Zbirka ključev poteče %s</string>
-  <string name="msg_ip_master_flags_unspecified">Glavne oznake: nedoločeno (najverjetneje vse)</string>
-  <string name="msg_ip_master_flags_cesa">Glavne oznake: potrdi, šifriraj, podpiši, overi</string>
-  <string name="msg_ip_master_flags_cesx">Glavne oznake: potrdi. šifriraj, podpiši</string>
-  <string name="msg_ip_master_flags_cexa">Glavne oznake: potrdi, šifriraj, overi</string>
-  <string name="msg_ip_master_flags_cexx">Glavne oznake: potrdi, šifriraj</string>
-  <string name="msg_ip_master_flags_cxsa">Glavne oznake: potrdi, podpiši, overi</string>
-  <string name="msg_ip_master_flags_cxsx">Glavne oznake: potrdi, podpiši</string>
-  <string name="msg_ip_master_flags_cxxa">Glavne oznake: potrdi, overi</string>
-  <string name="msg_ip_master_flags_cxxx">Glavne oznake: potrdi</string>
-  <string name="msg_ip_master_flags_xesa">Glavne oznake: šifriraj, podpiši, overi</string>
-  <string name="msg_ip_master_flags_xesx">Glavne oznake: šifriraj, podpiši</string>
-  <string name="msg_ip_master_flags_xexa">Glavne oznake: šifriraj, overi</string>
-  <string name="msg_ip_master_flags_xexx">Glavne oznake: šifriraj</string>
-  <string name="msg_ip_master_flags_xxsa">Glavne oznake: podpiši, overi</string>
-  <string name="msg_ip_master_flags_xxsx">Glavne oznake: podpiši</string>
-  <string name="msg_ip_master_flags_xxxa">Glavne oznake: overi</string>
-  <string name="msg_ip_master_flags_xxxx">Glavne oznake: brez</string>
   <string name="msg_ip_merge_public">Združujem uvožene podatke z obstoječo zbirko javnih ključev</string>
   <string name="msg_ip_subkey">Obdelujem podključ %s</string>
   <string name="msg_ip_subkey_expired">Podključ je potekel %s</string>
@@ -650,15 +612,8 @@
   <string name="msg_kc_secret">Kanoniziram zasebno zbirko ključev %s</string>
   <string name="msg_kc_error_v3">Toje ključ verzije OpenPGP 3, ki je zastarela in ni več podprta!</string>
   <string name="msg_kc_error_no_uid">Zbirka ključev nima nobenega veljavnega ID-ja!</string>
-  <string name="msg_kc_error_master_algo">Glavni ključ uporablja neznan (%s) algoritem!</string>
-  <string name="msg_kc_master">Obdelujem glavni ključ...</string>
-  <string name="msg_kc_master_bad_type">Odstranjujem potrdilo glavnega ključa neznanega tipa (%s)</string>
-  <string name="msg_kc_master_bad_local">Odstranjujem potrdilo glavnega ključa z oznako \'lokalno\'</string>
-  <string name="msg_kc_master_bad_err">Odstranjujem slabo potrdilo glavnega ključa</string>
   <string name="msg_kc_master_bad_time">Odstranjujem preklicno potrdilo zbirke ključev s časovno znamko v prihodnosti</string>
   <string name="msg_kc_master_bad_type_uid">Odstranjujem potrdilo ID-ja na slabi poziciji</string>
-  <string name="msg_kc_master_bad">Odstranjujem slabo potrdilo glavnega ključa</string>
-  <string name="msg_kc_master_local">Odstranjujem potrdilo glavnega ključa z oznako \"lokalno\"</string>
   <string name="msg_kc_revoke_dup">Odstranjujem odvečno preklicno potrdilo zbirke ključev</string>
   <string name="msg_kc_notation_dup">Odstranjujem odvečno potrdilo notacije</string>
   <string name="msg_kc_notation_empty">Odstranjujem prazno potrdilo notacije</string>
@@ -720,14 +675,12 @@
   <string name="msg_mg_found_new">Najdenih %s novih potrdil v zbirki ključev</string>
   <!--createSecretKeyRing-->
   <string name="msg_cr_error_no_user_id">Zbirke ključev morajo biti ustvarjene z najmanj enim ID-jem!</string>
-  <string name="msg_cr_error_no_certify">Glavni ključ mora biti označen za potrjevanje!</string>
   <string name="msg_cr_error_flags_dsa">Ključ vsebuje napačne oznake, DSA ne more biti uporabljen za šifriranje!</string>
   <string name="msg_cr_error_flags_elgamal">Ključ vsebuje napačne oznake, ElGamal ne more biti uporabljen za podpisovanje!</string>
   <string name="msg_cr_error_flags_ecdsa">Ključ vsebuje napačne oznake, ECDSA ne more biti uporabljen za šifriranje!</string>
   <string name="msg_cr_error_flags_ecdh">Ključ vsebuje napačne oznake, ECDH ne more biti uporabljen za podpisovanje!</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mf_error_keyid">NI ID-ja ključa. To je interna napaka, prosimo prijavite hrošča!</string>
-  <string name="msg_mf_error_master_none">Najdeno ni bilo nobeno uporabno glavno potrdilo (so vsa odstranjena?)</string>
   <string name="msg_mf_error_noexist_primary">Naveden je slab primarni ID!</string>
   <string name="msg_mf_error_noexist_revoke">Naveden je slab ID za preklic!</string>
   <string name="msg_mf_error_revoked_primary">Preklican ID ne more biti primaren!</string>
@@ -766,9 +719,6 @@
   <string name="msg_backup_error_db">Napaka v bazi podatkov!</string>
   <string name="msg_upload_error_not_found">Ključ ni bil najden!</string>
   <string name="msg_del_error_multi_secret">Zasebne ključe je mogoče izbrisati zgolj posamično!</string>
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_error_key_mismatch">Prstni odtis ključa ne ustreza tistemu v dokazilu</string>
-  <string name="msg_keybase_error_msg_payload_mismatch">Dešifrirano dokazilo ne ustreza pričakovani vrednosti</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_pwd">Geslo</string>
@@ -831,5 +781,5 @@
   <string name="key_gen_finish">Končaj</string>
   <string name="notify_channel_passcache">Hranjenje gesla v spominu</string>
   <string name="notify_title_keysync">Posodabljam ključe...</string>
-    <string name="share_key">Deli ključ</string>
+  <string name="share_key">Deli ključ</string>
 </resources>

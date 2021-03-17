@@ -1,4 +1,4 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (NOTĂ: Vă rugăm să puneți fiecare frază pe o linie separată, Transifex pune fiecare linie in câmpul ei de traducere!)
 
 ## Key Confirmation
 Without confirmation, you cannot be sure if a key really corresponds to a specific person.

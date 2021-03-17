@@ -8,7 +8,6 @@
   <string name="title_encrypt_files">Mã hóa</string>
   <string name="title_decrypt">Giải mã</string>
   <string name="title_add_subkey">Thêm khóa con</string>
-  <string name="title_change_master_key">Thay đổi khóa chính</string>
   <string name="title_edit_key">Sửa khóa</string>
   <string name="title_preferences">Thiết lập</string>
   <string name="title_api_registered_apps">Ứng dụng đã cấp quyền</string>
@@ -39,12 +38,11 @@
   <string name="section_user_ids">Định danh</string>
   <string name="section_security_token">Thiết bị an toàn</string>
   <string name="section_linked_system_contact">Danh bạ hệ thống được liên kết</string>
-  <string name="section_keybase_proofs">Minh chứng tại keybase.io</string>
   <string name="section_should_you_trust">Bạn có nên tin tưởng khóa này?</string>
   <string name="section_proof_details">Xác nhận minh chứng</string>
   <string name="section_keys">Khóa con</string>
   <string name="section_cloud_search">Tìm kiếm kháo</string>
-  <string name="section_cloud_search_summary">Keyserver, keybase.io</string>
+  <string name="section_cloud_search_summary">Máy chủ lưu khóa</string>
   <string name="section_passphrase_cache">Mật khẩu và mã PIN</string>
   <string name="section_proxy_settings">Mạng nặc danh</string>
   <string name="section_proxy_settings_summary">Tor, Các thiết lập Proxy</string>
@@ -155,6 +153,7 @@
   <string name="label_expiry">Hạn dùng</string>
   <string name="label_valid_from">Có hiệu lực từ</string>
   <string name="label_usage">Đã dùng</string>
+  <string name="label_revoked">Thu hồi</string>
   <string name="label_key_size">Kích cỡ khóa</string>
   <string name="label_ecc_curve">Đường cong Elliptic</string>
   <string name="label_main_user_id">Định danh chính</string>
@@ -177,26 +176,20 @@
   <string name="label_enter_smartpgp_authority_name">Tên</string>
   <string name="pref_keyserver">Máy chủ lưu khóa</string>
   <string name="pref_keyserver_summary">Tìm kiếm khóa lưu ở các máy chủ (theo giao thức HKP)</string>
-  <string name="pref_keybase">keybase.io</string>
-  <string name="pref_keybase_summary">Tìm khóa lưu trên keybase.io</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">Tìm khóa lưu trên Facebook theo tài khoản</string>
   <string name="label_sync_settings_keyserver_title">Cập nhật khóa tự động</string>
   <string name="label_sync_settings_keyserver_summary_on">Khóa sẽ được tự động cập nhật ba ngày một lần từ máy chủ được ưu tiên</string>
   <string name="label_sync_settings_keyserver_summary_off">Không tự động cập nhật khóa</string>
   <string name="label_sync_settings_wifi_title">Chỉ đồng bộ khi sử dụng Wi-Fi</string>
-  <string name="label_sync_settings_contacts_title">Liên kết khóa với danh bạ</string>
-  <string name="label_sync_settings_contacts_summary_on">Liên kết khóa với danh bạ dựa trên tên và địa chỉ thư. Nó được thực hiện hoàn toàn ngoại tuyến trên thiết bị của bạn.</string>
-  <string name="label_sync_settings_contacts_summary_off">Các khóa mới sẽ không được liên kết với danh bạ</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
-    <string name="label_experimental_settings_desc_title">Cảnh báo</string>
+  <string name="label_experimental_settings_desc_title">Cảnh báo</string>
   <string name="label_experimental_settings_desc_summary">Tính năng này hiện chưa được hoàn thành hoặc chỉ mới là kết quả nghiên cứu/thử nghiệm. Do vậy, bạn đừng tin cậy vào tính an toàn của chúng cũng như không cần thiết phải thông báo với chúng tôi!</string>
-  <string name="label_experimental_settings_keybase_summary">Liên hệ với keybase.io để minh chứng khóa và hiển thị chúng mỗi khi khóa được gọi</string>
   <string name="label_experimental_settings_theme_summary">(Các biểu tượng và nhiều màn hình không được thêm vào giao diện dạng tối)</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Bật Tor</string>
   <string name="pref_proxy_host_title">Proxy Host</string>
   <string name="pref_proxy_port_title">Cổng Proxy</string>
+  <string name="pref_proxy_type_title">Loại proxy</string>
   <!--proxy type choices and values-->
   <string name="pref_proxy_type_choice_socks">SOCKS</string>
   <!--OrbotHelper strings-->
@@ -272,9 +265,8 @@
   <string name="key_view_tab_start">Bắt đầu</string>
   <string name="key_view_tab_share">Chia sẻ</string>
   <string name="key_view_tab_keys">Khóa con</string>
+  <string name="user_id_info_revoked_title">Thu hồi</string>
   <!--Key trust-->
-  <!--keybase proof stuff-->
-  <string name="keybase_verify">Phối kiểm</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Đổi mật khẩu</string>
   <!--Create key-->
@@ -312,8 +304,6 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_pwd">Mật khẩu</string>
@@ -333,6 +323,7 @@
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">Điền mật khẩu</string>
   <string name="passphrase">Mật khẩu</string>
+  <string name="set_passphrase">Cài đặt mật khẩu</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="nfc_settings">Thiết đặt</string>
   <string name="snack_security_token_view">Xem</string>
@@ -351,6 +342,7 @@
   <string name="button_cancel">Hủy</string>
   <string name="button_back">Lùi</string>
   <string name="button_got_it">Hiểu rõ</string>
+  <string name="key_health_revoked_title">Thu hồi</string>
   <string name="keyserver_title_not_published">Chưa Xuất Bản</string>
   <string name="dialog_insecure_title">Cảnh Báo An Ninh</string>
   <string name="dialog_insecure_button_ok">Hiểu rõ</string>

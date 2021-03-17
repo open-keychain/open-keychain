@@ -8,7 +8,6 @@
   <string name="title_encrypt_files">Krypter</string>
   <string name="title_decrypt">Dekrypter</string>
   <string name="title_add_subkey">Legg til undernøkkel</string>
-  <string name="title_change_master_key">Endre hovednøkkel</string>
   <string name="title_edit_key">Rediger nøkkel</string>
   <string name="title_preferences">Innstillinger</string>
   <string name="title_api_registered_apps">Programmer</string>
@@ -40,12 +39,11 @@
   <string name="section_user_ids">Identiteter</string>
   <string name="section_security_token">Sikkerhetssymbol</string>
   <string name="section_linked_system_contact">Lenket systemkontakt</string>
-  <string name="section_keybase_proofs">Keybase.io-bevis</string>
   <string name="section_should_you_trust">Kan du stole på denne nøkkelen?</string>
   <string name="section_proof_details">Bekreft bevis</string>
   <string name="section_keys">Undernøkler</string>
   <string name="section_cloud_search">Finn nøkkel</string>
-  <string name="section_cloud_search_summary">Nøkkeltjener, keybase.io</string>
+  <string name="section_cloud_search_summary">Nøkkeltjener</string>
   <string name="section_passphrase_cache">Passord og PIN-koder</string>
   <string name="section_proxy_settings">Nettverks-anonymitet</string>
   <string name="section_proxy_settings_summary">Tor, mellomtjener-innstillinger</string>
@@ -146,6 +144,7 @@
   <string name="label_delete_after_encryption">Slett filer etter kryptering</string>
   <string name="label_delete_after_decryption">Slett etter kryptering</string>
   <string name="label_encryption_algorithm">Krypteringsalgoritme</string>
+  <string name="label_hash_algorithm">Hash-algoritme</string>
   <string name="label_symmetric">Krypter med passord</string>
   <string name="label_passphrase_cache_subs">Husk på passord utifra undernøkler</string>
   <string name="label_message_compression">Tekstkomprimering</string>
@@ -159,13 +158,16 @@
   <string name="label_creation">Opprettet</string>
   <string name="label_creation_colon">Opprettet:</string>
   <string name="label_expiry">Utløper</string>
+  <string name="label_valid_from">Gyldig fra</string>
   <string name="label_usage">Bruk</string>
   <string name="label_revoked">Tilbakekalt</string>
+  <string name="label_insecure">Usikker</string>
   <string name="label_key_size">Nøkkelstørrelse</string>
   <string name="label_ecc_curve">Elliptisk kurve</string>
   <string name="label_main_user_id">Hovedidentitet</string>
   <string name="label_name">Navn</string>
   <string name="label_email">E-post</string>
+  <string name="label_send_key">Publiser sertifisering på nøkkeltjenere</string>
   <string name="label_fingerprint">Fingeravtrykk</string>
   <string name="expiry_date_dialog_title">Sett utløpsdato</string>
   <string name="label_keyservers_title">Nøkkeltjenere</string>
@@ -190,22 +192,14 @@
   <string name="label_smartpgp_authority_dialog_delete">Slett myndighet</string>
   <string name="pref_keyserver">OpenPGP-nøkkeltjenere</string>
   <string name="pref_keyserver_summary">Velg nøkler på utvalgte OpenPGP-nøkkeltjenere (HKP-protokoll)</string>
-  <string name="pref_keybase">keybase.io</string>
-  <string name="pref_keybase_summary">Del nøkler på keybase.io</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">Del nøkler på Facebook etter brukernavn</string>
   <string name="label_sync_settings_keyserver_title">Automatiske nøkkeloppdateringer</string>
   <string name="label_sync_settings_keyserver_summary_on">Hver tredje dag, vil nøkler bli oppdatert fra foretrukket nøkkeltjener</string>
   <string name="label_sync_settings_keyserver_summary_off">Nøkler blir ikke automatisk oppdatert</string>
   <string name="label_sync_settings_wifi_title">Bare synkroniser på Wi-Fi</string>
-  <string name="label_sync_settings_contacts_title">Lenk nøkler til kontakter</string>
-  <string name="label_sync_settings_contacts_summary_on">Lenk nøkler til kontakter basert på navn og e-postadresser. Dette skjer helt frakoblet på din enhet.</string>
-  <string name="label_sync_settings_contacts_summary_off">Nye nøkler vil ikke lenkes til kontakter</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
-    <string name="label_experimental_settings_desc_title">Advarsel</string>
+  <string name="label_experimental_settings_desc_title">Advarsel</string>
   <string name="label_experimental_settings_desc_summary">Disse funksjonene er ikke ferdige enda, eller resultat av brukererfaring/sikkerhetsforskning. Som sådan, bør du ikke stole på at de er sikre, og ikke rapportere feil du kommer over!</string>
-  <string name="label_experimental_settings_keybase_title">Keybase.io-bevis</string>
-  <string name="label_experimental_settings_keybase_summary">Kontakt keybase.io for nøkkelbevis og vis dem hver gang en nøkkel vises</string>
   <string name="label_experimental_settings_theme_summary">(Ikonene og mange av skjermene er ikke justert i henhold til den mørke drakten)</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Skru på Tor</string>
@@ -306,6 +300,8 @@
   <string name="no_file_selected">Ingen fil valgt.</string>
   <string name="select_encryption_key">Velg minst én krypteringsnøkkel.</string>
   <string name="error_no_encryption_or_signature_key">Velg minst én krypteringsnøkkel eller en signeringsnøkkel.</string>
+  <string name="specify_file_to_encrypt_to">Vennligst velg hvilken fil å kryptere til.\nADVARSEL: Filen vil bli overskrevet hvis den eksisterer!</string>
+  <string name="specify_file_to_decrypt_to">Vennligst velg hvilken fil å dekryptere til.\nADVARSEL: Filen vil bli overskrevet hvis den eksisterer!</string>
   <string name="key_deletion_confirmation_multi">Ønsker du virkelig å slette alle valgte nøkler?</string>
   <string name="public_key_deletetion_confirmation">Vil du slette nøkkelen \'%s\'?</string>
   <string name="also_export_secret_keys">Eksporter også hemmelige nøkler</string>
@@ -396,6 +392,7 @@
   <string name="progress_certifying">sertifiserer…</string>
   <string name="progress_reading_data">leser data…</string>
   <string name="progress_finding_key">finner nøkkel…</string>
+  <string name="progress_deleting_securely">Sletter \'%s\' sikkert...</string>
   <string name="progress_deleting">sletter nøkler…</string>
   <string name="progress_verifying_keyserver_connection">verifiserer tilkoblingen …</string>
   <string name="progress_starting_orbot">Starter Orbot…</string>
@@ -487,6 +484,7 @@
   <string name="api_settings_advanced">Avansert</string>
   <string name="api_settings_allowed_keys">Tillatte nøkler</string>
   <string name="api_settings_settings">Innstillinger</string>
+  <string name="api_register_text">%s ber om å bruke OpenKeychain som en kryptoleverandør. Du vil fortsatt bli spurt om godkjenning før appen kan bruke noen av nøklene dine for dekryptering.\n\nDu kan trekke fra tillatelsen senere i \'Apper\'-skjermen i OpenKeychain.</string>
   <string name="api_register_allow">Tillat tilgang</string>
   <string name="api_register_disallow">Nekt tilgang</string>
   <string name="api_register_error_select_key">Velg en nøkkel!</string>
@@ -536,7 +534,6 @@
   <string name="key_view_tab_share">Del</string>
   <string name="key_view_tab_keys">Undernøkler</string>
   <string name="key_view_tab_certs">Sertifikater</string>
-  <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">Tilbakekalt</string>
   <string name="user_id_info_certified_title">Bekreftet</string>
   <string name="user_id_info_certified_text">Denne identiteten har blitt bekreftet av deg.</string>
@@ -544,24 +541,6 @@
   <string name="user_id_info_uncertified_text">Denne identiteten har ikke blitt bekreftet enda. Du kan ikke være sikker på at identiteten faktisk samsvarer med en spesifikk person.</string>
   <!--Key trust-->
   <string name="key_trust_start_cloud_search">Begynn å søke</string>
-  <!--keybase proof stuff-->
-  <string name="keybase_narrative_twitter">Legger ut på Twitter som %s</string>
-  <string name="keybase_narrative_github">Er kjent på GitHub som %s</string>
-  <string name="keybase_narrative_dns">Styrer domenenavne(t/ne) %s</string>
-  <string name="keybase_narrative_web_site">Kan legge ut på nettstede(t/ne) %s</string>
-  <string name="keybase_narrative_reddit">Legger ut på Reddit som %s</string>
-  <string name="keybase_narrative_coinbase">Er kjent på Coinbase som %s</string>
-  <string name="keybase_narrative_hackernews">Legger ut på Hacker News som %s</string>
-  <string name="keybase_narrative_unknown">Ukjent bevistype %s</string>
-  <string name="keybase_a_post">Et innlegg</string>
-  <string name="keybase_fetched_from">hentet fra</string>
-  <string name="keybase_for_the_domain">for domenet</string>
-  <string name="keybase_twitter_proof">En tweet</string>
-  <string name="keybase_web_site_proof">Ei tekstfil</string>
-  <string name="keybase_github_proof">En Gist</string>
-  <string name="keybase_reddit_proof">En JSON-fil</string>
-  <string name="keybase_reddit_attribution">tilegnet av Reddit til</string>
-  <string name="keybase_verify">Bekreft</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Endre passord</string>
   <string name="edit_key_action_add_identity">Legg til identitet</string>
@@ -612,7 +591,6 @@
   <string name="drawer_close">Lukk navigasjonsskuffen</string>
   <string name="my_keys">Mine nøkler</string>
   <string name="nav_backup">Sikkerhetskopier/gjenopprett</string>
-  <string name="nav_transfer">Sikker WiFi-overføring</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Skriv inn tekst her</string>
   <!--certs-->
@@ -708,10 +686,9 @@
     <item quantity="one">Lyktes i å slette nøkkelen</item>
     <item quantity="other">Lyktes i å slette %d nøkler</item>
   </plurals>
+  <string name="msg_data_mime_length">Innholdslengde: %s</string>
   <string name="msg_get_success">Vellykket nedlasting!</string>
   <string name="msg_get_no_valid_keys">Ingen gyldige nøkler ble funnet i filen/utklippstavlen!</string>
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <plurals name="passp_cache_notif_n_keys">
@@ -829,6 +806,7 @@
   <string name="key_health_divert_partial_title">Frisk (Delvis sjetong)</string>
   <string name="key_health_divert_partial_subtitle">Klikk for detaljer</string>
   <string name="key_health_revoked_title">Tilbakekalt</string>
+  <string name="key_health_insecure_title">Usikker</string>
   <string name="key_health_broken_subtitle">Klikk for detaljer</string>
   <string name="key_health_sign_only_title">Frisk (Signeringsnøkkel)</string>
   <string name="key_health_sign_only_subtitle">Klikk for detaljer</string>
@@ -856,6 +834,7 @@
   <string name="token_result_not_found">Nøkkel ikke funnet!</string>
   <string name="token_action_reset">Tilbakestill sikkerhetssymbol</string>
   <string name="token_action_import">Importer</string>
+  <string name="token_error_cannot_reset_gnuk_old">Gnuk Token/Nitrokey Start støtter ikke reset før versjon 1.2.5</string>
   <string name="token_unlock_ok">Lås opp</string>
   <string name="token_hint_admin_pin">Administrator-PIN</string>
   <string name="msg_ret_ks_start">Ser etter nøkkelen i nøkkeltjenere …</string>
@@ -868,4 +847,6 @@
   <string name="notify_title_keysync">oppdaterer nøkler…</string>
   <string name="keylist_item_key_id">Nøkkel-ID: %s</string>
   <string name="keylist_header_anonymous">Anonym</string>
+  <string name="share_key_clipboard">Del nøkkel via utklippstavlen</string>
+  <string name="share_key">Del nøkkel</string>
 </resources>

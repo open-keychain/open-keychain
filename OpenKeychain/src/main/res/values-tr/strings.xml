@@ -27,6 +27,7 @@
   <!--section-->
   <string name="section_user_ids">Kimlikler</string>
   <string name="section_keys">Alt anahtarlar</string>
+  <string name="section_cloud_search_summary">Anahtar Sunucusu</string>
   <string name="section_sync_settings">Eşitleme</string>
   <string name="section_certify">Onayla</string>
   <string name="section_actions">Eylemler</string>
@@ -108,9 +109,9 @@
   <string name="label_preferred">tercih edilen</string>
   <string name="label_hidden_recipients">Alıcılar gizlensin</string>
   <string name="label_enter_keyserver_url">URL</string>
+  <string name="label_theme">Tema</string>
   <string name="label_enter_smartpgp_authority_name">İsim</string>
   <string name="pref_facebook">Facebook</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">Uyarı</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Tor Kullanılsın</string>
@@ -154,6 +155,8 @@
   <string name="usage_encrypt">Şifreleme</string>
   <string name="error">Hata</string>
   <string name="error_message">Hata: %s</string>
+  <string name="theme_dark">Koyu</string>
+  <string name="theme_light">Açık</string>
   <!--sentences-->
   <string name="no_filemanager_installed">Uyumlu dosya yöneticisi yüklenmedi.</string>
   <string name="passphrase_for_symmetric_encryption">Parolayı girin</string>
@@ -215,7 +218,6 @@
   <string name="progress_exporting">dışa aktarılıyor...</string>
   <string name="progress_uploading">yükleniyor...</string>
   <string name="progress_building_key">anahtar oluşturuluyor...</string>
-  <string name="progress_building_master_key">ana anahtarlık oluşturuluyor...</string>
   <string name="progress_generating_rsa">yeni RSA anahtarı oluşturuluyor...</string>
   <string name="progress_generating_dsa">yeni DSA anahtarı oluşturuluyor...</string>
   <string name="progress_generating_elgamal">yeni ElGamal anahtarı oluşturuluyor...</string>
@@ -349,8 +351,6 @@
   <string name="user_id_info_revoked_title">Yürürlükten kaldırılmış</string>
   <string name="user_id_info_revoked_text">Bu kimlik anahtar sahibi tarafından yürürlükten kaldırılmış. Artık geçerli değil.</string>
   <!--Key trust-->
-  <!--keybase proof stuff-->
-  <string name="keybase_verify">Doğrula</string>
   <!--Edit key-->
   <string name="edit_key_action_add_identity">Kimlik Ekle</string>
   <string name="edit_key_action_add_subkey">Alt anahtar Ekle</string>
@@ -398,19 +398,16 @@
   <string name="msg_ip_delete_old_ok">Eski anahtarları veritabanından sil</string>
   <string name="msg_ip_fingerprint_ok">Parmakizi kontrolü TAMAM</string>
   <string name="msg_ip_prepare">Veritabanı işlemleri hazırlanıyor</string>
-  <string name="msg_ip_master">Ana anahtar %s işleniyor</string>
   <string name="msg_ip_subkey">Alt anahtar %s işleniyor</string>
   <string name="msg_ip_uid_cert_error">Sertifika işlenirken hata!</string>
   <string name="msg_ip_uat_cert_error">Sertifika işlenirken hata!</string>
   <!--Import Secret log entries-->
   <string name="msg_is_db_exception">Veritabanı hatası!</string>
   <!--Keyring Canonicalization log entries-->
-  <string name="msg_kc_master">Ana anahtar işleniyor</string>
   <string name="msg_kc_sub">Alt anahtar %s işleniyor</string>
   <string name="msg_kc_sub_bad_type">Bilinmeyen alt anahtar sertifika tipi: %s</string>
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
-  <string name="msg_cr">Yeni ana anahtar oluşturuluyor</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mf_error_noop">Yapacak işlem yok!</string>
   <string name="msg_mf_subkey_new_id">Yeni alt anahtar ID: %s</string>
@@ -439,8 +436,6 @@
   <string name="msg_del_error_empty">Silinecek bir şey yok!</string>
   <string name="msg_get_success">Başarıyla indirildi!</string>
   <string name="msg_download_query_failed">Anahtarlar aranırken bir hata oluştu.</string>
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_keys">Kaydedilmiş parolalar</string>
@@ -479,6 +474,7 @@
   <string name="enter_passphrase">Parolayı girin</string>
   <string name="passphrase">Parola</string>
   <string name="passphrase_again">Tekrar</string>
+  <string name="set_passphrase">Parola ayarla</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="nfc_settings">Ayarlar</string>
   <string name="snack_security_token_view">Göster</string>

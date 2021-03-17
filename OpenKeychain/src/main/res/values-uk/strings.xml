@@ -8,7 +8,6 @@
   <string name="title_encrypt_files">Зашифрувати</string>
   <string name="title_decrypt">Розшифрувати</string>
   <string name="title_add_subkey">Додати підключ</string>
-  <string name="title_change_master_key">Змінити основний ключ</string>
   <string name="title_edit_key">Редагувати ключ</string>
   <string name="title_preferences">Налаштування</string>
   <string name="title_api_registered_apps">Програми</string>
@@ -40,12 +39,11 @@
   <string name="section_user_ids">Сутності</string>
   <string name="section_security_token">Маркер безпеки</string>
   <string name="section_linked_system_contact">Пов\'язані системні контакти</string>
-  <string name="section_keybase_proofs">Перевірки Keybase.io</string>
   <string name="section_should_you_trust">Ви довіряєте цьому ключу?</string>
   <string name="section_proof_details">Перевірка достовірності</string>
   <string name="section_keys">Підключі</string>
   <string name="section_cloud_search">Пошук ключа</string>
-  <string name="section_cloud_search_summary">Сервер ключів, keybase.io</string>
+  <string name="section_cloud_search_summary">Сервер ключів</string>
   <string name="section_passphrase_cache">Паролі та Піни</string>
   <string name="section_passphrase_cache_summary">Обробка</string>
   <string name="section_proxy_settings">Мережева анонімність</string>
@@ -198,8 +196,6 @@
   <string name="label_smartpgp_authority_dialog_delete">Видалити центр повноважень</string>
   <string name="pref_keyserver">OpenPGP сервери ключів</string>
   <string name="pref_keyserver_summary">Шукати ключі на обраних OpenPGP серверах ключів (HKP протокол)</string>
-  <string name="pref_keybase">keybase.io</string>
-  <string name="pref_keybase_summary">Шукати ключі на keybase.io</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">Шукати ключі в Facebook за іменем користувача</string>
   <string name="pref_wkd">Web Key Directory</string>
@@ -208,16 +204,10 @@
   <string name="label_sync_settings_keyserver_summary_on">Щотри дні ключі оновлюються з обраних серверів ключів</string>
   <string name="label_sync_settings_keyserver_summary_off">Ключі не оновлені автоматично</string>
   <string name="label_sync_settings_wifi_title">Синхронізувати через Wi-Fi</string>
-  <string name="label_sync_settings_contacts_title">Прив\'язувати ключі до контактів</string>
-  <string name="label_sync_settings_contacts_summary_on">Прив\'язувати ключі до контактів на основі імен та адрес електронної пошти. Це відбувається повністю локально на Вашому пристрої.</string>
-  <string name="label_sync_settings_contacts_summary_off">Нові ключі не будуть прив\'язані до контактів</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
-    <string name="label_experimental_settings_desc_title">Попередження</string>
+  <string name="label_experimental_settings_desc_title">Попередження</string>
   <string name="label_experimental_settings_desc_summary">Ці можливості ще в розробці. Будь ласка, не сподівайтесь на їх безпеку та не повідомляйте про проблеми їхнього використання!</string>
-  <string name="label_experimental_settings_keybase_title">Перевірки Keybase.io</string>
-  <string name="label_experimental_settings_keybase_summary">Контактувати з keybase.io для підтвердження ключа та показувати дійсності щоразу, коли ключ відображено</string>
   <string name="label_experimental_settings_theme_summary">(Піктограми та більшість екранів не налаштовані для темної теми)</string>
-    <!--Proxy Preferences-->
+  <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Увімкнути Tor</string>
   <string name="pref_proxy_tor_summary">Потребує інсталяції Orbot</string>
   <string name="pref_proxy_normal_title">Увімкнути інше проксі</string>
@@ -427,7 +417,6 @@
   <string name="progress_exporting">експортується…</string>
   <string name="progress_uploading">відвантаження…</string>
   <string name="progress_building_key">будується ключ…</string>
-  <string name="progress_building_master_key">побудова основного кільця…</string>
   <string name="progress_generating_rsa">генерується новий ключ RSA…</string>
   <string name="progress_generating_dsa">генерується новий ключ DSA…</string>
   <string name="progress_generating_elgamal">генерується новий ключ ElGamal…</string>
@@ -693,7 +682,6 @@
   <string name="key_view_tab_share">Поділитися</string>
   <string name="key_view_tab_keys">Підключі</string>
   <string name="key_view_tab_certs">Сертифікати</string>
-  <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">Відхилено</string>
   <string name="user_id_info_revoked_text">Ця сутність вже відкликана власником ключа. Вона більше не дійсна.</string>
   <string name="user_id_info_certified_title">Підтверджений</string>
@@ -703,36 +691,6 @@
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">Немає підтверджень з Інтернету на надійність цього ключа.</string>
   <string name="key_trust_start_cloud_search">Почати пошук</string>
-  <string name="key_trust_results_prefix">Keybase.io пропонує “докази” , що підтверджують власником цього ключа: </string>
-  <!--keybase proof stuff-->
-  <string name="keybase_narrative_twitter">Дописувати у Twitter як %s</string>
-  <string name="keybase_narrative_github">Відомий на GitHub як %s</string>
-  <string name="keybase_narrative_dns">Контролювати доменні ім\'я(імена) %s</string>
-  <string name="keybase_narrative_web_site">Може дописувати на веб-сайті(ах) %s</string>
-  <string name="keybase_narrative_reddit">Дописувати на Reddit як %s</string>
-  <string name="keybase_narrative_coinbase">Відомий на Coinbase як %s</string>
-  <string name="keybase_narrative_hackernews">Дописувати на Hacker News як %s</string>
-  <string name="keybase_narrative_unknown">Невідомий тип підтвердження %s</string>
-  <string name="keybase_proof_failure">На жаль, підтвердження не може бути перевірене.</string>
-  <string name="keybase_unknown_proof_failure">Нерозпізнана проблема з перевіркою достовірності</string>
-  <string name="keybase_problem_fetching_evidence">Проблема з підтвердженням</string>
-  <string name="keybase_key_mismatch">Відбиток ключа не збігається з очікуваним</string>
-  <string name="keybase_dns_query_failure">Отримання запису невдале DNS TXT</string>
-  <string name="keybase_no_prover_found">Не знайдено інструменту підтвердження для</string>
-  <string name="keybase_message_payload_mismatch">Розшифрований еталонний показний не збігається з очікуваним значенням</string>
-  <string name="keybase_message_fetching_data">Отримання підтвердження</string>
-  <string name="keybase_proof_succeeded">Це підтвердження було перевірено!</string>
-  <string name="keybase_a_post">Допис</string>
-  <string name="keybase_fetched_from">отримано з</string>
-  <string name="keybase_for_the_domain">для домену</string>
-  <string name="keybase_contained_signature">має повідомлення, яке міг створити тільки власником цього ключа.</string>
-  <string name="keybase_twitter_proof">Твіт</string>
-  <string name="keybase_dns_proof">Запис DNS TXT</string>
-  <string name="keybase_web_site_proof">Текстовий файл</string>
-  <string name="keybase_github_proof">Сутність</string>
-  <string name="keybase_reddit_proof">JSON файл</string>
-  <string name="keybase_reddit_attribution">приписано Reddit до</string>
-  <string name="keybase_verify">Перевірити</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Змінити пароль</string>
   <string name="edit_key_action_add_identity">Додати сутність</string>
@@ -816,7 +774,6 @@
   <string name="drawer_close">Закрити панель навігації</string>
   <string name="my_keys">Мої ключі</string>
   <string name="nav_backup">Резервування/Відновлення</string>
-  <string name="nav_transfer">Безпечна передачі Wifi</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Набрати текст</string>
   <!--certs-->
@@ -847,26 +804,8 @@
   <string name="msg_ip_insert_keyring">Шифруються дані із в\'язки</string>
   <string name="msg_ip_insert_keys">Аналізуються ключі</string>
   <string name="msg_ip_prepare">Підготовка операцій з базою даних</string>
-  <string name="msg_ip_master">Обробляється основний ключа %s</string>
   <string name="msg_ip_master_expired">В\'язка закінчилася %s</string>
   <string name="msg_ip_master_expires">В\'язка закінчується %s</string>
-  <string name="msg_ip_master_flags_unspecified">Основний прапор: не встановлено (допускаємо всі)</string>
-  <string name="msg_ip_master_flags_cesa">Основні прапори: сертифікувати, шифрувати, підписувати, авторизувати</string>
-  <string name="msg_ip_master_flags_cesx">Основні прапори: сертифікувати, шифрувати, підписувати</string>
-  <string name="msg_ip_master_flags_cexa">Основні прапори: сертифікувати, шифрувати, авторизувати</string>
-  <string name="msg_ip_master_flags_cexx">Головні прапорці: сертифікувати, шифрувати</string>
-  <string name="msg_ip_master_flags_cxsa">Основні прапори: сертифікувати, підписувати, авторизувати</string>
-  <string name="msg_ip_master_flags_cxsx">Основні прапори: сертифікувати, підписувати</string>
-  <string name="msg_ip_master_flags_cxxa">Основні прапори: сертифікувати, авторизувати</string>
-  <string name="msg_ip_master_flags_cxxx">Основні прапори: засвідчено</string>
-  <string name="msg_ip_master_flags_xesa">Основні прапори: шифрувати, підписувати, авторизувати</string>
-  <string name="msg_ip_master_flags_xesx">Основні прапори: шифрувати, підписувати</string>
-  <string name="msg_ip_master_flags_xexa">Основні прапори: шифрувати, авторизувати</string>
-  <string name="msg_ip_master_flags_xexx">Основні прапори: шифрувати</string>
-  <string name="msg_ip_master_flags_xxsa">Основні прапори: підписувати, авторизувати</string>
-  <string name="msg_ip_master_flags_xxsx">Основні прапори: підписувати</string>
-  <string name="msg_ip_master_flags_xxxa">Основні прапори: авторизувати</string>
-  <string name="msg_ip_master_flags_xxxx">Головні прапори: жодний</string>
   <string name="msg_ip_merge_public">Об\'єднання імпортованих даних у наявну публічну в\'язку ключів</string>
   <string name="msg_ip_merge_secret">Об\'єднання імпортованих даних в наявну секретну в\'язку ключів</string>
   <string name="msg_ip_subkey">Опрацьовується підключ %s</string>
@@ -955,16 +894,9 @@
   <string name="msg_kc_secret">Канонізація секретної в\'язки %s</string>
   <string name="msg_kc_error_v3">Цей ключ OpenPGP версії 3 є застарілим та більше не використовується!</string>
   <string name="msg_kc_error_no_uid">В\'язка ключів не має чинних ідентифікаторів користувача!</string>
-  <string name="msg_kc_error_master_algo">Головний ключ використовує невідомий (%s) алгоритм!</string>
   <string name="msg_kc_error_dup_key">Залежний ключ %s повторюється у в\'язці ключів. В\'язку ключів пошкоджено, не імпортується!</string>
-  <string name="msg_kc_master">Обробляється основний ключ…</string>
-  <string name="msg_kc_master_bad_type">Видалення сертифікату невідомого типу головного ключа  (%s)</string>
-  <string name="msg_kc_master_bad_local">Видалення сертифікату головного ключа з прапором \'локальний\'</string>
-  <string name="msg_kc_master_bad_err">Видалення поганого сертифікату головного ключа</string>
   <string name="msg_kc_master_bad_time">Видалення в\'язки ключів сертифікату відкликання з майбутньою відміткою часу</string>
   <string name="msg_kc_master_bad_type_uid">Видалення ідентифікатора користувача сертифіката в поганій позиції</string>
-  <string name="msg_kc_master_bad">Видалення поганого сертифікату головного ключа</string>
-  <string name="msg_kc_master_local">Видалення сертифіката головного ключа з прапором \'локальний\'</string>
   <string name="msg_kc_revoke_dup">Видалення сертифікату відкликання надлишкових в\'язок ключів</string>
   <string name="msg_kc_notation_dup">Видалення надлишкової примітки сертифіката</string>
   <string name="msg_kc_notation_empty">Видалення порожньої примітки сертифіката</string>
@@ -1040,10 +972,7 @@
   <string name="msg_mg_found_new">Знайдено %s нових сертифікатів у в\'язці</string>
   <string name="msg_mg_unchanged">Нема що зливати</string>
   <!--createSecretKeyRing-->
-  <string name="msg_cr">Генерується новий основний ключ</string>
-  <string name="msg_cr_error_no_master">Не вказано параметрів основного ключа!</string>
   <string name="msg_cr_error_no_user_id">В\'язки мають бути створені з як мінімум одним ідентифікатором користувача!</string>
-  <string name="msg_cr_error_no_certify">Основний ключ повинен мати прапорець certify!</string>
   <string name="msg_cr_error_null_expiry">Час закінчення дії ключа не може бути ранішим за час створення ключа. Це програмна помилка, будь ласка, повідомте через звіт про помилку!</string>
   <string name="msg_cr_error_keysize_2048">Розмір ключа має бути більшим чи дорівнювати 2048!</string>
   <string name="msg_cr_error_no_curve">Не зазначено розмір ключа! Це програмна помилка, будь ласка повідомте через звіт про помилку!</string>
@@ -1065,14 +994,12 @@
   <string name="msg_mf_error_fingerprint">Дійсний відбиток ключа не зібгається з очікуваним!</string>
   <string name="msg_mf_error_keyid">Немає ІД ключа. Це внутрішня помилка! Будь ласка, надішліть звіт про ваду!</string>
   <string name="msg_mf_error_integrity">Внутрішня помилка - збій перевірки цілісності!</string>
-  <string name="msg_mf_error_master_none">Не знайдено основного сертифікату для операцій! (Усе відкликано?)</string>
   <string name="msg_mf_error_noexist_primary">Вказаний поганий ІД первинного користувача!</string>
   <string name="msg_mf_error_noexist_revoke">Вказаний поганий ІД первинного користувача!</string>
   <string name="msg_mf_error_restricted">Спроба виконати обмежену операцію без пароля! Це програмна помилка. Будь ласка, повідомте через звіт про помилки!</string>
   <string name="msg_mf_error_revoked_primary">ІД відхилених користувачів не може бути первинним!</string>
   <string name="msg_mf_error_null_expiry">Час закінчення не може бути \"такий як раніше\" для створення підключа. Це програмна помилка. Будь ласка, повідомте через звіт про помилки!</string>
   <string name="msg_mf_error_noop">Немає задач!</string>
-  <string name="msg_mf_error_passphrase_master">Фатальна помилка розшифрування основного ключа! Це програмна помилка. Будь ласка, повідомте через звіт про помилки!</string>
   <string name="msg_mf_error_passphrases_unchanged">Пароль не змінено!</string>
   <string name="msg_mf_error_pgp">Внутрішня помилка OpenPGP!</string>
   <string name="msg_mf_error_sig">Виняток підпису!</string>
@@ -1081,7 +1008,6 @@
   <string name="msg_mf_error_conflicting_nfc_commands">Не можу перемістити ключ на маркер безпеки під час операції створення підпису на картці.</string>
   <string name="msg_mf_error_duplicate_keytocard_for_slot">Маркер безпеки підтримує лише один слот на ключ</string>
   <string name="msg_mf_error_invalid_flags_for_keytocard">Недопустимі прапори для ключа маркера безпеки.</string>
-  <string name="msg_mf_master">Змінюються основі сертифікації</string>
   <string name="msg_mf_passphrase">Зміна паролю для набору ключів</string>
   <string name="msg_mf_pin">Зміна PIN на карті</string>
   <string name="msg_mf_admin_pin">Зміна PIN адміністратора на карті</string>
@@ -1128,7 +1054,6 @@
   <string name="msg_pr_subkey_nomatch">Залежний ключ не на маркері безпеки: %s</string>
   <string name="msg_pr_success">Ключ успішно просунуто</string>
   <!--Other messages used in OperationLogs-->
-  <string name="msg_ek_error_dummy">Не можу редагувати в\'язку ключів з відокремленим головним ключем!</string>
   <string name="msg_ek_error_not_found">Ключ не знайдено!</string>
   <!--Messages for DecryptVerify operation-->
   <string name="msg_dc_askip_bad_flags">Ключ не є шифрувальним, пропускаю...</string>
@@ -1259,15 +1184,11 @@
     <item quantity="other">Сертифікування %1$d користувацьких атрибутів для ключа %2$s</item>
   </plurals>
   <string name="msg_crt_error_self">Не можу видати сертифікат самому собі як цей!</string>
-  <string name="msg_crt_error_master_not_found">Основний ключ не знайдено!</string>
   <string name="msg_crt_error_nothing">Сертифіковані ключі відсутні!</string>
-  <string name="msg_crt_error_unlock">Помилка розблокування основного ключа!</string>
   <string name="msg_crt">Сертифікування в\'язки ключів</string>
-  <string name="msg_crt_master_fetch">Отримання сертифікації основного ключа</string>
   <string name="msg_crt_nfc_return">Повернення до NFC екрану</string>
   <string name="msg_crt_save">Зберігання сертифікованого ключа %s</string>
   <string name="msg_crt_saving">Зберігання в\'язки ключів</string>
-  <string name="msg_crt_unlock">Розблокування основного ключа</string>
   <string name="msg_crt_success">Успішно сертифіковані сутності</string>
   <string name="msg_crt_warn_not_found">Ключ не знайдено!</string>
   <string name="msg_crt_warn_cert_failed">Генерування сертифікатів невдале!</string>
@@ -1285,7 +1206,6 @@
   <string name="msg_import_fetch_error_not_found">Ключ не знайдено!</string>
   <string name="msg_import_fetch_error_keyserver">Не можу отримати ключ із сервера ключів: %s</string>
   <string name="msg_import_fetch_error_keyserver_secret">Не можу імпортувати секретний ключ з сервера ключів!</string>
-  <string name="msg_import_fetch_keybase">Отримання з keybase.io: %s</string>
   <string name="msg_import_fetch_facebook">Отримання з Facebook: %s</string>
   <string name="msg_import_fetch_keyserver">Отримання з keyserver: %s</string>
   <string name="msg_import_fetch_keyserver_ok">Отримання ключа успішне</string>
@@ -1387,14 +1307,6 @@
   <string name="msg_get_query_too_short_or_too_many_responses">Не знайдено жодного чи дуже багато ключів. Будь ласка, удоскональте Ваш запит.</string>
   <string name="msg_get_no_enabled_source">Увімкніть бодай одне джерело для звантаження!</string>
   <string name="msg_download_query_failed">Помилка виникла під час пошуку ключів.</string>
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_verification">Пробую перевірити базу ключів для %s</string>
-  <string name="msg_keybase_error_no_prover">Не знайдено інструменту перевірки підтверджень для %s</string>
-  <string name="msg_keybase_error_fetching_evidence">Проблема з отриманням підтвердження</string>
-  <string name="msg_keybase_error_key_mismatch">Відбиток ключа не збігається з відбитком у пості підтвердження</string>
-  <string name="msg_keybase_error_dns_fail">Отримання запису DNS TXT невдале </string>
-  <string name="msg_keybase_error_specific">%s</string>
-  <string name="msg_keybase_error_msg_payload_mismatch">Розшифроване підтвердження не збігається з очікуваним значенням</string>
   <!--Messages for Mime parsing operation-->
   <string name="msg_mime_parsing_start">Аналіз MIME структури</string>
   <string name="msg_mime_parsing_error">аналіз MIME невдалий</string>
@@ -1684,7 +1596,6 @@
   <string name="keyserver_last_updated_never">Остання перевірка: ніколи</string>
   <string name="key_insecure_bitstrength_2048_problem">Ключ використовує <b>%1$s</b> алгоритм стійкістю <b>%2$s біт</b>. Ключ безпеки повинен мати як мінімум 2048 біт.</string>
   <string name="key_insecure_bitstrength_2048_solution">Цей ключ не може бути модернізованим. Для безпечної комунікації власник має згенерувати новий ключ.</string>
-  <string name="key_insecure_unknown_curve_problem">Цей ключ використовує <b>%1$s</b> алгоритм, який не в білому списку.</string>
   <string name="key_insecure_unknown_curve_solution">Цей ключ не може бути модернізованим. Для безпечної комунікації власник має згенерувати новий ключ.</string>
   <string name="key_insecure_unidentified_problem">Виникла невизначена проблема з цим ключем.</string>
   <string name="key_insecure_unidentified_solution">Будь ласка надішліть звіт про помилку.</string>
@@ -1695,8 +1606,6 @@
   <string name="insecure_encrypt_bitstrength_suggestion">Цей ключ у використанні небезпечний та не може бути модернізований. Для безпечної комунікації Ви маєте створити новий ключ!</string>
   <string name="insecure_sign_bitstrength">Ключ яким відправлено (підписано) це повідомлення є застарілим!\n\nАлгоритм (%s) налаштовано на довжину 1024 біти чи менше, що вважається небезпечним з 2006 року.</string>
   <string name="insecure_sign_bitstrength_suggestion">Цей ключ у використанні небезпечний та не може бути модернізований. Для безпечної комунікації відправник має створити новий ключ!</string>
-  <string name="insecure_encrypt_not_secure_curve">Ключ, яким було отримано (розшифровано) це повідомлення, використовує еліптичні криві OID %1$s, що відсутні у білому списку!</string>
-  <string name="insecure_sign_not_secure_curve">Ключ, яким було відправлено (підписано) це повідомлення, використовує еліптичні криві OID %1$s, що відсутні у білому списку!</string>
   <string name="insecure_encrypt_unidentified">Виникла невизначена проблема безпеки з ключем, який було використано для отримання (розшифрування) цього повідомлення!</string>
   <string name="insecure_sign_unidentified">Виникла невизначена проблема безпеки з ключем, який було використано для відправки (підписування) цього повідомлення!</string>
   <string name="insecure_report_suggestion">Це може бути проблема в OpenKeychain. Будь ласка, звітуйте через відстежувач проблем!</string>
@@ -1873,7 +1782,7 @@
   <string name="keylist_item_key_id">Ідентифікатор ключа: %s</string>
   <string name="keylist_header_anonymous">Анонімно</string>
   <string name="keylist_header_special">#</string>
-    <string name="subkey_action_create">Підключ буде створено</string>
+  <string name="subkey_action_create">Підключ буде створено</string>
   <string name="subkey_action_revoke">Підключ буде відкликано</string>
   <string name="subkey_action_strip">Підключ буде відділено</string>
   <string name="subkey_action_expiry_never">Термін дії буде змінено на ніколи</string>

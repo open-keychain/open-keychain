@@ -1,9 +1,9 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (หมายเหตุ: กรุณาใส่ทุกประโยคลงในบรรทัดของตัวเอง Transifex จะใส่ทุกบรรทัดลงในช่องสำหรับแปลของมันเอง!)
 
-Advanced screen allows you to
-* share key in non-recommended ways
-* edit identities
-* edit subkeys
-* examine certificates in detail
+หน้าจอขั้นสูงอนุญาตให้คุณ
+* แบ่งปันกุญแจในวิธีที่ไม่แนะนำ
+* แก้ไขอัตลักษณ์
+* แก้ไขกุญแจย่อย
+* พิจารณาใบอนุญาตในรายละเอียด
 
-Only proceed if you know what you are doing!
+เดินหน้าต่อก็ต่อเมื่อคุณรู้ว่าคุณกำลังทำอะไรอยู่เท่านั้น!

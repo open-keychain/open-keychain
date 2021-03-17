@@ -23,7 +23,6 @@
   <!--label-->
   <string name="label_name">Name</string>
   <string name="label_enter_smartpgp_authority_name">Name</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Enable Tor</string>
   <!--proxy type choices and values-->
@@ -80,7 +79,6 @@
   <!--Key view-->
   <string name="key_view_tab_share">వంతు</string>
   <!--Key trust-->
-  <!--keybase proof stuff-->
   <!--Edit key-->
   <!--Create key-->
   <!--View key-->
@@ -104,7 +102,6 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <!--Keyserver sync-->

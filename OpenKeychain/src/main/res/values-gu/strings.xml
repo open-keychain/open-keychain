@@ -8,7 +8,6 @@
   <string name="title_encrypt_files">એનક્રિપ્ટ કરો </string>
   <string name="title_decrypt">ડિક્રિપ્ટ કરો </string>
   <string name="title_add_subkey">ઉપચાવી ઉમેરો</string>
-  <string name="title_change_master_key">મુખ્ય ચાવી બદલો</string>
   <string name="title_edit_key">ચાવી સુધારો</string>
   <string name="title_preferences">સેટિંગ્સ</string>
   <string name="title_api_registered_apps">એપ્સ</string>
@@ -40,12 +39,11 @@
   <string name="section_user_ids">ઓળખ</string>
   <string name="section_security_token">સુરક્ષા ટોકન</string>
   <string name="section_linked_system_contact">જોડાયેલા સાધન સંપર્ક</string>
-  <string name="section_keybase_proofs">Kaybase.io સાબિતીઓ</string>
   <string name="section_should_you_trust">શું તમારે આ ચાવી પર ભરોસો કરવો જોઈએ?</string>
   <string name="section_proof_details">સાબિતીની ચકાસણી</string>
   <string name="section_keys">ઉપચાવીઓ</string>
   <string name="section_cloud_search">ચાવી શોધો</string>
-  <string name="section_cloud_search_summary">ચાવી સર્વર, keybase.io</string>
+  <string name="section_cloud_search_summary">ચાવી સર્વર</string>
   <string name="section_passphrase_cache">પાસવર્ડસ અને પિન્સ</string>
   <string name="section_proxy_settings">નેટવર્ક અનામિત્વ</string>
   <string name="section_proxy_settings_summary">ટોર, પ્રોક્સી સેટિંગ્સ</string>
@@ -170,7 +168,6 @@
   <string name="label_smartpgp_roots">SmartPGP: વિશ્વસનીય સત્તાવાળાઓ</string>
   <string name="label_enter_smartpgp_authority_name">નામ</string>
   <string name="pref_keyserver">OpenPGP ચાવીના સર્વરો</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">ટોર સક્રિય કરો</string>
   <!--proxy type choices and values-->
@@ -232,8 +229,6 @@
   <string name="key_view_tab_keys">ઉપચાવીઓ</string>
   <string name="user_id_info_revoked_title">રદ</string>
   <!--Key trust-->
-  <!--keybase proof stuff-->
-  <string name="keybase_verify">ચકાસો</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">પાસવર્ડ બદલો</string>
   <!--Create key-->
@@ -263,7 +258,6 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_pwd">પાસવર્ડ</string>

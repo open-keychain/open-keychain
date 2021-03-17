@@ -1,10 +1,14 @@
 [//]: # (NOTERING: Var vänlig och sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
 
+## 5.6
+  * Compatibility with Android 10 and higher
+  * Several bug fixes
+
 ## 5.5
-  * Fix decryption from clipboard on Android 10
+  * Åtgärdat dekryptering från utklipp i Android 10
 
 ## 5.4
-  * Add WKD Advanced method
+  *Lägg till WKD Avancerad metod
   * Add COTECH Security Key Shop
 
 ## 5.3

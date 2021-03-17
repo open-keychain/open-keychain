@@ -40,12 +40,11 @@
   <string name="section_user_ids">用户标识</string>
   <string name="section_security_token">安全令牌</string>
   <string name="section_linked_system_contact">关联的系统联系人</string>
-  <string name="section_keybase_proofs">Keybase.io 证明</string>
   <string name="section_should_you_trust">信任此密钥？</string>
   <string name="section_proof_details">验证</string>
   <string name="section_keys">子密钥</string>
   <string name="section_cloud_search">搜索密钥</string>
-  <string name="section_cloud_search_summary">密钥服务器， keybase.io</string>
+  <string name="section_cloud_search_summary">密钥服务器</string>
   <string name="section_passphrase_cache">密码和 PIN 码</string>
   <string name="section_passphrase_cache_summary">正在处理</string>
   <string name="section_proxy_settings">匿名网络</string>
@@ -198,8 +197,6 @@
   <string name="label_smartpgp_authority_dialog_delete">删除受信方</string>
   <string name="pref_keyserver">OpenPGP 密钥服务器</string>
   <string name="pref_keyserver_summary">在指定的 OpenPGP 密钥服务器上搜索（HKP协议）</string>
-  <string name="pref_keybase">keybase.io</string>
-  <string name="pref_keybase_summary">在 keybase.io 搜索密钥</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">在 Facebook 上根据用户名搜索密钥</string>
   <string name="pref_wkd">网络密钥目录</string>
@@ -208,14 +205,8 @@
   <string name="label_sync_settings_keyserver_summary_on">每隔三天，自动与服务器更新密钥</string>
   <string name="label_sync_settings_keyserver_summary_off">不自动更新密钥</string>
   <string name="label_sync_settings_wifi_title">仅在 Wi-Fi 环境下同步</string>
-  <string name="label_sync_settings_contacts_title">与联系人关联密钥</string>
-  <string name="label_sync_settings_contacts_summary_on">根据名字和邮件地址将密钥关联到联系人。这是本地操作，不需要设备联网。</string>
-  <string name="label_sync_settings_contacts_summary_off">新密钥将不会与联系人相关联</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">警告</string>
   <string name="label_experimental_settings_desc_summary">这些功能目前尚未完成或者缺少用户经验性/安全性的研究结果。所以，不保证他们是安全的，请不要报告遇到的问题！</string>
-  <string name="label_experimental_settings_keybase_title">Keybase.io 证明</string>
-  <string name="label_experimental_settings_keybase_summary">每次展示密钥时自动从keybase.io获取证明并显示它们</string>
   <string name="label_experimental_settings_theme_summary">（图标和某些界面还未根据深色主题进行调整）</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">启用 Tor 代理</string>
@@ -635,7 +626,6 @@
   <string name="key_view_tab_share">分享</string>
   <string name="key_view_tab_keys">子密钥</string>
   <string name="key_view_tab_certs">认证列表</string>
-  <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">已吊销</string>
   <string name="user_id_info_revoked_text">该用户标识已被密钥拥有者吊销，即不再可用</string>
   <string name="user_id_info_certified_title">已验证</string>
@@ -645,36 +635,6 @@
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">网上没有关于此密钥可信度的证明</string>
   <string name="key_trust_start_cloud_search">开始搜索</string>
-  <string name="key_trust_results_prefix">Keybase.io 提供用以确定该密钥所有者的证明：</string>
-  <!--keybase proof stuff-->
-  <string name="keybase_narrative_twitter">能发送推文到 %s </string>
-  <string name="keybase_narrative_github">在GitHub上的用户名是 %s</string>
-  <string name="keybase_narrative_dns">拥有域名 %s</string>
-  <string name="keybase_narrative_web_site">能发送网页到 %s</string>
-  <string name="keybase_narrative_reddit">以 %s 之名发送到 Reddit </string>
-  <string name="keybase_narrative_coinbase">在Coinbase上的用户名是 %s</string>
-  <string name="keybase_narrative_hackernews">以 %s 之名发送到 Hacker News</string>
-  <string name="keybase_narrative_unknown">未知的证明类型 %s</string>
-  <string name="keybase_proof_failure">很不幸，该证明检验失败</string>
-  <string name="keybase_unknown_proof_failure">检验证明时出现未知问题</string>
-  <string name="keybase_problem_fetching_evidence">证明有问题</string>
-  <string name="keybase_key_mismatch">证明内容与该密钥指纹不匹配</string>
-  <string name="keybase_dns_query_failure">取回 DNS 的 TXT 记录失败</string>
-  <string name="keybase_no_prover_found">没有找到证明检查</string>
-  <string name="keybase_message_payload_mismatch">加密证明内容不匹配</string>
-  <string name="keybase_message_fetching_data">正在获取证明</string>
-  <string name="keybase_proof_succeeded">该证明已被检验</string>
-  <string name="keybase_a_post">一个网页</string>
-  <string name="keybase_fetched_from">取自</string>
-  <string name="keybase_for_the_domain">为该域名</string>
-  <string name="keybase_contained_signature">包括一条只能被该密钥持有人发送的信息。</string>
-  <string name="keybase_twitter_proof">一条推文</string>
-  <string name="keybase_dns_proof">一个DNS TXT记录</string>
-  <string name="keybase_web_site_proof">一个文本文件</string>
-  <string name="keybase_github_proof">一个gist</string>
-  <string name="keybase_reddit_proof">一个JSON文件</string>
-  <string name="keybase_reddit_attribution">归到 Reddit </string>
-  <string name="keybase_verify">校验</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">变更密码</string>
   <string name="edit_key_action_add_identity">添加用户标识</string>
@@ -758,7 +718,6 @@
   <string name="drawer_close">关闭抽屉</string>
   <string name="my_keys">我的密钥</string>
   <string name="nav_backup">备份/恢复</string>
-  <string name="nav_transfer">安全 Wifi 传输</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">此处输入要加密的内容</string>
   <!--certs-->
@@ -792,23 +751,23 @@
   <string name="msg_ip_master">正在处理主密钥 %s</string>
   <string name="msg_ip_master_expired">密钥环过期于 %s</string>
   <string name="msg_ip_master_expires">密钥环过期于 %s</string>
-  <string name="msg_ip_master_flags_unspecified">主密钥用途：未指定(假定为全部 )</string>
-  <string name="msg_ip_master_flags_cesa">主密钥用途：认证，加密，签名，授权</string>
-  <string name="msg_ip_master_flags_cesx">主密钥用途：认证，加密，签名</string>
-  <string name="msg_ip_master_flags_cexa">主密钥用途：认证，加密，授权</string>
-  <string name="msg_ip_master_flags_cexx">主密钥用途：认证，加密</string>
-  <string name="msg_ip_master_flags_cxsa">主密钥用途：认证，签名，授权</string>
-  <string name="msg_ip_master_flags_cxsx">主密钥用途：认证，签名</string>
-  <string name="msg_ip_master_flags_cxxa">主密钥用途：认证，授权</string>
-  <string name="msg_ip_master_flags_cxxx">主密钥用途：认证</string>
-  <string name="msg_ip_master_flags_xesa">主密钥用途：加密，签名，授权</string>
-  <string name="msg_ip_master_flags_xesx">主密钥用途：加密，签名</string>
-  <string name="msg_ip_master_flags_xexa">主密钥用途：加密，授权</string>
-  <string name="msg_ip_master_flags_xexx">主密钥用途：加密</string>
-  <string name="msg_ip_master_flags_xxsa">主密钥用途：签名，授权</string>
-  <string name="msg_ip_master_flags_xxsx">主密钥用途：签名</string>
-  <string name="msg_ip_master_flags_xxxa">主密钥用途：授权</string>
-  <string name="msg_ip_master_flags_xxxx">主密钥用途：无</string>
+  <string name="msg_ip_master_flags_unspecified">主标记：未指定 (假定全部)</string>
+  <string name="msg_ip_master_flags_cesa">主密钥：认证、加密、签名、验证</string>
+  <string name="msg_ip_master_flags_cesx">主标记：认证、加密、签署</string>
+  <string name="msg_ip_master_flags_cexa">主标记：认证、加密、验证</string>
+  <string name="msg_ip_master_flags_cexx">主标记：认证、加密</string>
+  <string name="msg_ip_master_flags_cxsa">主标记：认证、签署、验证</string>
+  <string name="msg_ip_master_flags_cxsx">主标记：认证、签署</string>
+  <string name="msg_ip_master_flags_cxxa">主标记：认证、验证</string>
+  <string name="msg_ip_master_flags_cxxx">主标记：认证</string>
+  <string name="msg_ip_master_flags_xesa">主标记：加密、签署、验证</string>
+  <string name="msg_ip_master_flags_xesx">主标记：加密、签署</string>
+  <string name="msg_ip_master_flags_xexa">主标记：加密、验证</string>
+  <string name="msg_ip_master_flags_xexx">主标记：加密</string>
+  <string name="msg_ip_master_flags_xxsa">主标记：签署、验证</string>
+  <string name="msg_ip_master_flags_xxsx">主标记：签署</string>
+  <string name="msg_ip_master_flags_xxxa">主标记：验证</string>
+  <string name="msg_ip_master_flags_xxxx">主标记：无</string>
   <string name="msg_ip_merge_public">正在合并已导入的数据到现有的公钥密钥环</string>
   <string name="msg_ip_merge_secret">正在合并已导入的数据到现有的私钥密钥环</string>
   <string name="msg_ip_subkey">正在处理子密钥 %s</string>
@@ -888,16 +847,16 @@
   <string name="msg_kc_secret">正在格式化私钥密钥环 %s</string>
   <string name="msg_kc_error_v3">这是一个 OpenPGP 3 版的密钥， 已不被支持！</string>
   <string name="msg_kc_error_no_uid">密钥环中没有有效的用户标识！</string>
-  <string name="msg_kc_error_master_algo">该主密钥使用了一个未知算法（%s）！</string>
+  <string name="msg_kc_error_master_algo">主密钥使用了一个未知的 (%s) 算法！</string>
   <string name="msg_kc_error_dup_key">子密钥 %s 在密钥环中出现了两次。密钥环没有正确格式化，放弃导入！</string>
-  <string name="msg_kc_master">正在处理主密钥</string>
-  <string name="msg_kc_master_bad_type">正在移除未知类型 (%s) 的主密钥</string>
-  <string name="msg_kc_master_bad_local">正在移除标记为\'local\'的主密钥</string>
-  <string name="msg_kc_master_bad_err">正在移除损坏的主密钥认证</string>
+  <string name="msg_kc_master">正在处理主密钥 </string>
+  <string name="msg_kc_master_bad_type">移除主密钥证书，其类型未知 (%s)</string>
+  <string name="msg_kc_master_bad_local">移除带 \'本地\' 标记的主密钥证书</string>
+  <string name="msg_kc_master_bad_err">正在移除坏的主密钥证书</string>
   <string name="msg_kc_master_bad_time">正在移除带有未来时间戳的吊销认证</string>
   <string name="msg_kc_master_bad_type_uid">正在移除错误位置的用户标识</string>
-  <string name="msg_kc_master_bad">正在移除损坏的主密钥认证</string>
-  <string name="msg_kc_master_local">正在移除标记为\'local\'的主密钥</string>
+  <string name="msg_kc_master_bad">正在移除坏的主密钥证书</string>
+  <string name="msg_kc_master_local">移除带 \'本地\' flag 的主密钥证书 </string>
   <string name="msg_kc_revoke_dup">移除多余的密钥环吊销认证</string>
   <string name="msg_kc_notation_dup">移除多余的注释认证</string>
   <string name="msg_kc_notation_empty">移除空白的注释认证</string>
@@ -968,9 +927,9 @@
   <string name="msg_mg_unchanged">无物可合并</string>
   <!--createSecretKeyRing-->
   <string name="msg_cr">正在生成新的主密钥</string>
-  <string name="msg_cr_error_no_master">未指定主密钥选项！</string>
+  <string name="msg_cr_error_no_master">未指定主密钥选项！ </string>
   <string name="msg_cr_error_no_user_id">密钥链至少需要一个用户ID才能创建！</string>
-  <string name="msg_cr_error_no_certify">主密钥必须包含认证用途！</string>
+  <string name="msg_cr_error_no_certify">主密钥必须有 “认证”标记！</string>
   <string name="msg_cr_error_null_expiry">在密钥创建过程中不允许过期时间为“与之前相同”。这是一个编程错误，请发送错误报告！</string>
   <string name="msg_cr_error_keysize_2048">密钥的大小不能小于2048位！</string>
   <string name="msg_cr_error_no_curve">没有指定密钥大小！这是一个编程错误，请发送错误报告！</string>
@@ -992,14 +951,14 @@
   <string name="msg_mf_error_fingerprint">实际的密钥指纹与期望值不匹配！</string>
   <string name="msg_mf_error_keyid">无密钥ID。这是一个内部错误，请发送错误报告！</string>
   <string name="msg_mf_error_integrity">内部错误，完整性校验失败！</string>
-  <string name="msg_mf_error_master_none">没有找到可供操作的主密钥认证！(都吊销了？)</string>
+  <string name="msg_mf_error_master_none">没有找到可供操作的主证书！（都被撤销了？）</string>
   <string name="msg_mf_error_noexist_primary">指定了错误的用户ID！</string>
   <string name="msg_mf_error_noexist_revoke">吊销指定密钥时遇到错误的用户ID！</string>
   <string name="msg_mf_error_restricted">尝试无密码执行限制操作！这是一个编程错误，请发送错误报告！</string>
   <string name="msg_mf_error_revoked_primary">无法吊销主用户标识!</string>
   <string name="msg_mf_error_null_expiry">在子密钥创建过程中不允许过期时间为“与之前相同”。这是一个编程错误，请发送错误报告！</string>
   <string name="msg_mf_error_noop">无事可做！</string>
-  <string name="msg_mf_error_passphrase_master">解密主密钥时发生致命错误！这可能是一个编程错误，请发送错误报告！</string>
+  <string name="msg_mf_error_passphrase_master">解密主密钥时发生重大错误！这可能是一个编程错误，请提交一份错误报告！</string>
   <string name="msg_mf_error_passphrases_unchanged">未变更任何密码！</string>
   <string name="msg_mf_error_pgp">OpenPGP 内部错误！</string>
   <string name="msg_mf_error_sig">签名异常！</string>
@@ -1008,7 +967,7 @@
   <string name="msg_mf_error_conflicting_nfc_commands">不能在令牌内创建签名的过程中将密钥移动到安全令牌中。</string>
   <string name="msg_mf_error_duplicate_keytocard_for_slot">安全令牌对于每种密钥类型只提供一个插槽。</string>
   <string name="msg_mf_error_invalid_flags_for_keytocard">安全令牌密钥的标签不正确。</string>
-  <string name="msg_mf_master">正在修改主密钥认证</string>
+  <string name="msg_mf_master">正在修改主证书</string>
   <string name="msg_mf_passphrase">正在更改密钥环密码</string>
   <string name="msg_mf_pin">正在变更安全令牌PIN码</string>
   <string name="msg_mf_admin_pin">正在变更安全令牌管理员PIN码</string>
@@ -1055,7 +1014,7 @@
   <string name="msg_pr_subkey_nomatch">子密钥不在安全令牌中: %s</string>
   <string name="msg_pr_success">密钥成功升级</string>
   <!--Other messages used in OperationLogs-->
-  <string name="msg_ek_error_dummy">主密钥已剥离时无法编辑密钥环！</string>
+  <string name="msg_ek_error_dummy">不能编辑带剥离的主密钥的密钥环！</string>
   <string name="msg_ek_error_not_found">未找到密钥</string>
   <!--Messages for DecryptVerify operation-->
   <string name="msg_dc_askip_bad_flags">不是加密密钥，跳过...</string>
@@ -1180,11 +1139,11 @@
     <item quantity="other">正在认证密钥 %2$s 的 %1$d 个用户属性。</item>
   </plurals>
   <string name="msg_crt_error_self">无法发出这样的自认证！</string>
-  <string name="msg_crt_error_master_not_found">未找到主密钥！</string>
+  <string name="msg_crt_error_master_not_found">未找到主密钥！ </string>
   <string name="msg_crt_error_nothing">没有密钥被签名</string>
   <string name="msg_crt_error_unlock">解锁主密钥时出错！</string>
   <string name="msg_crt">正在为密钥环签名...</string>
-  <string name="msg_crt_master_fetch">正在获取认证方的主密钥</string>
+  <string name="msg_crt_master_fetch">正在获取并认证主密钥</string>
   <string name="msg_crt_nfc_return">返回到 NFC 屏幕</string>
   <string name="msg_crt_save">正在保存验证后的密钥 %s</string>
   <string name="msg_crt_saving">保存密钥环中....</string>
@@ -1203,7 +1162,6 @@
   <string name="msg_import_fetch_error_not_found">未找到密钥</string>
   <string name="msg_import_fetch_error_keyserver">无法从密钥服务器下载密钥：%s</string>
   <string name="msg_import_fetch_error_keyserver_secret">无法从密钥服务器导入私钥！</string>
-  <string name="msg_import_fetch_keybase">正在从 keybase.io 获取密钥：%s</string>
   <string name="msg_import_fetch_facebook">正在从 Facebook 获取密钥：%s</string>
   <string name="msg_import_fetch_keyserver">正在从密钥服务器获取密钥：%s</string>
   <string name="msg_import_fetch_keyserver_ok">密钥取回成功</string>
@@ -1293,14 +1251,6 @@
   <string name="msg_get_query_too_short_or_too_many_responses">没有找到或找到过多结果。请优化您的关键词！</string>
   <string name="msg_get_no_enabled_source">启用至少一个信息源用于下载！</string>
   <string name="msg_download_query_failed">搜索密钥时出错。</string>
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_verification">尝试使用 keybase 验证密钥 %s</string>
-  <string name="msg_keybase_error_no_prover">没有找到 %s 的证明检查</string>
-  <string name="msg_keybase_error_fetching_evidence">获取证明出现问题</string>
-  <string name="msg_keybase_error_key_mismatch">证明内容与该密钥指纹不匹配</string>
-  <string name="msg_keybase_error_dns_fail">取回 DNS 的 TXT 记录失败</string>
-  <string name="msg_keybase_error_specific">%s</string>
-  <string name="msg_keybase_error_msg_payload_mismatch">证明内容匹配失败</string>
   <!--Messages for Mime parsing operation-->
   <string name="msg_mime_parsing_start">正在解析 MIME 结构</string>
   <string name="msg_mime_parsing_error">MIME 解析成功！</string>
@@ -1584,7 +1534,7 @@
   <string name="keyserver_last_updated_never">上一次检查：无</string>
   <string name="key_insecure_bitstrength_2048_problem">此密钥使用长度为<b>%2$s位</b>的<b>%1$s</b>加密算法。要保证安全，密钥至少需要2048位</string>
   <string name="key_insecure_bitstrength_2048_solution">此密钥不能升级。为了通信安全，密钥持有者必须重新生成新的密钥</string>
-  <string name="key_insecure_unknown_curve_problem">此密钥使用的<b>%1$s</b>算法不在白名单中。</string>
+  <string name="key_insecure_unknown_curve_problem">此密钥使用 <b>%1$s</b> 算法，这个算法不在白名单中。</string>
   <string name="key_insecure_unknown_curve_solution">此密钥不能升级。为了通信安全，密钥持有者必须重新生成新的密钥</string>
   <string name="key_insecure_unidentified_problem">此密钥出现了一个尚未定义的问题</string>
   <string name="key_insecure_unidentified_solution">请发送一个缺陷报告。</string>
@@ -1595,8 +1545,8 @@
   <string name="insecure_encrypt_bitstrength_suggestion">正在使用的密钥是不安全的，并且无法被升级。为了更安全地通信，你必须创建一个新的密钥！</string>
   <string name="insecure_sign_bitstrength">你选择用于发送（签名）信息的密钥已经过时！\n\n你配置的小于等于1024位的（%s）算法密钥，早在2006年就被认为在一般使用中不安全了。</string>
   <string name="insecure_sign_bitstrength_suggestion">正在使用的密钥是不安全的，并且无法被升级。为了更安全地通信，发送者必须创建一个新的密钥！</string>
-  <string name="insecure_encrypt_not_secure_curve">用于接收（解密）此消息的密钥使用的椭圆曲线算法不在白名单中！OID：%1$s</string>
-  <string name="insecure_sign_not_secure_curve">用于发送（签名）此消息的密钥使用的椭圆曲线算法不在白名单中！OID：%1$s</string>
+  <string name="insecure_encrypt_not_secure_curve">接收(解密)此消息的密钥使用带 OID %1$s的椭圆曲线，其不在安全曲线之列！</string>
+  <string name="insecure_sign_not_secure_curve">发送(签署)此消息的密钥使用带 OID %1$s 的椭圆曲线，其不在安全曲线列表中！</string>
   <string name="insecure_encrypt_unidentified">用于接收（解密）此信息的密钥包含一个尚未定义的安全问题！</string>
   <string name="insecure_sign_unidentified">用于发送（签名）此信息的密钥包含一个尚未定义的安全问题！</string>
   <string name="insecure_report_suggestion">OpenKeychain也许出现了一个问题，请上传一份报告到我们的问题追踪服务器！</string>

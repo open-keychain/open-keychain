@@ -1,17 +1,21 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (หมายเหตุ: กรุณาใส่ทุกประโยคลงในบรรทัดของตัวเอง Transifex จะใส่ทุกบรรทัดลงในช่องสำหรับแปลของมันเอง!)
+
+## 5.6
+  * Compatibility with Android 10 and higher
+  * Several bug fixes
 
 ## 5.5
-  * Fix decryption from clipboard on Android 10
+  * แก้ไขการถอดรหัสลับจากคลิปบอร์ดบนแอนดรอยด์ 10
 
 ## 5.4
   * Add WKD Advanced method
   * Add COTECH Security Key Shop
 
 ## 5.3
-  * Use keys.openpgp.org as default keyserver
+  * ใช้ keys.openpgp.org เป็นเซิร์ฟเวอร์กุญแจปริยาย
 
 ## 5.2
-  * Improved key import from clipboard
+  * ปรับปรุงการนำเข้ากุญแจจากคลิปบอร์ด
 
 ## 5.1
   * Support for Ledger Nano S

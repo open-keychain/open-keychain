@@ -1,22 +1,26 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 5.6
+  * Compatibility with Android 10 and higher
+  * Several bug fixes
+
 ## 5.5
-  * Fix decryption from clipboard on Android 10
+  * Fikser dekryptering fra utklippstavlen på Android 10
 
 ## 5.4
-  * Add WKD Advanced method
-  * Add COTECH Security Key Shop
+  * Legger til WKD Advanced metoden
+  * Legger til COTECH Sikkerhetsnøkkelbutikk
 
 ## 5.3
-  * Use keys.openpgp.org as default keyserver
+  * Bruk keys.openpgp.org som standard keyserver
 
 ## 5.2
-  * Improved key import from clipboard
+  * Forbedret nøkkelimport fra utiklippstavle
 
 ## 5.1
-  * Support for Ledger Nano S
-  * Support Web Key Directory (WKD) search
-  * Fixed potential API security issue
+  * Støtte for Ledge Nano S
+  * Støtte for Web Key Directory (WKD) søk
+  * Fikset et mulig API sikkerhets problem
 
 ## 5.0
   * Forbedret Autocrypt-støtte
@@ -28,24 +32,24 @@
 
 ## 4.8
 
-  * Improved support for USB tokens: Gnuk, Nitrokey models, YubiKey 4 models
-  * Feature to find the position of the device's NFC reader
+  * Forbedret støtte for USB nøkler: Gnuk, Nitrokey modeller, YubiKey 4 modeller
+  * Funksjon for å finne enhetens NFC-leserplassering
 
 ## 4.7
 
   * Forbedret import fra utklippstavle
   * Ny nøkkelopprettelsesveiviser for sikkerhetssymbol
-  * Removed password cache "time to live" setting
+  * Fjernet passord-cache foreldelsesinnstilling
 
 
 ## 4.6
 
-  * Import your keys using our new Secure Wi-Fi Transfer mechanism
+  * Importer nøklene dine ved bruk av vår nye sikre Wi-Fi  overføringsmekanisme
 
 
 ## 4.5
 
-  * Detailed description of security problems
+  * Detaljert beskrivelse av sikkerhetsproblemer
   * Vis nøkkelstatus per nøkkel
   * Støtte for EdDSA
   * Fiks for pgp.mit.edu (nytt sertifikat)

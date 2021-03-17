@@ -1,29 +1,29 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+[//]: # (หมายเหตุ: กรุณาใส่ทุกประโยคลงในบรรทัดของตัวเอง Transifex จะใส่ทุกบรรทัดลงในช่องสำหรับแปลของมันเอง!)
 
 [https://www.openkeychain.org](https://www.openkeychain.org)
 
-[OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
+[OpenKeychain](https://www.openkeychain.org) เป็นซอฟต์แวร์ OpenPGP สำหรับแอนดรอยด์
 
-License: GPLv3+
+สัญญาอนุญาต: GPLv3+
 
-[//]: # (NOTE: Alphabetic ordering)
+[//]: # (หมายเหตุ: เรียงลำดับตามอักษร)
 
-## Main Developers
-  * Dominik Schürmann (Maintainer)
+## นักพัฒนาหลัก
+  * Dominik Schürmann (ผู้ดูแลรักษา)
   * Vincent Breitmoser
 
-## Top Contributors
+## ผู้ร่วมสมทบอันดับต้น
   * Adithya Abraham Philip
   * Andrea Torlaschi
   * Arnaud Fontaine
   * Ash Hughes
   * 'mar-v-in'
   * Nikita Mikhailov
-  * 'Thialfihar' (APG developer)
+  * 'Thialfihar' (นักพัฒนา APG)
   * Tim Bray
   * Tobias Erthal
 
-## Occasional Contributors
+## ผู้ร่วมสมทบตามโอกาส
   * Alex Fong Jie Wen
   * Andrea Torlaschi
   * Art O Cathain

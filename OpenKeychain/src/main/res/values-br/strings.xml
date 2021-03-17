@@ -35,7 +35,6 @@
   <string name="label_theme">Tem</string>
   <string name="label_enter_smartpgp_authority_name">Anv</string>
   <string name="pref_facebook">Facebook</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Gweredekaat Tor</string>
   <!--proxy type choices and values-->
@@ -102,7 +101,6 @@
   <string name="key_view_tab_start">Stagañ ganti</string>
   <string name="key_view_tab_share">Rannañ</string>
   <!--Key trust-->
-  <!--keybase proof stuff-->
   <!--Edit key-->
   <!--Create key-->
   <string name="create_key_passphrases_not_equal">Ne glot ket ar gerioù-tremen</string>
@@ -132,7 +130,6 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_pwd">Ger-tremen</string>

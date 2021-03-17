@@ -8,7 +8,6 @@
   <string name="title_encrypt_files">Xifra</string>
   <string name="title_decrypt">Desxifra</string>
   <string name="title_add_subkey">Afegeix subclau</string>
-  <string name="title_change_master_key">Canvia la clau principal</string>
   <string name="title_edit_key">Edita clau</string>
   <string name="title_preferences">Configuració</string>
   <string name="title_api_registered_apps">Apps</string>
@@ -37,12 +36,11 @@
   <string name="title_manage_my_keys">Gestiona les meves claus</string>
   <!--section-->
   <string name="section_user_ids">Identitats</string>
-  <string name="section_keybase_proofs">Proves de Keybase.io</string>
   <string name="section_should_you_trust">Heu de confiar en aquesta clau?</string>
   <string name="section_proof_details">Prova de verificació</string>
   <string name="section_keys">Subclaus</string>
   <string name="section_cloud_search">Cerca clau</string>
-  <string name="section_cloud_search_summary">Servidor de claus, keybase.io</string>
+  <string name="section_cloud_search_summary">Servidor de claus</string>
   <string name="section_passphrase_cache">Contrasenya i PINs</string>
   <string name="section_passphrase_cache_summary">Gestionant</string>
   <string name="section_proxy_settings">Anonimitat de la xarxa</string>
@@ -194,8 +192,6 @@
   <string name="label_smartpgp_authority_dialog_delete">Suprimeix autoritat</string>
   <string name="pref_keyserver">Servidors de claus OpenPGP </string>
   <string name="pref_keyserver_summary">Cerca claus en els servidors de claus OpenPGP seleccionats (protocol HKP)</string>
-  <string name="pref_keybase">keybase.io</string>
-  <string name="pref_keybase_summary">Cerca claus a keybase.io</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">Cerca claus a Facebook per nom d\'usuari</string>
   <string name="pref_wkd">Directori web de claus</string>
@@ -204,13 +200,7 @@
   <string name="label_sync_settings_keyserver_summary_on">Cada tres dies, s\'actualitzen les claus des del servidor de claus preferit</string>
   <string name="label_sync_settings_keyserver_summary_off">Les claus no han estat actualitzades de manera automàtica</string>
   <string name="label_sync_settings_wifi_title">Sync només amb Wi-Fi</string>
-  <string name="label_sync_settings_contacts_title">Enllaça claus amb contactes</string>
-  <string name="label_sync_settings_contacts_summary_on">Enllaça claus amb contactes basant-se amb noms i adreces de correu. Això succeeix completament fora de línia en el vostre dispositiu.</string>
-  <string name="label_sync_settings_contacts_summary_off">Les noves claus no s\'enllaçaran amb els contactes</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">Advertència</string>
-  <string name="label_experimental_settings_keybase_title">Proves de Keybase.io</string>
-  <string name="label_experimental_settings_keybase_summary">Contacta amb keybase.io per proves de clau i mostra-les cada vegada que es mostri una clau</string>
   <string name="label_experimental_settings_theme_summary">(Les icones i moltes pantalles no estan encara ben ajustades per aquest tema fosc)</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Activa Tor</string>
@@ -599,7 +589,6 @@
   <string name="key_view_tab_share">Compartir</string>
   <string name="key_view_tab_keys">Subclaus</string>
   <string name="key_view_tab_certs">Certificats</string>
-  <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">revocat</string>
   <string name="user_id_info_revoked_text">El propietari de la clau ha revocat aquesta identitat. Ja no és vàlida.</string>
   <string name="user_id_info_certified_title">Confirmat</string>
@@ -609,33 +598,6 @@
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">No hi ha cap prova a Internet de la confiança d\'aquesta clau.</string>
   <string name="key_trust_start_cloud_search">Inicia cerca</string>
-  <string name="key_trust_results_prefix">Keybase.io ofereix “proves” que asseguren el propietari d\'aquesta clau: </string>
-  <!--keybase proof stuff-->
-  <string name="keybase_narrative_twitter">Posts a Twitter com %s</string>
-  <string name="keybase_narrative_github">És conegut a GitHub com %s</string>
-  <string name="keybase_narrative_dns">Controla els noms de domini %s</string>
-  <string name="keybase_narrative_web_site">Poden pujar a lloc(s) Web %s</string>
-  <string name="keybase_narrative_reddit">Posts a Reddit com %s</string>
-  <string name="keybase_narrative_coinbase">És conegut a Coinbase com %s</string>
-  <string name="keybase_narrative_hackernews">Posts a Hacker News com %s</string>
-  <string name="keybase_narrative_unknown">Tipus de prova desconeguda %s</string>
-  <string name="keybase_proof_failure">Desafortunadament, aquesta prova no es pot verificar</string>
-  <string name="keybase_unknown_proof_failure">Problema desconegut amb el verificador de proves</string>
-  <string name="keybase_problem_fetching_evidence">Problema amb aquesta prova</string>
-  <string name="keybase_key_mismatch">L\'empremta digital de la clau no coincideix amb el del post de la prova</string>
-  <string name="keybase_dns_query_failure">L\'obtenció del registre DNS TXT ha fallat</string>
-  <string name="keybase_no_prover_found">No s\'ha trobat verificador de proves per</string>
-  <string name="keybase_proof_succeeded">Aquesta prova ha estat verificada!</string>
-  <string name="keybase_a_post">Un post</string>
-  <string name="keybase_fetched_from">obtingut des de</string>
-  <string name="keybase_for_the_domain">per al domini</string>
-  <string name="keybase_contained_signature">conté un missatge que ha pogut ésser creat solament pel propietari d\'aquesta clau.</string>
-  <string name="keybase_twitter_proof">Una piulada</string>
-  <string name="keybase_dns_proof">Un registre DNS TXT</string>
-  <string name="keybase_web_site_proof">Un fitxer de text</string>
-  <string name="keybase_reddit_proof">Un fitxer JSON</string>
-  <string name="keybase_reddit_attribution">atribuït per Reddit a</string>
-  <string name="keybase_verify">Verifica</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Canvia la contrasenya</string>
   <string name="edit_key_action_add_identity">Afegeix identitat</string>
@@ -696,7 +658,6 @@
   <string name="drawer_close">Tanca el calaix de navegació</string>
   <string name="my_keys">Les meves claus</string>
   <string name="nav_backup">Còpia de seguretat/Restaura</string>
-  <string name="nav_transfer">Transferència Wifi segura</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Escriviu text</string>
   <!--certs-->
@@ -723,7 +684,6 @@
   <string name="msg_ip_fingerprint_error">L\'empremta digital de la clau importada no coincideix amb el que s\'esperava!</string>
   <string name="msg_ip_fingerprint_ok">Test de l\'empremta digital OK</string>
   <string name="msg_ip_prepare">Preparant les operacions de base de dades</string>
-  <string name="msg_ip_master">Processant clau principal %s</string>
   <string name="msg_ip_master_expired">L\'anell de claus expira a %s</string>
   <string name="msg_ip_master_expires">L\'anell de claus expira a %s</string>
   <string name="msg_ip_reinsert_secret">Inserint de nou la clau secreta</string>
@@ -750,10 +710,6 @@
   <string name="msg_crt_warn_not_found">No s’ha trobat la clau.</string>
   <string name="msg_import_fetch_error_not_found">No s’ha trobat la clau.</string>
   <string name="msg_upload_error_not_found">No s’ha trobat la clau.</string>
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_error_key_mismatch">L\'empremta digital de la clau no coincideix amb el del post de la prova</string>
-  <string name="msg_keybase_error_dns_fail">L\'obtenció del registre DNS TXT ha fallat</string>
-  <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_keys">Contrasenyes desades</string>
@@ -774,6 +730,7 @@
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">Inseriu contrasenya</string>
   <string name="passphrase">Contrasenya</string>
+  <string name="set_passphrase">Estableix la contrasenya</string>
   <string name="nfc_title">NFC</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="nfc_settings">Configuració</string>

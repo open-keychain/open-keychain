@@ -1,7 +1,11 @@
 [//]: # (Увага: Будь ласка розміщуйте кожне речення у окремому рядку, Transifex розмістить кожен рядок у відповідному полі для перекладу!)
 
+## 5.6
+  * Compatibility with Android 10 and higher
+  * Several bug fixes
+
 ## 5.5
-  * Fix decryption from clipboard on Android 10
+  * Виправлено розшифрування з буфера обміну на Android 10
 
 ## 5.4
   * Додавання WKD, розширений метод

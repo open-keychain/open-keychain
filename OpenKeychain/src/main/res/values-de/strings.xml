@@ -8,7 +8,7 @@
   <string name="title_encrypt_files">Verschlüsseln</string>
   <string name="title_decrypt">Entschlüsseln</string>
   <string name="title_add_subkey">Unterschlüssel hinzufügen</string>
-  <string name="title_change_master_key">Hauptschlüssel ändern</string>
+  <string name="title_change_master_key">Primärschlüssel ändern</string>
   <string name="title_edit_key">Schlüssel bearbeiten</string>
   <string name="title_preferences">Einstellungen</string>
   <string name="title_api_registered_apps">Apps</string>
@@ -40,12 +40,11 @@
   <string name="section_user_ids">Identitäten</string>
   <string name="section_security_token">Security-Token</string>
   <string name="section_linked_system_contact">Verknüpfter Systemkontakt</string>
-  <string name="section_keybase_proofs">Keybase.io-Nachweise</string>
   <string name="section_should_you_trust">Sollte ich diesem Schlüssel vertrauen?</string>
   <string name="section_proof_details">Nachweis verifizieren</string>
   <string name="section_keys">Unterschlüssel</string>
   <string name="section_cloud_search">Schlüsselsuche</string>
-  <string name="section_cloud_search_summary">Schlüsselserver, Keybase.io</string>
+  <string name="section_cloud_search_summary">Schlüsselserver</string>
   <string name="section_passphrase_cache">Passwörter und PINs</string>
   <string name="section_passphrase_cache_summary">Handhabung</string>
   <string name="section_proxy_settings">Netzwerkanonymität</string>
@@ -198,8 +197,6 @@
   <string name="label_smartpgp_authority_dialog_delete">Zertifizierungsstelle entfernen</string>
   <string name="pref_keyserver">OpenPGP-Schlüsselserver</string>
   <string name="pref_keyserver_summary">Schlüssel auf ausgewählten OpenPGP-Schlüsselservern suchen (HKP-Protokoll)</string>
-  <string name="pref_keybase">Keybase.io</string>
-  <string name="pref_keybase_summary">Schlüssel auf Keybase.io suchen</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">Schlüssel auf Facebook suchen</string>
   <string name="pref_wkd">Web Key Verzeichnis</string>
@@ -208,14 +205,8 @@
   <string name="label_sync_settings_keyserver_summary_on">Alle drei Tage werden die Schlüssel vom bevorzugten Schlüsselserver aktualisiert</string>
   <string name="label_sync_settings_keyserver_summary_off">Schlüssel werden nicht automatisch aktualisiert</string>
   <string name="label_sync_settings_wifi_title">Synchronisation nur bei WLAN</string>
-  <string name="label_sync_settings_contacts_title">Schlüssel mit Kontakten verknüpfen</string>
-  <string name="label_sync_settings_contacts_summary_on">Schlüssel basierend auf Namen und E-Mail-Adressen mit Kontakten verknüpfen. Das alles findet komplett offline auf deinem Gerät statt.</string>
-  <string name="label_sync_settings_contacts_summary_off">Neue Schlüssel werden nicht mit Kontakten verknüpft</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">Warnung</string>
   <string name="label_experimental_settings_desc_summary">Diese Funktionen sind noch nicht final oder das Ergebnis von Benutzererfahrungs-/Sicherheitsuntersuchungen. Verlasse dich daher nicht auf deren Sicherheit und melde uns bitte keine auftretenden Probleme!</string>
-  <string name="label_experimental_settings_keybase_title">Keybase.io-Nachweise</string>
-  <string name="label_experimental_settings_keybase_summary">Keybase.io für Schlüsselnachweise kontaktieren und diese jedesmal zeigen, wenn ein Schlüssel angezeigt wird</string>
   <string name="label_experimental_settings_theme_summary">(Die Symbole und viele Bildschirme sind noch nicht an das dunkle Design angepasst)</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Tor aktivieren</string>
@@ -415,7 +406,7 @@
   <string name="progress_exporting">Wird exportiert…</string>
   <string name="progress_uploading">Wird hochgeladen...</string>
   <string name="progress_building_key">Schlüssel wird erstellt…</string>
-  <string name="progress_building_master_key">Hauptschlüssel wird erstellt…</string>
+  <string name="progress_building_master_key">Primärring wird erstellt...</string>
   <string name="progress_generating_rsa">Neuer RSA-Schlüssel wird erzeugt...</string>
   <string name="progress_generating_dsa">Neuer DSA-Schlüssel wird erzeugt...</string>
   <string name="progress_generating_elgamal">Neuen ElGamal-Schlüssel wird erzeugt...</string>
@@ -598,12 +589,12 @@
   <string name="api_settings_allowed_keys">Erlaubte Schlüssel</string>
   <string name="api_settings_settings">Einstellungen</string>
   <string name="api_register_title">Zugriff auf OpenKeyChain erlauben?</string>
-  <string name="api_register_text">%smöchte OpenKeychain also Krypto-Provider verwenden. Sie werden weiterhin um Erlaubnis gefragt bevor die App einen Ihrer Schlüssel zur Entschlüsselung verwendet.\n\nSie können diesen Zugriff später im \'Apps\' Menü in OpenKeychain widerrufen.</string>
+  <string name="api_register_text">%s möchte OpenKeychain als Krypto-Provider verwenden. Sie werden weiterhin um Erlaubnis gefragt bevor die App einen Ihrer Schlüssel zur Entschlüsselung verwendet.\n\nSie können diesen Zugriff später im \'Apps\' Menü in OpenKeychain widerrufen.</string>
   <string name="api_register_allow">Zugriff erlauben</string>
   <string name="api_register_disallow">Zugriff verbieten</string>
   <string name="api_register_error_select_key">Bitte einen Schlüssel auswählen!</string>
   <string name="api_select_pub_keys_missing_text">Für diese E-Mail-Adressen wurden keine Schlüssel gefunden:</string>
-  <string name="api_select_pub_keys_dublicates_text">Es exisitert mehr als ein Schlüssel für diese E-Mail-Adressen:</string>
+  <string name="api_select_pub_keys_dublicates_text">Es existiert mehr als ein Schlüssel für diese E-Mail-Adressen:</string>
   <string name="api_select_pub_keys_text">Bitte die Liste der Empfänger überprüfen!</string>
   <string name="api_select_pub_keys_text_no_user_ids">Bitte die Empfänger auswählen!</string>
   <string name="api_error_wrong_signature">Signaturverifikation fehlgeschlagen! Wurde diese App aus einer anderen Quelle installiert? Wenn du eine Attacke ausschließen kannst, solltest du die Registrierung der App in OpenKeychain widerrufen und die App erneut registrieren.</string>
@@ -653,7 +644,6 @@
   <string name="key_view_tab_share">Teilen</string>
   <string name="key_view_tab_keys">Unterschlüssel</string>
   <string name="key_view_tab_certs">Beglaubigungen</string>
-  <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">Widerrufen</string>
   <string name="user_id_info_revoked_text">Diese Identität wurde vom Schlüsselinhaber widerrufen. Sie ist nicht mehr gültig.</string>
   <string name="user_id_info_certified_title">Bestätigt</string>
@@ -663,36 +653,6 @@
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">Es gibt keinen Nachweis aus dem Internet zur Vertrauenswürdigkeit dieses Schlüssels.</string>
   <string name="key_trust_start_cloud_search">Suche beginnen</string>
-  <string name="key_trust_results_prefix">Keybase.io bietet \"Nachweise\" die bestätigen, dass der Schlüsselinhaber:</string>
-  <!--keybase proof stuff-->
-  <string name="keybase_narrative_twitter">Auf Twitter schreibt, als %s</string>
-  <string name="keybase_narrative_github">Auf GitHub bekannt ist, als %s</string>
-  <string name="keybase_narrative_dns">Den/Die Domainname(n) kontrolliert %s</string>
-  <string name="keybase_narrative_web_site">Auf diese Webseite(n) veröffentlichen kann %s</string>
-  <string name="keybase_narrative_reddit">Auf Reddit veröffentlicht, als %s</string>
-  <string name="keybase_narrative_coinbase">Auf Coinbase bekannt ist, als %s</string>
-  <string name="keybase_narrative_hackernews">Auf Hacker News veröffentlicht, als %s</string>
-  <string name="keybase_narrative_unknown">Unbekannter Nachweistyp %s</string>
-  <string name="keybase_proof_failure">Leider kann dieser Nachweis nicht veifiziert werden.</string>
-  <string name="keybase_unknown_proof_failure">Unbekanntes Problem mit dem Nachweisprüfer</string>
-  <string name="keybase_problem_fetching_evidence">Problem mit dem Nachweis</string>
-  <string name="keybase_key_mismatch">Fingerabdruck des Schlüssels stimmt nicht mit dem Fingerabdruck im Nachweis überein</string>
-  <string name="keybase_dns_query_failure">Abfrage des DNS-TXT-Eintrags fehlgeschlagen</string>
-  <string name="keybase_no_prover_found">Kein Nachweisprüfer gefunden für</string>
-  <string name="keybase_message_payload_mismatch">Entschlüsselter Nachweis entspricht nicht dem erwarteten Wert</string>
-  <string name="keybase_message_fetching_data">Nachweis wird abgerufen</string>
-  <string name="keybase_proof_succeeded">Dieser Nachweis wurde verifiziert!</string>
-  <string name="keybase_a_post">Ein Posting / eine Veröffentlichung</string>
-  <string name="keybase_fetched_from">abgerufen von</string>
-  <string name="keybase_for_the_domain">für die Domain</string>
-  <string name="keybase_contained_signature">enthält eine Nachricht, die nur vom Schlüsselinhaber hätte erzeugt werden können.</string>
-  <string name="keybase_twitter_proof">Ein Tweet</string>
-  <string name="keybase_dns_proof">Ein DNS-TXT-Eintrag</string>
-  <string name="keybase_web_site_proof">Eine Textdatei</string>
-  <string name="keybase_github_proof">Ein Gist</string>
-  <string name="keybase_reddit_proof">Eine JSON-Datei</string>
-  <string name="keybase_reddit_attribution">von Reddit zugeordnet an</string>
-  <string name="keybase_verify">Verifizieren</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Passwort ändern</string>
   <string name="edit_key_action_add_identity">Identität hinzufügen</string>
@@ -776,7 +736,6 @@
   <string name="drawer_close">Menü schließen</string>
   <string name="my_keys">Meine Schlüssel</string>
   <string name="nav_backup">Backup/Wiederherstellung</string>
-  <string name="nav_transfer">Sichere WiFi Übertragung</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Text eingeben</string>
   <!--certs-->
@@ -807,26 +766,8 @@
   <string name="msg_ip_insert_keyring">Schlüsselbunddaten werden kodiert</string>
   <string name="msg_ip_insert_keys">Schlüssel werden analysiert</string>
   <string name="msg_ip_prepare">Datenbankvorgänge werden vorbereitet</string>
-  <string name="msg_ip_master">Hauptschlüssel %s wird verarbeitet</string>
   <string name="msg_ip_master_expired">Schlüsselbund ist abgelaufen am %s</string>
   <string name="msg_ip_master_expires">Schlüsselbund wird ablaufen am %s</string>
-  <string name="msg_ip_master_flags_unspecified">Haupt-Attribute: Unspezifiziert (alle angenommen)</string>
-  <string name="msg_ip_master_flags_cesa">Haupt-Attribute: beglaubigen, verschlüsseln, signieren und authentifizieren</string>
-  <string name="msg_ip_master_flags_cesx">Haupt-Attribute: beglaubigen, verschlüsseln und signieren</string>
-  <string name="msg_ip_master_flags_cexa">Haupt-Attribute: beglaubigen, verschlüsseln und authentifizieren</string>
-  <string name="msg_ip_master_flags_cexx">Haupt-Attribute: beglaubigen und verschlüsseln</string>
-  <string name="msg_ip_master_flags_cxsa">Haupt-Attribute: beglaubigen, signieren und authentifizieren</string>
-  <string name="msg_ip_master_flags_cxsx">Haupt-Attribute: beglaubigen und signieren</string>
-  <string name="msg_ip_master_flags_cxxa">Haupt-Attribute: beglaubigen und authentifizieren</string>
-  <string name="msg_ip_master_flags_cxxx">Haupt-Attribute: beglaubigen</string>
-  <string name="msg_ip_master_flags_xesa">Haupt-Attribute: verschlüsseln, signieren und authentifizieren</string>
-  <string name="msg_ip_master_flags_xesx">Haupt-Attribute: verschlüsseln und signieren</string>
-  <string name="msg_ip_master_flags_xexa">Haupt-Attribute: verschlüsseln und authentifizieren</string>
-  <string name="msg_ip_master_flags_xexx">Haupt-Attribut: verschlüsseln</string>
-  <string name="msg_ip_master_flags_xxsa">Haupt-Attribute: signieren und authentifizieren</string>
-  <string name="msg_ip_master_flags_xxsx">Haupt-Attribute: signieren</string>
-  <string name="msg_ip_master_flags_xxxa">Haupt-Attribute: authentifizieren</string>
-  <string name="msg_ip_master_flags_xxxx">Haupt-Attribute: keine</string>
   <string name="msg_ip_merge_public">Importierte Daten werden in vorhandenen öffentlichen Schlüsselbund eingefügt</string>
   <string name="msg_ip_merge_secret">Importierte Daten werden in vorhandenen privaten Schlüsselbund eingefügt</string>
   <string name="msg_ip_subkey">Unterschlüssel %s wird verarbeitet</string>
@@ -909,16 +850,9 @@
   <string name="msg_kc_secret">Privater Schlüsselbund %s wird in vorschriftsmäßiges Format gebracht</string>
   <string name="msg_kc_error_v3">Dies ist ein OpenPGP Schlüssel der Version 3, welche hinfällig sind und nicht weiter unterstützt werden!</string>
   <string name="msg_kc_error_no_uid">Schlüsselbund hat keine gültigen User-IDs!</string>
-  <string name="msg_kc_error_master_algo">Der Hauptschlüssel verwendet einen unbekannten (%s) Algorithmus!</string>
   <string name="msg_kc_error_dup_key">Unterschlüssel %s kommt zweimal im Schlüsselbund vor. Schlüsselbund ist fehlerhaft und wird nicht importiert!</string>
-  <string name="msg_kc_master">Hauptschlüssel wird verarbeitet</string>
-  <string name="msg_kc_master_bad_type">Hauptschlüsselbeglaubigung unbekannter Art wird entfernt (%s)</string>
-  <string name="msg_kc_master_bad_local">Hauptschlüsselbeglaubigung mit \'Lokal\'-Attribut wird entfernt</string>
-  <string name="msg_kc_master_bad_err">Fehlerhafte Hauptschlüsselbeglaubigung wird entfernt</string>
   <string name="msg_kc_master_bad_time">Schlüsselbund-Widerrufszertifikat mit zukünftigem Zeitstempel wird entfernt</string>
   <string name="msg_kc_master_bad_type_uid">User-ID-Beglaubigung an falscher Position wird entfernt</string>
-  <string name="msg_kc_master_bad">Fehlerhafte Hauptschlüsselbeglaubigung wird entfernt</string>
-  <string name="msg_kc_master_local">Hauptschlüsselbeglaubigung mit \'Lokal\'-Attribut wird entfernt</string>
   <string name="msg_kc_revoke_dup">Entferne redundantes Schlüsselbund-Widerrufszertifikat</string>
   <string name="msg_kc_notation_dup">Entferne redundante Vermerk-Beglaubigung</string>
   <string name="msg_kc_notation_empty">Entferne leere Vermerk-Beglaubigung</string>
@@ -990,10 +924,7 @@
   <string name="msg_mg_found_new">%s neue Beglaubigungen in Schlüsselbund gefunden</string>
   <string name="msg_mg_unchanged">Nichts einzufügen</string>
   <!--createSecretKeyRing-->
-  <string name="msg_cr">Neuer Hauptschlüssel wird erzeugt</string>
-  <string name="msg_cr_error_no_master">Keine Hauptschlüsseloptionen spezifiziert!</string>
   <string name="msg_cr_error_no_user_id">Schlüsselbünde müssen mindestens eine User-ID enthalten!</string>
-  <string name="msg_cr_error_no_certify">Hauptschlüssel benötigt das Attribut beglaubigen!</string>
   <string name="msg_cr_error_null_expiry">Ablaufdatum kann bei Schlüsselerzeugung nicht \"identisch wie vorher\" sein. Dies ist ein Programmierfehler, bitte reiche einen Fehlerbericht ein!</string>
   <string name="msg_cr_error_keysize_2048">Schlüssellänge muss größer-gleich 2048 sein!</string>
   <string name="msg_cr_error_no_curve">Keine Schlüssellänge spezifiziert! Dies ist ein Progammierfehler, bitte reiche einen Fehlerbericht ein!</string>
@@ -1015,14 +946,12 @@
   <string name="msg_mf_error_fingerprint">Tatsächlicher Fingerabdruck des Schlüssels entspricht nicht dem Erwarteten!</string>
   <string name="msg_mf_error_keyid">Keine Schlüssel-ID gefunden. Dies ist ein interner Fehler, bitte reiche einen Fehlerbericht ein!</string>
   <string name="msg_mf_error_integrity">Interner Fehler, Integritätsprüfung fehlgeschlagen!</string>
-  <string name="msg_mf_error_master_none">Keine Hauptbeglaubigung zum damit Arbeiten gefunden! (Alle widerrufen?)</string>
   <string name="msg_mf_error_noexist_primary">Falsche primäre User-ID spezifiziert!</string>
   <string name="msg_mf_error_noexist_revoke">Falsche User-ID für Widerruf spezifiziert!</string>
   <string name="msg_mf_error_restricted">Versuch einen eingeschränkten Vorgang ohne Passwort auszuführen! Dies ist ein Programmierfehler, bitte reiche einen Fehlerbericht ein!</string>
   <string name="msg_mf_error_revoked_primary">Widerrufene User-IDs können keine primären IDs sein!</string>
   <string name="msg_mf_error_null_expiry">Ablaufdatum kann bei Unterschlüsselerzeugung nicht \"identisch wie vorher\" sein. Dies ist ein Programmierfehler, bitte reiche einen Fehlerbericht ein!</string>
   <string name="msg_mf_error_noop">Nichts zu tun!</string>
-  <string name="msg_mf_error_passphrase_master">Schwerer Fehler beim Entschlüsseln des Hauptschlüssels! Dies ist wahrscheinlich ein Programmierfehler, bitte reiche einen Fehlerbericht ein!</string>
   <string name="msg_mf_error_passphrases_unchanged">Kein Passwort geändert!</string>
   <string name="msg_mf_error_pgp">Interner OpenPGP-Fehler!</string>
   <string name="msg_mf_error_sig">Signaturfehler!</string>
@@ -1031,7 +960,6 @@
   <string name="msg_mf_error_conflicting_nfc_commands">Der Schlüssel kann nicht auf den Security-Token verschoben werden, wenn im selben Vorgang darauf eine Signatur erzeugt wird.</string>
   <string name="msg_mf_error_duplicate_keytocard_for_slot">Security-Token unterstützt nur einen Slot pro Schlüsseltyp.</string>
   <string name="msg_mf_error_invalid_flags_for_keytocard">Ungeeignete Schlüsselattribute für Schlüssel des Security-Tokens.</string>
-  <string name="msg_mf_master">Hauptbeglaubigungen werden verändert</string>
   <string name="msg_mf_passphrase">Passwort für Schlüsselbund wird geändert</string>
   <string name="msg_mf_pin">PIN des Security-Tokens wird geändert</string>
   <string name="msg_mf_admin_pin">Admin-PIN des Security-Tokens wird geändert</string>
@@ -1078,7 +1006,6 @@
   <string name="msg_pr_subkey_nomatch">Unterschlüssel ist nicht auf dem Security-Token: %s</string>
   <string name="msg_pr_success">Schlüssel erfolgreich hochgestuft</string>
   <!--Other messages used in OperationLogs-->
-  <string name="msg_ek_error_dummy">Schlüsselbund mit gekürztem Hauptschlüssel kann nicht bearbeitet werden!</string>
   <string name="msg_ek_error_not_found">Schlüssel wurde nicht gefunden!</string>
   <!--Messages for DecryptVerify operation-->
   <string name="msg_dc_askip_bad_flags">Schlüssel ist kein gültiger Verschlüsselung-Schlüssel, überspringe...</string>
@@ -1205,15 +1132,11 @@
     <item quantity="other">Beglaubige %1$d Benutzerattribute für Schlüssel %2$s</item>
   </plurals>
   <string name="msg_crt_error_self">Auf diese Art und Weise kann keine Eigenbeglaubigung ausgestellt werden!</string>
-  <string name="msg_crt_error_master_not_found">Hauptschlüssel wurde nicht gefunden!</string>
   <string name="msg_crt_error_nothing">Keine beglaubigten Schlüssel!</string>
-  <string name="msg_crt_error_unlock">Fehler beim Entsperren des Hauptschlüssels!</string>
   <string name="msg_crt">Schlüsselbünde werden beglaubigt</string>
-  <string name="msg_crt_master_fetch">Beglaubigender Hauptschlüssel wird abgerufen</string>
   <string name="msg_crt_nfc_return">Kehre zu NFC-Bildschirm zurück</string>
   <string name="msg_crt_save">Beglaubigter Schlüssel %s wird gespeichert</string>
   <string name="msg_crt_saving">Schlüsselbünde werden gespeichert</string>
-  <string name="msg_crt_unlock">Hauptschlüssel wird entsperrt</string>
   <string name="msg_crt_success">Identitäten wurden erfolgreich beglaubigt</string>
   <string name="msg_crt_warn_not_found">Schlüssel wurde nicht gefunden!</string>
   <string name="msg_crt_warn_cert_failed">Erzeugen der Beglaubigung fehlgeschlagen!</string>
@@ -1229,7 +1152,6 @@
   <string name="msg_import_fetch_error_not_found">Schlüssel nicht gefunden!</string>
   <string name="msg_import_fetch_error_keyserver">Schlüssel konnte nicht vom Schlüsselserver abgerufen werden: %s</string>
   <string name="msg_import_fetch_error_keyserver_secret">Konnte Schlüssel nicht von Keyserver importieren!</string>
-  <string name="msg_import_fetch_keybase">Von Keybase.io wird abgerufen: %s</string>
   <string name="msg_import_fetch_facebook">Von Facebook wird abgerufen: %s</string>
   <string name="msg_import_fetch_keyserver">Vom Schlüsselserver wird abgerufen: %s</string>
   <string name="msg_import_fetch_keyserver_ok">Schlüssel erfolgreich abgerufen</string>
@@ -1323,14 +1245,6 @@
   <string name="msg_get_query_too_short_or_too_many_responses">Keine oder zu viele Schlüssel wurden gefunden. Bitte präzisiere deine Anfrage!</string>
   <string name="msg_get_no_enabled_source">Aktivieren sie wenigstens eine Quelle zum Download!</string>
   <string name="msg_download_query_failed">Beim Suchen der Schlüssel ist ein Fehler aufgetreten.</string>
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_verification">Versuche Keybase.io-Verifikation für %s</string>
-  <string name="msg_keybase_error_no_prover">Kein Nachweisprüfer gefunden für %s</string>
-  <string name="msg_keybase_error_fetching_evidence">Problem beim Holen des Nachweises</string>
-  <string name="msg_keybase_error_key_mismatch">Fingerabdruck des Schlüssels stimmt nicht mit dem Fingerabdruck im Nachweis überein</string>
-  <string name="msg_keybase_error_dns_fail">Abfrage des DNS-TXT-Eintrags fehlgeschlagen</string>
-  <string name="msg_keybase_error_specific">%s</string>
-  <string name="msg_keybase_error_msg_payload_mismatch">Entschlüsselter Nachweis entspricht nicht dem erwarteten Wert</string>
   <!--Messages for Mime parsing operation-->
   <string name="msg_mime_parsing_start">MIME-Struktur wird analysiert</string>
   <string name="msg_mime_parsing_error">MIME-Analyse ist fehlgeschlagen</string>
@@ -1617,7 +1531,6 @@
   <string name="key_insecure_bitstrength_2048_problem">Dieser Schlüssel verwendet den <b>%1$s </b> Algorithmus mit einer Stärke von <b> %2$s </b> Bits. 
 Ein sicherer Schlüssel sollte eine Stärke von 2048 Bits besitzen.</string>
   <string name="key_insecure_bitstrength_2048_solution">Dieser Schlüssel kann nicht geupgraded werden. Zur sicheren Kommunikation muss der Besitzer einen neuen Schlüssel erzeugen.</string>
-  <string name="key_insecure_unknown_curve_problem">Dieser Schlüssel verwendet den <b>%1$s</b> Algorithmus, der nicht auf der Liste steht.</string>
   <string name="key_insecure_unknown_curve_solution">Dieser Schlüssel kann nicht geupgraded werden. Zur sicheren Kommunikation muss der Besitzer einen neuen Schlüssel erzeugen.</string>
   <string name="key_insecure_unidentified_problem">Es liegt ein nicht identifizierbares Problem mit diesem Schlüssel vor.</string>
   <string name="key_insecure_unidentified_solution">Bitte erstellen Sie einen Bug-Report.</string>
@@ -1628,8 +1541,6 @@ Ein sicherer Schlüssel sollte eine Stärke von 2048 Bits besitzen.</string>
   <string name="insecure_encrypt_bitstrength_suggestion">Der verwendete Schlüssel ist unsicher und kann nicht geupgraded werden. Um sicher zu kommunizieren, müssen SIe einen neuen Schlüssel erzeugen!</string>
   <string name="insecure_sign_bitstrength">Der Schlüssel, der diese Nachricht gesendet (signiert) hat, ist veraltet!\n\nDer Algorithmus (%s) ist mit einer Schlüssellänge von 1024 Bits oder weniger konfiguriert. Dies gilt seit 2006 als unsicher für den allgemeinen Gebrauch.</string>
   <string name="insecure_sign_bitstrength_suggestion">Der verwendete Schlüssel ist unsicher und kann nicht geupgraded werden. Zur sicheren Kommunikation müss der Sender einen neuen Schlüssel erzeugen!</string>
-  <string name="insecure_encrypt_not_secure_curve">Der Schlüssel, der diese Nachricht empfangen (entschlüsselt) hat, verwendet eine elliptische Kurve mit OID %1$s; diese steht nicht auf der Liste!</string>
-  <string name="insecure_sign_not_secure_curve">Der Schlüssel, der diese Nachricht gesendet (signiert) hat, verwendet eine elliptische Kurve mit OID %1$s ; diese steht nicht auf der Liste</string>
   <string name="insecure_encrypt_unidentified">Es liegt ein nicht identifizierbares Sicherheitsproblem mit dem zum Empfangen (Entschlüsseln) der Nachricht verwendeten Schlüssel vor!</string>
   <string name="insecure_sign_unidentified">Es liegt ein unbekanntes Sicherheitsproblem bei den Schlüssel vor, der diese Nachricht gesendet (signiert) hat!</string>
   <string name="insecure_report_suggestion">Es liegt möglicherweise ein Problem in OpenKeychain vor; bitte melden Sie es in unserem Issue Tracker!</string>

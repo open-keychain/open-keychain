@@ -8,7 +8,6 @@
   <string name="title_encrypt_files">Encriptar</string>
   <string name="title_decrypt">Decriptar</string>
   <string name="title_add_subkey">Adicionar subchave</string>
-  <string name="title_change_master_key">Modificar chave-mestra</string>
   <string name="title_edit_key">Editar chave</string>
   <string name="title_preferences">Configurações</string>
   <string name="title_api_registered_apps">Aplicativos</string>
@@ -40,12 +39,11 @@
   <string name="section_user_ids">Identidades</string>
   <string name="section_security_token">Token de segurança</string>
   <string name="section_linked_system_contact">Contato Vinculado do Sistema</string>
-  <string name="section_keybase_proofs">Provas Keybase.io</string>
   <string name="section_should_you_trust">Você confia nessa chave?</string>
   <string name="section_proof_details">Prova de verificação</string>
   <string name="section_keys">Subchaves</string>
   <string name="section_cloud_search">Buscar Chave</string>
-  <string name="section_cloud_search_summary">Servidor de chaves, keybase.io</string>
+  <string name="section_cloud_search_summary">Servidor de Chaves</string>
   <string name="section_passphrase_cache">Senhas e PINs</string>
   <string name="section_passphrase_cache_summary">Tratamento</string>
   <string name="section_proxy_settings">Anonimato de Rede</string>
@@ -198,8 +196,6 @@
   <string name="label_smartpgp_authority_dialog_delete">Excluir autoridade</string>
   <string name="pref_keyserver">Servidores de chaves OpenPGP</string>
   <string name="pref_keyserver_summary">Buscar chaves em servidores de chaves OpenPGP selecionados (protocolo HKP)</string>
-  <string name="pref_keybase">keybase.io</string>
-  <string name="pref_keybase_summary">Buscar chaves no keybase.io</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">Buscar chaves no Facebook por nomes de usuário</string>
   <string name="pref_wkd">Diretório de Chaves da Web</string>
@@ -208,14 +204,8 @@
   <string name="label_sync_settings_keyserver_summary_on">A cada três dias, as chaves são atualizados a partir dos servidores de chaves selecionados</string>
   <string name="label_sync_settings_keyserver_summary_off">Chaves não serão atualizadas automaticamente</string>
   <string name="label_sync_settings_wifi_title">Sincronizar apenas por Wi-Fi</string>
-  <string name="label_sync_settings_contacts_title">Vincular chaves a contatos</string>
-  <string name="label_sync_settings_contacts_summary_on">Vincula chaves a contatos com base em nomes e endereços de email. Isto acontece completamente off-line em seu dispositivo.</string>
-  <string name="label_sync_settings_contacts_summary_off">Novas chaves não serão vinculadas aos contatos</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
-    <string name="label_experimental_settings_desc_title">Aviso</string>
+  <string name="label_experimental_settings_desc_title">Aviso</string>
   <string name="label_experimental_settings_desc_summary">Esses recursos ainda não estão finalizados ou resultam de pesquisas de experiência/segurança do usuário. Dessa forma, não confie em sua segurança e, por favor, não relate problemas que encontre!</string>
-  <string name="label_experimental_settings_keybase_title">Provas Keybase.io</string>
-  <string name="label_experimental_settings_keybase_summary">Contate o keybase.io para as provas de chaves e mostre-as toda vez que uma chave for exibida</string>
   <string name="label_experimental_settings_theme_summary">(Os ícones e algumas telas ainda não foram adaptados para o tema escuro)</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Ativar Tor</string>
@@ -415,7 +405,6 @@
   <string name="progress_exporting">exportando...</string>
   <string name="progress_uploading">enviando...</string>
   <string name="progress_building_key">construindo chave...</string>
-  <string name="progress_building_master_key">construindo chaveiro-mestre...</string>
   <string name="progress_generating_rsa">gerando nova chave RSA...</string>
   <string name="progress_generating_dsa">gerando nova chave DSA...</string>
   <string name="progress_generating_elgamal">gerando nova chave ElGamal...</string>
@@ -653,7 +642,6 @@
   <string name="key_view_tab_share">Compartilhar</string>
   <string name="key_view_tab_keys">Subchaves</string>
   <string name="key_view_tab_certs">Certificados</string>
-  <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">Revogada</string>
   <string name="user_id_info_revoked_text">Esta identidade foi revogada pelo proprietário da chave. Ela não é mais válida.</string>
   <string name="user_id_info_certified_title">Confirmada</string>
@@ -663,36 +651,6 @@
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">Não há provas na Internet da confiabilidade desta chave.</string>
   <string name="key_trust_start_cloud_search">Iniciar busca</string>
-  <string name="key_trust_results_prefix">O Keybase.io oferece \"provas\" que atestam que o proprietário desta chave:</string>
-  <!--keybase proof stuff-->
-  <string name="keybase_narrative_twitter">Posta no Twitter como %s</string>
-  <string name="keybase_narrative_github">É conhecido no GitHub como %s</string>
-  <string name="keybase_narrative_dns">Controla o(s) domínio(s) %s</string>
-  <string name="keybase_narrative_web_site">Pode postar no(s) website(s) %s</string>
-  <string name="keybase_narrative_reddit">Posta no Reddit como %s</string>
-  <string name="keybase_narrative_coinbase">É conhecido no Coinbase como %s</string>
-  <string name="keybase_narrative_hackernews">Posta no Hacker News como %s</string>
-  <string name="keybase_narrative_unknown">Tipo de prova %s desconhecido</string>
-  <string name="keybase_proof_failure">Infelizmente esta prova não pode ser verificada.</string>
-  <string name="keybase_unknown_proof_failure">Problema desconhecido com o verificador de provas</string>
-  <string name="keybase_problem_fetching_evidence">Problema com a prova</string>
-  <string name="keybase_key_mismatch">A impressão digital da chave não coincide com a da postagem da prova</string>
-  <string name="keybase_dns_query_failure">A recuperação do Registro DNS TXT falhou</string>
-  <string name="keybase_no_prover_found">Nenhum verificador de provas encontrado para</string>
-  <string name="keybase_message_payload_mismatch">A postagem decriptada da prova não coincide com o valor esperado</string>
-  <string name="keybase_message_fetching_data">Obtendo prova</string>
-  <string name="keybase_proof_succeeded">Esta prova foi verificada!</string>
-  <string name="keybase_a_post">Uma postagem</string>
-  <string name="keybase_fetched_from">obtida de</string>
-  <string name="keybase_for_the_domain">para o domínio</string>
-  <string name="keybase_contained_signature">contém uma mensagem que só poderia ter sido criada pelo proprietário desta chave.</string>
-  <string name="keybase_twitter_proof">Um tweet</string>
-  <string name="keybase_dns_proof">Um registro DNS TXT</string>
-  <string name="keybase_web_site_proof">Um arquivo-texto</string>
-  <string name="keybase_github_proof">Um gist</string>
-  <string name="keybase_reddit_proof">Um arquivo JSON</string>
-  <string name="keybase_reddit_attribution">atribuído pelo Reddit para</string>
-  <string name="keybase_verify">Verificar</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Alterar senha</string>
   <string name="edit_key_action_add_identity">Adicionar Identidade</string>
@@ -776,7 +734,6 @@
   <string name="drawer_close">Fechar gaveta de navegação</string>
   <string name="my_keys">Minhas Chaves</string>
   <string name="nav_backup">Backup/Restaurar</string>
-  <string name="nav_transfer">Transferência Segura Wifi</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Digite o texto</string>
   <!--certs-->
@@ -807,26 +764,8 @@
   <string name="msg_ip_insert_keyring">Codificando dados do chaveiro</string>
   <string name="msg_ip_insert_keys">Analisando chaves</string>
   <string name="msg_ip_prepare">Preparando operações de banco de dados</string>
-  <string name="msg_ip_master">Processando chave-mestra %s</string>
   <string name="msg_ip_master_expired">O chaveiro expirou em %s</string>
   <string name="msg_ip_master_expires">O chaveiro expira em %s</string>
-  <string name="msg_ip_master_flags_unspecified">Sinalizadores mestre: não especificado (assumindo todos)</string>
-  <string name="msg_ip_master_flags_cesa">Sinalizadores mestre: certificar, encriptar, assinar, autenticar</string>
-  <string name="msg_ip_master_flags_cesx">Sinalizadores mestre: certificar, encriptar, assinar</string>
-  <string name="msg_ip_master_flags_cexa">Sinalizadores mestre: certificar, encriptar, autenticar</string>
-  <string name="msg_ip_master_flags_cexx">Sinalizadores mestre: certificar, encriptar</string>
-  <string name="msg_ip_master_flags_cxsa">Sinalizadores mestre: certificar, assinar, autenticar</string>
-  <string name="msg_ip_master_flags_cxsx">Sinalizadores mestre: certificar, assinar</string>
-  <string name="msg_ip_master_flags_cxxa">Sinalizadores mestre: certificar, autenticar</string>
-  <string name="msg_ip_master_flags_cxxx">Sinalizadores mestre: certificar</string>
-  <string name="msg_ip_master_flags_xesa">Sinalizadores mestre: encriptar, assinar, autenticar</string>
-  <string name="msg_ip_master_flags_xesx">Sinalizadores mestre: encriptar, assinar</string>
-  <string name="msg_ip_master_flags_xexa">Sinalizadores mestre: encriptar, autenticar</string>
-  <string name="msg_ip_master_flags_xexx">Sinalizadores mestre: encriptar</string>
-  <string name="msg_ip_master_flags_xxsa">Sinalizadores mestre: assinar, autenticar</string>
-  <string name="msg_ip_master_flags_xxsx">Sinalizadores mestre: assinar</string>
-  <string name="msg_ip_master_flags_xxxa">Sinalizadores mestre: autenticar</string>
-  <string name="msg_ip_master_flags_xxxx">Sinalizadores mestre: nenhum</string>
   <string name="msg_ip_merge_public">Unindo os dados importados com o chaveiro público existente</string>
   <string name="msg_ip_merge_secret">Unindo os dados importados com o chaveiro secreto existente</string>
   <string name="msg_ip_subkey">Processando subchave %s</string>
@@ -909,16 +848,9 @@
   <string name="msg_kc_secret">Canonicalizando chaveiro secreto %s</string>
   <string name="msg_kc_error_v3">Esta é uma chave OpenPGP versão 3, que está obsoleta e não é mais suportada!</string>
   <string name="msg_kc_error_no_uid">O chaveiro não possui IDs de usuário válidos!</string>
-  <string name="msg_kc_error_master_algo">A chave-mestra usa um algoritmo desconhecido (%s)!</string>
   <string name="msg_kc_error_dup_key">Subchave %s duplicada no chaveiro. O chaveiro está mal-formado, não importando!</string>
-  <string name="msg_kc_master">Processando chave-mestra</string>
-  <string name="msg_kc_master_bad_type">Removendo certificado da chave-mestra de tipo desconhecido (%s)</string>
-  <string name="msg_kc_master_bad_local">Removendo certificado da chave-mestra com sinalizador \'local\'</string>
-  <string name="msg_kc_master_bad_err">Removendo certificado inválido da chave-mestra</string>
   <string name="msg_kc_master_bad_time">Removendo certificado de revogação do chaveiro com carimbo de data no futuro</string>
   <string name="msg_kc_master_bad_type_uid">Removendo certificado de ID de usuário em posição inválida</string>
-  <string name="msg_kc_master_bad">Removendo certificado inválido da chave-mestra</string>
-  <string name="msg_kc_master_local">Removendo certificado da chave-mestra com sinalizador \'local\'</string>
   <string name="msg_kc_revoke_dup">Removendo certificado de revogação de chaveiro redundante</string>
   <string name="msg_kc_notation_dup">Removendo certificado de notação redundante</string>
   <string name="msg_kc_notation_empty">Removendo certificado de notação vazio</string>
@@ -990,10 +922,7 @@
   <string name="msg_mg_found_new">%s novos certificados encontrados no chaveiro</string>
   <string name="msg_mg_unchanged">Para para unir</string>
   <!--createSecretKeyRing-->
-  <string name="msg_cr">Gerando nova chave-mestra</string>
-  <string name="msg_cr_error_no_master">Nenhuma opção de chave-mestra foi especificada!</string>
   <string name="msg_cr_error_no_user_id">Os chaveiros precisam ser criados com ao menos uma ID de usuário</string>
-  <string name="msg_cr_error_no_certify">A chave-mestra precisa possuir um sinalizador de certificação!</string>
   <string name="msg_cr_error_null_expiry">A data de expiração não pode ser \"a mesma de antes\" na criação da chave. Isto é um erro programático, por favor, abra um relatório de erro!</string>
   <string name="msg_cr_error_keysize_2048">O tamanho da chave deve ser maior ou igual a 2048!</string>
   <string name="msg_cr_error_no_curve">Nenhum tamanho de chave foi especificado! Isto é um erro programático, por favor, envie um relatório de erro!</string>
@@ -1015,14 +944,12 @@
   <string name="msg_mf_error_fingerprint">A impressão digital atual da chave não confere com o esperado!</string>
   <string name="msg_mf_error_keyid">Nenhuma ID de chave. Isto é um erro interno, por favor, envie um relatório de erro!</string>
   <string name="msg_mf_error_integrity">Erro interno, a verificação de integridade falhou!</string>
-  <string name="msg_mf_error_master_none">Nenhum certificado mestre encontrado para operar! (Todos revogados?)</string>
   <string name="msg_mf_error_noexist_primary">Foi especificado um ID de usuário primário inválido!</string>
   <string name="msg_mf_error_noexist_revoke">Foi especificado um ID de usuário para revogação inválido!</string>
   <string name="msg_mf_error_restricted">Tentou-se executar uma operação restrita sem senha! Isto é um erro programático, por favor, envie um relatório de erro!</string>
   <string name="msg_mf_error_revoked_primary">IDs de usuário revogados não podem ser primários!</string>
   <string name="msg_mf_error_null_expiry">A data de expiração não pode ser \"a mesma de antes\" na criação de subchave. Este é um erro programático, por favor, abra um relatório de erro!</string>
   <string name="msg_mf_error_noop">Nada a fazer!</string>
-  <string name="msg_mf_error_passphrase_master">Erro fatal ao decriptar a chave-mestra! Isto é provavelmente um erro programático, por favor, envie um relatório de erro!</string>
   <string name="msg_mf_error_passphrases_unchanged">Nenhuma senha alterada!</string>
   <string name="msg_mf_error_pgp">Erro interno de OpenPGP!</string>
   <string name="msg_mf_error_sig">Exceção na assinatura!</string>
@@ -1031,7 +958,6 @@
   <string name="msg_mf_error_conflicting_nfc_commands">Não é possível mover a chave para o Token de Segurança na mesma operação que cria uma assinatura no cartão.</string>
   <string name="msg_mf_error_duplicate_keytocard_for_slot">O Token de Segurança suporta apenas um compartimento por tipo de chave.</string>
   <string name="msg_mf_error_invalid_flags_for_keytocard">Sinalizadores impróprios para a chave do Token de Segurança</string>
-  <string name="msg_mf_master">Modificando as certificações mestras</string>
   <string name="msg_mf_passphrase">Modificando senha para o chaveiro</string>
   <string name="msg_mf_pin">Modificando PIN no cartão</string>
   <string name="msg_mf_admin_pin">Modificando o PIN Administrativo no cartão</string>
@@ -1078,7 +1004,6 @@
   <string name="msg_pr_subkey_nomatch">A subchave não está no Token de Segurança: %s</string>
   <string name="msg_pr_success">Chave promovida com sucesso</string>
   <!--Other messages used in OperationLogs-->
-  <string name="msg_ek_error_dummy">Não é possível editar um chaveiro com uma chave-mestra extirpada!</string>
   <string name="msg_ek_error_not_found">Chave não encontrada!</string>
   <!--Messages for DecryptVerify operation-->
   <string name="msg_dc_askip_bad_flags">Esta não é uma chave de encriptação, ignorando...</string>
@@ -1205,15 +1130,11 @@
     <item quantity="other">Certificando %1$d atributos de usuário para a chave %2$s</item>
   </plurals>
   <string name="msg_crt_error_self">Não é possível emitir auto-certificados desta maneira!</string>
-  <string name="msg_crt_error_master_not_found">A chave-mestra não foi encontrada!</string>
   <string name="msg_crt_error_nothing">Nenhuma chave certificada!</string>
-  <string name="msg_crt_error_unlock">Erro ao desbloquear a chave-mestra!</string>
   <string name="msg_crt">Certificando chaveiros</string>
-  <string name="msg_crt_master_fetch">Obtendo a chave-mestra certificadora</string>
   <string name="msg_crt_nfc_return">Retornando à tela do NFC</string>
   <string name="msg_crt_save">Salvando chave certificada %s</string>
   <string name="msg_crt_saving">Salvando chaveiros</string>
-  <string name="msg_crt_unlock">Desbloqueando a chave-mestra</string>
   <string name="msg_crt_success">Identidades certificadas com sucesso</string>
   <string name="msg_crt_warn_not_found">Chave não encontrada!</string>
   <string name="msg_crt_warn_cert_failed">Falha na geração do certificado!</string>
@@ -1229,7 +1150,6 @@
   <string name="msg_import_fetch_error_not_found">Chave não encontrada</string>
   <string name="msg_import_fetch_error_keyserver">Não foi possível recuperar a chave dos servidores: %s</string>
   <string name="msg_import_fetch_error_keyserver_secret">Não é possível importar uma chave secreta de um servidor e chaves!</string>
-  <string name="msg_import_fetch_keybase">Recuperando do keybase.io: %s</string>
   <string name="msg_import_fetch_facebook">Recuperando do Facebook: %s</string>
   <string name="msg_import_fetch_keyserver">Recuperando do servidor de chaves: %s</string>
   <string name="msg_import_fetch_keyserver_ok">Chave recuperada com sucesso</string>
@@ -1323,14 +1243,6 @@
   <string name="msg_get_query_too_short_or_too_many_responses">Ou nenhuma chave ou chaves demais foram encontradas. Por favor, refine sua busca!</string>
   <string name="msg_get_no_enabled_source">Habilite ao menos uma fonte para download!</string>
   <string name="msg_download_query_failed">Ocorreu um erro ao buscar pelas chaves</string>
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_verification">Tentando verificar pelo Keybase para %s</string>
-  <string name="msg_keybase_error_no_prover">Nenhum verificador de provas encontrado para %s</string>
-  <string name="msg_keybase_error_fetching_evidence">Problema ao obter a prova</string>
-  <string name="msg_keybase_error_key_mismatch">A impressão digital da chave não coincide com a da postagem da prova</string>
-  <string name="msg_keybase_error_dns_fail">A recuperação do Registro DNS TXT falhou</string>
-  <string name="msg_keybase_error_specific">%s</string>
-  <string name="msg_keybase_error_msg_payload_mismatch">A postagem da prova não coincide com o valor esperado</string>
   <!--Messages for Mime parsing operation-->
   <string name="msg_mime_parsing_start">Interpretando a estrutura MIME</string>
   <string name="msg_mime_parsing_error">Falha na interpretação MIME</string>
@@ -1616,7 +1528,6 @@
   <string name="keyserver_last_updated_never">Última verificação: Nunca</string>
   <string name="key_insecure_bitstrength_2048_problem">Esta chave usa o algoritmo <b>%1$s</b> com uma força de <b>%2$s bits</b>. Uma chave segura deve ter uma força de 2048 bits.</string>
   <string name="key_insecure_bitstrength_2048_solution">Esta chave não pode ser atualizada. Para comunicação segura, o proprietário deve gerar uma nova chave.</string>
-  <string name="key_insecure_unknown_curve_problem">Esta chave usa o algoritmo <b>%1$s</b> que não está na lista permitida.</string>
   <string name="key_insecure_unknown_curve_solution">Esta chave não pode ser atualizada. Para comunicação segura, o proprietário deve gerar uma nova chave.</string>
   <string name="key_insecure_unidentified_problem">Há um problema não identificado com esta chave.</string>
   <string name="key_insecure_unidentified_solution">Por favor, abra um ticket de bug.</string>
@@ -1627,8 +1538,6 @@
   <string name="insecure_encrypt_bitstrength_suggestion">Esta chave é insegura e não pode ser atualizada. Para se comunicar seguramente, você precisa criar uma nova chave!</string>
   <string name="insecure_sign_bitstrength">A chave que enviou (assinou) esta mensagem está desatualizada!\n\nO algoritmo (%s) está configurado com uma força de 1024 bits ou menos, o que foi considerado inseguro para uso geral desde 2006.</string>
   <string name="insecure_sign_bitstrength_suggestion">A chave em uso é insegura e não pode ser atualizada. Para se comunicar seguramente, o remetente precisa criar uma nova chave!</string>
-  <string name="insecure_encrypt_not_secure_curve">A chave que recebeu (decriptou) esta mensagem está usando a curva elíptica com OID %1$s, que não está na lista permitida!</string>
-  <string name="insecure_sign_not_secure_curve">A chave que enviou (assinou) esta mensagem está usando a curva elíptica com OID %1$s, que não está na lista permitida!</string>
   <string name="insecure_encrypt_unidentified">Há um problema não identificado de segurança com a chave usada para receber (decriptar) esta mensagem!</string>
   <string name="insecure_sign_unidentified">Há um problema não identificado de segurança com a chave usada para enviar (assinar) esta mensagem!</string>
   <string name="insecure_report_suggestion">Isto pode ser um problema no OpenKeychain, por favor reporte em nosso sistema de rastreamento de bugs!</string>

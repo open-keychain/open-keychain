@@ -8,7 +8,6 @@
   <string name="title_encrypt_files">Enkriptatu</string>
   <string name="title_decrypt">Dekriptatu</string>
   <string name="title_add_subkey">Gehitu azpigiltza</string>
-  <string name="title_change_master_key">Aldatu giltza maisua</string>
   <string name="title_edit_key">Editatu Giltza</string>
   <string name="title_preferences">Ezarpenak</string>
   <string name="title_api_registered_apps">Aplikazioak</string>
@@ -39,12 +38,11 @@
   <string name="section_user_ids">Nortasunak</string>
   <string name="section_security_token">Segurtasun Lekukoa</string>
   <string name="section_linked_system_contact">Loturatutako Sistema Harremana</string>
-  <string name="section_keybase_proofs">Keybase.io Probak</string>
   <string name="section_should_you_trust">Fidatu behar zara giltza honetaz?</string>
   <string name="section_proof_details">Probatu egiaztapena</string>
   <string name="section_keys">Azpigiltzak</string>
   <string name="section_cloud_search">Giltza Bilaketa</string>
-  <string name="section_cloud_search_summary">Giltza-zerbitzaria, keybase.io</string>
+  <string name="section_cloud_search_summary">Giltza-zerbitzaria</string>
   <string name="section_passphrase_cache">Sarhitzak eta PIN-ak</string>
   <string name="section_proxy_settings">Sare Izengabetasuna</string>
   <string name="section_proxy_settings_summary">Tor, Proxy Ezarpenak</string>
@@ -193,8 +191,6 @@
   <string name="label_smartpgp_authority_dialog_delete">Ezabatu autoritatea</string>
   <string name="pref_keyserver">OpenPGP giltza-zerbitzariak</string>
   <string name="pref_keyserver_summary">Bilatu giltzak hautaturiko OpenPGP giltza-zerbitzarietan (HKP protokoloa)</string>
-  <string name="pref_keybase">keybase.io</string>
-  <string name="pref_keybase_summary">Bilatu giltzak keybase.io-an</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">Bilatu giltzak Facebook-en erabiltzaile-izenez</string>
   <string name="pref_wkd">Web Giltza Zuzenbidea</string>
@@ -202,15 +198,10 @@
   <string name="label_sync_settings_keyserver_summary_on">Hiru egunetik behin, giltzak hobetsitako giltza-zerbitzaritik eguneratzen dira</string>
   <string name="label_sync_settings_keyserver_summary_off">Giltzak ez dira berezgaitasunez eguneratzen</string>
   <string name="label_sync_settings_wifi_title">Aldiberetu Wi-Fi moduan bakarrik</string>
-  <string name="label_sync_settings_contacts_title">Lotu giltzak harremanekin</string>
-  <string name="label_sync_settings_contacts_summary_on">Lotu giltzak harremanekin izen eta post@ helbideetan ohinarrituz. Hau erabat lineaz-kanpo gertatzen da zure gailuan.</string>
-  <string name="label_sync_settings_contacts_summary_off">Giltza berriak ez dira harremanekin lotuko</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
-    <string name="label_experimental_settings_desc_title">Kontuz</string>
+  <string name="label_experimental_settings_desc_title">Kontuz</string>
   <string name="label_experimental_settings_desc_summary">Ezaugarri hauek ez dute amaitu edo erabiltzaile jarduera/segurtasun emaitzak erdietsita. Honela, ez dira beren segurtasunean ohinarritzen eta mesedez ez jakinarazi aurkitzen dituzun arazoak!</string>
-  <string name="label_experimental_settings_keybase_summary">Jarri harremanetan keybase.io giltzak probatzeko eta erakutsi hauek giltza bat erakusten den bakoitzean</string>
   <string name="label_experimental_settings_theme_summary">(Ikurrak eta ikusleiho asko oraindik ez daude azalgai ilunarekin zehaztuta)</string>
-    <!--Proxy Preferences-->
+  <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Gaitu Tor</string>
   <string name="pref_proxy_tor_summary">Orbot ezarrita egotea behar du</string>
   <string name="pref_proxy_normal_title">Gaitu beste proxy bat</string>
@@ -393,7 +384,6 @@
   <string name="progress_exporting">esportatzen...</string>
   <string name="progress_uploading">igotzen...</string>
   <string name="progress_building_key">giltza eraikitzen...</string>
-  <string name="progress_building_master_key">Maisu eraztuna eraikitzen...</string>
   <string name="progress_generating_rsa">RSA giltza berria sortzen...</string>
   <string name="progress_generating_dsa">DSA giltza berria sortzen...</string>
   <string name="progress_generating_elgamal">EIGamal giltza berria sortzen...</string>
@@ -626,7 +616,6 @@
   <string name="key_view_tab_share">Elkarbanatu</string>
   <string name="key_view_tab_keys">Azpigiltzak</string>
   <string name="key_view_tab_certs">Egiaztagiriak</string>
-  <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">Ukatuta</string>
   <string name="user_id_info_revoked_text">Nortasun hau ukatua izan da giltzaren jabeagaitik. Aurrerantzean ez da baliozkoa.</string>
   <string name="user_id_info_certified_title">Baieztatuta</string>
@@ -635,35 +624,6 @@
   <string name="user_id_info_uncertified_text">Giltza hau oraindik ez da baieztatu. Ezin zara zihur egon giltza egitan norbanako zehatz batena den.</string>
   <!--Key trust-->
   <string name="key_trust_start_cloud_search">Hasi bilaketa</string>
-  <string name="key_trust_results_prefix">Keybase.io \"probak\" eskaintzen ditu giltza honen jabea baieztatzeko:</string>
-  <!--keybase proof stuff-->
-  <string name="keybase_narrative_twitter">Argitaratu Twitter-en  honela %s</string>
-  <string name="keybase_narrative_github">GitHub-en %s bezala ezagutzen da</string>
-  <string name="keybase_narrative_dns">%s domeinu izena(k) agintzen ditu</string>
-  <string name="keybase_narrative_web_site">%s Web gune(et)an argitaratu dezake</string>
-  <string name="keybase_narrative_reddit">Argitaratu Reddit-en %s bezala</string>
-  <string name="keybase_narrative_coinbase">Coinbasen %s bezala ezagutzen da</string>
-  <string name="keybase_narrative_hackernews">Argitaratu Hacker News-en %s bezala</string>
-  <string name="keybase_narrative_unknown">Proba mota ezezaguna: %s</string>
-  <string name="keybase_proof_failure">Zorigaitzez proba hau ezin da egiaztatu.</string>
-  <string name="keybase_unknown_proof_failure">Arazo ezezaguna proba egiaztatzailearekin</string>
-  <string name="keybase_problem_fetching_evidence">Arazoa probarekin</string>
-  <string name="keybase_key_mismatch">Giltzaren hatz-aztarna ez dator bat proban aurkeztutakoarekin</string>
-  <string name="keybase_dns_query_failure">DNS TXT Grabaketa berreskurapen hutsegitea</string>
-  <string name="keybase_no_prover_found">Ez da proba egiaztatzailerik aurkitu honentzat:</string>
-  <string name="keybase_message_payload_mismatch">Dekriptatutako proba ez dator bat itxarondako balioarekin</string>
-  <string name="keybase_message_fetching_data">Proba lortzen</string>
-  <string name="keybase_proof_succeeded">Proba hau egiaztatua izan da!</string>
-  <string name="keybase_a_post">Posta bat</string>
-  <string name="keybase_fetched_from">hemendik lortuta</string>
-  <string name="keybase_for_the_domain">domeinurako</string>
-  <string name="keybase_contained_signature">giltza honen jabeak bakarrik sortu ahal izan duen mezu bat du.</string>
-  <string name="keybase_twitter_proof">Txio bat</string>
-  <string name="keybase_dns_proof">DNS TXT grabaketa bat</string>
-  <string name="keybase_web_site_proof">Idazki agiri bat</string>
-  <string name="keybase_github_proof"> </string>
-  <string name="keybase_reddit_proof">JSON agiri bat</string>
-  <string name="keybase_verify">Egiaztatu</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Aldatu Sarhitza</string>
   <string name="edit_key_action_add_identity">Gehitu Nortasuna</string>
@@ -737,7 +697,6 @@
   <string name="drawer_close">Itxi nabigazio marraztzailea</string>
   <string name="my_keys">Nire Giltzak</string>
   <string name="nav_backup">Babeskopiatu/Leheneratu</string>
-  <string name="nav_transfer">Wifi Segurua Eskualdaketa</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Idatzi idazkia</string>
   <!--certs-->
@@ -768,26 +727,8 @@
   <string name="msg_ip_insert_keyring">Giltza-uztai datuak kodeatzen</string>
   <string name="msg_ip_insert_keys">Giltzak aztertzen</string>
   <string name="msg_ip_prepare">Datubase eragiketak gertatzen</string>
-  <string name="msg_ip_master">%s maisu giltza prozesatzen</string>
   <string name="msg_ip_master_expired">Giltza-uztaia iraungituta: %s</string>
   <string name="msg_ip_master_expires">Giltza-uztaia iraungitzen da: %s</string>
-  <string name="msg_ip_master_flags_unspecified">Maisu ikurra: adierazi gabe (guztiak onartzen)</string>
-  <string name="msg_ip_master_flags_cesa">Maisu ikurrak: egiaztagiritu, enkriptatu, sinatu, egiaztatu</string>
-  <string name="msg_ip_master_flags_cesx">Maisu ikurrak: egiaztagiritu, enkriptatu, sinatu</string>
-  <string name="msg_ip_master_flags_cexa">Maisu ikurrak: egiaztagiritu, enkriptatu, egiaztatu</string>
-  <string name="msg_ip_master_flags_cexx">Maisu ikurrak: egiaztagiritu, enkriptatu</string>
-  <string name="msg_ip_master_flags_cxsa">Maisu ikurrak: egiaztagiritu, sinatu, egiaztatu</string>
-  <string name="msg_ip_master_flags_cxsx">Maisu ikurrak: egiaztagiritu, sinatu</string>
-  <string name="msg_ip_master_flags_cxxa">Maisu ikurrak: egiaztagiritu, egiaztatu</string>
-  <string name="msg_ip_master_flags_cxxx">Maisu ikurrak: egiaztagiritu</string>
-  <string name="msg_ip_master_flags_xesa">Maisu ikurrak: enkriptatu, sinatu, egiaztatu</string>
-  <string name="msg_ip_master_flags_xesx">Maisu ikurrak: enkriptatu, sinatu</string>
-  <string name="msg_ip_master_flags_xexa">Maisu ikurrak: enkriptatu, egiaztatu</string>
-  <string name="msg_ip_master_flags_xexx">Maisu ikurrak: enkriptatu</string>
-  <string name="msg_ip_master_flags_xxsa">Maisu ikurrak: sinatu, egiaztatu</string>
-  <string name="msg_ip_master_flags_xxsx">Maisu ikurrak: sinatu</string>
-  <string name="msg_ip_master_flags_xxxa">Maisu ikurrak: egiaztatu</string>
-  <string name="msg_ip_master_flags_xxxx">Maisu ikurrak: ezer ez</string>
   <string name="msg_ip_merge_public">Inportatutako datuak dagoen giltza-uztai publikoan batzen</string>
   <string name="msg_ip_merge_secret">Inportatutako datuak dagoen giltza-uztai sekretuan batzen</string>
   <string name="msg_ip_subkey">%s azpigiltza prozesatzen</string>
@@ -866,12 +807,7 @@
   <!--Keyring Canonicalization log entries-->
   <string name="msg_kc_error_v3">Hau OpenPGP 3 bertsioko giltza bat da, zeina zaharkituta dago eta ez da gehiago sostengatzen!</string>
   <string name="msg_kc_error_no_uid">Giltza-uztaiak ez du baliozko erabiltzaile ID-rik!</string>
-  <string name="msg_kc_error_master_algo">Giltza maisuak algoritmo ezezagun bat erabiltzen du (%s)!</string>
-  <string name="msg_kc_master">Maisu giltza prozesatzen</string>
-  <string name="msg_kc_master_bad_type">Mota ezezaguneko (%s) maisu giltza egiaztagiria kentzen</string>
-  <string name="msg_kc_master_bad_err">Maisu giltza egiaztagiri gaitza kentzen</string>
   <string name="msg_kc_master_bad_type_uid">Erabiltzaile ID egiaztagiria kentzen kokapen okerretik</string>
-  <string name="msg_kc_master_bad">Maisu giltza egiaztagiri gaitza kentzen</string>
   <string name="msg_kc_sub">%s azpigiltza prozesatzen</string>
   <string name="msg_kc_sub_bad_type">Azpigiltza egiaztagiri mota ezezaguna: %s</string>
   <string name="msg_kc_sub_no_cert">Ez da baliozko egiaztagiririk aurkitu %s-rentzat, eraztunetik kentzen</string>
@@ -899,10 +835,7 @@
   <string name="msg_mg_found_new">%s egiaztagiri berri aurkitu dira giltza-uztaian</string>
   <string name="msg_mg_unchanged">Ez dago ezer batzeko</string>
   <!--createSecretKeyRing-->
-  <string name="msg_cr">Giltza maisu berria sortzen</string>
-  <string name="msg_cr_error_no_master">Ez da maisu giltza aukerarik adierazi!</string>
   <string name="msg_cr_error_no_user_id">Giltza-uztaiak gutxienez erabiltzaile ID batekin sortu behar dira!</string>
-  <string name="msg_cr_error_no_certify">Maisu giltzak egiaztagiri ikurra izan behar du!</string>
   <string name="msg_cr_error_null_expiry">Epemuga ezin daiteke giltza sortzea baino \'lehenago\' izan. Hau programazio akats bat da, mesedez agiritu akats jakinarazpen bat!</string>
   <string name="msg_cr_error_keysize_2048">Giltza neurria 2048 edo handiagoa izan behar da!</string>
   <string name="msg_cr_error_no_curve">Ez da giltzaren neurria adierazi! Hau programazio akats bat da, mesedez agiritu akats jakinarazpen bat!</string>
@@ -918,19 +851,16 @@
   <string name="msg_mf_error_fingerprint">Oraingo giltzaren hatz-aztarna ez dator bat itxarondakoarekin!</string>
   <string name="msg_mf_error_keyid">Ez dago giltza ID-rik. Hau barneko akats bat da, mesedez agiritu akats jakinarazpen bat!</string>
   <string name="msg_mf_error_integrity">Barneko akatsa, osotasun egiaztapen hutsegitea!</string>
-  <string name="msg_mf_error_master_none">Ez da egiaztagiri maisuri aurkitu eragiketarako! (Guztiak ukatuta?)</string>
   <string name="msg_mf_error_noexist_primary">Lehen erabiltzaile ID gaitza adierazi da!</string>
   <string name="msg_mf_error_noexist_revoke">Erabiltzaile ID okerra adierazi da ukatzeko!</string>
   <string name="msg_mf_error_restricted">Eragiketa murriztua sarhitzik gabe exekutatzeko saiakera! Hau programazio akats bat da, mesedez agiritu akats jakinarazpen bat!</string>
   <string name="msg_mf_error_revoked_primary">Ukatutako erabiltzaile ID-ak ezin dira lehena izan!</string>
   <string name="msg_mf_error_null_expiry">Epemuga ezin daiteke azpigiltza sortzea baino \'lehenago\' izan. Hau programazio akats bat da, mesedez agiritu akats jakinarazpen bat!</string>
   <string name="msg_mf_error_noop">Ez dago ezer egiteko!</string>
-  <string name="msg_mf_error_passphrase_master">Akats larria giltza maisua dekriptatzerakoan! Hau programazio akats bat da, mesedez agiritu akats jakinarazpen bat!</string>
   <string name="msg_mf_error_passphrases_unchanged">Ez da sarhitzik aldatu!</string>
   <string name="msg_mf_error_pgp">Barneko OpenPGP akatsa!</string>
   <string name="msg_mf_error_sig">Sinadura salbuespena!</string>
   <string name="msg_mf_error_invalid_flags_for_keytocard">Giltza ikur ezegokiak Segurtasun Lekukoa giltzarako.</string>
-  <string name="msg_mf_master">Maisu egiaztagiriak aldatzen</string>
   <string name="msg_mf_passphrase">Giltza-uztaiaren sarhitza aldatzen</string>
   <string name="msg_mf_pin">PIN-a aldatzen txartelean</string>
   <string name="msg_mf_admin_pin">Administrari PIN-a aldatzen txartelean</string>
@@ -1076,15 +1006,11 @@
   <string name="msg_auth_ok">Egiaztapen eragiketa ongi!</string>
   <string name="msg_crt_certifying">Egiaztagiriak sortzen</string>
   <string name="msg_crt_error_self">Ezin da hau bezalako berez-egiaztatua jaulki!</string>
-  <string name="msg_crt_error_master_not_found">Maisu giltza ez da aurkitu!</string>
   <string name="msg_crt_error_nothing">Ez da giltzarik egiaztagiritu!</string>
-  <string name="msg_crt_error_unlock">Akatsa maisu giltza desblokeatzerakoan!</string>
   <string name="msg_crt">Giltza-uztaiak egiaztagiritzen</string>
-  <string name="msg_crt_master_fetch">Maisu giltza egiaztagiritua lortzen</string>
   <string name="msg_crt_nfc_return">NFC ikusleihora itzultzen</string>
   <string name="msg_crt_save">%s giltza egiaztagiritua gordetzen</string>
   <string name="msg_crt_saving">Giltza-uztaiak gordetzen</string>
-  <string name="msg_crt_unlock">Maisu giltza desblokeatzen</string>
   <string name="msg_crt_success">Nortasunak ongi egiaztagiritu dira</string>
   <string name="msg_crt_warn_not_found">Giltza ez da aurkitu!</string>
   <string name="msg_crt_warn_cert_failed">Egiaztagiri sortze hutsegitea!</string>
@@ -1100,7 +1026,6 @@
   <string name="msg_import_fetch_error_not_found">Giltza ez da aurkitu!</string>
   <string name="msg_import_fetch_error_keyserver">Ezin da giltza berreskuratu giltza-zerbitzarietatik: %s</string>
   <string name="msg_import_fetch_error_keyserver_secret">Ezin da giltza inportatu giltza-zerbitzaritik!</string>
-  <string name="msg_import_fetch_keybase">keybase.io-tik berreskuratzen: %s</string>
   <string name="msg_import_fetch_facebook">Facebook-etik berreskuratzen: %s</string>
   <string name="msg_import_fetch_keyserver">Giltza-zerbitzaritik berreskuratzen: %s</string>
   <string name="msg_import_fetch_keyserver_ok">Giltza ongi berreskuratu da</string>
@@ -1186,14 +1111,6 @@
   <string name="msg_get_query_too_short">Bilaketa eskaera laburregia. Mesedez zehaztu zure eskaera!</string>
   <string name="msg_get_query_too_short_or_too_many_responses">Ez dago giltzarik edo gehiegi aurkitu dira. Mesedez hobetu zure eskaera!</string>
   <string name="msg_download_query_failed">Akats bat gertatu da giltzak bilatzerakoan.</string>
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_verification">Giltzabase egiaztapen saiakera %s-rentzat</string>
-  <string name="msg_keybase_error_no_prover">Ez da proba egiaztatzailerik aurkitu %s-rako</string>
-  <string name="msg_keybase_error_fetching_evidence">Arazoa probarekin</string>
-  <string name="msg_keybase_error_key_mismatch">Giltzaren hatz-aztarna ez dator bat proban aurkeztutakoarekin</string>
-  <string name="msg_keybase_error_dns_fail">DNS TXT Grabaketa berreskurapen hutsegitea</string>
-  <string name="msg_keybase_error_specific">%s</string>
-  <string name="msg_keybase_error_msg_payload_mismatch">Dekriptatutako proba ez dator bat itxarondako balioarekin</string>
   <!--Messages for Mime parsing operation-->
   <string name="msg_mime_parsing_start">MIME egitura aztertzen</string>
   <string name="msg_mime_parsing_error">MIME azterketa hutsegitea</string>

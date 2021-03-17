@@ -2,91 +2,299 @@
 <resources>
   <!--GENERAL: Please put all strings inside quotes as described in example 1 on
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
+  <string name="app_name">OpenKeychain</string>
   <!--title-->
-  <string name="title_encrypt_text">การเข้ารหัสลับของข้อความ</string>
-  <string name="title_encrypt_files">การเข้ารหัสลับของข้อความ</string>
-  <string name="title_decrypt">ถอดรหัส</string>
+  <string name="title_encrypt_text">เข้ารหัสลับ</string>
+  <string name="title_encrypt_files">เข้ารหัสลับ</string>
+  <string name="title_decrypt">ถอดรหัสลับ</string>
+  <string name="title_add_subkey">เพิ่มกุญแจย่อย</string>
+  <string name="title_edit_key">แก้กุญแจ</string>
   <string name="title_preferences">การตั้งค่า</string>
   <string name="title_api_registered_apps">แอป</string>
+  <string name="title_key_server_preference">เซิร์ฟเวอร์กุญแจ OpenPGP</string>
+  <string name="title_smartpgp_authorities_preference">SmartPGP: ผู้มีอำนาจรับรองที่น่าเชื่อถือ</string>
+  <string name="title_change_passphrase">เปลี่ยนรหัสผ่าน</string>
+  <string name="title_share_fingerprint_with">แบ่งปันลายนิ้วมือกับ...</string>
+  <string name="title_share_key">แบ่งปันกุญแจกับ...</string>
+  <string name="title_share_file">แบ่งปันแฟ้มกับ...</string>
+  <string name="title_share_message">แบ่งปันข้อความกับ...</string>
+  <string name="title_encrypt_to_file">เข้ารหัสลับไปที่แฟ้ม</string>
+  <string name="title_decrypt_to_file">ถอดรหัสลับไปที่แฟ้ม</string>
+  <string name="title_import_keys">นำเข้ากุญแจ</string>
+  <string name="title_export_key">สำรองกุญแจ</string>
+  <string name="title_export_keys">สำรองกุญแจ</string>
+  <string name="title_key_not_found">ไม่พบกุญแจ</string>
+  <string name="title_send_key">อัปโหลดไปเซิร์ฟเวอร์กุญแจ</string>
+  <string name="title_backup">สำรองกุญแจ</string>
+  <string name="title_certify_key">ยืนยันกุญแจ</string>
+  <string name="title_key_details">รายละเอียดกุญแจ</string>
   <string name="title_help">ช่วยเหลือ</string>
-  <string name="title_log_display">บันทึก</string>
+  <string name="title_log_display">ปูม</string>
+  <string name="title_exchange_keys">แลกเปลี่ยนกุญแจ</string>
   <string name="title_advanced_key_info">ขั้นสูง</string>
+  <string name="title_delete_secret_key">ลบกุญแจ \'%s\' **ของคุณเอง** หรือไม่?</string>
+  <string name="title_manage_my_keys">จัดการกุญแจของฉัน</string>
   <!--section-->
+  <string name="section_user_ids">อัตลักษณ์</string>
+  <string name="section_should_you_trust">คุณควรเชื่อถือกุญแจนี้หรือไม่?</string>
   <string name="section_keys">กุญแจย่อย</string>
+  <string name="section_cloud_search">ค้นหากุญแจ</string>
+  <string name="section_cloud_search_summary">เซิร์ฟเวอร์กุญแจ</string>
+  <string name="section_passphrase_cache">รหัสผ่านและรหัส PIN</string>
+  <string name="section_passphrase_cache_summary">การรับมือ</string>
+  <string name="section_proxy_settings">ความเป็นนิรนามทางเครือข่าย</string>
+  <string name="section_proxy_settings_summary">การตั้งค่าพร็อกซีและ Tor</string>
+  <string name="section_gui">ส่วนติดต่อ</string>
+  <string name="section_sync_settings">การปรับประสานกัน</string>
+  <string name="section_sync_settings_summary">การปรับปรุงกุญแจและการเชื่อมกับผู้ติดต่อโดยอัตโนมัติ</string>
+  <string name="section_experimental_features">ความสามารถขั้นทดลอง</string>
   <string name="section_certify">ยืนยัน</string>
   <string name="section_share_key">รหัสกุญแจ</string>
+  <string name="section_key_server">เซิร์ฟเวอร์กุญแจ</string>
   <string name="section_fingerprint">ลายนิ้วมือ</string>
-  <string name="section_encrypt">การเข้ารหัสลับของข้อความ</string>
+  <string name="section_encrypt">เข้ารหัสลับ</string>
+  <string name="section_decrypt">ถอดรหัสลับ/ตรวจยืนยัน</string>
+  <string name="section_current_expiry">เวลาหมดอายุปัจจุบัน</string>
+  <string name="section_new_expiry">เวลาหมดอายุใหม่</string>
   <!--button-->
+  <string name="btn_decrypt_verify_file">ถอดรหัสลับ ตรวจยืนยัน และบันทึกแฟ้ม</string>
+  <string name="btn_encrypt_share_file">เข้ารหัสลับและแบ่งปันแฟ้ม</string>
+  <string name="btn_encrypt_save_file">เข้ารหัสลับและแบ่งปันแฟ้ม</string>
+  <string name="btn_save_file">บันทึกแฟ้ม</string>
   <string name="btn_save">บันทึก</string>
   <string name="btn_view_log">ดูปูม</string>
   <string name="btn_do_not_save">ยกเลิก</string>
   <string name="btn_delete">ลบ</string>
+  <string name="btn_no_date">ไม่มีหมดอายุ</string>
   <string name="btn_okay">ตกลง</string>
-  <string name="btn_next">ต่อไป</string>
+  <string name="btn_export_to_server">อัปโหลดไปเซิร์ฟเวอร์กุญแจ</string>
+  <string name="btn_next">ถัดไป</string>
   <string name="btn_back">ย้อนกลับ</string>
   <string name="btn_no">ไม่ใช่</string>
-  <string name="btn_copy_decrypted_text">คัดลอกคลิปบอร์ด</string>
-  <string name="btn_encrypt_files">เข้ารหัสลับ</string>
-  <string name="btn_unlock">ปลดล็อค</string>
-  <string name="btn_proceed">ดำเนิน</string>
+  <string name="btn_match">ลายนิ้วมือตรงกัน</string>
+  <string name="btn_share_encrypted_signed">เข้ารหัสลับ/เซ็น และแบ่งปันข้อความ</string>
+  <string name="btn_copy_encrypted_signed">เข้ารหัสลับ/เซ็น และคัดลอกข้อความ</string>
+  <string name="btn_paste_encrypted_signed">เข้ารหัสลับ/เซ็น และวางข้อความ</string>
+  <string name="btn_view_cert_key">ดูกุญแจใบรับรอง</string>
+  <string name="btn_create_key">สร้างกุญแจ</string>
+  <string name="btn_add_files">เพิ่มแฟ้ม</string>
+  <string name="btn_share_decrypted_text">แบ่งปัน</string>
+  <string name="btn_open_with">เปิดด้วย...</string>
+  <string name="btn_copy_decrypted_text">คัดลอกไปคลิปบอร์ด</string>
+  <string name="btn_decrypt_clipboard">อ่านจากคลิปบอร์ด</string>
+  <string name="btn_decrypt_files">เลือกแฟ้มข้อมูลเข้า</string>
+  <string name="btn_encrypt_files">เข้ารหัสลับแฟ้ม</string>
+  <string name="btn_encrypt_text">เข้ารหัสลับข้อความ</string>
+  <string name="btn_add_email">เพิ่มที่อยู่อีเมลเพิ่มเติม</string>
+  <string name="btn_unlock">ปลดล็อก</string>
+  <string name="btn_proceed">ทำ</string>
   <string name="btn_add_keyserver">เพิ่ม</string>
+  <string name="btn_save_default">บันทึกเป็นค่าปริยาย</string>
+  <string name="btn_saved">บันทึกแล้ว!</string>
+  <string name="btn_not_matching">ไม่ตรง</string>
   <!--Shortcut Strings-->
   <!--Content Description-->
-  <string name="cd_encrypt_files">เข้ารหัสลับ</string>
+  <string name="cd_encrypt_files">เข้ารหัสลับแฟ้ม</string>
+  <string name="cd_exchange_keys">แลกเปลี่ยนกุญแจ</string>
+  <string name="cd_encrypt_text">เข้ารหัสลับข้อความ</string>
+  <string name="cd_share_nfc">แบ่งปันผ่าน NFC</string>
   <!--menu-->
   <string name="menu_preferences">การตั้งค่า</string>
   <string name="menu_help">ช่วยเหลือ</string>
+  <string name="menu_export_key">สำรองกุญแจ</string>
+  <string name="menu_delete_key">ลบกุญแจ</string>
+  <string name="menu_status">ดูสถานะกุญแจ</string>
+  <string name="menu_manage_keys">จัดการกุญแจของฉัน</string>
   <string name="menu_search">ค้นหา</string>
   <string name="menu_open">เปิด</string>
+  <string name="menu_read_clipboard">อ่านจากคลิปบอร์ด</string>
+  <string name="menu_nfc_preferences">การตั้งค่า NFC</string>
+  <string name="menu_encrypt_to">เข้ารหัสลับไปยัง...</string>
   <string name="menu_select_all">เลือกทั้งหมด</string>
+  <string name="menu_export_all_keys">ส่งออกกุญแจทั้งหมด</string>
+  <string name="menu_update_all_keys">ปรับปรุงกุญแจทั้งหมด</string>
+  <string name="menu_certify_fingerprint">ยืนยันด้วยลายนิ้วมือ</string>
+  <string name="menu_certify_fingerprint_phrases">ยืนยันด้วยวลี</string>
+  <string name="menu_share_log">แบ่งปันปูม</string>
   <string name="menu_change_password">เปลี่ยนรหัสผ่าน</string>
   <string name="menu_advanced">ขั้นสูง</string>
   <string name="menu_keyserver_add">เพิ่ม</string>
   <!--label-->
   <string name="label_message">แบบอักษร</string>
   <string name="label_file">แฟ้ม</string>
+  <string name="label_files">แฟ้ม</string>
+  <string name="label_file_colon">แฟ้ม:</string>
+  <string name="label_no_passphrase">ไม่มีรหัสผ่าน</string>
   <string name="label_passphrase">รหัสผ่าน</string>
-  <string name="label_unlock">กำลังปลดล็อค...</string>
+  <string name="label_pin">รหัสพิน</string>
+  <string name="label_unlock">กำลังปลดล็อก...</string>
+  <string name="label_passphrase_again">ทวนรหัสผ่าน</string>
+  <string name="label_show_passphrase">แสดงรหัสผ่าน</string>
   <string name="label_algorithm">อัลกอริทึม</string>
-  <string name="label_key_id">รหัสระบุกุญแจ</string>
-  <string name="label_key_id_colon">รหัสระบุกุญแจ</string>
+  <string name="label_algorithm_colon">อัลกอริทึม:</string>
+  <string name="label_asymmetric_from">เซ็นด้วย:</string>
+  <string name="label_to">เข้ารหัสลับไปที่</string>
+  <string name="label_delete_after_encryption">ลบแฟ้มหลังจากการเข้ารหัสลับ</string>
+  <string name="label_delete_after_decryption">ลบหลังจากถอดรหัสลับ</string>
+  <string name="label_encryption_algorithm">อัลกอริทึมเข้ารหัสลับ</string>
+  <string name="label_hash_algorithm">อัลกอริทึมแฮช</string>
+  <string name="label_symmetric">เข้ารหัสลับด้วยรหัสผ่าน</string>
+  <string name="label_message_compression">การบีบอัดข้อความ</string>
+  <string name="label_file_compression">การบีบอัดแฟ้ม</string>
+  <string name="label_keyservers">จัดการเซิร์ฟเวอร์กุญแจ OpenPGP</string>
+  <string name="label_key_id">เลขประจำกุญแจ</string>
+  <string name="label_key_id_colon">เลขประจำกุญแจ</string>
+  <string name="label_key_created">สร้าง %s แล้ว</string>
+  <string name="label_key_created_just_now">เพิ่งสร้างเดี๋ยวนี้</string>
   <string name="label_key_type">ชนิด</string>
   <string name="label_creation">การสร้าง</string>
-  <string name="label_name">ชื่อเอกสาร</string>
+  <string name="label_creation_colon">การสร้าง:</string>
+  <string name="label_expiry">หมดอายุ</string>
+  <string name="label_valid_from">ใช้ได้จาก</string>
+  <string name="label_usage">การใช้</string>
+  <string name="label_revoked">ถูกเพิกถอนแล้ว</string>
+  <string name="label_insecure">ไม่ปลอดภัย</string>
+  <string name="label_key_size">ขนาดกุญแจ</string>
+  <string name="label_name">ชื่อ</string>
   <string name="label_email">อีเมล</string>
   <string name="label_fingerprint">ลายนิ้วมือ</string>
+  <string name="expiry_date_dialog_title">ตั้งวันหมดอายุ</string>
+  <string name="label_keyservers_title">เซิร์ฟเวอร์กุญแจ</string>
+  <string name="label_keyserver_settings_hint">ลากเพื่อเปลี่ยนลำดับ แตะเพื่อแก้ไข/ลบ</string>
+  <string name="label_selected_keyserver_title">เซิร์ฟเวอร์กุญแจที่ถูกเลือก</string>
   <string name="label_preferred">ที่ต้องการ</string>
+  <string name="label_enable_compression">เปิดใช้งานการบีบอัดข้อมูล</string>
+  <string name="label_encrypt_filenames">เข้ารหัสลับชื่อแฟ้ม</string>
   <string name="label_hidden_recipients">ซ่อนผู้รับ:</string>
+  <string name="label_smartpgp_verify">SmartPGP: ตรวจยืนยันใบรับรอง</string>
+  <string name="label_smartpgp_verify_summary">ตรวจยืนยันใบรับรองโทเค็นความปลอดภัย SmartPGP กับผู้มีอำนาจรับรองที่น่าเชื่อถือ</string>
+  <string name="label_smartpgp_roots">SmartPGP: ผู้มีอำนาจรับรองที่น่าเชื่อถือ</string>
+  <string name="label_enter_keyserver_url">URL</string>
+  <string name="label_enter_keyserver_onion">ตัวเลือก URL .onion ของ Tor</string>
+  <string name="label_keyserver_dialog_delete">ลบเซิร์ฟเวอร์กุญแจ</string>
+  <string name="label_theme">ธีม</string>
   <string name="label_enter_smartpgp_authority_name">ชื่อเอกสาร</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
+  <string name="pref_keyserver">เซิร์ฟเวอร์กุญแจ OpenPGP</string>
+  <string name="label_sync_settings_keyserver_title">ปรับปรุงกุญแจอัตโนมัติ</string>
   <string name="label_experimental_settings_desc_title">คำเตือน</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Enable Tor</string>
+  <string name="pref_proxy_host_title">โฮสต์พร็อกซี</string>
+  <string name="pref_proxy_port_title">พอร์ตพร็อกซี</string>
+  <string name="pref_proxy_type_title">ชนิดพร็อกซี</string>
   <!--proxy type choices and values-->
+  <string name="pref_proxy_type_choice_http">HTTP</string>
+  <string name="pref_proxy_type_choice_socks">SOCKS</string>
   <!--OrbotHelper strings-->
+  <string name="orbot_ignore_tor">ไม่ใช้ Tor</string>
   <!--InstallDialogFragment strings-->
+  <string name="orbot_install_dialog_title">ติดตั้ง Orbot เพื่อใช้ Tor หรือไม่?</string>
   <string name="orbot_install_dialog_install">ติดตั้ง</string>
   <string name="orbot_install_dialog_cancel">ยกเลิก</string>
+  <string name="orbot_install_dialog_ignore_tor">ไม่ใช้ Tor</string>
   <!--StartOrbotDialogFragment strings-->
+  <string name="orbot_start_dialog_title">เริ่มใช้ Orbot หรือไม่?</string>
+  <string name="orbot_start_btn">เริ่ม Orbot</string>
+  <string name="orbot_start_dialog_start">เริ่ม Orbot</string>
   <string name="orbot_start_dialog_cancel">ยกเลิก</string>
+  <string name="orbot_start_dialog_ignore_tor">ไม่ใช้ Tor</string>
+  <string name="user_id_no_name"><![CDATA[<no name>]]></string>
+  <string name="none"><![CDATA[<none>]]></string>
+  <plurals name="n_keys">
+    <item quantity="other">%d กุญแจ</item>
+  </plurals>
+  <plurals name="n_keyservers">
+    <item quantity="other">%dเซิร์ฟเวอร์กุญแจ </item>
+  </plurals>
+  <string name="secret_key">กุญแจลับ:</string>
   <!--choice-->
   <string name="choice_none">ไม่มี</string>
+  <string name="choice_15secs">15 วิ</string>
+  <string name="choice_1min">1 นาที</string>
+  <string name="choice_3mins">3 นาที</string>
+  <string name="choice_5mins">5 นาที</string>
+  <string name="choice_10mins">10 นาที</string>
+  <string name="choice_20mins">20 นาที</string>
+  <string name="choice_40mins">40 นาที</string>
+  <string name="choice_1hour">1 ชั่วโมง</string>
+  <string name="choice_2hours">2 ชั่วโมง</string>
+  <string name="choice_4hours">4 ชั่วโมง</string>
+  <string name="choice_8hours">8 ชั่วโมง</string>
+  <string name="choice_forever">ตลอดไป</string>
+  <string name="choice_select_cert">เลือกกุญแจ</string>
+  <string name="filemanager_title_open">เปิด...</string>
+  <string name="rsa_2048">RSA 2048</string>
+  <string name="rsa_3072">RSA 3072</string>
+  <string name="rsa_4096">RSA 4096</string>
+  <string name="ecc_p256">ECC P-256</string>
+  <string name="ecc_p384">ECC P-384</string>
+  <string name="ecc_p521">ECC P-521</string>
+  <string name="ecc_eddsa">ECC EdDSA</string>
+  <string name="usage_sign">เซ็น</string>
   <string name="usage_encrypt">การเข้ารหัสลับของข้อความ</string>
+  <string name="usage_sign_and_encrypt">เซ็นและเข้ารหัสลับ</string>
   <string name="error">ข้อผิดพลาด</string>
+  <string name="error_message">ผิดพลาด: %s</string>
+  <string name="theme_dark">มืด</string>
+  <string name="theme_light">สว่าง</string>
   <!--sentences-->
+  <string name="passphrase_for_symmetric_encryption">ใส่รหัสผ่าน</string>
+  <string name="passphrase_for_any">ใส่รหัสผ่าน</string>
+  <string name="encrypt_sign_successful">เซ็นและ/หรือเข้ารหัสลับสำเร็จ</string>
+  <string name="encrypt_sign_clipboard_successful">เซ็นและ/หรือเข้ารหัสลับไปยังคลิปบอร์ดสำเร็จ</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
+  <string name="error_no_signature_key">ไม่มีกุญแจลายเซ็นมาให้</string>
   <!--errors without preceding Error:-->
+  <string name="error_nothing_import">ไม่พบกุญแจ!</string>
   <!--results shown after decryption/verification-->
+  <string name="decrypt_result_no_signature">ไม่ได้ถูกเซ็น</string>
+  <string name="decrypt_result_invalid_signature">ลายเซ็นไม่ถูกต้อง!</string>
+  <string name="decrypt_result_signature_secret">เซ็นด้วยกุญแจของคุณ</string>
+  <string name="decrypt_result_signature_certified">เซ็นด้วยกุญแจยืนยัน</string>
+  <string name="decrypt_result_signature_expired_key">เซ็นด้วยกุญแจ <b>ที่หมดอายุแล้ว</b>!</string>
+  <string name="decrypt_result_signature_revoked_key">เซ็นด้วยกุญแจ <b>ที่ถูกเพิกถอนแล้ว</b>!</string>
+  <string name="decrypt_result_signature_missing_key">เซ็นด้วยกุญแจ <b>สาธารณะที่ไม่รู้ที่มา</b></string>
   <string name="decrypt_result_action_show">แสดง</string>
   <!--Add keys-->
   <!--progress dialogs, usually ending in '…'-->
   <string name="progress_cancel">ยกเลิก</string>
+  <string name="progress_saving">กำลังบันทึก...</string>
+  <string name="progress_importing">กำลังนำเข้า...</string>
+  <string name="progress_revoking_uploading">กำลังเพิกถอนและอัปโหลดกุญแจ...</string>
+  <string name="progress_updating">กำลังปรับปรุงกุญแจ...</string>
+  <string name="progress_exporting">กำลังส่งออก...</string>
+  <string name="progress_uploading">กำลังอัปโหลด...</string>
+  <string name="progress_modify_passphrase">กำลังเปลี่ยนรหัสผ่าน...</string>
+  <string name="progress_modify_pin">กำลังเปลี่ยน PIN...</string>
+  <string name="progress_exporting_key">กำลังส่งออกกุญแจ...</string>
+  <string name="progress_exporting_keys">กำลังส่งออกกุญแจ...</string>
+  <string name="progress_start">กำลังเตรียมดำเนินการ...</string>
+  <string name="progress_extracting_signature_key">กำลังสกัดกุญแจลายเซ็น...</string>
+  <string name="progress_extracting_key">กำลังสกัดกุญแจ...</string>
+  <string name="progress_encrypting">กำลังเข้ารหัสลับข้อมูล...</string>
+  <string name="progress_prepare_decryption">เริ่มถอดรหัสลับ...</string>
+  <string name="progress_decrypting">กำลังถอดรหัสลับข้อมูล...</string>
+  <string name="progress_preparing_signature">กำลังเตรียมลายเซ็น...</string>
+  <string name="progress_processing_signature">กำลังประมวลลายเซ็น...</string>
+  <string name="progress_generating_signature">กำลังสร้างกุญแจลายเซ็น...</string>
+  <string name="progress_verifying_signature">กำลังตรวจยืนยันลายเซ็น...</string>
+  <string name="progress_signing">กำลังเซ็น...</string>
+  <string name="progress_certifying">กำลังรองรับ...</string>
+  <string name="progress_reading_data">กำลังอ่านข้อมูล...</string>
+  <string name="progress_finding_key">กำลังหากุญแจ...</string>
+  <string name="progress_deleting">กำลังลบกุญแจ...</string>
   <!--action strings-->
   <!--key bit length selections-->
+  <string name="key_size_2048">2048</string>
+  <string name="key_size_3072">3072</string>
+  <string name="key_size_4096">4096</string>
+  <string name="key_size_8192">8192</string>
   <!--elliptic curve names-->
+  <string name="key_curve_nist_p256">NIST P-256</string>
+  <string name="key_curve_nist_p384">NIST P-384</string>
+  <string name="key_curve_nist_p521">NIST P-521</string>
   <!--not in for now, see SaveKeyringParcel
     <string name="key_curve_bp_p256">"Brainpool P-256"</string>
     <string name="key_curve_bp_p384">"Brainpool P-384"</string>
@@ -99,6 +307,9 @@
   <string name="help_about_version">Version:</string>
   <string name="help_tab_donations">บริจาค</string>
   <!--Import-->
+  <string name="import_tab_keyserver">เซิร์ฟเวอร์กุญแจ</string>
+  <string name="import_tab_cloud">ค้นหากุญแจ</string>
+  <string name="import_qr_code_button">สแกนรหัสคิวอาร์</string>
   <string name="btn_import">นำเข้า</string>
   <string name="btn_refresh">แสดงใหม่</string>
   <!--Generic result toast-->
@@ -106,110 +317,305 @@
   <!--Import result toast-->
   <!--Delete result toast-->
   <!--Revoke result toast (snackbar)-->
+  <string name="revoke_ok">เพิกถอนกุญแจสำเร็จแล้ว</string>
+  <string name="revoke_nothing">ไม่มีอะไรให้เพิกถอน</string>
+  <string name="revoke_cancelled">การดำเนินการเพิกถอนถูกยกเลิก</string>
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
+  <string name="api_settings_no_key">ไม่มีกุญแจที่ถูกเลือก</string>
   <string name="api_settings_save">บันทึก</string>
   <string name="api_settings_cancel">ยกเลิก</string>
+  <string name="api_settings_revoke">เพิกถอนการเข้าถึง</string>
   <string name="api_settings_advanced">ขั้นสูง</string>
   <string name="api_settings_settings">การตั้งค่า</string>
   <!--Share-->
   <!--retry upload dialog-->
+  <string name="retry_up_dialog_title">การอัปโหลดล้มเหลว</string>
   <!--Delete or revoke private key dialog-->
+  <string name="del_rev_dialog_title">เพิกถอน/ลบกุญแจ \'%s\'</string>
+  <string name="del_rev_dialog_btn_revoke">เพิกถอนและอัปโหลด</string>
+  <string name="del_rev_dialog_btn_delete">ลบเท่านั้น</string>
   <!--Delete Or Revoke Dialog spinner-->
+  <string name="del_rev_dialog_choice_delete">ลบเท่านั้น</string>
+  <string name="del_rev_dialog_choice_rev_upload">เพิกถอนและอัปโหลด</string>
   <!--Key list-->
+  <string name="key_list_empty_text1">ไม่พบกุญแจ!</string>
+  <string name="key_list_fab_qr_code">สแกนรหัสคิวอาร์</string>
+  <string name="key_list_fab_search">ค้นหากุญแจ</string>
   <!--Key view-->
   <string name="key_view_action_edit">แก้ไข</string>
-  <string name="key_view_action_certify">ยืนหยันกุญแจ</string>
+  <string name="key_view_action_encrypt">เข้ารหัสลับข้อความ</string>
+  <string name="key_view_action_encrypt_files">แฟ้ม</string>
+  <string name="key_view_action_certify">ยืนยันกุญแจ</string>
+  <string name="key_view_action_update">ปรับปรุงจากเซิร์ฟเวอร์กุญแจ</string>
+  <string name="key_view_action_share_with">แบ่งปันกับ...</string>
+  <string name="key_view_action_upload">เผยแพร่บนเซิร์ฟเวอร์กุญแจ</string>
   <string name="key_view_tab_start">เริ่ม</string>
+  <string name="key_view_tab_share">แบ่งปัน</string>
   <string name="key_view_tab_keys">กุญแจย่อย</string>
+  <string name="key_view_tab_certs">ใบรับรอง</string>
+  <string name="user_id_info_revoked_title">ถูกเพิกถอนแล้ว</string>
+  <string name="user_id_info_certified_title">ยืนยันแล้ว</string>
+  <string name="user_id_info_uncertified_title">ยังไม่ยืนยัน</string>
   <!--Key trust-->
-  <!--keybase proof stuff-->
-  <string name="keybase_verify">ตรวจยืนยัน</string>
+  <string name="key_trust_start_cloud_search">เริ่มค้นหา</string>
   <!--Edit key-->
+  <string name="edit_key_action_change_passphrase">เปลี่ยนรหัสผ่าน</string>
+  <string name="edit_key_action_add_subkey">เพิ่มกุญแจย่อย</string>
+  <string name="edit_key_edit_user_id_title">เลือกการกระทำ!</string>
+  <string name="edit_key_edit_subkey_title">เลือกการกระทำ!</string>
   <!--Create key-->
   <string name="create_key_passphrases_not_equal">รหัสผ่านไม่ตรงกัน</string>
+  <string name="create_key_add_email">เพิ่มที่อยู่อีเมล</string>
+  <string name="create_key_yubi_key_pin">รหัส PIN</string>
+  <string name="create_key_yubi_key_admin_pin">รหัส PIN ผู้ดูแล</string>
+  <string name="create_key_yubi_key_pin_repeat">ทวน PIN</string>
+  <string name="create_key_yubi_key_pin_not_correct">PIN ไม่ถูกต้อง!</string>
+  <string name="create_key_yubi_key_algorithm_sign_text">กุญแจลายเซ็น</string>
+  <string name="create_key_yubi_key_algorithm_dec_text">กุญแจถอดรหัสลับ</string>
   <!--View key-->
+  <string name="view_key_my_key">กุญแจของฉัน</string>
   <!--Add/Edit keyserver-->
+  <string name="add_keyserver_dialog_title">เพิ่มเซิร์ฟเวอร์กุญแจ</string>
+  <string name="edit_keyserver_dialog_title">แก้ไขเซิร์ฟเวอร์กุญแจ</string>
   <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
+  <string name="nav_keys">กุญแจ</string>
   <string name="nav_apps">แอป</string>
+  <string name="my_keys">กุญแจของฉัน</string>
   <!--hints-->
   <!--certs-->
-  <string name="cert_none">เปล่า</string>
-  <string name="cert_revoke">ถูกยกเลิก</string>
+  <string name="cert_default">ปริยาย</string>
+  <string name="cert_none">ไม่มี</string>
+  <string name="cert_casual">ลำลอง (casual)</string>
+  <string name="cert_positive">ตรวจยืนยันแล้ว (positive)</string>
+  <string name="cert_revoke">ถูกเพิกถอน</string>
   <string name="cert_verify_ok">ตกลง</string>
+  <string name="cert_verify_error">ผิดพลาด!</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
+  <string name="msg_ip_subkey">กำลังประมวลผลกุญแจย่อย %s</string>
+  <string name="msg_ip_uid_cert_error">ผิดพลาดระหว่างประมวลผลใบรับรอง!</string>
+  <string name="msg_ip_uat_cert_error">ผิดพลาดระหว่างประมวลผลใบรับรอง!</string>
   <!--Import Secret log entries-->
+  <string name="msg_is_db_exception">ฐานข้อมูลผิดพลาด!</string>
   <!--Keyring Canonicalization log entries-->
+  <string name="msg_kc_sub">กำลังประมวลผลกุญแจย่อย %s</string>
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
+  <string name="msg_cr_error_internal_pgp">มีข้อผิดพลาดภายใน OpenPGP!</string>
   <!--modifySecretKeyRing-->
+  <string name="msg_mf_error_pgp">มีข้อผิดพลาดภายใน OpenPGP!</string>
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed_error_key_not_found">ไม่พบกุญแจ</string>
+  <string name="msg_ed_fetching">ดึงข้อมูลกุญแจเพื่อแก้ไข (%s)</string>
   <!--Promote key-->
   <string name="msg_pr_error_key_not_found">ไม่พบกุญแจ</string>
+  <string name="msg_pr_fetching">ดึงข้อมูลกุญแจเพื่อแก้ไข (%s)</string>
   <!--Other messages used in OperationLogs-->
   <string name="msg_ek_error_not_found">ไม่พบกุญแจ</string>
   <!--Messages for DecryptVerify operation-->
+  <string name="msg_dc_clear_meta_file">ชื่อแฟ้ม: %s</string>
+  <string name="msg_dc_clear_meta_mime">ชนิด MIME: %s</string>
+  <string name="msg_dc_clear_meta_size">ขนาดแฟ้ม: %s</string>
+  <string name="msg_dc_clear_meta_time">เวลาแก้ไข: %s</string>
+  <string name="msg_dc_clear_signature_check">กำลังตรวจยืนยันข้อมูลลายเซ็น</string>
+  <string name="msg_dc_error_no_signature">ข้อมูลลายเซ็นหายไป!</string>
   <!--Messages for VerifySignedLiteralData operation-->
+  <string name="msg_vl_error_no_signature">ข้อมูลลายเซ็นหายไป!</string>
+  <string name="msg_vl_clear_meta_file">ชื่อแฟ้ม: %s</string>
+  <string name="msg_vl_clear_meta_mime">ชนิด MIME: %s</string>
+  <string name="msg_vl_clear_meta_time">เวลาแก้ไข: %s</string>
+  <string name="msg_vl_clear_meta_size">ขนาดแฟ้ม: %s</string>
+  <string name="msg_vl_clear_signature_check">กำลังตรวจยืนยันข้อมูลลายเซ็น</string>
   <string name="msg_vl_ok">ตกลง</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
+  <string name="msg_pse_error_bad_passphrase">รหัสผ่านไม่ดีพอ!</string>
+  <string name="msg_pse_error_pgp">มีข้อผิดพลาดภายใน OpenPGP!</string>
   <!--Messages for Authentication operation-->
+  <string name="msg_auth_error_bad_passphrase">รหัสผ่านไม่ดีพอ!</string>
   <string name="msg_crt_warn_not_found">ไม่พบกุญแจ</string>
   <string name="msg_import_fetch_error_not_found">ไม่พบกุญแจ</string>
+  <string name="msg_backup_error_db">ฐานข้อมูลผิดพลาด!</string>
+  <string name="msg_upload_key">รหัสระบุกุญแจ: %s</string>
   <string name="msg_upload_error_not_found">ไม่พบกุญแจ</string>
-  <!--Messages for Keybase Verification operation-->
+  <string name="msg_revoke_error_empty">ไม่มีอะไรให้เพิกถอน!</string>
+  <string name="msg_revoke_error_not_found">ไม่พบกุญแจที่จะเพิกถอน!</string>
+  <string name="msg_revoke_ok">เพิกถอนกุญแจสำเร็จแล้ว</string>
+  <string name="msg_bench_enc_time">เวลาในการเข้ารหัสลับ: %s วิ</string>
+  <string name="msg_bench_enc_time_avg">เวลาเฉลี่ยในการเข้ารหัสลับข้อมูล 5MB: %s วิ</string>
+  <string name="msg_bench_dec_time">เวลาในการถอดรหัสลับ: %s วิ</string>
+  <string name="msg_data">ประมวลผลข้อมูลรับเข้า</string>
+  <string name="msg_data_mime_type">Content-Type: %s</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
+  <plurals name="passp_cache_notif_n_keys">
+    <item quantity="other">บันทึกรหัสผ่านอยู่ %d ชุด</item>
+  </plurals>
+  <string name="passp_cache_notif_keys">รหัสผ่านที่ถูกบันทึก</string>
+  <string name="passp_cache_notif_clear">ล้างรหัสผ่าน</string>
   <string name="passp_cache_notif_pwd">รหัสผ่าน</string>
   <!--Keyserver sync-->
+  <string name="keyserver_sync_orbot_notif_start">เริ่ม Orbot</string>
   <!--First Time-->
+  <string name="first_time_create_key">สร้างกุญแจของฉัน</string>
   <string name="first_time_import_key">นำเข้ากุญแจจากไฟล์</string>
+  <string name="first_time_skip">ข้ามการติดตั้ง</string>
   <string name="backup_section">สำรอง</string>
   <string name="restore_section">คืนค่า</string>
   <!--unsorted-->
   <string name="label_user_id">เอกลักษณ์</string>
+  <string name="label_revocation">เหตุผลที่เพิกถอน</string>
   <string name="label_cert_type">ชนิด</string>
   <string name="error_key_not_found">ไม่พบกุญแจ</string>
+  <string name="key_no_passphrase">ไม่มีรหัสผ่าน</string>
+  <string name="key_unavailable">ไม่มีที่ใช้ได้</string>
+  <string name="title_view_cert">ดูรายละเอียดใบประกาศ</string>
   <string name="unknown">ไม่ทราบ</string>
+  <string name="can_sign_not">ไม่สามารถลงชื่อ</string>
+  <string name="contact_show_key">แสดงกุญแจ (%s)</string>
+  <string name="key_colon">กุญแจ:</string>
+  <string name="user_id_none"><![CDATA[<none>]]></string>
   <!--Android Account-->
   <string name="account_privacy_title">ความเป็นส่วนตัว</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <string name="enter_passphrase">ใส่รหัสผ่าน</string>
   <string name="passphrase">รหัสผ่าน</string>
+  <string name="noPassphrase">ไม่มีรหัสผ่าน</string>
+  <string name="no_passphrase_set">ยังไม่ได้ตั้งรหัสผ่าน</string>
+  <string name="passphrases_match">รหัสผ่านไม่ตรงกัน</string>
+  <string name="passphrase_saved">รหัสผ่านถูกบันทึกแล้ว</string>
+  <string name="passphrase_invalid">รหัสผ่านไม่ถูก</string>
+  <string name="missing_passphrase">รหัสผ่านหาย</string>
+  <string name="passphrase_again">อีกครั้ง</string>
+  <string name="set_passphrase">ตั้งรหัสผ่าน</string>
+  <string name="nfc_title">NFC</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="unlocked">ปลดล็อกแล้ว</string>
   <string name="nfc_settings">การตั้งค่า</string>
   <string name="snack_security_token_view">มองดู</string>
   <string name="snack_security_token_import">นำเข้า</string>
+  <string name="security_token_serial_no">เลขอนุกรม: %s</string>
   <string name="btn_reset">ล้างทิ้ง</string>
+  <string name="security_token_radio_use_existing">ใช้กุญแจที่มีอยู่แล้ว</string>
+  <string name="security_token_error">ผิดพลาด: %s</string>
+  <string name="btn_delete_original">ลบแฟ้มต้นฉบับ</string>
+  <string name="filename_unknown_text">ข้อความ (แตะเพื่อแสดง)</string>
+  <string name="label_clip_title">ข้อมูลที่ถูกเข้ารหัสลับ</string>
+  <string name="progress_processing">กำลังประมวลผล...</string>
+  <string name="error_saving_file">ผิดพลาดระหว่างการบันทึกแฟ้ม!</string>
+  <string name="file_saved">บันทึกแฟ้มแล้ว!</string>
+  <string name="file_delete_ok">แฟ้มต้นฉบับถูกลบแล้ว</string>
+  <string name="file_delete_none">ไม่มีแฟ้มที่ถูกลบ! (ได้ลบไปก่อนนี้แล้ว?)</string>
+  <string name="file_delete_exception">ไม่สามารถลบแฟ้มต้นฉบับได้!</string>
+  <string name="error_clipboard_empty">คลิปบอร์ดนั้นว่างเปล่า!</string>
   <!--Other Linked Identity strings-->
   <string name="btn_finish">เสร็จ</string>
+  <string name="snack_btn_overwrite">เขียนทับ</string>
+  <string name="share_log_dialog_share_button">แบ่งปัน</string>
   <string name="share_log_dialog_cancel_button">ยกเลิก</string>
   <string name="menu_uids_save">บันทึก</string>
   <string name="prompt_fidesmo_pgp_install_button_positive">ติดตั้ง</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">ยกเลิก</string>
   <string name="prompt_fidesmo_app_install_button_positive">ติดตั้ง</string>
   <string name="prompt_fidesmo_app_install_button_negative">ยกเลิก</string>
+  <string name="help_donation_paypal_item">บริจาคให้ OpenKeychain</string>
+  <string-array name="help_donation_google_catalog_values">
+    <item>1 EUR</item>
+    <item>2 EUR</item>
+    <item>3 EUR</item>
+    <item>5 EUR</item>
+    <item>10 EUR</item>
+    <item>50 EUR</item>
+    <item>100 EUR</item>
+  </string-array>
   <string name="redirect_import_key_no">ปิด</string>
+  <string name="button_allow">อนุญาต</string>
   <string name="button_cancel">ยกเลิก</string>
   <string name="button_back">ย้อนกลับ</string>
   <string name="button_got_it">ได้รับมัน</string>
+  <string name="title_key_status">สถานะกุญแจ</string>
+  <string name="key_health_ok_subtitle">ไม่พบปัญหากับกุญแจ</string>
+  <string name="key_health_divert_subtitle">ไม่พบปัญหากับกุญแจ</string>
+  <string name="key_health_divert_partial_subtitle">คลิกเพื่อดูรายละเอียด</string>
+  <string name="key_health_revoked_title">ถูกเพิกถอนแล้ว</string>
+  <string name="key_health_insecure_title">ไม่ปลอดภัย</string>
+  <string name="key_health_broken_subtitle">คลิกเพื่อดูรายละเอียด</string>
+  <string name="key_health_sign_only_subtitle">คลิกเพื่อดูรายละเอียด</string>
+  <string name="key_health_stripped_subtitle">คลิกเพื่อดูรายละเอียด</string>
+  <string name="key_health_partial_stripped_subtitle">คลิกเพื่อดูรายละเอียด</string>
+  <string name="keyserver_last_updated">ตรวจสอบล่าสุด: %s</string>
+  <string name="keyserver_last_updated_never">ตรวจสอบล่าสุด: ไม่เคย</string>
   <string name="dialog_insecure_title">คำเตือนด้านความปลอดภัย</string>
-  <string name="dialog_insecure_button_ok">ได้รับมัน</string>
+  <string name="dialog_insecure_button_view_key">ดูกุญแจ</string>
+  <string name="dialog_insecure_button_ok">รับทราบ</string>
+  <string name="identity_context_forget">ลืม</string>
   <string name="button_import">นำเข้า</string>
   <string name="transfer_status_connected">เชื่อมต่อสำเร็จ</string>
+  <string name="transfer_error_connect">การเชื่อมต่อล้มเหลว!</string>
+  <string name="transfer_connecting">กำลังเชื่อมต่อ...</string>
+  <string name="first_time_secure_wifi_transfer">การส่งข้อมูลผ่านไวไฟที่ปลอดภัย</string>
+  <string name="menu_secure_wifi_transfer">การส่งข้อมูลผ่านไวไฟที่ปลอดภัย</string>
   <string name="transfer_confirm_cancel">ยกเลิก</string>
   <string name="transfer_confirm_ok">ส่ง</string>
+  <string name="button_scan_again">สแกนอีกครั้ง</string>
+  <string name="transfer_error_wifi_text">การเชื่อมต่อล้มเหลว!</string>
+  <string name="status_check_key">กำลังตรวจสอบสถานะกุญแจ...</string>
+  <string name="status_search_local">กำลังค้นหาในรายการกุญแจ...</string>
+  <string name="status_search_uri">กำลังค้นหาที่ URL ของโทเค็น...</string>
+  <string name="status_search_keyserver">กำลังค้นหาบนเซิร์ฟเวอร์กุญแจ...</string>
+  <string name="status_import">กำลังนำเข้ากุญแจ...</string>
+  <string name="status_token_promote">กำลังตั้งค่ากุญแจ...</string>
+  <string name="status_token_check">กำลังตรวจสอบการติดตั้งกุญแจ...</string>
+  <string name="status_content_uri">กำลังอ่านแฟ้ม...</string>
   <string name="token_reset_confirm_ok">ล้างทิ้ง</string>
   <string name="token_result_not_found">ไม่พบกุญแจ</string>
+  <string name="token_action_retry">ลองค้นหาอีกครั้ง</string>
+  <string name="token_action_load_from_file">เรียกจากแฟ้ม</string>
   <string name="token_action_import">นำเข้า</string>
+  <string name="token_action_view_key">ดูกุญแจ</string>
+  <string name="token_menu_change_pin">เปลี่ยนรหัส PIN</string>
+  <string name="token_menu_view_log">ดูปูม</string>
   <string name="token_unlock_ok">ปลดล็อค</string>
+  <string name="token_hint_admin_pin">รหัส PIN ผู้ดูแล</string>
+  <string name="token_hint_new_pin">รหัส PIN ใหม่</string>
+  <string name="token_hint_new_pin_repeat">รหัส PIN ใหม่ (ทวนอีกครั้ง)</string>
+  <string name="token_error_pin_repeat">รหัส PIN ไม่ตรงกัน!</string>
+  <string name="msg_ret_curi_error_io">ผิดพลาดระหว่างอ่านข้อมูล!</string>
+  <string name="msg_ret_curi_error_no_match">ไม่พบกุญแจที่ตรงกัน!</string>
+  <string name="msg_ret_curi_found">กุญแจที่พบ: %s</string>
+  <string name="msg_ret_curi_mismatch">กุญแจไม่ตรง</string>
+  <string name="msg_ret_curi_ok">พบกุญแจ</string>
+  <string name="msg_ret_curi_open">กำลังเปิด URL: %s</string>
+  <string name="msg_ret_ks_error_not_found">ไม่พบกุญแจ</string>
+  <string name="msg_ret_ks_ok">พบกุญแจ</string>
+  <string name="msg_ret_local_search">กำลังค้นหากุญแจ: %s</string>
+  <string name="msg_ret_local_not_found">ไม่พบกุญแจ</string>
+  <string name="msg_ret_local_none_found">ไม่พบกุญแจที่ตรงกัน!</string>
+  <string name="msg_ret_local_ok">พบกุญแจ</string>
+  <string name="msg_ret_uri_ok">พบกุญแจ</string>
+  <string name="msg_trust_key">กำลังปรับปรุงกุญแจที่เซ็นโดย %s</string>
   <string name="select_identity_cancel">ปิดการใช้งาน</string>
   <string name="key_gen_back">ย้อนกลับ</string>
   <string name="key_gen_finish">เสร็จ</string>
   <string name="snack_keylist_clipboard_action">ดู</string>
+  <string name="notify_channel_orbot">สถานะ Orbot</string>
+  <string name="notify_title_keysync">กำลังปรับปรุงกุญแจ...</string>
+  <string name="notify_title_keysync_finished">ปรับปรุงกุญแจสำเร็จแล้ว %d ดอก</string>
+  <string name="notify_content_keysync">กุญแจ %d / %d</string>
+  <string name="snack_keysync_start">เริ่มการปรับปรุงกุญแจทั้งหมด...</string>
+  <string name="snack_keysync_finished">การปรับปรุงกุญแจสำเร็จ</string>
+  <string name="keychoice_cannot_sign">กุญแจนี้ไม่สามารถใช้เพื่อการเซ็นได้!</string>
+  <string name="keychoice_revoked">ไม่สามารถใช้กุญแจนี้ได้เนื่องจากมันถูกเพิกถอนแล้ว!</string>
+  <string name="keylist_item_key_id">รหัสระบุกุญแจ: %s</string>
+  <string name="keylist_header_anonymous">นิรนาม</string>
+  <string name="keylist_header_special">#</string>
+  <string name="subkey_action_create">กุญแจย่อยจะถูกสร้าง</string>
+  <string name="subkey_action_revoke">กุญแจย่อยจะถูกเพิกถอน</string>
+  <string name="share_key_clipboard">แบ่งปันกุญแจผ่านคลิปบอร์ด</string>
+  <string name="share_key">แบ่งปันกุญแจ</string>
 </resources>

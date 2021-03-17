@@ -13,7 +13,9 @@
   <string name="title_log_display">Log</string>
   <string name="title_advanced_key_info">Avanceret</string>
   <!--section-->
+  <string name="section_user_ids">Identiteter</string>
   <string name="section_keys">undernøgler</string>
+  <string name="section_cloud_search_summary">Nøgleserver</string>
   <string name="section_certify">Bekræft</string>
   <string name="section_actions">Handlinger</string>
   <string name="section_share_key">Nøgle</string>
@@ -66,7 +68,6 @@
   <string name="label_enter_keyserver_url">URL</string>
   <string name="label_enter_smartpgp_authority_name">Navn</string>
   <string name="pref_facebook">Facebook</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">Advarsel</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Aktiver Tor</string>
@@ -139,8 +140,6 @@
   <string name="key_view_tab_keys">undernøgler</string>
   <string name="user_id_info_revoked_title">Tilbagekaldt</string>
   <!--Key trust-->
-  <!--keybase proof stuff-->
-  <string name="keybase_verify">Verificer</string>
   <!--Edit key-->
   <!--Create key-->
   <string name="create_key_passphrases_not_equal">Adgangskoderne stemmer ikke overens</string>
@@ -151,6 +150,7 @@
   <string name="nav_apps">Apps</string>
   <!--hints-->
   <!--certs-->
+  <string name="cert_default">default</string>
   <string name="cert_none">ingen</string>
   <string name="cert_revoke">tilbagekaldt</string>
   <string name="cert_verify_ok">OK</string>
@@ -176,7 +176,6 @@
   <string name="msg_crt_warn_not_found">Krypteringsnøgle ikke fundet!</string>
   <string name="msg_import_fetch_error_not_found">Krypteringsnøgle ikke fundet!</string>
   <string name="msg_upload_error_not_found">Krypteringsnøgle ikke fundet!</string>
-  <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_pwd">Adgangskode</string>
@@ -195,6 +194,7 @@
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="passphrase">Adgangskode</string>
+  <string name="set_passphrase">Sæt password</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
   <string name="nfc_settings">Indstillinger</string>
   <string name="snack_security_token_view">Gennemse</string>

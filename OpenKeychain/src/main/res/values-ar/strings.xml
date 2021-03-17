@@ -8,7 +8,6 @@
   <string name="title_encrypt_files">تعمية</string>
   <string name="title_decrypt">فك التعمية</string>
   <string name="title_add_subkey">إضافة مفتاح فرعي</string>
-  <string name="title_change_master_key">تعديل المفتاح الرئيسي</string>
   <string name="title_edit_key">تعديل المفتاح</string>
   <string name="title_preferences">الإعدادات</string>
   <string name="title_api_registered_apps">تطبيقات</string>
@@ -35,11 +34,11 @@
   <!--section-->
   <string name="section_user_ids">الهويات</string>
   <string name="section_security_token">شارة الأمان</string>
-  <string name="section_keybase_proofs">دلائل Keybase.io</string>
   <string name="section_should_you_trust">هل تود الثقة في هذا المفتاح ؟</string>
   <string name="section_proof_details">دليل التحقق</string>
   <string name="section_keys">المفاتيح التابعة</string>
   <string name="section_cloud_search">البحث عن مفاتيح</string>
+  <string name="section_cloud_search_summary">خادم المفاتيح</string>
   <string name="section_passphrase_cache">الكلمات السرية و الرموز</string>
   <string name="section_proxy_settings">الخصوصية على الشبكة</string>
   <string name="section_proxy_settings_summary">إعدادات وكيل البروكسي و شبكة تور</string>
@@ -169,16 +168,11 @@
   <string name="label_enter_smartpgp_authority_name">الاسم</string>
   <string name="label_smartpgp_authority_dialog_delete">حذف السُّلطة</string>
   <string name="pref_keyserver">خوادم مفاتيح OpenPGP</string>
-  <string name="pref_keybase">keybase.io</string>
-  <string name="pref_keybase_summary">البحث عن مفاتيح على keybase.io</string>
   <string name="pref_facebook">فيس بوك</string>
   <string name="pref_facebook_summary">البحث عن مفاتيح على الفايسبوك بإسم المستخدمين</string>
   <string name="label_sync_settings_keyserver_title">تحديثات تلقائية للمفاتيح</string>
   <string name="label_sync_settings_wifi_title">زامن فقط على الواي فاي</string>
-  <string name="label_sync_settings_contacts_title">ربط المفاتيح بجهات الإتصال</string>
-  <string name="label_sync_settings_contacts_summary_off">لن يتم ربط المفاتيح الجديدة بجهات الإتصال</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
-    <string name="label_experimental_settings_desc_title">تحذير</string>
+  <string name="label_experimental_settings_desc_title">تحذير</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">فعّل تور</string>
   <string name="pref_proxy_tor_summary">يتطلب نتصيب تطبيق أوربوت</string>
@@ -414,19 +408,12 @@
   <string name="key_view_tab_share">شارك</string>
   <string name="key_view_tab_keys">المفاتيح الفرعية</string>
   <string name="key_view_tab_certs">الشهادات</string>
-  <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">ملغى</string>
   <string name="user_id_info_certified_title">هوية مؤكَّدة</string>
   <string name="user_id_info_certified_text">تمّ تأكيد هذه الهوية مِن طرفك.</string>
   <string name="user_id_info_uncertified_title">هوية غير مؤكَّدة</string>
   <!--Key trust-->
   <string name="key_trust_start_cloud_search">إبدأ البحث</string>
-  <!--keybase proof stuff-->
-  <string name="keybase_problem_fetching_evidence">مشكلة مع الدليل</string>
-  <string name="keybase_twitter_proof">تغريدة</string>
-  <string name="keybase_web_site_proof">ملف نصي</string>
-  <string name="keybase_reddit_proof">ملف JSON</string>
-  <string name="keybase_verify">التحقق</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">غير كلمة السر</string>
   <string name="edit_key_action_add_identity">إضافة هوية</string>
@@ -472,7 +459,6 @@
   <string name="drawer_close">إغلاق قائمة التصفح</string>
   <string name="my_keys">مفاتيحي</string>
   <string name="nav_backup">حفظ أو إستعادة</string>
-  <string name="nav_transfer">نقل آمن عبر الواي فاي</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">قم بتحرير نص</string>
   <!--certs-->
@@ -492,10 +478,8 @@
   <string name="msg_is_db_exception">خطأ في قاعدة البيانات !</string>
   <string name="msg_is_importing_subkeys">معالَجة المفاتيح الفرعية السرية</string>
   <!--Keyring Canonicalization log entries-->
-  <string name="msg_kc_master">معالَجة المفتاح الرئيسي</string>
   <!--Keyring merging log entries-->
   <!--createSecretKeyRing-->
-  <string name="msg_cr">جارٍ توليد مفتاح رئيسي جديد</string>
   <string name="msg_cr_error_keysize_2048">يتوجب أن يكون حجم المفتاح أكبر أو يساوي 2048 !</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mf_require_passphrase">كلمة السر مطلوبة للقيام بالإجراءات</string>
@@ -524,7 +508,6 @@
   <string name="msg_pse_error_bad_passphrase">كلمة السر غير سليمة !</string>
   <!--Messages for Authentication operation-->
   <string name="msg_auth_error_bad_passphrase">كلمة السر غير سليمة !</string>
-  <string name="msg_crt_error_master_not_found">لم يتم العثور على المفتاح الرئيسي !</string>
   <string name="msg_crt_warn_not_found">مفتاح غير موجود!</string>
   <string name="msg_crt_warn_upload_failed">فشلت عملية الرفع !</string>
   <string name="msg_crt_upload_success">نجحت عملية رفع المفتاح إلى الخادم</string>
@@ -538,8 +521,6 @@
   <string name="msg_data_mime_filename">اسم الملف: \'%s\'</string>
   <string name="msg_data_ok">تمت معالجة البيانات بنجاح</string>
   <string name="msg_get_no_valid_keys">لم يُعثَر على أي مفتاح صحيح سواءا في الملف أو على الحافظة !</string>
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_error_specific">نسبة %s</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_pwd">كلمة السر</string>

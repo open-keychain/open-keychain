@@ -8,7 +8,6 @@
   <string name="title_encrypt_files">Codifica</string>
   <string name="title_decrypt">Decodifica</string>
   <string name="title_add_subkey">Aggiungi sottochiave</string>
-  <string name="title_change_master_key">Cambia la chiave principale</string>
   <string name="title_edit_key">Modifica chiave</string>
   <string name="title_preferences">Impostazioni</string>
   <string name="title_api_registered_apps">Applicazioni</string>
@@ -37,12 +36,11 @@
   <!--section-->
   <string name="section_user_ids">Identità</string>
   <string name="section_security_token">Token di Sicurezza</string>
-  <string name="section_keybase_proofs">Prove da Keybase.io</string>
   <string name="section_should_you_trust">Ci si potrà fidare di questa chiave?</string>
   <string name="section_proof_details">Verifica prova</string>
   <string name="section_keys">Sottochiavi</string>
   <string name="section_cloud_search">Ricerca chiave</string>
-  <string name="section_cloud_search_summary">Server chiavi, keybase.io</string>
+  <string name="section_cloud_search_summary">Server delle chiavi</string>
   <string name="section_passphrase_cache">Password e PIN</string>
   <string name="section_proxy_settings">Rete anonimata</string>
   <string name="section_proxy_settings_summary">Tor, Impostazioni del proxy</string>
@@ -154,7 +152,9 @@
   <string name="label_key_id_colon">ID chiave:</string>
   <string name="label_key_type">Tipo</string>
   <string name="label_creation">Creazione</string>
+  <string name="label_creation_colon">Creazione:</string>
   <string name="label_expiry">Scadenza</string>
+  <string name="label_valid_from">Valida dal</string>
   <string name="label_usage">Utilizzo</string>
   <string name="label_revoked">Revocato</string>
   <string name="label_insecure">Non sicuro</string>
@@ -182,21 +182,14 @@
   <string name="label_enter_smartpgp_authority_name">Nome</string>
   <string name="pref_keyserver">Server chiavi OpenPGP</string>
   <string name="pref_keyserver_summary">Cerca chiavi su server chiavi OpenPGP selezionati (protocollo HKP)</string>
-  <string name="pref_keybase">keybase.io</string>
-  <string name="pref_keybase_summary">Ricerca chiavi su keybase.io</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">Cerca chiavi per nome utente su Facebook</string>
   <string name="label_sync_settings_keyserver_title">Aggiornamenti automatici delle chiavi</string>
   <string name="label_sync_settings_keyserver_summary_on">Ogni tre giorni, le chiavi vengono aggiornate dal server preferito</string>
   <string name="label_sync_settings_keyserver_summary_off">Le chiavi non vengono aggiornate automaticamente</string>
   <string name="label_sync_settings_wifi_title">Sincronizza solo via Wi-Fi</string>
-  <string name="label_sync_settings_contacts_title">Collega le chiavi ai contatti</string>
-  <string name="label_sync_settings_contacts_summary_on">Collega le chiavi ai contatti in base ai nomi e indirizzi email. Ciò avviene completamente offline sul tuo dispositivo.</string>
-  <string name="label_sync_settings_contacts_summary_off">Le chiavi nuove non verranno collegate ai contatti</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
-    <string name="label_experimental_settings_desc_title">Attenzione</string>
+  <string name="label_experimental_settings_desc_title">Attenzione</string>
   <string name="label_experimental_settings_desc_summary">Queste funzioni non sono ancora finite o testate da utenti/ricerche di sicurezza. Perciò non contare sulla loro sicurezza e per favore non segnalare i problemi che riscontri!</string>
-  <string name="label_experimental_settings_keybase_summary">Contatta keybase.io per avere prove e mostrale ogni volta che visualizzo una chiave</string>
   <string name="label_experimental_settings_theme_summary">(Le icone e molte schermate non sono ancora modificate correttamente per il tema scuro)</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Abilita Tor</string>
@@ -381,7 +374,6 @@
   <string name="progress_exporting">esportazione...</string>
   <string name="progress_uploading">caricamento...</string>
   <string name="progress_building_key">fabbricazione chiave...</string>
-  <string name="progress_building_master_key">fabbricazione portachiavi principale...</string>
   <string name="progress_generating_rsa">generazione di una nuova chiave RSA...</string>
   <string name="progress_generating_dsa">generazione di una nuova chiave DSA...</string>
   <string name="progress_generating_elgamal">generazione di una nuova chiave ElGamal...</string>
@@ -400,6 +392,7 @@
   <string name="progress_modify_passphrase">cambiando la password...</string>
   <string name="progress_modify_pin">cambiando PIN...</string>
   <string name="progress_modify_admin_pin">cambiando Admin PIN...</string>
+  <string name="progress_exporting_key">esportazione chiave in corso...</string>
   <string name="progress_exporting_keys">esportazione chiavi...</string>
   <string name="progress_start">preparazione operazione...</string>
   <string name="progress_extracting_signature_key">estrazione chiavi di firma...</string>
@@ -607,7 +600,6 @@
   <string name="key_view_tab_share">Condividi</string>
   <string name="key_view_tab_keys">Sottochiavi</string>
   <string name="key_view_tab_certs">Certificati</string>
-  <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">Revocato</string>
   <string name="user_id_info_revoked_text">Questa identità è stata revocata dal suo proprietario. Non è più valida.</string>
   <string name="user_id_info_certified_title">Confermata</string>
@@ -617,35 +609,6 @@
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">Nessuna prova da internet sull\'affidabilità di questa chiave.</string>
   <string name="key_trust_start_cloud_search">Avvia la ricerca</string>
-  <string name="key_trust_results_prefix">Keybase.io offre “prove” per affermare che il proprietario di questa chiave: </string>
-  <!--keybase proof stuff-->
-  <string name="keybase_narrative_twitter">È presente su Twitter come %s</string>
-  <string name="keybase_narrative_github">È presente su GitHub come %s</string>
-  <string name="keybase_narrative_dns">Controlla il/i nome/i dominio %s</string>
-  <string name="keybase_narrative_web_site">Può postare sul/i sito/i %s</string>
-  <string name="keybase_narrative_reddit">È presente su Reddit come %s</string>
-  <string name="keybase_narrative_coinbase">È presente su CoinBase come %s</string>
-  <string name="keybase_narrative_hackernews">È presente su Hacker News come %s</string>
-  <string name="keybase_narrative_unknown">Tipo della prova sconosciuto %s</string>
-  <string name="keybase_proof_failure">Purtroppo questa prova non può essere verificata.</string>
-  <string name="keybase_unknown_proof_failure">Problema non riconosciuto nel controllo di prove</string>
-  <string name="keybase_problem_fetching_evidence">Errore durante la verifica</string>
-  <string name="keybase_key_mismatch">L\'impronta della chiave non corrisponde con quella della prova</string>
-  <string name="keybase_dns_query_failure">Recupero DNS TXT Record fallito</string>
-  <string name="keybase_no_prover_found">Nessun controllo di prove trovato per</string>
-  <string name="keybase_message_payload_mismatch">La prova decifrata non corrisponde con il valore previsto</string>
-  <string name="keybase_message_fetching_data">Recupero della prova</string>
-  <string name="keybase_proof_succeeded">Questa prova è stata verificata!</string>
-  <string name="keybase_a_post">Un post</string>
-  <string name="keybase_fetched_from">recuperato da</string>
-  <string name="keybase_for_the_domain">per il dominio</string>
-  <string name="keybase_contained_signature">contiene un messaggio che può essere stato creato solo dal proprietario di questa chiave.</string>
-  <string name="keybase_twitter_proof">Un tweet</string>
-  <string name="keybase_dns_proof">Un DNS TXT record</string>
-  <string name="keybase_web_site_proof">Un file di testo</string>
-  <string name="keybase_reddit_proof">Un file JSON</string>
-  <string name="keybase_reddit_attribution">attribuito da Reddit a</string>
-  <string name="keybase_verify">Verifica</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Cambio password</string>
   <string name="edit_key_action_add_identity">Aggiungi Identità</string>
@@ -750,26 +713,8 @@
   <string name="msg_ip_insert_keyring">Codifica dati del portachiavi</string>
   <string name="msg_ip_insert_keys">Elaborazione chiavi</string>
   <string name="msg_ip_prepare">Preparazione operazioni banca dati</string>
-  <string name="msg_ip_master">Elaborazione chiave principale %s</string>
   <string name="msg_ip_master_expired">Portachiavi scaduto il %s</string>
   <string name="msg_ip_master_expires">Il portachiavi scade il %s</string>
-  <string name="msg_ip_master_flags_unspecified">Caratteristiche chiave principale: non specificate (si assume tutte quante)</string>
-  <string name="msg_ip_master_flags_cesa">Caratteristiche chiave principale: certifica, codifica, firma, autentica</string>
-  <string name="msg_ip_master_flags_cesx">Caratteristiche chiave principale: certifica, codifica, firma</string>
-  <string name="msg_ip_master_flags_cexa">Caratteristiche chiave principale: certifica, codifica, firma</string>
-  <string name="msg_ip_master_flags_cexx">Caratteristiche chiave principale: certifica, codifica</string>
-  <string name="msg_ip_master_flags_cxsa">Caratteristiche chiave principale: certifica, firma, autentica</string>
-  <string name="msg_ip_master_flags_cxsx">Caratteristiche chiave principale: certifica, firma</string>
-  <string name="msg_ip_master_flags_cxxa">Caratteristiche chiave principale: certifica, autentica</string>
-  <string name="msg_ip_master_flags_cxxx">Caratteristiche chiave principale: certifica</string>
-  <string name="msg_ip_master_flags_xesa">Caratteristiche chiave principale: codifica, firma, autentica</string>
-  <string name="msg_ip_master_flags_xesx">Caratteristiche chiave principale: codifica, firma</string>
-  <string name="msg_ip_master_flags_xexa">Caratteristiche chiave principale: codifica, autentica</string>
-  <string name="msg_ip_master_flags_xexx">Caratteristiche chiave principale: codifica</string>
-  <string name="msg_ip_master_flags_xxsa">Caratteristiche chiave principale: firma, autentica</string>
-  <string name="msg_ip_master_flags_xxsx">Caratteristiche chiave principale: firma</string>
-  <string name="msg_ip_master_flags_xxxa">Caratteristiche chiave principale: autentica</string>
-  <string name="msg_ip_master_flags_xxxx">Caratteristiche chiave principale: nessuna</string>
   <string name="msg_ip_merge_public">Fusione dati importati nel portachiavi pubblico esistente</string>
   <string name="msg_ip_merge_secret">Fusione dati importati nel portachiavi segreto esistente</string>
   <string name="msg_ip_subkey">Elaborazione sottochiave %s</string>
@@ -846,8 +791,6 @@
   <string name="msg_kc_public">Canonicalizzazione portachiavi pubblico %s</string>
   <string name="msg_kc_secret">Canonicalizzazione portachiavi segreto %s</string>
   <string name="msg_kc_error_v3">Questa è una chiave OpenPGP versione 3, è deprecata e non più supportata!</string>
-  <string name="msg_kc_master">Elaborazione chiave principale</string>
-  <string name="msg_kc_master_bad_type">Rimozione certificato della chiave principale di tipo sconosciuto (%s)</string>
   <string name="msg_kc_master_bad_time">Rimozione certificato di revoca del portachiavi con marca temporale futura</string>
   <string name="msg_kc_revoke_dup">Rimozione certificato di revoca del portachiavi ridondante</string>
   <string name="msg_kc_sub">Elaborazione sottochiave %s</string>
@@ -884,9 +827,6 @@
   <string name="msg_mg_found_new">Trovati %s nuovi certificati nel portachiavi</string>
   <string name="msg_mg_unchanged">Nulla da unire</string>
   <!--createSecretKeyRing-->
-  <string name="msg_cr">Generazione nuova chiave principale</string>
-  <string name="msg_cr_error_no_master">Nessuna opzione della chiave principale specificata!</string>
-  <string name="msg_cr_error_no_certify">La chiave principale deve avere la caratteristica di certificazione!</string>
   <string name="msg_cr_error_null_expiry">La data di scadenza non può essere \'come prima\' sulla creazione di chiavi. Questo è un errore di programmazione, si prega di inviare una segnalazione di bug!</string>
   <string name="msg_cr_error_keysize_2048">La lunghezza della chiave deve essere di almeno 2048 bit!</string>
   <string name="msg_cr_error_no_keysize">Nessuna curva ellittica specificata! Questo è un errore di programmazione, per favore invia una segnalazione!</string>
@@ -897,14 +837,11 @@
   <string name="msg_mf_error_fingerprint">Impronta chiave attuale non corrispondente!</string>
   <string name="msg_mf_error_keyid">Nessun ID chiave. Questo è un errore di programmazione, per favore invia una segnalazione!</string>
   <string name="msg_mf_error_integrity">Errore interno, controllo di integrità fallito!</string>
-  <string name="msg_mf_error_master_none">Nessun certificato principale trovato su cui operare! (Tutti revocati?)</string>
   <string name="msg_mf_error_null_expiry">La data di scadenza non può essere \"come prima\" sulla creazione di sottochiavi. Questo è un errore di programmazione, si prega di inviare una segnalazione di bug!</string>
   <string name="msg_mf_error_noop">Non c\'è nessuna azione da eseguire.</string>
-  <string name="msg_mf_error_passphrase_master">Errore irreversibile nella decodifica della chiave principale! Questo è probabilmente un errore di programmazione, si prega di inviare una segnalazione di bug!</string>
   <string name="msg_mf_error_pgp">Errore interno di PGP!</string>
   <string name="msg_mf_error_sig">Eccezione di firma!</string>
   <string name="msg_mf_error_subkey_missing">Tentativo di operare su sottochiave %s mancante!</string>
-  <string name="msg_mf_master">Modifica delle certificazioni principali</string>
   <string name="msg_mf_subkey_change">Modifica sottochiave %s</string>
   <string name="msg_mf_require_passphrase">Per queste azioni è necessaria la password</string>
   <string name="msg_mf_subkey_new_id">Nuovo ID sottochiave: %s</string>
@@ -963,7 +900,6 @@
   <string name="msg_auth_error_unlock">Errore sconosciuto durante apertura chiave!</string>
   <string name="msg_auth_error_bad_passphrase">Password errata!</string>
   <string name="msg_auth_error_nfc">Errore dati NFC!</string>
-  <string name="msg_crt_error_master_not_found">Chiave principale non trovata!</string>
   <string name="msg_crt_error_nothing">Nessuna chiave certificata!</string>
   <string name="msg_crt_saving">Salvataggio portachiavi in corso</string>
   <string name="msg_crt_success">Identità certificata correttamente</string>
@@ -1010,11 +946,6 @@
   <string name="msg_get_query_too_short">Query di ricerca troppo. Per favore ridefinisci la tua ricerca!</string>
   <string name="msg_get_query_too_short_or_too_many_responses">In entrambi i casi sono state trovate troppe o nessuna chiave. Si prega di migliorare la vostra ricerca!</string>
   <string name="msg_download_query_failed">C\'è stato un errore durante la ricerca delle chiavi.</string>
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_error_key_mismatch">L\'impronta della chiave non corrisponde con quella della prova</string>
-  <string name="msg_keybase_error_dns_fail">Recupero DNS TXT Record fallito</string>
-  <string name="msg_keybase_error_specific">%s</string>
-  <string name="msg_keybase_error_msg_payload_mismatch">La prova decifrata non corrisponde con il valore previsto</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_keys">Password salvate</string>

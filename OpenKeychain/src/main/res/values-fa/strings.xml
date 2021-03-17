@@ -37,6 +37,7 @@
   <string name="section_user_ids">هویت‌ها</string>
   <string name="section_should_you_trust">آیا به این کلید اعتماد دارید؟</string>
   <string name="section_keys">زیرکلیدها</string>
+  <string name="section_cloud_search_summary">سرور کلید</string>
   <string name="section_gui">رابط</string>
   <string name="section_sync_settings">انجام هماهنگ سازی</string>
   <string name="section_certify">تأیید</string>
@@ -149,7 +150,6 @@
   <string name="label_enter_smartpgp_authority_name">نام</string>
   <string name="pref_keyserver">سرورهای کلید OpenPGP</string>
   <string name="pref_facebook">فیسبوک</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">هشدار</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">فعال‌کردن Tor</string>
@@ -238,7 +238,6 @@
   <string name="progress_exporting">در حال خارج‌کردن...</string>
   <string name="progress_uploading">در حال آپلود کردن...</string>
   <string name="progress_building_key">در حال ساخت کلید...</string>
-  <string name="progress_building_master_key">در حال ساخت حلقهٔ اصلی...</string>
   <string name="progress_generating_rsa">در حال تولید کلید RSA جدید...</string>
   <string name="progress_generating_dsa">در حال تولید کلید DSA جدید...</string>
   <string name="progress_generating_elgamal">در حال تولید کلید EIGamal جدید...</string>
@@ -298,11 +297,6 @@
   <string name="user_id_info_revoked_title">لغو</string>
   <!--Key trust-->
   <string name="key_trust_start_cloud_search">آغاز جستجو</string>
-  <!--keybase proof stuff-->
-  <string name="keybase_narrative_twitter">روی Twitter پست می‌کند به عنوان %s</string>
-  <string name="keybase_narrative_github">بر روی GitHub شناخته شده است به عنوان %s</string>
-  <string name="keybase_narrative_dns">کنترل می‌کند نام دامنه‌(های) %s</string>
-  <string name="keybase_verify">تایید</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">تغییر رمزعبور</string>
   <string name="edit_key_action_add_identity">اضافه‌کردن هویت</string>
@@ -361,8 +355,6 @@
   <string name="msg_crt_warn_not_found">کلید یافت نشد!</string>
   <string name="msg_import_fetch_error_not_found">کلید یافت نشد!</string>
   <string name="msg_upload_error_not_found">کلید یافت نشد!</string>
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_error_specific">%s</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_pwd">رمز عبور</string>

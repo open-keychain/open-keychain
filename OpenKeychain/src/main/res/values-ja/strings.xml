@@ -8,7 +8,6 @@
   <string name="title_encrypt_files">暗号化</string>
   <string name="title_decrypt">復号化</string>
   <string name="title_add_subkey">副鍵の追加</string>
-  <string name="title_change_master_key">主鍵の変更</string>
   <string name="title_edit_key">鍵の編集</string>
   <string name="title_preferences">設定</string>
   <string name="title_api_registered_apps">アプリ</string>
@@ -40,12 +39,11 @@
   <string name="section_user_ids">ユーザID</string>
   <string name="section_security_token">セキュリティ トークン</string>
   <string name="section_linked_system_contact">リンクしているシステムの連絡先</string>
-  <string name="section_keybase_proofs">Keybase.io 検証</string>
   <string name="section_should_you_trust">この鍵を信頼しますか?</string>
   <string name="section_proof_details">証明検証</string>
   <string name="section_keys">副鍵</string>
   <string name="section_cloud_search">鍵検索</string>
-  <string name="section_cloud_search_summary">鍵サーバ, keybase.io</string>
+  <string name="section_cloud_search_summary">鍵サーバー</string>
   <string name="section_passphrase_cache">パスワードとPIN</string>
   <string name="section_passphrase_cache_summary">取り扱い</string>
   <string name="section_proxy_settings">ネットワーク匿名性</string>
@@ -198,8 +196,6 @@
   <string name="label_smartpgp_authority_dialog_delete">認証局を削除</string>
   <string name="pref_keyserver">OpenPGP鍵サーバ</string>
   <string name="pref_keyserver_summary">選択したOpenPGP鍵サーバで鍵を探す (HKPプロトコル)</string>
-  <string name="pref_keybase">Keybase.io</string>
-  <string name="pref_keybase_summary">Keybase.ioで鍵を探す</string>
   <string name="pref_facebook">Facebook</string>
   <string name="pref_facebook_summary">Facebookでユーザー名から鍵を探す</string>
   <string name="pref_wkd">Webキーディレクトリ</string>
@@ -208,14 +204,8 @@
   <string name="label_sync_settings_keyserver_summary_on">3日ごとに鍵サーバから鍵をアップデートします</string>
   <string name="label_sync_settings_keyserver_summary_off">鍵を自動でアップデートしません</string>
   <string name="label_sync_settings_wifi_title">Wi-Fiでのみ同期</string>
-  <string name="label_sync_settings_contacts_title">連絡先へ鍵をリンク</string>
-  <string name="label_sync_settings_contacts_summary_on">オフランで完結して、名前とメールアドレスに基づいて、鍵を連絡先にリンク</string>
-  <string name="label_sync_settings_contacts_summary_off">新しい鍵は連絡先と関連付けしない</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">注意</string>
   <string name="label_experimental_settings_desc_summary">これらの機能はまだ完成していないか、ユーザーエクスペリエンス/セキュリティ研究の結果ではありません。そのため、このセキュリティに依存したり、遭遇した問題を報告しないでください!</string>
-  <string name="label_experimental_settings_keybase_title">Keybase.io 検証</string>
-  <string name="label_experimental_settings_keybase_summary">鍵の検証のためkeybase.ioに連絡し、鍵が表示されるたびに表示します</string>
   <string name="label_experimental_settings_theme_summary">(アイコンおよび多くの画面は、まだダークテーマに応じて調整されていません)</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Torを有効</string>
@@ -415,7 +405,6 @@
   <string name="progress_exporting">エクスポート...</string>
   <string name="progress_uploading">アップロード中...</string>
   <string name="progress_building_key">鍵の構築中...</string>
-  <string name="progress_building_master_key">主鍵輪の構築中...</string>
   <string name="progress_generating_rsa">新しいRSA鍵を生成中...</string>
   <string name="progress_generating_dsa">新しいDSA鍵を生成中...</string>
   <string name="progress_generating_elgamal">新しいElGamal鍵を生成中...</string>
@@ -639,7 +628,6 @@
   <string name="key_view_tab_share">共有</string>
   <string name="key_view_tab_keys">副鍵</string>
   <string name="key_view_tab_certs">証明</string>
-  <string name="key_view_tab_keybase">Keybase.io</string>
   <string name="user_id_info_revoked_title">破棄</string>
   <string name="user_id_info_revoked_text">このIDは鍵の所有者により破棄されています。もう適正ではありません。</string>
   <string name="user_id_info_certified_title">確認済み</string>
@@ -649,36 +637,6 @@
   <!--Key trust-->
   <string name="key_trust_no_cloud_evidence">この鍵の信頼性についてのインターネットでの検証がありません。</string>
   <string name="key_trust_start_cloud_search">検索開始</string>
-  <string name="key_trust_results_prefix">Keybase.ioはこのキーのオーナーだと言う証拠を提供している：</string>
-  <!--keybase proof stuff-->
-  <string name="keybase_narrative_twitter">Twitterへ以下のIDで投稿 %s</string>
-  <string name="keybase_narrative_github">Githubでは %s で知られています</string>
-  <string name="keybase_narrative_dns">ドメイン名 %s を制御しています</string>
-  <string name="keybase_narrative_web_site">Webサイト %s に投稿できます</string>
-  <string name="keybase_narrative_reddit">Redditへ以下のIDで投稿 %s</string>
-  <string name="keybase_narrative_coinbase">Conbaseでは %s で知られています</string>
-  <string name="keybase_narrative_hackernews">Hacker Newsへ以下のIDで投稿 %s</string>
-  <string name="keybase_narrative_unknown">不明な検証種別 %s</string>
-  <string name="keybase_proof_failure">不幸にもこの証明は検証されていません。</string>
-  <string name="keybase_unknown_proof_failure">証明チェッカで正当に評価されない問題</string>
-  <string name="keybase_problem_fetching_evidence">確認に問題があります</string>
-  <string name="keybase_key_mismatch">鍵の指紋が証明のポストと一致しませんでした</string>
-  <string name="keybase_dns_query_failure">DNS TXTレコードの確認に失敗</string>
-  <string name="keybase_no_prover_found">検証チェッカを見付けることができませんでした</string>
-  <string name="keybase_message_payload_mismatch">復号化した検証ポストが指定した値と一致しない</string>
-  <string name="keybase_message_fetching_data">検証を取得</string>
-  <string name="keybase_proof_succeeded">この証明は検証されています!</string>
-  <string name="keybase_a_post">投稿</string>
-  <string name="keybase_fetched_from">取得は</string>
-  <string name="keybase_for_the_domain">ドメイン名</string>
-  <string name="keybase_contained_signature">この鍵のオーナーだけが生成することができるメッセージを含んでいます。</string>
-  <string name="keybase_twitter_proof">ツィート</string>
-  <string name="keybase_dns_proof">DNSのTXTレコード</string>
-  <string name="keybase_web_site_proof">テキストファイル</string>
-  <string name="keybase_github_proof">gist</string>
-  <string name="keybase_reddit_proof">JSONファイル</string>
-  <string name="keybase_reddit_attribution">Redditの属性</string>
-  <string name="keybase_verify">検証</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">パスワードの変更</string>
   <string name="edit_key_action_add_identity">ユーザIDの追加</string>
@@ -762,7 +720,6 @@
   <string name="drawer_close">ナビゲーションドロワーを閉める</string>
   <string name="my_keys">自分の鍵</string>
   <string name="nav_backup">バックアップ/リストア</string>
-  <string name="nav_transfer">安全な Wifi 転送</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">テキストを入力</string>
   <!--certs-->
@@ -793,26 +750,8 @@
   <string name="msg_ip_insert_keyring">鍵輪データのエンコード中</string>
   <string name="msg_ip_insert_keys">鍵の解析中</string>
   <string name="msg_ip_prepare">データベース操作の準備</string>
-  <string name="msg_ip_master">主鍵処理中 %s</string>
   <string name="msg_ip_master_expired">%s が鍵輪の期限切れ</string>
   <string name="msg_ip_master_expires">%s に鍵輪が期限切れ</string>
-  <string name="msg_ip_master_flags_unspecified">主鍵のフラグ: 不特定 (すべてを仮定します)</string>
-  <string name="msg_ip_master_flags_cesa">主鍵のフラグ: 検証、暗号化、署名、認証</string>
-  <string name="msg_ip_master_flags_cesx">主鍵のフラグ: 検証、暗号化、署名</string>
-  <string name="msg_ip_master_flags_cexa">主鍵のフラグ: 検証、暗号化、認証</string>
-  <string name="msg_ip_master_flags_cexx">主鍵のフラグ: 検証、暗号化</string>
-  <string name="msg_ip_master_flags_cxsa">主鍵のフラグ: 検証、署名、認証</string>
-  <string name="msg_ip_master_flags_cxsx">主鍵のフラグ: 検証、署名</string>
-  <string name="msg_ip_master_flags_cxxa">主鍵のフラグ: 検証、認証</string>
-  <string name="msg_ip_master_flags_cxxx">主鍵のフラグ: 検証</string>
-  <string name="msg_ip_master_flags_xesa">主鍵のフラグ: 暗号化、署名、認証</string>
-  <string name="msg_ip_master_flags_xesx">主鍵のフラグ: 暗号化、署名</string>
-  <string name="msg_ip_master_flags_xexa">主鍵のフラグ: 暗号化、認証</string>
-  <string name="msg_ip_master_flags_xexx">主鍵のフラグ: 暗号化</string>
-  <string name="msg_ip_master_flags_xxsa">主鍵のフラグ: 署名、認証</string>
-  <string name="msg_ip_master_flags_xxsx">主鍵のフラグ: 署名</string>
-  <string name="msg_ip_master_flags_xxxa">主鍵のフラグ: 認証</string>
-  <string name="msg_ip_master_flags_xxxx">主鍵のフラグ: なし</string>
   <string name="msg_ip_merge_public">インポートしたデータ内に存在する公開鍵輪をマージ</string>
   <string name="msg_ip_merge_secret">インポートしたデータ内に存在する秘密鍵輪をマージ</string>
   <string name="msg_ip_subkey">副鍵 %s の処理中</string>
@@ -892,16 +831,9 @@
   <string name="msg_kc_secret">秘密鍵の鍵輪 %s の正規化中</string>
   <string name="msg_kc_error_v3">これはOpenPGP バージョン3の鍵で、これは非推奨でもうサポートされなくなりました!</string>
   <string name="msg_kc_error_no_uid">鍵輪が正しいユーザIDを含んでいませんでした!</string>
-  <string name="msg_kc_error_master_algo">主鍵で不明なアルゴリズム(%s)を利用しています!</string>
   <string name="msg_kc_error_dup_key">鍵輪の中に副鍵 %s が2度出現しました。鍵輪が不整形となっており、インポートできあせん!</string>
-  <string name="msg_kc_master">主鍵処理中</string>
-  <string name="msg_kc_master_bad_type">主鍵の不明な型 (%s) の証明を破棄中</string>
-  <string name="msg_kc_master_bad_local">ローカルフラグ付きの主鍵検証を破棄中</string>
-  <string name="msg_kc_master_bad_err">証明が付随する問題のある主鍵を破棄中</string>
   <string name="msg_kc_master_bad_time">鍵輪の未来にタイムスタンプがある破棄証明を破棄中</string>
   <string name="msg_kc_master_bad_type_uid">不正な位置のユーザID検証を破棄中</string>
-  <string name="msg_kc_master_bad">証明が付随する問題のある主鍵を破棄中</string>
-  <string name="msg_kc_master_local">ローカルフラグ付きの主鍵検証を破棄中</string>
   <string name="msg_kc_revoke_dup">重複している鍵輪の破棄証明を破棄中</string>
   <string name="msg_kc_notation_dup">重複しているノーテーション証明を破棄中</string>
   <string name="msg_kc_notation_empty">空のノーテーション証明を破棄中</string>
@@ -971,10 +903,7 @@
   <string name="msg_mg_found_new">鍵輪に新しい検証を %s 発見</string>
   <string name="msg_mg_unchanged">マージするものがありません</string>
   <!--createSecretKeyRing-->
-  <string name="msg_cr">新しい主鍵を生成中</string>
-  <string name="msg_cr_error_no_master">主鍵オプション特有ではありません!</string>
   <string name="msg_cr_error_no_user_id">鍵輪は最低でも1つのユーザIDの生成が必要です!</string>
-  <string name="msg_cr_error_no_certify">主鍵は検証フラグが必須です!</string>
   <string name="msg_cr_error_null_expiry">鍵の生成時に期限を\'過去\'とすることはできません。これはプログラムエラーで、バグレポートでファイルを送ってください!</string>
   <string name="msg_cr_error_keysize_2048">鍵サイズは2048かそれ以上が必須です!</string>
   <string name="msg_cr_error_no_curve">鍵サイズが不明です! これはプログラムエラーで、バグレポートでファイルの提出をお願いします!</string>
@@ -996,14 +925,12 @@
   <string name="msg_mf_error_fingerprint">現実の鍵指紋が想定の1つと合致しませんでした!</string>
   <string name="msg_mf_error_keyid">鍵IDがありません。 これは内部エラーで、バグレポートでファイルの提出をお願いします!</string>
   <string name="msg_mf_error_integrity">内部エラー、完全性チェックが失敗!</string>
-  <string name="msg_mf_error_master_none">マスター認証が操作で見付かりませんでした(すべて破棄しましたか?)</string>
   <string name="msg_mf_error_noexist_primary">問題のある主ユーザIDが指定された!</string>
   <string name="msg_mf_error_noexist_revoke">破棄において問題のあるユーザIDが指定された!</string>
   <string name="msg_mf_error_restricted">パスパスワードのない厳密な操作を実行してみてください!これはプロラミングエラーで、バグレポートでファイルの提出をお願いします!</string>
   <string name="msg_mf_error_revoked_primary">主ユーザIDの破棄はできません!</string>
   <string name="msg_mf_error_null_expiry">副鍵の生成時に期限を\"過去\"とすることはできません。これはプログラムエラーで、バグレポートでファイルの提出をお願いします!</string>
   <string name="msg_mf_error_noop">なにもできません!</string>
-  <string name="msg_mf_error_passphrase_master">主鍵の復号で致命的な失敗! これはプログラムエラーの場合がありますので、バグレポートでファイルの提出をお願いします!</string>
   <string name="msg_mf_error_passphrases_unchanged">パスワードは変更されていません!</string>
   <string name="msg_mf_error_pgp">PGP内部エラー!</string>
   <string name="msg_mf_error_sig">署名例外!</string>
@@ -1012,7 +939,6 @@
   <string name="msg_mf_error_conflicting_nfc_commands">カード上に署名を作るのと同じ操作で、セキュリティトークンに鍵を移動できません</string>
   <string name="msg_mf_error_duplicate_keytocard_for_slot">セキュリティトークンは、鍵の種類ごとに1つのスロットのみサポートします。</string>
   <string name="msg_mf_error_invalid_flags_for_keytocard">セキュリティトークンの鍵に不適合な鍵のフラグです。</string>
-  <string name="msg_mf_master">マスター認証を変更</string>
   <string name="msg_mf_passphrase">鍵輪のパスワードを変更中</string>
   <string name="msg_mf_pin">カードのPINを変更</string>
   <string name="msg_mf_admin_pin">カードの管理者PINを変更</string>
@@ -1059,7 +985,6 @@
   <string name="msg_pr_subkey_nomatch">セキュリティトークンに副鍵がありません: %s</string>
   <string name="msg_pr_success">鍵は正常に昇格しました</string>
   <!--Other messages used in OperationLogs-->
-  <string name="msg_ek_error_dummy">ストリップした主鍵では鍵輪を編集できません!</string>
   <string name="msg_ek_error_not_found">鍵が見当りません!</string>
   <!--Messages for DecryptVerify operation-->
   <string name="msg_dc_askip_bad_flags">暗号化した鍵ではありません、スキップします…</string>
@@ -1184,15 +1109,11 @@
     <item quantity="other">%1$d のユーザ属性で鍵 %2$s の検証中</item>
   </plurals>
   <string name="msg_crt_error_self">自己証明書的な発行は行えません!</string>
-  <string name="msg_crt_error_master_not_found">主鍵が見当りません!</string>
   <string name="msg_crt_error_nothing">検証できた鍵がない!</string>
-  <string name="msg_crt_error_unlock">主鍵のロック解除エラー!</string>
   <string name="msg_crt">鍵輪の検証</string>
-  <string name="msg_crt_master_fetch">検証中の主鍵のフェッチ</string>
   <string name="msg_crt_nfc_return">NFCの画面に復帰</string>
   <string name="msg_crt_save">検証した鍵の保存中 %s</string>
   <string name="msg_crt_saving">鍵輪の保存中</string>
-  <string name="msg_crt_unlock">主鍵のロック解除</string>
   <string name="msg_crt_success">ユーザIDの検証に成功</string>
   <string name="msg_crt_warn_not_found">鍵が見当りません!</string>
   <string name="msg_crt_warn_cert_failed">証明の生成が失敗!</string>
@@ -1207,7 +1128,6 @@
   <string name="msg_import_fetch_error_not_found">鍵が見当りません!</string>
   <string name="msg_import_fetch_error_keyserver">鍵サーバから展開できません: %s</string>
   <string name="msg_import_fetch_error_keyserver_secret">鍵サーバから秘密鍵をインポートできません!</string>
-  <string name="msg_import_fetch_keybase">keybase.ioから回収: %s</string>
   <string name="msg_import_fetch_facebook">Facebookから取得中: %s</string>
   <string name="msg_import_fetch_keyserver">鍵サーバからの回収: %s</string>
   <string name="msg_import_fetch_keyserver_ok">鍵の展開に成功</string>
@@ -1297,14 +1217,6 @@
   <string name="msg_get_query_too_short_or_too_many_responses">鍵が無いか、見付かった鍵が多すぎます。クエリを改善してください!</string>
   <string name="msg_get_no_enabled_source">ダウンロード元を少なくとも1つ有効にしてください!</string>
   <string name="msg_download_query_failed">鍵の検索時にエラーが発生しました。</string>
-  <!--Messages for Keybase Verification operation-->
-  <string name="msg_keybase_verification">%s のkeybase検証を試行中</string>
-  <string name="msg_keybase_error_no_prover">%s で検証チェッカを見付けることができませんでした</string>
-  <string name="msg_keybase_error_fetching_evidence">検証の取得で問題がある</string>
-  <string name="msg_keybase_error_key_mismatch">鍵の指紋が証明ポストと一致しませんでした</string>
-  <string name="msg_keybase_error_dns_fail">DNS TXT レコードの検索が失敗</string>
-  <string name="msg_keybase_error_specific">%s</string>
-  <string name="msg_keybase_error_msg_payload_mismatch">復号化した検証ポストが指定した値と一致しない</string>
   <!--Messages for Mime parsing operation-->
   <string name="msg_mime_parsing_start">MIME構造の解析中</string>
   <string name="msg_mime_parsing_error">MIME解析に失敗</string>
@@ -1588,7 +1500,6 @@
   <string name="keyserver_last_updated_never">最終チェック: なし</string>
   <string name="key_insecure_bitstrength_2048_problem">この鍵は、<b>%2$s ビット</b> の強度の <b>%1$s</b> アルゴリズムが使用されています。 安全な鍵は、2048 ビットの強度を持つ必要があります。</string>
   <string name="key_insecure_bitstrength_2048_solution">この鍵はアップグレードできません。 安全な通信のために、所有者は新しい鍵を生成する必要があります。</string>
-  <string name="key_insecure_unknown_curve_problem">この鍵はホワイトリストに登録されていない <b>%1$s</b>アルゴリズムを使用しています。</string>
   <string name="key_insecure_unknown_curve_solution">この鍵はアップグレードできません。 安全な通信のために、所有者は新しい鍵を生成する必要があります。</string>
   <string name="key_insecure_unidentified_problem">この鍵には未確認の問題があります。</string>
   <string name="key_insecure_unidentified_solution">バグレポートを提出してください。</string>
@@ -1599,8 +1510,6 @@
   <string name="insecure_encrypt_bitstrength_suggestion">使用中の鍵は安全ではなく、更新できません。 安全に通信するには、新しい鍵を作成する必要があります!</string>
   <string name="insecure_sign_bitstrength">このメッセージを送信 (署名) するために使用した鍵は古くなっています!\n\nアルゴリズム (%s) は、2006 年以降の一般的な使用では安全でないと考えられていた 1024 ビット以下の強度で構成されています。</string>
   <string name="insecure_sign_bitstrength_suggestion">使用中の鍵は安全ではなく、更新できません。 安全に通信するには、送信者は新しい鍵を作成する必要があります!</string>
-  <string name="insecure_encrypt_not_secure_curve">このメッセージを受信 (復号化) した鍵は、ホワイトリストに登録されていない OID %1$s の楕円曲線を使用しています!</string>
-  <string name="insecure_sign_not_secure_curve">このメッセージを送信 (署名) した鍵は、ホワイトリストに登録されていない OID %1$s の楕円曲線を使用しています!</string>
   <string name="insecure_encrypt_unidentified">このメッセージを受信 (復号化) するのに使用した鍵は、未確認のセキュリティ問題があります!</string>
   <string name="insecure_sign_unidentified">このメッセージを送信 (署名) するのに使用した鍵は、未確認のセキュリティ問題があります!</string>
   <string name="insecure_report_suggestion">これは OpenKeychain の問題である可能性があります。 イシュートラッカーでご報告ください!</string>

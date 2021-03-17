@@ -13,6 +13,7 @@
   <string name="title_log_display">Protokolo</string>
   <string name="title_advanced_key_info">Altnivela</string>
   <!--section-->
+  <string name="section_cloud_search_summary">Retŝlosilejo</string>
   <string name="section_share_key">Ŝlosilo</string>
   <string name="section_key_server">Retŝlosilejo</string>
   <string name="section_encrypt">Ĉifri</string>
@@ -23,6 +24,7 @@
   <string name="btn_next">Sekva</string>
   <string name="btn_back">Reen</string>
   <string name="btn_no">Ne</string>
+  <string name="btn_share_decrypted_text">Kunuzi</string>
   <string name="btn_add_keyserver">Aldoni</string>
   <!--Shortcut Strings-->
   <!--Content Description-->
@@ -42,7 +44,6 @@
   <string name="label_email">Retpoŝto</string>
   <string name="label_enter_smartpgp_authority_name">Nomo</string>
   <string name="pref_facebook">Facebook</string>
-  <!--label shown in Android settings under the OpenKeychain account-->
   <string name="label_experimental_settings_desc_title">Averto</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Enable Tor</string>
@@ -107,10 +108,11 @@
   <!--Key list-->
   <!--Key view-->
   <string name="key_view_tab_start">Ek</string>
+  <string name="key_view_tab_share">Kunuzi</string>
   <!--Key trust-->
-  <!--keybase proof stuff-->
   <!--Edit key-->
   <!--Create key-->
+  <string name="create_key_passphrases_not_equal">Pasvortoj ne egali</string>
   <!--View key-->
   <!--Add/Edit keyserver-->
   <!--Add/Edit SmartPGP authority-->
@@ -137,7 +139,6 @@
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
-  <!--Messages for Keybase Verification operation-->
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_pwd">Pasvorto</string>
@@ -161,6 +162,7 @@
   <string name="btn_reset">Rekomencigo</string>
   <!--Other Linked Identity strings-->
   <string name="btn_finish">Fini</string>
+  <string name="share_log_dialog_share_button">Kunuzi</string>
   <string name="share_log_dialog_cancel_button">Rezigni</string>
   <string name="menu_uids_save">Konservi</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">Rezigni</string>
