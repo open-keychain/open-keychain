@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
 android {
-    if (project.hasProperty('rootProject.ext.compileSdkVersion')) {
+    if (project.hasProperty('compileSdkVersion')) {
         compileSdkVersion rootProject.ext.compileSdkVersion
     } else {
         compileSdkVersion 28
