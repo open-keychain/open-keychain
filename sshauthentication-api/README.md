@@ -19,6 +19,6 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.open-keychain.open-keychain:sshauthentication-api:v5.7'
+    implementation 'com.github.open-keychain.open-keychain:sshauthentication-api:v5.7.1'
 }
 ```
