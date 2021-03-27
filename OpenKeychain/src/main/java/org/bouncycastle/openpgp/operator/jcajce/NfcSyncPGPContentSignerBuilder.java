@@ -34,6 +34,7 @@ public class NfcSyncPGPContentSignerBuilder
     private int     hashAlgorithm;
     private int     keyAlgorithm;
     private long    keyID;
+    private boolean isEdDsaAuthenticationSignature = false;
 
     private Map signedHashes;
 
@@ -86,6 +87,13 @@ public class NfcSyncPGPContentSignerBuilder
         return this;
     }
 
+    public NfcSyncPGPContentSignerBuilder configureForEdDsaAuthenticationSignature()
+    {
+        isEdDsaAuthenticationSignature = true;
+
+        return this;
+    }
+
     public PGPContentSigner build(final int signatureType, PGPPrivateKey privateKey)
         throws PGPException {
         // NOTE: privateKey is null in this case!
@@ -95,8 +103,8 @@ public class NfcSyncPGPContentSignerBuilder
     public PGPContentSigner build(final int signatureType, final long keyID)
         throws PGPException
     {
-        if (keyAlgorithm == PublicKeyAlgorithmTags.EDDSA) {
-            return buildEdDSASigner(signatureType, keyID);
+        if (isEdDsaAuthenticationSignature) {
+            return buildEdDSAAuthenticationSigner(signatureType, keyID);
         }
 
         final PGPDigestCalculator digestCalculator = digestCalculatorProviderBuilder.build().get(hashAlgorithm);
@@ -146,7 +154,7 @@ public class NfcSyncPGPContentSignerBuilder
         };
     }
 
-    public PGPContentSigner buildEdDSASigner(final int signatureType, final long keyID)
+    public PGPContentSigner buildEdDSAAuthenticationSigner(final int signatureType, final long keyID)
         throws PGPException
     {
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
