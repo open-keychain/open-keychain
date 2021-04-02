@@ -414,7 +414,6 @@ public class SecurityTokenConnection {
         // delete secrets from memory
         Arrays.fill(pin, (byte) 0);
         Arrays.fill(transformedPin, (byte) 0);
-        adminPin.removeFromMemory();
 
         ResponseApdu response = communicate(verifyPw3Command);
         if (!response.isSuccess()) {
