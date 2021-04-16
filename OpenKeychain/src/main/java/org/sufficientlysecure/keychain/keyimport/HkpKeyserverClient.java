@@ -54,7 +54,7 @@ import static java.util.Locale.ENGLISH;
 public class HkpKeyserverClient implements KeyserverClient {
 
     private static final Pattern INFO_LINE = Pattern
-            .compile("^info:1:([0-9]*)\n", Pattern.CASE_INSENSITIVE);
+            .compile("^info:1:([0-9]*)\r?\n", Pattern.CASE_INSENSITIVE);
 
     /**
      * uid:%escaped uid string%:%creationdate%:%expirationdate%:%flags%
@@ -82,11 +82,11 @@ public class HkpKeyserverClient implements KeyserverClient {
      */
     private static final Pattern UID_LINE = Pattern
             .compile("(uid:" +              // group 1
-                            "([^:\n]*)" +       // group 2
+                            "([^:\r?\n]*)" +// group 2
                             "(?::([0-9]*)" +  // group 3
                             "(?::([0-9]*)" +  // group 4
                             "(?::(((?=(r(?!(.?r))|d(?!(.?d))|e(?!(.?e))))[rde]){0,3})" + // group 5
-                            ")?)?)?\n)",
+                            ")?)?)?\r?\n)",
                     Pattern.CASE_INSENSITIVE);
 
     /**
@@ -128,7 +128,7 @@ public class HkpKeyserverClient implements KeyserverClient {
                             "(?::([0-9]*)" +      // group 5
                             "(?::([0-9]*)" +      // group 6
                             "(?::((?:(?=(?:r(?!(.?r))|d(?!(.?d))|e(?!(.?e))))[rde]){0,3})" + // group 7
-                            ")?)?)?)?)?\n)"// pub line
+                            ")?)?)?)?)?\r\n)"// pub line
                             + "(" + UID_LINE.pattern() + // group 11
                             "+)", // one or more uid lines
                     Pattern.CASE_INSENSITIVE
