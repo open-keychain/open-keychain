@@ -128,7 +128,7 @@ public class HkpKeyserverClient implements KeyserverClient {
                             "(?::([0-9]*)" +      // group 5
                             "(?::([0-9]*)" +      // group 6
                             "(?::((?:(?=(?:r(?!(.?r))|d(?!(.?d))|e(?!(.?e))))[rde]){0,3})" + // group 7
-                            ")?)?)?)?)?\r\n)"// pub line
+                            ")?)?)?)?)?\r?\n)"// pub line
                             + "(" + UID_LINE.pattern() + // group 11
                             "+)", // one or more uid lines
                     Pattern.CASE_INSENSITIVE
