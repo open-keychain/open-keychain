@@ -50,8 +50,9 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 
-/** This class implements the PSO:DECIPHER operation, as specified in OpenPGP card spec / 7.2.11 (p52 in v3.0.1).
- *
+/**
+ * This class implements the PSO:DECIPHER operation, as specified in OpenPGP card spec / 7.2.11 (p52 in v3.0.1).
+ * <p>
  * See https://www.g10code.com/docs/openpgp-card-3.0.pdf
  */
 public class PsoDecryptTokenOp {
@@ -63,7 +64,7 @@ public class PsoDecryptTokenOp {
     }
 
     private PsoDecryptTokenOp(SecurityTokenConnection connection,
-            JcaKeyFingerprintCalculator jcaKeyFingerprintCalculator) {
+                              JcaKeyFingerprintCalculator jcaKeyFingerprintCalculator) {
         this.connection = connection;
         this.fingerprintCalculator = jcaKeyFingerprintCalculator;
     }
@@ -159,38 +160,34 @@ public class PsoDecryptTokenOp {
            From rfc6637#section-13 :
            This document explicitly discourages the use of algorithms other than AES as a KEK algorithm.
        */
-        byte[] keyEncryptionKey = response.getData();
+        byte[] point = response.getData();
 
         /* From rfc6637#section-7 :
-        The input of KDF should be the x portion of the point.
-        As the result of ECDH can be expressed in two formats: compressed and uncompressed,
-        we have to deal with each case:
-        An uncompressed point is encoded as 04 || x || y, with x and y are of the same size.
-        However, a valid x may be led with 04, so we have to also check the length of the result.
-        A compressed point, on the other hand, is encoded as x only. Therefore, we use the value directly.
+           The input of KDF should be the x portion of the point.
+           As the result of ECDH can be expressed in two formats: compressed and uncompressed,
+           we have to deal with each case:
+           An uncompressed point is encoded as 04 || x || y, with x and y are of the same size.
+           However, a valid x may be led with 04, so we have to also check the length of the result.
+           A compressed point, on the other hand, is encoded as x only. Therefore, we use the value directly.
         */
-        int xLen, startPos;
-        if (keyEncryptionKey[0] == 0x04 && keyEncryptionKey.length % 2 == 1) {
-            // uncompressed format
-            xLen = (keyEncryptionKey.length - 1) / 2;
-            startPos = 1;
+        final byte[] pointX;
+        boolean isUncompressedPoint = point[0] == 0x04 && point.length % 2 == 1;
+        if (isUncompressedPoint) {
+            int lengthX = (point.length - 1) / 2;
+            pointX = new byte[lengthX];
+            System.arraycopy(point, 1, pointX, 0, lengthX);
         } else {
-            // compressed format
-            xLen = keyEncryptionKey.length;
-            startPos = 0;
+            pointX = point;
         }
-        final byte[] kekX = new byte[xLen];
-        System.arraycopy(keyEncryptionKey, startPos, kekX, 0, xLen);
 
-        final byte[] keyEnc = new byte[encryptedSessionKeyMpi[mpiLength + 2]];
-
-        System.arraycopy(encryptedSessionKeyMpi, 2 + mpiLength + 1, keyEnc, 0, keyEnc.length);
+        final byte[] encryptedKey = new byte[encryptedSessionKeyMpi[mpiLength + 2]];
+        System.arraycopy(encryptedSessionKeyMpi, 2 + mpiLength + 1, encryptedKey, 0, encryptedKey.length);
 
         try {
             final MessageDigest kdf = MessageDigest.getInstance(MessageDigestUtils.getDigestName(publicKey.getSecurityTokenHashAlgorithm()));
 
             kdf.update(new byte[]{(byte) 0, (byte) 0, (byte) 0, (byte) 1});
-            kdf.update(kekX);
+            kdf.update(pointX);
             kdf.update(publicKey.createUserKeyingMaterial(fingerprintCalculator));
 
             byte[] kek = kdf.digest();
@@ -198,7 +195,7 @@ public class PsoDecryptTokenOp {
 
             c.init(Cipher.UNWRAP_MODE, new SecretKeySpec(kek, 0, publicKey.getSecurityTokenSymmetricKeySize() / 8, "AES"));
 
-            Key paddedSessionKey = c.unwrap(keyEnc, "Session", Cipher.SECRET_KEY);
+            Key paddedSessionKey = c.unwrap(encryptedKey, "Session", Cipher.SECRET_KEY);
 
             Arrays.fill(kek, (byte) 0);
 
