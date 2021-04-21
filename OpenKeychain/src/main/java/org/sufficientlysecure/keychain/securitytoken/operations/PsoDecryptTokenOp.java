@@ -59,6 +59,10 @@ public class PsoDecryptTokenOp {
     private final SecurityTokenConnection connection;
     private final JcaKeyFingerprintCalculator fingerprintCalculator;
 
+    private static final byte[] DECIPHER_EXTERNAL_PUBLIC_KEY = Hex.decode("86");
+    private static final byte[] DECIPHER_PUBLIC_KEY_DO = Hex.decode("7F49");
+    private static final byte[] DECIPHER_CIPHER_DO = Hex.decode("A6");
+
     public static PsoDecryptTokenOp create(SecurityTokenConnection connection) {
         return new PsoDecryptTokenOp(connection, new JcaKeyFingerprintCalculator());
     }
@@ -123,21 +127,21 @@ public class PsoDecryptTokenOp {
         } else {
             dataLen = new byte[]{(byte) 0x81, (byte) psoDecipherPayload.length};
         }
-        psoDecipherPayload = Arrays.concatenate(Hex.decode("86"), dataLen, psoDecipherPayload);
+        psoDecipherPayload = Arrays.concatenate(DECIPHER_EXTERNAL_PUBLIC_KEY, dataLen, psoDecipherPayload);
 
         if (psoDecipherPayload.length < 128) {
             dataLen = new byte[]{(byte) psoDecipherPayload.length};
         } else {
             dataLen = new byte[]{(byte) 0x81, (byte) psoDecipherPayload.length};
         }
-        psoDecipherPayload = Arrays.concatenate(Hex.decode("7F49"), dataLen, psoDecipherPayload);
+        psoDecipherPayload = Arrays.concatenate(DECIPHER_PUBLIC_KEY_DO, dataLen, psoDecipherPayload);
 
         if (psoDecipherPayload.length < 128) {
             dataLen = new byte[]{(byte) psoDecipherPayload.length};
         } else {
             dataLen = new byte[]{(byte) 0x81, (byte) psoDecipherPayload.length};
         }
-        psoDecipherPayload = Arrays.concatenate(Hex.decode("A6"), dataLen, psoDecipherPayload);
+        psoDecipherPayload = Arrays.concatenate(DECIPHER_CIPHER_DO, dataLen, psoDecipherPayload);
 
         CommandApdu command = connection.getCommandFactory().createDecipherCommand(
                 psoDecipherPayload, encryptedPoint.length);
