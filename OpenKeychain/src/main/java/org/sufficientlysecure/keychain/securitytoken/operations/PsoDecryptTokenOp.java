@@ -164,7 +164,10 @@ public class PsoDecryptTokenOp {
         /* From rfc6637#section-7 :
         The input of KDF should be the x portion of the point.
         As the result of ECDH can be expressed in two formats: compressed and uncompressed,
-        we have to deal with each case.
+        we have to deal with each case:
+        An uncompressed point is encoded as 04 || x || y, with x and y are of the same size.
+        However, a valid x may be led with 04, so we have to also check the length of the result.
+        A compressed point, on the other hand, is encoded as x only. Therefore, we use the value directly.
         */
         int xLen, startPos;
         if (keyEncryptionKey[0] == 0x04 && keyEncryptionKey.length % 2 == 1) {
