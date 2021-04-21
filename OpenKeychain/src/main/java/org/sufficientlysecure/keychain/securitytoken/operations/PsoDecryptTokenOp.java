@@ -161,14 +161,23 @@ public class PsoDecryptTokenOp {
        */
         byte[] keyEncryptionKey = response.getData();
 
-        int xLen;
-        if (eckf.isX25519()) {
-            xLen = keyEncryptionKey.length;
-        } else {
+        /* From rfc6637#section-7 :
+        The input of KDF should be the x portion of the point.
+        As the result of ECDH can be expressed in two formats: compressed and uncompressed,
+        we have to deal with each case.
+        */
+        int xLen, startPos;
+        if (keyEncryptionKey[0] == 0x04 && keyEncryptionKey.length % 2 == 1) {
+            // uncompressed format
             xLen = (keyEncryptionKey.length - 1) / 2;
+            startPos = 1;
+        } else {
+            // compressed format
+            xLen = keyEncryptionKey.length;
+            startPos = 0;
         }
         final byte[] kekX = new byte[xLen];
-        System.arraycopy(keyEncryptionKey, eckf.isX25519() ? 0 : 1, kekX, 0, xLen);
+        System.arraycopy(keyEncryptionKey, startPos, kekX, 0, xLen);
 
         final byte[] keyEnc = new byte[encryptedSessionKeyMpi[mpiLength + 2]];
 
