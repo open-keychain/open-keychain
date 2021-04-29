@@ -137,12 +137,7 @@ public class NfcSyncPGPContentSignerBuilder
             }
 
             public byte[] getSignature() {
-                byte[] digest;
-                if (enablePreHash) {
-                    digest = digestCalculator.getDigest();
-                } else {
-                    digest = ((ByteArrayOutputStream) getOutputStream()).toByteArray();
-                }
+                byte[] digest = getDigest();
                 ByteBuffer buf = ByteBuffer.wrap(digest);
                 if (signedHashes.containsKey(buf)) {
                     return (byte[]) signedHashes.get(buf);
@@ -154,6 +149,9 @@ public class NfcSyncPGPContentSignerBuilder
 
             public byte[] getDigest()
             {
+                if (digest != null) {
+                    return digest;
+                }
                 if (enablePreHash) {
                     digest = digestCalculator.getDigest();
                 } else {
