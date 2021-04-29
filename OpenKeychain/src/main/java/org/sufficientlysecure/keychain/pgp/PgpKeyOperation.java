@@ -1511,8 +1511,9 @@ public class PgpKeyOperation {
         if (divertToCard) {
             // use synchronous "NFC based" SignerBuilder
             builder = new NfcSyncPGPContentSignerBuilder(
-                    pKey.getAlgorithm(), PgpSecurityConstants.SECRET_KEY_BINDING_SIGNATURE_HASH_ALGO,
-                    pKey.getKeyID(), cryptoInput.getCryptoData())
+                    pKey.getAlgorithm(), pKey.getKeyID(),
+                    true, PgpSecurityConstants.SECRET_KEY_BINDING_SIGNATURE_HASH_ALGO,
+                    cryptoInput.getCryptoData())
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         } else {
             // content signer based on signing key algorithm and chosen hash algorithm

@@ -223,8 +223,8 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
         if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
             // use synchronous "NFC based" SignerBuilder
             return new NfcSyncPGPContentSignerBuilder(
-                    mSecretKey.getPublicKey().getAlgorithm(), hashAlgo,
-                    mSecretKey.getKeyID(), signedHashes)
+                    mSecretKey.getPublicKey().getAlgorithm(), mSecretKey.getKeyID(),
+                    true, hashAlgo, signedHashes)
                     .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         } else {
             // content signer based on signing key algorithm and chosen hash algorithm
@@ -257,12 +257,11 @@ public class CanonicalizedSecretKey extends CanonicalizedPublicKey {
             byte[]> signedHashes) {
         if (getAlgorithm() == PublicKeyAlgorithmTags.EDDSA) {
             // content signer feeding the input directly into the signature engine,
-            // since EdDSA hashes the input anyway
+            // no pre-hashing for EdDSA!
             if (mPrivateKeyState == PRIVATE_KEY_STATE_DIVERT_TO_CARD) {
                 return new NfcSyncPGPContentSignerBuilder(
-                        mSecretKey.getPublicKey().getAlgorithm(), hashAlgorithm,
-                        mSecretKey.getKeyID(), signedHashes)
-                        .configureForEdDsaAuthenticationSignature()
+                        mSecretKey.getPublicKey().getAlgorithm(), mSecretKey.getKeyID(),
+                        false, hashAlgorithm, signedHashes)
                         .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
             } else {
                 return new EdDsaAuthenticationContentSignerBuilder(
