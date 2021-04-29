@@ -137,14 +137,13 @@ public class NfcSyncPGPContentSignerBuilder
             }
 
             public byte[] getSignature() {
-                byte[] digest = getDigest();
-                ByteBuffer buf = ByteBuffer.wrap(digest);
+                ByteBuffer buf = ByteBuffer.wrap(getDigest());
                 if (signedHashes.containsKey(buf)) {
                     return (byte[]) signedHashes.get(buf);
                 }
                 // catch this when signatureGenerator.generate() is executed and divert digest to card,
                 // when doing the operation again reuse creationTimestamp (this will be hashed)
-                throw new NfcInteractionNeeded(digest, getHashAlgorithm());
+                throw new NfcInteractionNeeded(getDigest(), getHashAlgorithm());
             }
 
             public byte[] getDigest()
