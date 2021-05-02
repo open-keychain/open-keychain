@@ -130,4 +130,12 @@ public class SplitUserIdTest {
         Assert.assertEquals("this is a comment", info.comment);
     }
 
+    @Test
+    public void splitUserIdWithInvalidEmailShouldReturnEmail() {
+        OpenPgpUtils.UserId info = KeyRing.splitUserId("Name@LooksLike.Email <Name@LooksLikeEmail>");
+        Assert.assertEquals("Name@LooksLike.Email", info.name);
+        Assert.assertEquals("Name@LooksLikeEmail", info.email);
+        Assert.assertNull(info.comment);
+    }
+
 }
