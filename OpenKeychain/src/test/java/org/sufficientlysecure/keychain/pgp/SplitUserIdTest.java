@@ -130,4 +130,12 @@ public class SplitUserIdTest {
         Assert.assertEquals("this is a comment", info.comment);
     }
 
+    @Test
+    public void splitUserIdWithEmailWithoutTldShouldReturnNameAndEmail() {
+        OpenPgpUtils.UserId info = KeyRing.splitUserId("Max Mustermann <max@localhost>");
+        Assert.assertEquals("Max Mustermann", info.name);
+        Assert.assertEquals("max@localhost", info.email);
+        Assert.assertNull(info.comment);
+    }
+
 }
