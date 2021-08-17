@@ -1,3 +1,7 @@
+**WARNING: This software is no longer actively developed.**
+We will still apply security fixes where reported, and do basic maintenance work, but no new features or will be worked on.
+We will try to consider and merge contributions where possible.
+
 # OpenKeychain (for Android)
 
 OpenKeychain is an OpenPGP implementation for Android.  
