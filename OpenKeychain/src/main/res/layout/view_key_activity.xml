@@ -150,7 +150,7 @@
                 android:touchscreenBlocksFocus="false"
                 android:transitionGroup="false"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+                app:popupTheme="?popupOverlayStyle"
                 tools:ignore="UnusedAttribute" />
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 

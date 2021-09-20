@@ -19,6 +19,7 @@ package org.sufficientlysecure.keychain.ui.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.view.ContextThemeWrapper;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -33,13 +34,35 @@ public class ThemeChanger {
     private int mLightResId;
     private int mDarkResId;
 
+    static private boolean isDark(final Preferences preferences, final Configuration config) {
+        final String preferedTheme = preferences.getTheme();
+        switch (preferedTheme) {
+            case Constants.Pref.Theme.AUTO:
+                final int currentNightMode = config.uiMode & Configuration.UI_MODE_NIGHT_MASK;
+                switch (currentNightMode) {
+                    case Configuration.UI_MODE_NIGHT_NO:
+                        return false;
+                    case Configuration.UI_MODE_NIGHT_YES:
+                        return true;
+                    default:
+                        throw new IllegalStateException("Unknown uiMode");
+                }
+            case Constants.Pref.Theme.LIGHT:
+                return false;
+            case Constants.Pref.Theme.DARK:
+                return true;
+            default:
+                throw new IllegalStateException("Unknown theme");
+        }
+    }
+
     static public ContextThemeWrapper getDialogThemeWrapper(Context context) {
         Preferences preferences = Preferences.getPreferences(context);
 
         // if the dialog is displayed from the application class, design is missing.
         // hack to get holo design (which is not automatically applied due to activity's
         // Theme.NoDisplay)
-        if (Constants.Pref.Theme.DARK.equals(preferences.getTheme())) {
+        if (isDark(preferences, context.getResources().getConfiguration())) {
             return new ContextThemeWrapper(context, R.style.Theme_Keychain_Dark);
         } else {
             return new ContextThemeWrapper(context, R.style.Theme_Keychain_Light);
@@ -63,7 +86,11 @@ public class ThemeChanger {
      * the caller can re-create the activity, if need be.
      */
     public boolean changeTheme() {
-        String newTheme = mPreferences.getTheme();
+        String newTheme = Constants.Pref.Theme.LIGHT;
+        if (isDark(mPreferences, mContext.getResources().getConfiguration())) {
+            newTheme = Constants.Pref.Theme.DARK;
+        }
+
         if (mCurrentTheme != null && mCurrentTheme.equals(newTheme)) {
             return false;
         }

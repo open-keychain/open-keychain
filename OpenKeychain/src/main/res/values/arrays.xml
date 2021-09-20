@@ -32,11 +32,15 @@
     </string-array>
 
     <string-array name="theme_entries" translatable="false">
-        <item>@string/theme_dark</item>
+        <item>@string/theme_auto</item>
         <item>@string/theme_light</item>
+        <item>@string/theme_dark</item>
     </string-array>
     <string-array name="theme_values" translatable="false">
+        <item>"auto"</item>
         <item>"dark"</item>
         <item>"light"</item>
     </string-array>
+
+    <attr name="popupOverlayStyle" format="reference" />
 </resources>
