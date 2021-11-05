@@ -142,8 +142,20 @@ public class SecurityTokenPsoSignTokenOp {
             if (br[0] == 0x00 && (br[1] & 0x80) == 0) {
                 br = Arrays.copyOfRange(br, 1, br.length);
             }
+            if (br[0] < 0) {
+                byte[] paddedBr = new byte[br.length + 1];
+                paddedBr[0] = 0;
+                System.arraycopy(br, 0, paddedBr, 1, br.length);
+                br = paddedBr;
+            }
             if (bs[0] == 0x00 && (bs[1] & 0x80) == 0) {
                 bs = Arrays.copyOfRange(bs, 1, bs.length);
+            }
+            if (bs[0] < 0) {
+                byte[] paddedBs = new byte[bs.length + 1];
+                paddedBs[0] = 0;
+                System.arraycopy(bs, 0, paddedBs, 1, bs.length);
+                bs = paddedBs;
             }
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ASN1OutputStream out = ASN1OutputStream.create(baos);
