@@ -7,12 +7,15 @@ We will try to consider and merge contributions where possible.
 OpenKeychain is an OpenPGP implementation for Android.  
 For a more detailed description and installation instructions go to https://www.openkeychain.org .
 
+Gei it on this [Fork-release]()
+
 <a href="https://f-droid.org/repository/browse/?fdid=org.sufficientlysecure.keychain" target="_blank">
 <img src=/graphics/get-it-on-f-droid.png alt="Get it on F-Droid" height="80"/></a>
 <a href="https://play.google.com/store/apps/details?id=org.sufficientlysecure.keychain" target="_blank">
 <img src=/graphics/get-it-on-google-play.png alt="Get it on Google Play" height="80"/></a>
 
 ### Branches
+
 * The development of OpenKeychain happens in the "master" branch.
 * For every release a new branch, e.g., "3.2-fixes" is created to backport fixes from "master"
 
@@ -47,9 +50,9 @@ Development mailinglist at https://lists.riseup.net/www/subscribe/openkeychain
 2. Get all external submodules with ``git submodule update --init --recursive``
 3. Have Android SDK "tools", "platform-tools", and "build-tools" directories in your PATH (http://developer.android.com/sdk/index.html)
 4. Open the Android SDK Manager (shell command: ``android``).
-Expand the Tools directory and select "Android SDK Build-tools (Version 27.0.3)".
-Expand the Extras directory and install "Android Support Library", as well as "Local Maven repository for Support Libraries"
-Select SDK Platform for API levels 27.
+   Expand the Tools directory and select "Android SDK Build-tools (Version 27.0.3)".
+   Expand the Extras directory and install "Android Support Library", as well as "Local Maven repository for Support Libraries"
+   Select SDK Platform for API levels 27.
 5. Export ANDROID_HOME pointing to your Android SDK
 6. Execute ``./gradlew assembleFdroidDebug``
 7. You can install the app with ``adb install -r OpenKeychain/build/outputs/apk/OpenKeychain-fdroid-debug.apk``
@@ -57,10 +60,12 @@ Select SDK Platform for API levels 27.
 The "google" flavor is only used to include donations via Play Store, for development the "fdroid" flavor should be used.
 
 ### Run Tests
+
 1. Use OpenJDK instead of Oracle JDK
 2. Execute ``./gradlew clean testFdroidDebugUnitTest --continue``
 
 ### Run Jacoco Test Coverage
+
 1. Use OpenJDK instead of Oracle JDK
 2. Execute ``./gradlew clean testFdroidDebugUnitTest jacocoTestReport``
 3. Report is here: OpenKeychain/build/reports/jacoco/jacocoTestReport/html/index.html
@@ -80,6 +85,7 @@ We are using the newest [Android Studio](http://developer.android.com/sdk/instal
 OpenKeychain uses a forked version with some small changes. These changes will been sent to Bouncy Castle.
 
 see
+
 * Fork: https://github.com/open-keychain/bouncycastle
 
 #### Bouncy Castle resources
@@ -88,6 +94,7 @@ see
 * Issue tracker: http://www.bouncycastle.org/jira/browse/BJA
 
 #### Documentation
+
 * Documentation project at http://www.cryptoworkshop.com/guide/
 * Tests in https://github.com/bcgit/bc-java/tree/master/pg/src/test/java/org/bouncycastle/openpgp/test
 * Examples in https://github.com/bcgit/bc-java/tree/master/pg/src/main/java/org/bouncycastle/openpgp/examples
@@ -99,28 +106,33 @@ see
 We try to make our builds as [reproducible/deterministic](https://blog.torproject.org/blog/deterministic-builds-part-one-cyberwar-and-global-compromise) as possible.  
 
 #### Update Gradle version
+
 * Always use a fixed Android Gradle plugin version not a dynamic one, e.g. ``0.7.3`` instead of ``0.7.+`` (allows offline builds without lookups for new versions, also some minor Android plugin versions had serious issues, i.e. [0.7.2 and 0.8.1](http://tools.android.com/tech-docs/new-build-system))
 * Update every build.gradle file with the new gradle version and/or gradle plugin version
-    * build.gradle
-    * OpenKeychain/build.gradle
+  * build.gradle
+  * OpenKeychain/build.gradle
 * run ./gradlew wrapper twice to update gradle and download the new gradle jar file
 * commit the corresponding [Gradle wrapper](http://www.gradle.org/docs/current/userguide/gradle_wrapper.html) to the repository (allows easy building for new contributors without the need to install the required Gradle version using a package manager)
-  
+
 #### Update SDK and Build Tools
+
 * Change SDK and Build Tools in git submodules "openkeychain-api-lib" and "openpgp-api-lib" manually. They should also build on their own without the ext variables.
 
 #### Update library
+
 * You can check for library updates with ``./gradlew dependencyUpdates -Drevision=release
 
 #### Add new library
+
 * You can add the library as a Maven dependency or as a git submodule (if patches are required) in the "extern" folder.
 * You can get all transitive dependencies with ``./gradlew -q dependencies OpenKeychain:dependencies``
 * If added as a git submodule, change the ``compileSdkVersion`` in build.gradle to use the variables from the root project:
-```
-android {
+  
+  ```
+  android {
     compileSdkVersion rootProject.ext.compileSdkVersion
-}
-```
+  }
+  ```
 * You can check for wrong ``compileSdkVersion`` by ``find -name build.gradle | xargs grep compileSdkVersion``
 
 #### Slow Gradle?
@@ -150,6 +162,7 @@ see http://help.transifex.net/features/client/index.html#user-client
 ## Coding Style
 
 ### Code
+
 * Indentation: 4 spaces, no tabs.
 * Maximum line width for code and comments: 100.
 * Opening braces don't go on their own line.
@@ -163,16 +176,19 @@ The full coding style can be found at http://source.android.com/source/code-styl
 ### Automated syntax check with CheckStyle
 
 #### Linux
+
 1. Paste the `tools/checkstyle.xml` file to `~/.AndroidStudioPreview/config/codestyles/`
 2. Go to Settings > Code Style > Java, select OpenPgpChecker, as well as Code Style > XML and select OpenPgpChecker again.
 3. Start code inspection and see the results by selecting Analyze > Inspect Code from Android-Studio or you can directly run checkstyle via cli with `.tools/checkstyle`. Make sure it's executable first.
 
 #### Mac OSX
+
 1. Paste the `tools/checkstyle.xml` file to `~/Library/Preferences/AndroidStudioPreview/codestyles`
 2. Go to Preferences > Code Style > Java, select OpenPgpChecker, as well as Code Style > XML and select OpenPgpChecker again.
 3. Start code inspection and see the results by selecting Analyze > Inspect Code from Android-Studio or you can directly run checkstyle via cli with `.tools/checkstyle`. Make sure it's executable first.
 
 #### Windows
+
 1. Paste the `tools/checkstyle.xml` file to `C:\Users\<UserName>\.AndroidStudioPreview\config\codestyles`
 2. Go to File > Settings > Code Style > Java, select OpenPgpChecker, as well as Code Style > XML and select OpenPgpChecker again.
 3. Start code inspection and see the results by selecting Analyze > Inspect Code from Android-Studio.
