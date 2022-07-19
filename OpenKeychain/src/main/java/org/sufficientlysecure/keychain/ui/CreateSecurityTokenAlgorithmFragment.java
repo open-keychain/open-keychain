@@ -108,6 +108,8 @@ public class CreateSecurityTokenAlgorithmFragment extends Fragment {
                     R.string.ecc_p384), getResources().getString(R.string.ecc_p384_description_html)));
             choices.add(new Choice<>(SupportedKeyType.ECC_P521, getResources().getString(
                     R.string.ecc_p521), getResources().getString(R.string.ecc_p521_description_html)));
+            choices.add(new Choice<>(SupportedKeyType.curve25519, getResources().getString(
+                    R.string.curve25519), getResources().getString(R.string.curve25519_description_html)));
         }
 
         TwoLineArrayAdapter adapter = new TwoLineArrayAdapter(context,

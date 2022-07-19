@@ -266,6 +266,8 @@
   <string name="ecc_p256">ECC P-256</string>
   <string name="ecc_p384">ECC P-384</string>
   <string name="ecc_p521">ECC P-521</string>
+  <string name="curve25519">ECC Curve25519</string>
+  <string name="curve25519_description_html">檔案較大，直到 2040 年後依舊安全</string>
   <string name="ecc_eddsa">ECC EdDSA</string>
   <string name="usage_sign">簽名</string>
   <string name="usage_encrypt">加密</string>

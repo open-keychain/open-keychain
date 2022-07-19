@@ -62,7 +62,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
     }
 
     public enum SupportedKeyType {
-        RSA_2048, RSA_3072, RSA_4096, ECC_P256, ECC_P521, EDDSA
+        RSA_2048, RSA_3072, RSA_4096, ECC_P256, ECC_P521, EDDSA, curve25519
     }
 
     private static final String ARG_WILL_BE_MASTER_KEY = "will_be_master_key";
@@ -160,6 +160,8 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                     R.string.ecc_p256), getResources().getString(R.string.ecc_p256_description_html)));
             choices.add(new Choice<>(SupportedKeyType.ECC_P521, getResources().getString(
                     R.string.ecc_p521), getResources().getString(R.string.ecc_p521_description_html)));
+            choices.add(new Choice<>(SupportedKeyType.curve25519, getResources().getString(
+                    R.string.curve25519), getResources().getString(R.string.curve25519_description_html)));
             choices.add(new Choice<>(SupportedKeyType.EDDSA, getResources().getString(
                     R.string.ecc_eddsa), getResources().getString(R.string.ecc_eddsa_description_html)));
             TwoLineArrayAdapter adapter = new TwoLineArrayAdapter(context,
@@ -262,6 +264,10 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                             curve = Curve.NIST_P521;
                             break;
                         }
+                        case curve25519: {
+                            curve = Curve.curve25519;
+                            break;
+                        }
                     }
 
                     // set algorithm
@@ -274,6 +280,7 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                         }
 
                         case ECC_P256:
+                        case curve25519:
                         case ECC_P521: {
                             if(mUsageEncrypt.isChecked()) {
                                 algorithm = Algorithm.ECDH;

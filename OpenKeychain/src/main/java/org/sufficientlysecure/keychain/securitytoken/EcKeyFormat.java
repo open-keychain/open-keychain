@@ -121,6 +121,8 @@ public abstract class EcKeyFormat extends KeyFormat {
             scurve = SaveKeyringParcel.Curve.NIST_P384;
         } else if (EcObjectIdentifiers.NIST_P_521.equals(curveOid())) {
             scurve = SaveKeyringParcel.Curve.NIST_P521;
+        } else if (EcObjectIdentifiers.curve25519.equals(curveOid())) {
+            scurve = SaveKeyringParcel.Curve.curve25519;
         } else {
             throw new IllegalArgumentException("Unsupported curve " + curveOid());
         }
