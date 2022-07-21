@@ -275,6 +275,8 @@
   <string name="ecc_p384_description_html">非常小的文件尺寸，在 2040 年之前被认为是安全的 &lt;br/&gt; &lt;u&gt;试验性质且不被所有实现所支持&lt;/u&gt;</string>
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">较小的文件尺寸，在 2040 之后若干年也被认为是安全的 &lt;br/&gt; &lt;u&gt;试验性质且不被所有实现所支持&lt;/u&gt;</string>
+  <string name="curve25519">ECC Curve25519</string>
+  <string name="curve25519_description_html">较小的文件尺寸，在 2040 之后若干年也被认为是安全的 &lt;br/&gt; &lt;u&gt;试验性质且不被所有实现所支持&lt;/u&gt;</string>
   <string name="ecc_eddsa">ECC EdDSA（爱德华曲线数字签名算法）</string>
   <string name="ecc_eddsa_description_html">较小的文件尺寸，在 2040 之后若干年也被认为是安全的 &lt;br/&gt; &lt;u&gt;试验性质且不被所有实现所支持&lt;/u&gt;</string>
   <string name="usage_none">无 (只绑定子密钥)</string>

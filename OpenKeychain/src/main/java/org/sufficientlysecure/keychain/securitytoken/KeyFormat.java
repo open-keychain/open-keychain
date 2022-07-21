@@ -55,6 +55,8 @@ public abstract class KeyFormat {
                 return EcKeyFormat.getInstance(algorithmId, EcObjectIdentifiers.NIST_P_384, true);
             case ECC_P521:
                 return EcKeyFormat.getInstance(algorithmId, EcObjectIdentifiers.NIST_P_521, true);
+            case curve25519:
+                return EcKeyFormat.getInstance(algorithmId, EcObjectIdentifiers.curve25519, true);
         }
 
         throw new IllegalArgumentException("Unsupported Algorithm id " + t);
