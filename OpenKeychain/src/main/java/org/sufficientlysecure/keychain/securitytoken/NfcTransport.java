@@ -82,7 +82,11 @@ public class NfcTransport implements Transport {
 
     @Override
     public boolean isConnected() {
-        return mIsoCard != null && mIsoCard.isConnected();
+        try {
+            return mIsoCard != null && mIsoCard.isConnected();
+        } catch (SecurityException e) {
+            return false;
+        }
     }
 
     /**
