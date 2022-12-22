@@ -82,7 +82,8 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.Keychain.Light">
         <!-- broadcast receiver for Orbots status -->
-        <receiver android:name=".network.orbot.OrbotStatusReceiver">
+        <receiver android:name=".network.orbot.OrbotStatusReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="org.torproject.android.intent.action.STATUS"/>
             </intent-filter>
@@ -93,7 +94,8 @@
             android:name=".ui.MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/app_name"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -109,7 +111,8 @@
             android:label="@string/title_manage_my_keys"
             android:launchMode="singleTop"
             android:parentActivityName=".ui.MainActivity"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:exported="false">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
@@ -135,7 +138,8 @@
             android:name=".ui.keyview.ViewKeyActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_key_details"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.MainActivity"
+            android:exported="true">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
@@ -150,7 +154,8 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_encrypt_files"
             android:parentActivityName=".ui.MainActivity"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:exported="true">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
@@ -182,7 +187,8 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_encrypt_text"
             android:parentActivityName=".ui.MainActivity"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:exported="true">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
@@ -224,7 +230,8 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_decrypt"
             android:parentActivityName=".ui.MainActivity"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:exported="true">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.MainActivity" />
@@ -428,7 +435,8 @@
         <activity
             android:name=".ui.SettingsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_preferences">
+            android:label="@string/title_preferences"
+            android:exported="true">
             <intent-filter>
                 <action android:name="org.sufficientlysecure.keychain.ui.PREFS_GEN" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -477,7 +485,8 @@
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/app_name"
             android:theme="@style/Theme.Keychain.Transparent"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden"
+            android:exported="true">
 
             <!-- IMPORT_KEY without mimeType to allow import with extras Bundle -->
             <intent-filter android:label="@string/intent_import_key">
@@ -498,7 +507,8 @@
         <activity
             android:name=".ui.ImportKeysActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
-            android:label="@string/title_import_keys">
+            android:label="@string/title_import_keys"
+            android:exported="true">
 
             <!-- VIEW with mimeType: Allows to import keys (attached to emails) from email apps  -->
             <intent-filter android:label="@string/intent_import_key">
@@ -752,7 +762,8 @@
             android:name=".ui.RedirectImportKeysActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|keyboard"
             android:label="@string/title_import_keys"
-            android:theme="@style/Theme.Keychain.Transparent">
+            android:theme="@style/Theme.Keychain.Transparent"
+            android:exported="true">
 
             <!-- VIEW with fingerprint scheme:
                       Handle URIs with fingerprints when scanning directly from Barcode Scanner -->
@@ -815,7 +826,8 @@
         <activity
             android:name=".ui.PanicResponderActivity"
             android:noHistory="true"
-            android:theme="@android:style/Theme.NoDisplay">
+            android:theme="@android:style/Theme.NoDisplay"
+            android:exported="true">
             <intent-filter>
                 <action android:name="info.guardianproject.panic.action.TRIGGER" />
 
@@ -928,7 +940,9 @@
             android:name=".remote.ui.RemoteDisplayTransferCodeActivity"
             android:theme="@style/Theme.Keychain.Transparent"/>
 
-        <activity android:name=".ui.DebugActionsActivity">
+        <activity
+            android:name=".ui.DebugActionsActivity"
+            android:exported="false">
             <intent-filter>
                 <action android:name="org.sufficientlysecure.keychain.debug" />
             </intent-filter>
