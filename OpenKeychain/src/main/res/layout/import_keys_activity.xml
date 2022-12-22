@@ -7,16 +7,10 @@
         android:id="@+id/toolbar_include"
         layout="@layout/toolbar_standalone" />
 
-    <!--
-        fitsSystemWindows and layout_marginTop from
-        https://medium.com/@ngdelamo/using-drawerlayout-the-material-way-i-716bba2b5705
-    -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/toolbar_include"
-        android:layout_marginTop="@dimen/minus_statusbar_height"
-        android:fitsSystemWindows="true"
         android:orientation="vertical">
 
         <include layout="@layout/notify_area" />

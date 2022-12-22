@@ -39,7 +39,6 @@ import org.sufficientlysecure.keychain.ui.util.ThemeChanger;
  */
 public abstract class BaseActivity extends AppCompatActivity {
     protected Toolbar mToolbar;
-    protected View mStatusBar;
     protected ThemeChanger mThemeChanger;
 
     @Override
@@ -83,7 +82,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             setSupportActionBar(mToolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        mStatusBar = findViewById(R.id.status_bar);
     }
 
     /**

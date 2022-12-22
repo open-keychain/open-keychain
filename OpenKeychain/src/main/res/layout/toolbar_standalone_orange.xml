@@ -4,7 +4,8 @@
     android:elevation="4dp"
     android:background="@color/android_orange_light"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    >
 
     <include
         android:id="@+id/toolbar_inner_layout"

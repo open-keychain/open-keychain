@@ -3,23 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!--
-        We always have windowTranslucentStatus=true to get under the status bar.
-        Thus this ImageView is the part under the status bar!
-    -->
-    <ImageView
-        android:id="@+id/status_bar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/statusbar_height"
-        android:background="@color/transparent" />
-
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        android:layout_below="@+id/status_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="?attr/actionBarSize"
         android:background="@color/transparent"
+        android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         tools:ignore="UnusedAttribute" />

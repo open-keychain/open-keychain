@@ -55,16 +55,11 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
     public static final String EXTRA_INIT_FRAG = "init_frag";
 
     public Drawer mDrawer;
-    private Toolbar mToolbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_activity);
-
-        mToolbar = findViewById(R.id.toolbar);
-        mToolbar.setTitle(R.string.app_name);
-        setSupportActionBar(mToolbar);
+        setTitle(R.string.app_name);
 
         mDrawer = new DrawerBuilder()
                 .withActivity(this)
@@ -157,6 +152,11 @@ public class MainActivity extends BaseSecurityTokenActivity implements FabContai
             }
         }
 
+    }
+
+    @Override
+    protected void initLayout() {
+        setContentView(R.layout.main_activity);
     }
 
     @Override

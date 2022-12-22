@@ -20,7 +20,6 @@
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
             app:contentScrim="@color/primary"
             app:expandedTitleMarginBottom="102dp"
             app:expandedTitleMarginEnd="128dp"
@@ -31,7 +30,6 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="238dp"
-                android:fitsSystemWindows="true"
                 app:layout_collapseMode="parallax">
 
                 <TextView

@@ -185,7 +185,6 @@ public class ViewKeyAdvActivity extends BaseActivity implements OnPageChangeList
             }
         }
         mToolbar.setBackgroundColor(color);
-        mStatusBar.setBackgroundColor(ViewKeyActivity.getStatusBarBackgroundColor(color));
         slidingTabLayout.setBackgroundColor(color);
 
         invalidateOptionsMenu();

@@ -2,8 +2,6 @@
 <resources>
 
     <style name="Theme.Keychain.Light" parent="Base.Theme.Keychain.Light">
-        <item name="android:windowTranslucentStatus">true</item>
-
         <!-- enable window content transitions -->
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
@@ -14,7 +12,6 @@
     </style>
 
      <style name="Theme.Keychain.Dark" parent="Base.Theme.Keychain.Dark">
-        <item name="android:windowTranslucentStatus">true</item>
         <item name="android:navigationBarColor">#33cccccc</item>
 
         <!-- enable window content transitions -->
