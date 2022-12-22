@@ -88,12 +88,6 @@
             </intent-filter>
         </receiver>
         <!-- broadcast receiver for listening to package uninstalls -->
-        <receiver android:name=".remote.PackageUninstallReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />
-                <data android:scheme="package"/>
-            </intent-filter>
-        </receiver>
         <!-- singleTop for NFC dispatch, see SecurityTokenOperationActivity -->
         <activity
             android:name=".ui.MainActivity"
