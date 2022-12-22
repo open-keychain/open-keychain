@@ -21,6 +21,8 @@ package org.sufficientlysecure.keychain;
 import java.io.File;
 import java.net.Proxy;
 
+import android.app.PendingIntent;
+import android.os.Build;
 import android.os.Environment;
 
 import org.bouncycastle.bcpg.sig.KeyFlags;
@@ -96,6 +98,9 @@ public final class Constants {
     public static final class Path {
         public static final File APP_DIR = new File(Environment.getExternalStorageDirectory(), "OpenKeychain");
     }
+
+    public static final int FLAG_IMMUTABLE_COMPAT =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? PendingIntent.FLAG_IMMUTABLE : 0;
 
     public static final class NotificationIds {
         public static final int PASSPHRASE_CACHE = 1;

@@ -32,6 +32,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.core.app.NotificationCompat;
 import android.view.ContextThemeWrapper;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.NotificationIds;
 import org.sufficientlysecure.keychain.NotificationChannelManager;
 import org.sufficientlysecure.keychain.R;
@@ -199,7 +200,8 @@ public class OrbotRequiredDialogActivity extends FragmentActivity
         startOrbotIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startOrbotIntent.putExtra(OrbotRequiredDialogActivity.EXTRA_START_ORBOT, true);
         PendingIntent startOrbotPi = PendingIntent.getActivity(
-                context, 0, startOrbotIntent, PendingIntent.FLAG_CANCEL_CURRENT
+                context, 0, startOrbotIntent, PendingIntent.FLAG_CANCEL_CURRENT |
+                        Constants.FLAG_IMMUTABLE_COMPAT
         );
 
         builder.addAction(R.drawable.ic_stat_tor,

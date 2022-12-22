@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.DecryptVerifySecurityProblem;
 import org.sufficientlysecure.keychain.remote.ui.RemoteBackupActivity;
 import org.sufficientlysecure.keychain.remote.ui.RemoteDisplayTransferCodeActivity;
@@ -186,13 +186,8 @@ public class ApiPendingIntentFactory {
         intent.putExtra(RemoteSecurityProblemDialogActivity.EXTRA_SECURITY_PROBLEM, securityProblem);
         intent.putExtra(RemoteSecurityProblemDialogActivity.EXTRA_SUPPORT_OVERRIDE, supportOverride);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            //noinspection ResourceType, looks like lint is missing FLAG_IMMUTABLE
-            return PendingIntent.getActivity(mContext, 0, intent,
-                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        } else {
-            return PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        }
+        return PendingIntent.getActivity(mContext, 0, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT | Constants.FLAG_IMMUTABLE_COMPAT);
     }
 
     public PendingIntent createDisplayTransferCodePendingIntent(Passphrase autocryptTransferCode) {
@@ -208,16 +203,10 @@ public class ApiPendingIntentFactory {
             intent.putExtra(RemoteSecurityTokenOperationActivity.EXTRA_DATA, data);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            //noinspection ResourceType, looks like lint is missing FLAG_IMMUTABLE
-            return PendingIntent.getActivity(mContext, 0,
-                    intent,
-                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        } else {
-            return PendingIntent.getActivity(mContext, 0,
-                    intent,
-                    PendingIntent.FLAG_CANCEL_CURRENT);
-        }
+        return PendingIntent.getActivity(mContext, 0,
+                intent,
+                PendingIntent.FLAG_CANCEL_CURRENT | Constants.FLAG_IMMUTABLE_COMPAT
+        );
     }
 
     public PendingIntent createRegisterPendingIntent(Intent data, String packageName, byte[] packageCertificate) {
@@ -226,16 +215,9 @@ public class ApiPendingIntentFactory {
         intent.putExtra(RemoteRegisterActivity.EXTRA_PACKAGE_SIGNATURE, packageCertificate);
         intent.putExtra(RemoteRegisterActivity.EXTRA_DATA, data);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            //noinspection ResourceType, looks like lint is missing FLAG_IMMUTABLE
-            return PendingIntent.getActivity(mContext, 0,
-                    intent,
-                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT
-                            | PendingIntent.FLAG_IMMUTABLE);
-        } else {
-            return PendingIntent.getActivity(mContext, 0,
-                    intent,
-                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
-        }
+        return PendingIntent.getActivity(mContext, 0,
+                intent,
+                PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT
+                        | Constants.FLAG_IMMUTABLE_COMPAT);
     }
 }

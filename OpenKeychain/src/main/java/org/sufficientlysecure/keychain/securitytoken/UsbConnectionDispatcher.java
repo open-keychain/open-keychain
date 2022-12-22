@@ -26,6 +26,7 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 
 import org.sufficientlysecure.keychain.BuildConfig;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransport;
 import timber.log.Timber;
@@ -123,7 +124,8 @@ public class UsbConnectionDispatcher {
 
         Intent answerBroadcastIntent = new Intent(ACTION_USB_PERMISSION);
         answerBroadcastIntent.setPackage(BuildConfig.APPLICATION_ID);
-        PendingIntent answerPendingIntent = PendingIntent.getBroadcast(context, 0, answerBroadcastIntent, 0);
+        PendingIntent answerPendingIntent = PendingIntent.getBroadcast(context, 0, answerBroadcastIntent,
+                Constants.FLAG_IMMUTABLE_COMPAT);
 
         Timber.d("Requesting permission for " + usbDevice.getDeviceName());
         usbManager.requestPermission(usbDevice, answerPendingIntent);
