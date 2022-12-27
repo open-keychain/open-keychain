@@ -82,7 +82,13 @@ public class NfcTransport implements Transport {
 
     @Override
     public boolean isConnected() {
-        return mIsoCard != null && mIsoCard.isConnected();
+        try {
+            return mIsoCard != null && mIsoCard.isConnected();
+        } catch (SecurityException e) {
+            // We sometimes get this here after token is disconnected:
+            // java.lang.SecurityException: Permission Denial: Tag ( ID: 04 17 37 B3 71 24 80 ) is out of date
+            return false;
+        }
     }
 
     /**
