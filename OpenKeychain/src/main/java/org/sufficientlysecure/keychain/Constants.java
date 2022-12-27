@@ -150,7 +150,7 @@ public final class Constants {
             public static final String AUTO = "auto";
             public static final String LIGHT = "light";
             public static final String DARK = "dark";
-            public static final String DEFAULT = Constants.Pref.Theme.LIGHT;
+            public static final String DEFAULT = Constants.Pref.Theme.AUTO;
         }
 
         public static final class ProxyType {

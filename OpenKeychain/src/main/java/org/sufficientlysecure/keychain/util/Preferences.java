@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 import com.google.auto.value.AutoValue;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.Pref;
+import org.sufficientlysecure.keychain.Constants.Pref.Theme;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
 import timber.log.Timber;
 
@@ -229,7 +230,7 @@ public class Preferences {
     }
 
     public String getTheme() {
-        return mSharedPreferences.getString(Pref.THEME, Pref.Theme.LIGHT);
+        return mSharedPreferences.getString(Pref.THEME, Theme.DEFAULT);
     }
 
     public void setTheme(String value) {
