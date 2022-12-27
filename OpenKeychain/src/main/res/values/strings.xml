@@ -314,8 +314,9 @@
     <string name="usage_sign_and_encrypt">"Sign &amp; Encrypt"</string>
     <string name="error">"Error"</string>
     <string name="error_message">"Error: %s"</string>
-    <string name="theme_dark">"Dark"</string>
+    <string name="theme_auto">"Automatic"</string>
     <string name="theme_light">"Light"</string>
+    <string name="theme_dark">"Dark"</string>
     <string name="strip">"Strip it"</string>
 
     <!-- sentences -->

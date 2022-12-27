@@ -7,6 +7,8 @@
         <item name="colorAccent">#2196f3</item>
         <item name="colorBrightToolbar">#dddddd</item>
 
+        <item name="popupOverlayStyle">@style/ThemeOverlay.AppCompat.Light</item>
+
         <item name="colorFab">#2196f3</item>
         <item name="colorFabPressed">#1976d2</item>
         <item name="colorFabText">#fafafa</item>
@@ -47,6 +49,8 @@
         <item name="colorPrimaryDark">#166bb2</item>
         <item name="colorAccent">#2196f3</item>
         <item name="colorBrightToolbar">#808080</item>
+
+        <item name="popupOverlayStyle">@style/ThemeOverlay.AppCompat.Dark</item>
 
         <item name="colorFab">#2196f3</item>
         <item name="colorFabPressed">#1976d2</item>
