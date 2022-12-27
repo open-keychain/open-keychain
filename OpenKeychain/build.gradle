@@ -17,8 +17,8 @@ dependencies {
     implementation 'com.google.zxing:core:3.4.0'
     implementation 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.1'
     implementation 'org.sufficientlysecure:donations:2.5'
-    implementation 'com.squareup.okhttp3:okhttp:3.13.1'
-    implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.9.1'
+    implementation 'com.squareup.okhttp3:okhttp:3.14.9'
+    implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.14.9'
     implementation 'org.apache.james:apache-mime4j-core:0.8.1'
     implementation 'org.apache.james:apache-mime4j-dom:0.8.1'
 
