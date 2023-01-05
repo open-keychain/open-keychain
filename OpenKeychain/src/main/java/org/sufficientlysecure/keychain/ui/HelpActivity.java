@@ -26,9 +26,6 @@ import android.view.View;
 
 import com.astuetz.PagerSlidingTabStrip;
 
-import org.sufficientlysecure.donations.DonationsFragment;
-import org.sufficientlysecure.keychain.BuildConfig;
-import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
@@ -40,15 +37,9 @@ public class HelpActivity extends BaseActivity {
     public static final int TAB_START = 0;
     public static final int TAB_CONFIRM = 1;
     public static final int TAB_FAQ = 2;
-    public static final int TAB_DONATE = 3;
     public static final int TAB_CHANGELOG = 4;
     public static final int TAB_LICENSES = 5;
     public static final int TAB_ABOUT = 6;
-
-    // Google Play
-    private static final String[] GOOGLE_PLAY_CATALOG = new String[]{"keychain.donation.1",
-            "keychain.donation.2", "keychain.donation.3", "keychain.donation.5", "keychain.donation.10",
-            "keychain.donation.50", "keychain.donation.100"};
 
     private PagerTabStripAdapter mTabsAdapter;
 
@@ -91,29 +82,6 @@ public class HelpActivity extends BaseActivity {
         mTabsAdapter.addTab(HelpMarkdownFragment.class, faqBundle,
                 getString(R.string.help_tab_faq));
 
-        Bundle donationsBundle = new Bundle();
-        donationsBundle.putBoolean(DonationsFragment.ARG_DEBUG, Constants.DEBUG);
-        if (BuildConfig.DONATIONS_GOOGLE) {
-            donationsBundle.putBoolean(DonationsFragment.ARG_GOOGLE_ENABLED, true);
-            donationsBundle.putString(DonationsFragment.ARG_GOOGLE_PUBKEY, BuildConfig.GOOGLE_PLAY_PUBKEY);
-            donationsBundle.putStringArray(DonationsFragment.ARG_GOOGLE_CATALOG, GOOGLE_PLAY_CATALOG);
-            donationsBundle.putStringArray(DonationsFragment.ARG_GOOGLE_CATALOG_VALUES,
-                    getResources().getStringArray(R.array.help_donation_google_catalog_values));
-        } else {
-            donationsBundle.putBoolean(DonationsFragment.ARG_PAYPAL_ENABLED, true);
-            donationsBundle.putString(DonationsFragment.ARG_PAYPAL_CURRENCY_CODE, BuildConfig.PAYPAL_CURRENCY_CODE);
-            donationsBundle.putString(DonationsFragment.ARG_PAYPAL_USER, BuildConfig.PAYPAL_USER);
-            donationsBundle.putString(DonationsFragment.ARG_PAYPAL_ITEM_NAME,
-                    getString(R.string.help_donation_paypal_item));
-            donationsBundle.putBoolean(DonationsFragment.ARG_FLATTR_ENABLED, true);
-            donationsBundle.putString(DonationsFragment.ARG_FLATTR_PROJECT_URL, BuildConfig.FLATTR_PROJECT_URL);
-            donationsBundle.putString(DonationsFragment.ARG_FLATTR_URL, BuildConfig.FLATTR_URL);
-            donationsBundle.putBoolean(DonationsFragment.ARG_BITCOIN_ENABLED, true);
-            donationsBundle.putString(DonationsFragment.ARG_BITCOIN_ADDRESS, BuildConfig.BITCOIN_ADDRESS);
-        }
-        mTabsAdapter.addTab(DonationsFragment.class, donationsBundle,
-                getString(R.string.help_tab_donations));
-
         Bundle changelogBundle = new Bundle();
         changelogBundle.putInt(HelpMarkdownFragment.ARG_MARKDOWN_RES, R.raw.help_changelog);
         mTabsAdapter.addTab(HelpMarkdownFragment.class, changelogBundle,
@@ -144,19 +112,4 @@ public class HelpActivity extends BaseActivity {
         intent.putExtra(HelpActivity.EXTRA_SELECTED_TAB, code);
         context.startActivity(intent);
     }
-
-    /**
-     * Needed for Google Play In-app Billing. It uses startIntentSenderForResult(). The result is not propagated to
-     * the Fragment like in startActivityForResult(). Thus we need to propagate manually to our Fragment.
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        Fragment fragment = mTabsAdapter.getRegisteredFragment(TAB_DONATE);
-        if (fragment != null) {
-            fragment.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
 }

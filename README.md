@@ -51,18 +51,16 @@ Expand the Tools directory and select "Android SDK Build-tools (Version 27.0.3)"
 Expand the Extras directory and install "Android Support Library", as well as "Local Maven repository for Support Libraries"
 Select SDK Platform for API levels 27.
 5. Export ANDROID_HOME pointing to your Android SDK
-6. Execute ``./gradlew assembleFdroidDebug``
-7. You can install the app with ``adb install -r OpenKeychain/build/outputs/apk/OpenKeychain-fdroid-debug.apk``
-
-The "google" flavor is only used to include donations via Play Store, for development the "fdroid" flavor should be used.
+6. Execute ``./gradlew assembleDebug``
+7. You can install the app with ``adb install -r OpenKeychain/build/outputs/apk/OpenKeychain-debug.apk``
 
 ### Run Tests
 1. Use OpenJDK instead of Oracle JDK
-2. Execute ``./gradlew clean testFdroidDebugUnitTest --continue``
+2. Execute ``./gradlew clean testDebugUnitTest --continue``
 
 ### Run Jacoco Test Coverage
 1. Use OpenJDK instead of Oracle JDK
-2. Execute ``./gradlew clean testFdroidDebugUnitTest jacocoTestReport``
+2. Execute ``./gradlew clean testDebugUnitTest jacocoTestReport``
 3. Report is here: OpenKeychain/build/reports/jacoco/jacocoTestReport/html/index.html
 
 ### Development with Android Studio

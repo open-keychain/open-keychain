@@ -16,7 +16,6 @@ dependencies {
     implementation 'com.journeyapps:zxing-android-embedded:3.4.0'
     implementation 'com.google.zxing:core:3.4.0'
     implementation 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.1'
-    implementation 'org.sufficientlysecure:donations:2.5'
     implementation 'com.squareup.okhttp3:okhttp:3.14.9'
     implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.14.9'
     implementation 'org.apache.james:apache-mime4j-core:0.8.1'
@@ -168,37 +167,6 @@ android {
             // Enable code coverage (Jacoco)
             testCoverageEnabled true
             matchingFallbacks = ['debug']    // instead use this
-        }
-    }
-
-    flavorDimensions("freedom")
-
-    productFlavors {
-        google {
-            dimension "freedom"
-            buildConfigField "boolean", "DONATIONS_GOOGLE", "true"
-            buildConfigField "String", "GOOGLE_PLAY_PUBKEY", "\"MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwX9SOQ/EL4u5pvbYmYMagN5DDenuSaMaVs2cVPzqxMaIHp6/9/nGuzj2/CpcB4ASd2vvfLlE9tZRkPmFTULWc4Sp4OR+JenQufZZr7Y8WGPkFyqd+dOxhIqKKLtH1QuqSyhby3gEMlWzydJY3rHXlH2Bpu65Uroawq76nynnELXNlzsCM231XWgj4HA87qxv9hSWLCpu16wKxZIX3d6mwZLZmGF+xYJAzVr291oDYYl+h6BDoIcAfmQFsv5MexNwBFO+TLVrvL0e5qdGHZxwwD1/68VSY8FxAEfM+yq7jovdVSdcXlJQjZrV5TRDdFWrtEB6njGA3YZWXP6B6MMMoQIDAQAB\""
-            buildConfigField "String", "PAYPAL_USER", "null"
-            buildConfigField "String", "PAYPAL_CURRENCY_CODE", "null"
-            buildConfigField "String", "BITCOIN_ADDRESS", "null"
-            buildConfigField "String", "FLATTR_PROJECT_URL", "null"
-            buildConfigField "String", "FLATTR_URL", "null"
-        }
-        fdroid {
-            dimension "freedom"
-            buildConfigField "boolean", "DONATIONS_GOOGLE", "false"
-            buildConfigField "String", "GOOGLE_PLAY_PUBKEY", "null"
-            buildConfigField "String", "PAYPAL_USER", "\"android@schuermann.eu\""
-            buildConfigField "String", "PAYPAL_CURRENCY_CODE", "\"EUR\""
-            buildConfigField "String", "BITCOIN_ADDRESS", "\"1LY6Hs6SurATjfxnihzLMDUMUuMxvQ4aEi\""
-            buildConfigField "String", "FLATTR_PROJECT_URL", "\"https://www.openkeychain.org\""
-            buildConfigField "String", "FLATTR_URL", "\"flattr.com/submit/auto?fid=4vzg0p&url=https%3A%2F%2Fwww.openkeychain.org\""
-        }
-    }
-
-    variantFilter { variant ->
-        if(variant.buildType.name == 'debug' && variant.getFlavors().get(0).name == 'google') {
-            variant.setIgnore(true)
         }
     }
 
