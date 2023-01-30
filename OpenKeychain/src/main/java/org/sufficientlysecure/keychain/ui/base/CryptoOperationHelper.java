@@ -284,6 +284,11 @@ public class CryptoOperationHelper<T extends Parcelable, S extends OperationResu
         KeychainServiceTask keychainServiceTask = KeychainServiceTask.create(activity);
         OperationCallback operationCallback = new OperationCallback() {
             @Override
+            public boolean haveProgressDialog() {
+                return (mProgressMessageResource != null);
+            }
+
+            @Override
             public void operationFinished(OperationResult result) {
                 if (progressDialogManager != null) {
                     progressDialogManager.dismissAllowingStateLoss();

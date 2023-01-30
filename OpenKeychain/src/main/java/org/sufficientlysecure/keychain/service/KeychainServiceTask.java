@@ -25,6 +25,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Parcelable;
+import android.os.SystemClock;
 
 import androidx.core.os.CancellationSignal;
 import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
@@ -76,8 +77,12 @@ public class KeychainServiceTask {
                     @Override
                     protected OperationResult doInBackground(Void... voids) {
                         BaseOperation op;
-
-                        if (inputParcel instanceof SignEncryptParcel) {
+                        
+                        // Prevent Dialog from calling close before it is created
+                        if(operationCallback.haveProgressDialog())
+                            SystemClock.sleep(200);
+                        
+                            if (inputParcel instanceof SignEncryptParcel) {
                             op = new SignEncryptOperation(context, keyRepository, asyncProgressable,
                                     operationCancelledBoolean);
                         } else if (inputParcel instanceof PgpDecryptVerifyInputParcel) {
@@ -163,6 +168,7 @@ public class KeychainServiceTask {
     }
 
     public interface OperationCallback {
+        boolean haveProgressDialog();
         void setProgress(Integer message, int current, int total);
         void setPreventCancel();
         void operationFinished(OperationResult data);
