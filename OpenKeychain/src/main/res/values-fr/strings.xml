@@ -1729,7 +1729,7 @@
   <string name="key_import_text">Pour utiliser une clé de chiffrement de bout en bout, elle doit être importée dans OpenKeychain.</string>
   <string name="key_import_text_autocrypt_setup_msg">Pour importer votre configuration existante d’un autre appareil, vous pouvez aussi ouvrir un message de configuration Autocrypt dans %s.</string>
   <string name="button_goto_openkeychain">Aller dans OpenKeychain</string>
-  <string name="backup_code_checkbox">J’ai pris ce code de sauvegarde par écrit. Sans lui, je ne pourrai pas à restaurer la sauvegarde.</string>
+  <string name="backup_code_checkbox">J’ai pris ce code de sauvegarde par écrit. Sans lui, je ne pourrai pas restaurer la sauvegarde.</string>
   <string name="msg_get_query_not_implemented">Le serveur ne prend pas en charge la requête actuelle. Certains serveurs n’acceptent que les adresses de courriel. Veuillez la redéfinir ou essayer un autre serveur.</string>
   <string name="snack_keylist_clipboard_title">Des données de clé ont été trouvées dans le presse-papiers</string>
   <string name="snack_keylist_clipboard_action">Visualiser</string>
