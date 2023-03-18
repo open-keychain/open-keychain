@@ -165,9 +165,9 @@ public class AddSubkeyDialogFragment extends DialogFragment {
             TwoLineArrayAdapter adapter = new TwoLineArrayAdapter(context,
                     android.R.layout.simple_spinner_item, choices);
             mKeyTypeSpinner.setAdapter(adapter);
-            // make RSA 3072 the default
+            // make EDDSA the default
             for (int i = 0; i < choices.size(); ++i) {
-                if (choices.get(i).getId() == SupportedKeyType.RSA_3072) {
+                if (choices.get(i).getId() == SupportedKeyType.EDDSA) {
                     mKeyTypeSpinner.setSelection(i);
                     break;
                 }
