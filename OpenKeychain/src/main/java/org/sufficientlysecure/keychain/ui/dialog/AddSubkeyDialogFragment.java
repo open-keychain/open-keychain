@@ -197,19 +197,18 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                     mUsageNone.setChecked(true);
                 }
 
-                if (keyType == SupportedKeyType.ECC_P521 || keyType == SupportedKeyType.ECC_P256) {
-                    mUsageSignAndEncrypt.setEnabled(false);
-                    if (mWillBeMasterKey) {
-                        mUsageEncrypt.setEnabled(false);
-                    }
-                } else if (keyType == SupportedKeyType.EDDSA) {
-                    mUsageSignAndEncrypt.setEnabled(false);
-                    mUsageEncrypt.setEnabled(false);
-                } else {
-                    // need to enable if previously disabled for ECC masterkey
-                    mUsageEncrypt.setEnabled(true);
-                    mUsageSignAndEncrypt.setEnabled(true);
+                boolean signAndEncryptAvailable = true;
+                boolean encryptAvailable = true;
+                switch (keyType) {
+                    case ECC_P256:
+                    case ECC_P521:
+                    case EDDSA:
+                        signAndEncryptAvailable = false;
+                        if (mWillBeMasterKey) encryptAvailable = false;
+                        break;
                 }
+                mUsageSignAndEncrypt.setEnabled(signAndEncryptAvailable);
+                mUsageEncrypt.setEnabled(encryptAvailable);
             }
 
             @Override
