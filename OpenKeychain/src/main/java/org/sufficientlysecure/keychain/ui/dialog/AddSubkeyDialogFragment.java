@@ -262,6 +262,10 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                             curve = Curve.NIST_P521;
                             break;
                         }
+                        case EDDSA: {
+                            curve = Curve.CV25519;
+                            break;
+                        }
                     }
 
                     // set algorithm
@@ -283,7 +287,11 @@ public class AddSubkeyDialogFragment extends DialogFragment {
                             break;
                         }
                         case EDDSA: {
-                            algorithm = Algorithm.EDDSA;
+                            if(mUsageEncrypt.isChecked()) {
+                                algorithm = Algorithm.ECDH;
+                            } else {
+                                algorithm = Algorithm.EDDSA;
+                            }
                         }
                     }
 

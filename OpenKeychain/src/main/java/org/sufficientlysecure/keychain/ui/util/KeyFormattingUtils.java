@@ -188,6 +188,8 @@ public class KeyFormattingUtils {
                 return "NIST P-384";
             case NIST_P521:
                 return "NIST P-521";
+            case CV25519:
+                return "Curve25519";
 
             /* see SaveKeyringParcel
             case BRAINPOOL_P256:
