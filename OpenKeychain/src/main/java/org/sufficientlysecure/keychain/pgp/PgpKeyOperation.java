@@ -269,9 +269,14 @@ public class PgpKeyOperation {
                         return null;
                     }
                     progress(R.string.progress_generating_ecdh, 30);
-                    ECGenParameterSpec ecParamSpec = getEccParameterSpec(add.getCurve());
-                    keyGen = KeyPairGenerator.getInstance("ECDH", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
-                    keyGen.initialize(ecParamSpec, new SecureRandom());
+                    if (add.getCurve() == Curve.CV25519) {
+                        keyGen = KeyPairGenerator.getInstance("X25519");
+                        keyGen.initialize(255);
+                    } else {
+                        ECGenParameterSpec ecParamSpec = getEccParameterSpec(add.getCurve());
+                        keyGen = KeyPairGenerator.getInstance("ECDH", Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+                        keyGen.initialize(ecParamSpec, new SecureRandom());
+                    }
 
                     algorithm = PGPPublicKey.ECDH;
                     break;
