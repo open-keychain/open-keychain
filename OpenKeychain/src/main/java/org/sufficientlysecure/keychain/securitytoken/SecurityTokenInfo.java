@@ -117,7 +117,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
 
     public enum TokenType {
         YUBIKEY_NEO, YUBIKEY_4_5, FIDESMO, NITROKEY_PRO, NITROKEY_STORAGE, NITROKEY_START_OLD,
-        NITROKEY_START_1_25_AND_NEWER, GNUK_OLD, GNUK_1_25_AND_NEWER, LEDGER_NANO_S, SECALOT, UNKNOWN
+        NITROKEY_START_1_25_AND_NEWER, NITROKEY_3, GNUK_OLD, GNUK_1_25_AND_NEWER, LEDGER_NANO_S, SECALOT, UNKNOWN
     }
 
     public static final Set<TokenType> SUPPORTED_USB_TOKENS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
@@ -127,6 +127,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
             TokenType.NITROKEY_STORAGE,
             TokenType.NITROKEY_START_OLD,
             TokenType.NITROKEY_START_1_25_AND_NEWER,
+            TokenType.NITROKEY_3,
             TokenType.GNUK_OLD,
             TokenType.GNUK_1_25_AND_NEWER,
             TokenType.LEDGER_NANO_S,
@@ -139,6 +140,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
             TokenType.NITROKEY_PRO,
             TokenType.NITROKEY_STORAGE,
             TokenType.NITROKEY_START_1_25_AND_NEWER,
+            TokenType.NITROKEY_3,
             TokenType.GNUK_1_25_AND_NEWER,
             TokenType.SECALOT
     )));
