@@ -47,6 +47,53 @@ public class CcidTransceiver {
     private static final int COMMAND_STATUS_SUCCESS = 0;
     private static final int COMMAND_STATUS_TIME_EXTENSION_RQUESTED = 2;
 
+    /**
+     * Level Parameter: APDU is a single command.
+     *
+     * "the command APDU begins and ends with this command"
+     * -- DWG Smart-Card USB Integrated Circuit(s) Card Devices rev 1.0
+     *    § 6.1.1.3
+     */
+    public static final short LEVEL_PARAM_START_SINGLE_CMD_APDU = 0x0000;
+
+    /**
+     * Level Parameter: First APDU in a multi-command APDU.
+     *
+     * "the command APDU begins with this command, and continue in the
+     * next PC_to_RDR_XfrBlock"
+     * -- DWG Smart-Card USB Integrated Circuit(s) Card Devices rev 1.0
+     *    § 6.1.1.3
+     */
+    public static final short LEVEL_PARAM_START_MULTI_CMD_APDU = 0x0001;
+
+    /**
+     * Level Parameter: Final APDU in a multi-command APDU.
+     *
+     * "this abData field continues a command APDU and ends the command APDU"
+     * -- DWG Smart-Card USB Integrated Circuit(s) Card Devices rev 1.0
+     *    § 6.1.1.3
+     */
+    public static final short LEVEL_PARAM_END_MULTI_CMD_APDU = 0x0002;
+
+    /**
+     * Level Parameter: Next command in a multi-command APDU.
+     *
+     * "the abData field continues a command APDU and another block is to follow"
+     * -- DWG Smart-Card USB Integrated Circuit(s) Card Devices rev 1.0
+     *    § 6.1.1.3
+     */
+    public static final short LEVEL_PARAM_CONTINUE_MULTI_CMD_APDU = 0x0003;
+
+    /**
+     * Level Parameter: Request the device continue sending APDU.
+     *
+     * "empty abData field, continuation of response APDU is expected in the next
+     * RDR_to_PC_DataBlock"
+     * -- DWG Smart-Card USB Integrated Circuit(s) Card Devices rev 1.0
+     *    § 6.1.1.3
+     */
+    public static final short LEVEL_PARAM_CONTINUE_RESPONSE = 0x0010;
+
     private static final int SLOT_NUMBER = 0x00;
 
     private static final int ICC_STATUS_SUCCESS = 0;
@@ -152,6 +199,27 @@ public class CcidTransceiver {
      */
     @WorkerThread
     public synchronized CcidDataBlock sendXfrBlock(byte[] payload) throws UsbTransportException {
+        return sendXfrBlock(payload, LEVEL_PARAM_START_SINGLE_CMD_APDU);
+    }
+
+    /**
+     * Receives a continued XfrBlock. Should be called when a multiblock response is indicated
+     * 6.1.4 PC_to_RDR_XfrBlock
+     */
+    @WorkerThread
+    public synchronized CcidDataBlock receiveContinuedResponse() throws UsbTransportException {
+        return sendXfrBlock(new byte[0], LEVEL_PARAM_CONTINUE_RESPONSE);
+    }
+
+    /**
+     * Transmits XfrBlock
+     * 6.1.4 PC_to_RDR_XfrBlock
+     *
+     * @param payload payload to transmit
+     * @param levelParam Level parameter
+     */
+    @WorkerThread
+    public synchronized CcidDataBlock sendXfrBlock(byte[] payload, short levelParam) throws UsbTransportException {
         long startTime = SystemClock.elapsedRealtime();
 
         int l = payload.length;
@@ -161,8 +229,9 @@ public class CcidTransceiver {
                 (byte) l, (byte) (l >> 8), (byte) (l >> 16), (byte) (l >> 24),
                 SLOT_NUMBER,
                 sequenceNumber,
-                0x00, // block waiting time
-                0x00, 0x00 // level parameters
+                (byte) 0x00, // block waiting time
+                (byte)(levelParam & 0x00ff),
+                (byte)(levelParam >> 8)
         };
         byte[] data = Arrays.concatenate(headerData, payload);
 
