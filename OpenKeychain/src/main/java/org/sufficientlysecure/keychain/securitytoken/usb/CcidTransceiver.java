@@ -47,6 +47,33 @@ public class CcidTransceiver {
     private static final int COMMAND_STATUS_SUCCESS = 0;
     private static final int COMMAND_STATUS_TIME_EXTENSION_RQUESTED = 2;
 
+    /**
+     * the command APDU begins and ends with this command
+     */
+    public static final short LEVEL_PARAM_START_SINGLE_CMD_APDU = 0x0000;
+
+    /**
+     * the command APDU begins with this command, and continue in the
+     * next PC_to_RDR_XfrBlock
+     */
+    public static final short LEVEL_PARAM_START_MULTI_CMD_APDU = 0x0001;
+
+    /**
+     * this abData field continues a command APDU and ends the command APDU
+     */
+    public static final short LEVEL_PARAM_END_MULTI_CMD_APDU = 0x0002;
+
+    /**
+     * the abData field continues a command APDU and another block is to follow
+     */
+    public static final short LEVEL_PARAM_CONTINUE_MULTI_CMD_APDU = 0x0003;
+
+    /**
+     * empty abData field, continuation of response APDU is expected in the
+     * next RDR_to_PC_DataBlock
+     */
+    public static final short LEVEL_PARAM_CONTINUE_RESPONSE = 0x0010;
+
     private static final int SLOT_NUMBER = 0x00;
 
     private static final int ICC_STATUS_SUCCESS = 0;
@@ -152,6 +179,19 @@ public class CcidTransceiver {
      */
     @WorkerThread
     public synchronized CcidDataBlock sendXfrBlock(byte[] payload) throws UsbTransportException {
+        return sendXfrBlock(payload, (byte)0x00, LEVEL_PARAM_START_SINGLE_CMD_APDU);
+    }
+
+    /**
+     * Transmits XfrBlock
+     * 6.1.4 PC_to_RDR_XfrBlock
+     *
+     * @param payload payload to transmit
+     * @param blockWaitTime Block waiting time
+     * @param levelParam Level parameter
+     */
+    @WorkerThread
+    public synchronized CcidDataBlock sendXfrBlock(byte[] payload, byte blockWaitingTime, short levelParam) throws UsbTransportException {
         long startTime = SystemClock.elapsedRealtime();
 
         int l = payload.length;
@@ -161,8 +201,9 @@ public class CcidTransceiver {
                 (byte) l, (byte) (l >> 8), (byte) (l >> 16), (byte) (l >> 24),
                 SLOT_NUMBER,
                 sequenceNumber,
-                0x00, // block waiting time
-                0x00, 0x00 // level parameters
+                blockWaitingTime,
+                (byte)(levelParam >> 8),
+                (byte)(levelParam & 0x00ff)
         };
         byte[] data = Arrays.concatenate(headerData, payload);
 
