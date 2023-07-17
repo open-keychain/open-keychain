@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain.securitytoken.usb.tpdu;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import androidx.annotation.NonNull;
 
@@ -26,6 +28,16 @@ import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransportProtocol;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 
 public class T1ShortApduProtocol implements CcidTransportProtocol {
+    /**
+     * The response APDU begins with this command and is to continue
+     */
+    public static final byte CHAIN_PARAM_APDU_MULTIBLOCK_START = 1;
+
+    /**
+     * This abData field continues the response APDU and another block is to follow
+     */
+    public static final byte CHAIN_PARAM_APDU_MULTIBLOCK_MORE = 3;
+
     private CcidTransceiver ccidTransceiver;
 
     public void connect(@NonNull CcidTransceiver transceiver) throws UsbTransportException {
@@ -35,7 +47,29 @@ public class T1ShortApduProtocol implements CcidTransportProtocol {
 
     @Override
     public byte[] transceive(@NonNull final byte[] apdu) throws UsbTransportException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
         CcidDataBlock response = ccidTransceiver.sendXfrBlock(apdu);
-        return response.getData();
+
+        try {
+            output.write(response.getData());
+        } catch (IOException e) {
+            throw new UsbTransportException("Failed to write block to temporary buffer", e);
+        }
+
+        while (
+                (response.getChainParameter() == CHAIN_PARAM_APDU_MULTIBLOCK_START)
+                || (response.getChainParameter() == CHAIN_PARAM_APDU_MULTIBLOCK_MORE)
+        ) {
+            response = ccidTransceiver.sendXfrBlock(
+                new byte[0], (byte)0,
+                CcidTransceiver.LEVEL_PARAM_CONTINUE_RESPONSE
+            );
+            try {
+                output.write(response.getData());
+            } catch (IOException e) {
+                throw new UsbTransportException("Failed to write block to temporary buffer", e);
+            }
+        }
+        return output.toByteArray();
     }
 }
