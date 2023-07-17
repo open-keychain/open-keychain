@@ -202,8 +202,8 @@ public class CcidTransceiver {
                 SLOT_NUMBER,
                 sequenceNumber,
                 blockWaitingTime,
-                (byte)(levelParam >> 8),
-                (byte)(levelParam & 0x00ff)
+                (byte)(levelParam & 0x00ff),
+                (byte)(levelParam >> 8)
         };
         byte[] data = Arrays.concatenate(headerData, payload);
 
