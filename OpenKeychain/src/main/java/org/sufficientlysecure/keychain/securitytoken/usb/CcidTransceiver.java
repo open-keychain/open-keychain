@@ -247,7 +247,16 @@ public class CcidTransceiver {
     }
 
     private CcidDataBlock receiveDataBlockImmediate(byte expectedSequenceNumber) throws UsbTransportException {
+        Timber.d("Receive data block immediate seq=" + expectedSequenceNumber);
         int readBytes = usbConnection.bulkTransfer(usbBulkIn, inputBuffer, inputBuffer.length, DEVICE_COMMUNICATE_TIMEOUT_MILLIS);
+        Timber.d("Received " + readBytes + " bytes: " + toHexString(inputBuffer));
+        if (readBytes == 0) {
+            Timber.d("Poking device again due to zero-sized read");
+            sendRaw(new byte[0], 0, 0);
+            readBytes = usbConnection.bulkTransfer(usbBulkIn, inputBuffer, inputBuffer.length, DEVICE_COMMUNICATE_TIMEOUT_MILLIS);
+            Timber.d("(on retry) Received " + readBytes + " bytes: " + toHexString(inputBuffer));
+        }
+
         if (readBytes < CCID_HEADER_LENGTH) {
             throw new UsbTransportException("USB-CCID error - failed to receive CCID header");
         }
