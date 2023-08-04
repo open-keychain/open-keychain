@@ -48,29 +48,49 @@ public class CcidTransceiver {
     private static final int COMMAND_STATUS_TIME_EXTENSION_RQUESTED = 2;
 
     /**
-     * the command APDU begins and ends with this command
+     * Level Parameter: APDU is a single command.
+     *
+     * "the command APDU begins and ends with this command"
+     * -- DWG Smart-Card USB Integrated Circuit(s) Card Devices rev 1.0
+     *    § 6.1.1.3
      */
     public static final short LEVEL_PARAM_START_SINGLE_CMD_APDU = 0x0000;
 
     /**
-     * the command APDU begins with this command, and continue in the
-     * next PC_to_RDR_XfrBlock
+     * Level Parameter: First APDU in a multi-command APDU.
+     *
+     * "the command APDU begins with this command, and continue in the
+     * next PC_to_RDR_XfrBlock"
+     * -- DWG Smart-Card USB Integrated Circuit(s) Card Devices rev 1.0
+     *    § 6.1.1.3
      */
     public static final short LEVEL_PARAM_START_MULTI_CMD_APDU = 0x0001;
 
     /**
-     * this abData field continues a command APDU and ends the command APDU
+     * Level Parameter: Final APDU in a multi-command APDU.
+     *
+     * "this abData field continues a command APDU and ends the command APDU"
+     * -- DWG Smart-Card USB Integrated Circuit(s) Card Devices rev 1.0
+     *    § 6.1.1.3
      */
     public static final short LEVEL_PARAM_END_MULTI_CMD_APDU = 0x0002;
 
     /**
-     * the abData field continues a command APDU and another block is to follow
+     * Level Parameter: Next command in a multi-command APDU.
+     *
+     * "the abData field continues a command APDU and another block is to follow"
+     * -- DWG Smart-Card USB Integrated Circuit(s) Card Devices rev 1.0
+     *    § 6.1.1.3
      */
     public static final short LEVEL_PARAM_CONTINUE_MULTI_CMD_APDU = 0x0003;
 
     /**
-     * empty abData field, continuation of response APDU is expected in the
-     * next RDR_to_PC_DataBlock
+     * Level Parameter: Request the device continue sending APDU.
+     *
+     * "empty abData field, continuation of response APDU is expected in the next
+     * RDR_to_PC_DataBlock"
+     * -- DWG Smart-Card USB Integrated Circuit(s) Card Devices rev 1.0
+     *    § 6.1.1.3
      */
     public static final short LEVEL_PARAM_CONTINUE_RESPONSE = 0x0010;
 
