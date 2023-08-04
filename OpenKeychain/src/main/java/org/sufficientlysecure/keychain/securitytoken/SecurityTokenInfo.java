@@ -127,7 +127,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
             TokenType.NITROKEY_STORAGE,
             TokenType.NITROKEY_START_OLD,
             TokenType.NITROKEY_START_1_25_AND_NEWER,
-	    TokenType.NITROKEY_3,
+            TokenType.NITROKEY_3,
             TokenType.GNUK_OLD,
             TokenType.GNUK_1_25_AND_NEWER,
             TokenType.LEDGER_NANO_S,
@@ -140,7 +140,7 @@ public abstract class SecurityTokenInfo implements Parcelable {
             TokenType.NITROKEY_PRO,
             TokenType.NITROKEY_STORAGE,
             TokenType.NITROKEY_START_1_25_AND_NEWER,
-	    TokenType.NITROKEY_3,
+            TokenType.NITROKEY_3,
             TokenType.GNUK_1_25_AND_NEWER,
             TokenType.SECALOT
     )));
