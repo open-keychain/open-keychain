@@ -62,6 +62,13 @@ public class T1ShortApduProtocol implements CcidTransportProtocol {
             throw new UsbTransportException("Failed to write block to temporary buffer", e);
         }
 
+        /*
+         * Handle multi-block responses in accordance with DWG Smart-Card USB Integrated Circut(s)
+         * Card Devices v1.0 § 6.1.1.  If we receive a response with a chain parameter indicating
+         * more data is to come, then instruct the device to continue and append the response to our
+         * output buffer.
+         */
+
         while (
                 (response.getChainParameter() == CHAIN_PARAM_APDU_MULTIBLOCK_START)
                 || (response.getChainParameter() == CHAIN_PARAM_APDU_MULTIBLOCK_MORE)
