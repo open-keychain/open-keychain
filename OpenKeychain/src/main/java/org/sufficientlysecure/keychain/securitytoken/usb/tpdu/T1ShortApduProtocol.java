@@ -74,8 +74,7 @@ public class T1ShortApduProtocol implements CcidTransportProtocol {
                 || (response.getChainParameter() == CHAIN_PARAM_APDU_MULTIBLOCK_MORE)
         ) {
             response = ccidTransceiver.sendXfrBlock(
-                new byte[0], (byte)0,
-                CcidTransceiver.LEVEL_PARAM_CONTINUE_RESPONSE
+                new byte[0], (byte)0, CcidTransceiver.LEVEL_PARAM_CONTINUE_RESPONSE
             );
             try {
                 output.write(response.getData());
