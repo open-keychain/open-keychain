@@ -29,12 +29,18 @@ import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 
 public class T1ShortApduProtocol implements CcidTransportProtocol {
     /**
-     * The response APDU begins with this command and is to continue
+     * Chain Parameter: Start of multi-command APDU response.
+     *
+     * "The response APDU begins with this command and is to continue"
+     * -- DWG Smart-Card USB Integrated Circuit(s) Card Devices v1.0 § 6.1.1.3
      */
     public static final byte CHAIN_PARAM_APDU_MULTIBLOCK_START = 1;
 
     /**
-     * This abData field continues the response APDU and another block is to follow
+     * Chain Parameter: Continued multi-command APDU response with more data.
+     *
+     * "This abData field continues the response APDU and another block is to follow"
+     * -- DWG Smart-Card USB Integrated Circuit(s) Card Devices v1.0 § 6.1.1.3
      */
     public static final byte CHAIN_PARAM_APDU_MULTIBLOCK_MORE = 3;
 
