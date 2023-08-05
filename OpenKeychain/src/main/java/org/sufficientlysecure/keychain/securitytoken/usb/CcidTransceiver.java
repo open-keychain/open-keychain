@@ -267,6 +267,12 @@ public class CcidTransceiver {
     }
 
     private CcidDataBlock receiveDataBlockImmediate(byte expectedSequenceNumber) throws UsbTransportException {
+        /*
+         * Some USB CCID devices (notably NitroKey 3) may time-out and need a subsequent poke to
+         * carry on communications.  No particular reason why the number 3 was chosen.  If we get a
+         * zero-sized reply (or a time-out), we try again.  Clamped retries prevent an infinite loop
+         * if things really turn sour.
+         */
         int attempts = 3;
         Timber.d("Receive data block immediate seq=" + expectedSequenceNumber);
         int readBytes;
