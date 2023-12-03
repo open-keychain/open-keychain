@@ -134,29 +134,6 @@ public class PassphraseDialogActivity extends FragmentActivity {
         frag.show(getSupportFragmentManager(), "passphraseDialog");
     }
 
-    @Override
-    protected void onResumeFragments() {
-        super.onResumeFragments();
-
-        /* Show passphrase dialog to cache a new passphrase the user enters for using it later for
-         * encryption. Based on mSecretKeyId it asks for a passphrase to open a private key or it asks
-         * for a symmetric passphrase
-         */
-        /*PassphraseDialogFragment frag = new PassphraseDialogFragment();
-        frag.setArguments(getIntent().getExtras());
-        frag.show(getSupportFragmentManager(), "passphraseDialog");*/
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        DialogFragment dialog = (DialogFragment) getSupportFragmentManager().findFragmentByTag("passphraseDialog");
-        /*if (dialog != null) {
-            dialog.dismiss();
-        }*/
-    }
-
     public static class PassphraseDialogFragment extends DialogFragment implements TextView.OnEditorActionListener {
         private EditText mPassphraseEditText;
         private TextView mPassphraseText;
