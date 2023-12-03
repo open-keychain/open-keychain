@@ -129,6 +129,9 @@ public class PassphraseDialogActivity extends FragmentActivity {
             finish();
         }
 
+        PassphraseDialogFragment frag = new PassphraseDialogFragment();
+        frag.setArguments(getIntent().getExtras());
+        frag.show(getSupportFragmentManager(), "passphraseDialog");
     }
 
     @Override
@@ -139,9 +142,9 @@ public class PassphraseDialogActivity extends FragmentActivity {
          * encryption. Based on mSecretKeyId it asks for a passphrase to open a private key or it asks
          * for a symmetric passphrase
          */
-        PassphraseDialogFragment frag = new PassphraseDialogFragment();
+        /*PassphraseDialogFragment frag = new PassphraseDialogFragment();
         frag.setArguments(getIntent().getExtras());
-        frag.show(getSupportFragmentManager(), "passphraseDialog");
+        frag.show(getSupportFragmentManager(), "passphraseDialog");*/
     }
 
     @Override
@@ -149,9 +152,9 @@ public class PassphraseDialogActivity extends FragmentActivity {
         super.onPause();
 
         DialogFragment dialog = (DialogFragment) getSupportFragmentManager().findFragmentByTag("passphraseDialog");
-        if (dialog != null) {
+        /*if (dialog != null) {
             dialog.dismiss();
-        }
+        }*/
     }
 
     public static class PassphraseDialogFragment extends DialogFragment implements TextView.OnEditorActionListener {
