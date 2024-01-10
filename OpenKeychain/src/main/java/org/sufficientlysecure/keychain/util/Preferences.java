@@ -350,11 +350,6 @@ public class Preferences {
         return mSharedPreferences.getBoolean(Pref.SYNC_KEYSERVER, true);
     }
 
-    public UUID getKeyserverSyncWorkUuid() {
-        String uuidString = mSharedPreferences.getString(Pref.SYNC_WORK_UUID, null);
-        return uuidString != null ? UUID.fromString(uuidString) : null;
-    }
-
     public void setKeyserverSyncScheduled(UUID uuid) {
         String value = uuid != null ? uuid.toString() : null;
         mSharedPreferences.edit().putString(Pref.SYNC_WORK_UUID, value).apply();
