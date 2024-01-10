@@ -18,28 +18,26 @@
 package org.sufficientlysecure.keychain.daos;
 
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
-import android.database.Cursor;
-import androidx.annotation.Nullable;
 
-import com.squareup.sqldelight.SqlDelightQuery;
-import org.sufficientlysecure.keychain.AutocryptPeersModel.DeleteByIdentifier;
-import org.sufficientlysecure.keychain.AutocryptPeersModel.DeleteByMasterKeyId;
-import org.sufficientlysecure.keychain.AutocryptPeersModel.InsertPeer;
-import org.sufficientlysecure.keychain.AutocryptPeersModel.UpdateGossipKey;
-import org.sufficientlysecure.keychain.AutocryptPeersModel.UpdateKey;
-import org.sufficientlysecure.keychain.AutocryptPeersModel.UpdateLastSeen;
+import androidx.annotation.Nullable;
+import org.sufficientlysecure.keychain.AutocryptPeersQueries;
+import org.sufficientlysecure.keychain.Autocrypt_peers;
 import org.sufficientlysecure.keychain.KeychainDatabase;
-import org.sufficientlysecure.keychain.model.AutocryptPeer;
-import org.sufficientlysecure.keychain.model.AutocryptPeer.AutocryptKeyStatus;
-import org.sufficientlysecure.keychain.model.AutocryptPeer.GossipOrigin;
+import org.sufficientlysecure.keychain.SelectAutocryptKeyStatus;
+import org.sufficientlysecure.keychain.SelectMasterKeyIdByIdentifier;
+import org.sufficientlysecure.keychain.model.GossipOrigin;
 
 
 public class AutocryptPeerDao extends AbstractDao {
+    private final AutocryptPeersQueries autocryptPeersQueries =
+            getDatabase().getAutocryptPeersQueries();
+
     public static AutocryptPeerDao getInstance(Context context) {
         KeychainDatabase keychainDatabase = KeychainDatabase.getInstance(context);
         DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
@@ -47,100 +45,78 @@ public class AutocryptPeerDao extends AbstractDao {
         return new AutocryptPeerDao(keychainDatabase, databaseNotifyManager);
     }
 
-    private AutocryptPeerDao(KeychainDatabase database, DatabaseNotifyManager databaseNotifyManager) {
+    private AutocryptPeerDao(KeychainDatabase database,
+            DatabaseNotifyManager databaseNotifyManager) {
         super(database, databaseNotifyManager);
     }
 
     public Long getMasterKeyIdForAutocryptPeer(String autocryptId) {
-        SqlDelightQuery query = AutocryptPeer.FACTORY.selectMasterKeyIdByIdentifier(autocryptId);
-        try (Cursor cursor = getReadableDb().query(query)) {
-            if (cursor.moveToFirst()) {
-                return AutocryptPeer.FACTORY.selectMasterKeyIdByIdentifierMapper().map(cursor);
-            }
+        SelectMasterKeyIdByIdentifier masterKeyId =
+                autocryptPeersQueries.selectMasterKeyIdByIdentifier(autocryptId)
+                        .executeAsOneOrNull();
+        if (masterKeyId != null) {
+            return masterKeyId.getMaster_key_id();
         }
         return null;
     }
 
     @Nullable
-    public AutocryptPeer getAutocryptPeer(String packageName, String autocryptId) {
-        List<AutocryptPeer> autocryptPeers = getAutocryptPeers(packageName, autocryptId);
-        if (!autocryptPeers.isEmpty()) {
-            return autocryptPeers.get(0);
-        }
-        return null;
+    public Autocrypt_peers getAutocryptPeer(String packageName, String autocryptId) {
+        return autocryptPeersQueries.selectByIdentifiers(packageName,
+                Collections.singleton(autocryptId)).executeAsOneOrNull();
     }
 
-    private List<AutocryptPeer> getAutocryptPeers(String packageName, String... autocryptId) {
-        SqlDelightQuery query = AutocryptPeer.FACTORY.selectByIdentifiers(packageName, autocryptId);
-        return mapAllRows(query, AutocryptPeer.PEER_MAPPER);
+    private List<Autocrypt_peers> getAutocryptPeers(String packageName, String... autocryptId) {
+        return autocryptPeersQueries.selectByIdentifiers(packageName, Arrays.asList(autocryptId))
+                .executeAsList();
     }
 
-    public List<AutocryptKeyStatus> getAutocryptKeyStatus(String packageName, String[] autocryptIds) {
-        SqlDelightQuery query = AutocryptPeer.FACTORY.selectAutocryptKeyStatus(packageName, autocryptIds);
-        return mapAllRows(query, AutocryptPeer.KEY_STATUS_MAPPER);
+    public List<SelectAutocryptKeyStatus> getAutocryptKeyStatus(String packageName,
+            String[] autocryptIds) {
+        return autocryptPeersQueries.selectAutocryptKeyStatus(packageName,
+                Arrays.asList(autocryptIds)).executeAsList();
     }
 
     private void ensureAutocryptPeerExists(String packageName, String autocryptId) {
-        InsertPeer insertStatement = new InsertPeer(getWritableDb());
-        insertStatement.bind(packageName, autocryptId);
-        insertStatement.executeInsert();
+        autocryptPeersQueries.insertPeer(packageName, autocryptId);
     }
 
     public void insertOrUpdateLastSeen(String packageName, String autocryptId, Date date) {
         ensureAutocryptPeerExists(packageName, autocryptId);
-
-        UpdateLastSeen updateStatement = new UpdateLastSeen(getWritableDb(), AutocryptPeer.FACTORY);
-        updateStatement.bind(packageName, autocryptId, date);
-        updateStatement.executeUpdateDelete();
+        autocryptPeersQueries.updateLastSeen(packageName, autocryptId, date);
     }
 
-    public void updateKey(String packageName, String autocryptId, Date effectiveDate, long masterKeyId,
+    public void updateKey(String packageName, String autocryptId, Date effectiveDate,
+            long masterKeyId,
             boolean isMutual) {
         ensureAutocryptPeerExists(packageName, autocryptId);
-
-        UpdateKey updateStatement = new UpdateKey(getWritableDb(), AutocryptPeer.FACTORY);
-        updateStatement.bind(packageName, autocryptId, effectiveDate, masterKeyId, isMutual);
-        updateStatement.executeUpdateDelete();
-
+        autocryptPeersQueries.updateKey(packageName, autocryptId, effectiveDate, masterKeyId,
+                isMutual);
         getDatabaseNotifyManager().notifyAutocryptUpdate(autocryptId, masterKeyId);
     }
 
-    public void updateKeyGossip(String packageName, String autocryptId, Date effectiveDate, long masterKeyId,
+    public void updateKeyGossip(String packageName, String autocryptId, Date effectiveDate,
+            long masterKeyId,
             GossipOrigin origin) {
         ensureAutocryptPeerExists(packageName, autocryptId);
-
-        UpdateGossipKey updateStatement = new UpdateGossipKey(getWritableDb(), AutocryptPeer.FACTORY);
-        updateStatement.bind(packageName, autocryptId, effectiveDate, masterKeyId, origin);
-        updateStatement.executeUpdateDelete();
-
+        autocryptPeersQueries.updateGossipKey(packageName, autocryptId, effectiveDate, masterKeyId,
+                origin);
         getDatabaseNotifyManager().notifyAutocryptUpdate(autocryptId, masterKeyId);
     }
 
-    public List<AutocryptPeer> getAutocryptPeersForKey(long masterKeyId) {
-        ArrayList<AutocryptPeer> result = new ArrayList<>();
-        SqlDelightQuery query = AutocryptPeer.FACTORY.selectByMasterKeyId(masterKeyId);
-        try (Cursor cursor = getReadableDb().query(query)) {
-            if (cursor.moveToNext()) {
-                AutocryptPeer autocryptPeer = AutocryptPeer.PEER_MAPPER.map(cursor);
-                result.add(autocryptPeer);
-            }
-        }
-        return result;
+    public List<Autocrypt_peers> getAutocryptPeersForKey(long masterKeyId) {
+        return autocryptPeersQueries.selectByMasterKeyId(masterKeyId).executeAsList();
     }
 
     public void deleteByIdentifier(String packageName, String autocryptId) {
         Long masterKeyId = getMasterKeyIdForAutocryptPeer(autocryptId);
-        DeleteByIdentifier deleteStatement = new DeleteByIdentifier(getReadableDb());
-        deleteStatement.bind(packageName, autocryptId);
-        deleteStatement.execute();
+        autocryptPeersQueries.deleteByIdentifier(packageName, autocryptId);
         if (masterKeyId != null) {
             getDatabaseNotifyManager().notifyAutocryptDelete(autocryptId, masterKeyId);
         }
     }
 
     public void deleteByMasterKeyId(long masterKeyId) {
-        DeleteByMasterKeyId deleteStatement = new DeleteByMasterKeyId(getReadableDb());
-        deleteStatement.bind(masterKeyId);
-        deleteStatement.execute();
+        autocryptPeersQueries.deleteByMasterKeyId(masterKeyId);
     }
 }

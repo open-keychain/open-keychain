@@ -3,15 +3,15 @@ package org.sufficientlysecure.keychain.ui.keyview;
 
 import java.util.List;
 
+import android.content.Context;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
-import android.content.Context;
-
+import org.sufficientlysecure.keychain.Key_metadata;
 import org.sufficientlysecure.keychain.daos.KeyMetadataDao;
 import org.sufficientlysecure.keychain.livedata.GenericLiveData;
-import org.sufficientlysecure.keychain.model.KeyMetadata;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao;
 import org.sufficientlysecure.keychain.ui.keyview.loader.IdentityDao.IdentityInfo;
 import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao;
@@ -21,7 +21,7 @@ import org.sufficientlysecure.keychain.ui.keyview.loader.SubkeyStatusDao.KeySubk
 public class KeyFragmentViewModel extends ViewModel {
     private LiveData<List<IdentityInfo>> identityInfo;
     private LiveData<KeySubkeyStatus> subkeyStatus;
-    private LiveData<KeyMetadata> keyserverStatus;
+    private LiveData<Key_metadata> keyserverStatus;
 
     LiveData<List<IdentityInfo>> getIdentityInfo(Context context, LiveData<UnifiedKeyInfo> unifiedKeyInfoLiveData) {
         if (identityInfo == null) {
@@ -43,7 +43,7 @@ public class KeyFragmentViewModel extends ViewModel {
         return subkeyStatus;
     }
 
-    LiveData<KeyMetadata> getKeyserverStatus(Context context, LiveData<UnifiedKeyInfo> unifiedKeyInfoLiveData) {
+    LiveData<Key_metadata> getKeyserverStatus(Context context, LiveData<UnifiedKeyInfo> unifiedKeyInfoLiveData) {
         if (keyserverStatus == null) {
             KeyMetadataDao keyMetadataDao = KeyMetadataDao.create(context);
             keyserverStatus = Transformations.switchMap(unifiedKeyInfoLiveData,

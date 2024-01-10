@@ -21,23 +21,23 @@ package org.sufficientlysecure.keychain.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.lifecycle.LiveData;
 import android.database.MatrixCursor;
 import android.os.Bundle;
 import android.os.Parcel;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.LiveData;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.livedata.GenericLiveData;
-import org.sufficientlysecure.keychain.model.UserPacket.UserId;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.livedata.GenericLiveData;
+import org.sufficientlysecure.keychain.model.UserId;
 import org.sufficientlysecure.keychain.service.CertifyActionsParcel;
 import org.sufficientlysecure.keychain.ui.adapter.MultiUserIdsAdapter;
 import timber.log.Timber;
@@ -85,7 +85,7 @@ public class MultiUserIdsFragment extends Fragment {
         KeyRepository keyRepository = KeyRepository.create(activity);
         LiveData<List<UserId>> userIdLiveData =
                 new GenericLiveData<>(getContext(), () -> keyRepository.getUserIds(pubMasterKeyIds));
-        userIdLiveData.observe(this, this::onUserIdsLoaded);
+        userIdLiveData.observe(getViewLifecycleOwner(), this::onUserIdsLoaded);
 
     }
 

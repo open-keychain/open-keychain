@@ -26,8 +26,8 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.OpenPgpSignatureResult.SenderStatusResult;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import timber.log.Timber;
 
 

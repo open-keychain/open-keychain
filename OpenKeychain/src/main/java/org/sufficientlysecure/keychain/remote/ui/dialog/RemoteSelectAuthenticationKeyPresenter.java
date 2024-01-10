@@ -27,7 +27,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteSelectAuthenticationKeyActivity.SelectAuthKeyViewModel;
 import timber.log.Timber;
 

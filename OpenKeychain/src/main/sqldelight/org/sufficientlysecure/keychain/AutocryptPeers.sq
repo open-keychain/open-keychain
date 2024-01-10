@@ -1,16 +1,16 @@
 import java.util.Date;
-import org.sufficientlysecure.keychain.model.AutocryptPeer.GossipOrigin;
+import org.sufficientlysecure.keychain.model.GossipOrigin;
 
 CREATE TABLE IF NOT EXISTS autocrypt_peers (
     package_name TEXT NOT NULL,
     identifier TEXT NOT NULL,
-    last_seen INTEGER AS Date NULL,
-    last_seen_key INTEGER AS Date NULL,
+    last_seen INTEGER AS Date,
+    last_seen_key INTEGER AS Date,
     is_mutual INTEGER AS Boolean NOT NULL DEFAULT 0,
-    master_key_id INTEGER NULL,
-    gossip_master_key_id INTEGER NULL,
-    gossip_last_seen_key INTEGER AS Date NULL,
-    gossip_origin INTEGER AS GossipOrigin NULL,
+    master_key_id INTEGER,
+    gossip_master_key_id INTEGER,
+    gossip_last_seen_key INTEGER AS Date,
+    gossip_origin INTEGER AS GossipOrigin,
     PRIMARY KEY(package_name, identifier),
     FOREIGN KEY(package_name) REFERENCES api_apps (package_name) ON DELETE CASCADE
 );
@@ -54,10 +54,10 @@ selectAutocryptKeyStatus:
 SELECT autocryptPeer.*,
         (CASE WHEN ac_key.expiry IS NULL THEN 0 WHEN ac_key.expiry > strftime('%s', 'now') THEN 0 ELSE 1 END) AS key_is_expired_int,
         (CASE WHEN gossip_key.expiry IS NULL THEN 0 WHEN gossip_key.expiry > strftime('%s', 'now') THEN 0 ELSE 1 END) AS gossip_key_is_expired_int,
-        ac_key.is_revoked AS key_is_revoked_int,
-        gossip_key.is_revoked AS gossip_key_is_revoked_int,
-        EXISTS (SELECT * FROM certs WHERE certs.master_key_id = autocryptPeer.master_key_id AND verified = 1 ) AS key_is_verified_int,
-        EXISTS (SELECT * FROM certs WHERE certs.master_key_id = autocryptPeer.gossip_master_key_id AND verified = 1 ) AS gossip_key_is_verified_int
+        ac_key.is_revoked AS key_is_revoked,
+        gossip_key.is_revoked AS gossip_key_is_revoked,
+        EXISTS (SELECT * FROM certs WHERE certs.master_key_id = autocryptPeer.master_key_id AND verified = 1) AS key_is_verified,
+        EXISTS (SELECT * FROM certs WHERE certs.master_key_id = autocryptPeer.gossip_master_key_id AND verified = 1) AS gossip_key_is_verified
     FROM autocrypt_peers AS autocryptPeer
         LEFT JOIN keys AS ac_key ON (ac_key.master_key_id = autocryptPeer.master_key_id AND ac_key.rank = 0)
         LEFT JOIN keys AS gossip_key ON (gossip_key.master_key_id = gossip_master_key_id AND gossip_key.rank = 0)

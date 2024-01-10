@@ -9,19 +9,19 @@ import java.util.TimeZone;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
-import androidx.annotation.StringRes;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.StringRes;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
 import eu.davidea.flexibleadapter.items.IFlexible;
 import eu.davidea.viewholders.FlexibleViewHolder;
+import org.sufficientlysecure.keychain.Keys;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.model.SubKey;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Builder;
@@ -32,22 +32,22 @@ import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 
 public class SubKeyItem extends AbstractFlexibleItem<SubKeyItem.SubkeyViewHolder> {
-    final SubKey subkeyInfo;
+    final Keys subkeyInfo;
     private final SubkeyEditViewModel viewModel;
 
-    SubKeyItem(SubKey subkeyInfo, SubkeyEditViewModel viewModel) {
+    SubKeyItem(Keys subkeyInfo, SubkeyEditViewModel viewModel) {
         this.subkeyInfo = subkeyInfo;
         this.viewModel = viewModel;
     }
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof SubKeyItem && ((SubKeyItem) o).subkeyInfo.key_id() == subkeyInfo.key_id();
+        return o instanceof SubKeyItem && ((SubKeyItem) o).subkeyInfo.getKey_id() == subkeyInfo.getKey_id();
     }
 
     @Override
     public int hashCode() {
-        long key_id = subkeyInfo.key_id();
+        long key_id = subkeyInfo.getKey_id();
         return (int) (key_id ^ (key_id >>> 32));
     }
 
@@ -100,13 +100,13 @@ public class SubKeyItem extends AbstractFlexibleItem<SubKeyItem.SubkeyViewHolder
             vActionCancel = itemView.findViewById(R.id.button_subkey_action_cancel);
         }
 
-        void bind(SubKey subkeyInfo) {
-            bindKeyId(subkeyInfo.key_id(), subkeyInfo.rank() == 0);
-            bindKeyDetails(subkeyInfo.algorithm(), subkeyInfo.key_size(), subkeyInfo.key_curve_oid(), subkeyInfo.has_secret());
-            bindKeyFlags(subkeyInfo.can_certify(), subkeyInfo.can_sign(), subkeyInfo.can_encrypt(), subkeyInfo.can_authenticate());
+        void bind(Keys subkeyInfo) {
+            bindKeyId(subkeyInfo.getKey_id(), subkeyInfo.getRank() == 0);
+            bindKeyDetails(subkeyInfo.getAlgorithm(), subkeyInfo.getKey_size(), subkeyInfo.getKey_curve_oid(), subkeyInfo.getHas_secret());
+            bindKeyFlags(subkeyInfo.getCan_certify(), subkeyInfo.getCan_sign(), subkeyInfo.getCan_encrypt(), subkeyInfo.getCan_authenticate());
 
-            Date validFrom = new Date(subkeyInfo.validFrom() * 1000);
-            Date expiryDate = subkeyInfo.expires() ? new Date(subkeyInfo.expiry() * 1000) : null;
+            Date validFrom = new Date(subkeyInfo.getValidFrom() * 1000);
+            Date expiryDate = subkeyInfo.getExpiry() != null ? new Date(subkeyInfo.getExpiry() * 1000) : null;
             bindKeyStatus(validFrom, expiryDate, subkeyInfo.is_revoked(), subkeyInfo.is_secure());
         }
 
@@ -198,14 +198,14 @@ public class SubKeyItem extends AbstractFlexibleItem<SubKeyItem.SubkeyViewHolder
             vKeyDetails.setText(algorithmStr);
         }
 
-        private void bindSubkeyAction(SubKey subkeyInfo, Builder saveKeyringParcelBuilder) {
+        private void bindSubkeyAction(Keys subkeyInfo, Builder saveKeyringParcelBuilder) {
             if (saveKeyringParcelBuilder == null) {
                 itemView.setClickable(false);
                 vActionLayout.setVisibility(View.GONE);
                 return;
             }
-            boolean isRevokeAction = (saveKeyringParcelBuilder.getMutableRevokeSubKeys().contains(subkeyInfo.key_id()));
-            SubkeyChange change = saveKeyringParcelBuilder.getSubkeyChange(subkeyInfo.key_id());
+            boolean isRevokeAction = (saveKeyringParcelBuilder.getMutableRevokeSubKeys().contains(subkeyInfo.getKey_id()));
+            SubkeyChange change = saveKeyringParcelBuilder.getSubkeyChange(subkeyInfo.getKey_id());
             boolean hasAction = isRevokeAction || change != null;
             if (!hasAction) {
                 itemView.setClickable(true);
@@ -214,7 +214,7 @@ public class SubKeyItem extends AbstractFlexibleItem<SubKeyItem.SubkeyViewHolder
             }
 
             OnClickListener onClickRemoveModificationListener = v -> {
-                saveKeyringParcelBuilder.removeModificationsForSubkey(subkeyInfo.key_id());
+                saveKeyringParcelBuilder.removeModificationsForSubkey(subkeyInfo.getKey_id());
                 mAdapter.notifyItemChanged(getAdapterPosition());
             };
 

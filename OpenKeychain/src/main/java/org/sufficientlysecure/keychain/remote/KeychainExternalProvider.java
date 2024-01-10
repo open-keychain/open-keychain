@@ -31,14 +31,15 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
-import androidx.annotation.NonNull;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import org.sufficientlysecure.keychain.BuildConfig;
+import org.sufficientlysecure.keychain.UidStatus;
 import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import org.sufficientlysecure.keychain.daos.DatabaseNotifyManager;
 import org.sufficientlysecure.keychain.daos.UserIdDao;
-import org.sufficientlysecure.keychain.model.UserPacket.UidStatus;
+import org.sufficientlysecure.keychain.model.CustomColumnAdapters;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract;
 import org.sufficientlysecure.keychain.provider.KeychainExternalContract.AutocryptStatus;
@@ -65,7 +66,8 @@ public class KeychainExternalProvider extends ContentProvider {
 
         matcher.addURI(authority, KeychainExternalContract.BASE_EMAIL_STATUS, EMAIL_STATUS);
         matcher.addURI(authority, KeychainExternalContract.BASE_AUTOCRYPT_STATUS, AUTOCRYPT_STATUS);
-        matcher.addURI(authority, KeychainExternalContract.BASE_AUTOCRYPT_STATUS + "/*", AUTOCRYPT_STATUS_INTERNAL);
+        matcher.addURI(authority, KeychainExternalContract.BASE_AUTOCRYPT_STATUS + "/*",
+                AUTOCRYPT_STATUS_INTERNAL);
 
         return matcher;
     }
@@ -84,8 +86,9 @@ public class KeychainExternalProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs,
-                        String sortOrder) {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection,
+            String[] selectionArgs,
+            String sortOrder) {
         Timber.v("query(uri=" + uri + ", proj=" + Arrays.toString(projection) + ")");
         Context context = getContext();
         if (context == null) {
@@ -97,7 +100,8 @@ public class KeychainExternalProvider extends ContentProvider {
         int match = uriMatcher.match(uri);
         switch (match) {
             case EMAIL_STATUS: {
-                Toast.makeText(context, "This API is no longer supported by OpenKeychain!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "This API is no longer supported by OpenKeychain!",
+                        Toast.LENGTH_SHORT).show();
                 return new MatrixCursor(projection);
             }
 
@@ -107,12 +111,14 @@ public class KeychainExternalProvider extends ContentProvider {
                 }
 
                 // override package name to use any external
-                 callingPackageName = uri.getLastPathSegment();
+                callingPackageName = uri.getLastPathSegment();
 
             case AUTOCRYPT_STATUS: {
-                boolean callerIsAllowed = (match == AUTOCRYPT_STATUS_INTERNAL) || apiPermissionHelper.isAllowedIgnoreErrors();
+                boolean callerIsAllowed = (match == AUTOCRYPT_STATUS_INTERNAL) ||
+                        apiPermissionHelper.isAllowedIgnoreErrors();
                 if (!callerIsAllowed) {
-                    throw new AccessControlException("An application must register before use of KeychainExternalProvider!");
+                    throw new AccessControlException(
+                            "An application must register before use of KeychainExternalProvider!");
                 }
 
                 if (projection == null) {
@@ -120,25 +126,32 @@ public class KeychainExternalProvider extends ContentProvider {
                 }
 
                 List<String> plist = Arrays.asList(projection);
-                boolean isWildcardSelector = selectionArgs.length == 1 && selectionArgs[0].contains("%");
+                boolean isWildcardSelector =
+                        selectionArgs.length == 1 && selectionArgs[0].contains("%");
                 boolean queriesUidResult = plist.contains(AutocryptStatus.UID_KEY_STATUS) ||
                         plist.contains(AutocryptStatus.UID_ADDRESS) ||
                         plist.contains(AutocryptStatus.UID_MASTER_KEY_ID) ||
                         plist.contains(AutocryptStatus.UID_CANDIDATES);
-                boolean queriesAutocryptResult = plist.contains(AutocryptStatus.AUTOCRYPT_PEER_STATE) ||
-                        plist.contains(AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID) ||
-                        plist.contains(AutocryptStatus.AUTOCRYPT_KEY_STATUS);
+                boolean queriesAutocryptResult =
+                        plist.contains(AutocryptStatus.AUTOCRYPT_PEER_STATE) ||
+                                plist.contains(AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID) ||
+                                plist.contains(AutocryptStatus.AUTOCRYPT_KEY_STATUS);
                 if (isWildcardSelector && queriesAutocryptResult) {
-                    throw new UnsupportedOperationException("Cannot wildcard-query autocrypt results!");
+                    throw new UnsupportedOperationException(
+                            "Cannot wildcard-query autocrypt results!");
                 }
 
                 Map<String, UidStatus> uidStatuses = queriesUidResult ?
-                        loadUidStatusMap(selectionArgs, isWildcardSelector) : Collections.emptyMap();
-                Map<String, AutocryptRecommendationResult> autocryptStates = queriesAutocryptResult ?
-                        loadAutocryptRecommendationMap(selectionArgs, callingPackageName) : Collections.emptyMap();
+                        loadUidStatusMap(selectionArgs, isWildcardSelector) :
+                        Collections.emptyMap();
+                Map<String, AutocryptRecommendationResult> autocryptStates =
+                        queriesAutocryptResult ?
+                                loadAutocryptRecommendationMap(selectionArgs, callingPackageName) :
+                                Collections.emptyMap();
 
                 MatrixCursor cursor =
-                        mapResultsToProjectedMatrixCursor(projection, selectionArgs, uidStatuses, autocryptStates);
+                        mapResultsToProjectedMatrixCursor(projection, selectionArgs, uidStatuses,
+                                autocryptStates);
 
                 uri = DatabaseNotifyManager.getNotifyUriAllKeys();
                 cursor.setNotificationUri(context.getContentResolver(), uri);
@@ -153,8 +166,10 @@ public class KeychainExternalProvider extends ContentProvider {
     }
 
     @NonNull
-    private MatrixCursor mapResultsToProjectedMatrixCursor(String[] projection, String[] selectionArgs,
-            Map<String, UidStatus> uidStatuses, Map<String, AutocryptRecommendationResult> autocryptStates) {
+    private MatrixCursor mapResultsToProjectedMatrixCursor(String[] projection,
+            String[] selectionArgs,
+            Map<String, UidStatus> uidStatuses,
+            Map<String, AutocryptRecommendationResult> autocryptStates) {
         MatrixCursor cursor = new MatrixCursor(projection);
         for (String selectionArg : selectionArgs) {
             AutocryptRecommendationResult autocryptResult = autocryptStates.get(selectionArg);
@@ -162,7 +177,8 @@ public class KeychainExternalProvider extends ContentProvider {
 
             Object[] row = new Object[projection.length];
             for (int i = 0; i < projection.length; i++) {
-                if (AutocryptStatus.ADDRESS.equals(projection[i]) || AutocryptStatus._ID.equals(projection[i])) {
+                if (AutocryptStatus.ADDRESS.equals(projection[i]) ||
+                        AutocryptStatus._ID.equals(projection[i])) {
                     row[i] = selectionArg;
                 } else {
                     row[i] = columnNameToRowContent(projection[i], autocryptResult, uidStatus);
@@ -180,7 +196,8 @@ public class KeychainExternalProvider extends ContentProvider {
                 if (uidStatus == null) {
                     return null;
                 }
-                return uidStatus.keyStatus() == VerificationStatus.VERIFIED_SECRET ?
+                return CustomColumnAdapters.VERIFICATON_STATUS_ADAPTER.decode(
+                        uidStatus.getKey_status_int()) == VerificationStatus.VERIFIED_SECRET ?
                         KeychainExternalContract.KEY_STATUS_VERIFIED :
                         KeychainExternalContract.KEY_STATUS_UNVERIFIED;
             }
@@ -188,19 +205,19 @@ public class KeychainExternalProvider extends ContentProvider {
                 if (uidStatus == null) {
                     return null;
                 }
-                return uidStatus.user_id();
+                return uidStatus.getUser_id();
 
             case AutocryptStatus.UID_MASTER_KEY_ID:
                 if (uidStatus == null) {
                     return null;
                 }
-                return uidStatus.master_key_id();
+                return uidStatus.getMaster_key_id();
 
             case AutocryptStatus.UID_CANDIDATES:
                 if (uidStatus == null) {
                     return null;
                 }
-                return uidStatus.candidates();
+                return uidStatus.getCandidates();
 
             case AutocryptStatus.AUTOCRYPT_PEER_STATE:
                 if (autocryptResult == null) {
@@ -213,7 +230,8 @@ public class KeychainExternalProvider extends ContentProvider {
                     return null;
                 }
                 return autocryptResult.isVerified ?
-                        KeychainExternalContract.KEY_STATUS_VERIFIED : KeychainExternalContract.KEY_STATUS_UNVERIFIED;
+                        KeychainExternalContract.KEY_STATUS_VERIFIED :
+                        KeychainExternalContract.KEY_STATUS_UNVERIFIED;
 
             case AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID:
                 if (autocryptResult == null) {
@@ -226,10 +244,12 @@ public class KeychainExternalProvider extends ContentProvider {
         }
     }
 
-    private Map<String, UidStatus> loadUidStatusMap(String[] selectionArgs, boolean isWildcardSelector) {
+    private Map<String, org.sufficientlysecure.keychain.UidStatus> loadUidStatusMap(
+            String[] selectionArgs, boolean isWildcardSelector) {
         UserIdDao userIdDao = UserIdDao.getInstance(getContext());
         if (isWildcardSelector) {
-            UidStatus uidStatus = userIdDao.getUidStatusByEmailLike(selectionArgs[0]);
+            org.sufficientlysecure.keychain.UidStatus uidStatus =
+                    userIdDao.getUidStatusByEmailLike(selectionArgs[0]);
             return Collections.singletonMap(selectionArgs[0], uidStatus);
         } else {
             return userIdDao.getUidStatusByEmail(selectionArgs);
@@ -238,17 +258,23 @@ public class KeychainExternalProvider extends ContentProvider {
 
     private Map<String, AutocryptRecommendationResult> loadAutocryptRecommendationMap(
             String[] selectionArgs, String callingPackageName) {
-        AutocryptInteractor autocryptInteractor = AutocryptInteractor.getInstance(getContext(), callingPackageName);
+        AutocryptInteractor autocryptInteractor =
+                AutocryptInteractor.getInstance(getContext(), callingPackageName);
         return autocryptInteractor.determineAutocryptRecommendations(selectionArgs);
     }
 
     private int getPeerStateValue(AutocryptState autocryptState) {
         switch (autocryptState) {
-            case DISABLE: return AutocryptStatus.AUTOCRYPT_PEER_DISABLED;
-            case DISCOURAGED_OLD: return AutocryptStatus.AUTOCRYPT_PEER_DISCOURAGED_OLD;
-            case DISCOURAGED_GOSSIP: return AutocryptStatus.AUTOCRYPT_PEER_GOSSIP;
-            case AVAILABLE: return AutocryptStatus.AUTOCRYPT_PEER_AVAILABLE;
-            case MUTUAL: return AutocryptStatus.AUTOCRYPT_PEER_MUTUAL;
+            case DISABLE:
+                return AutocryptStatus.AUTOCRYPT_PEER_DISABLED;
+            case DISCOURAGED_OLD:
+                return AutocryptStatus.AUTOCRYPT_PEER_DISCOURAGED_OLD;
+            case DISCOURAGED_GOSSIP:
+                return AutocryptStatus.AUTOCRYPT_PEER_GOSSIP;
+            case AVAILABLE:
+                return AutocryptStatus.AUTOCRYPT_PEER_AVAILABLE;
+            case MUTUAL:
+                return AutocryptStatus.AUTOCRYPT_PEER_MUTUAL;
         }
         throw new IllegalStateException("Unhandled case!");
     }
@@ -269,7 +295,8 @@ public class KeychainExternalProvider extends ContentProvider {
     }
 
     @Override
-    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(@NonNull Uri uri, ContentValues values, String selection,
+            String[] selectionArgs) {
         throw new UnsupportedOperationException();
     }
 

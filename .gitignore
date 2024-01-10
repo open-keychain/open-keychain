@@ -38,3 +38,6 @@ fastlane/test_output
 
 # omit for now:
 fastlane/Appfile
+
+OpenKeychain/release
+OpenKeychain/google

@@ -25,24 +25,23 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import androidx.sqlite.db.SupportSQLiteDatabase;
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.collection.LongSparseArray;
-
+import androidx.sqlite.db.SupportSQLiteDatabase;
 import org.openintents.openpgp.util.OpenPgpUtils;
-import org.sufficientlysecure.keychain.KeyRingsPublicModel.DeleteByMasterKeyId;
+import org.sufficientlysecure.keychain.Certs;
+import org.sufficientlysecure.keychain.Key_signatures;
 import org.sufficientlysecure.keychain.KeychainDatabase;
-import org.sufficientlysecure.keychain.KeysModel.UpdateHasSecretByKeyId;
-import org.sufficientlysecure.keychain.KeysModel.UpdateHasSecretByMasterKeyId;
+import org.sufficientlysecure.keychain.Keyrings_public;
+import org.sufficientlysecure.keychain.Keys;
+import org.sufficientlysecure.keychain.KeysQueries;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.User_packets;
+import org.sufficientlysecure.keychain.UtilQueries;
 import org.sufficientlysecure.keychain.daos.DatabaseBatchInteractor.BatchOp;
-import org.sufficientlysecure.keychain.model.Certification;
-import org.sufficientlysecure.keychain.model.KeyRingPublic;
-import org.sufficientlysecure.keychain.model.KeySignature;
-import org.sufficientlysecure.keychain.model.SubKey;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
-import org.sufficientlysecure.keychain.model.UserPacket;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
@@ -114,7 +113,7 @@ public class KeyWritableRepository extends KeyRepository {
         this.context = context;
         this.databaseNotifyManager = databaseNotifyManager;
         this.autocryptPeerDao = autocryptPeerDao;
-        this.databaseBatchInteractor = new DatabaseBatchInteractor(getWritableDb());
+        this.databaseBatchInteractor = new DatabaseBatchInteractor(getDatabase());
     }
 
     private LongSparseArray<CanonicalizedPublicKey> getTrustedMasterKeys() {
@@ -193,7 +192,7 @@ public class KeyWritableRepository extends KeyRepository {
             log(LogType.MSG_IP_INSERT_KEYRING);
 
             byte[] encodedRingIfDbCachable = encodedKeyRing.length < MAX_CACHED_KEY_SIZE ? encodedKeyRing : null;
-            KeyRingPublic keyRingPublic = KeyRingPublic.create(masterKeyId, encodedRingIfDbCachable);
+            Keyrings_public keyRingPublic = new Keyrings_public(masterKeyId, encodedRingIfDbCachable);
             operations.add(DatabaseBatchInteractor.createInsertKeyRingPublic(keyRingPublic));
 
             log(LogType.MSG_IP_INSERT_SUBKEYS);
@@ -239,9 +238,12 @@ public class KeyWritableRepository extends KeyRepository {
                         }
                     }
 
-                    SubKey subKey = SubKey.create(masterKeyId, rank, key.getKeyId(),
+                    long creationUnixTime = creation.getTime() / 1000;
+                    Long expiryUnixTime = expiry != null ? expiry.getTime() / 1000 : null;
+                    long validFromTime = bindingSignatureTime.getTime() / 1000;
+                    Keys subKey = new Keys(masterKeyId, rank, key.getKeyId(),
                             key.getBitStrength(), key.getCurveOid(), key.getAlgorithm(), key.getFingerprint(),
-                            c, s, e, a, key.isRevoked(), SecretKeyType.UNAVAILABLE, key.isSecure(), creation, expiry, bindingSignatureTime);
+                            c, s, e, a, key.isRevoked(), SecretKeyType.UNAVAILABLE, key.isSecure(), creationUnixTime, expiryUnixTime, validFromTime);
                     operations.add(DatabaseBatchInteractor.createInsertSubKey(subKey));
 
                     ++rank;
@@ -300,7 +302,7 @@ public class KeyWritableRepository extends KeyRepository {
 
                     // keep a note about the issuer of this key signature
                     if (!signerKeyIds.contains(certId)) {
-                        KeySignature keySignature = KeySignature.create(masterKeyId, certId);
+                        Key_signatures keySignature = new Key_signatures(masterKeyId, certId);
                         operations.add(DatabaseBatchInteractor.createInsertSignerKey(keySignature));
                         signerKeyIds.add(certId);
                     }
@@ -468,7 +470,7 @@ public class KeyWritableRepository extends KeyRepository {
             for (int userIdRank = 0; userIdRank < uids.size(); userIdRank++) {
                 UserPacketItem item = uids.get(userIdRank);
                 Long type = item.type != null ? item.type.longValue() : null;
-                UserPacket userPacket = UserPacket.create(masterKeyId, userIdRank, type, item.userId, item.name, item.email,
+                User_packets userPacket = new User_packets(masterKeyId, userIdRank, type, item.userId, item.name, item.email,
                         item.comment, item.attributeData, item.isPrimary, item.selfRevocation != null);
                 operations.add(DatabaseBatchInteractor.createInsertUserPacket(userPacket));
 
@@ -508,14 +510,13 @@ public class KeyWritableRepository extends KeyRepository {
             mIndent -= 1;
         }
 
-        SupportSQLiteDatabase db = databaseBatchInteractor.getDb();
+        SupportSQLiteDatabase db = getWritableDb();
         try {
             db.beginTransaction();
 
             // delete old version of this keyRing (from database only!), which also deletes all keys and userIds on cascade
-            DeleteByMasterKeyId deleteStatement = new DeleteByMasterKeyId(db);
-            deleteStatement.bind(masterKeyId);
-            int deletedRows = deleteStatement.executeUpdateDelete();
+            getDatabase().getKeyRingsPublicQueries().deleteByMasterKeyId(masterKeyId);
+            int deletedRows = getDatabase().getUtilQueries().selectChanges().executeAsOne().intValue();
 
             if (deletedRows > 0) {
                 log(LogType.MSG_IP_DELETE_OLD_OK);
@@ -559,9 +560,8 @@ public class KeyWritableRepository extends KeyRepository {
         }
         autocryptPeerDao.deleteByMasterKeyId(masterKeyId);
 
-        DeleteByMasterKeyId deleteStatement = new DeleteByMasterKeyId(getWritableDb());
-        deleteStatement.bind(masterKeyId);
-        int deletedRows = deleteStatement.executeUpdateDelete();
+        getDatabase().getKeyRingsPublicQueries().deleteByMasterKeyId(masterKeyId);
+        int deletedRows = getDatabase().getUtilQueries().selectChanges().executeAsOne().intValue();
 
         databaseNotifyManager.notifyKeyChange(masterKeyId);
 
@@ -631,12 +631,10 @@ public class KeyWritableRepository extends KeyRepository {
             }
 
             {
-                UpdateHasSecretByMasterKeyId resetStatement =
-                        SubKey.createUpdateHasSecretByMasterKeyIdStatement(getWritableDb());
-                resetStatement.bind(masterKeyId, SecretKeyType.GNU_DUMMY);
-                resetStatement.executeUpdateDelete();
+                KeysQueries keysQueries = getDatabase().getKeysQueries();
+                UtilQueries utilQueries = getDatabase().getUtilQueries();
 
-                UpdateHasSecretByKeyId updateStatement = SubKey.createUpdateHasSecretByKeyId(getWritableDb());
+                keysQueries.updateHasSecretByMasterKeyId(masterKeyId, SecretKeyType.GNU_DUMMY);
 
                 // then, mark exactly the keys we have available
                 log(LogType.MSG_IS_IMPORTING_SUBKEYS);
@@ -644,8 +642,8 @@ public class KeyWritableRepository extends KeyRepository {
                 for (CanonicalizedSecretKey sub : keyRing.secretKeyIterator()) {
                     long id = sub.getKeyId();
                     SecretKeyType mode = sub.getSecretKeyTypeSuperExpensive();
-                    updateStatement.bind(id, mode);
-                    int upd = updateStatement.executeUpdateDelete();
+                    keysQueries.updateHasSecretByKeyId(id, mode);
+                    int upd = utilQueries.selectChanges().executeAsOne().intValue();
                     if (upd == 1) {
                         switch (mode) {
                             case PASSPHRASE:
@@ -1013,8 +1011,9 @@ public class KeyWritableRepository extends KeyRepository {
 
     private BatchOp buildCertOperations(long masterKeyId, int rank, WrappedSignature cert, VerificationStatus verificationStatus) {
         try {
-            Certification certification = Certification.create(masterKeyId, rank, cert.getKeyId(),
-                    cert.getSignatureType(), verificationStatus, cert.getCreationTime(), cert.getEncoded());
+            long creationUnixTime = cert.getCreationTime().getTime() / 1000;
+            Certs certification = new Certs(masterKeyId, rank, cert.getKeyId(),
+                    cert.getSignatureType(), verificationStatus, creationUnixTime, cert.getEncoded());
             return DatabaseBatchInteractor.createInsertCertification(certification);
         } catch (IOException e) {
             throw new AssertionError(e);

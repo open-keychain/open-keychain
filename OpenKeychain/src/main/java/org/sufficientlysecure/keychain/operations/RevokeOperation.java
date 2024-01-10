@@ -21,7 +21,7 @@ package org.sufficientlysecure.keychain.operations;
 import android.content.Context;
 import androidx.annotation.NonNull;
 
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.RevokeResult;

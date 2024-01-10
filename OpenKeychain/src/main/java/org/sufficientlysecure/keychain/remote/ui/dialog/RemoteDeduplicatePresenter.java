@@ -25,7 +25,7 @@ import android.content.Context;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.remote.AutocryptInteractor;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteDeduplicateActivity.DeduplicateViewModel;
 import org.sufficientlysecure.keychain.ui.adapter.KeyChoiceAdapter;

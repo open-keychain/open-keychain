@@ -20,15 +20,11 @@ package org.sufficientlysecure.keychain.ui;
 
 import java.util.List;
 
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,10 +34,14 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ViewAnimator;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProviders;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
-import org.sufficientlysecure.keychain.model.UserPacket.UserId;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UserId;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -196,8 +196,8 @@ public class ViewKeyAdvUserIdsFragment extends Fragment {
         mUserIds.setAdapter(mUserIdsAdapter);
 
         ViewKeyAdvViewModel viewModel = ViewModelProviders.of(requireActivity()).get(ViewKeyAdvViewModel.class);
-        viewModel.getUnifiedKeyInfoLiveData(requireContext()).observe(this, this::onLoadUnifiedKeyInfo);
-        viewModel.getUserIdLiveData(requireContext()).observe(this, this::onLoadUserIds);
+        viewModel.getUnifiedKeyInfoLiveData(requireContext()).observe(getViewLifecycleOwner(), this::onLoadUnifiedKeyInfo);
+        viewModel.getUserIdLiveData(requireContext()).observe(getViewLifecycleOwner(), this::onLoadUserIds);
     }
 
     public void onLoadUnifiedKeyInfo(UnifiedKeyInfo unifiedKeyInfo) {

@@ -23,17 +23,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import android.content.Context;
+
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import androidx.sqlite.db.SupportSQLiteOpenHelper;
 import androidx.sqlite.db.SupportSQLiteOpenHelper.Callback;
 import androidx.sqlite.db.SupportSQLiteOpenHelper.Configuration;
 import androidx.sqlite.db.framework.FrameworkSQLiteOpenHelperFactory;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteException;
-
-import org.sufficientlysecure.keychain.daos.LocalSecretKeyStorage;
+import com.squareup.sqldelight.android.AndroidSqliteDriver;
+import org.sufficientlysecure.keychain.model.CustomColumnAdapters;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
 
@@ -41,15 +39,18 @@ import timber.log.Timber;
 /**
  * SQLite Datatypes (from http://www.sqlite.org/datatype3.html)
  * - NULL. The value is a NULL value.
- * - INTEGER. The value is a signed integer, stored in 1, 2, 3, 4, 6, or 8 bytes depending on the magnitude of the value.
+ * - INTEGER. The value is a signed integer, stored in 1, 2, 3, 4, 6, or 8 bytes depending on the
+ * magnitude of the value.
  * - REAL. The value is a floating point value, stored as an 8-byte IEEE floating point number.
- * - TEXT. The value is a text string, stored using the database encoding (UTF-8, UTF-16BE or UTF-16LE).
+ * - TEXT. The value is a text string, stored using the database encoding (UTF-8, UTF-16BE or
+ * UTF-16LE).
  * - BLOB. The value is a blob of data, stored exactly as it was input.
  */
 public class KeychainDatabase {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 34;
+    private static final int DATABASE_VERSION = 35;
     private final SupportSQLiteOpenHelper supportSQLiteOpenHelper;
+    private final Database sqldelightDatabase;
 
     private static KeychainDatabase sInstance;
 
@@ -71,12 +72,15 @@ public class KeychainDatabase {
                                     }
 
                                     @Override
-                                    public void onUpgrade(SupportSQLiteDatabase db, int oldVersion, int newVersion) {
-                                        KeychainDatabase.this.onUpgrade(db, context, oldVersion, newVersion);
+                                    public void onUpgrade(SupportSQLiteDatabase db, int oldVersion,
+                                            int newVersion) {
+                                        KeychainDatabase.this.onUpgrade(db, context, oldVersion,
+                                                newVersion);
                                     }
 
                                     @Override
-                                    public void onDowngrade(SupportSQLiteDatabase db, int oldVersion, int newVersion) {
+                                    public void onDowngrade(SupportSQLiteDatabase db,
+                                            int oldVersion, int newVersion) {
                                         KeychainDatabase.this.onDowngrade();
                                     }
 
@@ -86,12 +90,19 @@ public class KeychainDatabase {
                                         if (!db.isReadOnly()) {
                                             // Enable foreign key constraints
                                             db.execSQL("PRAGMA foreign_keys=ON;");
-                                            if (Constants.DEBUG) {
-                                                recreateUnifiedKeyView(db);
-                                            }
                                         }
                                     }
                                 }).build());
+        AndroidSqliteDriver driver = new AndroidSqliteDriver(supportSQLiteOpenHelper);
+        sqldelightDatabase = Database.Companion.invoke(driver,
+                new Autocrypt_peers.Adapter(CustomColumnAdapters.DATE_ADAPTER,
+                        CustomColumnAdapters.DATE_ADAPTER,
+                        CustomColumnAdapters.DATE_ADAPTER,
+                        CustomColumnAdapters.GOSSIP_ORIGIN_ADAPTER),
+                new Certs.Adapter(CustomColumnAdapters.VERIFICATON_STATUS_ADAPTER),
+                new Key_metadata.Adapter(CustomColumnAdapters.DATE_ADAPTER),
+                new Keys.Adapter(CustomColumnAdapters.SECRET_KEY_TYPE_ADAPTER)
+        );
     }
 
     public SupportSQLiteDatabase getReadableDatabase() {
@@ -102,328 +113,85 @@ public class KeychainDatabase {
         return supportSQLiteOpenHelper.getWritableDatabase();
     }
 
+    public Database getSqlDelightDatabase() {
+        return sqldelightDatabase;
+    }
+
     @SuppressWarnings("deprecation") // using some sqldelight constants
     private void onCreate(SupportSQLiteDatabase db, Context context) {
         Timber.w("Creating database...");
 
-        db.execSQL(KeyRingsPublicModel.CREATE_TABLE);
-        db.execSQL(KeysModel.CREATE_TABLE);
-        db.execSQL(UserPacketsModel.CREATE_TABLE);
-        db.execSQL(CertsModel.CREATE_TABLE);
-        db.execSQL(KeyMetadataModel.CREATE_TABLE);
-        db.execSQL(KeySignaturesModel.CREATE_TABLE);
-        db.execSQL(ApiAppsModel.CREATE_TABLE);
-        db.execSQL(OverriddenWarningsModel.CREATE_TABLE);
-        db.execSQL(AutocryptPeersModel.CREATE_TABLE);
-        db.execSQL(ApiAllowedKeysModel.CREATE_TABLE);
-        db.execSQL(KeysModel.UNIFIEDKEYVIEW);
-        db.execSQL(KeysModel.VALIDKEYSVIEW);
-        db.execSQL(KeysModel.VALIDMASTERKEYSVIEW);
-        db.execSQL(UserPacketsModel.UIDSTATUS);
+        AndroidSqliteDriver sqlDriver = new AndroidSqliteDriver(db);
+        Database.Companion.getSchema().create(sqlDriver);
+        recreateDatabaseViews(db);
 
-        db.execSQL("CREATE INDEX keys_by_rank ON keys (" + KeysModel.RANK + ", " + KeysModel.MASTER_KEY_ID + ");");
-        db.execSQL("CREATE INDEX uids_by_rank ON user_packets (" + UserPacketsModel.RANK + ", "
-                + UserPacketsModel.USER_ID + ", " + UserPacketsModel.MASTER_KEY_ID + ");");
-        db.execSQL("CREATE INDEX verified_certs ON certs ("
-                + CertsModel.VERIFIED + ", " + CertsModel.MASTER_KEY_ID + ");");
-        db.execSQL("CREATE INDEX uids_by_email ON user_packets ("
-                + UserPacketsModel.EMAIL + ");");
+        db.execSQL("CREATE INDEX keys_by_rank ON keys (rank, master_key_id);");
+        db.execSQL("CREATE INDEX uids_by_rank ON user_packets (rank, user_id, master_key_id);");
+        db.execSQL("CREATE INDEX verified_certs ON certs (verified, master_key_id);");
+        db.execSQL("CREATE INDEX uids_by_email ON user_packets (email);");
 
         Preferences.getPreferences(context).setKeySignaturesTableInitialized();
     }
 
-    private void onUpgrade(SupportSQLiteDatabase db, Context context, int oldVersion, int newVersion) {
+    private void onUpgrade(SupportSQLiteDatabase db, Context context, int oldVersion,
+            int newVersion) {
         Timber.d("Upgrading db from " + oldVersion + " to " + newVersion);
-
+        if (oldVersion < 34) {
+            throw new IllegalStateException("upgrades from older versions not supported");
+        }
         switch (oldVersion) {
-            case 1:
-                // add has_secret for all who are upgrading from a beta version
-                try {
-                    db.execSQL("ALTER TABLE keys ADD COLUMN has_secret INTEGER");
-                } catch (Exception e) {
-                    // never mind, the column probably already existed
-                }
-                // fall through
-            case 2:
-                // ECC support
-                try {
-                    db.execSQL("ALTER TABLE keys ADD COLUMN key_curve_oid TEXT");
-                } catch (Exception e) {
-                    // never mind, the column probably already existed
-                }
-                // fall through
-            case 3:
-                // better s2k detection, we need consolidate
-                // fall through
-            case 4:
-                try {
-                    db.execSQL("ALTER TABLE keys ADD COLUMN can_authenticate INTEGER");
-                } catch (Exception e) {
-                    // never mind, the column probably already existed
-                }
-                // fall through
-            case 5:
-                // do consolidate for 3.0 beta3
-                // fall through
-            case 6:
-                db.execSQL("ALTER TABLE user_ids ADD COLUMN type INTEGER");
-                db.execSQL("ALTER TABLE user_ids ADD COLUMN attribute_data BLOB");
-            case 7:
-                // new table for allowed key ids in API
-                try {
-                    db.execSQL(ApiAppsModel.CREATE_TABLE);
-                } catch (Exception e) {
-                    // never mind, the column probably already existed
-                }
-            case 8:
-                // tbale name for user_ids changed to user_packets
-                db.execSQL("DROP TABLE IF EXISTS certs");
-                db.execSQL("DROP TABLE IF EXISTS user_ids");
-                db.execSQL("CREATE TABLE IF NOT EXISTS user_packets("
-                        + "master_key_id INTEGER, "
-                        + "type INT, "
-                        + "user_id TEXT, "
-                        + "attribute_data BLOB, "
-
-                        + "is_primary INTEGER, "
-                        + "is_revoked INTEGER, "
-                        + "rank INTEGER, "
-
-                        + "PRIMARY KEY(master_key_id, rank), "
-                        + "FOREIGN KEY(master_key_id) REFERENCES "
-                        + "keyrings_public(master_key_id) ON DELETE CASCADE"
-                        + ")");
-                db.execSQL("CREATE TABLE IF NOT EXISTS certs("
-                        + "master_key_id INTEGER,"
-                        + "rank INTEGER, " // rank of certified uid
-
-                        + "key_id_certifier INTEGER, " // certifying key
-                        + "type INTEGER, "
-                        + "verified INTEGER, "
-                        + "creation INTEGER, "
-
-                        + "data BLOB, "
-
-                        + "PRIMARY KEY(master_key_id, rank, "
-                        + "key_id_certifier), "
-                        + "FOREIGN KEY(master_key_id) REFERENCES "
-                        + "keyrings_public(master_key_id) ON DELETE CASCADE,"
-                        + "FOREIGN KEY(master_key_id, rank) REFERENCES "
-                        + "user_packets(master_key_id, rank) ON DELETE CASCADE"
-                        + ")");
-            case 9:
-                // do nothing here, just consolidate
-            case 10:
-                // fix problems in database, see #1402 for details
-                // https://github.com/open-keychain/open-keychain/issues/1402
-                // no longer needed, api_accounts is deprecated
-                // db.execSQL("DELETE FROM api_accounts WHERE key_id BETWEEN 0 AND 3");
-            case 11:
-                db.execSQL("CREATE TABLE IF NOT EXISTS updated_keys ("
-                        + "master_key_id INTEGER PRIMARY KEY, "
-                        + "last_updated INTEGER, "
-                        + "FOREIGN KEY(master_key_id) REFERENCES "
-                        + "keyrings_public(master_key_id) ON DELETE CASCADE"
-                        + ")");
-            case 12:
-                // do nothing here, just consolidate
-            case 13:
-                db.execSQL("CREATE INDEX keys_by_rank ON keys (rank);");
-                db.execSQL("CREATE INDEX uids_by_rank ON user_packets (rank, user_id, master_key_id);");
-                db.execSQL("CREATE INDEX verified_certs ON certs (verified, master_key_id);");
-            case 14:
-                db.execSQL("ALTER TABLE user_packets ADD COLUMN name TEXT");
-                db.execSQL("ALTER TABLE user_packets ADD COLUMN email TEXT");
-                db.execSQL("ALTER TABLE user_packets ADD COLUMN comment TEXT");
-            case 15:
-                db.execSQL("CREATE INDEX uids_by_name ON user_packets (name COLLATE NOCASE)");
-                db.execSQL("CREATE INDEX uids_by_email ON user_packets (email COLLATE NOCASE)");
-            case 16:
-                // splitUserId changed: Execute consolidate for new parsing of name, email
-            case 17:
-                // splitUserId changed: Execute consolidate for new parsing of name, email
-            case 18:
-                db.execSQL("ALTER TABLE keys ADD COLUMN is_secure INTEGER");
-            case 19:
-                // emergency fix for crashing consolidate
-                db.execSQL("UPDATE keys SET is_secure = 1;");
-            case 20:
-                db.execSQL(
-                        "CREATE TABLE IF NOT EXISTS overridden_warnings ("
-                                + "_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                                + "identifier TEXT NOT NULL UNIQUE "
-                                + ")");
-
-            case 21:
-                try {
-                    db.execSQL("ALTER TABLE updated_keys ADD COLUMN seen_on_keyservers INTEGER;");
-                } catch (SQLiteException e) {
-                    // don't bother, the column probably already existed
-                }
-
-            case 22:
-                db.execSQL("CREATE TABLE IF NOT EXISTS api_autocrypt_peers ("
-                        + "package_name TEXT NOT NULL, "
-                        + "identifier TEXT NOT NULL, "
-                        + "last_updated INTEGER NOT NULL, "
-                        + "last_seen_key INTEGER NOT NULL, "
-                        + "state INTEGER NOT NULL, "
-                        + "master_key_id INTEGER, "
-                        + "PRIMARY KEY(package_name, identifier), "
-                        + "FOREIGN KEY(package_name) REFERENCES api_apps(package_name) ON DELETE CASCADE"
-                        + ")");
-
-            case 23:
-                db.execSQL("CREATE TABLE IF NOT EXISTS key_signatures ("
-                        + "master_key_id INTEGER NOT NULL, "
-                        + "signer_key_id INTEGER NOT NULL, "
-                        + "PRIMARY KEY(master_key_id, signer_key_id), "
-                        + "FOREIGN KEY(master_key_id) REFERENCES keyrings_public(master_key_id) ON DELETE CASCADE"
-                        + ")");
-
-            case 24: {
-                db.execSQL("ALTER TABLE api_autocrypt_peers RENAME TO tmp");
-                db.execSQL("CREATE TABLE api_autocrypt_peers ("
-                        + "package_name TEXT NOT NULL, "
-                        + "identifier TEXT NOT NULL, "
-                        + "last_seen INTEGER, "
-                        + "last_seen_key INTEGER, "
-                        + "is_mutual INTEGER, "
-                        + "master_key_id INTEGER, "
-                        + "gossip_master_key_id INTEGER, "
-                        + "gossip_last_seen_key INTEGER, "
-                        + "gossip_origin INTEGER, "
-                        + "PRIMARY KEY(package_name, identifier), "
-                        + "FOREIGN KEY(package_name) REFERENCES api_apps (package_name) ON DELETE CASCADE"
-                        + ")");
-                // Note: Keys from Autocrypt 0.X with state == "reset" (0) are dropped
-                db.execSQL("INSERT INTO api_autocrypt_peers " +
-                        "(package_name, identifier, last_seen, gossip_last_seen_key, gossip_master_key_id, gossip_origin) " +
-                        "SELECT package_name, identifier, last_updated, last_seen_key, master_key_id, 0 " +
-                        "FROM tmp WHERE state = 1"); // Autocrypt 0.X, "gossip" -> now origin=autocrypt
-                db.execSQL("INSERT INTO api_autocrypt_peers " +
-                        "(package_name, identifier, last_seen, gossip_last_seen_key, gossip_master_key_id, gossip_origin) " +
-                        "SELECT package_name, identifier, last_updated, last_seen_key, master_key_id, 20 " +
-                        "FROM tmp WHERE state = 2"); // "selected" keys -> now origin=dedup
-                db.execSQL("INSERT INTO api_autocrypt_peers " +
-                        "(package_name, identifier, last_seen, last_seen_key, master_key_id, is_mutual) " +
-                        "SELECT package_name, identifier, last_updated, last_seen_key, master_key_id, 0 " +
-                        "FROM tmp WHERE state = 3"); // Autocrypt 0.X, state = "available"
-                db.execSQL("INSERT INTO api_autocrypt_peers " +
-                        "(package_name, identifier, last_seen, last_seen_key, master_key_id, is_mutual) " +
-                        "SELECT package_name, identifier, last_updated, last_seen_key, master_key_id, 1 " +
-                        "FROM tmp WHERE state = 4"); // from Autocrypt 0.X, state = "mutual"
-                db.execSQL("DROP TABLE tmp");
-
-                db.execSQL("CREATE INDEX IF NOT EXISTS uids_by_email ON user_packets (email);");
-                db.execSQL("DROP INDEX keys_by_rank");
-                db.execSQL("CREATE INDEX keys_by_rank ON keys(rank, master_key_id);");
-            }
-
-            case 25: {
-                try {
-                    migrateSecretKeysFromDbToLocalStorage(db, context);
-                } catch (IOException e) {
-                    throw new IllegalStateException("Error migrating secret keys! This is bad!!");
-                }
-            }
-
-            case 26:
-                migrateUpdatedKeysToKeyMetadataTable(db);
-
-            case 27:
-                renameApiAutocryptPeersTable(db);
-
-            case 28:
-                // drop old table from version 20
-                db.execSQL("DROP TABLE IF EXISTS api_accounts");
-
-            case 29:
-                recreateUnifiedKeyView(db);
-
-            case 30:
-                // ignore. this case only came up in an unreleased beta.
-
-            case 31:
-                addSubkeyValidFromField(db);
-
-            case 32:
-                recreateUnifiedKeyView(db);
-
-            case 33:
-                dropKeyMetadataForeignKey(db);
+            case 34:
+                // nothing
         }
+        // recreate the unified key view on any upgrade
+        recreateDatabaseViews(db);
     }
 
-    private void addSubkeyValidFromField(SupportSQLiteDatabase db) {
-        try {
-            db.execSQL("ALTER TABLE keys ADD COLUMN validFrom INTEGER NOT NULL DEFAULT 0;");
-            db.execSQL("UPDATE keys SET validFrom = creation");
-        } catch (SQLiteException e) {
-            // column probably already existed, nvm this
-        }
-    }
+    private static void recreateDatabaseViews(SupportSQLiteDatabase db) {
+        // for some reason those aren't created as part of the schema. so we do it here.
+        db.execSQL("DROP VIEW IF EXISTS unifiedKeyView");
+        db.execSQL(
+                """
+                        CREATE VIEW unifiedKeyView AS
+                            SELECT keys.master_key_id, keys.fingerprint, MIN(user_packets.rank), user_packets.user_id, user_packets.name, user_packets.email, user_packets.comment, keys.creation, keys.expiry, keys.is_revoked, keys.is_secure, keys.can_certify, certs.verified,
+                                (EXISTS (SELECT * FROM user_packets AS dups WHERE dups.master_key_id != keys.master_key_id AND dups.rank = 0 AND dups.name = user_packets.name COLLATE NOCASE AND dups.email = user_packets.email COLLATE NOCASE )) AS has_duplicate,
+                                (EXISTS (SELECT * FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.has_secret != 0)) AS has_any_secret,
+                                (EXISTS (SELECT * FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_encrypt != 0)) AS has_encrypt_key,
+                                (EXISTS (SELECT * FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_sign != 0)) AS has_sign_key,
+                                (EXISTS (SELECT * FROM keys AS k WHERE k.master_key_id = keys.master_key_id AND k.can_authenticate != 0)) AS has_auth_key,
+                                GROUP_CONCAT(DISTINCT aTI.package_name) AS autocrypt_package_names_csv,
+                                GROUP_CONCAT(user_packets.user_id, '|||') AS user_id_list
+                            FROM keys
+                                 INNER JOIN user_packets ON ( keys.master_key_id = user_packets.master_key_id AND user_packets.type IS NULL AND (user_packets.rank = 0 OR user_packets.is_revoked = 0))
+                                 LEFT JOIN certs ON ( keys.master_key_id = certs.master_key_id AND certs.verified = 1 )
+                                 LEFT JOIN autocrypt_peers AS aTI ON ( aTI.master_key_id = keys.master_key_id )
+                            WHERE keys.rank = 0
+                            GROUP BY keys.master_key_id;""");
+        db.execSQL("DROP VIEW IF EXISTS validKeys");
+        db.execSQL("""
+                        CREATE VIEW validKeys AS
+                            SELECT master_key_id, rank, key_id, key_size, key_curve_oid, algorithm, fingerprint, can_certify, can_sign, can_encrypt, can_authenticate, is_revoked, has_secret, is_secure, creation, expiry
+                                FROM keys
+                                WHERE is_revoked = 0 AND is_secure = 1 AND (expiry IS NULL OR expiry >= strftime('%s', 'now')) AND validFrom <= strftime('%s', 'now');
+                """);
+        db.execSQL("DROP VIEW IF EXISTS uidStatus");
+        db.execSQL("""
+                        CREATE VIEW uidStatus AS
+                            SELECT user_packets.email, MIN(certs.verified) AS key_status_int, user_packets.user_id, user_packets.master_key_id, COUNT(DISTINCT user_packets.master_key_id) AS candidates
+                            FROM user_packets
+                                JOIN validMasterKeys USING (master_key_id)
+                                LEFT JOIN certs ON (certs.master_key_id = user_packets.master_key_id AND certs.rank = user_packets.rank AND certs.verified > 0)
+                            WHERE user_packets.email IS NOT NULL
+                            GROUP BY user_packets.email;
+                """);
+        db.execSQL("DROP VIEW IF EXISTS validMasterKeys");
+        db.execSQL("""
+                        CREATE VIEW validMasterKeys AS
+                        SELECT *
+                                FROM validKeys
+                        WHERE rank = 0;
+                """);
 
-    private void recreateUnifiedKeyView(SupportSQLiteDatabase db) {
-        // noinspection deprecation
-        db.execSQL("DROP VIEW IF EXISTS " + KeysModel.UNIFIEDKEYVIEW_VIEW_NAME);
-        db.execSQL(KeysModel.UNIFIEDKEYVIEW);
-        // noinspection deprecation
-        db.execSQL("DROP VIEW IF EXISTS " + KeysModel.VALIDKEYS_VIEW_NAME);
-        db.execSQL(KeysModel.VALIDKEYSVIEW);
-        // noinspection deprecation
-        db.execSQL("DROP VIEW IF EXISTS " + KeysModel.VALIDMASTERKEYS_VIEW_NAME);
-        db.execSQL(KeysModel.VALIDMASTERKEYSVIEW);
-        // noinspection deprecation
-        db.execSQL("DROP VIEW IF EXISTS " + UserPacketsModel.UIDSTATUS_VIEW_NAME);
-        db.execSQL(UserPacketsModel.UIDSTATUS);
-    }
-
-    private void dropKeyMetadataForeignKey(SupportSQLiteDatabase db) {
-        // noinspection deprecation
-        db.execSQL("ALTER TABLE " + KeyMetadataModel.TABLE_NAME + " RENAME TO metadata_tmp");
-        db.execSQL(KeyMetadataModel.CREATE_TABLE);
-        // noinspection deprecation
-        db.execSQL("INSERT INTO " + KeyMetadataModel.TABLE_NAME + " SELECT * FROM metadata_tmp");
-        db.execSQL("DROP TABLE metadata_tmp");
-    }
-
-    private void migrateSecretKeysFromDbToLocalStorage(SupportSQLiteDatabase db, Context context) throws IOException {
-        LocalSecretKeyStorage localSecretKeyStorage = LocalSecretKeyStorage.getInstance(context);
-        Cursor cursor = db.query("SELECT master_key_id, key_ring_data FROM keyrings_secret");
-        while (cursor.moveToNext()) {
-            long masterKeyId = cursor.getLong(0);
-            byte[] secretKeyBlob = cursor.getBlob(1);
-            localSecretKeyStorage.writeSecretKey(masterKeyId, secretKeyBlob);
-        }
-        cursor.close();
-
-        // we'll keep this around for now, but make sure to delete when migration looks ok!!
-        // db.execSQL("DROP TABLE keyrings_secret");
-    }
-
-    private void migrateUpdatedKeysToKeyMetadataTable(SupportSQLiteDatabase db) {
-        try {
-            db.execSQL("ALTER TABLE updated_keys RENAME TO key_metadata;");
-        } catch (SQLException e) {
-            if (Constants.DEBUG) {
-                Timber.e(e, "Ignoring migration exception, this probably happened before");
-                return;
-            }
-            throw e;
-        }
-    }
-
-    private void renameApiAutocryptPeersTable(SupportSQLiteDatabase db) {
-        try {
-            db.execSQL("ALTER TABLE api_autocrypt_peers RENAME TO autocrypt_peers;");
-        } catch (SQLException e) {
-            if (Constants.DEBUG) {
-                Timber.e(e, "Ignoring migration exception, this probably happened before");
-                return;
-            }
-            throw e;
-        }
     }
 
     private void onDowngrade() {
@@ -468,7 +236,7 @@ public class KeychainDatabase {
             out.createNewFile();
         }
         if (!in.canRead()) {
-            throw new IOException("Cannot read " +  in.getName());
+            throw new IOException("Cannot read " + in.getName());
         }
         if (!out.canWrite()) {
             throw new IOException("Cannot write " + out.getName());

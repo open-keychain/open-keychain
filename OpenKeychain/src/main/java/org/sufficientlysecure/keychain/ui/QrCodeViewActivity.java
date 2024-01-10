@@ -28,7 +28,7 @@ import android.widget.ImageView;
 
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.keyview.UnifiedKeyInfoViewModel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;

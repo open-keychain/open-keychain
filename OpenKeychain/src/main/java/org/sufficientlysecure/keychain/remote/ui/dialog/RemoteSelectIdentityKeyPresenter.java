@@ -33,9 +33,9 @@ import android.text.TextUtils;
 
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.openintents.openpgp.util.OpenPgpUtils.UserId;
+import org.sufficientlysecure.keychain.Api_apps;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.model.ApiApp;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
 import org.sufficientlysecure.keychain.operations.results.PgpEditKeyResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
@@ -59,7 +59,7 @@ class RemoteSelectIdentityKeyPresenter {
     private Long selectedMasterKeyId;
     private byte[] generatedKeyData;
     private ApiAppDao apiAppDao;
-    private ApiApp apiApp;
+    private Api_apps apiApp;
 
 
     RemoteSelectIdentityKeyPresenter(Context context, LifecycleOwner lifecycleOwner) {
@@ -98,7 +98,7 @@ class RemoteSelectIdentityKeyPresenter {
         Drawable appIcon = packageManager.getApplicationIcon(applicationInfo);
         CharSequence appLabel = packageManager.getApplicationLabel(applicationInfo);
 
-        apiApp = ApiApp.create(packageName, packageSignature);
+        apiApp = new Api_apps(0L, packageName, packageSignature);
 
         view.setTitleClientIconAndName(appIcon, appLabel);
     }
@@ -217,14 +217,14 @@ class RemoteSelectIdentityKeyPresenter {
 
     void onHighlightFinished() {
         apiAppDao.insertApiApp(apiApp);
-        apiAppDao.addAllowedKeyIdForApp(apiApp.package_name(), Objects.requireNonNull(selectedMasterKeyId));
+        apiAppDao.addAllowedKeyIdForApp(apiApp.getPackage_name(), Objects.requireNonNull(selectedMasterKeyId));
         view.finishAndReturn(selectedMasterKeyId);
     }
 
     void onImportOpSuccess(ImportKeyResult result) {
         long importedMasterKeyId = result.getImportedMasterKeyIds()[0];
         apiAppDao.insertApiApp(apiApp);
-        apiAppDao.addAllowedKeyIdForApp(apiApp.package_name(), importedMasterKeyId);
+        apiAppDao.addAllowedKeyIdForApp(apiApp.getPackage_name(), importedMasterKeyId);
         view.finishAndReturn(importedMasterKeyId);
     }
 

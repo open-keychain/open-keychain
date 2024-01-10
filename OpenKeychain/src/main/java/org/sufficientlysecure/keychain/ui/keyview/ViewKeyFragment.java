@@ -35,11 +35,11 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
+import org.sufficientlysecure.keychain.Key_metadata;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
 import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
-import org.sufficientlysecure.keychain.model.KeyMetadata;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.ui.adapter.IdentityAdapter;
@@ -265,16 +265,16 @@ public class ViewKeyFragment extends Fragment implements OnMenuItemClickListener
         identitiesAdapter.setData(identityInfos);
     }
 
-    private void onLoadKeyMetadata(KeyMetadata keyMetadata) {
+    private void onLoadKeyMetadata(Key_metadata keyMetadata) {
         if (keyMetadata == null) {
             keyserverStatusView.setDisplayStatusUnknown();
-        } else if (keyMetadata.hasBeenUpdated()) {
-            if (keyMetadata.isPublished()) {
+        } else if (keyMetadata.getLast_updated() != null) {
+            if (keyMetadata.getSeen_on_keyservers() != null && keyMetadata.getSeen_on_keyservers()) {
                 keyserverStatusView.setDisplayStatusPublished();
             } else {
                 keyserverStatusView.setDisplayStatusNotPublished();
             }
-            keyserverStatusView.setLastUpdated(keyMetadata.last_updated());
+            keyserverStatusView.setLastUpdated(keyMetadata.getLast_updated());
         } else {
             keyserverStatusView.setDisplayStatusUnknown();
         }

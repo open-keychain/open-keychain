@@ -37,7 +37,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKey;
 import org.sufficientlysecure.keychain.pgp.SshPublicKey;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;

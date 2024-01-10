@@ -10,11 +10,11 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 
+import org.sufficientlysecure.keychain.Api_apps;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import org.sufficientlysecure.keychain.daos.DatabaseNotifyManager;
 import org.sufficientlysecure.keychain.livedata.ApiAppsLiveData.ListedApp;
-import org.sufficientlysecure.keychain.model.ApiApp;
 import org.sufficientlysecure.keychain.ui.keyview.loader.AsyncTaskLiveData;
 
 
@@ -41,18 +41,18 @@ public class ApiAppsLiveData extends AsyncTaskLiveData<List<ListedApp>> {
     }
 
     private void loadRegisteredApps(ArrayList<ListedApp> result) {
-        List<ApiApp> registeredApiApps = apiAppDao.getAllApiApps();
+        List<Api_apps> registeredApiApps = apiAppDao.getAllApiApps();
 
-        for (ApiApp apiApp : registeredApiApps) {
+        for (Api_apps apiApp : registeredApiApps) {
             ListedApp listedApp;
             try {
-                ApplicationInfo ai = packageManager.getApplicationInfo(apiApp.package_name(), 0);
+                ApplicationInfo ai = packageManager.getApplicationInfo(apiApp.getPackage_name(), 0);
                 CharSequence applicationLabel = packageManager.getApplicationLabel(ai);
                 Drawable applicationIcon = packageManager.getApplicationIcon(ai);
 
-                listedApp = new ListedApp(apiApp.package_name(), true, true, applicationLabel, applicationIcon, null);
+                listedApp = new ListedApp(apiApp.getPackage_name(), true, true, applicationLabel, applicationIcon, null);
             } catch (PackageManager.NameNotFoundException e) {
-                listedApp = new ListedApp(apiApp.package_name(), false, true, apiApp.package_name(), null, null);
+                listedApp = new ListedApp(apiApp.getPackage_name(), false, true, apiApp.getPackage_name(), null, null);
             }
             result.add(listedApp);
         }

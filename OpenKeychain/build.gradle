@@ -1,5 +1,8 @@
-apply plugin: 'com.android.application'
-apply plugin: 'com.squareup.sqldelight'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'com.squareup.sqldelight'
+}
 
 dependencies {
     // from local Android SDK
@@ -20,6 +23,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.14.9'
     implementation 'org.apache.james:apache-mime4j-core:0.8.1'
     implementation 'org.apache.james:apache-mime4j-dom:0.8.1'
+    implementation "com.squareup.sqldelight:android-driver:1.5.4"
 
     // UI
     implementation 'org.sufficientlysecure:html-textview:3.1'
@@ -86,6 +90,7 @@ dependencies {
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
+    namespace 'org.sufficientlysecure.keychain'
 
     defaultConfig {
         minSdkVersion 15

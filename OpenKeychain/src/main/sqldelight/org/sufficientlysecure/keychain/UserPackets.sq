@@ -16,8 +16,7 @@ CREATE TABLE IF NOT EXISTS user_packets(
 );
 
 insertUserPacket:
-INSERT INTO user_packets (master_key_id, rank, type, user_id, name, email, comment, attribute_data, is_primary, is_revoked)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO user_packets VALUES ?;
 
 selectUserIdsByMasterKeyId:
 SELECT user_packets.master_key_id, user_packets.rank, user_id, name, email, comment, is_primary, is_revoked, MIN(certs.verified) AS verified_int

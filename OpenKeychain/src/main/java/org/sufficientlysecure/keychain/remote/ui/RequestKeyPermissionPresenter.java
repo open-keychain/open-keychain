@@ -26,7 +26,7 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.Nullable;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.exception.PgpKeyNotFoundException;
 import org.sufficientlysecure.keychain.daos.ApiAppDao;

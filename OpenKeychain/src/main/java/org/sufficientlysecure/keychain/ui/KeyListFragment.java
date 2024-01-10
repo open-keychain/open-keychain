@@ -58,7 +58,7 @@ import org.sufficientlysecure.keychain.compatibility.ClipboardReflection;
 import org.sufficientlysecure.keychain.daos.DatabaseNotifyManager;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.keysync.KeyserverSyncManager;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.KeySyncParcel;
 import org.sufficientlysecure.keychain.operations.results.BenchmarkResult;
 import org.sufficientlysecure.keychain.operations.results.ImportKeyResult;
@@ -252,7 +252,7 @@ public class KeyListFragment extends RecyclerFragment<FlexibleAdapter<FlexibleKe
 
         GenericViewModel viewModel = ViewModelProviders.of(this).get(GenericViewModel.class);
         LiveData<List<FlexibleKeyItem>> liveData = viewModel.getGenericLiveData(requireContext(), this::loadFlexibleKeyItems);
-        liveData.observe(this, this::onLoadKeyItems);
+        liveData.observe(getViewLifecycleOwner(), this::onLoadKeyItems);
     }
 
     @WorkerThread

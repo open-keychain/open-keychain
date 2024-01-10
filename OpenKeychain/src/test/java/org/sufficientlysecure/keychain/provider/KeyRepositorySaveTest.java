@@ -29,7 +29,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLog;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
@@ -128,7 +128,6 @@ public class KeyRepositorySaveTest {
         CanonicalizedPublicKeyRing pubRing = mDatabaseInteractor.getCanonicalizedPublicKeyRing(keyId);
 
         Assert.assertEquals("master key should be encryption key", keyId, pubRing.getEncryptId());
-        Assert.assertEquals("master key should be encryption key (cached)", keyId, unifiedKeyInfo.has_encrypt_key_int());
 
         Assert.assertEquals("canonicalized key flags should be zero",
                 0, (long) pubRing.getPublicKey().getKeyUsage());

@@ -46,7 +46,7 @@ import android.widget.Toast;
 import com.mikepenz.materialdrawer.util.KeyboardUtil;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.livedata.GenericLiveData;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.remote.ui.RemoteSecurityTokenOperationActivity;
 import org.sufficientlysecure.keychain.remote.ui.dialog.RemoteDeduplicatePresenter.RemoteDeduplicateView;

@@ -21,24 +21,23 @@ package org.sufficientlysecure.keychain.remote.ui;
 import java.util.List;
 
 import android.app.Activity;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import org.openintents.openpgp.util.OpenPgpApi;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.model.ApiApp;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
-import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.pgp.KeyRing;
 import org.sufficientlysecure.keychain.ui.CreateKeyActivity;
 import org.sufficientlysecure.keychain.ui.adapter.KeyChoiceAdapter;
 import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
@@ -117,7 +116,7 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<KeyChoiceAdapt
         GenericViewModel viewModel = ViewModelProviders.of(this).get(GenericViewModel.class);
         LiveData<List<UnifiedKeyInfo>> liveData = viewModel.getGenericLiveData(
                 requireContext(), keyRepository::getAllUnifiedKeyInfoWithSecret);
-        liveData.observe(this, this::onLoadUnifiedKeyData);
+        liveData.observe(getViewLifecycleOwner(), this::onLoadUnifiedKeyData);
     }
 
     public void onLoadUnifiedKeyData(List<UnifiedKeyInfo> data) {
@@ -155,8 +154,7 @@ public class SelectSignKeyIdListFragment extends RecyclerFragment<KeyChoiceAdapt
     }
 
     private void onSelectKeyItemClicked(UnifiedKeyInfo keyInfo) {
-        ApiApp apiApp = ApiApp.create(packageName, packageSignature);
-        apiAppDao.insertApiApp(apiApp);
+        apiAppDao.insertApiApp(packageName, packageSignature);
         apiAppDao.addAllowedKeyIdForApp(packageName, keyInfo.master_key_id());
         resultIntent.putExtra(OpenPgpApi.EXTRA_SIGN_KEY_ID, keyInfo.master_key_id());
 

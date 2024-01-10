@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 
-import org.apache.tools.ant.util.StringUtils;
 import org.bouncycastle.bcpg.BCPGInputStream;
 import org.bouncycastle.bcpg.Packet;
 import org.bouncycastle.bcpg.PacketTags;
@@ -388,9 +387,9 @@ public class PgpEncryptDecryptTest {
 
             Assert.assertTrue("verification must succeed", result.success());
 
-            Assert.assertTrue("verification text should equal plaintext (ignoring newlines)",
-                    new String(out.toByteArray()).replace(StringUtils.LINE_SEP, "")
-                            .equals(plaintext.replace("\r", "").replace("\n", "")));
+            Assert.assertEquals("verification text should equal plaintext (ignoring newlines)",
+                    out.toString().replace("\r", "").replace("\n", ""),
+                    plaintext.replace("\r", "").replace("\n", ""));
             Assert.assertEquals("decryptionResult should be RESULT_NOT_ENCRYPTED",
                     OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED, result.getDecryptionResult().getResult());
             Assert.assertEquals("signatureResult should be RESULT_VALID_CONFIRMED",

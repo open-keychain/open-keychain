@@ -39,7 +39,7 @@ import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.livedata.GenericLiveData;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.ui.chips.EncryptRecipientChipsInput;
 import org.sufficientlysecure.keychain.ui.chips.EncryptRecipientChipsInput.EncryptRecipientChip;
 import org.sufficientlysecure.keychain.ui.widget.KeySpinner;
@@ -121,8 +121,8 @@ public class EncryptModeAsymmetricFragment extends EncryptModeFragment {
         super.onActivityCreated(savedInstanceState);
 
         EncryptModeViewModel viewModel = ViewModelProviders.of(this).get(EncryptModeViewModel.class);
-        viewModel.getSignKeyLiveData(requireContext()).observe(this, mSignKeySpinner::setData);
-        viewModel.getEncryptRecipientLiveData(requireContext()).observe(this, mEncryptKeyView::setData);
+        viewModel.getSignKeyLiveData(requireContext()).observe(getViewLifecycleOwner(), mSignKeySpinner::setData);
+        viewModel.getEncryptRecipientLiveData(requireContext()).observe(getViewLifecycleOwner(), mEncryptKeyView::setData);
 
         // preselect keys given, from state or arguments
         if (savedInstanceState == null) {

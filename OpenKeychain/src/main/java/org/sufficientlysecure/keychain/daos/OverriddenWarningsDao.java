@@ -20,11 +20,7 @@ package org.sufficientlysecure.keychain.daos;
 
 import android.content.Context;
 
-import com.squareup.sqldelight.SqlDelightQuery;
 import org.sufficientlysecure.keychain.KeychainDatabase;
-import org.sufficientlysecure.keychain.OverriddenWarningsModel.DeleteByIdentifier;
-import org.sufficientlysecure.keychain.OverriddenWarningsModel.InsertIdentifier;
-import org.sufficientlysecure.keychain.model.OverriddenWarning;
 
 
 public class OverriddenWarningsDao extends AbstractDao {
@@ -35,25 +31,21 @@ public class OverriddenWarningsDao extends AbstractDao {
         return new OverriddenWarningsDao(database, databaseNotifyManager);
     }
 
-    private OverriddenWarningsDao(KeychainDatabase db, DatabaseNotifyManager databaseNotifyManager) {
+    private OverriddenWarningsDao(KeychainDatabase db,
+            DatabaseNotifyManager databaseNotifyManager) {
         super(db, databaseNotifyManager);
     }
 
     public boolean isWarningOverridden(String identifier) {
-        SqlDelightQuery query = OverriddenWarning.FACTORY.selectCountByIdentifier(identifier);
-        Long result = mapSingleRow(query, OverriddenWarning.FACTORY.selectCountByIdentifierMapper()::map);
-        return result != null && result > 0;
+        return getDatabase().getOverriddenWarningsQueries().selectCountByIdentifier(identifier)
+                .executeAsOne() > 0;
     }
 
     public void putOverride(String identifier) {
-        InsertIdentifier statement = new InsertIdentifier(getWritableDb());
-        statement.bind(identifier);
-        statement.executeInsert();
+        getDatabase().getOverriddenWarningsQueries().insertIdentifier(identifier);
     }
 
     public void deleteOverride(String identifier) {
-        DeleteByIdentifier statement = new DeleteByIdentifier(getWritableDb());
-        statement.bind(identifier);
-        statement.executeInsert();
+        getDatabase().getOverriddenWarningsQueries().deleteByIdentifier(identifier);
     }
 }

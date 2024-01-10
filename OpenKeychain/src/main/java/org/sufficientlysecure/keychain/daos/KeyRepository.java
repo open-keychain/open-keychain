@@ -20,22 +20,23 @@ package org.sufficientlysecure.keychain.daos;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import android.content.Context;
-import android.database.Cursor;
-import androidx.annotation.WorkerThread;
 
-import com.squareup.sqldelight.SqlDelightQuery;
+import androidx.annotation.WorkerThread;
+import com.squareup.sqldelight.Query;
+import com.squareup.sqldelight.db.SqlCursor;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
+import org.sufficientlysecure.keychain.KeyRingsPublicQueries;
+import org.sufficientlysecure.keychain.KeySignaturesQueries;
 import org.sufficientlysecure.keychain.KeychainDatabase;
-import org.sufficientlysecure.keychain.model.Certification;
-import org.sufficientlysecure.keychain.model.KeyRingPublic;
-import org.sufficientlysecure.keychain.model.KeySignature;
-import org.sufficientlysecure.keychain.model.SubKey;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
-import org.sufficientlysecure.keychain.model.UserPacket;
-import org.sufficientlysecure.keychain.model.UserPacket.UserId;
+import org.sufficientlysecure.keychain.Keyrings_public;
+import org.sufficientlysecure.keychain.Keys;
+import org.sufficientlysecure.keychain.KeysQueries;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UserId;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
@@ -49,9 +50,12 @@ import timber.log.Timber;
 public class KeyRepository extends AbstractDao {
     final LocalPublicKeyStorage mLocalPublicKeyStorage;
     final LocalSecretKeyStorage localSecretKeyStorage;
+    private final KeysQueries keysQueries = getDatabase().getKeysQueries();
 
     OperationLog mLog;
     int mIndent;
+    private final KeyRingsPublicQueries keyRingsPublicQueries = getDatabase().getKeyRingsPublicQueries();
+    private final KeySignaturesQueries keySignaturesQueries = getDatabase().getKeySignaturesQueries();
 
     public static KeyRepository create(Context context) {
         LocalPublicKeyStorage localPublicKeyStorage = LocalPublicKeyStorage.getInstance(context);
@@ -59,14 +63,16 @@ public class KeyRepository extends AbstractDao {
         KeychainDatabase database = KeychainDatabase.getInstance(context);
         DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
 
-        return new KeyRepository(database, databaseNotifyManager, localPublicKeyStorage, localSecretKeyStorage);
+        return new KeyRepository(database, databaseNotifyManager, localPublicKeyStorage,
+                localSecretKeyStorage);
     }
 
     private KeyRepository(KeychainDatabase database,
             DatabaseNotifyManager databaseNotifyManager,
             LocalPublicKeyStorage localPublicKeyStorage,
             LocalSecretKeyStorage localSecretKeyStorage) {
-        this(database, databaseNotifyManager, localPublicKeyStorage, localSecretKeyStorage, new OperationLog(), 0);
+        this(database, databaseNotifyManager, localPublicKeyStorage, localSecretKeyStorage,
+                new OperationLog(), 0);
     }
 
     KeyRepository(KeychainDatabase database,
@@ -101,7 +107,8 @@ public class KeyRepository extends AbstractDao {
         mLog = new OperationLog();
     }
 
-    public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(long masterKeyId) throws NotFoundException {
+    public CanonicalizedPublicKeyRing getCanonicalizedPublicKeyRing(long masterKeyId)
+            throws NotFoundException {
         UnifiedKeyInfo unifiedKeyInfo = getUnifiedKeyInfo(masterKeyId);
         if (unifiedKeyInfo == null) {
             throw new NotFoundException();
@@ -111,7 +118,8 @@ public class KeyRepository extends AbstractDao {
         return new CanonicalizedPublicKeyRing(publicKeyData, unifiedKeyInfo.verified());
     }
 
-    public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(long masterKeyId) throws NotFoundException {
+    public CanonicalizedSecretKeyRing getCanonicalizedSecretKeyRing(long masterKeyId)
+            throws NotFoundException {
         UnifiedKeyInfo unifiedKeyInfo = getUnifiedKeyInfo(masterKeyId);
         if (unifiedKeyInfo == null || !unifiedKeyInfo.has_any_secret()) {
             throw new NotFoundException();
@@ -124,75 +132,85 @@ public class KeyRepository extends AbstractDao {
     }
 
     public List<Long> getAllMasterKeyIds() {
-        SqlDelightQuery query = KeyRingPublic.FACTORY.selectAllMasterKeyIds();
-        return mapAllRows(query, KeySignature.FACTORY.selectMasterKeyIdsBySignerMapper());
+        return keyRingsPublicQueries.selectAllMasterKeyIds().executeAsList();
     }
 
     public List<Long> getMasterKeyIdsBySigner(List<Long> signerMasterKeyIds) {
-        long[] signerKeyIds = getLongListAsArray(signerMasterKeyIds);
-        SqlDelightQuery query = KeySignature.FACTORY.selectMasterKeyIdsBySigner(signerKeyIds);
-        return mapAllRows(query, KeySignature.FACTORY.selectMasterKeyIdsBySignerMapper());
+        return keySignaturesQueries.selectMasterKeyIdsBySigner(signerMasterKeyIds).executeAsList();
     }
 
     public Long getMasterKeyIdBySubkeyId(long subKeyId) {
-        SqlDelightQuery query = SubKey.FACTORY.selectMasterKeyIdBySubkey(subKeyId);
-        return mapSingleRow(query, SubKey.FACTORY.selectMasterKeyIdBySubkeyMapper());
+        return keysQueries.selectMasterKeyIdBySubkey(subKeyId).executeAsOneOrNull();
     }
 
     public UnifiedKeyInfo getUnifiedKeyInfo(long masterKeyId) {
-        SqlDelightQuery query = SubKey.FACTORY.selectUnifiedKeyInfoByMasterKeyId(masterKeyId);
-        return mapSingleRow(query, SubKey.UNIFIED_KEY_INFO_MAPPER);
+        return keysQueries.selectUnifiedKeyInfoByMasterKeyId(masterKeyId, UnifiedKeyInfo::create).executeAsOneOrNull();
     }
 
     public List<UnifiedKeyInfo> getUnifiedKeyInfo(long... masterKeyIds) {
-        SqlDelightQuery query = SubKey.FACTORY.selectUnifiedKeyInfoByMasterKeyIds(masterKeyIds);
-        return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER);
+        return keysQueries.selectUnifiedKeyInfoByMasterKeyIds(getLongArrayAsList(masterKeyIds), UnifiedKeyInfo::create)
+                .executeAsList();
     }
 
     public List<UnifiedKeyInfo> getUnifiedKeyInfosByMailAddress(String mailAddress) {
-        SqlDelightQuery query = SubKey.FACTORY.selectUnifiedKeyInfoSearchMailAddress('%' + mailAddress + '%');
-        return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER);
+        return keysQueries.selectUnifiedKeyInfoSearchMailAddress('%' + mailAddress + '%', UnifiedKeyInfo::create)
+                .executeAsList();
     }
 
     public List<UnifiedKeyInfo> getAllUnifiedKeyInfo() {
-        SqlDelightQuery query = SubKey.FACTORY.selectAllUnifiedKeyInfo();
-        return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER);
+        return keysQueries.selectAllUnifiedKeyInfo(UnifiedKeyInfo::create).executeAsList();
     }
 
     public List<UnifiedKeyInfo> getAllUnifiedKeyInfoWithSecret() {
-        SqlDelightQuery query = SubKey.FACTORY.selectAllUnifiedKeyInfoWithSecret();
-        return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER);
+        return keysQueries.selectAllUnifiedKeyInfoWithSecret(UnifiedKeyInfo::create).executeAsList();
     }
 
     public List<UnifiedKeyInfo> getAllUnifiedKeyInfoWithAuthKeySecret() {
-        SqlDelightQuery query = SubKey.FACTORY.selectAllUnifiedKeyInfoWithAuthKeySecret();
-        return mapAllRows(query, SubKey.UNIFIED_KEY_INFO_MAPPER);
+        return keysQueries.selectAllUnifiedKeyInfoWithAuthKeySecret(UnifiedKeyInfo::create).executeAsList();
     }
 
     public List<UserId> getUserIds(long... masterKeyIds) {
-        SqlDelightQuery query = UserPacket.FACTORY.selectUserIdsByMasterKeyId(masterKeyIds);
-        return mapAllRows(query, UserPacket.USER_ID_MAPPER);
+        return getDatabase().getUserPacketsQueries()
+                .selectUserIdsByMasterKeyId(getLongArrayAsList(masterKeyIds), UserId::create).executeAsList();
     }
+
+
 
     public List<String> getConfirmedUserIds(long masterKeyId) {
-        SqlDelightQuery query = UserPacket.FACTORY.selectUserIdsByMasterKeyIdAndVerification(
-                Certification.FACTORY, masterKeyId, VerificationStatus.VERIFIED_SECRET);
-        return mapAllRows(query, cursor -> UserPacket.USER_ID_MAPPER.map(cursor).user_id());
+        return getDatabase().getUserPacketsQueries()
+                .selectUserIdsByMasterKeyIdAndVerification(masterKeyId,
+                        VerificationStatus.VERIFIED_SECRET, (
+                                master_key_id,
+                                rank,
+                                user_id,
+                                name,
+                                email,
+                                comment,
+                                is_primary,
+                                is_revoked,
+                                verified_int
+
+                        ) -> user_id).executeAsList();
     }
 
-    public List<SubKey> getSubKeysByMasterKeyId(long masterKeyId) {
-        SqlDelightQuery query = SubKey.FACTORY.selectSubkeysByMasterKeyId(masterKeyId);
-        return mapAllRows(query, SubKey.SUBKEY_MAPPER);
+    public List<Keys> getSubKeysByMasterKeyId(long masterKeyId) {
+        return keysQueries.selectSubkeysByMasterKeyId(masterKeyId).executeAsList();
     }
 
     public SecretKeyType getSecretKeyType(long keyId) throws NotFoundException {
-        SqlDelightQuery query = SubKey.FACTORY.selectSecretKeyType(keyId);
-        return mapSingleRowOrThrow(query, SubKey.SKT_MAPPER);
+        try {
+            return keysQueries.selectSecretKeyType(keyId).executeAsOne();
+        } catch (NullPointerException npe) {
+            throw new NotFoundException();
+        }
     }
 
     public byte[] getFingerprintByKeyId(long keyId) throws NotFoundException {
-        SqlDelightQuery query = SubKey.FACTORY.selectFingerprintByKeyId(keyId);
-        return mapSingleRowOrThrow(query, SubKey.FACTORY.selectFingerprintByKeyIdMapper());
+        try {
+            return keysQueries.selectFingerprintByKeyId(keyId).executeAsOne();
+        } catch (NullPointerException npe) {
+            throw new NotFoundException();
+        }
     }
 
     private byte[] getKeyRingAsArmoredData(byte[] data) throws IOException {
@@ -205,23 +223,26 @@ public class KeyRepository extends AbstractDao {
         return bos.toByteArray();
     }
 
-    public String getPublicKeyRingAsArmoredString(long masterKeyId) throws NotFoundException, IOException {
+    public String getPublicKeyRingAsArmoredString(long masterKeyId)
+            throws NotFoundException, IOException {
         byte[] data = loadPublicKeyRingData(masterKeyId);
         byte[] armoredData = getKeyRingAsArmoredData(data);
         return new String(armoredData);
     }
 
-    public byte[] getSecretKeyRingAsArmoredData(long masterKeyId) throws NotFoundException, IOException {
+    public byte[] getSecretKeyRingAsArmoredData(long masterKeyId)
+            throws NotFoundException, IOException {
         byte[] data = loadSecretKeyRingData(masterKeyId);
         return getKeyRingAsArmoredData(data);
     }
 
     public final byte[] loadPublicKeyRingData(long masterKeyId) throws NotFoundException {
-        SqlDelightQuery query = KeyRingPublic.FACTORY.selectByMasterKeyId(masterKeyId);
-        try (Cursor cursor = getReadableDb().query(query)) {
-            if (cursor.moveToFirst()) {
-                KeyRingPublic keyRingPublic = KeyRingPublic.MAPPER.map(cursor);
-                byte[] keyRingData = keyRingPublic.key_ring_data();
+        Query<Keyrings_public> keyringsPublicQuery =
+                keyRingsPublicQueries.selectByMasterKeyId(masterKeyId);
+        try (SqlCursor cursor = keyringsPublicQuery.execute()) {
+            if (cursor.next()) {
+                Keyrings_public keyRingPublic = keyringsPublicQuery.getMapper().invoke(cursor);
+                byte[] keyRingData = keyRingPublic.getKey_ring_data();
                 if (keyRingData == null) {
                     keyRingData = mLocalPublicKeyStorage.readPublicKey(masterKeyId);
                 }
@@ -243,18 +264,16 @@ public class KeyRepository extends AbstractDao {
     }
 
     public long getSecretSignId(long masterKeyId) throws NotFoundException {
-        SqlDelightQuery query = SubKey.FACTORY.selectEffectiveSignKeyIdByMasterKeyId(masterKeyId);
-        return mapSingleRowOrThrow(query, SubKey.FACTORY.selectEffectiveSignKeyIdByMasterKeyIdMapper());
+        return keysQueries.selectEffectiveSignKeyIdByMasterKeyId(masterKeyId).executeAsOneOrNull();
     }
 
     public long getEffectiveAuthenticationKeyId(long masterKeyId) throws NotFoundException {
-        SqlDelightQuery query = SubKey.FACTORY.selectEffectiveAuthKeyIdByMasterKeyId(masterKeyId);
-        return mapSingleRowOrThrow(query, SubKey.FACTORY.selectEffectiveAuthKeyIdByMasterKeyIdMapper());
+        return keysQueries.selectEffectiveAuthKeyIdByMasterKeyId(masterKeyId).executeAsOneOrNull();
     }
 
     public List<Long> getPublicEncryptionIds(long masterKeyId) {
-        SqlDelightQuery query = SubKey.FACTORY.selectEffectiveEncryptionKeyIdsByMasterKeyId(masterKeyId);
-        return mapAllRows(query, SubKey.FACTORY.selectEffectiveEncryptionKeyIdsByMasterKeyIdMapper());
+        return keysQueries.selectEffectiveEncryptionKeyIdsByMasterKeyId(masterKeyId)
+                .executeAsList();
     }
 
     public static class NotFoundException extends Exception {
@@ -273,5 +292,14 @@ public class KeyRepository extends AbstractDao {
             longs[i++] = aLong;
         }
         return longs;
+    }
+
+    private List<Long> getLongArrayAsList(long[] longList) {
+        Long[] longs = new Long[longList.length];
+        int i = 0;
+        for (Long aLong : longList) {
+            longs[i++] = aLong;
+        }
+        return Arrays.asList(longs);
     }
 }

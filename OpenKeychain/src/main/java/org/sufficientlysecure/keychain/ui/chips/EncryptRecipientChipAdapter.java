@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.materialchips.ChipView;
 import org.sufficientlysecure.materialchips.ChipsInput;
 import org.sufficientlysecure.materialchips.adapter.ChipsAdapter;
@@ -15,7 +16,6 @@ import org.sufficientlysecure.materialchips.util.ViewUtil;
 import org.sufficientlysecure.materialchips.views.DetailedChipView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.model.SubKey;
 import org.sufficientlysecure.keychain.ui.chips.EncryptRecipientChipAdapter.ItemViewHolder;
 import org.sufficientlysecure.keychain.ui.chips.EncryptRecipientChipsInput.EncryptRecipientChip;
 
@@ -63,7 +63,7 @@ public class EncryptRecipientChipAdapter extends ChipsAdapter<EncryptRecipientCh
         }
     }
 
-    private SimpleChip simpleChipFromKeyInfo(SubKey.UnifiedKeyInfo keyInfo) {
+    private SimpleChip simpleChipFromKeyInfo(UnifiedKeyInfo keyInfo) {
         String name;
         String email;
         if (keyInfo.name() == null) {

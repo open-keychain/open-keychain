@@ -10,7 +10,7 @@ import android.content.res.Resources;
 import androidx.annotation.NonNull;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 
 
 public class FlexibleKeyItemFactory {

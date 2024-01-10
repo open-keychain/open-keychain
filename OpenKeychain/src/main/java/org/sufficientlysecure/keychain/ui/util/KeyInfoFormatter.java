@@ -10,8 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.model.SubKey;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 
 import java.util.List;
 
@@ -150,7 +149,7 @@ public class KeyInfoFormatter {
     }
 
     @NonNull
-    private String getSecretKeyReadableTime(Context context, SubKey.UnifiedKeyInfo keyInfo) {
+    private String getSecretKeyReadableTime(Context context, UnifiedKeyInfo keyInfo) {
         long creationMillis = keyInfo.creation() * 1000;
 
         boolean allowRelativeTimestamp = keyInfo.has_duplicate();

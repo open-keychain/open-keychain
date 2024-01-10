@@ -33,7 +33,7 @@ import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.model.UserPacket.UserId;
+import org.sufficientlysecure.keychain.model.UserId;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
