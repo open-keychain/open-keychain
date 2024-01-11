@@ -13,11 +13,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bouncycastle.bcpg.AEADEncDataPacket;
+import org.bouncycastle.bcpg.SymmetricEncIntegrityPacket;
 import org.bouncycastle.jcajce.util.NamedJcaJceHelper;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKeyEncryptedData;
+import org.bouncycastle.openpgp.PGPSessionKey;
 import org.bouncycastle.openpgp.operator.PGPDataDecryptor;
 import org.bouncycastle.openpgp.operator.PublicKeyDataDecryptorFactory;
+
 
 public class CachingDataDecryptorFactory implements PublicKeyDataDecryptorFactory
 {
@@ -25,12 +29,14 @@ public class CachingDataDecryptorFactory implements PublicKeyDataDecryptorFactor
     private final HashMap<ByteBuffer, byte[]> mSessionKeyCache;
 
     private OperatorHelper mOperatorHelper;
+    private JceAEADUtil mAeadHelper;
 
     public CachingDataDecryptorFactory(String providerName, Map<ByteBuffer, byte[]> sessionKeyCache)
     {
         this((PublicKeyDataDecryptorFactory) null, sessionKeyCache);
 
         mOperatorHelper = new OperatorHelper(new NamedJcaJceHelper(providerName));
+        mAeadHelper = new JceAEADUtil(mOperatorHelper);
     }
 
     public CachingDataDecryptorFactory(PublicKeyDataDecryptorFactory wrapped,
@@ -81,6 +87,24 @@ public class CachingDataDecryptorFactory implements PublicKeyDataDecryptorFactor
             return mWrappedDecryptor.createDataDecryptor(withIntegrityPacket, encAlgorithm, key);
         }
         return mOperatorHelper.createDataDecryptor(withIntegrityPacket, encAlgorithm, key);
+    }
+
+    @Override
+    public PGPDataDecryptor createDataDecryptor(AEADEncDataPacket aeadEncDataPacket,
+            PGPSessionKey sessionKey) throws PGPException {
+        if (mWrappedDecryptor != null) {
+            mWrappedDecryptor.createDataDecryptor(aeadEncDataPacket, sessionKey);
+        }
+        return mAeadHelper.createOpenPgpV5DataDecryptor(aeadEncDataPacket, sessionKey);
+    }
+
+    @Override
+    public PGPDataDecryptor createDataDecryptor(SymmetricEncIntegrityPacket seipd,
+            PGPSessionKey sessionKey) throws PGPException {
+        if (mWrappedDecryptor != null) {
+            mWrappedDecryptor.createDataDecryptor(seipd, sessionKey);
+        }
+        return mAeadHelper.createOpenPgpV6DataDecryptor(seipd, sessionKey);
     }
 
 }

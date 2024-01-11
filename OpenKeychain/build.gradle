@@ -57,7 +57,7 @@ dependencies {
     implementation project(':extern:MaterialChipsInput')
 
     // implementation project(':openkeychain:extern:bouncycastle:core')
-    implementation 'org.bouncycastle:bcprov-jdk15on:1.68'
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.77'
     implementation project(':extern:bouncycastle:pg')
     // implementation project(':openkeychain:extern:bouncycastle:prov')
 
@@ -69,7 +69,7 @@ dependencies {
     // http://www.vogella.com/tutorials/Robolectric/article.html
     testImplementation 'junit:junit:4.13'
     testImplementation ('org.robolectric:robolectric:3.8') {
-        exclude group: 'org.bouncycastle', module: 'bcprov-jdk16'
+        exclude group: 'org.bouncycastle', module: 'bcprov-jdk18on'
     }
     testImplementation 'org.mockito:mockito-core:2.18.0'
 

@@ -72,7 +72,10 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
     }
 
     JcePublicKeyKeyEncryptionMethodGenerator getPubKeyEncryptionGenerator(boolean hiddenRecipients) {
-        return new JcePublicKeyKeyEncryptionMethodGenerator(mPublicKey, hiddenRecipients);
+        JcePublicKeyKeyEncryptionMethodGenerator generator =
+                new JcePublicKeyKeyEncryptionMethodGenerator(mPublicKey);
+        generator.setSessionKeyObfuscation(hiddenRecipients);
+        return generator;
     }
 
     public boolean canSign() {
