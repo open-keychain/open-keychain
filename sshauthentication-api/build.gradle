@@ -18,8 +18,12 @@ android {
     lintOptions {
         abortOnError false
     }
+    buildFeatures {
+        aidl true
+    }
 }
 
+/*
 // https://developer.android.com/studio/build/maven-publish-plugin
 afterEvaluate {
     publishing {
@@ -49,3 +53,4 @@ afterEvaluate {
         }
     }
 }
+*/

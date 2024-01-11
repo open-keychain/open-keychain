@@ -10,7 +10,7 @@ buildscript {
 
     dependencies {
         // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
-        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath 'com.android.tools.build:gradle:8.1.4'
         // classpath 'com.squareup.sqldelight:gradle-plugin:0.8.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.squareup.sqldelight:gradle-plugin:1.5.4'
