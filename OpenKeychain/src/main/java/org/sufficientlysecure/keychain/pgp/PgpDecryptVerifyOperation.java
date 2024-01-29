@@ -109,7 +109,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             inputData = new InputData(new ByteArrayInputStream(inputBytes), inputBytes.length);
         } else {
             try {
-                InputStream inputStream = mContext.getContentResolver().openInputStream(input.getInputUri());
+                InputStream inputStream = FileHelper.openInputStreamSafe(mContext.getContentResolver(), input.getInputUri());
                 long inputSize = FileHelper.getFileSize(mContext, input.getInputUri(), 0);
                 inputData = new InputData(inputStream, inputSize);
             } catch (SecurityException e) {

@@ -141,7 +141,7 @@ public class ImportKeysListLoader
         if (ls.mKeyBytes != null) {
             inputData = new InputData(new ByteArrayInputStream(ls.mKeyBytes), ls.mKeyBytes.length);
         } else if (ls.mDataUri != null) {
-            InputStream inputStream = mContext.getContentResolver().openInputStream(ls.mDataUri);
+            InputStream inputStream = FileHelper.openInputStreamSafe(mContext.getContentResolver(), ls.mDataUri);
             long length = FileHelper.getFileSize(mContext, ls.mDataUri, -1);
 
             inputData = new InputData(inputStream, length);

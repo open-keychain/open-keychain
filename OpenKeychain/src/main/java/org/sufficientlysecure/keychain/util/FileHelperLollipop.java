@@ -23,7 +23,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
@@ -33,6 +32,7 @@ import android.system.ErrnoException;
 import android.system.Os;
 import android.system.StructStat;
 
+import androidx.annotation.RequiresApi;
 import timber.log.Timber;
 
 
@@ -43,7 +43,7 @@ import timber.log.Timber;
  * lollipop-only class. All methods here should only be called by FileHelper,
  * and consequently have package visibility.
  */
-@TargetApi(VERSION_CODES.LOLLIPOP)
+@RequiresApi(VERSION_CODES.LOLLIPOP)
 class FileHelperLollipop {
 
     /**
@@ -73,7 +73,7 @@ class FileHelperLollipop {
                     throw new FileNotFoundException("Unable to create stream");
                 }
             } catch (ErrnoException e) {
-                Timber.e("fstat() failed: " + e);
+                Timber.e(e, "fstat() failed");
                 throw new FileNotFoundException("fstat() failed");
             }
 

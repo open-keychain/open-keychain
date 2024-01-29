@@ -57,6 +57,7 @@ import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.CountingOutputStream;
+import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Numeric9x4PassphraseUtil;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -175,7 +176,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
         }
         PgpSignEncryptData pgpSignEncryptData = builder.build();
 
-        InputStream inStream = mContext.getContentResolver().openInputStream(plainUri);
+        InputStream inStream = FileHelper.openInputStreamSafe(mContext.getContentResolver(), plainUri);
 
         String filename;
         long[] masterKeyIds = backupInput.getMasterKeyIds();

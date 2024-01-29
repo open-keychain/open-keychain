@@ -47,6 +47,7 @@ import org.sufficientlysecure.keychain.pgp.UncachedKeyRing.IteratorWithIOThrow;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
+import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.ParcelableProxy;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
@@ -206,7 +207,7 @@ public class PublicKeyRetriever {
             log.add(LogType.MSG_RET_CURI_START, 0);
 
             log.add(LogType.MSG_RET_CURI_OPEN, 1, uri.toString());
-            InputStream is = context.getContentResolver().openInputStream(uri);
+            InputStream is = FileHelper.openInputStreamSafe(context.getContentResolver(), uri);
             if (is == null) {
                 log.add(LogType.MSG_RET_CURI_ERROR_NOT_FOUND, 1);
                 return KeyRetrievalResult.createWithError(log);
