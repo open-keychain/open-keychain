@@ -39,6 +39,7 @@ import org.bouncycastle.openpgp.operator.KeyFingerPrintCalculator;
 import org.bouncycastle.openpgp.operator.RFC6637Utils;
 import org.bouncycastle.openpgp.operator.jcajce.JcaPGPKeyConverter;
 import org.bouncycastle.openpgp.operator.jcajce.JcePublicKeyKeyEncryptionMethodGenerator;
+import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.util.IterableIterator;
 import timber.log.Timber;
@@ -74,6 +75,7 @@ public class CanonicalizedPublicKey extends UncachedPublicKey {
     JcePublicKeyKeyEncryptionMethodGenerator getPubKeyEncryptionGenerator(boolean hiddenRecipients) {
         JcePublicKeyKeyEncryptionMethodGenerator generator =
                 new JcePublicKeyKeyEncryptionMethodGenerator(mPublicKey);
+        generator.setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
         generator.setSessionKeyObfuscation(hiddenRecipients);
         return generator;
     }
