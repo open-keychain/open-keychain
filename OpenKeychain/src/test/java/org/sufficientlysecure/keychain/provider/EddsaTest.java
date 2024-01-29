@@ -76,7 +76,7 @@ public class EddsaTest {
 
     @Before
     public void setUp() throws Exception {
-        context = RuntimeEnvironment.application;
+        context = RuntimeEnvironment.getApplication();
         keyRepository = KeyWritableRepository.create(context);
 
     }

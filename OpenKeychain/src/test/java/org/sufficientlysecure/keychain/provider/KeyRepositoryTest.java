@@ -45,7 +45,7 @@ public class KeyRepositoryTest {
         testKeyring = KeyringTestingHelper.readRingFromResource("/test-keys/authenticate_multisub_with_revoked.asc");
 
         KeyWritableRepository databaseInteractor =
-                KeyWritableRepository.create(RuntimeEnvironment.application);
+                KeyWritableRepository.create(RuntimeEnvironment.getApplication());
         databaseInteractor.saveSecretKeyRing(testKeyring);
     }
 
@@ -55,7 +55,7 @@ public class KeyRepositoryTest {
         long expectedEncryptSubKeyId = KeyFormattingUtils.convertKeyIdHexToKeyId("0xDA7207E385A44339");
         long expectedSignSubKeyId = KeyFormattingUtils.convertKeyIdHexToKeyId("0xB8ECA89E054028D5");
 
-        KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
+        KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.getApplication());
 
         long masterKeyId = testKeyring.getMasterKeyId();
         long authSubKeyId = keyRepository.getEffectiveAuthenticationKeyId(masterKeyId);

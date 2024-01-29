@@ -68,7 +68,7 @@ dependencies {
     // http://robolectric.org/getting-started/
     // http://www.vogella.com/tutorials/Robolectric/article.html
     testImplementation 'junit:junit:4.13'
-    testImplementation ('org.robolectric:robolectric:3.8') {
+    testImplementation ('org.robolectric:robolectric:4.11.1') {
         exclude group: 'org.bouncycastle', module: 'bcprov-jdk18on'
     }
     testImplementation 'org.mockito:mockito-core:2.18.0'

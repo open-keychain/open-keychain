@@ -60,7 +60,7 @@ public class SshPublicKeyTest {
     @Before
     public void setUp() {
         KeyWritableRepository databaseInteractor =
-                KeyWritableRepository.create(RuntimeEnvironment.application);
+                KeyWritableRepository.create(RuntimeEnvironment.getApplication());
 
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
@@ -73,7 +73,7 @@ public class SshPublicKeyTest {
 
     @Test
     public void testECDSA() throws Exception {
-        KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
+        KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.getApplication());
 
         long masterKeyId = mStaticRingEcDsa.getMasterKeyId();
         long authSubKeyId = keyRepository.getEffectiveAuthenticationKeyId(masterKeyId);

@@ -118,7 +118,7 @@ public class CertifyOperationTest {
     @Before
     public void setUp() throws Exception {
         KeyWritableRepository databaseInteractor =
-                KeyWritableRepository.create(RuntimeEnvironment.application);
+                KeyWritableRepository.create(RuntimeEnvironment.getApplication());
 
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
@@ -133,7 +133,7 @@ public class CertifyOperationTest {
     @Test
     public void testSelfCertifyFlag() throws Exception {
 
-        CanonicalizedPublicKeyRing ring = KeyWritableRepository.create(RuntimeEnvironment.application)
+        CanonicalizedPublicKeyRing ring = KeyWritableRepository.create(RuntimeEnvironment.getApplication())
                 .getCanonicalizedPublicKeyRing(mStaticRing1.getMasterKeyId());
         Assert.assertEquals("secret key must be marked self-certified in database",
                 // TODO this should be more correctly be VERIFIED_SELF at some point!
@@ -143,11 +143,11 @@ public class CertifyOperationTest {
 
     @Test
     public void testCertifyId() throws Exception {
-        CertifyOperation op = new CertifyOperation(RuntimeEnvironment.application,
-                KeyWritableRepository.create(RuntimeEnvironment.application), null, null);
+        CertifyOperation op = new CertifyOperation(RuntimeEnvironment.getApplication(),
+                KeyWritableRepository.create(RuntimeEnvironment.getApplication()), null, null);
 
         {
-            CanonicalizedPublicKeyRing ring = KeyWritableRepository.create(RuntimeEnvironment.application)
+            CanonicalizedPublicKeyRing ring = KeyWritableRepository.create(RuntimeEnvironment.getApplication())
                     .getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
             Assert.assertNull("public key must not be marked verified prior to certification",
                     ring.getVerified());
@@ -161,7 +161,7 @@ public class CertifyOperationTest {
         Assert.assertTrue("certification must succeed", result.success());
 
         {
-            CanonicalizedPublicKeyRing ring = KeyWritableRepository.create(RuntimeEnvironment.application)
+            CanonicalizedPublicKeyRing ring = KeyWritableRepository.create(RuntimeEnvironment.getApplication())
                     .getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
             Assert.assertEquals("new key must be verified now",
                     VerificationStatus.VERIFIED_SECRET, ring.getVerified());
@@ -171,8 +171,8 @@ public class CertifyOperationTest {
 
     @Test
     public void testCertifyAttribute() throws Exception {
-        KeyWritableRepository keyWritableRepository = KeyWritableRepository.create(RuntimeEnvironment.application);
-        CertifyOperation op = new CertifyOperation(RuntimeEnvironment.application, keyWritableRepository, null, null);
+        KeyWritableRepository keyWritableRepository = KeyWritableRepository.create(RuntimeEnvironment.getApplication());
+        CertifyOperation op = new CertifyOperation(RuntimeEnvironment.getApplication(), keyWritableRepository, null, null);
 
         {
             CanonicalizedPublicKeyRing ring = keyWritableRepository.getCanonicalizedPublicKeyRing(mStaticRing2.getMasterKeyId());
@@ -198,8 +198,8 @@ public class CertifyOperationTest {
 
     @Test
     public void testCertifySelf() throws Exception {
-        CertifyOperation op = new CertifyOperation(RuntimeEnvironment.application,
-                KeyWritableRepository.create(RuntimeEnvironment.application), null, null);
+        CertifyOperation op = new CertifyOperation(RuntimeEnvironment.getApplication(),
+                KeyWritableRepository.create(RuntimeEnvironment.getApplication()), null, null);
 
         CertifyActionsParcel.Builder actions = CertifyActionsParcel.builder(mStaticRing1.getMasterKeyId());
         actions.addAction(CertifyAction.createForUserIds(mStaticRing1.getMasterKeyId(),
@@ -215,8 +215,8 @@ public class CertifyOperationTest {
     @Test
     public void testCertifyNonexistent() throws Exception {
 
-        CertifyOperation op = new CertifyOperation(RuntimeEnvironment.application,
-                KeyWritableRepository.create(RuntimeEnvironment.application), null, null);
+        CertifyOperation op = new CertifyOperation(RuntimeEnvironment.getApplication(),
+                KeyWritableRepository.create(RuntimeEnvironment.getApplication()), null, null);
 
         {
             CertifyActionsParcel.Builder actions = CertifyActionsParcel.builder(mStaticRing1.getMasterKeyId());

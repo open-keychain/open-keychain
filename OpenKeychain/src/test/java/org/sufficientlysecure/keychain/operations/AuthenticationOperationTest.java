@@ -133,7 +133,7 @@ public class AuthenticationOperationTest {
     @Before
     public void setUp() {
         KeyWritableRepository databaseInteractor =
-                KeyWritableRepository.create(RuntimeEnvironment.application);
+                KeyWritableRepository.create(RuntimeEnvironment.getApplication());
 
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
@@ -153,13 +153,13 @@ public class AuthenticationOperationTest {
         byte[] challenge = "dies ist ein challenge ☭".getBytes();
         byte[] signature;
 
-        KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
+        KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.getApplication());
 
         long masterKeyId = mStaticRingRsa.getMasterKeyId();
         Long authSubKeyId = keyRepository.getEffectiveAuthenticationKeyId(masterKeyId);
 
         { // sign challenge
-            AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.application,
+            AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.getApplication(),
                     keyRepository);
 
             AuthenticationData.Builder authData = AuthenticationData.builder();
@@ -199,13 +199,13 @@ public class AuthenticationOperationTest {
         byte[] challenge = "dies ist ein challenge ☭".getBytes();
         byte[] signature;
 
-        KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
+        KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.getApplication());
 
         long masterKeyId = mStaticRingEcDsa.getMasterKeyId();
         Long authSubKeyId = keyRepository.getEffectiveAuthenticationKeyId(masterKeyId);
 
         { // sign challenge
-            AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.application,
+            AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.getApplication(),
                     keyRepository);
 
             AuthenticationData.Builder authData = AuthenticationData.builder();
@@ -245,13 +245,13 @@ public class AuthenticationOperationTest {
         byte[] challenge = "dies ist ein challenge ☭".getBytes();
         byte[] signature;
 
-        KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
+        KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.getApplication());
 
         long masterKeyId = mStaticRingEdDsa.getMasterKeyId();
         Long authSubKeyId = keyRepository.getEffectiveAuthenticationKeyId(masterKeyId);
 
         { // sign challenge
-            AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.application,
+            AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.getApplication(),
                     keyRepository);
 
             AuthenticationData.Builder authData = AuthenticationData.builder();
@@ -294,13 +294,13 @@ public class AuthenticationOperationTest {
         byte[] challenge = "dies ist ein challenge ☭".getBytes();
         byte[] signature;
 
-        KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
+        KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.getApplication());
 
         long masterKeyId = mStaticRingDsa.getMasterKeyId();
         Long authSubKeyId = keyRepository.getEffectiveAuthenticationKeyId(masterKeyId);
 
         { // sign challenge
-            AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.application,
+            AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.getApplication(),
                     keyRepository);
 
             AuthenticationData.Builder authData = AuthenticationData.builder();
@@ -339,13 +339,13 @@ public class AuthenticationOperationTest {
 
         byte[] challenge = "dies ist ein challenge ☭".getBytes();
 
-        KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.application);
+        KeyRepository keyRepository = KeyRepository.create(RuntimeEnvironment.getApplication());
 
         long masterKeyId = mStaticRingEcDsa.getMasterKeyId();
         Long authSubKeyId = keyRepository.getEffectiveAuthenticationKeyId(masterKeyId);
 
         { // sign challenge - should succeed with selected key allowed
-            AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.application,
+            AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.getApplication(),
                     keyRepository);
 
             AuthenticationData.Builder authData = AuthenticationData.builder();
@@ -368,7 +368,7 @@ public class AuthenticationOperationTest {
             Assert.assertTrue("authentication must succeed with selected key allowed", result.success());
         }
         { // sign challenge - should fail with selected key disallowed
-            AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.application,
+            AuthenticationOperation op = new AuthenticationOperation(RuntimeEnvironment.getApplication(),
                     keyRepository);
 
             AuthenticationData.Builder authData = AuthenticationData.builder();

@@ -135,7 +135,7 @@ public class BackupOperationTest {
     @Before
     public void setUp() {
         KeyWritableRepository databaseInteractor =
-                KeyWritableRepository.create(RuntimeEnvironment.application);
+                KeyWritableRepository.create(RuntimeEnvironment.getApplication());
 
         // don't log verbosely here, we're not here to test imports
         ShadowLog.stream = oldShadowStream;
@@ -149,8 +149,8 @@ public class BackupOperationTest {
 
     @Test
     public void testExportAllLocalStripped() throws Exception {
-        BackupOperation op = new BackupOperation(RuntimeEnvironment.application,
-                KeyWritableRepository.create(RuntimeEnvironment.application), null);
+        BackupOperation op = new BackupOperation(RuntimeEnvironment.getApplication(),
+                KeyWritableRepository.create(RuntimeEnvironment.getApplication()), null);
 
         // make sure there is a local cert (so the later checks that there are none are meaningful)
         assertTrue("second keyring has local certification", checkForLocal(mStaticRing2));
@@ -230,8 +230,8 @@ public class BackupOperationTest {
 
     @Test
     public void testExportWithExtraHeaders() throws Exception {
-        BackupOperation op = new BackupOperation(RuntimeEnvironment.application,
-                KeyWritableRepository.create(RuntimeEnvironment.application), null);
+        BackupOperation op = new BackupOperation(RuntimeEnvironment.getApplication(),
+                KeyWritableRepository.create(RuntimeEnvironment.getApplication()), null);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         boolean result = op.exportKeysToStream(
@@ -252,11 +252,11 @@ public class BackupOperationTest {
         ByteArrayOutputStream outStream1 = new ByteArrayOutputStream();
         when(mockResolver.openOutputStream(fakeOutputUri)).thenReturn(outStream1);
 
-        Application spyApplication = spy(RuntimeEnvironment.application);
+        Application spyApplication = spy(RuntimeEnvironment.getApplication());
         when(spyApplication.getContentResolver()).thenReturn(mockResolver);
 
         BackupOperation op = new BackupOperation(spyApplication,
-                KeyWritableRepository.create(RuntimeEnvironment.application), null);
+                KeyWritableRepository.create(RuntimeEnvironment.getApplication()), null);
 
         BackupKeyringParcel parcel = BackupKeyringParcel.create(
                 new long[] { mStaticRing1.getMasterKeyId() }, false, false, true, fakeOutputUri);
@@ -305,7 +305,7 @@ public class BackupOperationTest {
             outStream = new ByteArrayOutputStream();
             when(mockResolver.openOutputStream(fakeOutputUri)).thenReturn(outStream);
 
-            spyApplication = spy(RuntimeEnvironment.application);
+            spyApplication = spy(RuntimeEnvironment.getApplication());
             when(spyApplication.getContentResolver()).thenReturn(mockResolver);
         }
 
@@ -313,7 +313,7 @@ public class BackupOperationTest {
 
         { // export encrypted
             BackupOperation op = new BackupOperation(spyApplication,
-                    KeyWritableRepository.create(RuntimeEnvironment.application), null);
+                    KeyWritableRepository.create(RuntimeEnvironment.getApplication()), null);
 
             BackupKeyringParcel parcel = BackupKeyringParcel.create(
                     new long[] { mStaticRing1.getMasterKeyId() }, false, true, true, fakeOutputUri);
@@ -330,8 +330,8 @@ public class BackupOperationTest {
         }
 
         {
-            PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.application,
-                    KeyWritableRepository.create(RuntimeEnvironment.application), null);
+            PgpDecryptVerifyOperation op = new PgpDecryptVerifyOperation(RuntimeEnvironment.getApplication(),
+                    KeyWritableRepository.create(RuntimeEnvironment.getApplication()), null);
 
             PgpDecryptVerifyInputParcel input = PgpDecryptVerifyInputParcel.builder()
                     .setAllowSymmetricDecryption(true)

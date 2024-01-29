@@ -126,11 +126,11 @@ public class InputDataOperationTest {
                 .thenReturn(fakeOutputUri1, fakeOutputUri2);
 
         // application which returns mockresolver
-        Application spyApplication = spy(RuntimeEnvironment.application);
+        Application spyApplication = spy(RuntimeEnvironment.getApplication());
         when(spyApplication.getContentResolver()).thenReturn(mockResolver);
 
         InputDataOperation op = new InputDataOperation(spyApplication,
-                KeyWritableRepository.create(RuntimeEnvironment.application), null);
+                KeyWritableRepository.create(RuntimeEnvironment.getApplication()), null);
 
         InputDataParcel input = InputDataParcel.createInputDataParcel(fakeInputUri, null);
 
@@ -306,11 +306,11 @@ public class InputDataOperationTest {
                 .thenReturn(fakeOutputUri1);
 
         // application which returns mockresolver
-        Application spyApplication = spy(RuntimeEnvironment.application);
+        Application spyApplication = spy(RuntimeEnvironment.getApplication());
         when(spyApplication.getContentResolver()).thenReturn(mockResolver);
 
         InputDataOperation op = new InputDataOperation(spyApplication,
-                KeyWritableRepository.create(RuntimeEnvironment.application), null);
+                KeyWritableRepository.create(RuntimeEnvironment.getApplication()), null);
 
         InputDataParcel input = InputDataParcel.createInputDataParcel(FAKE_CONTENT_INPUT_URI_1, null);
         return op.execute(input, CryptoInputParcel.createCryptoInputParcel());

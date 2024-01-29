@@ -66,7 +66,7 @@ public class Cv25519Test {
 
     @Before
     public void setUp() throws Exception {
-        context = RuntimeEnvironment.application;
+        context = RuntimeEnvironment.getApplication();
         keyRepository = KeyWritableRepository.create(context);
 
     }

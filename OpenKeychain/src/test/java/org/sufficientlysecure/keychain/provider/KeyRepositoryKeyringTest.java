@@ -34,14 +34,14 @@ public class KeyRepositoryKeyringTest {
 
     @Test
     public void testSavePublicKeyring() throws Exception {
-        Assert.assertTrue(new KeyringTestingHelper(RuntimeEnvironment.application).addKeyring(Collections.singleton(
+        Assert.assertTrue(new KeyringTestingHelper(RuntimeEnvironment.getApplication()).addKeyring(Collections.singleton(
                 "/public-key-for-sample.blob"
         )));
     }
 
     // @Test
     public void testSavePublicKeyringRsa() throws Exception {
-        Assert.assertTrue(new KeyringTestingHelper(RuntimeEnvironment.application).addKeyring(prependResourcePath(Arrays.asList(
+        Assert.assertTrue(new KeyringTestingHelper(RuntimeEnvironment.getApplication()).addKeyring(prependResourcePath(Arrays.asList(
                         "000001-006.public_key",
                         "000002-013.user_id",
                         "000003-002.sig",
@@ -62,7 +62,7 @@ public class KeyRepositoryKeyringTest {
 
     // @Test
     public void testSavePublicKeyringDsa() throws Exception {
-        Assert.assertTrue(new KeyringTestingHelper(RuntimeEnvironment.application).addKeyring(prependResourcePath(Arrays.asList(
+        Assert.assertTrue(new KeyringTestingHelper(RuntimeEnvironment.getApplication()).addKeyring(prependResourcePath(Arrays.asList(
                         "000016-006.public_key",
                         "000017-002.sig",
                         "000018-012.ring_trust",
@@ -79,7 +79,7 @@ public class KeyRepositoryKeyringTest {
 
     // @Test
     public void testSavePublicKeyringDsa2() throws Exception {
-        Assert.assertTrue(new KeyringTestingHelper(RuntimeEnvironment.application).addKeyring(prependResourcePath(Arrays.asList(
+        Assert.assertTrue(new KeyringTestingHelper(RuntimeEnvironment.getApplication()).addKeyring(prependResourcePath(Arrays.asList(
                         "000027-006.public_key",
                         "000028-002.sig",
                         "000029-012.ring_trust",
