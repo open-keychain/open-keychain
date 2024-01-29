@@ -32,9 +32,9 @@ import java.util.regex.Pattern;
 
 import android.content.Context;
 import android.net.Uri;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
@@ -113,12 +113,12 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
                 }
 
                 plainUri = TemporaryFileProvider.createFile(mContext);
-                plainOut = mContext.getContentResolver().openOutputStream(plainUri);
+                plainOut = FileHelper.openOutputStreamSafe(mContext.getContentResolver(), plainUri);
             } else {
                 if (backupInput.getOutputUri() == null || outputStream != null) {
                     throw new IllegalArgumentException("Unencrypted export to output stream is not supported!");
                 } else {
-                    plainOut = mContext.getContentResolver().openOutputStream(backupInput.getOutputUri());
+                    plainOut = FileHelper.openOutputStreamSafe(mContext.getContentResolver(), backupInput.getOutputUri());
                 }
             }
 
@@ -201,7 +201,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             if (outputStream != null) {
                 throw new IllegalArgumentException("If output uri is set, outputStream must null!");
             }
-            outStream = mContext.getContentResolver().openOutputStream(backupInput.getOutputUri());
+            outStream = FileHelper.openOutputStreamSafe(mContext.getContentResolver(), backupInput.getOutputUri());
         }
 
         return signEncryptOperation.execute(

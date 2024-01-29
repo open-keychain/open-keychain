@@ -299,7 +299,7 @@ public class FileHelper {
         try {
             ContentResolver resolver = context.getContentResolver();
             bis = new BufferedInputStream(FileHelper.openInputStreamSafe(resolver, fromUri));
-            bos = new BufferedOutputStream(resolver.openOutputStream(toUri));
+            bos = new BufferedOutputStream(FileHelper.openOutputStreamSafe(resolver, toUri));
             byte[] buf = new byte[1024];
             int len;
             while ( (len = bis.read(buf)) > 0) {
@@ -388,4 +388,14 @@ public class FileHelper {
         }
     }
 
+    public static OutputStream openOutputStreamSafe(ContentResolver resolver, Uri uri)
+            throws FileNotFoundException {
+
+        // Not supported on Android < 5
+        if (Build.VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+            return FileHelperLollipop.openOutputStreamSafe(resolver, uri);
+        } else {
+            return resolver.openOutputStream(uri);
+        }
+    }
 }

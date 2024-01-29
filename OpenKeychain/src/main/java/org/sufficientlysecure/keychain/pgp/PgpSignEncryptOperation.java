@@ -37,8 +37,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
 import android.net.Uri;
-import androidx.annotation.NonNull;
 
+import androidx.annotation.NonNull;
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.bcpg.BCPGOutputStream;
 import org.bouncycastle.bcpg.CompressionAlgorithmTags;
@@ -143,7 +143,7 @@ public class PgpSignEncryptOperation extends BaseOperation<PgpSignEncryptInputPa
             if (input.getOutputUri() != null) {
                 try {
                     Uri outputUri = input.getOutputUri();
-                    outStream = mContext.getContentResolver().openOutputStream(outputUri);
+                    outStream = FileHelper.openOutputStreamSafe(mContext.getContentResolver(), outputUri);
                 } catch (FileNotFoundException e) {
                     log.add(LogType.MSG_PSE_ERROR_OUTPUT_URI_NOT_FOUND, 1);
                     return new PgpSignEncryptResult(SignEncryptResult.RESULT_ERROR, log);

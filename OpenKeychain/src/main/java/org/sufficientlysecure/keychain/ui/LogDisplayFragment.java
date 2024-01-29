@@ -25,11 +25,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.SubLogEntryParcel;
@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.ui.base.RecyclerFragment;
 import org.sufficientlysecure.keychain.ui.dialog.ShareLogDialogFragment;
 import org.sufficientlysecure.keychain.ui.util.Notify;
 import org.sufficientlysecure.keychain.ui.util.Notify.Style;
+import org.sufficientlysecure.keychain.util.FileHelper;
 
 
 public class LogDisplayFragment extends RecyclerFragment<NestedLogAdapter>
@@ -120,14 +121,14 @@ public class LogDisplayFragment extends RecyclerFragment<NestedLogAdapter>
         if (mLogTempFile == null) {
             mLogTempFile = TemporaryFileProvider.createFile(getActivity(), "openkeychain_log.txt", "text/plain");
             try {
-                OutputStream outputStream = activity.getContentResolver().openOutputStream(mLogTempFile);
+                OutputStream outputStream = FileHelper.openOutputStreamSafe(activity.getContentResolver(), mLogTempFile);
                 outputStream.write(log.getBytes());
+                outputStream.close();
             } catch (IOException | NullPointerException e) {
                 Notify.create(activity, R.string.error_log_share_internal, Style.ERROR).show();
                 return;
             }
         }
-
 
         ShareLogDialogFragment shareLogDialog = ShareLogDialogFragment.newInstance(mLogTempFile);
         shareLogDialog.show(getActivity().getSupportFragmentManager(), "shareLogDialog");
