@@ -278,8 +278,8 @@
   <string name="ecc_p384_description_html">sehr kleine Dateigröße, bis 2040 als sicher erachtet <br></br> <u>experimentell, nicht von allen Implementierungen unterstützt</u></string>
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">kleine Dateigröße, bis nach 2040 als sicher erachtet &lt;br/&gt; &lt;u&gt;experimentell, nicht von allen Implementierungen unterstützt&lt;/u&gt;</string>
-  <string name="ecc_eddsa">ECC EdDSA</string>
-  <string name="ecc_eddsa_description_html">kleine Dateigröße, bis nach 2040 als sicher erachtet &lt;br/&gt; &lt;u&gt;experimentell, nicht von allen Implementierungen unterstützt&lt;/u&gt;</string>
+  <string name="ecc_25519">Ed25519 / Cv25519</string>
+  <string name="ecc_25519_description_html">kleine Dateigröße, bis nach 2040 als sicher erachtet &lt;br/&gt; &lt;u&gt;experimentell, nicht von allen Implementierungen unterstützt&lt;/u&gt;</string>
   <string name="usage_none">Keine (nur Unterschlüssel-Bindung)</string>
   <string name="usage_sign">Signieren</string>
   <string name="usage_encrypt">Verschlüsseln</string>

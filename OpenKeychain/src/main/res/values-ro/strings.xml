@@ -280,8 +280,8 @@
   <string name="ecc_p384_description_html">dimensiune de fișier foarte mică, considerat sigur pană în 2040 &lt;br/&gt; &lt;u&gt;experimental și nu e suportat de toate implementările&lt;/u&gt;</string>
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">dimensiune de fișier mică, considerat sigur pană în 2040+ &lt;br/&gt; &lt;u&gt;experimental și nu e suportat de toate implementările&lt;/u&gt;</string>
-  <string name="ecc_eddsa">ECC EdDSA</string>
-  <string name="ecc_eddsa_description_html">dimensiune de fișier mică, considerat sigur pană în 2040+ &lt;br/&gt; &lt;u&gt;experimental și nu e suportat de toate implementările&lt;/u&gt;</string>
+  <string name="ecc_25519">Ed25519 / Cv25519</string>
+  <string name="ecc_25519_description_html">dimensiune de fișier mică, considerat sigur pană în 2040+ &lt;br/&gt; &lt;u&gt;experimental și nu e suportat de toate implementările&lt;/u&gt;</string>
   <string name="usage_none">Niciuna (doar leagă subcheia)</string>
   <string name="usage_sign">Semnează</string>
   <string name="usage_encrypt">Criptează</string>

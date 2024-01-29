@@ -200,7 +200,7 @@
   <string name="ecc_p256_description_html">hyvin pieni tiedostokoko, pidetään turvallisena 2040 asti &lt;br/&gt; &lt;u&gt;kokeellinen eikä tuettu kaikissa toteutuksissa&lt;/u&gt;</string>
   <string name="ecc_p384_description_html">hyvin pieni tiedostokoko, pidetään turvallisena 2040 asti &lt;br/&gt; &lt;u&gt;kokeellinen eikä tuettu kaikissa toteutuksissa&lt;/u&gt;</string>
   <string name="ecc_p521_description_html">pieni tiedostokoko, pidetään turvallisena 2040+ asti &lt;br/&gt; &lt;u&gt;kokeellinen eikä tuettu kaikissa toteutuksissa&lt;/u&gt;</string>
-  <string name="ecc_eddsa_description_html">pieni tiedostokoko, pidetään turvallisena 2040+ asti &lt;br/&gt; &lt;u&gt;kokeellinen eikä tuettu kaikissa toteutuksissa&lt;/u&gt;</string>
+  <string name="ecc_25519_description_html">pieni tiedostokoko, pidetään turvallisena 2040+ asti &lt;br/&gt; &lt;u&gt;kokeellinen eikä tuettu kaikissa toteutuksissa&lt;/u&gt;</string>
   <string name="usage_sign">Allekirjoita</string>
   <string name="usage_encrypt">Salaa</string>
   <string name="error">Virhe</string>

@@ -257,7 +257,7 @@
   <string name="ecc_p384_description_html">dimensione file minuscola, considerato sicuro fino al 2040 &lt;br/&gt; &lt;u&gt;sperimentale e non supportato da tutte le implementazioni&lt;/u&gt;</string>
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">dimensione file piccola, considerato sicuro fino al 2040+ &lt;br/&gt; &lt;u&gt;sperimentale e non supportato da tutte le implementazioni&lt;/u&gt;</string>
-  <string name="ecc_eddsa_description_html">dimensione file piccola, considerato sicuro fino al 2040+ &lt;br/&gt; &lt;u&gt;sperimentale e non supportato da tutte le implementazioni&lt;/u&gt;</string>
+  <string name="ecc_25519_description_html">dimensione file piccola, considerato sicuro fino al 2040+ &lt;br/&gt; &lt;u&gt;sperimentale e non supportato da tutte le implementazioni&lt;/u&gt;</string>
   <string name="usage_sign">Firma</string>
   <string name="usage_encrypt">Codifica</string>
   <string name="usage_sign_and_encrypt">Firma &amp; Codifica</string>

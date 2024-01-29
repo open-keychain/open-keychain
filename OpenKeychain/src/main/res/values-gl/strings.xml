@@ -276,8 +276,8 @@
   <string name="ecc_p384_description_html">tamaño moi pequeno, considerado seguro ate 2040  &lt;br/&gt; &lt;u&gt;experimental e non soportado por todas as instalacións&lt;/u&gt;</string>
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">ficheiro pequeno, considerado seguro máis aló do 2040  &lt;br/&gt; &lt;u&gt;experimental e non habilitado en todas as instalacións&lt;/u&gt;</string>
-  <string name="ecc_eddsa">ECC EdDSA</string>
-  <string name="ecc_eddsa_description_html">ficheiro pequeno, considerado seguro máis aló do 2040  &lt;br/&gt; &lt;u&gt;experimental e non habilitado en todas as instalacións&lt;/u&gt;</string>
+  <string name="ecc_25519">Ed25519 / Cv25519</string>
+  <string name="ecc_25519_description_html">ficheiro pequeno, considerado seguro máis aló do 2040  &lt;br/&gt; &lt;u&gt;experimental e non habilitado en todas as instalacións&lt;/u&gt;</string>
   <string name="usage_none">Ningún (so para ligar subchaves)</string>
   <string name="usage_sign">Firma</string>
   <string name="usage_encrypt">Cifrar</string>

@@ -306,8 +306,8 @@
     <string name="ecc_p384_description_html">"very tiny file size, considered secure until 2040 &lt;br/> &lt;u>experimental and not supported by all implementations&lt;/u>"</string>
     <string name="ecc_p521">"ECC P-521"</string>
     <string name="ecc_p521_description_html">"tiny file size, considered secure until 2040+ &lt;br/> &lt;u>experimental and not supported by all implementations&lt;/u>"</string>
-    <string name="ecc_eddsa">"ECC EdDSA"</string>
-    <string name="ecc_eddsa_description_html">"tiny file size, considered secure until 2040+ &lt;br/> &lt;u>experimental and not supported by all implementations&lt;/u>"</string>
+    <string name="ecc_25519">"Ed25519 / Cv25519"</string>
+    <string name="ecc_25519_description_html">"tiny file size, considered secure until 2040+ &lt;br/> &lt;u>experimental and not supported by all implementations&lt;/u>"</string>
     <string name="usage_none">"None (subkey binding only)"</string>
     <string name="usage_sign">"Sign"</string>
     <string name="usage_encrypt">"Encrypt"</string>

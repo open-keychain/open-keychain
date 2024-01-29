@@ -284,8 +284,8 @@
   <string name="ecc_p384_description_html">очень маленький размер файла, считается безопасным до 2040 года &lt;br/&gt; &lt;u&gt;экспериментально и поддерживается не всеми реализациями&lt;/u&gt;</string>
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">маленький размер файла, считается безопасным и после 2040 года &lt;br/&gt; &lt;u&gt;экспериментально и поддерживается не всеми реализациями&lt;/u&gt;</string>
-  <string name="ecc_eddsa">ECC EdDSA</string>
-  <string name="ecc_eddsa_description_html">маленький размер файла, считается безопасным и после 2040 года &lt;br/&gt; &lt;u&gt;экспериментально и поддерживается не всеми реализациями&lt;/u&gt;</string>
+  <string name="ecc_25519">Ed25519 / Cv25519</string>
+  <string name="ecc_25519_description_html">маленький размер файла, считается безопасным и после 2040 года &lt;br/&gt; &lt;u&gt;экспериментально и поддерживается не всеми реализациями&lt;/u&gt;</string>
   <string name="usage_none">Нет (только привязка доп. ключа)</string>
   <string name="usage_sign">Подписать</string>
   <string name="usage_encrypt">Зашифровать</string>

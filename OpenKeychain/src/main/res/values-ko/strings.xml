@@ -270,8 +270,8 @@
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">파일 크기 매우 작음, 2040년 이후 까지의 보안을 고려함&lt;br/&gt;
 &lt;u&gt;실험용으로 모든 작업에서 지원되진 않음 &lt;/u&gt;</string>
-  <string name="ecc_eddsa">ECC EdDSA</string>
-  <string name="ecc_eddsa_description_html">파일 크기 매우 작음, 2040년 이후 까지의 보안을 고려함&lt;br/&gt;
+  <string name="ecc_25519">Ed25519 / Cv25519</string>
+  <string name="ecc_25519_description_html">파일 크기 매우 작음, 2040년 이후 까지의 보안을 고려함&lt;br/&gt;
 &lt;u&gt;실험용으로 모든 작업에서 지원되진 않음 &lt;/u&gt;</string>
   <string name="usage_none">없음 (하위 키 바인딩 만 사용)</string>
   <string name="usage_sign">서명</string>
