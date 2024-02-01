@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="org.sufficientlysecure.keychain"
     android:installLocation="auto">
 
     <!--
@@ -55,13 +54,14 @@
     <!-- CAMERA permission requested by ZXing library -->
 
     <!-- storage group -->
-    <!--
-        No need on >= Android 4.4 for WRITE_EXTERNAL_STORAGE, because we use Storage Access Framework,
-        but better not use maxSdkVersion as it causes problems: https://code.google.com/p/android/issues/detail?id=63895
-    -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <!-- READ_EXTERNAL_STORAGE is now dangerous on Android >= 6 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <!-- Replaced by the READ_MEDIA_* permissions on sdk33 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <!-- other group (for free) -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -71,6 +71,7 @@
     <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
     <!-- android:allowBackup="false": Don't allow backup over adb backup or other apps! -->
     <application
@@ -848,10 +849,12 @@
         <service
             android:name=".service.PassphraseCacheService"
             android:exported="false"
+            android:foregroundServiceType="specialUse"
             android:process=":passphrase_cache" />
         <service
             android:name=".remote.CryptoInputParcelCacheService"
             android:exported="false"
+            android:foregroundServiceType="specialUse"
             android:process=":remote_api" />
 
         <provider
@@ -973,6 +976,7 @@
             android:enabled="true"
             android:exported="true"
             android:process=":remote_api"
+            android:foregroundServiceType="specialUse"
             tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="org.openintents.openpgp.IOpenPgpService" />
@@ -986,6 +990,7 @@
             android:enabled="true"
             android:exported="true"
             android:process=":remote_api_2"
+            android:foregroundServiceType="specialUse"
             tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="org.openintents.openpgp.IOpenPgpService2" />
@@ -999,6 +1004,7 @@
             android:enabled="true"
             android:exported="true"
             android:process=":remote_ssh_api"
+            android:foregroundServiceType="specialUse"
             tools:ignore="ExportedService">
             <intent-filter>
                 <action android:name="org.openintents.ssh.authentication.ISshAuthenticationService" />

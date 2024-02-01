@@ -55,6 +55,7 @@ import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.InputDataParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.util.CharsetVerifier;
+import org.sufficientlysecure.keychain.util.FileHelper;
 
 
 /** This operation deals with input data, trying to determine its type as it goes.
@@ -381,7 +382,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
             try {
 
                 // open current uri for input
-                InputStream in = mContext.getContentResolver().openInputStream(currentInputUri);
+                InputStream in = FileHelper.openInputStreamSafe(mContext.getContentResolver(), currentInputUri);
                 parser.parse(in);
 
                 if (mSignedDataUri != null) {
@@ -394,7 +395,7 @@ public class InputDataOperation extends BaseOperation<InputDataParcel> {
 
                     // the actual content is the signed data now (and will be passed verbatim, if parsing fails)
                     currentInputUri = mSignedDataUri;
-                    in = mContext.getContentResolver().openInputStream(currentInputUri);
+                    in = FileHelper.openInputStreamSafe(mContext.getContentResolver(), currentInputUri);
                     // reset signed data result, to indicate to the parser that it is in the inner part
                     mSignedDataResult = null;
                     parser.parse(in);

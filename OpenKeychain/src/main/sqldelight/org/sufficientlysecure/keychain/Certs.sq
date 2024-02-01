@@ -15,11 +15,11 @@ CREATE TABLE IF NOT EXISTS certs(
 );
 
 insertCert:
-INSERT INTO certs (master_key_id, rank, key_id_certifier, type, verified, creation, data) VALUES (?, ?, ?, ?, ?, ?, ?);
+INSERT INTO certs VALUES ?;
 
 selectVerifyingCertDetails:
 SELECT master_key_id AS masterKeyId, key_id_certifier AS signerMasterKeyId, creation * 1000 AS creation
     FROM certs
     WHERE verified = 1 AND master_key_id = ? AND rank = ?
-    ORDER BY creation DESC
+    ORDER BY certs.creation DESC
     LIMIT 1;

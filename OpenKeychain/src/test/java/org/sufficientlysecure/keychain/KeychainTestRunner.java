@@ -17,7 +17,6 @@ public class KeychainTestRunner extends RobolectricTestRunner {
     protected Config buildGlobalConfig() {
         return new Config.Builder()
                 .setSdk(27)
-                .setConstants(WorkaroundBuildConfig.class)
                 .setShadows(new Class[] { ShadowWorkManager.class })
                 .build();
     }

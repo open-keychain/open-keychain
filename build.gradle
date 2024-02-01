@@ -1,4 +1,8 @@
 buildscript {
+    ext {
+        kotlin_version = '1.8.20'
+    }
+
     repositories {
         google()
         mavenCentral()
@@ -6,8 +10,10 @@ buildscript {
 
     dependencies {
         // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
-        classpath 'com.android.tools.build:gradle:4.2.2'
-        classpath 'com.squareup.sqldelight:gradle-plugin:0.8.0'
+        classpath 'com.android.tools.build:gradle:8.1.4'
+        // classpath 'com.squareup.sqldelight:gradle-plugin:0.8.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.squareup.sqldelight:gradle-plugin:1.5.4'
     }
 }
 
@@ -23,5 +29,5 @@ allprojects {
 // SDK Version and Build Tools used by all subprojects
 // See http://tools.android.com/tech-docs/new-build-system/tips#TOC-Controlling-Android-properties-of-all-your-modules-from-the-main-project.
 ext {
-    compileSdkVersion = 33
+    compileSdkVersion = 34
 }

@@ -16,7 +16,7 @@ SELECT *
 
 deleteAllLastUpdatedTimes:
 UPDATE key_metadata
-    SET last_updated = null, seen_on_keyservers = null;
+    SET last_updated = NULL, seen_on_keyservers = NULL;
 
 replaceKeyMetadata:
 REPLACE INTO key_metadata (master_key_id, last_updated, seen_on_keyservers) VALUES (?, ?, ?);

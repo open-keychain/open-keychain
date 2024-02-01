@@ -18,6 +18,7 @@
 package org.sufficientlysecure.keychain.ui.util;
 
 import android.Manifest;
+import android.Manifest.permission;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
@@ -25,8 +26,12 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
+
+import android.os.Build.VERSION_CODES;
 import android.widget.Toast;
 
 import org.sufficientlysecure.keychain.R;
@@ -34,6 +39,13 @@ import org.sufficientlysecure.keychain.R;
 public class PermissionsUtil {
 
     private static final int PERMISSION_READ_EXTERNAL_STORAGE = 1;
+    public static final String[] READ_PERMISSIONS = { permission.READ_EXTERNAL_STORAGE };
+    @RequiresApi(api = VERSION_CODES.TIRAMISU)
+    public static final String[] READ_PERMISSIONS_TIRAMISU = {
+            permission.READ_MEDIA_IMAGES,
+            permission.READ_MEDIA_AUDIO,
+            permission.READ_MEDIA_VIDEO
+    };
 
     /**
      * Request READ_EXTERNAL_STORAGE permission on Android >= 6.0 to read content from "file" Uris.
@@ -47,8 +59,7 @@ public class PermissionsUtil {
     public static boolean checkAndRequestReadPermission(Activity activity, Uri uri) {
         boolean result = checkReadPermission(activity, uri);
         if (!result) {
-            activity.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    PERMISSION_READ_EXTERNAL_STORAGE);
+            activity.requestPermissions(getReadPermissions(), PERMISSION_READ_EXTERNAL_STORAGE);
         }
         return result;
     }
@@ -56,10 +67,17 @@ public class PermissionsUtil {
     public static boolean checkAndRequestReadPermission(Fragment fragment, Uri uri) {
         boolean result = checkReadPermission(fragment.getContext(), uri);
         if (!result) {
-            fragment.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    PERMISSION_READ_EXTERNAL_STORAGE);
+            fragment.requestPermissions(getReadPermissions(), PERMISSION_READ_EXTERNAL_STORAGE);
         }
         return result;
+    }
+
+    private static String[] getReadPermissions() {
+        if (Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+            return READ_PERMISSIONS_TIRAMISU;
+        } else {
+            return READ_PERMISSIONS;
+        }
     }
 
     public static boolean checkReadPermission(Context context, Uri uri) {

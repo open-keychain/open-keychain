@@ -10,7 +10,7 @@ import android.util.AttributeSet;
 
 import org.sufficientlysecure.materialchips.ChipsInput;
 import org.sufficientlysecure.materialchips.adapter.FilterableAdapter.FilterableItem;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.ui.chips.EncryptRecipientChipsInput.EncryptRecipientChip;
 
 

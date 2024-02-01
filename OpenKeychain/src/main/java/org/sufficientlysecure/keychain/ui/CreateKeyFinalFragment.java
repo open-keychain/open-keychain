@@ -26,8 +26,6 @@ import java.util.regex.Pattern;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,18 +36,20 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import org.bouncycastle.bcpg.sig.KeyFlags;
 import org.openintents.openpgp.util.OpenPgpUtils;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Keys;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.keyimport.HkpKeyserverAddress;
-import org.sufficientlysecure.keychain.model.SubKey;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.operations.results.UploadResult;
 import org.sufficientlysecure.keychain.pgp.KeyRing;
-import org.sufficientlysecure.keychain.daos.KeyRepository;
-import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
 import org.sufficientlysecure.keychain.service.ChangeUnlockParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
@@ -420,9 +420,9 @@ public class CreateKeyFinalFragment extends Fragment {
             return;
         }
 
-        List<SubKey> subKeys = keyRepository.getSubKeysByMasterKeyId(saveKeyResult.mMasterKeyId);
-        for (SubKey subKey : subKeys) {
-            builder.addOrReplaceSubkeyChange(SubkeyChange.createMoveToSecurityTokenChange(subKey.key_id()));
+        List<Keys> subKeys = keyRepository.getSubKeysByMasterKeyId(saveKeyResult.mMasterKeyId);
+        for (Keys subKey : subKeys) {
+            builder.addOrReplaceSubkeyChange(SubkeyChange.createMoveToSecurityTokenChange(subKey.getKey_id()));
         }
 
         // define new PIN and Admin PIN for the card

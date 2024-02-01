@@ -32,23 +32,23 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentActivity;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 import org.sufficientlysecure.keychain.Constants;
+import org.sufficientlysecure.keychain.Keys;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.model.SubKey;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
-import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
+import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
@@ -131,8 +131,8 @@ public class BackupRestoreFragment extends CryptoOperationFragment<BackupKeyring
             }
 
             private Long getFirstSubKeyWithPassphrase(long masterKeyId) {
-                for (SubKey subKey : keyRepository.getSubKeysByMasterKeyId(masterKeyId)) {
-                    switch (subKey.has_secret()) {
+                for (Keys subKey : keyRepository.getSubKeysByMasterKeyId(masterKeyId)) {
+                    switch (subKey.getHas_secret()) {
                         case PASSPHRASE_EMPTY:
                         case DIVERT_TO_CARD:
                         case UNAVAILABLE:
@@ -140,7 +140,7 @@ public class BackupRestoreFragment extends CryptoOperationFragment<BackupKeyring
                         case GNU_DUMMY:
                             continue;
                         default: {
-                            return subKey.key_id();
+                            return subKey.getKey_id();
                         }
                     }
                 }

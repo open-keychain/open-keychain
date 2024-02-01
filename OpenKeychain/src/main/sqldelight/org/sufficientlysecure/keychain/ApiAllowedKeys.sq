@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS api_allowed_keys (
     _id INTEGER PRIMARY KEY AUTOINCREMENT,
-    key_id INTEGER,
+    key_id INTEGER NOT NULL,
     package_name TEXT NOT NULL,
     UNIQUE (key_id, package_name),
     FOREIGN KEY (package_name) REFERENCES api_apps (package_name) ON DELETE CASCADE

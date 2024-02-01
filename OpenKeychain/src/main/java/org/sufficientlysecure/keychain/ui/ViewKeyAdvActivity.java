@@ -42,16 +42,15 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 import com.astuetz.PagerSlidingTabStrip;
+import org.sufficientlysecure.keychain.Keys;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.livedata.GenericLiveData;
-import org.sufficientlysecure.keychain.model.SubKey;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
-import org.sufficientlysecure.keychain.model.UserPacket.UserId;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UserId;
 import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.ui.adapter.PagerTabStripAdapter;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
-import org.sufficientlysecure.keychain.ui.keyview.ViewKeyActivity;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 
 
@@ -112,7 +111,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements OnPageChangeList
     public static class ViewKeyAdvViewModel extends ViewModel {
         private Long masterKeyId;
         private LiveData<UnifiedKeyInfo> unifiedKeyInfoLiveData;
-        private LiveData<List<SubKey>> subKeyLiveData;
+        private LiveData<List<Keys>> subKeyLiveData;
         private LiveData<List<UserId>> userIdsLiveData;
 
         void setMasterKeyId(long masterKeyId) {
@@ -134,7 +133,7 @@ public class ViewKeyAdvActivity extends BaseActivity implements OnPageChangeList
             return unifiedKeyInfoLiveData;
         }
 
-        LiveData<List<SubKey>> getSubkeyLiveData(Context context) {
+        LiveData<List<Keys>> getSubkeyLiveData(Context context) {
             if (subKeyLiveData == null) {
                 KeyRepository keyRepository = KeyRepository.create(context);
                 subKeyLiveData = Transformations.switchMap(getUnifiedKeyInfoLiveData(context),

@@ -21,18 +21,11 @@ package org.sufficientlysecure.keychain.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,13 +34,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ViewAnimator;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.FlexibleAdapter.OnItemClickListener;
 import eu.davidea.flexibleadapter.items.IFlexible;
+import org.sufficientlysecure.keychain.Keys;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.compatibility.DialogFragmentWorkaround;
-import org.sufficientlysecure.keychain.model.SubKey;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.EditKeyResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
@@ -99,8 +99,8 @@ public class ViewKeyAdvSubkeysFragment extends Fragment {
         subkeysList.setAdapter(subkeysAdapter);
 
         ViewKeyAdvViewModel viewModel = ViewModelProviders.of(requireActivity()).get(ViewKeyAdvViewModel.class);
-        viewModel.getUnifiedKeyInfoLiveData(requireContext()).observe(this, this::onLoadUnifiedKeyId);
-        viewModel.getSubkeyLiveData(requireContext()).observe(this, this::onLoadSubKeys);
+        viewModel.getUnifiedKeyInfoLiveData(requireContext()).observe(getViewLifecycleOwner(), this::onLoadUnifiedKeyId);
+        viewModel.getSubkeyLiveData(requireContext()).observe(getViewLifecycleOwner(), this::onLoadSubKeys);
 
         subkeyEditViewModel = ViewModelProviders.of(this).get(SubkeyEditViewModel.class);
     }
@@ -114,9 +114,9 @@ public class ViewKeyAdvSubkeysFragment extends Fragment {
         subkeyEditViewModel.unifiedKeyInfo = unifiedKeyInfo;
     }
 
-    private void onLoadSubKeys(List<SubKey> subKeys) {
+    private void onLoadSubKeys(List<Keys> subKeys) {
         ArrayList<IFlexible> subKeyItems = new ArrayList<>(subKeys.size());
-        for (SubKey subKey : subKeys) {
+        for (Keys subKey : subKeys) {
             subKeyItems.add(new SubKeyItem(subKey, subkeyEditViewModel));
         }
         subkeysAdapter.updateDataSet(subKeyItems);
@@ -207,7 +207,7 @@ public class ViewKeyAdvSubkeysFragment extends Fragment {
     }
 
     private void editSubkey(int position, SubKeyItem item) {
-        if (subkeyEditViewModel.skpBuilder.hasModificationsForSubkey(item.subkeyInfo.key_id())) {
+        if (subkeyEditViewModel.skpBuilder.hasModificationsForSubkey(item.subkeyInfo.getKey_id())) {
             return;
         }
 
@@ -219,8 +219,8 @@ public class ViewKeyAdvSubkeysFragment extends Fragment {
                         editSubkeyExpiry(item);
                         break;
                     case EditSubkeyDialogFragment.MESSAGE_REVOKE:
-                        SubKey subKey = item.subkeyInfo;
-                        subkeyEditViewModel.skpBuilder.addRevokeSubkey(subKey.key_id());
+                        Keys subKey = item.subkeyInfo;
+                        subkeyEditViewModel.skpBuilder.addRevokeSubkey(subKey.getKey_id());
                         break;
                     case EditSubkeyDialogFragment.MESSAGE_STRIP: {
                         editSubkeyToggleStrip(item);
@@ -241,21 +241,21 @@ public class ViewKeyAdvSubkeysFragment extends Fragment {
     }
 
     private void editSubkeyToggleStrip(SubKeyItem item) {
-        SubKey subKey = item.subkeyInfo;
-        if (subKey.has_secret() == SecretKeyType.GNU_DUMMY) {
+        Keys subKey = item.subkeyInfo;
+        if (subKey.getHas_secret() == SecretKeyType.GNU_DUMMY) {
             // Key is already stripped; this is a no-op.
             return;
         }
 
-        subkeyEditViewModel.skpBuilder.addOrReplaceSubkeyChange(SubkeyChange.createStripChange(subKey.key_id()));
+        subkeyEditViewModel.skpBuilder.addOrReplaceSubkeyChange(SubkeyChange.createStripChange(subKey.getKey_id()));
     }
 
     private void editSubkeyExpiry(SubKeyItem item) {
-        SubKey subKey = item.subkeyInfo;
+        Keys subKey = item.subkeyInfo;
 
-        final long keyId = subKey.key_id();
-        final Long creationDate = subKey.creation();
-        final Long expiryDate = subKey.expiry();
+        final long keyId = subKey.getKey_id();
+        final Long creationDate = subKey.getCreation();
+        final Long expiryDate = subKey.getExpiry();
 
         Handler returnHandler = new Handler() {
             @Override

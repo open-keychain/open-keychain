@@ -24,21 +24,20 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import android.widget.Toast;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.pgp.PgpHelper;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
+import org.sufficientlysecure.keychain.util.FileHelper;
 
 
 public class DecryptActivity extends BaseActivity {
@@ -200,7 +199,7 @@ public class DecryptActivity extends BaseActivity {
     @Nullable
     public Uri readToTempFile(String text) throws IOException {
         Uri tempFile = TemporaryFileProvider.createFile(this);
-        OutputStream outStream = getContentResolver().openOutputStream(tempFile);
+        OutputStream outStream = FileHelper.openOutputStreamSafe(getContentResolver(), tempFile);
         if (outStream == null) {
             return null;
         }

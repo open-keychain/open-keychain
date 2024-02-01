@@ -228,14 +228,14 @@ public class InteropTest {
 
     private PgpDecryptVerifyOperation makeOperation(final String msg, final Passphrase passphrase,
             UncachedKeyRing decrypt, UncachedKeyRing verify) {
-        KeyWritableRepository keyRepository = KeyWritableRepository.create(RuntimeEnvironment.application);
+        KeyWritableRepository keyRepository = KeyWritableRepository.create(RuntimeEnvironment.getApplication());
 
         Assert.assertTrue(keyRepository.saveSecretKeyRing(decrypt).success());
         if (verify != null) {
             Assert.assertTrue(keyRepository.savePublicKeyRing(verify).success());
         }
 
-        return new PgpDecryptVerifyOperation(RuntimeEnvironment.application, keyRepository, null) {
+        return new PgpDecryptVerifyOperation(RuntimeEnvironment.getApplication(), keyRepository, null) {
             @Override
             public Passphrase getCachedPassphrase(long masterKeyId, long subKeyId) {
                 Assert.assertEquals(msg + ": passphrase should be for the secret key",

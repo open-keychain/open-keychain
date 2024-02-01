@@ -25,8 +25,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 
+import org.sufficientlysecure.keychain.Api_apps;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.model.ApiApp;
 import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import timber.log.Timber;
 
@@ -39,7 +39,7 @@ class RemoteRegisterPresenter {
 
     private RemoteRegisterView view;
     private Intent resultData;
-    private ApiApp apiApp;
+    private Api_apps apiApp;
 
 
     RemoteRegisterPresenter(Context context) {
@@ -54,7 +54,7 @@ class RemoteRegisterPresenter {
     }
 
     void setupFromIntentData(Intent resultData, String packageName, byte[] packageSignature) {
-        this.apiApp = ApiApp.create(packageName, packageSignature);
+        this.apiApp = new Api_apps(0L, packageName, packageSignature);
         this.resultData = resultData;
 
         try {

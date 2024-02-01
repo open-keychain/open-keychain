@@ -1,15 +1,15 @@
 package org.sufficientlysecure.keychain.ui.keyview;
 
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModel;
 import android.content.Context;
 import android.net.Uri;
 
-import org.sufficientlysecure.keychain.livedata.GenericLiveData;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
 import org.sufficientlysecure.keychain.daos.DatabaseNotifyManager;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.livedata.GenericLiveData;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 
 
 public class UnifiedKeyInfoViewModel extends ViewModel {

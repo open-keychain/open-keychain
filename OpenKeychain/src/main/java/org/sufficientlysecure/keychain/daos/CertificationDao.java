@@ -2,12 +2,9 @@ package org.sufficientlysecure.keychain.daos;
 
 
 import android.content.Context;
-import android.database.Cursor;
 
-import com.squareup.sqldelight.SqlDelightQuery;
 import org.sufficientlysecure.keychain.KeychainDatabase;
-import org.sufficientlysecure.keychain.model.Certification;
-import org.sufficientlysecure.keychain.model.Certification.CertDetails;
+import org.sufficientlysecure.keychain.SelectVerifyingCertDetails;
 
 
 public class CertificationDao extends AbstractDao {
@@ -22,14 +19,8 @@ public class CertificationDao extends AbstractDao {
         super(keychainDatabase, databaseNotifyManager);
     }
 
-    public CertDetails getVerifyingCertDetails(long masterKeyId, int userPacketRank) {
-        SqlDelightQuery query = Certification.FACTORY.selectVerifyingCertDetails(masterKeyId, userPacketRank);
-        try (Cursor cursor = getReadableDb().query(query)) {
-            if (cursor.moveToFirst()) {
-                return Certification.CERT_DETAILS_MAPPER.map(cursor);
-            }
-        }
-        return null;
+    public SelectVerifyingCertDetails getVerifyingCertDetails(long masterKeyId, int userPacketRank) {
+        return getDatabase().getCertsQueries().selectVerifyingCertDetails(masterKeyId, userPacketRank).executeAsOneOrNull();
     }
 
 }

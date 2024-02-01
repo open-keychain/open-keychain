@@ -33,10 +33,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
+import androidx.annotation.NonNull;
 import org.bouncycastle.bcpg.ArmoredInputStream;
 import org.bouncycastle.openpgp.PGPCompressedData;
 import org.bouncycastle.openpgp.PGPDataValidationException;
@@ -61,6 +61,8 @@ import org.openintents.openpgp.OpenPgpMetadata;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.key;
 import org.sufficientlysecure.keychain.R;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.operations.BaseOperation;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
@@ -71,8 +73,6 @@ import org.sufficientlysecure.keychain.pgp.SecurityProblem.EncryptionAlgorithmPr
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.MissingMdc;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.daos.KeyRepository;
-import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel.RequireAnyDecryptPassphraseBuilder;
@@ -109,7 +109,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             inputData = new InputData(new ByteArrayInputStream(inputBytes), inputBytes.length);
         } else {
             try {
-                InputStream inputStream = mContext.getContentResolver().openInputStream(input.getInputUri());
+                InputStream inputStream = FileHelper.openInputStreamSafe(mContext.getContentResolver(), input.getInputUri());
                 long inputSize = FileHelper.getFileSize(mContext, input.getInputUri(), 0);
                 inputData = new InputData(inputStream, inputSize);
             } catch (SecurityException e) {
@@ -129,7 +129,7 @@ public class PgpDecryptVerifyOperation extends BaseOperation<PgpDecryptVerifyInp
             outputStream = new ByteArrayOutputStream();
         } else {
             try {
-                outputStream = mContext.getContentResolver().openOutputStream(input.getOutputUri());
+                outputStream = FileHelper.openOutputStreamSafe(mContext.getContentResolver(), input.getOutputUri());
             } catch (FileNotFoundException e) {
                 Timber.e(e, "Output URI could not be opened: " + input.getOutputUri());
                 OperationLog log = new OperationLog();

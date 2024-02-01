@@ -8,20 +8,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.content.Context;
-import androidx.annotation.Nullable;
 import android.text.format.DateUtils;
 
+import androidx.annotation.Nullable;
 import org.openintents.openpgp.AutocryptPeerUpdate;
 import org.openintents.openpgp.AutocryptPeerUpdate.PreferEncrypt;
+import org.sufficientlysecure.keychain.Autocrypt_peers;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.model.AutocryptPeer;
-import org.sufficientlysecure.keychain.model.AutocryptPeer.AutocryptKeyStatus;
-import org.sufficientlysecure.keychain.model.AutocryptPeer.GossipOrigin;
+import org.sufficientlysecure.keychain.SelectAutocryptKeyStatus;
+import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
+import org.sufficientlysecure.keychain.model.GossipOrigin;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.UncachedKeyRing;
 import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
-import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
-import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import timber.log.Timber;
 
 
@@ -48,17 +48,17 @@ public class AutocryptInteractor {
     }
 
     void updateAutocryptPeerState(String autocryptPeerId, AutocryptPeerUpdate autocryptPeerUpdate) {
-        AutocryptPeer currentAutocryptPeer = autocryptPeerDao.getAutocryptPeer(packageName, autocryptPeerId);
+        Autocrypt_peers currentAutocryptPeer = autocryptPeerDao.getAutocryptPeer(packageName, autocryptPeerId);
         Date effectiveDate = autocryptPeerUpdate.getEffectiveDate();
 
         // 1. If the message’s effective date is older than the peers[from-addr].autocrypt_timestamp value, then no changes are required, and the update process terminates.
-        Date lastSeenKey = currentAutocryptPeer != null ? currentAutocryptPeer.last_seen_key() : null;
+        Date lastSeenKey = currentAutocryptPeer != null ? currentAutocryptPeer.getLast_seen_key() : null;
         if (lastSeenKey != null && effectiveDate.compareTo(lastSeenKey) <= 0) {
             return;
         }
 
         // 2. If the message’s effective date is more recent than peers[from-addr].last_seen then set peers[from-addr].last_seen to the message’s effective date.
-        Date lastSeen = currentAutocryptPeer != null ? currentAutocryptPeer.last_seen() : null;
+        Date lastSeen = currentAutocryptPeer != null ? currentAutocryptPeer.getLast_seen() : null;
         if (lastSeen == null || effectiveDate.after(lastSeen)) {
             autocryptPeerDao.insertOrUpdateLastSeen(packageName, autocryptPeerId, effectiveDate);
         }
@@ -83,14 +83,14 @@ public class AutocryptInteractor {
     }
 
     void updateAutocryptPeerGossipState(String autocryptPeerId, AutocryptPeerUpdate autocryptPeerUpdate) {
-        AutocryptPeer currentAutocryptPeer = autocryptPeerDao.getAutocryptPeer(packageName, autocryptPeerId);
+        Autocrypt_peers currentAutocryptPeer = autocryptPeerDao.getAutocryptPeer(packageName, autocryptPeerId);
         Date effectiveDate = autocryptPeerUpdate.getEffectiveDate();
 
         // 1. If gossip-addr does not match any recipient in the mail’s To or Cc header, the update process terminates (i.e., header is ignored).
         // -> This should be taken care of in the mail client that sends us this data!
 
         // 2. If peers[gossip-addr].gossip_timestamp is more recent than the message’s effective date, then the update process terminates.
-        Date lastSeenGossip = currentAutocryptPeer != null ? currentAutocryptPeer.gossip_last_seen_key() : null;
+        Date lastSeenGossip = currentAutocryptPeer != null ? currentAutocryptPeer.getGossip_last_seen_key() : null;
         if (lastSeenGossip != null && lastSeenGossip.after(effectiveDate)) {
             return;
         }
@@ -150,7 +150,7 @@ public class AutocryptInteractor {
     public Map<String,AutocryptRecommendationResult> determineAutocryptRecommendations(String... autocryptIds) {
         Map<String,AutocryptRecommendationResult> result = new HashMap<>(autocryptIds.length);
 
-        for (AutocryptKeyStatus autocryptKeyStatus : autocryptPeerDao.getAutocryptKeyStatus(packageName, autocryptIds)) {
+        for (SelectAutocryptKeyStatus autocryptKeyStatus : autocryptPeerDao.getAutocryptKeyStatus(packageName, autocryptIds)) {
             AutocryptRecommendationResult peerResult = determineAutocryptRecommendation(autocryptKeyStatus);
             result.put(peerResult.peerId, peerResult);
         }
@@ -161,58 +161,60 @@ public class AutocryptInteractor {
     /** Determines Autocrypt "ui-recommendation", according to spec.
      * See https://autocrypt.org/level1.html#recommendations-for-single-recipient-messages
      */
-    private AutocryptRecommendationResult determineAutocryptRecommendation(AutocryptKeyStatus autocryptKeyStatus) {
+    private AutocryptRecommendationResult determineAutocryptRecommendation(
+            SelectAutocryptKeyStatus autocryptKeyStatus) {
         AutocryptRecommendationResult keyRecommendation = determineAutocryptKeyRecommendation(autocryptKeyStatus);
         if (keyRecommendation != null) return keyRecommendation;
 
         AutocryptRecommendationResult gossipRecommendation = determineAutocryptGossipRecommendation(autocryptKeyStatus);
         if (gossipRecommendation != null) return gossipRecommendation;
 
-        return new AutocryptRecommendationResult(autocryptKeyStatus.autocryptPeer().identifier(), AutocryptState.DISABLE, null, false);
+        return new AutocryptRecommendationResult(autocryptKeyStatus.getIdentifier(), AutocryptState.DISABLE, null, false);
     }
 
     @Nullable
-    private AutocryptRecommendationResult determineAutocryptKeyRecommendation(AutocryptKeyStatus autocryptKeyStatus) {
-        AutocryptPeer autocryptPeer = autocryptKeyStatus.autocryptPeer();
-
-        Long masterKeyId = autocryptPeer.master_key_id();
+    private AutocryptRecommendationResult determineAutocryptKeyRecommendation(
+            SelectAutocryptKeyStatus autocryptKeyStatus) {
+        Long masterKeyId = autocryptKeyStatus.getMaster_key_id();
         boolean hasKey = masterKeyId != null;
-        boolean isRevoked = autocryptKeyStatus.isKeyRevoked();
-        boolean isExpired = autocryptKeyStatus.isKeyExpired();
+        boolean isRevoked = Boolean.TRUE.equals(autocryptKeyStatus.getKey_is_revoked());
+        boolean isExpired = autocryptKeyStatus.getKey_is_expired_int() != 0;
         if (!hasKey || isRevoked || isExpired) {
             return null;
         }
 
-        Date lastSeen = autocryptPeer.last_seen();
-        Date lastSeenKey = autocryptPeer.last_seen_key();
-        boolean isVerified = autocryptKeyStatus.isKeyVerified();
+        Date lastSeen = autocryptKeyStatus.getLast_seen();
+        Date lastSeenKey = autocryptKeyStatus.getLast_seen_key();
+        boolean isVerified = autocryptKeyStatus.getKey_is_verified();
         boolean isLastSeenOlderThanDiscourageTimespan = lastSeen != null && lastSeenKey != null &&
                 lastSeenKey.getTime() < (lastSeen.getTime() - AUTOCRYPT_DISCOURAGE_THRESHOLD_MILLIS);
         if (isLastSeenOlderThanDiscourageTimespan) {
-            return new AutocryptRecommendationResult(autocryptPeer.identifier(), AutocryptState.DISCOURAGED_OLD, masterKeyId, isVerified);
+            return new AutocryptRecommendationResult(autocryptKeyStatus.getIdentifier(), AutocryptState.DISCOURAGED_OLD, masterKeyId, isVerified);
         }
 
-        boolean isMutual = autocryptPeer.is_mutual();
+        boolean isMutual = autocryptKeyStatus.is_mutual();
         if (isMutual) {
-            return new AutocryptRecommendationResult(autocryptPeer.identifier(), AutocryptState.MUTUAL, masterKeyId, isVerified);
+            return new AutocryptRecommendationResult(autocryptKeyStatus.getIdentifier(), AutocryptState.MUTUAL, masterKeyId, isVerified);
         } else {
-            return new AutocryptRecommendationResult(autocryptPeer.identifier(), AutocryptState.AVAILABLE, masterKeyId, isVerified);
+            return new AutocryptRecommendationResult(autocryptKeyStatus.getIdentifier(), AutocryptState.AVAILABLE, masterKeyId, isVerified);
         }
     }
 
     @Nullable
-    private AutocryptRecommendationResult determineAutocryptGossipRecommendation(AutocryptKeyStatus autocryptKeyStatus) {
-        boolean gossipHasKey = autocryptKeyStatus.hasGossipKey();
-        boolean gossipIsRevoked = autocryptKeyStatus.isGossipKeyRevoked();
-        boolean gossipIsExpired = autocryptKeyStatus.isGossipKeyExpired();
-        boolean isVerified = autocryptKeyStatus.isGossipKeyVerified();
+    private AutocryptRecommendationResult determineAutocryptGossipRecommendation(
+            SelectAutocryptKeyStatus autocryptKeyStatus) {
+        boolean gossipHasKey = autocryptKeyStatus.getGossip_master_key_id() != null;
+        boolean gossipIsRevoked =
+                Boolean.TRUE.equals(autocryptKeyStatus.getGossip_key_is_revoked());
+        boolean gossipIsExpired = autocryptKeyStatus.getGossip_key_is_expired_int() != 0;
+        boolean isVerified = autocryptKeyStatus.getGossip_key_is_verified();
 
         if (!gossipHasKey || gossipIsRevoked || gossipIsExpired) {
             return null;
         }
 
-        Long masterKeyId = autocryptKeyStatus.autocryptPeer().gossip_master_key_id();
-        return new AutocryptRecommendationResult(autocryptKeyStatus.autocryptPeer().identifier(), AutocryptState.DISCOURAGED_GOSSIP, masterKeyId, isVerified);
+        Long masterKeyId = autocryptKeyStatus.getGossip_master_key_id();
+        return new AutocryptRecommendationResult(autocryptKeyStatus.getIdentifier(), AutocryptState.DISCOURAGED_GOSSIP, masterKeyId, isVerified);
     }
 
     public void updateKeyGossipFromSignature(String autocryptId, Date effectiveDate, long masterKeyId) {

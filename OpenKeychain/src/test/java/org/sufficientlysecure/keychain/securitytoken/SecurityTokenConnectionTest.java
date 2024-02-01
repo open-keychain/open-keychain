@@ -70,7 +70,7 @@ public class SecurityTokenConnectionTest {
                         "c59cd0f2a59cd0af059cd0c959000"); // get application related data
 
 
-        securityTokenConnection.connectToDevice(RuntimeEnvironment.application);
+        securityTokenConnection.connectToDevice(RuntimeEnvironment.getApplication());
 
 
         verify(transport).connect();

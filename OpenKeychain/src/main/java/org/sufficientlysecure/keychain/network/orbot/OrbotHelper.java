@@ -58,6 +58,8 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Messenger;
@@ -451,7 +453,11 @@ public class OrbotHelper {
                             intent.getStringExtra(EXTRA_STATUS));
                 }
             };
-            context.registerReceiver(receiver, new IntentFilter(OrbotHelper.ACTION_STATUS));
+            if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+                context.registerReceiver(receiver, new IntentFilter(OrbotHelper.ACTION_STATUS), Context.RECEIVER_EXPORTED);
+            } else {
+                context.registerReceiver(receiver, new IntentFilter(OrbotHelper.ACTION_STATUS));
+            }
 
             requestStartTor(context);
         }

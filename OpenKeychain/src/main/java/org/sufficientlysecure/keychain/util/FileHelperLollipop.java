@@ -22,8 +22,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
-import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
@@ -33,6 +33,7 @@ import android.system.ErrnoException;
 import android.system.Os;
 import android.system.StructStat;
 
+import androidx.annotation.RequiresApi;
 import timber.log.Timber;
 
 
@@ -43,7 +44,7 @@ import timber.log.Timber;
  * lollipop-only class. All methods here should only be called by FileHelper,
  * and consequently have package visibility.
  */
-@TargetApi(VERSION_CODES.LOLLIPOP)
+@RequiresApi(VERSION_CODES.LOLLIPOP)
 class FileHelperLollipop {
 
     /**
@@ -73,7 +74,7 @@ class FileHelperLollipop {
                     throw new FileNotFoundException("Unable to create stream");
                 }
             } catch (ErrnoException e) {
-                Timber.e("fstat() failed: " + e);
+                Timber.e(e, "fstat() failed");
                 throw new FileNotFoundException("fstat() failed");
             }
 
@@ -85,6 +86,37 @@ class FileHelperLollipop {
             }
         } else {
             return resolver.openInputStream(uri);
+        }
+
+    }
+
+    static OutputStream openOutputStreamSafe(ContentResolver resolver, Uri uri)
+            throws FileNotFoundException {
+
+        String scheme = uri.getScheme();
+        if (ContentResolver.SCHEME_FILE.equals(scheme)) {
+            ParcelFileDescriptor pfd = ParcelFileDescriptor.open(
+                    new File(uri.getPath()), ParcelFileDescriptor.parseMode("w"));
+
+            try {
+                final StructStat st = Os.fstat(pfd.getFileDescriptor());
+                if (st.st_uid == android.os.Process.myUid()) {
+                    Timber.e("File is owned by the application itself, aborting!");
+                    throw new FileNotFoundException("Unable to create stream");
+                }
+            } catch (ErrnoException e) {
+                Timber.e(e, "fstat() failed");
+                throw new FileNotFoundException("fstat() failed");
+            }
+
+            AssetFileDescriptor fd = new AssetFileDescriptor(pfd, 0, -1);
+            try {
+                return fd.createOutputStream();
+            } catch (IOException e) {
+                throw new FileNotFoundException("Unable to create stream");
+            }
+        } else {
+            return resolver.openOutputStream(uri);
         }
 
     }

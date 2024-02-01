@@ -29,6 +29,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -36,11 +38,11 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+
+import androidx.collection.LongSparseArray;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationCompat.Builder;
 import androidx.core.app.NotificationCompat.InboxStyle;
-import androidx.collection.LongSparseArray;
-
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.Constants.NotificationIds;
 import org.sufficientlysecure.keychain.NotificationChannelManager;
@@ -318,7 +320,11 @@ public class PassphraseCacheService extends Service {
             IntentFilter filter = new IntentFilter();
             filter.addAction(BROADCAST_ACTION_PASSPHRASE_CACHE_SERVICE);
             filter.addAction(Intent.ACTION_SCREEN_OFF);
-            registerReceiver(mIntentReceiver, filter);
+            if (VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+                registerReceiver(mIntentReceiver, filter, RECEIVER_EXPORTED);
+            } else {
+                registerReceiver(mIntentReceiver, filter);
+            }
         }
     }
 

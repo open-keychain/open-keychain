@@ -29,7 +29,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLog;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedPublicKeyRing;
@@ -47,7 +47,7 @@ import java.util.Iterator;
 public class KeyRepositorySaveTest {
 
     KeyWritableRepository mDatabaseInteractor =
-            KeyWritableRepository.create(RuntimeEnvironment.application);
+            KeyWritableRepository.create(RuntimeEnvironment.getApplication());
 
     @BeforeClass
     public static void setUpOnce() {
@@ -65,9 +65,9 @@ public class KeyRepositorySaveTest {
         SaveKeyringResult result;
 
         // insert both keys, second should fail
-        result = KeyWritableRepository.create(RuntimeEnvironment.application).savePublicKeyRing(first);
+        result = KeyWritableRepository.create(RuntimeEnvironment.getApplication()).savePublicKeyRing(first);
         Assert.assertTrue("first keyring import should succeed", result.success());
-        result = KeyWritableRepository.create(RuntimeEnvironment.application).savePublicKeyRing(second);
+        result = KeyWritableRepository.create(RuntimeEnvironment.getApplication()).savePublicKeyRing(second);
         Assert.assertFalse("second keyring import should fail", result.success());
     }
 
@@ -81,9 +81,9 @@ public class KeyRepositorySaveTest {
 
         SaveKeyringResult result;
 
-        result = KeyWritableRepository.create(RuntimeEnvironment.application).savePublicKeyRing(second);
+        result = KeyWritableRepository.create(RuntimeEnvironment.getApplication()).savePublicKeyRing(second);
         Assert.assertTrue("first keyring import should succeed", result.success());
-        result = KeyWritableRepository.create(RuntimeEnvironment.application).savePublicKeyRing(first);
+        result = KeyWritableRepository.create(RuntimeEnvironment.getApplication()).savePublicKeyRing(first);
         Assert.assertFalse("second keyring import should fail", result.success());
 
     }
@@ -102,14 +102,14 @@ public class KeyRepositorySaveTest {
         SaveKeyringResult result;
 
         // insert secret, this should fail because of missing self-cert
-        result = KeyWritableRepository.create(RuntimeEnvironment.application)
+        result = KeyWritableRepository.create(RuntimeEnvironment.getApplication())
                 .saveSecretKeyRing(seckey);
         Assert.assertFalse("secret keyring import before pubring import should fail", result.success());
 
         // insert pubkey, then seckey - both should succeed
-        result = KeyWritableRepository.create(RuntimeEnvironment.application).savePublicKeyRing(pubkey);
+        result = KeyWritableRepository.create(RuntimeEnvironment.getApplication()).savePublicKeyRing(pubkey);
         Assert.assertTrue("public keyring import should succeed", result.success());
-        result = KeyWritableRepository.create(RuntimeEnvironment.application)
+        result = KeyWritableRepository.create(RuntimeEnvironment.getApplication())
                 .saveSecretKeyRing(seckey);
         Assert.assertTrue("secret keyring import after pubring import should succeed", result.success());
 
@@ -128,7 +128,6 @@ public class KeyRepositorySaveTest {
         CanonicalizedPublicKeyRing pubRing = mDatabaseInteractor.getCanonicalizedPublicKeyRing(keyId);
 
         Assert.assertEquals("master key should be encryption key", keyId, pubRing.getEncryptId());
-        Assert.assertEquals("master key should be encryption key (cached)", keyId, unifiedKeyInfo.has_encrypt_key_int());
 
         Assert.assertEquals("canonicalized key flags should be zero",
                 0, (long) pubRing.getPublicKey().getKeyUsage());

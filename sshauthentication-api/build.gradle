@@ -2,26 +2,28 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
 android {
-    if (project.hasProperty('compileSdkVersion')) {
-        compileSdkVersion rootProject.ext.compileSdkVersion
-    } else {
-        compileSdkVersion 28
-    }
-
-
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 28
-        versionCode 2
-        versionName "2.0"
+        versionCode 3
+        versionName "3.0"
+        namespace 'org.openintents.ssh.authentication'
+        if (project.hasProperty('compileSdkVersion')) {
+            compileSdk rootProject.ext.compileSdkVersion
+        } else {
+            compileSdk 28
+        }
     }
 
     // Do not abort build if lint finds errors
     lintOptions {
         abortOnError false
     }
+    buildFeatures {
+        aidl true
+    }
 }
 
+/*
 // https://developer.android.com/studio/build/maven-publish-plugin
 afterEvaluate {
     publishing {
@@ -51,3 +53,4 @@ afterEvaluate {
         }
     }
 }
+*/

@@ -18,26 +18,25 @@
 package org.sufficientlysecure.keychain.daos;
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import android.content.Context;
-import android.database.Cursor;
 
-import com.squareup.sqldelight.SqlDelightQuery;
-import org.sufficientlysecure.keychain.ApiAllowedKeysModel.InsertAllowedKey;
-import org.sufficientlysecure.keychain.ApiAppsModel;
-import org.sufficientlysecure.keychain.ApiAppsModel.DeleteByPackageName;
-import org.sufficientlysecure.keychain.ApiAppsModel.InsertApiApp;
+import org.sufficientlysecure.keychain.ApiAllowedKeysQueries;
+import org.sufficientlysecure.keychain.ApiAppsQueries;
+import org.sufficientlysecure.keychain.Api_apps;
+import org.sufficientlysecure.keychain.GetCertificate;
 import org.sufficientlysecure.keychain.KeychainDatabase;
-import org.sufficientlysecure.keychain.model.ApiAllowedKey;
-import org.sufficientlysecure.keychain.model.ApiApp;
 
 
 public class ApiAppDao extends AbstractDao {
+    private final ApiAppsQueries apiAppsQueries = getDatabase().getApiAppsQueries();
+    private final ApiAllowedKeysQueries apiAllowedKeysQueries =
+            getDatabase().getApiAllowedKeysQueries();
+
     public static ApiAppDao getInstance(Context context) {
         KeychainDatabase keychainDatabase = KeychainDatabase.getInstance(context);
         DatabaseNotifyManager databaseNotifyManager = DatabaseNotifyManager.create(context);
@@ -45,95 +44,75 @@ public class ApiAppDao extends AbstractDao {
         return new ApiAppDao(keychainDatabase, databaseNotifyManager);
     }
 
-    private ApiAppDao(KeychainDatabase keychainDatabase, DatabaseNotifyManager databaseNotifyManager) {
+    private ApiAppDao(KeychainDatabase keychainDatabase,
+            DatabaseNotifyManager databaseNotifyManager) {
         super(keychainDatabase, databaseNotifyManager);
     }
 
-    public ApiApp getApiApp(String packageName) {
-        try (Cursor cursor = getReadableDb().query(ApiApp.FACTORY.selectByPackageName(packageName))) {
-            if (cursor.moveToFirst()) {
-                return ApiApp.FACTORY.selectByPackageNameMapper().map(cursor);
-            }
-            return null;
-        }
+    public Api_apps getApiApp(String packageName) {
+        return apiAppsQueries.selectByPackageName(packageName).executeAsOneOrNull();
     }
 
     public byte[] getApiAppCertificate(String packageName) {
-        try (Cursor cursor = getReadableDb().query(ApiApp.FACTORY.getCertificate(packageName))) {
-            if (cursor.moveToFirst()) {
-                return ApiApp.FACTORY.getCertificateMapper().map(cursor);
-            }
+        GetCertificate getCertificate =
+                apiAppsQueries.getCertificate(packageName).executeAsOneOrNull();
+        if (getCertificate == null) {
             return null;
         }
+        return getCertificate.getPackage_signature();
     }
 
-    public void insertApiApp(ApiApp apiApp) {
-        ApiApp existingApiApp = getApiApp(apiApp.package_name());
+    public void insertApiApp(String packageName, byte[] signature) {
+        Api_apps existingApiApp = getApiApp(packageName);
         if (existingApiApp != null) {
-            if (!Arrays.equals(existingApiApp.package_signature(), apiApp.package_signature())) {
-                throw new IllegalStateException("Inserting existing api with different signature?!");
+            if (!Arrays.equals(existingApiApp.getPackage_signature(),
+                    signature)) {
+                throw new IllegalStateException(
+                        "Inserting existing api with different signature?!");
             }
             return;
         }
-        InsertApiApp statement = new ApiAppsModel.InsertApiApp(getWritableDb());
-        statement.bind(apiApp.package_name(), apiApp.package_signature());
-        statement.executeInsert();
+        apiAppsQueries.insertApiApp(packageName, signature);
+        getDatabaseNotifyManager().notifyApiAppChange(packageName);
+    }
 
-        getDatabaseNotifyManager().notifyApiAppChange(apiApp.package_name());
+    public void insertApiApp(Api_apps apiApp) {
+        Api_apps existingApiApp = getApiApp(apiApp.getPackage_name());
+        if (existingApiApp != null) {
+            if (!Arrays.equals(existingApiApp.getPackage_signature(),
+                    apiApp.getPackage_signature())) {
+                throw new IllegalStateException(
+                        "Inserting existing api with different signature?!");
+            }
+            return;
+        }
+        apiAppsQueries.insertApiApp(apiApp.getPackage_name(), apiApp.getPackage_signature());
+        getDatabaseNotifyManager().notifyApiAppChange(apiApp.getPackage_name());
     }
 
     public void deleteApiApp(String packageName) {
-        DeleteByPackageName deleteByPackageName = new DeleteByPackageName(getWritableDb());
-        deleteByPackageName.bind(packageName);
-        deleteByPackageName.executeUpdateDelete();
-
+        apiAppsQueries.deleteByPackageName(packageName);
         getDatabaseNotifyManager().notifyApiAppChange(packageName);
     }
 
     public HashSet<Long> getAllowedKeyIdsForApp(String packageName) {
-        SqlDelightQuery allowedKeys = ApiAllowedKey.FACTORY.getAllowedKeys(packageName);
-        HashSet<Long> keyIds = new HashSet<>();
-        try (Cursor cursor = getReadableDb().query(allowedKeys)) {
-            while (cursor.moveToNext()) {
-                long allowedKeyId = ApiAllowedKey.FACTORY.getAllowedKeysMapper().map(cursor);
-                keyIds.add(allowedKeyId);
-            }
-        }
-        return keyIds;
+        return new HashSet<>(apiAllowedKeysQueries.getAllowedKeys(packageName).executeAsList());
     }
 
     public void saveAllowedKeyIdsForApp(String packageName, Set<Long> allowedKeyIds) {
-        ApiAllowedKey.DeleteByPackageName deleteByPackageName = new ApiAllowedKey.DeleteByPackageName(getWritableDb());
-        deleteByPackageName.bind(packageName);
-        deleteByPackageName.executeUpdateDelete();
-
-        InsertAllowedKey statement = new InsertAllowedKey(getWritableDb());
+        apiAllowedKeysQueries.deleteByPackageName(packageName);
         for (Long keyId : allowedKeyIds) {
-            statement.bind(packageName, keyId);
-            statement.execute();
+            apiAllowedKeysQueries.insertAllowedKey(packageName, keyId);
         }
-
         getDatabaseNotifyManager().notifyApiAppChange(packageName);
     }
 
     public void addAllowedKeyIdForApp(String packageName, long allowedKeyId) {
-        InsertAllowedKey statement = new InsertAllowedKey(getWritableDb());
-        statement.bind(packageName, allowedKeyId);
-        statement.executeInsert();
-
+        apiAllowedKeysQueries.insertAllowedKey(packageName, allowedKeyId);
         getDatabaseNotifyManager().notifyApiAppChange(packageName);
     }
 
-    public List<ApiApp> getAllApiApps() {
-        SqlDelightQuery query = ApiApp.FACTORY.selectAll();
-
-        ArrayList<ApiApp> result = new ArrayList<>();
-        try (Cursor cursor = getReadableDb().query(query)) {
-            while (cursor.moveToNext()) {
-                ApiApp apiApp = ApiApp.FACTORY.selectAllMapper().map(cursor);
-                result.add(apiApp);
-            }
-        }
-        return result;
+    public List<Api_apps> getAllApiApps() {
+        return apiAppsQueries.selectAll().executeAsList();
     }
 }

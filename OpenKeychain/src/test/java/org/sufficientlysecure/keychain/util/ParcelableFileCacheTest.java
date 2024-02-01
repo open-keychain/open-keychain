@@ -41,7 +41,7 @@ public class ParcelableFileCacheTest {
     @Test
     public void testInputOutput() throws Exception {
 
-        ParcelableFileCache<Bundle> cache = new ParcelableFileCache<Bundle>(RuntimeEnvironment.application, "test.pcl");
+        ParcelableFileCache<Bundle> cache = new ParcelableFileCache<Bundle>(RuntimeEnvironment.getApplication(), "test.pcl");
 
         ArrayList<Bundle> list = new ArrayList<Bundle>();
 

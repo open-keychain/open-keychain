@@ -25,13 +25,13 @@ import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 
-import org.sufficientlysecure.keychain.model.SubKey;
+import androidx.annotation.NonNull;
+import org.sufficientlysecure.keychain.Keys;
+import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 import org.sufficientlysecure.keychain.pgp.PgpSecurityConstants;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.KeySecurityProblem;
-import org.sufficientlysecure.keychain.daos.KeyRepository;
 
 
 public class SubkeyStatusDao {
@@ -51,7 +51,7 @@ public class SubkeyStatusDao {
         SubKeyItem keyCertify = null;
         ArrayList<SubKeyItem> keysSign = new ArrayList<>();
         ArrayList<SubKeyItem> keysEncrypt = new ArrayList<>();
-        for (SubKey subKey : keyRepository.getSubKeysByMasterKeyId(masterKeyId)) {
+        for (Keys subKey : keyRepository.getSubKeysByMasterKeyId(masterKeyId)) {
             SubKeyItem ski = new SubKeyItem(masterKeyId, subKey);
 
             if (ski.mKeyId == masterKeyId) {
@@ -183,23 +183,23 @@ public class SubkeyStatusDao {
         final boolean mCanCertify, mCanSign, mCanEncrypt;
         public final KeySecurityProblem mSecurityProblem;
 
-        SubKeyItem(long masterKeyId, SubKey subKey) {
-            mKeyId = subKey.key_id();
-            mCreation = new Date(subKey.creation() * 1000);
+        SubKeyItem(long masterKeyId, Keys subKey) {
+            mKeyId = subKey.getKey_id();
+            mCreation = new Date(subKey.getCreation() * 1000);
 
-            mSecretKeyType = subKey.has_secret();
+            mSecretKeyType = subKey.getHas_secret();
 
             mIsRevoked = subKey.is_revoked();
-            mExpiry = subKey.expiry() == null ? null : new Date(subKey.expiry() * 1000);
+            mExpiry = subKey.getExpiry() == null ? null : new Date(subKey.getExpiry() * 1000);
             mIsExpired = mExpiry != null && mExpiry.before(new Date());
 
-            mCanCertify = subKey.can_certify();
-            mCanSign = subKey.can_sign();
-            mCanEncrypt = subKey.can_encrypt();
+            mCanCertify = subKey.getCan_certify();
+            mCanSign = subKey.getCan_sign();
+            mCanEncrypt = subKey.getCan_encrypt();
 
-            int algorithm = subKey.algorithm();
-            Integer bitStrength = subKey.key_size();
-            String curveOid = subKey.key_curve_oid();
+            int algorithm = subKey.getAlgorithm();
+            Integer bitStrength = subKey.getKey_size();
+            String curveOid = subKey.getKey_curve_oid();
 
             mSecurityProblem = PgpSecurityConstants.getKeySecurityProblem(
                     masterKeyId, mKeyId, algorithm, bitStrength, curveOid);

@@ -31,7 +31,7 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 
 public class KeySpinner extends AppCompatSpinner {
     public static final String ARG_SUPER_STATE = "super_state";

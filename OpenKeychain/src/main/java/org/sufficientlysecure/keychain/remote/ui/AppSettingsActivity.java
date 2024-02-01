@@ -27,17 +27,17 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import androidx.fragment.app.FragmentManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.fragment.app.FragmentManager;
 import org.bouncycastle.util.encoders.Hex;
+import org.sufficientlysecure.keychain.Api_apps;
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.model.ApiApp;
-import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.daos.ApiAppDao;
+import org.sufficientlysecure.keychain.operations.results.OperationResult;
 import org.sufficientlysecure.keychain.ui.base.BaseActivity;
 import org.sufficientlysecure.keychain.ui.dialog.AdvancedAppSettingsDialogFragment;
 import timber.log.Timber;
@@ -53,7 +53,7 @@ public class AppSettingsActivity extends BaseActivity {
 
 
     // model
-    ApiApp mApiApp;
+    Api_apps mApiApp;
     private ApiAppDao apiAppDao;
 
     @Override
@@ -140,7 +140,7 @@ public class AppSettingsActivity extends BaseActivity {
         // advanced info: package certificate SHA-256
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(mApiApp.package_signature());
+            md.update(mApiApp.getPackage_signature());
             byte[] digest = md.digest();
             certificate = new String(Hex.encode(digest));
         } catch (NoSuchAlgorithmException e) {
@@ -148,7 +148,7 @@ public class AppSettingsActivity extends BaseActivity {
         }
 
         AdvancedAppSettingsDialogFragment dialogFragment =
-                AdvancedAppSettingsDialogFragment.newInstance(mApiApp.package_name(), certificate);
+                AdvancedAppSettingsDialogFragment.newInstance(mApiApp.getPackage_name(), certificate);
 
         dialogFragment.show(getSupportFragmentManager(), "advancedDialog");
     }
@@ -157,7 +157,7 @@ public class AppSettingsActivity extends BaseActivity {
         Intent i;
         PackageManager manager = getPackageManager();
         try {
-            i = manager.getLaunchIntentForPackage(mApiApp.package_name());
+            i = manager.getLaunchIntentForPackage(mApiApp.getPackage_name());
             if (i == null)
                 throw new PackageManager.NameNotFoundException();
             // start like the Android launcher would do
@@ -177,13 +177,13 @@ public class AppSettingsActivity extends BaseActivity {
         Drawable appIcon = null;
         PackageManager pm = getApplicationContext().getPackageManager();
         try {
-            ApplicationInfo ai = pm.getApplicationInfo(mApiApp.package_name(), 0);
+            ApplicationInfo ai = pm.getApplicationInfo(mApiApp.getPackage_name(), 0);
 
             appName = (String) pm.getApplicationLabel(ai);
             appIcon = pm.getApplicationIcon(ai);
         } catch (PackageManager.NameNotFoundException e) {
             // fallback
-            appName = mApiApp.package_name();
+            appName = mApiApp.getPackage_name();
         }
         mAppNameView.setText(appName);
         mAppIconView.setImageDrawable(appIcon);

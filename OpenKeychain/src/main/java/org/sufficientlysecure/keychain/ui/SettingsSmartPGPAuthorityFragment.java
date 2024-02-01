@@ -41,6 +41,7 @@ import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperAdapt
 import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperDragCallback;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.ItemTouchHelperViewHolder;
 import org.sufficientlysecure.keychain.ui.util.recyclerview.RecyclerItemClickListener;
+import org.sufficientlysecure.keychain.util.FileHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -205,7 +206,7 @@ public class SettingsSmartPGPAuthorityFragment extends Fragment implements Recyc
             if (uri == null) {
                 new_cert = old_cert;
             } else {
-                final InputStream fis = getContext().getContentResolver().openInputStream(Uri.parse(uri));
+                final InputStream fis = FileHelper.openInputStreamSafe(getContext().getContentResolver(), Uri.parse(uri));
 
                 final CertificateFactory cf = CertificateFactory.getInstance("X.509");
                 new_cert = cf.generateCertificate(fis);

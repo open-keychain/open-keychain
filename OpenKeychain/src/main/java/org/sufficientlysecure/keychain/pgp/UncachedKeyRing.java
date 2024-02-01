@@ -523,13 +523,17 @@ public class UncachedKeyRing {
                 // check for duplicate user ids
                 if (processedUserIds.contains(userId)) {
                     log.add(LogType.MSG_KC_UID_DUP, indent, userId);
-                    // strip out the first found user id with this name
+                    // strip out this user id entirely. we could preserve one and merge
+                    // certifications, but that would be more effort and it's an error case,
+                    // so we just don't.
                     modified = PGPPublicKey.removeCertification(modified, rawUserId);
+                    continue;
                 }
                 if (processedUserIds.size() > CANONICALIZE_MAX_USER_IDS) {
                     log.add(LogType.MSG_KC_UID_TOO_MANY, indent, userId);
-                    // strip out the user id
+                    // strip out this user id entirely
                     modified = PGPPublicKey.removeCertification(modified, rawUserId);
+                    continue;
                 }
                 processedUserIds.add(userId);
 
@@ -538,7 +542,7 @@ public class UncachedKeyRing {
 
                 // look through signatures for this specific user id
                 @SuppressWarnings("unchecked")
-                Iterator<PGPSignature> signaturesIt = masterKey.getSignaturesForID(rawUserId);
+                Iterator<PGPSignature> signaturesIt = modified.getSignaturesForID(rawUserId);
                 if (signaturesIt != null) {
                     for (PGPSignature zert : new IterableIterator<>(signaturesIt)) {
                         WrappedSignature cert = new WrappedSignature(zert);

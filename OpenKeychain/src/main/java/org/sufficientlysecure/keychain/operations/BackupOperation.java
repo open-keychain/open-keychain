@@ -32,15 +32,15 @@ import java.util.regex.Pattern;
 
 import android.content.Context;
 import android.net.Uri;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.daos.KeyRepository.NotFoundException;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.operations.results.ExportResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.OperationLog;
@@ -57,6 +57,7 @@ import org.sufficientlysecure.keychain.service.BackupKeyringParcel;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.util.CountingOutputStream;
+import org.sufficientlysecure.keychain.util.FileHelper;
 import org.sufficientlysecure.keychain.util.InputData;
 import org.sufficientlysecure.keychain.util.Numeric9x4PassphraseUtil;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -112,12 +113,12 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
                 }
 
                 plainUri = TemporaryFileProvider.createFile(mContext);
-                plainOut = mContext.getContentResolver().openOutputStream(plainUri);
+                plainOut = FileHelper.openOutputStreamSafe(mContext.getContentResolver(), plainUri);
             } else {
                 if (backupInput.getOutputUri() == null || outputStream != null) {
                     throw new IllegalArgumentException("Unencrypted export to output stream is not supported!");
                 } else {
-                    plainOut = mContext.getContentResolver().openOutputStream(backupInput.getOutputUri());
+                    plainOut = FileHelper.openOutputStreamSafe(mContext.getContentResolver(), backupInput.getOutputUri());
                 }
             }
 
@@ -175,7 +176,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
         }
         PgpSignEncryptData pgpSignEncryptData = builder.build();
 
-        InputStream inStream = mContext.getContentResolver().openInputStream(plainUri);
+        InputStream inStream = FileHelper.openInputStreamSafe(mContext.getContentResolver(), plainUri);
 
         String filename;
         long[] masterKeyIds = backupInput.getMasterKeyIds();
@@ -200,7 +201,7 @@ public class BackupOperation extends BaseOperation<BackupKeyringParcel> {
             if (outputStream != null) {
                 throw new IllegalArgumentException("If output uri is set, outputStream must null!");
             }
-            outStream = mContext.getContentResolver().openOutputStream(backupInput.getOutputUri());
+            outStream = FileHelper.openOutputStreamSafe(mContext.getContentResolver(), backupInput.getOutputUri());
         }
 
         return signEncryptOperation.execute(

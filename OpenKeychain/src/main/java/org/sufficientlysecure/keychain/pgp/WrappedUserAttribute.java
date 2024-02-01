@@ -59,8 +59,8 @@ public class WrappedUserAttribute implements Serializable {
     }
 
     public static WrappedUserAttribute fromSubpacket (int type, byte[] data) {
-        UserAttributeSubpacket subpacket = new UserAttributeSubpacket(type, data);
-        PGPUserAttributeSubpacketVector vector = new PGPUserAttributeSubpacketVector(
+        UserAttributeSubpacket subpacket = UserAttributeSubpacket.create(type, data);
+        PGPUserAttributeSubpacketVector vector = PGPUserAttributeSubpacketVector.fromSubpackets(
                 new UserAttributeSubpacket[] { subpacket });
 
         return new WrappedUserAttribute(vector);
@@ -86,7 +86,7 @@ public class WrappedUserAttribute implements Serializable {
         UserAttributeSubpacket[] result = new UserAttributeSubpacket[list.size()];
         list.toArray(result);
         return new WrappedUserAttribute(
-                new PGPUserAttributeSubpacketVector(result));
+                PGPUserAttributeSubpacketVector.fromSubpackets(result));
     }
 
     /** Writes this object to an ObjectOutputStream. */
@@ -107,7 +107,7 @@ public class WrappedUserAttribute implements Serializable {
         if ( ! UserAttributePacket.class.isInstance(p)) {
             throw new IOException("Could not decode UserAttributePacket!");
         }
-        mVector = new PGPUserAttributeSubpacketVector(((UserAttributePacket) p).getSubpackets());
+        mVector = PGPUserAttributeSubpacketVector.fromSubpackets(((UserAttributePacket) p).getSubpackets());
 
     }
 

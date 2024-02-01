@@ -4,9 +4,7 @@ package org.sufficientlysecure.keychain.model;
 import java.util.Date;
 
 import androidx.annotation.NonNull;
-
 import com.squareup.sqldelight.ColumnAdapter;
-import org.sufficientlysecure.keychain.model.AutocryptPeer.GossipOrigin;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedKeyRing.VerificationStatus;
 import org.sufficientlysecure.keychain.pgp.CanonicalizedSecretKey.SecretKeyType;
 
@@ -15,7 +13,7 @@ public final class CustomColumnAdapters {
 
     private CustomColumnAdapters() { }
 
-    static final ColumnAdapter<Date,Long> DATE_ADAPTER = new ColumnAdapter<Date,Long>() {
+    public static final ColumnAdapter<Date,Long> DATE_ADAPTER = new ColumnAdapter<Date,Long>() {
         @NonNull
         @Override
         public Date decode(Long databaseValue) {
@@ -29,7 +27,7 @@ public final class CustomColumnAdapters {
         }
     };
 
-    static final ColumnAdapter<GossipOrigin,Long> GOSSIP_ORIGIN_ADAPTER = new ColumnAdapter<GossipOrigin,Long>() {
+    public static final ColumnAdapter<GossipOrigin,Long> GOSSIP_ORIGIN_ADAPTER = new ColumnAdapter<GossipOrigin,Long>() {
         @NonNull
         @Override
         public GossipOrigin decode(Long databaseValue) {

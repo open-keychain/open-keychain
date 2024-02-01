@@ -46,8 +46,8 @@ public class BenchmarkOperationTest {
 
     @Test
     public void testBenchmark() throws Exception {
-        BenchmarkOperation op = new BenchmarkOperation(RuntimeEnvironment.application,
-                KeyWritableRepository.create(RuntimeEnvironment.application), null);
+        BenchmarkOperation op = new BenchmarkOperation(RuntimeEnvironment.getApplication(),
+                KeyWritableRepository.create(RuntimeEnvironment.getApplication()), null);
 
         op.execute(BenchmarkInputParcel.newInstance(), null);
     }

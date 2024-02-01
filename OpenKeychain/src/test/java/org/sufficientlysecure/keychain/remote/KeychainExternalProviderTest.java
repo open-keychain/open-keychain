@@ -17,15 +17,13 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowBinder;
-import org.robolectric.shadows.ShadowContentResolver;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowPackageManager;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
 import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
 import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
-import org.sufficientlysecure.keychain.model.ApiApp;
-import org.sufficientlysecure.keychain.model.AutocryptPeer.GossipOrigin;
+import org.sufficientlysecure.keychain.model.GossipOrigin;
 import org.sufficientlysecure.keychain.operations.CertifyOperation;
 import org.sufficientlysecure.keychain.operations.results.CertifyResult;
 import org.sufficientlysecure.keychain.operations.results.SaveKeyringResult;
@@ -59,8 +57,8 @@ public class KeychainExternalProviderTest {
 
 
     KeyWritableRepository databaseInteractor =
-            KeyWritableRepository.create(RuntimeEnvironment.application);
-    ContentResolver contentResolver = RuntimeEnvironment.application.getContentResolver();
+            KeyWritableRepository.create(RuntimeEnvironment.getApplication());
+    ContentResolver contentResolver = RuntimeEnvironment.getApplication().getContentResolver();
     ApiPermissionHelper apiPermissionHelper;
     ApiAppDao apiAppDao;
     AutocryptPeerDao autocryptPeerDao;
@@ -70,7 +68,7 @@ public class KeychainExternalProviderTest {
     public void setUp() throws Exception {
         ShadowLog.stream = System.out;
 
-        ShadowPackageManager packageManager = shadowOf(RuntimeEnvironment.application.getPackageManager());
+        ShadowPackageManager packageManager = shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
         packageManager.setPackagesForUid(PACKAGE_UID, PACKAGE_NAME);
         PackageInfo packageInfo = new PackageInfo();
         packageInfo.signatures = new Signature[] { new Signature(PACKAGE_SIGNATURE) };
@@ -83,11 +81,11 @@ public class KeychainExternalProviderTest {
         info.authority = KeychainExternalContract.CONTENT_AUTHORITY_EXTERNAL;
         Robolectric.buildContentProvider(KeychainExternalProvider.class).create(info);
 
-        apiAppDao = ApiAppDao.getInstance(RuntimeEnvironment.application);
-        apiPermissionHelper = new ApiPermissionHelper(RuntimeEnvironment.application, apiAppDao);
-        autocryptPeerDao = AutocryptPeerDao.getInstance(RuntimeEnvironment.application);
+        apiAppDao = ApiAppDao.getInstance(RuntimeEnvironment.getApplication());
+        apiPermissionHelper = new ApiPermissionHelper(RuntimeEnvironment.getApplication(), apiAppDao);
+        autocryptPeerDao = AutocryptPeerDao.getInstance(RuntimeEnvironment.getApplication());
 
-        apiAppDao.insertApiApp(ApiApp.create(PACKAGE_NAME, PACKAGE_SIGNATURE));
+        apiAppDao.insertApiApp(PACKAGE_NAME, PACKAGE_SIGNATURE);
     }
 
     @Test(expected = AccessControlException.class)
@@ -104,7 +102,7 @@ public class KeychainExternalProviderTest {
     @Test(expected = AccessControlException.class)
     public void testPermission__withWrongPackageCert() throws Exception {
         apiAppDao.deleteApiApp(PACKAGE_NAME);
-        apiAppDao.insertApiApp(ApiApp.create(PACKAGE_NAME, new byte[] { 1, 2, 4 }));
+        apiAppDao.insertApiApp(PACKAGE_NAME, new byte[] { 1, 2, 4 });
 
         contentResolver.query(
                 AutocryptStatus.CONTENT_URI,
@@ -331,7 +329,7 @@ public class KeychainExternalProviderTest {
         certifyActionsParcel.addAction(
                 CertifyAction.createForUserIds(publicMasterKeyId, Collections.singletonList(userId)));
         CertifyOperation op = new CertifyOperation(
-                RuntimeEnvironment.application, databaseInteractor, new ProgressScaler(), null);
+                RuntimeEnvironment.getApplication(), databaseInteractor, new ProgressScaler(), null);
         CertifyResult certifyResult = op.execute(certifyActionsParcel.build(), CryptoInputParcel.createCryptoInputParcel());
 
         assertTrue(certifyResult.success());

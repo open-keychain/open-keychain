@@ -27,7 +27,7 @@ import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import org.sufficientlysecure.keychain.R;
-import org.sufficientlysecure.keychain.model.SubKey.UnifiedKeyInfo;
+import org.sufficientlysecure.keychain.model.UnifiedKeyInfo;
 import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import org.sufficientlysecure.keychain.daos.KeyRepository;
 import org.sufficientlysecure.keychain.ui.adapter.KeyChoiceAdapter;

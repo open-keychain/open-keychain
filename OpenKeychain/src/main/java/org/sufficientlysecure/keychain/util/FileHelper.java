@@ -49,9 +49,9 @@ import android.os.Build.VERSION_CODES;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.OpenableColumns;
-import androidx.fragment.app.Fragment;
 import android.widget.Toast;
 
+import androidx.fragment.app.Fragment;
 import org.sufficientlysecure.keychain.R;
 import timber.log.Timber;
 
@@ -232,7 +232,7 @@ public class FileHelper {
 
         BufferedReader br = null;
         try {
-            InputStream is = context.getContentResolver().openInputStream(uri);
+            InputStream is = FileHelper.openInputStreamSafe(context.getContentResolver(), uri);
             br = new BufferedReader(new InputStreamReader(is));
 
             String header = "-----BEGIN PGP MESSAGE-----";
@@ -264,7 +264,7 @@ public class FileHelper {
 
         byte[] decryptedMessage;
         {
-            InputStream in = context.getContentResolver().openInputStream(outputUri);
+            InputStream in = FileHelper.openInputStreamSafe(context.getContentResolver(), outputUri);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             byte[] buf = new byte[256];
             int read;
@@ -298,8 +298,8 @@ public class FileHelper {
 
         try {
             ContentResolver resolver = context.getContentResolver();
-            bis = new BufferedInputStream(resolver.openInputStream(fromUri));
-            bos = new BufferedOutputStream(resolver.openOutputStream(toUri));
+            bis = new BufferedInputStream(FileHelper.openInputStreamSafe(resolver, fromUri));
+            bos = new BufferedOutputStream(FileHelper.openOutputStreamSafe(resolver, toUri));
             byte[] buf = new byte[1024];
             int len;
             while ( (len = bis.read(buf)) > 0) {
@@ -388,4 +388,14 @@ public class FileHelper {
         }
     }
 
+    public static OutputStream openOutputStreamSafe(ContentResolver resolver, Uri uri)
+            throws FileNotFoundException {
+
+        // Not supported on Android < 5
+        if (Build.VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+            return FileHelperLollipop.openOutputStreamSafe(resolver, uri);
+        } else {
+            return resolver.openOutputStream(uri);
+        }
+    }
 }

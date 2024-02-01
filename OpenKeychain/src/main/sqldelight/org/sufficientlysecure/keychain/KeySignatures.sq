@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS key_signatures (
 );
 
 insertKeySignature:
-INSERT INTO key_signatures (master_key_id, signer_key_id) VALUES (?, ?);
+INSERT INTO key_signatures (master_key_id, signer_key_id) VALUES ?;
 
 selectMasterKeyIdsBySigner:
 SELECT master_key_id
