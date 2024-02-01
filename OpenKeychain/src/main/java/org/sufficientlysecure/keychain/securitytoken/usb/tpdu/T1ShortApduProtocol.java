@@ -17,6 +17,8 @@
 
 package org.sufficientlysecure.keychain.securitytoken.usb.tpdu;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import androidx.annotation.NonNull;
 
@@ -26,6 +28,22 @@ import org.sufficientlysecure.keychain.securitytoken.usb.CcidTransportProtocol;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
 
 public class T1ShortApduProtocol implements CcidTransportProtocol {
+    /**
+     * Chain Parameter: Start of multi-command APDU response.
+     *
+     * "The response APDU begins with this command and is to continue"
+     * -- DWG Smart-Card USB Integrated Circuit(s) Card Devices v1.0 § 6.1.1.3
+     */
+    public static final byte CHAIN_PARAM_APDU_MULTIBLOCK_START = 1;
+
+    /**
+     * Chain Parameter: Continued multi-command APDU response with more data.
+     *
+     * "This abData field continues the response APDU and another block is to follow"
+     * -- DWG Smart-Card USB Integrated Circuit(s) Card Devices v1.0 § 6.1.1.3
+     */
+    public static final byte CHAIN_PARAM_APDU_MULTIBLOCK_MORE = 3;
+
     private CcidTransceiver ccidTransceiver;
 
     public void connect(@NonNull CcidTransceiver transceiver) throws UsbTransportException {
@@ -35,7 +53,35 @@ public class T1ShortApduProtocol implements CcidTransportProtocol {
 
     @Override
     public byte[] transceive(@NonNull final byte[] apdu) throws UsbTransportException {
-        CcidDataBlock response = ccidTransceiver.sendXfrBlock(apdu);
-        return response.getData();
+        CcidDataBlock initialResponse = ccidTransceiver.sendXfrBlock(apdu);
+
+        if (initialResponse.getChainParameter() != CHAIN_PARAM_APDU_MULTIBLOCK_START) {
+            return initialResponse.getData();
+        }
+
+        /*
+         * Handle multi-block responses in accordance with DWG Smart-Card USB Integrated Circut(s)
+         * Card Devices v1.0 § 6.1.1.  If we receive a response with a chain parameter indicating
+         * more data is to come, then instruct the device to continue and append the response to our
+         * output buffer.
+         */
+
+        try {
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            output.write(initialResponse.getData());
+
+            CcidDataBlock continuedResponse;
+            do {
+                continuedResponse = ccidTransceiver.receiveContinuedResponse();
+                output.write(continuedResponse.getData());
+            } while(continuedResponse.getChainParameter() == CHAIN_PARAM_APDU_MULTIBLOCK_MORE);
+
+            return output.toByteArray();
+        } catch (UsbTransportException e) {
+            // rethrow as-is
+            throw e;
+        } catch (IOException e) {
+            throw new UsbTransportException("Failed to write block to temporary buffer", e);
+        }
     }
 }

@@ -66,6 +66,7 @@ public class UsbTransport implements Transport {
     private static final int PRODUCT_NITROKEY_PRO = 16648;
     private static final int PRODUCT_NITROKEY_START = 16913;
     private static final int PRODUCT_NITROKEY_STORAGE = 16649;
+    private static final int PRODUCT_NITROKEY_3 = 17074;
 
     private static final int VENDOR_FSIJ = 9035;
     private static final int VENDOR_LEDGER = 11415;
@@ -245,6 +246,8 @@ public class UsbTransport implements Transport {
                         return versionGreaterEquals125 ? TokenType.NITROKEY_START_1_25_AND_NEWER : TokenType.NITROKEY_START_OLD;
                     case PRODUCT_NITROKEY_STORAGE:
                         return TokenType.NITROKEY_STORAGE;
+                    case PRODUCT_NITROKEY_3:
+                        return TokenType.NITROKEY_3;
                 }
                 break;
             }

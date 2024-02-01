@@ -47,6 +47,53 @@ public class CcidTransceiver {
     private static final int COMMAND_STATUS_SUCCESS = 0;
     private static final int COMMAND_STATUS_TIME_EXTENSION_RQUESTED = 2;
 
+    /**
+     * Level Parameter: APDU is a single command.
+     *
+     * "the command APDU begins and ends with this command"
+     * -- DWG Smart-Card USB Integrated Circuit(s) Card Devices rev 1.0
+     *    § 6.1.1.3
+     */
+    public static final short LEVEL_PARAM_START_SINGLE_CMD_APDU = 0x0000;
+
+    /**
+     * Level Parameter: First APDU in a multi-command APDU.
+     *
+     * "the command APDU begins with this command, and continue in the
+     * next PC_to_RDR_XfrBlock"
+     * -- DWG Smart-Card USB Integrated Circuit(s) Card Devices rev 1.0
+     *    § 6.1.1.3
+     */
+    public static final short LEVEL_PARAM_START_MULTI_CMD_APDU = 0x0001;
+
+    /**
+     * Level Parameter: Final APDU in a multi-command APDU.
+     *
+     * "this abData field continues a command APDU and ends the command APDU"
+     * -- DWG Smart-Card USB Integrated Circuit(s) Card Devices rev 1.0
+     *    § 6.1.1.3
+     */
+    public static final short LEVEL_PARAM_END_MULTI_CMD_APDU = 0x0002;
+
+    /**
+     * Level Parameter: Next command in a multi-command APDU.
+     *
+     * "the abData field continues a command APDU and another block is to follow"
+     * -- DWG Smart-Card USB Integrated Circuit(s) Card Devices rev 1.0
+     *    § 6.1.1.3
+     */
+    public static final short LEVEL_PARAM_CONTINUE_MULTI_CMD_APDU = 0x0003;
+
+    /**
+     * Level Parameter: Request the device continue sending APDU.
+     *
+     * "empty abData field, continuation of response APDU is expected in the next
+     * RDR_to_PC_DataBlock"
+     * -- DWG Smart-Card USB Integrated Circuit(s) Card Devices rev 1.0
+     *    § 6.1.1.3
+     */
+    public static final short LEVEL_PARAM_CONTINUE_RESPONSE = 0x0010;
+
     private static final int SLOT_NUMBER = 0x00;
 
     private static final int ICC_STATUS_SUCCESS = 0;
@@ -152,6 +199,28 @@ public class CcidTransceiver {
      */
     @WorkerThread
     public synchronized CcidDataBlock sendXfrBlock(byte[] payload) throws UsbTransportException {
+        return sendXfrBlock(payload, LEVEL_PARAM_START_SINGLE_CMD_APDU);
+    }
+
+    /**
+     * Receives a continued XfrBlock. Should be called when a multiblock response is indicated
+     * 6.1.4 PC_to_RDR_XfrBlock
+     */
+    @WorkerThread
+    public synchronized CcidDataBlock receiveContinuedResponse() throws UsbTransportException {
+        return sendXfrBlock(new byte[0], LEVEL_PARAM_CONTINUE_RESPONSE);
+    }
+
+    /**
+     * Transmits XfrBlock
+     * 6.1.4 PC_to_RDR_XfrBlock
+     *
+     * @param payload payload to transmit
+     * @param levelParam Level parameter
+     */
+    @WorkerThread
+    private synchronized CcidDataBlock sendXfrBlock(byte[] payload, short levelParam)
+            throws UsbTransportException {
         long startTime = SystemClock.elapsedRealtime();
 
         int l = payload.length;
@@ -161,8 +230,9 @@ public class CcidTransceiver {
                 (byte) l, (byte) (l >> 8), (byte) (l >> 16), (byte) (l >> 24),
                 SLOT_NUMBER,
                 sequenceNumber,
-                0x00, // block waiting time
-                0x00, 0x00 // level parameters
+                (byte) 0x00, // block waiting time
+                (byte)(levelParam & 0x00ff),
+                (byte)(levelParam >> 8)
         };
         byte[] data = Arrays.concatenate(headerData, payload);
 
@@ -187,12 +257,16 @@ public class CcidTransceiver {
             ignoredBytes = usbConnection.bulkTransfer(
                     usbBulkIn, inputBuffer, inputBuffer.length, DEVICE_SKIP_TIMEOUT_MILLIS);
             if (ignoredBytes > 0) {
-                Timber.e("Skipped " + ignoredBytes + " bytes: " + toHexString(inputBuffer, 0, ignoredBytes));
+                Timber.e(
+                        "Skipped " + ignoredBytes + " bytes: "
+                        + toHexString(inputBuffer, 0, ignoredBytes)
+                );
             }
         } while (ignoredBytes > 0);
     }
 
-    private CcidDataBlock receiveDataBlock(byte expectedSequenceNumber) throws UsbTransportException {
+    private CcidDataBlock receiveDataBlock(byte expectedSequenceNumber)
+            throws UsbTransportException {
         CcidDataBlock response;
         do {
             response = receiveDataBlockImmediate(expectedSequenceNumber);
@@ -205,19 +279,40 @@ public class CcidTransceiver {
         return response;
     }
 
-    private CcidDataBlock receiveDataBlockImmediate(byte expectedSequenceNumber) throws UsbTransportException {
-        int readBytes = usbConnection.bulkTransfer(usbBulkIn, inputBuffer, inputBuffer.length, DEVICE_COMMUNICATE_TIMEOUT_MILLIS);
+    private CcidDataBlock receiveDataBlockImmediate(byte expectedSequenceNumber)
+            throws UsbTransportException {
+        /*
+         * Some USB CCID devices (notably NitroKey 3) may time-out and need a subsequent poke to
+         * carry on communications.  No particular reason why the number 3 was chosen.  If we get a
+         * zero-sized reply (or a time-out), we try again.  Clamped retries prevent an infinite loop
+         * if things really turn sour.
+         */
+        int attempts = 3;
+        Timber.d("Receive data block immediate seq=%d", expectedSequenceNumber);
+        int readBytes;
+        do {
+            readBytes = usbConnection.bulkTransfer(
+                usbBulkIn, inputBuffer, inputBuffer.length, DEVICE_COMMUNICATE_TIMEOUT_MILLIS
+            );
+            Timber.d("Received " + readBytes + " bytes: " + toHexString(inputBuffer));
+        } while ((readBytes <= 0) && (attempts-- > 0));
+
         if (readBytes < CCID_HEADER_LENGTH) {
             throw new UsbTransportException("USB-CCID error - failed to receive CCID header");
         }
         if (inputBuffer[0] != (byte) MESSAGE_TYPE_RDR_TO_PC_DATA_BLOCK) {
             if (expectedSequenceNumber != inputBuffer[6]) {
-                throw new UsbTransportException("USB-CCID error - bad CCID header, type " + inputBuffer[0] + " (expected " +
-                        MESSAGE_TYPE_RDR_TO_PC_DATA_BLOCK + "), sequence number " + inputBuffer[6] + " (expected " +
-                        expectedSequenceNumber + ")");
+                throw new UsbTransportException(
+                        "USB-CCID error - bad CCID header, type " + inputBuffer[0] + " (expected " +
+                        MESSAGE_TYPE_RDR_TO_PC_DATA_BLOCK + "), sequence number " + inputBuffer[6]
+                        + " (expected " +
+                        expectedSequenceNumber + ")"
+                );
             }
 
-            throw new UsbTransportException("USB-CCID error - bad CCID header type " + inputBuffer[0]);
+            throw new UsbTransportException(
+                    "USB-CCID error - bad CCID header type " + inputBuffer[0]
+            );
         }
         CcidDataBlock result = CcidDataBlock.parseHeaderFromBytes(inputBuffer);
 
@@ -231,9 +326,13 @@ public class CcidTransceiver {
         System.arraycopy(inputBuffer, CCID_HEADER_LENGTH, dataBuffer, 0, bufferedBytes);
 
         while (bufferedBytes < dataBuffer.length) {
-            readBytes = usbConnection.bulkTransfer(usbBulkIn, inputBuffer, inputBuffer.length, DEVICE_COMMUNICATE_TIMEOUT_MILLIS);
+            readBytes = usbConnection.bulkTransfer(
+                    usbBulkIn, inputBuffer, inputBuffer.length, DEVICE_COMMUNICATE_TIMEOUT_MILLIS
+            );
             if (readBytes < 0) {
-                throw new UsbTransportException("USB error - failed reading response data! Header: " + result);
+                throw new UsbTransportException(
+                        "USB error - failed reading response data! Header: " + result
+                );
             }
             System.arraycopy(inputBuffer, 0, dataBuffer, bufferedBytes, readBytes);
             bufferedBytes += readBytes;
@@ -247,14 +346,20 @@ public class CcidTransceiver {
     private void sendRaw(byte[] data, int offset, int length) throws UsbTransportException {
         int tr1;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            tr1 = usbConnection.bulkTransfer(usbBulkOut, data, offset, length, DEVICE_COMMUNICATE_TIMEOUT_MILLIS);
+            tr1 = usbConnection.bulkTransfer(
+                    usbBulkOut, data, offset, length, DEVICE_COMMUNICATE_TIMEOUT_MILLIS
+            );
         } else {
             byte[] dataToSend = Arrays.copyOfRange(data, offset, offset+length);
-            tr1 = usbConnection.bulkTransfer(usbBulkOut, dataToSend, dataToSend.length, DEVICE_COMMUNICATE_TIMEOUT_MILLIS);
+            tr1 = usbConnection.bulkTransfer(
+                    usbBulkOut, dataToSend, dataToSend.length, DEVICE_COMMUNICATE_TIMEOUT_MILLIS
+            );
         }
 
         if (tr1 != length) {
-            throw new UsbTransportException("USB error - failed to transmit data (" + tr1 + "/" + length + ")");
+            throw new UsbTransportException(
+                    "USB error - failed to transmit data (" + tr1 + "/" + length + ")"
+            );
         }
     }
 
@@ -300,7 +405,9 @@ public class CcidTransceiver {
             }
 
             return new AutoValue_CcidTransceiver_CcidDataBlock(
-                    getDataLength(), getSlot(), getSeq(), getStatus(), getError(), getChainParameter(), data);
+                    getDataLength(), getSlot(), getSeq(), getStatus(), getError(),
+                    getChainParameter(), data
+            );
         }
 
         byte getIccStatus() {
@@ -316,7 +423,8 @@ public class CcidTransceiver {
         }
 
         boolean isStatusSuccess() {
-            return getIccStatus() == ICC_STATUS_SUCCESS && getCommandStatus() == COMMAND_STATUS_SUCCESS;
+            return getIccStatus() == ICC_STATUS_SUCCESS
+                && getCommandStatus() == COMMAND_STATUS_SUCCESS;
         }
     }
 }
