@@ -107,7 +107,7 @@ public class PassphraseDialogActivity extends FragmentActivity {
 
         // this activity itself has no content view (see manifest)
         RequiredInputParcel requiredInput = getIntent().getParcelableExtra(EXTRA_REQUIRED_INPUT);
-        if (requiredInput.mType != RequiredInputType.PASSPHRASE) {
+        if (!requiredInput.isTextInput()) {
             return;
         }
 
@@ -115,7 +115,9 @@ public class PassphraseDialogActivity extends FragmentActivity {
         try {
             KeyRepository keyRepository = KeyRepository.create(this);
             // use empty passphrase for empty passphrase
-            if (keyRepository.getSecretKeyType(requiredInput.getSubKeyId()) == SecretKeyType.PASSPHRASE_EMPTY) {
+            Long subKeyId = requiredInput.getSubKeyId();
+            if (subKeyId != null &&
+                keyRepository.getSecretKeyType(subKeyId) == SecretKeyType.PASSPHRASE_EMPTY) {
                 // also return passphrase back to activity
                 Intent returnIntent = new Intent();
                 cryptoInputParcel = cryptoInputParcel.withPassphrase(new Passphrase(""), requiredInput.getSubKeyId());
