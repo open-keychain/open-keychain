@@ -36,7 +36,7 @@ public class UserIdDao extends AbstractDao {
 
     public UidStatus getUidStatusByEmailLike(String emailLike) {
         return getDatabase().getUserPacketsQueries().selectUserIdStatusByEmailLike(emailLike)
-                .executeAsOne();
+                .executeAsOneOrNull();
     }
 
     public Map<String, UidStatus> getUidStatusByEmail(String... emails) {
