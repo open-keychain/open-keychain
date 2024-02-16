@@ -39,6 +39,20 @@ public class RequiredInputParcel implements Parcelable {
         return new String(mInputData[0]);
     }
 
+    public boolean isTextInput() {
+        switch (mType) {
+            case BACKUP_CODE:
+            case NUMERIC_9X4:
+            case NUMERIC_9X4_AUTOCRYPT:
+            case PASSPHRASE:
+            case PASSPHRASE_AUTH:
+            case PASSPHRASE_SYMMETRIC:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     public enum RequiredInputType {
         PASSPHRASE, PASSPHRASE_SYMMETRIC, PASSPHRASE_AUTH,
         BACKUP_CODE, NUMERIC_9X4, NUMERIC_9X4_AUTOCRYPT,
