@@ -264,11 +264,23 @@ public class KeyRepository extends AbstractDao {
     }
 
     public long getSecretSignId(long masterKeyId) throws NotFoundException {
-        return keysQueries.selectEffectiveSignKeyIdByMasterKeyId(masterKeyId).executeAsOneOrNull();
+        List<Long> candidates =
+                keysQueries.selectEffectiveSignKeyIdByMasterKeyId(masterKeyId).executeAsList();
+        if (candidates.isEmpty()) {
+            throw new NotFoundException();
+        }
+        // If there are multiple candidates for authentication, pick an arbitrary one
+        return candidates.get(0);
     }
 
     public long getEffectiveAuthenticationKeyId(long masterKeyId) throws NotFoundException {
-        return keysQueries.selectEffectiveAuthKeyIdByMasterKeyId(masterKeyId).executeAsOneOrNull();
+        List<Long> candidates =
+                keysQueries.selectEffectiveAuthKeyIdByMasterKeyId(masterKeyId).executeAsList();
+        if (candidates.isEmpty()) {
+            throw new NotFoundException();
+        }
+        // If there are multiple candidates for authentication, pick an arbitrary one
+        return candidates.get(0);
     }
 
     public List<Long> getPublicEncryptionIds(long masterKeyId) {
