@@ -46,14 +46,15 @@ import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowLog;
 import org.sufficientlysecure.keychain.KeychainTestRunner;
+import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.operations.results.DecryptVerifyResult;
 import org.sufficientlysecure.keychain.operations.results.OperationResult.LogType;
 import org.sufficientlysecure.keychain.operations.results.PgpSignEncryptResult;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureBitStrength;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.InsecureEncryptionAlgorithm;
 import org.sufficientlysecure.keychain.pgp.SecurityProblem.MissingMdc;
-import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel;
+import org.sufficientlysecure.keychain.service.SaveKeyringParcel.Algorithm;
 import org.sufficientlysecure.keychain.service.SaveKeyringParcel.SubkeyChange;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -404,12 +405,77 @@ public class PgpEncryptDecryptTest {
     }
 
     @Test
+    public void testAsymmetricSignMultipleCandidates() {
+
+        String plaintext = "dies ist ein plaintext ☭";
+        byte[] detachedSignature;
+
+        { // modify key, add extra signing subkey
+            SaveKeyringParcel.Builder builder = SaveKeyringParcel.buildChangeKeyringParcel(
+                    mStaticRing1.getMasterKeyId(), mStaticRing1.getFingerprint());
+            builder.addSubkeyAdd(SaveKeyringParcel.SubkeyAdd.createSubkeyAdd(
+                    Algorithm.ECDSA, 0, SaveKeyringParcel.Curve.NIST_P256, KeyFlags.SIGN_DATA, 0L));
+            UncachedKeyRing modified = PgpKeyOperationTest.applyModificationWithChecks(builder.build(), mStaticRing1,
+                    new ArrayList<RawPacket>(), new ArrayList<RawPacket>(),
+                    CryptoInputParcel.createCryptoInputParcel(new Date(), mKeyPhrase1));
+
+            KeyWritableRepository databaseInteractor =
+                    KeyWritableRepository.create(RuntimeEnvironment.getApplication());
+            databaseInteractor.saveSecretKeyRing(modified);
+        }
+
+        { // sign data with key
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
+
+            PgpSignEncryptOperation op = new PgpSignEncryptOperation(RuntimeEnvironment.getApplication(),
+                    KeyWritableRepository.create(RuntimeEnvironment.getApplication()), null);
+
+            InputData data = new InputData(in, in.available());
+
+            PgpSignEncryptData.Builder pgpData = PgpSignEncryptData.builder();
+            // only sign, as cleartext
+            pgpData.setSignatureMasterKeyId(mStaticRing1.getMasterKeyId());
+            // do not select a subkey id for signing here
+            pgpData.setDetachedSignature(true);
+
+            PgpSignEncryptResult result = op.execute(pgpData.build(),
+                    CryptoInputParcel.createCryptoInputParcel(mKeyPhrase1), data, out);
+            Assert.assertTrue("signing must succeed", result.success());
+
+            detachedSignature = result.getDetachedSignature();
+        }
+
+        { // verification should succeed
+
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
+            InputData data = new InputData(in, in.available());
+
+            PgpDecryptVerifyOperation op = operationWithFakePassphraseCache(null, null, null);
+            PgpDecryptVerifyInputParcel input = PgpDecryptVerifyInputParcel.builder()
+                    .setDetachedSignature(detachedSignature)
+                    .build();
+            DecryptVerifyResult result = op.execute(input, CryptoInputParcel.createCryptoInputParcel(), data, out);
+
+            Assert.assertTrue("verification must succeed", result.success());
+            Assert.assertArrayEquals("verification text should equal plaintext (save for a newline)",
+                    plaintext.getBytes(), out.toByteArray());
+            Assert.assertEquals("decryptionResult should be RESULT_NOT_ENCRYPTED",
+                    OpenPgpDecryptionResult.RESULT_NOT_ENCRYPTED, result.getDecryptionResult().getResult());
+            Assert.assertEquals("signatureResult should be RESULT_VALID_CONFIRMED",
+                    OpenPgpSignatureResult.RESULT_VALID_KEY_CONFIRMED, result.getSignatureResult().getResult());
+        }
+
+    }
+
+    @Test
     public void testAsymmetricSignDetached() {
 
         String plaintext = "dies ist ein plaintext ☭";
         byte[] detachedSignature;
 
-        { // encrypt data with key
+        { // sign data with key
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ByteArrayInputStream in = new ByteArrayInputStream(plaintext.getBytes());
 
