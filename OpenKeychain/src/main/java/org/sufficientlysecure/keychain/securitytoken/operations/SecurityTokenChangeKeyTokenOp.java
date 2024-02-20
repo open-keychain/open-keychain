@@ -39,6 +39,7 @@ import org.sufficientlysecure.keychain.securitytoken.OpenPgpCapabilities;
 import org.sufficientlysecure.keychain.securitytoken.RsaKeyFormat;
 import org.sufficientlysecure.keychain.securitytoken.ResponseApdu;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
+import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo.TokenType;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenUtils;
 import org.sufficientlysecure.keychain.util.Passphrase;
 
@@ -150,7 +151,9 @@ public class SecurityTokenChangeKeyTokenOp {
         OpenPgpCapabilities openPgpCapabilities = connection.getOpenPgpCapabilities();
         KeyFormat formatForKeyType = openPgpCapabilities.getFormatForKeyType(slot);
 
-        return SecurityTokenUtils.attributesFromSecretKey(slot, secretKey, formatForKeyType);
+        // the Nitrokey 3 doesn't support including the public key
+        boolean withEccPublicKey = connection.getTokenType() != TokenType.NITROKEY_3;
+        return SecurityTokenUtils.attributesFromSecretKey(slot, secretKey, formatForKeyType, withEccPublicKey);
     }
 
     private void setKeyAttributes(Passphrase adminPin, KeyType keyType, byte[] data) throws IOException {

@@ -33,13 +33,13 @@ import java.security.interfaces.RSAPrivateCrtKey;
 
 public class SecurityTokenUtils {
     public static byte[] attributesFromSecretKey(KeyType slot, CanonicalizedSecretKey secretKey,
-            KeyFormat formatForKeyType)
+            KeyFormat currentKeyFormat, boolean withEccPublicKey)
             throws IOException {
         if (secretKey.isRSA()) {
-            return attributesForRsaKey(secretKey.getBitStrength(), (RsaKeyFormat) formatForKeyType);
+            return attributesForRsaKey(secretKey.getBitStrength(), (RsaKeyFormat) currentKeyFormat);
         } else if (secretKey.isEC()) {
             byte[] oid = new ASN1ObjectIdentifier(secretKey.getCurveOid()).getEncoded();
-            byte[] attrs = new byte[1 + (oid.length - 2) + 1];
+            byte[] attrs = new byte[1 + (oid.length - 2) + (withEccPublicKey ? 1 : 0)];
 
             if (slot.equals(KeyType.ENCRYPT))
                 attrs[0] = PublicKeyAlgorithmTags.ECDH;
@@ -49,7 +49,9 @@ public class SecurityTokenUtils {
 
             System.arraycopy(oid, 2, attrs, 1, (oid.length - 2));
 
-            attrs[attrs.length - 1] = (byte) 0xff;
+            if (withEccPublicKey) {
+                attrs[attrs.length - 1] = (byte) 0xff;
+            }
 
             return attrs;
         } else {
