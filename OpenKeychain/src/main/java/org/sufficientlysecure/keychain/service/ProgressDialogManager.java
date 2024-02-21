@@ -31,6 +31,7 @@ public class ProgressDialogManager {
     public static final String TAG_PROGRESS_DIALOG = "progressDialog";
 
     private FragmentActivity activity;
+    private boolean isDismissed = false;
 
     public ProgressDialogManager(FragmentActivity activity) {
         this.activity = activity;
@@ -42,7 +43,9 @@ public class ProgressDialogManager {
 
     public void showProgressDialog(
             String progressDialogMessage, int progressDialogStyle, CancellationSignal cancellationSignal) {
-
+        if (isDismissed) {
+            return;
+        }
         final ProgressDialogFragment frag = ProgressDialogFragment.newInstance(
                 progressDialogMessage, progressDialogStyle, cancellationSignal != null);
 
@@ -52,7 +55,12 @@ public class ProgressDialogManager {
         // http://stackoverflow.com/questions/10114324/show-dialogfragment-from-onactivityresult
         final FragmentManager manager = activity.getSupportFragmentManager();
         Handler handler = new Handler();
-        handler.post(() -> frag.show(manager, TAG_PROGRESS_DIALOG));
+        handler.post(() -> {
+            if (isDismissed) {
+                return;
+            }
+            frag.show(manager, TAG_PROGRESS_DIALOG);
+        });
 
     }
 
@@ -69,6 +77,8 @@ public class ProgressDialogManager {
     }
 
     public void dismissAllowingStateLoss() {
+        isDismissed = true;
+
         ProgressDialogFragment progressDialogFragment =
                 (ProgressDialogFragment) activity.getSupportFragmentManager()
                         .findFragmentByTag(TAG_PROGRESS_DIALOG);
