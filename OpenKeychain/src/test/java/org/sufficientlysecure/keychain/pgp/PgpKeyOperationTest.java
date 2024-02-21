@@ -256,7 +256,7 @@ public class PgpKeyOperationTest {
         PGPSecretKey secretKey = ((PGPSecretKeyRing) result.getRing().mRing).getSecretKey();
 
         assertEquals(S2K.SALTED_AND_ITERATED, secretKey.getS2K().getType());
-        assertEquals(HashAlgorithmTags.SHA512, secretKey.getS2K().getHashAlgorithm());
+        assertEquals(HashAlgorithmTags.SHA256, secretKey.getS2K().getHashAlgorithm());
         assertEquals(-1, secretKey.getS2K().getProtectionMode());
         assertEquals(SecretKeyPacket.USAGE_CHECKSUM, secretKey.getS2KUsage());
     }

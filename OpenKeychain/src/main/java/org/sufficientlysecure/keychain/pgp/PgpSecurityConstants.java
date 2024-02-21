@@ -81,7 +81,7 @@ public class PgpSecurityConstants {
             // MD2: not used widely
             // TIGER_192: not used widely
             // HAVAL_5_160: not used widely
-            HashAlgorithmTags.SHA256, // compatibility for old Mailvelope versions
+            HashAlgorithmTags.SHA256, // solid default
             HashAlgorithmTags.SHA384, // affine padding attacks; unproven status of RSA-PKCSv15
             HashAlgorithmTags.SHA512
             // SHA224: issues with collision resistance of 112-bits, Not used widely
@@ -177,7 +177,7 @@ public class PgpSecurityConstants {
      * (Most preferred is first)
      */
     public static final int[] PREFERRED_HASH_ALGORITHMS = new int[]{
-            HashAlgorithmTags.SHA512, // If possible use SHA-512, this is state of the art!
+            HashAlgorithmTags.SHA256,
     };
 
     /**
@@ -196,7 +196,7 @@ public class PgpSecurityConstants {
     /**
      * Hash algorithm used to certify public keys
      */
-    public static final int CERTIFY_HASH_ALGO = HashAlgorithmTags.SHA512;
+    public static final int CERTIFY_HASH_ALGO = HashAlgorithmTags.SHA256;
 
 
     /**
@@ -213,7 +213,7 @@ public class PgpSecurityConstants {
      * Always use SHA-512!
      * We always ignore the preferred hash algos of the recipient!
      */
-    public static final int DEFAULT_HASH_ALGORITHM = HashAlgorithmTags.SHA512;
+    public static final int DEFAULT_HASH_ALGORITHM = HashAlgorithmTags.SHA256;
 
     public interface OpenKeychainHashAlgorithmTags extends HashAlgorithmTags {
         int USE_DEFAULT = -1;
@@ -254,9 +254,9 @@ public class PgpSecurityConstants {
      * Yahoo's End-to-End: 96=0x60 (65536 iterations) (https://github.com/yahoo/end-to-end/blob/master/src/javascript/crypto/e2e/openpgp/keyring.js)
      */
     public static final int SECRET_KEY_ENCRYPTOR_S2K_COUNT = 0x90;
-    public static final int SECRET_KEY_ENCRYPTOR_HASH_ALGO = HashAlgorithmTags.SHA512;
+    public static final int SECRET_KEY_ENCRYPTOR_HASH_ALGO = HashAlgorithmTags.SHA256;
     public static final int SECRET_KEY_ENCRYPTOR_SYMMETRIC_ALGO = SymmetricKeyAlgorithmTags.AES_256;
-    public static final int SECRET_KEY_BINDING_SIGNATURE_HASH_ALGO = HashAlgorithmTags.SHA512;
+    public static final int SECRET_KEY_BINDING_SIGNATURE_HASH_ALGO = HashAlgorithmTags.SHA256;
     // NOTE: only SHA1 is supported for key checksum calculations in OpenPGP,
     // see http://tools.ietf.org/html/rfc488 0#section-5.5.3
     public static final int SECRET_KEY_SIGNATURE_CHECKSUM_HASH_ALGO = HashAlgorithmTags.SHA1;
