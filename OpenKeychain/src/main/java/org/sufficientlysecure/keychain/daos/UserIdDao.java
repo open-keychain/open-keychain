@@ -37,8 +37,8 @@ public class UserIdDao extends AbstractDao {
     public UidStatus getUidStatusByEmailLike(String emailLike) {
         List<UidStatus> uidStatusList = getDatabase().getUserPacketsQueries()
             .selectUserIdStatusByEmailLike(emailLike).executeAsList();
-        if (length(uidStatusList) > 0){
-            return uidStatusList[0]
+        if (uidStatusList.size() > 0){
+            return uidStatusList.get(0)
         }
         return null
     }
