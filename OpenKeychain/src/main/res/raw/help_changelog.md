@@ -1,5 +1,10 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 6.0.4
+  * Update translations
+  * Fix dark theme issue in backup dialog
+  * Fix API crash
+
 ## 6.0.3
   * Add special handling for expected ECC import format for Nitrokey 3
   * Change security defaults from SHA-512 to SHA-256
