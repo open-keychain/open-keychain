@@ -48,7 +48,7 @@ import timber.log.Timber;
  */
 public class KeychainDatabase {
     private static final String DATABASE_NAME = "openkeychain.db";
-    private static final int DATABASE_VERSION = 35;
+    private static final int DATABASE_VERSION = 36;
     private final SupportSQLiteOpenHelper supportSQLiteOpenHelper;
     private final Database sqldelightDatabase;
 
@@ -141,6 +141,7 @@ public class KeychainDatabase {
         }
         switch (oldVersion) {
             case 34:
+            case 35:
                 // nothing
         }
         // recreate the unified key view on any upgrade
@@ -191,7 +192,20 @@ public class KeychainDatabase {
                                 FROM validKeys
                         WHERE rank = 0;
                 """);
-
+        db.execSQL("DROP VIEW IF EXISTS autocryptKeyStatus");
+        db.execSQL("""
+                        CREATE VIEW autocryptKeyStatus AS
+                            SELECT autocryptPeer.*,
+                                    (CASE WHEN ac_key.expiry IS NULL THEN 0 WHEN ac_key.expiry > strftime('%s', 'now') THEN 0 ELSE 1 END) AS key_is_expired_int,
+                                    (CASE WHEN gossip_key.expiry IS NULL THEN 0 WHEN gossip_key.expiry > strftime('%s', 'now') THEN 0 ELSE 1 END) AS gossip_key_is_expired_int,
+                                    ac_key.is_revoked AS key_is_revoked,
+                                    gossip_key.is_revoked AS gossip_key_is_revoked,
+                                    EXISTS (SELECT * FROM certs WHERE certs.master_key_id = autocryptPeer.master_key_id AND verified = 1) AS key_is_verified,
+                                    EXISTS (SELECT * FROM certs WHERE certs.master_key_id = autocryptPeer.gossip_master_key_id AND verified = 1) AS gossip_key_is_verified
+                                FROM autocrypt_peers AS autocryptPeer
+                                    LEFT JOIN keys AS ac_key ON (ac_key.master_key_id = autocryptPeer.master_key_id AND ac_key.rank = 0)
+                                    LEFT JOIN keys AS gossip_key ON (gossip_key.master_key_id = gossip_master_key_id AND gossip_key.rank = 0);
+                """);
     }
 
     private void onDowngrade() {

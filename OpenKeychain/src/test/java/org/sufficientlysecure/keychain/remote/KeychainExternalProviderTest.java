@@ -264,6 +264,60 @@ public class KeychainExternalProviderTest {
         assertFalse(cursor.moveToNext());
     }
 
+    @Test
+    public void testAutocryptStatus_autocryptPeer_wildcard() throws Exception {
+        insertSecretKeyringFrom("/test-keys/testring.sec");
+        insertPublicKeyringFrom("/test-keys/testring.pub");
+
+        autocryptPeerDao.insertOrUpdateLastSeen(PACKAGE_NAME, "tid", new Date());
+        autocryptPeerDao.updateKey(PACKAGE_NAME, AUTOCRYPT_PEER, new Date(), KEY_ID_PUBLIC, false);
+
+        Cursor cursor = contentResolver.query(
+                AutocryptStatus.CONTENT_URI, new String[] {
+                        AutocryptStatus.ADDRESS, AutocryptStatus.UID_KEY_STATUS, AutocryptStatus.UID_ADDRESS,
+                        AutocryptStatus.AUTOCRYPT_PEER_STATE,
+                        AutocryptStatus.AUTOCRYPT_KEY_STATUS, AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID
+                },
+                null, new String [] { "twi@%" }, null
+        );
+
+        assertNotNull(cursor);
+        assertTrue(cursor.moveToFirst());
+        assertEquals("twi@openkeychain.org", cursor.getString(0));
+        assertFalse(cursor.moveToNext());
+    }
+
+    @Test
+    public void testAutocryptStatus_autocryptPeer_wildcard2() throws Exception {
+        insertSecretKeyringFrom("/test-keys/testring.sec");
+        insertPublicKeyringFrom("/test-keys/testring.pub");
+
+        autocryptPeerDao.insertOrUpdateLastSeen(PACKAGE_NAME, "tid1", new Date());
+        autocryptPeerDao.insertOrUpdateLastSeen(PACKAGE_NAME, "tid2", new Date());
+        autocryptPeerDao.updateKey(PACKAGE_NAME, "tid1", new Date(), KEY_ID_PUBLIC, false);
+        autocryptPeerDao.updateKey(PACKAGE_NAME, "tid2", new Date(), KEY_ID_PUBLIC, false);
+
+        Cursor cursor = contentResolver.query(
+                AutocryptStatus.CONTENT_URI, new String[] {
+                        AutocryptStatus.ADDRESS, AutocryptStatus.UID_KEY_STATUS,
+                        AutocryptStatus.AUTOCRYPT_PEER_STATE,
+                        AutocryptStatus.AUTOCRYPT_KEY_STATUS, AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID
+                },
+                null, new String [] { "ti%" }, null
+        );
+
+        assertNotNull(cursor);
+        assertTrue(cursor.moveToFirst());
+        assertEquals("tid1", cursor.getString(0));
+        assertTrue(cursor.isNull(1));
+        assertEquals(KEY_ID_PUBLIC, cursor.getLong(4));
+        assertTrue(cursor.moveToNext());
+        assertEquals("tid2", cursor.getString(0));
+        assertTrue(cursor.isNull(1));
+        assertEquals(KEY_ID_PUBLIC, cursor.getLong(4));
+        assertFalse(cursor.moveToNext());
+    }
+
 /*
     @Test
     public void testAutocryptStatus_stateSelected() throws Exception {

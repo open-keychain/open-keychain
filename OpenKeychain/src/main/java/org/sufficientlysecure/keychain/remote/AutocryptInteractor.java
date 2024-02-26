@@ -13,9 +13,9 @@ import android.text.format.DateUtils;
 import androidx.annotation.Nullable;
 import org.openintents.openpgp.AutocryptPeerUpdate;
 import org.openintents.openpgp.AutocryptPeerUpdate.PreferEncrypt;
+import org.sufficientlysecure.keychain.AutocryptKeyStatus;
 import org.sufficientlysecure.keychain.Autocrypt_peers;
 import org.sufficientlysecure.keychain.Constants;
-import org.sufficientlysecure.keychain.SelectAutocryptKeyStatus;
 import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
 import org.sufficientlysecure.keychain.daos.KeyWritableRepository;
 import org.sufficientlysecure.keychain.model.GossipOrigin;
@@ -150,7 +150,18 @@ public class AutocryptInteractor {
     public Map<String,AutocryptRecommendationResult> determineAutocryptRecommendations(String... autocryptIds) {
         Map<String,AutocryptRecommendationResult> result = new HashMap<>(autocryptIds.length);
 
-        for (SelectAutocryptKeyStatus autocryptKeyStatus : autocryptPeerDao.getAutocryptKeyStatus(packageName, autocryptIds)) {
+        for (AutocryptKeyStatus autocryptKeyStatus : autocryptPeerDao.getAutocryptKeyStatus(packageName, autocryptIds)) {
+            AutocryptRecommendationResult peerResult = determineAutocryptRecommendation(autocryptKeyStatus);
+            result.put(peerResult.peerId, peerResult);
+        }
+
+        return Collections.unmodifiableMap(result);
+    }
+
+    public Map<String,AutocryptRecommendationResult> determineAutocryptRecommendationsLike(String query) {
+        Map<String,AutocryptRecommendationResult> result = new HashMap<>();
+
+        for (AutocryptKeyStatus autocryptKeyStatus : autocryptPeerDao.getAutocryptKeyStatusLike(packageName, query)) {
             AutocryptRecommendationResult peerResult = determineAutocryptRecommendation(autocryptKeyStatus);
             result.put(peerResult.peerId, peerResult);
         }
@@ -162,7 +173,7 @@ public class AutocryptInteractor {
      * See https://autocrypt.org/level1.html#recommendations-for-single-recipient-messages
      */
     private AutocryptRecommendationResult determineAutocryptRecommendation(
-            SelectAutocryptKeyStatus autocryptKeyStatus) {
+            AutocryptKeyStatus autocryptKeyStatus) {
         AutocryptRecommendationResult keyRecommendation = determineAutocryptKeyRecommendation(autocryptKeyStatus);
         if (keyRecommendation != null) return keyRecommendation;
 
@@ -174,7 +185,7 @@ public class AutocryptInteractor {
 
     @Nullable
     private AutocryptRecommendationResult determineAutocryptKeyRecommendation(
-            SelectAutocryptKeyStatus autocryptKeyStatus) {
+            AutocryptKeyStatus autocryptKeyStatus) {
         Long masterKeyId = autocryptKeyStatus.getMaster_key_id();
         boolean hasKey = masterKeyId != null;
         boolean isRevoked = Boolean.TRUE.equals(autocryptKeyStatus.getKey_is_revoked());
@@ -202,7 +213,7 @@ public class AutocryptInteractor {
 
     @Nullable
     private AutocryptRecommendationResult determineAutocryptGossipRecommendation(
-            SelectAutocryptKeyStatus autocryptKeyStatus) {
+            AutocryptKeyStatus autocryptKeyStatus) {
         boolean gossipHasKey = autocryptKeyStatus.getGossip_master_key_id() != null;
         boolean gossipIsRevoked =
                 Boolean.TRUE.equals(autocryptKeyStatus.getGossip_key_is_revoked());

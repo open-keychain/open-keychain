@@ -20,9 +20,10 @@ package org.sufficientlysecure.keychain.remote;
 
 import java.security.AccessControlException;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -128,30 +129,31 @@ public class KeychainExternalProvider extends ContentProvider {
                 List<String> plist = Arrays.asList(projection);
                 boolean isWildcardSelector =
                         selectionArgs.length == 1 && selectionArgs[0].contains("%");
-                boolean queriesUidResult = plist.contains(AutocryptStatus.UID_KEY_STATUS) ||
-                        plist.contains(AutocryptStatus.UID_ADDRESS) ||
-                        plist.contains(AutocryptStatus.UID_MASTER_KEY_ID) ||
-                        plist.contains(AutocryptStatus.UID_CANDIDATES);
-                boolean queriesAutocryptResult =
-                        plist.contains(AutocryptStatus.AUTOCRYPT_PEER_STATE) ||
-                                plist.contains(AutocryptStatus.AUTOCRYPT_MASTER_KEY_ID) ||
-                                plist.contains(AutocryptStatus.AUTOCRYPT_KEY_STATUS);
-                if (isWildcardSelector && queriesAutocryptResult) {
-                    throw new UnsupportedOperationException(
-                            "Cannot wildcard-query autocrypt results!");
+
+                UserIdDao userIdDao = UserIdDao.getInstance(getContext());
+                AutocryptInteractor autocryptInteractor =
+                        AutocryptInteractor.getInstance(getContext(), callingPackageName);
+
+                Map<String, UidStatus> uidStatuses;
+                Map<String, AutocryptRecommendationResult> autocryptStates;
+                String[] emails;
+                if (isWildcardSelector) {
+                    uidStatuses = userIdDao.getUidStatusByEmailLike(selectionArgs[0]);
+                    autocryptStates = autocryptInteractor.determineAutocryptRecommendationsLike(selectionArgs[0]);
+                    // If this was a wildcard query, use the found email addresses in the result set.
+                    Set<String> emailsSet = new HashSet<>();
+                    emailsSet.addAll(uidStatuses.keySet());
+                    emailsSet.addAll(autocryptStates.keySet());
+                    emails = emailsSet.toArray(new String[0]);
+                } else {
+                    uidStatuses = userIdDao.getUidStatusByEmail(selectionArgs);
+                    autocryptStates = autocryptInteractor.determineAutocryptRecommendations(selectionArgs);
+                    // Otherwise, map exactly the selection args to results.
+                    emails = selectionArgs;
                 }
 
-                Map<String, UidStatus> uidStatuses = queriesUidResult ?
-                        loadUidStatusMap(selectionArgs, isWildcardSelector) :
-                        Collections.emptyMap();
-                Map<String, AutocryptRecommendationResult> autocryptStates =
-                        queriesAutocryptResult ?
-                                loadAutocryptRecommendationMap(selectionArgs, callingPackageName) :
-                                Collections.emptyMap();
-
-                MatrixCursor cursor =
-                        mapResultsToProjectedMatrixCursor(projection, selectionArgs, uidStatuses,
-                                autocryptStates);
+                MatrixCursor cursor = mapResultsToProjectedMatrixCursor(
+                        projection, emails, uidStatuses, autocryptStates);
 
                 uri = DatabaseNotifyManager.getNotifyUriAllKeys();
                 cursor.setNotificationUri(context.getContentResolver(), uri);
@@ -166,20 +168,22 @@ public class KeychainExternalProvider extends ContentProvider {
     }
 
     @NonNull
-    private MatrixCursor mapResultsToProjectedMatrixCursor(String[] projection,
-            String[] selectionArgs,
+    private MatrixCursor mapResultsToProjectedMatrixCursor(
+            String[] projection,
+            String[] addresses,
             Map<String, UidStatus> uidStatuses,
-            Map<String, AutocryptRecommendationResult> autocryptStates) {
+            Map<String, AutocryptRecommendationResult> autocryptStates
+        ) {
         MatrixCursor cursor = new MatrixCursor(projection);
-        for (String selectionArg : selectionArgs) {
-            AutocryptRecommendationResult autocryptResult = autocryptStates.get(selectionArg);
-            UidStatus uidStatus = uidStatuses.get(selectionArg);
+        for (String address : addresses) {
+            AutocryptRecommendationResult autocryptResult = autocryptStates.get(address);
+            UidStatus uidStatus = uidStatuses.get(address);
 
             Object[] row = new Object[projection.length];
             for (int i = 0; i < projection.length; i++) {
                 if (AutocryptStatus.ADDRESS.equals(projection[i]) ||
                         AutocryptStatus._ID.equals(projection[i])) {
-                    row[i] = selectionArg;
+                    row[i] = address;
                 } else {
                     row[i] = columnNameToRowContent(projection[i], autocryptResult, uidStatus);
                 }
@@ -242,25 +246,6 @@ public class KeychainExternalProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Unhandled case " + columnName);
         }
-    }
-
-    private Map<String, org.sufficientlysecure.keychain.UidStatus> loadUidStatusMap(
-            String[] selectionArgs, boolean isWildcardSelector) {
-        UserIdDao userIdDao = UserIdDao.getInstance(getContext());
-        if (isWildcardSelector) {
-            org.sufficientlysecure.keychain.UidStatus uidStatus =
-                    userIdDao.getUidStatusByEmailLike(selectionArgs[0]);
-            return Collections.singletonMap(selectionArgs[0], uidStatus);
-        } else {
-            return userIdDao.getUidStatusByEmail(selectionArgs);
-        }
-    }
-
-    private Map<String, AutocryptRecommendationResult> loadAutocryptRecommendationMap(
-            String[] selectionArgs, String callingPackageName) {
-        AutocryptInteractor autocryptInteractor =
-                AutocryptInteractor.getInstance(getContext(), callingPackageName);
-        return autocryptInteractor.determineAutocryptRecommendations(selectionArgs);
     }
 
     private int getPeerStateValue(AutocryptState autocryptState) {

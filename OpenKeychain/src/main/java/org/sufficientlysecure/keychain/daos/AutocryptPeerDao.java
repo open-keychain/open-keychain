@@ -26,10 +26,10 @@ import java.util.List;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
+import org.sufficientlysecure.keychain.AutocryptKeyStatus;
 import org.sufficientlysecure.keychain.AutocryptPeersQueries;
 import org.sufficientlysecure.keychain.Autocrypt_peers;
 import org.sufficientlysecure.keychain.KeychainDatabase;
-import org.sufficientlysecure.keychain.SelectAutocryptKeyStatus;
 import org.sufficientlysecure.keychain.SelectMasterKeyIdByIdentifier;
 import org.sufficientlysecure.keychain.model.GossipOrigin;
 
@@ -71,10 +71,15 @@ public class AutocryptPeerDao extends AbstractDao {
                 .executeAsList();
     }
 
-    public List<SelectAutocryptKeyStatus> getAutocryptKeyStatus(String packageName,
+    public List<AutocryptKeyStatus> getAutocryptKeyStatus(String packageName,
             String[] autocryptIds) {
         return autocryptPeersQueries.selectAutocryptKeyStatus(packageName,
                 Arrays.asList(autocryptIds)).executeAsList();
+    }
+
+    public List<AutocryptKeyStatus> getAutocryptKeyStatusLike(String packageName,
+            String query) {
+        return autocryptPeersQueries.selectAutocryptKeyStatusLike(packageName, query).executeAsList();
     }
 
     private void ensureAutocryptPeerExists(String packageName, String autocryptId) {

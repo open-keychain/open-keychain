@@ -34,14 +34,24 @@ public class UserIdDao extends AbstractDao {
                 .executeAsList();
     }
 
-    public UidStatus getUidStatusByEmailLike(String emailLike) {
-        return getDatabase().getUserPacketsQueries().selectUserIdStatusByEmailLike(emailLike)
-                .executeAsOneOrNull();
-    }
-
     public Map<String, UidStatus> getUidStatusByEmail(String... emails) {
         Query<UidStatus> q = getDatabase().getUserPacketsQueries()
                 .selectUserIdStatusByEmail(Arrays.asList(emails));
+        Map<String, UidStatus> result = new HashMap<>();
+        try (SqlCursor cursor = q.execute()) {
+            while (cursor.next()) {
+                UidStatus item = q.getMapper().invoke(cursor);
+                result.put(item.getEmail(), item);
+            }
+        } catch (IOException e) {
+            // oops
+        }
+        return result;
+    }
+
+    public Map<String, UidStatus> getUidStatusByEmailLike(String query) {
+        Query<UidStatus> q = getDatabase().getUserPacketsQueries()
+                .selectUserIdStatusByEmailLike(query);
         Map<String, UidStatus> result = new HashMap<>();
         try (SqlCursor cursor = q.execute()) {
             while (cursor.next()) {
