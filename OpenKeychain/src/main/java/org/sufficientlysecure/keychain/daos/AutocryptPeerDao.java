@@ -30,7 +30,6 @@ import org.sufficientlysecure.keychain.AutocryptKeyStatus;
 import org.sufficientlysecure.keychain.AutocryptPeersQueries;
 import org.sufficientlysecure.keychain.Autocrypt_peers;
 import org.sufficientlysecure.keychain.KeychainDatabase;
-import org.sufficientlysecure.keychain.SelectMasterKeyIdByIdentifier;
 import org.sufficientlysecure.keychain.model.GossipOrigin;
 
 
@@ -48,16 +47,6 @@ public class AutocryptPeerDao extends AbstractDao {
     private AutocryptPeerDao(KeychainDatabase database,
             DatabaseNotifyManager databaseNotifyManager) {
         super(database, databaseNotifyManager);
-    }
-
-    public Long getMasterKeyIdForAutocryptPeer(String autocryptId) {
-        SelectMasterKeyIdByIdentifier masterKeyId =
-                autocryptPeersQueries.selectMasterKeyIdByIdentifier(autocryptId)
-                        .executeAsOneOrNull();
-        if (masterKeyId != null) {
-            return masterKeyId.getMaster_key_id();
-        }
-        return null;
     }
 
     @Nullable
@@ -114,10 +103,10 @@ public class AutocryptPeerDao extends AbstractDao {
     }
 
     public void deleteByIdentifier(String packageName, String autocryptId) {
-        Long masterKeyId = getMasterKeyIdForAutocryptPeer(autocryptId);
+        Autocrypt_peers peer = getAutocryptPeer(packageName, autocryptId);
         autocryptPeersQueries.deleteByIdentifier(packageName, autocryptId);
-        if (masterKeyId != null) {
-            getDatabaseNotifyManager().notifyAutocryptDelete(autocryptId, masterKeyId);
+        if (peer != null && peer.getMaster_key_id() != null) {
+            getDatabaseNotifyManager().notifyAutocryptDelete(autocryptId, peer.getMaster_key_id());
         }
     }
 

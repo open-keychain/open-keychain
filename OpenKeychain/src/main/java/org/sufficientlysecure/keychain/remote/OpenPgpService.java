@@ -51,6 +51,7 @@ import org.openintents.openpgp.OpenPgpMetadata;
 import org.openintents.openpgp.OpenPgpSignatureResult;
 import org.openintents.openpgp.OpenPgpSignatureResult.AutocryptPeerResult;
 import org.openintents.openpgp.util.OpenPgpApi;
+import org.sufficientlysecure.keychain.Autocrypt_peers;
 import org.sufficientlysecure.keychain.Constants;
 import org.sufficientlysecure.keychain.daos.ApiAppDao;
 import org.sufficientlysecure.keychain.daos.AutocryptPeerDao;
@@ -585,10 +586,12 @@ public class OpenPgpService extends Service {
 
         AutocryptPeerDao autocryptPeerentityDao =
                 AutocryptPeerDao.getInstance(getBaseContext());
-        Long autocryptPeerMasterKeyId = autocryptPeerentityDao.getMasterKeyIdForAutocryptPeer(autocryptPeerId);
+        String packageName = mApiPermissionHelper.getCurrentCallingPackage();
+        Autocrypt_peers
+                autocryptPeer = autocryptPeerentityDao.getAutocryptPeer(packageName, autocryptPeerId);
 
         long masterKeyId = signatureResult.getKeyId();
-        if (autocryptPeerMasterKeyId == null) {
+        if (autocryptPeer == null) {
             Date now = new Date();
             Date effectiveTime = signatureResult.getSignatureTimestamp();
             if (effectiveTime.after(now)) {
@@ -598,7 +601,7 @@ public class OpenPgpService extends Service {
                     AutocryptInteractor.getInstance(this, mApiPermissionHelper.getCurrentCallingPackage());
             autocryptInteractor.updateKeyGossipFromSignature(autocryptPeerId, effectiveTime, masterKeyId);
             return signatureResult.withAutocryptPeerResult(AutocryptPeerResult.NEW);
-        } else  if (masterKeyId == autocryptPeerMasterKeyId) {
+        } else if (autocryptPeer.getMaster_key_id() != null && masterKeyId == autocryptPeer.getMaster_key_id()) {
             return signatureResult.withAutocryptPeerResult(AutocryptPeerResult.OK);
         } else {
             return signatureResult.withAutocryptPeerResult(AutocryptPeerResult.MISMATCH);

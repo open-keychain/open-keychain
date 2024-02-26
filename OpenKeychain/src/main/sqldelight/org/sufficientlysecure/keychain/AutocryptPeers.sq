@@ -25,11 +25,6 @@ SELECT *
     FROM  autocrypt_peers
     WHERE master_key_id = ?;
 
-selectMasterKeyIdByIdentifier:
-SELECT master_key_id
-    FROM autocrypt_peers
-    WHERE identifier = ?;
-
 deleteByIdentifier:
 DELETE FROM autocrypt_peers
     WHERE package_name = ? AND identifier = ?;
