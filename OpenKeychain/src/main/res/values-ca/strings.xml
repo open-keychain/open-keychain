@@ -18,11 +18,7 @@
   <string name="title_share_key">Comparteix la clau amb...</string>
   <string name="title_share_file">Comparteix el fitxer amb...</string>
   <string name="title_share_message">Comparteix text amb...</string>
-  <string name="title_encrypt_to_file">Xifra cap un Fitxer</string>
-  <string name="title_decrypt_to_file">Desxifra cap un Fitxer</string>
   <string name="title_import_keys">Importa claus</string>
-  <string name="title_export_key">Còpia de seguretat de la clau</string>
-  <string name="title_export_keys">Còpia de seguretat de les claus</string>
   <string name="title_key_not_found">Clau no trobada</string>
   <string name="title_send_key">Carrega al servidor de claus</string>
   <string name="title_backup">Còpia de seguretat de la clau</string>
@@ -30,22 +26,17 @@
   <string name="title_key_details">Detalls de les claus</string>
   <string name="title_help">Ajuda</string>
   <string name="title_log_display">Registre</string>
-  <string name="title_exchange_keys">Intercanvia claus</string>
   <string name="title_advanced_key_info">Avançat</string>
   <string name="title_delete_secret_key">Desitgeu suprimir la TEVA clau \'%s\'?</string>
   <string name="title_manage_my_keys">Gestiona les meves claus</string>
   <!--section-->
   <string name="section_user_ids">Identitats</string>
-  <string name="section_should_you_trust">Heu de confiar en aquesta clau?</string>
-  <string name="section_proof_details">Prova de verificació</string>
   <string name="section_keys">Subclaus</string>
   <string name="section_cloud_search">Cerca clau</string>
-  <string name="section_cloud_search_summary">Servidor de claus</string>
   <string name="section_passphrase_cache">Contrasenya i PINs</string>
   <string name="section_passphrase_cache_summary">Gestionant</string>
   <string name="section_proxy_settings">Anonimitat de la xarxa</string>
   <string name="section_proxy_settings_summary">Tor, Configuració del proxy</string>
-  <string name="section_gui">Interfície</string>
   <string name="section_sync_settings">Sincronització</string>
   <string name="section_sync_settings_summary">Actualització de clau automàtica, enllaç de contactes</string>
   <string name="section_experimental_features">Característiques experimentals</string>
@@ -59,10 +50,8 @@
   <string name="section_current_expiry">Caducitat actual</string>
   <string name="section_new_expiry">Nova caducitat</string>
   <!--button-->
-  <string name="btn_decrypt_verify_file">Desxifra, verifica, i desa el fitxer</string>
   <string name="btn_encrypt_share_file">Xifra i comparteix el fitxer</string>
   <string name="btn_encrypt_save_file">Xifra i desa el fitxer</string>
-  <string name="btn_save_file">Desa el fitxer</string>
   <string name="btn_save">Desa</string>
   <string name="btn_view_log">Mostra els registre</string>
   <string name="btn_do_not_save">Cancel·la</string>
@@ -72,12 +61,10 @@
   <string name="btn_export_to_server">Carrega al servidor de claus</string>
   <string name="btn_next">Següent</string>
   <string name="btn_back">Enrera</string>
-  <string name="btn_no">No</string>
   <string name="btn_match">L\'empremta digital coincideix</string>
   <string name="btn_share_encrypted_signed">Xifra/signa i comparteix el text</string>
   <string name="btn_copy_encrypted_signed">Xifra/signa i copia el text</string>
   <string name="btn_paste_encrypted_signed">Xifra/signa i enganxa el text</string>
-  <string name="btn_view_cert_key">Visualitza la clau de certificació</string>
   <string name="btn_create_key">Crea clau</string>
   <string name="btn_add_files">Afegeix fitxer(s)</string>
   <string name="btn_share_decrypted_text">Compartir</string>
@@ -90,7 +77,6 @@
   <string name="btn_add_email">Afegeix adreces de correu addicionals</string>
   <string name="btn_unlock">Desbloquejar</string>
   <string name="btn_proceed">Procedir</string>
-  <string name="btn_add_keyserver">Afegeix</string>
   <string name="btn_save_default">Desa per defecte</string>
   <string name="btn_saved">Desat!</string>
   <string name="btn_not_matching">No hi ha coincidència</string>
@@ -100,70 +86,44 @@
   <string name="cd_encrypt_files">Xifratge de fitxers</string>
   <string name="cd_exchange_keys">Intercanvia claus</string>
   <string name="cd_encrypt_text">Xifra text</string>
-  <string name="cd_share_nfc">Comparteix via NFC</string>
   <!--menu-->
   <string name="menu_preferences">Configuració</string>
   <string name="menu_help">Ajuda</string>
   <string name="menu_export_key">Còpia de seguretat de la clau</string>
   <string name="menu_delete_key">Suprimeix clau</string>
-  <string name="menu_status">Veure l\'estatus de la clau</string>
   <string name="menu_manage_keys">Gestiona les meves claus</string>
   <string name="menu_search">Cerca</string>
   <string name="menu_open">Obre</string>
   <string name="menu_read_clipboard">Llegeix des del porta-retalls</string>
-  <string name="menu_nfc_preferences">Configuració de NFC</string>
   <string name="menu_encrypt_to">Xifra cap a...</string>
-  <string name="menu_select_all">Selecciona-ho tot</string>
-  <string name="menu_export_all_keys">Exporta totes les claus</string>
   <string name="menu_update_all_keys">Actualitza totes les claus</string>
   <string name="menu_certify_fingerprint">Confirma amb l\'empremta digital</string>
-  <string name="menu_certify_fingerprint_phrases">Confirma amb frases</string>
   <string name="menu_share_log">Comparteix log</string>
   <string name="menu_change_password">Canvia la contrasenya</string>
   <string name="menu_advanced">Avançat</string>
-  <string name="menu_keyserver_add">Afegeix</string>
   <!--label-->
-  <string name="label_message">Text</string>
-  <string name="label_file">Fitxer</string>
-  <string name="label_files">Fitxer(s)</string>
-  <string name="label_file_colon">Fitxer:</string>
   <string name="label_no_passphrase">Cap contrasenya</string>
   <string name="label_passphrase">Contrasenya</string>
   <string name="label_pin">PIN</string>
   <string name="label_unlock">Desbloquejar</string>
   <string name="label_passphrase_again">Repeteix contrasenya</string>
-  <string name="label_show_passphrase">Mostra contrasenya</string>
-  <string name="label_algorithm">Algorisme</string>
   <string name="label_algorithm_colon">Algorisme:</string>
-  <string name="label_ascii_armor">Fitxer ASCII Armor</string>
   <string name="label_file_ascii_armor">Habilita ASCII Armor</string>
-  <string name="label_write_version_header">Permet a d\'altres conèixer que esteu usant OpenKeychain</string>
-  <string name="label_write_version_header_summary">Escriu \'OpenKeychain v2.7\' a signatures OpenPGP, text xifrat, i claus exportades</string>
   <string name="label_asymmetric_from">Signa amb:</string>
   <string name="label_to">Xifra cap a</string>
   <string name="label_delete_after_encryption">Suprimeix els fitxers després de xifrar</string>
-  <string name="label_delete_after_decryption">Suprimeix després del desxifrat</string>
-  <string name="label_encryption_algorithm">Algorisme de xifrat</string>
-  <string name="label_hash_algorithm">Algorisme de hash</string>
   <string name="label_symmetric">Xifra amb contrasenya</string>
   <string name="label_passphrase_cache_subs">Recorda contrasenyes per subclau</string>
-  <string name="label_message_compression">Compressió de text</string>
-  <string name="label_file_compression">Compressió de fitxers</string>
   <string name="label_keyservers">Gestiona servidors de clau OpenPGP</string>
-  <string name="label_key_id">ID de la Clau</string>
   <string name="label_key_id_colon">Id. clau:</string>
   <string name="label_key_created">Creat %s</string>
   <string name="label_key_created_just_now">Creat ara mateix</string>
   <string name="label_key_type">Tipus</string>
-  <string name="label_creation">Creació</string>
-  <string name="label_creation_colon">Creació:</string>
   <string name="label_expiry">Caducitat</string>
   <string name="label_valid_from">Vàlid des de</string>
   <string name="label_usage">Ús</string>
   <string name="label_revoked">revocat</string>
   <string name="label_insecure">Insegur</string>
-  <string name="label_key_size">Mida de la clau</string>
-  <string name="label_ecc_curve">Corba el·líptica</string>
   <string name="label_main_user_id">Identitat primària</string>
   <string name="label_name">Nom</string>
   <string name="label_email">Correu electrònic</string>
@@ -173,17 +133,14 @@
   <string name="label_keyservers_title">Servidors de claus</string>
   <string name="label_keyserver_settings_hint">Arrossega per a canviar d\'ordre, cliqueu per a editar/suprimir</string>
   <string name="label_selected_keyserver_title">Servidor de claus seleccionat</string>
-  <string name="label_selected_smartpgp_authority_title">Selecciona autoritat</string>
   <string name="label_preferred">preferit</string>
   <string name="label_enable_compression">Habilita compressió</string>
   <string name="label_enable_self_encrypt">Xifra cap al signant</string>
   <string name="label_encrypt_filenames">Xifra nom de fitxers</string>
-  <string name="label_hidden_recipients">Oculta els destinataris</string>
   <string name="label_smartpgp_verify">SmartPGP: Verifica certificats</string>
   <string name="label_smartpgp_verify_summary">Verifica certificats a SmartPGP Security Tokens contra un conjunt d\'autoritats de confiança</string>
   <string name="label_smartpgp_roots">SmartPGP: autoritats confiables</string>
   <string name="label_verify_keyserver_connection">Test de connexió</string>
-  <string name="label_only_trusted_keyserver">Solament servidors de clau de confiança</string>
   <string name="label_enter_keyserver_url">URL</string>
   <string name="label_enter_keyserver_onion">URL .onion de Tor opcional</string>
   <string name="label_keyserver_dialog_delete">Suprimeix servidor de claus</string>
@@ -192,8 +149,6 @@
   <string name="label_smartpgp_authority_dialog_delete">Suprimeix autoritat</string>
   <string name="pref_keyserver">Servidors de claus OpenPGP </string>
   <string name="pref_keyserver_summary">Cerca claus en els servidors de claus OpenPGP seleccionats (protocol HKP)</string>
-  <string name="pref_facebook">Facebook</string>
-  <string name="pref_facebook_summary">Cerca claus a Facebook per nom d\'usuari</string>
   <string name="pref_wkd">Directori web de claus</string>
   <string name="pref_wkd_summary">Cerca claus emprant el directori web de claus</string>
   <string name="label_sync_settings_keyserver_title">Actualització de claus automàticamentq</string>
@@ -221,18 +176,11 @@
   <string name="orbot_install_dialog_install">Instal·lar</string>
   <string name="orbot_install_dialog_content">Cal tenir instal·lat i activat l\'Orbot per redirigir tràfic cap al proxy. El desitgeu instal·lar ?</string>
   <string name="orbot_install_dialog_cancel">Cancel·la</string>
-  <string name="orbot_install_dialog_ignore_tor">No usis Tor</string>
   <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">Iniciar Orbot?</string>
   <string name="orbot_start_dialog_content">L\'Orbot no sembla que estigui en funcionament. Desitgeu iniciar-lo i connectar-lo a Tor?</string>
-  <string name="orbot_start_btn">Inicia Orbot</string>
   <string name="orbot_start_dialog_start">Inicia Orbot</string>
   <string name="orbot_start_dialog_cancel">Cancel·la</string>
-  <string name="orbot_start_dialog_ignore_tor">No usis Tor</string>
-  <plurals name="n_keys">
-    <item quantity="one">1 clau</item>
-    <item quantity="other">%d claus</item>
-  </plurals>
   <plurals name="n_keyservers">
     <item quantity="one">%d servidor de claus</item>
     <item quantity="other">%d servidors de claus</item>
@@ -244,20 +192,7 @@
   <string name="secret_key">Clau secreta:</string>
   <!--choice-->
   <string name="choice_none">Cap</string>
-  <string name="choice_15secs">15 segons</string>
-  <string name="choice_1min">1 min</string>
-  <string name="choice_3mins">3 mins</string>
-  <string name="choice_5mins">5 mins</string>
-  <string name="choice_10mins">10 mins</string>
-  <string name="choice_20mins">20 mins</string>
-  <string name="choice_40mins">40 mins</string>
-  <string name="choice_1hour">1 houra</string>
-  <string name="choice_2hours">2 hores</string>
-  <string name="choice_4hours">4 hores</string>
-  <string name="choice_8hours">8 hores</string>
-  <string name="choice_forever">per sempre</string>
   <string name="choice_select_cert">Selecciona una clau</string>
-  <string name="filemanager_title_open">Obre...</string>
   <string name="rsa_2048">RSA 2048</string>
   <string name="rsa_2048_description_html">mida de fitxer petita, considerat segur fins el 2030</string>
   <string name="rsa_3072">RSA 3072</string>
@@ -270,7 +205,6 @@
   <string name="usage_sign">Signa</string>
   <string name="usage_encrypt">Xifra</string>
   <string name="usage_sign_and_encrypt">Signa &amp; Xifra</string>
-  <string name="error">Error</string>
   <string name="error_message">Error: %s</string>
   <string name="theme_auto">Automàtic</string>
   <string name="theme_light">Clar</string>
@@ -287,27 +221,15 @@
   <string name="passphrase_keyboard_hint_alpha">Canvieu a teclat alfabètic</string>
   <string name="passphrase_keyboard_hint_numeric">Canvieu a teclat numèric</string>
   <string name="passphrase_transfer">Inseriu codi de transferència</string>
-  <string name="pin_for">Inseriu PIN per \'%s\'</string>
   <string name="security_token_pin_for">Entreu el PIN per accedir a l\'identificador de seguretat per \'%s\'</string>
   <string name="file_delete_confirmation_title">Desitgeu suprimir els fitxers originals?</string>
   <string name="file_delete_confirmation">Els fitxers següents seran suprimits:%s</string>
   <string name="no_file_selected">Cap fitxer ha estat seleccionat.</string>
-  <string name="encrypt_sign_successful">Correctament signat i/o xifrat.</string>
-  <string name="encrypt_sign_clipboard_successful">Correctament signat i/o xifrat al porta-retalls.</string>
   <string name="select_encryption_key">Seleccioneu almenys una clau de xifrat.</string>
   <string name="error_no_encryption_or_signature_key">Seleccioneu almenys una clau de xifrat o una clau de signatura.</string>
-  <string name="specify_file_to_encrypt_to">Si us plau, especifiqueu el nom del fitxer xifrat.\nATENCIÓ: El fitxer serà sobreescrit en cas que aquest ja existeixi!!</string>
-  <string name="specify_file_to_decrypt_to">Si us plau, especifiqueu el nom per al fitxer desxifrat.\nATENCIÓ: El fitxer serà sobreescrit si aquest existeix!</string>
-  <string name="specify_backup_dest">Es crearà una còpia excloïent les vostres claus, si us plau especifiqueu un fitxer destí.\nATENCIÓ: Es sobreescriurà el fitxer en cas que existeixi!</string>
   <string name="key_deletion_confirmation_multi">Realment desitgeu suprimir totes les claus seleccionades?</string>
   <string name="secret_key_deletion_confirmation">Després de la supressió, no sereu capaç de desxifrar missatges/fitxers xifrats amb aquesta clau i perdreu totes les confirmacions de clau realitzades!</string>
   <string name="public_key_deletetion_confirmation">Suprimir la clau \'%s\'?</string>
-  <string name="also_export_secret_keys">També exportar les claus secretes</string>
-  <string name="reinstall_openkeychain">Heu topat amb un error conegut amb Android. Si us plau, reinstal·leu l\'OpenKeychain si desitgeu enllaçar contactes amb claus.</string>
-  <string name="key_exported">1 clau exportada correctament.</string>
-  <string name="keys_exported">%d claus exportades correctament.</string>
-  <string name="no_keys_exported">Cap clau ha estat exportada.</string>
-  <string name="key_creation_el_gamal_info">Nota: solament les subclaus suporten ElGamal.</string>
   <string name="key_not_found">No és possible trobar la clau %08X.</string>
   <string name="authentication_subkey_not_found">Aquesta clau no té una subclau d\'autenticació.</string>
   <string name="list_empty">Aquesta llista és buida!</string>
@@ -321,25 +243,12 @@
          they will be put after "error_message", e.g. "Error: file not found"-->
   <string name="error_file_delete_failed">no ha estat suprimida. Suprimiu-la manualment!</string>
   <string name="error_file_added_already">%s ja ha estat afegida.</string>
-  <string name="error_file_not_found">fitxer no trobat</string>
   <string name="error_bad_data">Informació incorrecta!</string>
-  <string name="error_no_secret_key_found">no ha estat trobada cap clau secreta adequada</string>
-  <string name="error_external_storage_not_ready">l\'emmagatzematge extern no està preparat</string>
-  <string name="error_key_size_minimum512bit">la mida de la clau mínima ha de ser de 512bits</string>
-  <string name="error_user_id_no_email">no s\'ha trobat cap adreça de correu electrònic</string>
-  <string name="error_key_needs_a_user_id">necessita almenys una identitat</string>
-  <string name="error_no_signature_passphrase">no s\'ha entregat cap contrasenya</string>
-  <string name="error_no_signature_key">no s\'ha entregat cap signatura</string>
   <string name="error_invalid_data">No hi ha contingut vàlid xifrat o signat amb OpenPGP!</string>
-  <string name="error_integrity_check_failed">el test d\'integritat ha fallat! Les dades han estat modificades!</string>
-  <string name="error_wrong_passphrase">contrasenya incorrecta</string>
   <string name="error_could_not_extract_private_key">no és possible extreure la clau privada</string>
   <!--errors without preceding Error:-->
-  <string name="error_nfc_needed">Heu d\'habilitar NFC!</string>
   <string name="error_nothing">Res per mostrar encara.</string>
   <string name="error_nothing_import">Cap clau ha estat trobada!</string>
-  <string name="error_contacts_key_id_missing">L\'obtenció de l\'ID de la clau des dels contactes ha fallat!</string>
-  <string name="error_generic_report_bug">Ha ocorregut un error genèric, si us plau creeu un nou informe d\'error d\'OpenKeychain.</string>
   <string name="error_denied_storage_permission">No és possible llegir fitxers des de l\'emmagatzematge pel fet que l\'accés ha estat denegat!</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">Sense Signar</string>
@@ -359,12 +268,9 @@
   <string name="progress_done">Fet.</string>
   <string name="progress_cancel">Cancel·la</string>
   <string name="progress_cancelling">cancel·lant...</string>
-  <string name="progress_downloading">descarregant...</string>
   <string name="progress_saving">desant...</string>
   <string name="progress_importing">important...</string>
   <string name="progress_revoking_uploading">Revocant i carregant la clau...</string>
-  <string name="progress_updating">Actualitzant claus...</string>
-  <string name="progress_exporting">exportant...</string>
   <string name="progress_uploading">carregant..</string>
   <string name="progress_building_key">construïnt clau...</string>
   <string name="progress_generating_rsa">generant nova clau RSA...</string>
@@ -386,46 +292,26 @@
   <string name="progress_modify_pin">canviant PIN...</string>
   <string name="progress_modify_admin_pin">canviant PIN d\'admin...</string>
   <string name="progress_exporting_key">exportant clau...</string>
-  <string name="progress_exporting_keys">exportant claus...</string>
-  <string name="progress_start">preparant operació...</string>
   <string name="progress_extracting_signature_key">extraïent clau de signatura...</string>
-  <string name="progress_extracting_key">extraïent clau...</string>
   <string name="progress_encrypting">xifrant dades...</string>
-  <string name="progress_prepare_decryption">Iniciant desxifrat...</string>
   <string name="progress_decrypting">Desxifrant dades...</string>
   <string name="progress_preparing_signature">preparant signatura...</string>
   <string name="progress_processing_signature">processant signatura...</string>
   <string name="progress_generating_signature">generant signatura...</string>
   <string name="progress_verifying_signature">verificant signatura...</string>
   <string name="progress_signing">signant...</string>
-  <string name="progress_certifying">certificant...</string>
   <string name="progress_reading_data">llegint dades...</string>
-  <string name="progress_finding_key">cercant clau...</string>
-  <string name="progress_decompressing_data">descomprimint dades...</string>
-  <string name="progress_verifying_integrity">verificant la integritat...</string>
-  <string name="progress_deleting_securely">suprimint \'%s\' de manera segura...</string>
   <string name="progress_deleting">suprimint claus...</string>
   <string name="progress_verifying_keyserver_connection">verificant connexió...</string>
   <string name="progress_starting_orbot">Iniciant Orbot...</string>
   <!--action strings-->
-  <string name="hint_cloud_search_hint">Cerca via Nom, Correu...</string>
   <!--key bit length selections-->
-  <string name="key_size_2048">2048</string>
-  <string name="key_size_3072">3072</string>
-  <string name="key_size_4096">4096</string>
-  <string name="key_size_8192">8192</string>
-  <string name="key_size_custom">Longitud de la clau a mida</string>
   <!--elliptic curve names-->
-  <string name="key_curve_nist_p256">NIST P-256</string>
-  <string name="key_curve_nist_p384">NIST P-384</string>
-  <string name="key_curve_nist_p521">NIST P-521</string>
   <!--not in for now, see SaveKeyringParcel
     <string name="key_curve_bp_p256">"Brainpool P-256"</string>
     <string name="key_curve_bp_p384">"Brainpool P-384"</string>
     <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
-  <string name="compression_fast">ràpid</string>
-  <string name="compression_very_slow">molt lent</string>
   <!--Help-->
   <string name="help_tab_start">Inicia</string>
   <string name="help_tab_faq">Preguntes més freqüents</string>
@@ -434,16 +320,10 @@
   <string name="help_tab_license">Llicències</string>
   <string name="help_tab_about">Quant a</string>
   <string name="help_about_version">Versió</string>
-  <string name="help_tab_donations">Fes una donació</string>
   <!--Import-->
-  <string name="import_tab_keyserver">Servidor de claus</string>
-  <string name="import_tab_cloud">Cerca clau</string>
-  <string name="import_tab_direct">Fitxer/Porta-retalls</string>
-  <string name="import_tab_qr_code">Codi QR/NFC</string>
   <string name="import_found_keys">S\'han trobat %1$d claus</string>
   <string name="import_qr_code_fp">L\'emprenta digital està malformada o és massa curta!</string>
   <string name="import_qr_code_too_short_fingerprint">Emprenta digital massa curta!</string>
-  <string name="import_qr_code_button">Escaneja el codi QR</string>
   <string name="import_qr_code_text">Poseu la vostra càmera sobre el codi QR!</string>
   <string name="btn_import">Subscriu-me</string>
   <string name="btn_import_keys">Importa totes les claus</string>
@@ -504,8 +384,6 @@
   <!--Revoke result toast (snackbar)-->
   <string name="revoke_ok">Clau revocada correctament.</string>
   <string name="revoke_fail">Error revocant clau!</string>
-  <string name="revoke_nothing">Res a revocar.</string>
-  <string name="revoke_cancelled">Operació de revocació cancel·lada.</string>
   <!--Certify result toast-->
   <plurals name="certify_keys_ok">
     <item quantity="one">Correctament confirmada la clau%2$s.</item>
@@ -525,30 +403,19 @@
   <string name="intent_send_encrypt">Xifra amb OpenKeychain</string>
   <string name="intent_send_decrypt">Desxifra amb OpenKeychain</string>
   <!--Remote API-->
-  <string name="api_settings_show_info">Mostra informació avançada</string>
-  <string name="api_settings_hide_info">Amaga informació avançada</string>
-  <string name="api_settings_no_key">Cap clau seleccionada</string>
-  <string name="api_settings_select_key">Selecciona clau</string>
   <string name="api_settings_create_key">Crea una nova clau</string>
   <string name="api_settings_save">Desa</string>
-  <string name="api_settings_cancel">Cancel·la</string>
   <string name="api_settings_revoke">Revoca l\'accés</string>
-  <string name="api_settings_start">Inicia l\'aplicació</string>
   <string name="api_settings_package_name">Nom del paquet</string>
   <string name="api_settings_package_certificate">SHA-256 del certificat del paquet</string>
   <string name="api_settings_advanced">Avançat</string>
   <string name="api_settings_allowed_keys">Claus permeses</string>
-  <string name="api_settings_settings">Configuració</string>
   <string name="api_register_title">Permetre accés a l\'OpenKeychain?</string>
-  <string name="api_register_allow">Permet l\'accés</string>
-  <string name="api_register_disallow">Deshabilita l\'accés</string>
-  <string name="api_register_error_select_key">Si us plau, selecciona una clau!</string>
   <string name="api_select_pub_keys_missing_text">No s\'han trobat claus amb aquestes adreces de correu electrònic:</string>
   <string name="api_select_pub_keys_dublicates_text">Existeix més d\'una clau per aquestes adreces de correu:</string>
   <string name="api_select_pub_keys_text">Si us plau, reviseu el llistat de destinataris!</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Comparteix amb codi QR</string>
-  <string name="share_nfc_dialog">Comparteix amb NFC</string>
   <!--retry upload dialog-->
   <string name="retry_up_dialog_title">Ha fallat la pujada</string>
   <string name="retry_up_dialog_message">Càrrega fallida. Desitgeu intentar-ho de nou l\'operació?</string>
@@ -567,8 +434,6 @@
     <item quantity="other">%d claus seleccionades.</item>
   </plurals>
   <string name="key_list_empty_text1">Cap clau ha estat trobada!</string>
-  <string name="key_list_filter_show_all">Mostra totes les claus</string>
-  <string name="key_list_filter_show_certified">Mostra només les claus confirmades</string>
   <string name="key_list_fab_qr_code">Escaneja el codi QR</string>
   <string name="key_list_fab_search">Cerca clau</string>
   <string name="key_list_fab_import">Importa des d\'un Fitxer</string>
@@ -576,19 +441,14 @@
   <string name="key_list_dummy_subtitle">Premeu aquí per a crear o importar-ne una</string>
   <!--Key view-->
   <string name="key_view_action_edit">Editar</string>
-  <string name="key_view_action_encrypt">Xifra text</string>
-  <string name="key_view_action_encrypt_files">fitxers</string>
   <string name="key_view_action_certify">Confirmeu clau</string>
   <string name="key_view_action_update">Actualitzeu des d\'un servidor de claus</string>
   <string name="key_view_action_share_with">Compartiu amb...</string>
   <string name="key_view_action_share_ssh_with">Comparteix com una clau pública SSH amb...</string>
-  <string name="key_view_action_share_nfc">Comparteix amb NFC</string>
   <string name="key_view_action_upload">Publica en un servidor de claus</string>
-  <string name="key_view_tab_main">Informació principal</string>
   <string name="key_view_tab_start">Inicia</string>
   <string name="key_view_tab_share">Compartir</string>
   <string name="key_view_tab_keys">Subclaus</string>
-  <string name="key_view_tab_certs">Certificats</string>
   <string name="user_id_info_revoked_title">revocat</string>
   <string name="user_id_info_revoked_text">El propietari de la clau ha revocat aquesta identitat. Ja no és vàlida.</string>
   <string name="user_id_info_certified_title">Confirmat</string>
@@ -596,8 +456,6 @@
   <string name="user_id_info_uncertified_title">No confirmada</string>
   <string name="user_id_info_uncertified_text">Aquesta identitat encara no ha estat confirmada. No podeu estar segur si aquesta identitat correspon a aquesta persona específica.</string>
   <!--Key trust-->
-  <string name="key_trust_no_cloud_evidence">No hi ha cap prova a Internet de la confiança d\'aquesta clau.</string>
-  <string name="key_trust_start_cloud_search">Inicia cerca</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Canvia la contrasenya</string>
   <string name="edit_key_action_add_identity">Afegeix identitat</string>
@@ -628,7 +486,6 @@
   <string name="create_key_yubi_key_pin">PIN</string>
   <string name="create_key_yubi_key_admin_pin">PIN d\'Amin</string>
   <string name="create_key_yubi_key_pin_repeat">Repetiu PIN</string>
-  <string name="create_key_yubi_key_pin_not_correct">El PIN no és correcte!</string>
   <string name="create_key_yubi_key_pin_too_short">El PIN ha de ser d\'almenys 6 nombres de longitud!</string>
   <string name="create_key_yubi_key_algorithm_text">Si us plau, escolliu un algorisme per cada clau.</string>
   <string name="create_key_yubi_key_algorithm_sign_text">Clau de signatura</string>
@@ -637,7 +494,6 @@
   <!--View key-->
   <string name="view_key_my_key">La meva clau</string>
   <string name="view_key_unverified">No confirmada: escanegeu cordi QR per tal de confirmar la clau!</string>
-  <string name="view_key_fragment_no_system_contact">&lt;cap&gt;</string>
   <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Afegeix servidor de claus</string>
   <string name="edit_keyserver_dialog_title">Edita servidor de claus</string>
@@ -654,22 +510,12 @@
   <string name="nav_keys">Claus</string>
   <string name="nav_encrypt_decrypt">Xifra/Desxifra</string>
   <string name="nav_apps">Apps</string>
-  <string name="drawer_open">Obre el calaix de navegació</string>
-  <string name="drawer_close">Tanca el calaix de navegació</string>
   <string name="my_keys">Les meves claus</string>
   <string name="nav_backup">Còpia de seguretat/Restaura</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Escriviu text</string>
   <!--certs-->
-  <string name="cert_default">per defecte</string>
   <string name="cert_none">Cap</string>
-  <string name="cert_casual">casual</string>
-  <string name="cert_positive">positiu</string>
-  <string name="cert_revoke">revocat</string>
-  <string name="cert_verify_ok">OK</string>
-  <string name="cert_verify_failed">fallit!</string>
-  <string name="cert_verify_error">error!</string>
-  <string name="cert_verify_unavailable">clau no disponible</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <string name="msg_internal_error">Error intern!</string>
   <string name="msg_cancelled">Operació cancel·lada.</string>
@@ -679,7 +525,6 @@
   <string name="msg_ip_encode_fail">Operació fallida a causa d\'un error de codificació</string>
   <string name="msg_ip_error_io_exc">Operació falllida a causa d\'un error d\'i/o</string>
   <string name="msg_ip_error_op_exc">Operació fallida a causa d\'un error en la base de dades</string>
-  <string name="msg_ip_error_remote_ex">Operació fallida a causa d\'un error intern</string>
   <string name="msg_ip">Important anell de claus públiques %s</string>
   <string name="msg_ip_fingerprint_error">L\'empremta digital de la clau importada no coincideix amb el que s\'esperava!</string>
   <string name="msg_ip_fingerprint_ok">Test de l\'empremta digital OK</string>
@@ -688,7 +533,7 @@
   <string name="msg_ip_master_expires">L\'anell de claus expira a %s</string>
   <string name="msg_ip_reinsert_secret">Inserint de nou la clau secreta</string>
   <string name="msg_ip_uid_cert_good">S\'ha trobat un certificat correcte per %1$s</string>
-  <string name="msg_ip_uat_cert_good">S\\'ha trobat un certificat correcte per %1$s</string>
+  <string name="msg_ip_uat_cert_good">S\'ha trobat un certificat correcte per %1$s</string>
   <!--Import Secret log entries-->
   <!--Keyring Canonicalization log entries-->
   <!--Keyring merging log entries-->
@@ -718,28 +563,16 @@
   <string name="keyserver_sync_orbot_notif_start">Inicieu Orbot</string>
   <!--First Time-->
   <!--unsorted-->
-  <string name="label_user_id">Identitat</string>
-  <string name="label_cert_type">Tipus</string>
   <string name="error_key_not_found">No s’ha trobat la clau.</string>
-  <string name="key_unavailable">no disponible</string>
   <string name="unknown">desconegut</string>
   <!--Android Account-->
-  <string name="account_privacy_title">Privadesa</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">Inseriu contrasenya</string>
-  <string name="passphrase">Contrasenya</string>
-  <string name="set_passphrase">Estableix la contrasenya</string>
-  <string name="nfc_title">NFC</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-  <string name="nfc_settings">Configuració</string>
-  <string name="snack_security_token_view">Visualitza</string>
-  <string name="snack_security_token_import">Subscriu-me</string>
-  <string name="btn_reset">Reinicia</string>
   <string name="security_token_error">Error: %s</string>
   <!--Other Linked Identity strings-->
-  <string name="btn_finish">Fi</string>
   <string name="share_log_dialog_share_button">Compartir</string>
   <string name="share_log_dialog_cancel_button">Cancel·la</string>
   <string name="menu_uids_save">Desa</string>
@@ -757,13 +590,6 @@
   <string name="keyserver_title_published">Published</string>
   <string name="dialog_insecure_button_ok">Entesos</string>
   <string name="usage_authentication">Autenticació</string>
-  <string name="button_import">Subscriu-me</string>
-  <string name="transfer_status_connected">Connectat</string>
-  <string name="transfer_connecting">S\'està connectant...</string>
-  <string name="first_time_secure_wifi_transfer">Transferència Wifi segura</string>
-  <string name="menu_secure_wifi_transfer">Transferència Wifi segura</string>
-  <string name="transfer_confirm_cancel">Cancel·la</string>
-  <string name="transfer_confirm_ok">Envia</string>
   <string name="token_reset_confirm_ok">Reinicia</string>
   <string name="token_result_not_found">No s’ha trobat la clau.</string>
   <string name="token_action_import">Subscriu-me</string>
@@ -773,6 +599,5 @@
   <string name="key_gen_back">Enrera</string>
   <string name="key_gen_finish">Fi</string>
   <string name="snack_keylist_clipboard_action">Visualitza</string>
-  <string name="notify_title_keysync">Actualitzant claus...</string>
   <string name="keylist_header_anonymous">Anònim </string>
 </resources>

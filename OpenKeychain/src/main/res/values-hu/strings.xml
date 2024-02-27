@@ -18,11 +18,7 @@
   <string name="title_share_key">Kulcs megosztása ezzel…</string>
   <string name="title_share_file">Fájl megosztása ezzel…</string>
   <string name="title_share_message">Szöveg megosztása ezzel…</string>
-  <string name="title_encrypt_to_file">Titkosítás fájlba</string>
-  <string name="title_decrypt_to_file">Visszafejtés fájlba</string>
   <string name="title_import_keys">Kulcsok importálása</string>
-  <string name="title_export_key">Kulcs biztonsági mentése</string>
-  <string name="title_export_keys">Kulcsok biztonsági mentése</string>
   <string name="title_key_not_found">Kulcs nem található</string>
   <string name="title_send_key">Feltöltés kulcskiszolgálóra</string>
   <string name="title_backup">Kulcs biztonsági mentése</string>
@@ -30,25 +26,18 @@
   <string name="title_key_details">Kulcs részletei</string>
   <string name="title_help">Súgó</string>
   <string name="title_log_display">Napló</string>
-  <string name="title_exchange_keys">Kulcsok kicserélése</string>
   <string name="title_advanced_key_info">Speciális</string>
   <string name="title_delete_secret_key">Törli a SAJÁT „%s” kulcsát?</string>
   <string name="title_manage_my_keys">Saját kulcsok kezelése</string>
   <string name="title_alert_strip">Alkulcs feldarabolása</string>
   <!--section-->
   <string name="section_user_ids">Személyazonosságok</string>
-  <string name="section_security_token">Biztonsági token</string>
-  <string name="section_linked_system_contact">Kapcsolt rendszerpartner</string>
-  <string name="section_should_you_trust">Meg kellene bíznia ebben a kulcsban?</string>
-  <string name="section_proof_details">Bizonyíték ellenőrzése</string>
   <string name="section_keys">Alkulcsok</string>
   <string name="section_cloud_search">Kulcskeresés</string>
-  <string name="section_cloud_search_summary">Kulcskiszolgáló</string>
   <string name="section_passphrase_cache">Jelszavak és PIN-kódok</string>
   <string name="section_passphrase_cache_summary">Kezelés</string>
   <string name="section_proxy_settings">Hálózati anonimitás</string>
   <string name="section_proxy_settings_summary">Tor, proxybeállítások</string>
-  <string name="section_gui">Felület</string>
   <string name="section_sync_settings">Szinkronizálás</string>
   <string name="section_sync_settings_summary">Automatikus kulcsfrissítések, partnercsatolás</string>
   <string name="section_experimental_features">Kísérleti funkciók</string>
@@ -62,10 +51,8 @@
   <string name="section_current_expiry">Jelenlegi lejárat</string>
   <string name="section_new_expiry">Új lejárat</string>
   <!--button-->
-  <string name="btn_decrypt_verify_file">Visszafejtés, ellenőrzés és mentés fájlba</string>
   <string name="btn_encrypt_share_file">Fájl titkosítása és megosztása</string>
   <string name="btn_encrypt_save_file">Fájl titkosítása és mentése</string>
-  <string name="btn_save_file">Fájl mentése</string>
   <string name="btn_save">Mentés</string>
   <string name="btn_view_log">Napló megtekintése</string>
   <string name="btn_do_not_save">Mégse</string>
@@ -75,12 +62,10 @@
   <string name="btn_export_to_server">Feltöltés a kulcskiszolgálóra</string>
   <string name="btn_next">Következő</string>
   <string name="btn_back">Vissza</string>
-  <string name="btn_no">Nem</string>
   <string name="btn_match">Ujjlenyomatok megegyeznek</string>
   <string name="btn_share_encrypted_signed">Szöveg titkosítása/aláírása és megosztása</string>
   <string name="btn_copy_encrypted_signed">Szöveg titkosítása/aláírása és másolása</string>
   <string name="btn_paste_encrypted_signed">Szöveg titkosítása/aláírása és beillesztése</string>
-  <string name="btn_view_cert_key">Tanúsítványkulcs megtekintése</string>
   <string name="btn_create_key">Kulcs létrehozása</string>
   <string name="btn_add_files">Fájlok hozzáadása</string>
   <string name="btn_share_decrypted_text">Megosztás</string>
@@ -93,7 +78,6 @@
   <string name="btn_add_email">További e-mail cím hozzáadása</string>
   <string name="btn_unlock">Feloldás</string>
   <string name="btn_proceed">Feldolgozás</string>
-  <string name="btn_add_keyserver">Hozzáadás</string>
   <string name="btn_save_default">Mentés alapértelmezettként</string>
   <string name="btn_saved">Mentve!</string>
   <string name="btn_not_matching">Nem egyezik</string>
@@ -103,71 +87,44 @@
   <string name="cd_encrypt_files">Fájlok titkosítása</string>
   <string name="cd_exchange_keys">Kulcsok kicserélése</string>
   <string name="cd_encrypt_text">Szöveg titkosítása</string>
-  <string name="cd_share_nfc">Megosztás NFC-n keresztül</string>
   <!--menu-->
   <string name="menu_preferences">Beállítások</string>
   <string name="menu_help">Súgó</string>
   <string name="menu_export_key">Kulcs biztonsági mentése</string>
   <string name="menu_delete_key">Kulcs törlése</string>
-  <string name="menu_status">Kulcs állapotának megtekintése</string>
   <string name="menu_manage_keys">Saját kulcsok kezelése</string>
   <string name="menu_search">Keresés</string>
   <string name="menu_open">Megnyitás</string>
   <string name="menu_read_clipboard">Beolvasás a vágólapról</string>
-  <string name="menu_nfc_preferences">NFC beállítások</string>
-  <string name="menu_beam_preferences">Beam beállítások</string>
   <string name="menu_encrypt_to">Titkosítás neki…</string>
-  <string name="menu_select_all">Összes kiválasztása</string>
-  <string name="menu_export_all_keys">Összes kulcs exportálása</string>
   <string name="menu_update_all_keys">Összes kulcs frissítése</string>
   <string name="menu_certify_fingerprint">Megerősítés ujjlenyomattal</string>
-  <string name="menu_certify_fingerprint_phrases">Megerősítés kifejezéssel</string>
   <string name="menu_share_log">Napló megosztása</string>
   <string name="menu_change_password">Jelszó megváltoztatása</string>
   <string name="menu_advanced">Speciális</string>
-  <string name="menu_keyserver_add">Hozzáadás</string>
   <!--label-->
-  <string name="label_message">Szöveg</string>
-  <string name="label_file">Fájl</string>
-  <string name="label_files">Fájlok</string>
-  <string name="label_file_colon">Fájl:</string>
   <string name="label_no_passphrase">Nincs jelszó</string>
   <string name="label_passphrase">Jelszó</string>
   <string name="label_pin">PIN</string>
   <string name="label_unlock">Feloldás…</string>
   <string name="label_passphrase_again">Jelszó ismétlése</string>
-  <string name="label_show_passphrase">Jelszó megjelenítése</string>
-  <string name="label_algorithm">Algoritmus</string>
   <string name="label_algorithm_colon">Algoritmus:</string>
-  <string name="label_ascii_armor">Fájl ASCII védelme</string>
   <string name="label_file_ascii_armor">ASCII védelem engedélyezése</string>
-  <string name="label_write_version_header">Tudassa másokkal, hogy OpenKeychaint használ</string>
-  <string name="label_write_version_header_summary">Hozzáírja az „OpenKeychain v2.7” szöveget az OpenPGP aláírásokhoz, titkosított szövegekhez és exportált kulcsokhoz</string>
   <string name="label_asymmetric_from">Aláírás ezzel:</string>
   <string name="label_to">Titkosítás neki</string>
   <string name="label_delete_after_encryption">Fájlok törlése titkosítás után</string>
-  <string name="label_delete_after_decryption">Törlés visszafejtés után</string>
-  <string name="label_encryption_algorithm">Titkosítási algoritmus</string>
-  <string name="label_hash_algorithm">Hash algoritmus</string>
   <string name="label_symmetric">Titkosítás jelszóval</string>
   <string name="label_passphrase_cache_subs">Jelszavak megjegyzése alkulcs által</string>
-  <string name="label_message_compression">Szövegtömörítés</string>
-  <string name="label_file_compression">Fájltömörítés</string>
   <string name="label_keyservers">OpenPGP kulcskiszolgálók kezelése</string>
-  <string name="label_key_id">Kulcsazonosító</string>
   <string name="label_key_id_colon">Kulcsazonosító:</string>
   <string name="label_key_created">%s létrehozva</string>
   <string name="label_key_created_just_now">Épp most létrehozva</string>
   <string name="label_key_type">Típus</string>
-  <string name="label_creation">Létrehozás</string>
-  <string name="label_creation_colon">Létrehozás:</string>
   <string name="label_expiry">Lejárat</string>
   <string name="label_valid_from">Érvényesség kezdete</string>
   <string name="label_usage">Használat</string>
   <string name="label_revoked">Visszavont</string>
   <string name="label_insecure">Nem biztonságos</string>
-  <string name="label_key_size">Kulcs mérete</string>
-  <string name="label_ecc_curve">Elliptikus görbe</string>
   <string name="label_main_user_id">Elsődleges személyazonosság</string>
   <string name="label_name">Név</string>
   <string name="label_email">E-mail</string>
@@ -177,17 +134,14 @@
   <string name="label_keyservers_title">Kulcskiszolgálók</string>
   <string name="label_keyserver_settings_hint">Húzza a sorrend megváltoztatásához, koppintson a szerkesztéshez vagy törléshez</string>
   <string name="label_selected_keyserver_title">Kiválasztott kulcskiszolgáló</string>
-  <string name="label_selected_smartpgp_authority_title">Kiválasztott szolgáltató</string>
   <string name="label_preferred">előnyben részesített</string>
   <string name="label_enable_compression">Tömörítés engedélyezése</string>
   <string name="label_enable_self_encrypt">Titkosítás az aláírónak</string>
   <string name="label_encrypt_filenames">Fájlnevek titkosítása</string>
-  <string name="label_hidden_recipients">Címzettek elrejtése</string>
   <string name="label_smartpgp_verify">SmartPGP: tanúsítványok ellenőrzése</string>
   <string name="label_smartpgp_verify_summary">Tanúsítványok ellenőrzése a SmartPGP biztonsági tokenen a megbízható szolgáltatókkal</string>
   <string name="label_smartpgp_roots">SmartPGP: megbízható szolgáltatók</string>
   <string name="label_verify_keyserver_connection">Kapcsolat tesztelése</string>
-  <string name="label_only_trusted_keyserver">Csak megbízható kulcskiszolgáló</string>
   <string name="label_enter_keyserver_url">URL</string>
   <string name="label_enter_keyserver_onion">Nem kötelező Tor .onion URL</string>
   <string name="label_keyserver_dialog_delete">Kulcskiszolgáló törlése</string>
@@ -196,8 +150,6 @@
   <string name="label_smartpgp_authority_dialog_delete">Szolgáltató törlése</string>
   <string name="pref_keyserver">OpenPGP kulcskiszolgálók</string>
   <string name="pref_keyserver_summary">Kulcsok keresése a kiválasztott OpenPGP kulcskiszolgálókon (HKP protokoll)</string>
-  <string name="pref_facebook">Facebook</string>
-  <string name="pref_facebook_summary">Kulcsok keresése a Facebookon felhasználónév alapján</string>
   <string name="pref_wkd">Web Key Directory</string>
   <string name="pref_wkd_summary">Kulcsok keresése Web Key Directory használatával</string>
   <string name="label_sync_settings_keyserver_title">Automatikus kulcsfrissítések</string>
@@ -226,20 +178,13 @@
   <string name="orbot_install_dialog_install">Telepítés</string>
   <string name="orbot_install_dialog_content">Az Orbot alkalmazásnak telepítve és aktiválva kell lennie, hogy a forgalmat proxyként át lehessen küldeni rajta. Szeretné telepíteni?</string>
   <string name="orbot_install_dialog_cancel">Mégse</string>
-  <string name="orbot_install_dialog_ignore_tor">Ne használjon Tor hálózatot</string>
   <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">Orbot indítása?</string>
   <string name="orbot_start_dialog_content">Úgy tűnik, hogy az Orbot nem fut. Szeretné elindítani, és kapcsolódni a Tor hálózathoz?</string>
-  <string name="orbot_start_btn">Orbot indítása</string>
   <string name="orbot_start_dialog_start">Orbot indítása</string>
   <string name="orbot_start_dialog_cancel">Mégse</string>
-  <string name="orbot_start_dialog_ignore_tor">Ne használjon Tor hálózatot</string>
   <string name="user_id_no_name"><![CDATA[<no name>]]></string>
   <string name="none"><![CDATA[<none>]]></string>
-  <plurals name="n_keys">
-    <item quantity="one">1 kulcs</item>
-    <item quantity="other">%d kulcs</item>
-  </plurals>
   <plurals name="n_keyservers">
     <item quantity="one">%d kulcskiszolgáló</item>
     <item quantity="other">%d kulcskiszolgáló</item>
@@ -251,20 +196,7 @@
   <string name="secret_key">Titkos kulcs:</string>
   <!--choice-->
   <string name="choice_none">Nincs</string>
-  <string name="choice_15secs">15 másodperc</string>
-  <string name="choice_1min">1 perc</string>
-  <string name="choice_3mins">3 perc</string>
-  <string name="choice_5mins">5 perc</string>
-  <string name="choice_10mins">10 perc</string>
-  <string name="choice_20mins">20 perc</string>
-  <string name="choice_40mins">40 perc</string>
-  <string name="choice_1hour">1 óra</string>
-  <string name="choice_2hours">2 óra</string>
-  <string name="choice_4hours">4 óra</string>
-  <string name="choice_8hours">8 óra</string>
-  <string name="choice_forever">örökre</string>
   <string name="choice_select_cert">Válassz egy kulcsot</string>
-  <string name="filemanager_title_open">Megnyitás…</string>
   <string name="rsa_2048">RSA 2048</string>
   <string name="rsa_2048_description_html">kisebb fájlméret, biztonságosnak tekintve 2030-ig</string>
   <string name="rsa_3072">RSA 3072</string>
@@ -282,7 +214,6 @@
   <string name="usage_sign">Aláírás</string>
   <string name="usage_encrypt">Titkosítás</string>
   <string name="usage_sign_and_encrypt">Aláírás és titkosítás</string>
-  <string name="error">Hiba</string>
   <string name="error_message">Hiba: %s</string>
   <string name="theme_auto">Automatikus</string>
   <string name="theme_light">Világos</string>
@@ -301,7 +232,6 @@
   <string name="passphrase_keyboard_hint_numeric">Váltás a számbillentyűzetre</string>
   <string name="passphrase_transfer">Átviteli kód megadása</string>
   <string name="passphrase_transfer_autocrypt">Az Autocrypt beállítási üzenet importálásához adja meg az átviteli kódot:</string>
-  <string name="pin_for">PIN-kód megadása ehhez: „%s”</string>
   <string name="security_token_pin_for">PIN-kód megadása a biztonsági tokenhez való hozzáféréshez ennél: „%s”</string>
   <string name="security_token_nfc_text">Tartsa a biztonsági tokent az NFC jelzésre az eszköz hátulján.</string>
   <string name="security_token_nfc_wait">Tartsa a biztonsági tokent a hátoldalon!</string>
@@ -311,34 +241,15 @@
   <string name="file_delete_confirmation">A következő fájlok lesznek törölve: %s</string>
   <string name="file_delete_successful">%1$d/%2$d fájl törölve lett.%3$s</string>
   <string name="no_file_selected">Nincs fájl kiválasztva.</string>
-  <string name="encrypt_sign_successful">Sikeresen aláírva és/vagy titkosítva.</string>
-  <string name="encrypt_sign_clipboard_successful">Sikeresen aláírva és/vagy titkosítva a vágólapra.</string>
   <string name="select_encryption_key">Válasszon legalább egy titkosítási kulcsot.</string>
   <string name="error_no_encryption_or_signature_key">Válasszon legalább egy titkosítási kulcsot vagy aláíró kulcsot.</string>
-  <string name="specify_file_to_encrypt_to">Adja meg, hogy mely fájlba legyen titkosítva.\nFIGYELMEZTETÉS: a fájl felül lesz írva, ha létezik!</string>
-  <string name="specify_file_to_decrypt_to">Adja meg, hogy mely fájlba legyen visszafejtve.\nFIGYELMEZTETÉS: a fájl felül lesz írva, ha létezik!</string>
-  <string name="specify_backup_dest">A kulcsait nem tartalmazó biztonsági mentés lesz készítve, adjon meg egy célfájlt.\nFIGYELMEZTETÉS: a fájl felül lesz írva, ha létezik!</string>
-  <string name="specify_backup_dest_single">A kulcs meg lesz osztva, adjon meg egy célfájlt.\nFIGYELMEZTETÉS: a fájl felül lesz írva, ha létezik!</string>
-  <string name="specify_backup_dest_secret_single">Teljes biztonsági mentés lesz készítve a kulcsáról, adjon meg egy célfájlt.\nFIGYELMEZTETÉS: a fájl felül lesz írva, ha létezik!</string>
-  <string name="specify_backup_dest_secret">Teljes biztonsági mentés lesz készítve az összes kulcsról (beleértve az önét is), adjon meg egy célfájlt.\nFIGYELMEZTETÉS: a fájl felül lesz írva, ha létezik!</string>
   <string name="key_deletion_confirmation_multi">Valóban törölni szeretné az összes kijelölt kulcsot?</string>
   <string name="secret_key_deletion_confirmation">Törlés után nem lesz képes visszafejteni a kulccsal titkosított üzeneteket és fájlokat, és elveszíti az összes kulcsmegerősítést, amit a kulccsal végzett!</string>
   <string name="public_key_deletetion_confirmation">Törli a kulcsot: „%s”?</string>
-  <string name="also_export_secret_keys">A titkos kulcsot is exportálja</string>
-  <string name="reinstall_openkeychain">Egy ismert Android hibával találkozott. Telepítse újra az OpenKeychain alkalmazást, ha össze szeretné kapcsolni a partnereit a kulcsokkal.</string>
   <string name="alert_strip">Az alkulcs feldarabolása használhatatlanná fogja tenni ezen az eszközön!</string>
-  <string name="key_exported">Sikeresen exportálva 1 kulcs.</string>
-  <string name="keys_exported">Sikeresen exportálva %d kulcs.</string>
-  <string name="no_keys_exported">Nem lettek kulcsok exportálva.</string>
-  <string name="key_creation_el_gamal_info">Megjegyzés: csak alkulcsok támogatják az ElGamalt.</string>
   <string name="key_not_found">Nem található a kulcs: %08X.</string>
   <string name="authentication_subkey_not_found">Ennek a kulcsnak nincs hitelesítési alkulcsa.</string>
-  <plurals name="bad_keys_encountered">
-    <item quantity="one">%d rossz titkos kulcs mellőzve. Talán a következő kapcsolóval exportálta:\n --export-secret-subkeys\nGyőződjön meg arról, hogy inkább a következő kapcsolóval exportálja:\n --export-secret-keys\n</item>
-    <item quantity="other">%d rossz titkos kulcs mellőzve. Talán a következő kapcsolóval exportálta:\n --export-secret-subkeys\nGyőződjön meg arról, hogy inkább a következő kapcsolóval exportálja:\n --export-secret-keys\n</item>
-  </plurals>
   <string name="list_empty">A lista üres!</string>
-  <string name="nfc_successful">Sikeresen elküldve a kulcs NFC Beam használatával!</string>
   <string name="key_copied_to_clipboard">A kulcs másolva lett a vágólapra!</string>
   <string name="fingerprint_copied_to_clipboard">Az ujjlenyomat másolva lett a vágólapra!</string>
   <string name="select_key_to_certify">Válasszon egy használandó kulcsot a kommunikációhoz!</string>
@@ -349,29 +260,13 @@
          they will be put after "error_message", e.g. "Error: file not found"-->
   <string name="error_file_delete_failed">nem lett törölve. Törölje őket kézzel!</string>
   <string name="error_file_added_already">%s már hozzá lett adva.</string>
-  <string name="error_file_not_found">a fájl nem található</string>
   <string name="error_bad_data">Rossz adatok!</string>
-  <string name="error_no_secret_key_found">nem található megfelelő titkos kulcs</string>
-  <string name="error_external_storage_not_ready">a külső tároló nem áll készen</string>
-  <string name="error_key_size_minimum512bit">a kulcsméretnek legalább 512 bitesnek kell lennie</string>
-  <string name="error_unknown_algorithm_choice">ismeretlen algoritmus választás</string>
-  <string name="error_user_id_no_email">nem található e-mail cím</string>
-  <string name="error_key_needs_a_user_id">legalább egy személyazonosság szükséges</string>
-  <string name="error_no_signature_passphrase">nincs jelszó megadva</string>
-  <string name="error_no_signature_key">nincs aláírási kulcs megadva</string>
   <string name="error_invalid_data">Nem érvényes titkosított vagy visszafejtett OpenPGP tartalom!</string>
-  <string name="error_integrity_check_failed">az integritás-ellenőrzés sikertelen! Az adatokat módosították!</string>
-  <string name="error_wrong_passphrase">hibás jelszó</string>
   <string name="error_could_not_extract_private_key">nem sikerült kinyerni a személyes kulcsot</string>
   <string name="error_wrong_security_token">ez a biztonsági token nem tartalmazza a szükséges kulcsot</string>
   <!--errors without preceding Error:-->
-  <string name="error_jelly_bean_needed">Android 4.1 szükséges az Android NFC Beam funkciójának használatához!</string>
-  <string name="error_nfc_needed">A NFC-t engedélyezni kell!</string>
-  <string name="error_beam_needed">A Beamet engedélyezni kell!</string>
   <string name="error_nothing">Nincs még mit megjeleníteni.</string>
   <string name="error_nothing_import">Nem találhatók kulcsok!</string>
-  <string name="error_contacts_key_id_missing">A kulcsazonosító lekérése a partnerektől sikertelen!</string>
-  <string name="error_generic_report_bug">Általános hiba történt, hozzon létre új hibajelentést az OpenKeychain programhoz.</string>
   <string name="error_denied_storage_permission">Nem lehet beolvasni fájlokat a tárhelyről, mert a hozzáférés meg lett tagadva!</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">Nincs aláírva</string>
@@ -394,13 +289,9 @@
   <string name="progress_done">Kész.</string>
   <string name="progress_cancel">Mégse</string>
   <string name="progress_cancelling">megszakítás…</string>
-  <string name="progress_downloading">letöltés…</string>
   <string name="progress_saving">mentés…</string>
   <string name="progress_importing">importálás…</string>
-  <string name="progress_benchmarking">teljesítményteszt…</string>
   <string name="progress_revoking_uploading">Visszavonás és kulcs feltöltése...</string>
-  <string name="progress_updating">Kulcsok frissítése...</string>
-  <string name="progress_exporting">exportálás…</string>
   <string name="progress_uploading">feltöltés…</string>
   <string name="progress_building_key">kulcs építése...</string>
   <string name="progress_generating_rsa">új RSA kulcs generálása...</string>
@@ -419,65 +310,36 @@
   <string name="progress_modify_pin">PIN cseréje...</string>
   <string name="progress_modify_admin_pin">Admin PIN cseréje...</string>
   <string name="progress_exporting_key">kulcs exportálása...</string>
-  <string name="progress_exporting_keys">kulcs exportálása...</string>
-  <string name="progress_start">művelet előkészítése...</string>
   <string name="progress_extracting_signature_key">aláíró kulcs kicsomagolása...</string>
-  <string name="progress_extracting_key">kulcs kicsomagolása...</string>
   <string name="progress_encrypting">adat titkosítása...</string>
-  <string name="progress_prepare_decryption">Dekódolás indítása...</string>
   <string name="progress_decrypting">Adat dekódolása...</string>
   <string name="progress_preparing_signature">előkészülés aláírásra...</string>
   <string name="progress_processing_signature">aláírás készítése...</string>
   <string name="progress_generating_signature">aláírás generálása...</string>
   <string name="progress_verifying_signature">aláírás ellenőrzése...</string>
   <string name="progress_signing">aláírás...</string>
-  <string name="progress_certifying">tanúsítás...</string>
   <string name="progress_reading_data">adat olvasása...</string>
-  <string name="progress_finding_key">kulcs keresése...</string>
-  <string name="progress_decompressing_data">adat kitömörítése...</string>
-  <string name="progress_verifying_integrity">integritás ellenőrzése...</string>
   <string name="progress_deleting">kulcsok törlése...</string>
   <string name="progress_update_trust">bizalmi információk frissítése...</string>
   <string name="progress_verifying_keyserver_connection">kapcsolat ellenőrzése...</string>
   <string name="progress_starting_orbot">Orbot indítása...</string>
   <!--action strings-->
-  <string name="hint_cloud_search_hint">Keresés névvel, emailel...</string>
   <!--key bit length selections-->
-  <string name="key_size_2048">2048</string>
-  <string name="key_size_3072">3072</string>
-  <string name="key_size_4096">4096</string>
-  <string name="key_size_8192">8192</string>
-  <string name="key_size_custom">Egyedi kulcsméret</string>
-  <string name="key_size_custom_info">Adja meg a kulcs méretet (bitekben):</string>
-  <string name="key_size_custom_info_rsa">RSA kulcs hossza 1024 és 16384 között kell legyen. Valamint a 8 többszöröse.</string>
-  <string name="key_size_custom_info_dsa">RSA kulcs hossza 512 és 1024 között kell legyen. Valamint a 64 többszöröse.</string>
   <!--elliptic curve names-->
-  <string name="key_curve_nist_p256">NIST P-256</string>
-  <string name="key_curve_nist_p384">NIST P-384</string>
-  <string name="key_curve_nist_p521">NIST P-521</string>
   <!--not in for now, see SaveKeyringParcel
     <string name="key_curve_bp_p256">"Brainpool P-256"</string>
     <string name="key_curve_bp_p384">"Brainpool P-384"</string>
     <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
-  <string name="compression_fast">gyors</string>
-  <string name="compression_very_slow">nagyon lassú</string>
   <!--Help-->
   <string name="help_tab_start">Indítás</string>
   <string name="help_tab_faq">GYIK</string>
   <string name="help_tab_wot">Kulcs megerősítés</string>
-  <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Változások</string>
   <string name="help_tab_license">Licencek</string>
   <string name="help_tab_about">Névjegy</string>
   <string name="help_about_version">Verzió:</string>
-  <string name="help_tab_donations">Támogatás</string>
   <!--Import-->
-  <string name="import_tab_keyserver">Kulcsszerver</string>
-  <string name="import_tab_cloud">Kulcs keresés</string>
-  <string name="import_tab_direct">Fájl/Vágólap</string>
-  <string name="import_tab_qr_code">QR kód/NFC</string>
-  <string name="import_qr_code_button">QR kód beolvasása</string>
   <string name="btn_import">Importálás</string>
   <string name="btn_import_keys">Minden kulcs beimportálása</string>
   <string name="btn_view_list">Lista megtekintése</string>
@@ -496,31 +358,21 @@
   <!--Revoke result toast (snackbar)-->
   <string name="revoke_ok">Sikeresen visszavont kulcs.</string>
   <string name="revoke_fail">Hiba a kulcs visszavonásával!</string>
-  <string name="revoke_nothing">Nincs mit visszavonni.</string>
-  <string name="revoke_cancelled">A visszavonási művelet megszakításra került.</string>
   <!--Certify result toast-->
   <!--Intent labels-->
   <string name="intent_decrypt_file">Fájl dekódolás OpenKeychain-nel</string>
   <string name="intent_send_encrypt">Titkosítás OpenKeychain-nel</string>
   <string name="intent_send_decrypt">Visszafejtés OpenKeychain-nel</string>
   <!--Remote API-->
-  <string name="api_settings_no_key">Nincs kulcs kiválasztva</string>
   <string name="api_settings_save">Mentés</string>
-  <string name="api_settings_cancel">Mégse</string>
   <string name="api_settings_advanced">Speciális</string>
   <string name="api_settings_allowed_keys">Engedélyezett kulcsok</string>
-  <string name="api_settings_settings">Beállítások</string>
-  <string name="api_register_allow">Hozzáférés engedélyezése</string>
-  <string name="api_register_disallow">Hozzáférés megvonása</string>
-  <string name="api_register_error_select_key">Kérjük válasszon egy kulcsot!</string>
   <string name="api_select_pub_keys_missing_text">Nem találhatók kulcsok ezekhez az email címekhez:</string>
   <string name="api_select_pub_keys_dublicates_text">Több mint egy kulcs található ezekhez az email címekhez:</string>
   <string name="api_select_pub_keys_text">Kérjük tekintse át a címzettek listáját!</string>
   <string name="api_select_pub_keys_text_no_user_ids">Kérjük válassza ki a címzetteket!</string>
-  <string name="api_select_keys_text">Az engedélyezett kulcsok egyike sem tudja visszefejteni a tartalmat. Válaszd ki a megfelelő kulcsot.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Megosztás QR kóddal</string>
-  <string name="share_nfc_dialog">Megosztás NFC-vel</string>
   <!--retry upload dialog-->
   <string name="retry_up_dialog_title">Feltöltés sikertelen</string>
   <string name="retry_up_dialog_btn_reupload">Művelet megismétlése</string>
@@ -533,8 +385,6 @@
   <string name="del_rev_dialog_choice_rev_upload">Visszavonás és Feltöltés</string>
   <!--Key list-->
   <string name="key_list_empty_text1">Nem találhatók kulcsok!</string>
-  <string name="key_list_filter_show_all">Minden kulcs megjelenítése</string>
-  <string name="key_list_filter_show_certified">Csak a megerősített kulcsok megjelenítése</string>
   <string name="key_list_fab_qr_code">QR kód beolvasása</string>
   <string name="key_list_fab_search">Kulcs keresés</string>
   <string name="key_list_fab_import">Importálás fájlból</string>
@@ -542,27 +392,20 @@
   <string name="key_list_dummy_subtitle">Kattintson ide egy létrehozásához vagy importálásához.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Szerkesztés</string>
-  <string name="key_view_action_encrypt">Szöveg titkosítása</string>
-  <string name="key_view_action_encrypt_files">fájl</string>
   <string name="key_view_action_certify">Kulcs megerősítése</string>
   <string name="key_view_action_update">Frissítés kulcsszerverről</string>
   <string name="key_view_action_share_with">Megosztás ezzel…</string>
   <string name="key_view_action_share_ssh_with">Megosztás, mint SSH publikus kulcs, ezzel…</string>
-  <string name="key_view_action_share_nfc">Megosztás NFC-n keresztül</string>
   <string name="key_view_action_upload">Közzététel kulcsszerverre...</string>
-  <string name="key_view_tab_main">Fő infó</string>
   <string name="key_view_tab_start">Indítás</string>
   <string name="key_view_tab_share">Megoszt</string>
   <string name="key_view_tab_keys">Alkulcsok</string>
-  <string name="key_view_tab_certs">Tanúsítványok</string>
   <string name="user_id_info_revoked_title">Visszavont</string>
   <string name="user_id_info_certified_title">Megerősített</string>
   <string name="user_id_info_certified_text">Ezt az a személyazonosságot Ön erősítette meg.</string>
   <string name="user_id_info_uncertified_title">Nem megerősített.</string>
   <string name="user_id_info_uncertified_text">Megerősítetlen: ez az identitás még nem lett megerősítve. Nem lehet biztos abban, hogy az identitás valóban a megfelelő személyhez tartozik-e.</string>
   <!--Key trust-->
-  <string name="key_trust_no_cloud_evidence">Nincs bizonyíték az internetről ennek a kulcsnak a megbízhatóságáról.</string>
-  <string name="key_trust_start_cloud_search">Keresés indítása</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Jelszó megváltoztatása</string>
   <!--Create key-->
@@ -576,14 +419,9 @@
   <string name="nav_keys">Kulcsok</string>
   <string name="nav_encrypt_decrypt">Titkosítás/Visszafejtés</string>
   <string name="nav_apps">Alkalmazások</string>
-  <string name="drawer_open">Navigációs fiók megnyitása</string>
-  <string name="drawer_close">Navigációs fiók bezárása</string>
   <!--hints-->
   <!--certs-->
-  <string name="cert_default">default</string>
   <string name="cert_none">semmi</string>
-  <string name="cert_revoke">visszavont</string>
-  <string name="cert_verify_ok">OK</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
@@ -606,10 +444,6 @@
   <string name="msg_dc_clear_meta_size_unknown">Fájlméret: nem ismert</string>
   <string name="msg_dc_clear_meta_time">Módosítás ideje: %s</string>
   <!--Messages for VerifySignedLiteralData operation-->
-  <string name="msg_vl_clear_meta_file">Fájlnév: %s</string>
-  <string name="msg_vl_clear_meta_mime">MIME típus: %s</string>
-  <string name="msg_vl_clear_meta_time">Módosítás ideje: %s</string>
-  <string name="msg_vl_clear_meta_size">Fájlméret: %s</string>
   <string name="msg_vl_ok">OK</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
@@ -621,7 +455,6 @@
   <string name="msg_upload_proxy_tor">Proxy használata: TOR</string>
   <string name="msg_upload_proxy">Proxy használata: %s</string>
   <string name="msg_upload_key">Kulcsazonosító: %s</string>
-  <string name="msg_bench_dec_time_avg">Átlagos idő 5MB visszafejtéséhez: %ss</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
   <string name="passp_cache_notif_pwd">Jelszó</string>
@@ -632,31 +465,17 @@
   <string name="first_time_skip">Beállítás Kihagyása</string>
   <string name="backup_section">Mentés</string>
   <!--unsorted-->
-  <string name="label_user_id">Identitás</string>
-  <string name="label_cert_type">Típus</string>
-  <string name="key_unavailable">nem elérhető</string>
   <string name="unknown">ismeretlen</string>
-  <string name="key_colon">Kulcs:</string>
-  <string name="user_id_none"><![CDATA[<none>]]></string>
   <!--Android Account-->
-  <string name="account_privacy_title">Adatvédelem</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">Jelszó megadása</string>
-  <string name="passphrase">Jelszó</string>
-  <string name="set_passphrase">Jelszó megadása</string>
-  <string name="nfc_title">NFC</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-  <string name="nfc_settings">Beállítások</string>
-  <string name="snack_security_token_view">Megtekintés</string>
-  <string name="snack_security_token_import">Importálás</string>
-  <string name="btn_reset">Visszaállít</string>
   <string name="security_token_error">Hiba: %s</string>
   <string name="security_token_error_unknown">Ismeretlen hiba</string>
   <string name="error_expiry_past">Lejárati dátum a múltban van!</string>
   <!--Other Linked Identity strings-->
-  <string name="btn_finish">Befejezés</string>
   <string name="share_log_dialog_share_button">Megoszt</string>
   <string name="share_log_dialog_cancel_button">Mégse</string>
   <string name="menu_uids_save">Mentés</string>
@@ -677,13 +496,6 @@
   <string name="keyserver_title_published">Közzétett</string>
   <string name="dialog_insecure_button_view_key">Kulcs megtekintése</string>
   <string name="dialog_insecure_button_ok">Megvan</string>
-  <string name="button_import">Importálás</string>
-  <string name="transfer_status_connected">Csatlakozva</string>
-  <string name="transfer_connecting">Csatlakozás...</string>
-  <string name="first_time_secure_wifi_transfer">Biztonságos Wi-Fi átvitel</string>
-  <string name="menu_secure_wifi_transfer">Biztonságos Wi-Fi átvitel</string>
-  <string name="transfer_confirm_cancel">Mégse</string>
-  <string name="transfer_confirm_ok">Küldés</string>
   <string name="token_reset_confirm_ok">Visszaállít</string>
   <string name="token_result_token_ok">Használatra kész!</string>
   <string name="token_result_empty">A token üres</string>
@@ -696,7 +508,6 @@
   <string name="use_key">Kulcs használata: %s</string>
   <string name="use_key_no_name">Use key: <![CDATA[<no name>]]></string>
   <string name="select_identity_cancel">Kikapcsol</string>
-  <string name="select_identity_create">Készíts új kulcsot nekem</string>
   <string name="no_keys_import_title">Már van kulcsom</string>
   <string name="key_list_import">Másik kulcs használata</string>
   <string name="key_gen_progress">Kérlek várj...</string>
@@ -704,10 +515,6 @@
   <string name="key_gen_finish">Befejezés</string>
   <string name="key_gen_finishing">Telepítés befejezése...</string>
   <string name="snack_keylist_clipboard_action">Megtekintés</string>
-  <string name="notify_title_keysync">Kulcsok frissítése...</string>
-  <string name="notify_content_keysync">Kulcs %d / %d</string>
-  <string name="snack_keysync_start">Kulcsok frissítése elkezdődött...</string>
-  <string name="snack_keysync_finished">A kulcs frissítés sikeres</string>
   <string name="keychoice_cannot_encrypt">Ez a kulcs nem használható titkosításra!</string>
   <string name="keychoice_cannot_sign">Ez a kulcs nem használható aláírásra!</string>
   <string name="keychoice_insecure">Ez a kulcs nem használható, mert nem biztonságos!</string>

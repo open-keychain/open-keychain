@@ -24,11 +24,7 @@
     <string name="title_share_key">"Share key with…"</string>
     <string name="title_share_file">"Share file with…"</string>
     <string name="title_share_message">"Share text with…"</string>
-    <string name="title_encrypt_to_file">"Encrypt To File"</string>
-    <string name="title_decrypt_to_file">"Decrypt To File"</string>
     <string name="title_import_keys">"Import Keys"</string>
-    <string name="title_export_key">"Backup Key"</string>
-    <string name="title_export_keys">"Backup Keys"</string>
     <string name="title_key_not_found">"Key Not Found"</string>
     <string name="title_send_key">"Upload to Keyserver"</string>
     <string name="title_backup">"Backup Key"</string>
@@ -36,7 +32,6 @@
     <string name="title_key_details">"Key Details"</string>
     <string name="title_help">"Help"</string>
     <string name="title_log_display">"Log"</string>
-    <string name="title_exchange_keys">"Exchange Keys"</string>
     <string name="title_advanced_key_info">"Advanced"</string>
     <string name="title_delete_secret_key">"Delete YOUR key '%s'?"</string>
     <string name="title_manage_my_keys">"Manage my keys"</string>
@@ -44,18 +39,12 @@
 
     <!-- section -->
     <string name="section_user_ids">"Identities"</string>
-    <string name="section_security_token">"Security Token"</string>
-    <string name="section_linked_system_contact">"Linked System Contact"</string>
-    <string name="section_should_you_trust">"Should you trust this key?"</string>
-    <string name="section_proof_details">Proof verification</string>
     <string name="section_keys">"Subkeys"</string>
     <string name="section_cloud_search">"Key Search"</string>
-    <string name="section_cloud_search_summary">"Keyserver"</string>
     <string name="section_passphrase_cache">"Passwords and PINs"</string>
     <string name="section_passphrase_cache_summary">"Handling"</string>
     <string name="section_proxy_settings">"Network Anonymity"</string>
     <string name="section_proxy_settings_summary">"Tor, Proxy Settings"</string>
-    <string name="section_gui">"Interface"</string>
     <string name="section_sync_settings">"Synchronization"</string>
     <string name="section_sync_settings_summary">"Automatic key updates, contact linking"</string>
     <string name="section_experimental_features">"Experimental Features"</string>
@@ -70,10 +59,8 @@
     <string name="section_new_expiry">"New expiry"</string>
 
     <!-- button -->
-    <string name="btn_decrypt_verify_file">"Decrypt, verify, and save file"</string>
     <string name="btn_encrypt_share_file">"Encrypt and share file"</string>
     <string name="btn_encrypt_save_file">"Encrypt and save file"</string>
-    <string name="btn_save_file">"Save file"</string>
     <string name="btn_save">"Save"</string>
     <string name="btn_view_log">"View log"</string>
     <string name="btn_do_not_save">"Cancel"</string>
@@ -83,12 +70,10 @@
     <string name="btn_export_to_server">"Upload To Keyserver"</string>
     <string name="btn_next">"Next"</string>
     <string name="btn_back">"Back"</string>
-    <string name="btn_no">"No"</string>
     <string name="btn_match">"Fingerprints match"</string>
     <string name="btn_share_encrypted_signed">"Encrypt/sign and share text"</string>
     <string name="btn_copy_encrypted_signed">"Encrypt/sign and copy text"</string>
     <string name="btn_paste_encrypted_signed">"Encrypt/sign and paste text"</string>
-    <string name="btn_view_cert_key">"View certification key"</string>
     <string name="btn_create_key">"Create key"</string>
     <string name="btn_add_files">"Add file(s)"</string>
     <string name="btn_share_decrypted_text">"Share"</string>
@@ -101,7 +86,6 @@
     <string name="btn_add_email">"Add additional email address"</string>
     <string name="btn_unlock">"Unlock"</string>
     <string name="btn_proceed">"Proceed"</string>
-    <string name="btn_add_keyserver">"Add"</string>
     <string name="btn_save_default">"Save as default"</string>
     <string name="btn_saved">"Saved!"</string>
     <string name="btn_not_matching">"Not matching"</string>
@@ -113,74 +97,46 @@
     <string name="cd_encrypt_files">"Encrypt files"</string>
     <string name="cd_exchange_keys">"Exchange keys"</string>
     <string name="cd_encrypt_text">"Encrypt text"</string>
-    <string name="cd_share_nfc">"Share via NFC"</string>
 
     <!-- menu -->
     <string name="menu_preferences">"Settings"</string>
     <string name="menu_help">"Help"</string>
     <string name="menu_export_key">"Backup key"</string>
     <string name="menu_delete_key">"Delete key"</string>
-    <string name="menu_status">"View key status"</string>
     <string name="menu_manage_keys">"Manage my keys"</string>
     <string name="menu_search">"Search"</string>
     <string name="menu_open">"Open"</string>
     <string name="menu_read_clipboard">"Read from clipboard"</string>
-    <string name="menu_nfc_preferences">"NFC settings"</string>
-    <string name="menu_beam_preferences">"Beam settings"</string>
     <string name="menu_encrypt_to">"Encrypt to…"</string>
-    <string name="menu_select_all">"Select all"</string>
-    <string name="menu_export_all_keys">"Export all keys"</string>
     <string name="menu_update_all_keys">"Update all keys"</string>
     <string name="menu_certify_fingerprint">"Confirm with fingerprint"</string>
-    <string name="menu_certify_fingerprint_phrases">"Confirm with phrases"</string>
     <string name="menu_share_log">"Share log"</string>
     <string name="menu_change_password">"Change password"</string>
     <string name="menu_advanced">"Advanced"</string>
 
-    <string name="menu_keyserver_add">"Add"</string>
-
     <!-- label -->
-    <string name="label_message">"Text"</string>
-    <string name="label_file">"File"</string>
-    <string name="label_files">"File(s)"</string>
-    <string name="label_file_colon">"File:"</string>
     <string name="label_no_passphrase">"No Password"</string>
     <string name="label_passphrase">"Password"</string>
     <string name="label_pin">"PIN"</string>
     <string name="label_unlock">"Unlocking…"</string>
     <string name="label_passphrase_again">"Repeat Password"</string>
-    <string name="label_show_passphrase">"Show Password"</string>
-    <string name="label_algorithm">"Algorithm"</string>
     <string name="label_algorithm_colon">"Algorithm:"</string>
-    <string name="label_ascii_armor">"File ASCII Armor"</string>
     <string name="label_file_ascii_armor">"Enable ASCII Armor"</string>
-    <string name="label_write_version_header">"Let others know that you're using OpenKeychain"</string>
-    <string name="label_write_version_header_summary">"Writes 'OpenKeychain v2.7' to OpenPGP signatures, ciphertext, and exported keys"</string>
     <string name="label_asymmetric_from">"Sign with:"</string>
     <string name="label_to">"Encrypt to"</string>
     <string name="label_delete_after_encryption">"Delete files after encryption"</string>
-    <string name="label_delete_after_decryption">"Delete after decryption"</string>
-    <string name="label_encryption_algorithm">"Encryption algorithm"</string>
-    <string name="label_hash_algorithm">"Hash algorithm"</string>
     <string name="label_symmetric">"Encrypt with password"</string>
     <string name="label_passphrase_cache_subs">"Remember passwords by subkey"</string>
-    <string name="label_message_compression">"Text compression"</string>
-    <string name="label_file_compression">"File compression"</string>
     <string name="label_keyservers">"Manage OpenPGP keyservers"</string>
-    <string name="label_key_id">"Key ID"</string>
     <string name="label_key_id_colon">"Key ID:"</string>
     <string name="label_key_created">"Created %s"</string>
     <string name="label_key_created_just_now">"Created just now"</string>
     <string name="label_key_type">"Type"</string>
-    <string name="label_creation">"Creation"</string>
-    <string name="label_creation_colon">"Creation:"</string>
     <string name="label_expiry">"Expiry"</string>
     <string name="label_valid_from">"Valid from"</string>
     <string name="label_usage">"Usage"</string>
     <string name="label_revoked">Revoked</string>
     <string name="label_insecure">Insecure</string>
-    <string name="label_key_size">"Key Size"</string>
-    <string name="label_ecc_curve">"Elliptic Curve"</string>
     <string name="label_main_user_id">"Primary identity"</string>
     <string name="label_name">"Name"</string>
     <string name="label_email">"Email"</string>
@@ -190,18 +146,15 @@
     <string name="label_keyservers_title">"Keyservers"</string>
     <string name="label_keyserver_settings_hint">"Drag to change order, tap to edit/delete"</string>
     <string name="label_selected_keyserver_title">"Selected keyserver"</string>
-    <string name="label_selected_smartpgp_authority_title">"Selected authority"</string>
     <string name="label_preferred">"preferred"</string>
     <string name="label_enable_compression">"Enable compression"</string>
     <string name="label_enable_self_encrypt">"Encrypt to signer"</string>
     <string name="label_encrypt_filenames">"Encrypt filenames"</string>
-    <string name="label_hidden_recipients">"Hide recipients"</string>
     <string name="label_smartpgp_verify">SmartPGP: Verify certificates</string>
     <string name="label_smartpgp_verify_summary">"Verify certificates on SmartPGP Security Tokens against a set of trusted authorities"</string>
     <string name="label_smartpgp_roots">SmartPGP: Trusted authorities</string>
 
     <string name="label_verify_keyserver_connection">"Test connection"</string>
-    <string name="label_only_trusted_keyserver">"Only trusted keyserver"</string>
     <string name="label_enter_keyserver_url">"URL"</string>
     <string name="label_enter_keyserver_onion">"Optional Tor .onion URL"</string>
     <string name="label_keyserver_dialog_delete">"Delete keyserver"</string>
@@ -211,8 +164,6 @@
 
     <string name="pref_keyserver">"OpenPGP keyservers"</string>
     <string name="pref_keyserver_summary">"Search keys on selected OpenPGP keyservers (HKP protocol)"</string>
-    <string name="pref_facebook">"Facebook"</string>
-    <string name="pref_facebook_summary">"Search keys on Facebook by username"</string>
     <string name="pref_wkd">"Web Key Directory"</string>
     <string name="pref_wkd_summary">"Search keys using Web Key Directory"</string>
 
@@ -248,23 +199,15 @@
     <string name="orbot_install_dialog_install">"Install"</string>
     <string name="orbot_install_dialog_content">You must have Orbot installed and activated to proxy traffic through it. Would you like to install it?</string>
     <string name="orbot_install_dialog_cancel">"Cancel"</string>
-    <string name="orbot_install_dialog_ignore_tor">"Don't use Tor"</string>
 
     <!-- StartOrbotDialogFragment strings -->
     <string name="orbot_start_dialog_title">Start Orbot?</string>
     <string name="orbot_start_dialog_content">"Orbot doesn't appear to be running. Would you like to start it up and connect to Tor?"</string>
-    <string name="orbot_start_btn">"Start Orbot"</string>
     <string name="orbot_start_dialog_start">"Start Orbot"</string>
     <string name="orbot_start_dialog_cancel">"Cancel"</string>
-    <string name="orbot_start_dialog_ignore_tor">"Don't use Tor"</string>
 
     <string name="user_id_no_name"><![CDATA[<no name>]]></string>
     <string name="none"><![CDATA[<none>]]></string>
-
-    <plurals name="n_keys">
-        <item quantity="one">"1 key"</item>
-        <item quantity="other">"%d keys"</item>
-    </plurals>
 
     <plurals name="n_keyservers">
         <item quantity="one">"%d keyserver"</item>
@@ -280,20 +223,7 @@
 
     <!-- choice -->
     <string name="choice_none">"None"</string>
-    <string name="choice_15secs">"15 secs"</string>
-    <string name="choice_1min">"1 min"</string>
-    <string name="choice_3mins">"3 mins"</string>
-    <string name="choice_5mins">"5 mins"</string>
-    <string name="choice_10mins">"10 mins"</string>
-    <string name="choice_20mins">"20 mins"</string>
-    <string name="choice_40mins">"40 mins"</string>
-    <string name="choice_1hour">"1 hour"</string>
-    <string name="choice_2hours">"2 hours"</string>
-    <string name="choice_4hours">"4 hours"</string>
-    <string name="choice_8hours">"8 hours"</string>
-    <string name="choice_forever">"forever"</string>
     <string name="choice_select_cert">"Select a Key"</string>
-    <string name="filemanager_title_open">"Open…"</string>
     <string name="rsa_2048">"RSA 2048"</string>
     <string name="rsa_2048_description_html">"smaller file size, considered secure until 2030"</string>
     <string name="rsa_3072">"RSA 3072"</string>
@@ -312,7 +242,6 @@
     <string name="usage_sign">"Sign"</string>
     <string name="usage_encrypt">"Encrypt"</string>
     <string name="usage_sign_and_encrypt">"Sign &amp; Encrypt"</string>
-    <string name="error">"Error"</string>
     <string name="error_message">"Error: %s"</string>
     <string name="theme_auto">"Automatic"</string>
     <string name="theme_light">"Light"</string>
@@ -332,7 +261,6 @@
     <string name="passphrase_keyboard_hint_numeric">"Switch to numeric keyboard"</string>
     <string name="passphrase_transfer">"Enter transfer code"</string>
     <string name="passphrase_transfer_autocrypt">"To import this Autocrypt Setup Message, enter transfer code:"</string>
-    <string name="pin_for">"Enter PIN for '%s'"</string>
     <string name="security_token_pin_for">"Enter PIN to access Security Token for '%s'"</string>
     <string name="security_token_nfc_text">"Hold Security Token against the NFC marker at the back of your device."</string>
     <string name="security_token_nfc_wait">"Keep the Security Token at the back!"</string>
@@ -342,37 +270,17 @@
     <string name="file_delete_confirmation">"The following files will be deleted:%s"</string>
     <string name="file_delete_successful">"%1$d out of %2$d files have been deleted.%3$s"</string>
     <string name="no_file_selected">"No file selected."</string>
-    <string name="encrypt_sign_successful">"Successfully signed and/or encrypted."</string>
-    <string name="encrypt_sign_clipboard_successful">"Successfully signed and/or encrypted to clipboard."</string>
     <string name="select_encryption_key">"Select at least one encryption key."</string>
     <string name="error_no_encryption_or_signature_key">"Select at least one encryption key or a signature key."</string>
-    <string name="specify_file_to_encrypt_to">"Please specify which file to encrypt to.\nWARNING: File will be overwritten if it exists!"</string>
-    <string name="specify_file_to_decrypt_to">"Please specify which file to decrypt to.\nWARNING: File will be overwritten if it exists!"</string>
-    <string name="specify_backup_dest">"A backup excluding your keys will be made, please specify a destination file.\nWARNING: File will be overwritten if it exists!"</string>
-    <string name="specify_backup_dest_single">"This key will be shared, please specify a destination file.\nWARNING: File will be overwritten if it exists!"</string>
-    <string name="specify_backup_dest_secret_single">"A full backup of your key will be made, please specify a destination file.\nWARNING: File will be overwritten if it exists!"</string>
-    <string name="specify_backup_dest_secret">"A full backup of all keys including yours will be made, please specify a destination file.\nWARNING: File will be overwritten if it exists!"</string>
     <string name="key_deletion_confirmation_multi">"Do you really want to delete all selected keys?"</string>
     <string name="secret_key_deletion_confirmation">"After deletion you will not be able to decrypt messages/files encrypted with this key and lose all key confirmations done with it!"</string>
     <string name="public_key_deletetion_confirmation">"Delete key '%s'?"</string>
-    <string name="also_export_secret_keys">"Also export secret keys"</string>
-    <string name="reinstall_openkeychain">"You encountered a known bug with Android. Please reinstall OpenKeychain if you want to link your contacts with keys."</string>
     <string name="alert_strip">"Stripping this subkey will make it unusable on this device!"</string>
 
-    <string name="key_exported">"Successfully exported 1 key."</string>
-    <string name="keys_exported">"Successfully exported %d keys."</string>
-    <string name="no_keys_exported">"No keys exported."</string>
-    <string name="key_creation_el_gamal_info">"Note: only subkeys support ElGamal."</string>
     <string name="key_not_found">"Couldn't find key %08X."</string>
     <string name="authentication_subkey_not_found">"This key does not have an authentication subkey."</string>
 
-    <plurals name="bad_keys_encountered">"
-        <item quantity="one">"%d bad secret key ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.""</item>
-        <item quantity="other">"%d bad secret keys ignored. Perhaps you exported with the option\n --export-secret-subkeys\nMake sure you export with\n --export-secret-keys\ninstead.""</item>
-    </plurals>
-
     <string name="list_empty">"This list is empty!"</string>
-    <string name="nfc_successful">"Successfully sent key with NFC Beam!"</string>
     <string name="key_copied_to_clipboard">"Key has been copied to the clipboard!"</string>
     <string name="fingerprint_copied_to_clipboard">"Fingerprint has been copied to the clipboard!"</string>
     <string name="select_key_to_certify">"Please select a key to be used for confirmation!"</string>
@@ -385,30 +293,14 @@
     -->
     <string name="error_file_delete_failed">"have not been deleted. Delete them manually!"</string>
     <string name="error_file_added_already">%s has already been added.</string>
-    <string name="error_file_not_found">"file not found"</string>
     <string name="error_bad_data">"Bad data!"</string>
-    <string name="error_no_secret_key_found">"no suitable secret key found"</string>
-    <string name="error_external_storage_not_ready">"external storage not ready"</string>
-    <string name="error_key_size_minimum512bit">"key size must be at least 512bit"</string>
-    <string name="error_unknown_algorithm_choice">"unknown algorithm choice"</string>
-    <string name="error_user_id_no_email">"no email address found"</string>
-    <string name="error_key_needs_a_user_id">"need at least one identity"</string>
-    <string name="error_no_signature_passphrase">"no password given"</string>
-    <string name="error_no_signature_key">"no signature key given"</string>
     <string name="error_invalid_data">"No valid encrypted or signed OpenPGP content!"</string>
-    <string name="error_integrity_check_failed">"integrity check failed! Data has been modified!"</string>
-    <string name="error_wrong_passphrase">"wrong password"</string>
     <string name="error_could_not_extract_private_key">"could not extract private key"</string>
     <string name="error_wrong_security_token">"this security token doesn't contain required key"</string>
 
     <!-- errors without preceding Error: -->
-    <string name="error_jelly_bean_needed">"You need Android 4.1 to use Android's NFC Beam feature!"</string>
-    <string name="error_nfc_needed">"NFC must be enabled!"</string>
-    <string name="error_beam_needed">"Beam must be enabled!"</string>
     <string name="error_nothing">"Nothing to show yet."</string>
     <string name="error_nothing_import">"No keys found!"</string>
-    <string name="error_contacts_key_id_missing">"Retrieving the key ID from contacts failed!"</string>
-    <string name="error_generic_report_bug">"A generic error occurred, please create a new bug report for OpenKeychain."</string>
     <string name="error_denied_storage_permission">"Can not read files from storage because access has been denied!"</string>
 
     <!-- results shown after decryption/verification -->
@@ -436,13 +328,9 @@
     <string name="progress_done">"Done."</string>
     <string name="progress_cancel">"Cancel"</string>
     <string name="progress_cancelling">"cancelling…"</string>
-    <string name="progress_downloading">"downloading…"</string>
     <string name="progress_saving">"saving…"</string>
     <string name="progress_importing">"importing…"</string>
-    <string name="progress_benchmarking">"benchmarking…"</string>
     <string name="progress_revoking_uploading">"Revoking and uploading key…"</string>
-    <string name="progress_updating">"Updating keys…"</string>
-    <string name="progress_exporting">"exporting…"</string>
     <string name="progress_uploading">"uploading…"</string>
     <string name="progress_building_key">"building key…"</string>
     <string name="progress_building_master_key">"building primary ring…"</string>
@@ -462,33 +350,23 @@
     <string name="progress_modify_primaryuid">"changing primary user ID…"</string>
     <string name="progress_modify_subkeychange">"modifying subkeys…"</string>
     <string name="progress_modify_subkeyrevoke">"revoking subkeys…"</string>
-    <string name="progress_modify_subkeystrip">"stripping subkeys…"</string>
     <string name="progress_modify_subkeyadd">"adding subkeys…"</string>
     <string name="progress_modify_passphrase">"changing password…"</string>
     <string name="progress_modify_pin">"changing PIN…"</string>
     <string name="progress_modify_admin_pin">"changing Admin PIN…"</string>
 
     <string name="progress_exporting_key">"exporting key…"</string>
-    <string name="progress_exporting_keys">"exporting keys…"</string>
 
-    <string name="progress_start">"preparing operation…"</string>
     <string name="progress_extracting_signature_key">"extracting signature key…"</string>
-    <string name="progress_extracting_key">"extracting key…"</string>
     <string name="progress_preparing_streams">"preparing streams…"</string>
     <string name="progress_encrypting">"encrypting data…"</string>
-    <string name="progress_prepare_decryption">"Starting decryption…"</string>
     <string name="progress_decrypting">"Decrypting data…"</string>
     <string name="progress_preparing_signature">"preparing signature…"</string>
     <string name="progress_processing_signature">processing signature…</string>
     <string name="progress_generating_signature">"generating signature…"</string>
     <string name="progress_verifying_signature">"verifying signature…"</string>
     <string name="progress_signing">"signing…"</string>
-    <string name="progress_certifying">"certifying…"</string>
     <string name="progress_reading_data">"reading data…"</string>
-    <string name="progress_finding_key">"finding key…"</string>
-    <string name="progress_decompressing_data">"decompressing data…"</string>
-    <string name="progress_verifying_integrity">"verifying integrity…"</string>
-    <string name="progress_deleting_securely">"deleting '%s' securely…"</string>
     <string name="progress_deleting">"deleting keys…"</string>
     <string name="progress_update_trust">"updating trust info…"</string>
 
@@ -497,22 +375,10 @@
     <string name="progress_starting_orbot">"Starting Orbot…"</string>
 
     <!-- action strings -->
-    <string name="hint_cloud_search_hint">"Search via Name, Email…"</string>
 
     <!-- key bit length selections -->
-    <string name="key_size_2048">"2048"</string>
-    <string name="key_size_3072">"3072"</string>
-    <string name="key_size_4096">"4096"</string>
-    <string name="key_size_8192">"8192"</string>
-    <string name="key_size_custom">"Custom key size"</string>
-    <string name="key_size_custom_info">"Type custom key length (in bits):"</string>
-    <string name="key_size_custom_info_rsa">"RSA key length must be greater than 1024 and at most 16384. Also it must be multiplicity of 8."</string>
-    <string name="key_size_custom_info_dsa">"DSA key length must be at least 512 and at most 1024. Also it must be multiplicity of 64."</string>
 
     <!-- elliptic curve names -->
-    <string name="key_curve_nist_p256">"NIST P-256"</string>
-    <string name="key_curve_nist_p384">"NIST P-384"</string>
-    <string name="key_curve_nist_p521">"NIST P-521"</string>
     <!-- not in for now, see SaveKeyringParcel
     <string name="key_curve_bp_p256">"Brainpool P-256"</string>
     <string name="key_curve_bp_p384">"Brainpool P-384"</string>
@@ -520,30 +386,21 @@
     -->
 
     <!-- compression -->
-    <string name="compression_fast">"fast"</string>
-    <string name="compression_very_slow">"very slow"</string>
 
     <!-- Help -->
     <string name="help_tab_start">"Start"</string>
     <string name="help_tab_faq">"FAQ"</string>
     <string name="help_tab_wot">"Key Confirmation"</string>
-    <string name="help_tab_nfc_beam">"NFC Beam"</string>
     <string name="help_tab_changelog">"Changelog"</string>
     <string name="help_tab_license">"Licenses"</string>
     <string name="help_tab_about">"About"</string>
     <string name="help_about_version">"Version:"</string>
-    <string name="help_tab_donations">"Donate"</string>
 
     <!-- Import -->
-    <string name="import_tab_keyserver">"Keyserver"</string>
-    <string name="import_tab_cloud">"Key Search"</string>
-    <string name="import_tab_direct">"File/Clipboard"</string>
-    <string name="import_tab_qr_code">"QR Code/NFC"</string>
     <string name="import_found_keys">"Found %1$d keys"</string>
     <string name="import_qr_code_wrong">"QR Code format not supported (format specification: https://github.com/open-keychain/open-keychain/wiki/QR-Codes)!"</string>
     <string name="import_qr_code_fp">"Fingerprint is malformed or too short!"</string>
     <string name="import_qr_code_too_short_fingerprint">"Fingerprint is too short!"</string>
-    <string name="import_qr_code_button">"Scan QR Code"</string>
     <string name="import_qr_code_text">"Place your camera over the QR Code!"</string>
     <string name="btn_import">"Import"</string>
     <string name="btn_import_keys">"Import all keys"</string>
@@ -608,8 +465,6 @@
     <!-- Revoke result toast (snackbar) -->
     <string name="revoke_ok">"Successfully revoked key."</string>
     <string name="revoke_fail">"Error revoking key!"</string>
-    <string name="revoke_nothing">"Nothing to revoke."</string>
-    <string name="revoke_cancelled">"Revoke operation cancelled."</string>
 
     <!-- Certify result toast -->
     <plurals name="certify_keys_ok">
@@ -633,36 +488,24 @@
     <string name="intent_autocrypt_setup">"Import Autocrypt Setup Message"</string>
 
     <!-- Remote API -->
-    <string name="api_settings_show_info">"Show advanced information"</string>
-    <string name="api_settings_hide_info">"Hide advanced information"</string>
-    <string name="api_settings_no_key">"No key selected"</string>
-    <string name="api_settings_select_key">"Select key"</string>
     <string name="api_settings_create_key">"Create new key"</string>
     <string name="api_settings_save">"Save"</string>
-    <string name="api_settings_cancel">"Cancel"</string>
     <string name="api_settings_revoke">"Revoke access"</string>
-    <string name="api_settings_start">"Start application"</string>
     <string name="api_settings_package_name">"Package Name"</string>
     <string name="api_settings_package_certificate">"SHA-256 of Package Certificate"</string>
     <string name="api_settings_advanced">"Advanced"</string>
     <string name="api_settings_allowed_keys">"Allowed Keys"</string>
-    <string name="api_settings_settings">"Settings"</string>
     <string name="api_register_title">"Allow access to OpenKeychain?"</string>
     <string name="api_register_text">"%s requests to use OpenKeychain as a crypto provider. You will still be asked for permission before the app can use any of your keys for decryption.\n\nYou can revoke access later in the 'Apps' screen in OpenKeychain."</string>
-    <string name="api_register_allow">"Allow access"</string>
-    <string name="api_register_disallow">"Disallow access"</string>
-    <string name="api_register_error_select_key">"Please select a key!"</string>
     <string name="api_select_pub_keys_missing_text">"No keys were found for these email addresses:"</string>
     <string name="api_select_pub_keys_dublicates_text">"More than one key exist for these email addresses:"</string>
     <string name="api_select_pub_keys_text">"Please review the list of recipients!"</string>
     <string name="api_select_pub_keys_text_no_user_ids">"Please select the recipients!"</string>
     <string name="api_error_wrong_signature">"Signature check failed! Have you installed this app from a different source? If you are sure that this is not an attack, revoke this app's registration in OpenKeychain and then register the app again."</string>
     <string name="api_select_sign_key_text">"Please select one of your existing keys or create a new one."</string>
-    <string name="api_select_keys_text">"None of the allowed keys is able to decrypt the content. Please select the allowed keys."</string>
 
     <!-- Share -->
     <string name="share_qr_code_dialog_title">"Share with QR Code"</string>
-    <string name="share_nfc_dialog">"Share with NFC"</string>
 
     <!-- retry upload dialog -->
     <string name="retry_up_dialog_title">"Upload failed"</string>
@@ -688,8 +531,6 @@
     </plurals>
 
     <string name="key_list_empty_text1">"No keys found!"</string>
-    <string name="key_list_filter_show_all">"Show all keys"</string>
-    <string name="key_list_filter_show_certified">"Show confirmed keys only"</string>
     <string name="key_list_fab_qr_code">"Scan QR Code"</string>
     <string name="key_list_fab_search">"Key Search"</string>
     <string name="key_list_fab_import">"Import from File"</string>
@@ -699,19 +540,14 @@
 
     <!-- Key view -->
     <string name="key_view_action_edit">"Edit"</string>
-    <string name="key_view_action_encrypt">"Encrypt text"</string>
-    <string name="key_view_action_encrypt_files">"files"</string>
     <string name="key_view_action_certify">"Confirm key"</string>
     <string name="key_view_action_update">"Update from keyserver"</string>
     <string name="key_view_action_share_with">"Share with…"</string>
     <string name="key_view_action_share_ssh_with">"Share as SSH public key with…"</string>
-    <string name="key_view_action_share_nfc">"Share over NFC"</string>
     <string name="key_view_action_upload">"Publish on keyserver"</string>
-    <string name="key_view_tab_main">"Main Info"</string>
     <string name="key_view_tab_start">"Start"</string>
     <string name="key_view_tab_share">"Share"</string>
     <string name="key_view_tab_keys">"Subkeys"</string>
-    <string name="key_view_tab_certs">"Certificates"</string>
     <string name="user_id_info_revoked_title">"Revoked"</string>
     <string name="user_id_info_revoked_text">"This identity has been revoked by the key owner. It is no longer valid."</string>
     <string name="user_id_info_certified_title">"Confirmed"</string>
@@ -720,8 +556,6 @@
     <string name="user_id_info_uncertified_text">"This identity has not been confirmed yet. You cannot be sure if the identity really corresponds to a specific person."</string>
 
     <!-- Key trust -->
-    <string name="key_trust_no_cloud_evidence">"No proof from the Internet on this key’s trustworthiness."</string>
-    <string name="key_trust_start_cloud_search">"Start search"</string>
 
     <!-- Edit key -->
     <string name="edit_key_action_change_passphrase">"Change Password"</string>
@@ -758,11 +592,8 @@
     <string name="create_key_final_text">"You entered the following identity:"</string>
     <string name="create_key_final_robot_text">"Creating a key may take a while, have a cup of coffee in the meantime…"</string>
     <string name="create_key_final_email_valid_warning">"Many applications work better when provided with keys only containing valid email addresses"</string>
-    <string name="create_key_rsa">"(3 subkeys, RSA, 4096 bit)"</string>
-    <string name="create_key_custom">"(custom key configuration)"</string>
     <string name="create_key_name_text">"Choose a name associated with this key. This can be a full name, e.g., 'John Doe', or a nickname, e.g., 'Johnny'."</string>
     <string name="create_key_email_text">"Enter your main email address used for secure communication."</string>
-    <string name="create_key_passphrase_text">"Choose a strong password. It protects your key when your device gets stolen."</string>
     <string name="create_key_hint_full_name">"Full Name or Nickname"</string>
     <string name="create_key_edit">"Change key configuration"</string>
     <string name="create_key_add_email">"Add email address"</string>
@@ -774,7 +605,6 @@
     <string name="create_key_yubi_key_pin">"PIN"</string>
     <string name="create_key_yubi_key_admin_pin">"Admin PIN"</string>
     <string name="create_key_yubi_key_pin_repeat">"Repeat PIN"</string>
-    <string name="create_key_yubi_key_pin_not_correct">"PIN is not correct!"</string>
     <string name="create_key_yubi_key_pin_too_short">"PIN must be at least 6 numbers long!"</string>
     <string name="create_key_yubi_key_pin_insecure">"Please choose a secure PIN, not 000000, 123456 or similar combinations (the top 20 most chosen PINs are not allowed)"</string>
     <string name="create_key_yubi_key_algorithm_text">"Please choose an algorithm for each key."</string>
@@ -786,8 +616,6 @@
     <string name="view_key_my_key">"My Key"</string>
     <string name="view_key_verified">"Confirmed Key"</string>
     <string name="view_key_unverified">"Unconfirmed: Scan QR Code to confirm key!"</string>
-
-    <string name="view_key_fragment_no_system_contact">"&lt;none&gt;"</string>
 
     <!-- Add/Edit keyserver -->
     <string name="add_keyserver_dialog_title">"Add keyserver"</string>
@@ -808,8 +636,6 @@
     <string name="nav_keys">"Keys"</string>
     <string name="nav_encrypt_decrypt">"Encrypt/Decrypt"</string>
     <string name="nav_apps">"Apps"</string>
-    <string name="drawer_open">"Open navigation drawer"</string>
-    <string name="drawer_close">"Close navigation drawer"</string>
     <string name="my_keys">"My Keys"</string>
     <string name="nav_backup">"Backup/Restore"</string>
 
@@ -817,15 +643,7 @@
     <string name="encrypt_content_edit_text_hint">"Type text"</string>
 
     <!-- certs -->
-    <string name="cert_default">"default"</string>
     <string name="cert_none">"none"</string>
-    <string name="cert_casual">"casual"</string>
-    <string name="cert_positive">"positive"</string>
-    <string name="cert_revoke">"revoked"</string>
-    <string name="cert_verify_ok">"OK"</string>
-    <string name="cert_verify_failed">"failed!"</string>
-    <string name="cert_verify_error">"error!"</string>
-    <string name="cert_verify_unavailable">"key unavailable"</string>
 
     <!-- LogType log messages. Errors should have _ERROR_ in their name and end with a ! -->
 
@@ -840,7 +658,6 @@
     <string name="msg_ip_encode_fail">"Operation failed due to encoding error"</string>
     <string name="msg_ip_error_io_exc">"Operation failed due to i/o error"</string>
     <string name="msg_ip_error_op_exc">"Operation failed due to database error"</string>
-    <string name="msg_ip_error_remote_ex">"Operation failed due to internal error"</string>
     <string name="msg_ip">"Importing public keyring %s"</string>
     <string name="msg_ip_fingerprint_error">"Fingerprint of importing key does not match expected!"</string>
     <string name="msg_ip_fingerprint_ok">"Fingerprint check OK"</string>
@@ -872,7 +689,6 @@
     <string name="msg_ip_subkey">"Processing subkey %s"</string>
     <string name="msg_ip_subkey_expired">"Subkey expired on %s"</string>
     <string name="msg_ip_subkey_expires">"Subkey expires on %s"</string>
-    <string name="msg_ip_subkey_flags_unspecified">"Subkey flags: unspecified (assuming all)"</string>
     <string name="msg_ip_subkey_flags_cesa">"Subkey flags: certify, encrypt, sign, authenticate"</string>
     <string name="msg_ip_subkey_flags_cesx">"Subkey flags: certify, encrypt, sign"</string>
     <string name="msg_ip_subkey_flags_cexa">"Subkey flags: certify, encrypt, authenticate"</string>
@@ -929,11 +745,9 @@
     <string name="msg_ip_uat_revoked">"User attribute is revoked"</string>
 
     <string name="msg_is_bad_type_public">"Tried to import public keyring as secret. This is a bug, please file a report!"</string>
-    <string name="msg_is_bad_type_uncanon">"Tried to import a keyring without canonicalization. This is a bug, please file a report!"</string>
 
     <!-- Import Secret log entries -->
     <string name="msg_is">"Importing secret key %s"</string>
-    <string name="msg_is_db_exception">"Database error!"</string>
     <string name="msg_is_importing_subkeys">"Processing secret subkeys"</string>
     <string name="msg_is_error_io_exc">"Error encoding keyring"</string>
     <string name="msg_is_merge_public">"Merging imported data into existing public keyring"</string>
@@ -971,7 +785,6 @@
     <string name="msg_kc_sub_bad_err">"Removing bad subkey binding certificate"</string>
     <string name="msg_kc_sub_bad_local">"Removing subkey binding certificate with 'local' flag"</string>
     <string name="msg_kc_sub_bad_keyid">"Subkey binding issuer id mismatch"</string>
-    <string name="msg_kc_sub_bad_time">"Removing subkey binding certificate with future timestamp"</string>
     <string name="msg_kc_sub_bad_time_early">"Subkey binding certificate has earlier timestamp than its key!"</string>
     <string name="msg_kc_sub_bad_type">"Unknown subkey certificate type: %s"</string>
     <string name="msg_kc_sub_dup">"Removing redundant subkey binding certificate"</string>
@@ -1192,10 +1005,6 @@
     <string name="msg_vl_error_wrong_key">"Message not signed with expected key!"</string>
     <string name="msg_vl_error_no_signature">"Missing signature data!"</string>
     <string name="msg_vl_error_missing_literal">"No data in signed literal data packet"</string>
-    <string name="msg_vl_clear_meta_file">"Filename: %s"</string>
-    <string name="msg_vl_clear_meta_mime">"MIME type: %s"</string>
-    <string name="msg_vl_clear_meta_time">"Modification time: %s"</string>
-    <string name="msg_vl_clear_meta_size">"File size: %s"</string>
     <string name="msg_vl_clear_signature_check">"Verifying signature data"</string>
     <string name="msg_vl_error_integrity_check">"Integrity check error!"</string>
     <string name="msg_vl_ok">"OK"</string>
@@ -1219,7 +1028,6 @@
     <string name="msg_pse_error_key_sign">"Selected signing key cannot sign data!"</string>
     <string name="msg_pse_error_sign_key">"Error fetching signing key!"</string>
     <string name="msg_pse_error_nfc">"NFC data error!"</string>
-    <string name="msg_pse_error_no_passphrase">"No password provided!"</string>
     <string name="msg_pse_error_pgp">"Internal OpenPGP error!"</string>
     <string name="msg_pse_error_sig">"Encountered OpenPGP signature exception!"</string>
     <string name="msg_pse_error_unlock">"Unknown error unlocking key!"</string>
@@ -1348,7 +1156,6 @@
     <string name="msg_bench_enc_time">"Encryption time: %ss"</string>
     <string name="msg_bench_enc_time_avg">"Average time to encrypt 5MB: %ss"</string>
     <string name="msg_bench_dec_time">"Decryption time: %ss"</string>
-    <string name="msg_bench_dec_time_avg">"Average time to decrypt 5MB: %ss"</string>
     <string name="msg_bench_s2k_100ms_its">"S2K iteration count for 100ms: %s"</string>
     <string name="msg_bench_s2k_for_it">"Time for %1$s SHA1 S2K iterations: %2$sms"</string>
     <string name="msg_bench_success">"Benchmarking complete!"</string>
@@ -1390,9 +1197,6 @@
     <string name="msg_download_query_failed">"An error occurred when searching for keys."</string>
 
     <!-- Messages for Mime parsing operation -->
-    <string name="msg_mime_parsing_start">"Parsing the MIME structure"</string>
-    <string name="msg_mime_parsing_error">"MIME parsing failed"</string>
-    <string name="msg_mime_parsing_success">"MIME parsing successfully!"</string>
 
     <!-- PassphraseCache -->
     <string name="passp_cache_notif_touch_to_clear">"Touch to clear passwords."</string>
@@ -1408,17 +1212,13 @@
     <string name="keyserver_sync_orbot_notif_title">"Sync From Servers requires Orbot"</string>
     <string name="keyserver_sync_orbot_notif_msg">"Tap to start Orbot"</string>
     <string name="keyserver_sync_orbot_notif_start">"Start Orbot"</string>
-    <string name="keyserver_sync_orbot_notif_ignore">"Direct"</string>
 
     <!-- First Time -->
-    <string name="first_time_text1">"Take back your privacy with OpenKeychain!"</string>
     <string name="first_time_create_key">"Create my key"</string>
     <string name="first_time_import_key">"Import key from file"</string>
     <string name="first_time_security_token">"Use Security Token"</string>
     <string name="first_time_security_token_subtitle">"(Fidesmo, YubiKey NEO, SIGILANCE, …)"</string>
     <string name="first_time_skip">"Skip Setup"</string>
-    <string name="first_time_blank_security_token">"Would you like to use this blank Security Token with OpenKeychain?\n\nPlease take away the Security Token now, you will be prompted when it is needed again!"</string>
-    <string name="first_time_blank_security_token_yes">"Use this Security Token"</string>
 
     <string name="backup_text">"Backups that include your own keys must never be shared with other people!"</string>
     <string name="backup_all">"Full backup (encrypted)"</string>
@@ -1427,90 +1227,31 @@
     <string name="restore_section">"Restore"</string>
 
     <!-- unsorted -->
-    <string name="section_certifier_id">"Certifier"</string>
-    <string name="section_cert">"Certificate Details"</string>
-    <string name="label_user_id">"Identity"</string>
-    <string name="unknown_uid"><![CDATA[<unknown>]]></string>
-    <string name="empty_certs">"No certificates for this key"</string>
-    <string name="certs_text">"Only validated self-certificates and validated certificates created with your keys are displayed here."</string>
     <string name="section_uids_to_certify">"Identities for "</string>
     <string name="certify_text">"The keys you are importing contain “identities”: names and email addresses. Select exactly those for confirmation which match what you expected."</string>
     <string name="certify_fingerprint_text">"Compare the fingerprint, character by character, with the one displayed on your partner’s device."</string>
-    <string name="label_revocation">"Revocation Reason"</string>
-    <string name="label_cert_type">"Type"</string>
     <string name="error_key_not_found">"Key not found!"</string>
     <string name="error_key_processing">"Error processing key!"</string>
     <string name="key_stripped">"stripped"</string>
     <string name="key_divert">"on Security Token"</string>
-    <string name="key_no_passphrase">"no password"</string>
-    <string name="key_unavailable">"unavailable"</string>
     <string name="secret_cannot_multiple">"Your own keys can only be deleted individually!"</string>
-    <string name="title_view_cert">"View Certificate Details"</string>
     <string name="unknown">"unknown"</string>
-    <string name="can_sign_not">"cannot sign"</string>
     <string name="error_no_encrypt_subkey">"No encryption subkey available!"</string>
-    <string name="contact_show_key">"Show key (%s)"</string>
-    <string name="swipe_to_update">"Swipe down to update from keyserver"</string>
     <string name="error_no_file_selected">"Select at least one file to encrypt!"</string>
     <string name="error_multi_files">"Saving of multiple files not supported. This is a limitation on current Android."</string>
     <string name="error_multi_clipboard">"Encryption of multiple files to clipboard not supported."</string>
     <string name="error_detached_signature">"Sign-only operation of binary files is not supported, select at least one encryption key."</string>
     <string name="error_empty_text">"Type some text to encrypt!"</string>
     <string name="error_log_share_internal">"Internal error while preparing log!"</string>
-    <string name="key_colon">"Key:"</string>
-    <string name="exchange_description">"To start a key exchange, choose the number of participants on the right side, then hit the “Start exchange” button.\n\nYou will be asked two more questions to make sure only the right participants are in the exchange and their fingerprints are correct."</string>
-    <string name="btn_start_exchange">"Start exchange"</string>
-    <string name="user_id_none"><![CDATA[<none>]]></string>
 
     <!-- Android Account -->
-    <string name="account_no_manual_account_creation">"You can not create OpenKeychain accounts manually."</string>
-    <string name="account_privacy_title">"Privacy"</string>
-    <string name="account_privacy_text">"OpenKeychain does not synchronize your contacts with the Internet. It only links contacts to keys based on names and email addresses. This is done offline on your device."</string>
-    <string name="sync_notification_permission_required_title">"Access to contacts required"</string>
-    <string name="sync_notification_permission_required_text">"Touch to configure linking to contacts"</string>
 
     <!-- Passphrase wizard -->
     <!-- TODO: rename all the things! -->
-    <string name="title_unlock_method">Choose an unlock method</string>
     <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
     <string name="enter_passphrase">Enter password</string>
-    <string name="passphrase">Password</string>
-    <string name="noPassphrase">No password</string>
-    <string name="no_passphrase_set">No password set</string>
-    <string name="passphrases_match">Passwords do match</string>
-    <string name="passphrase_saved">Password saved</string>
-    <string name="passphrase_invalid">Password invalid</string>
-    <string name="missing_passphrase">Missing password</string>
-    <string name="passphrase_again">Again</string>
-    <string name="lockpattern">Lockpattern</string>
-    <string name="lockpatternNFC">NFC + Lockpattern</string>
-    <string name="unlock_method">Unlock method</string>
-    <string name="set_passphrase">Set password</string>
-    <string name="draw_lockpattern">Draw lockpattern</string>
-    <string name="nfc_title">NFC</string>
     <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-    <string name="nfc_wrong_tag">Wrong Tag. Please try again.</string>
-    <string name="enable_nfc">Please activate NFC in your settings</string>
-    <string name="no_nfc_support">This device does not support NFC</string>
-    <string name="nfc_write_successful">Successfully written on NFC tag</string>
-    <string name="unlocked">Unlocked</string>
-    <string name="nfc_settings">Settings</string>
-    <string name="snack_security_token_view">"View"</string>
-    <string name="snack_security_token_import">"Import"</string>
-    <string name="button_bind_key">"Bind Key"</string>
-    <string name="security_token_serial_no">"Serial No: %s"</string>
-    <string name="security_token_key_holder">"Key holder: %s"</string>
-    <string name="security_token_key_holder_not_set"><![CDATA[Key holder: <not set>]]></string>
-    <string name="security_token_status_bound">"Security Token matches and is bound to key"</string>
-    <string name="security_token_status_unbound">"Security Token matches, can be bound to key"</string>
-    <string name="security_token_status_partly">"Security Token matches, partly bound to key"</string>
     <string name="security_token_create">"Hold Security Token against the back of your device."</string>
-    <string name="security_token_reset_or_import">"This Security Token already contains a key."</string>
-    <string name="btn_reset">"Reset"</string>
-    <string name="security_token_radio_use_existing">"Use existing key"</string>
-    <string name="security_token_radio_reset">"Reset token"</string>
-    <string name="security_token_reset_warning">"Resetting the Security Token completely destroys the keys on it. Afterwards, you will not be able to decrypt messages/files encrypted with this key!"</string>
-    <string name="snack_security_token_other">Different key stored on Security Token!</string>
     <string name="security_token_error">"Error: %s"</string>
     <plurals name="security_token_error_pin">
         <item quantity="one">"Incorrect PIN!\n%d try remaining."</item>
@@ -1541,7 +1282,6 @@
     <string name="snack_compression_off">"Compression <b>disabled</b>."</string>
     <string name="snack_self_encrypt_on">"Encrypt to signer <b>enabled</b>."</string>
     <string name="snack_self_encrypt_off">"Encrypt to signer <b>disabled</b>."</string>
-    <string name="error_loading_keys">"Error loading keys!"</string>
     <string name="error_empty_log">"(error, empty log)"</string>
     <string name="error_reading_text">"Could not read input to decrypt!"</string>
     <string name="error_reading_aosp">"Failed reading data, this is a bug in the Android E-Mail client! (Issue #290)"</string>
@@ -1568,13 +1308,8 @@
     <string name="error_expiry_past">"Expiry date is in the past!"</string>
 
     <!-- Other Linked Identity strings -->
-    <string name="btn_finish">"Finish"</string>
     <string name="snack_btn_overwrite">"Overwrite"</string>
     <string name="backup_code_explanation">"The backup will be secured with a backup code. Write it down before you proceed!"</string>
-    <string name="backup_code_enter">"Please enter the backup code:"</string>
-    <string name="backup_code_ok">"Code accepted!"</string>
-    <string name="btn_code_wrotedown">"OK, I wrote it down!"</string>
-    <string name="backup_code_wrong">"The backup code you entered is wrong!\nDid you write it down correctly?"</string>
     <string name="btn_backup_share">"Share backup"</string>
     <string name="btn_backup_save">"Save backup"</string>
     <string name="btn_backup_export">"Export backup"</string>
@@ -1582,7 +1317,6 @@
     <string name="snack_backup_saved">"Backup saved"</string>
     <string name="snack_backup_exists">"Backup already exists!"</string>
     <string name="snack_backup_saved_dir">"Saved to OpenKeychain directory"</string>
-    <string name="btn_backup_back">Go back to check</string>
     <string name="snack_text_too_long">"Text is too long to show in full!"</string>
     <string name="snack_shared_text_too_long">"Shared text was cut because it was too long!"</string>
 
@@ -1601,7 +1335,6 @@
     <string name="cache_ttl_one_day">"for one day"</string>
     <string name="cache_ttl_forever">"until cleared"</string>
     <string name="remember">"Remember"</string>
-    <string name="security_token_error_pgp_app_not_installed">"No PGP app was found on the security token"</string>
     <string name="prompt_fidesmo_pgp_install_title">"Install PGP?"</string>
     <string name="prompt_fidesmo_pgp_install_message">"There was no PGP app available on your Fidesmo device."</string>
     <string name="prompt_fidesmo_pgp_install_button_positive">"Install"</string>
@@ -1610,16 +1343,6 @@
     <string name="prompt_fidesmo_app_install_message">"To install PGP you need the Fidesmo Android app."</string>
     <string name="prompt_fidesmo_app_install_button_positive">"Install"</string>
     <string name="prompt_fidesmo_app_install_button_negative">"Cancel"</string>
-    <string name="help_donation_paypal_item">OpenKeychain Donation</string>
-    <string-array name="help_donation_google_catalog_values">
-        <item>1 EUR</item>
-        <item>2 EUR</item>
-        <item>3 EUR</item>
-        <item>5 EUR</item>
-        <item>10 EUR</item>
-        <item>50 EUR</item>
-        <item>100 EUR</item>
-    </string-array>
     <string name="redirect_import_key_title">"Scan with OpenKeychain!"</string>
     <string name="redirect_import_key_message">"You scanned a OpenPGP QR Code with another app. Please scan with Openkeychain directly to be safe."</string>
     <string name="redirect_import_key_yes">"Scan again"</string>
@@ -1633,11 +1356,8 @@
     <string name="button_back">Back</string>
     <string name="button_got_it">Got it</string>
     <string name="requested_key_label">Requested key:</string>
-    <string name="error_preselect_sign_key">Error selecting key %s for signing!</string>
-    <string name="error_preselect_encrypt_key">Error selecting key %s for encryption!</string>
 
     <string name="title_key_status">"Key Status"</string>
-    <string name="caption_secret_status">This key is yours. You can use it to:</string>
 
     <string name="cap_title_confirm">Confirm other keys</string>
     <string name="cap_cert_ok">"This key can confirm other keys."</string>
@@ -1661,7 +1381,6 @@
     <string name="cap_decrypt_revoked">"This key can decrypt/receive messages, but is revoked."</string>
     <string name="cap_decrypt_stripped">"This key can\'t decrypt/receive messages on this device."</string>
     <string name="cap_decrypt_unavailable">"This key is not configured to decrypt/receive messages!"</string>
-    <string name="cap_decrypt_insecure">"This key can decrypt/receive messages, but not securely!"</string>
 
     <string name="key_health_ok_title">"Healthy"</string>
     <string name="key_health_ok_subtitle">"No key issues found."</string>
@@ -1697,7 +1416,6 @@
     <string name="key_insecure_unknown_curve_solution">"This key can\'t be upgraded. For secure communication, the owner must generate a new key."</string>
 
     <string name="key_insecure_unidentified_problem">"There is an unidentified problem with this key."</string>
-    <string name="key_insecure_unidentified_solution">"Please submit a bug report."</string>
 
     <string name="key_expiry_text">"This key expired on <b>%1$s</b>."</string>
 
@@ -1720,8 +1438,6 @@
     <string name="insecure_hash_algo">"This message was signed using the %s hashing algorithm. This is considered insecure, or at least exotic!"</string>
     <string name="dialog_insecure_override">If you don\'t want to be warned about this specific security problem in the future, you can suppress this warning.</string>
     <string name="dialog_insecure_override_title">Suppress this warning</string>
-    <string name="dialog_insecure_override_ok_title">Warning suppressed</string>
-    <string name="dialog_insecure_override_ok">The security warning (for this key/message) will not be shown again in the future.</string>
     <string name="dialog_insecure_button_override">Suppress</string>
     <string name="dialog_insecure_button_override_confirm">Suppress (%d)</string>
     <string name="dialog_insecure_button_undo">Un-Suppress</string>
@@ -1730,36 +1446,6 @@
     <string name="usage_authentication">Authentication</string>
 
     <string name="identity_context_forget">Forget</string>
-
-    <string name="button_scan">"Scan"</string>
-    <string name="button_more_info">"More Info"</string>
-    <string name="transfer_scan_explanation">"To share or import your key setup, establish a secure connection by scanning with either device."</string>
-    <string name="transfer_scan_warning">Use with your own devices only!</string>
-    <string name="connection_status">"Connection status:"</string>
-    <string name="section_transfer_keys">"Available keys for transfer"</string>
-    <string name="section_received_keys">"Received keys"</string>
-    <string name="transfer_scan_only_wifi">"This feature can only be used on Wifi."</string>
-    <string name="button_import">"Import"</string>
-    <string name="transfer_status_connected">"Connected"</string>
-    <string name="transfer_status_disconnected">"Disconnected!"</string>
-    <string name="transfer_error_read_incoming">"Failed reading incoming key!"</string>
-    <string name="transfer_error_connect">"Connection failed!"</string>
-    <string name="transfer_error_listen">"Error waiting for connection!"</string>
-    <string name="transfer_error_generic">"Unknown communication error!"</string>
-    <string name="transfer_error_generic_msg">"Communication error: %s"</string>
-    <string name="transfer_not_available">"Sorry, this feature can only be used on Android 5 or newer :("</string>
-    <string name="transfer_list_empty">"No keys on this device that could be sent.  Waiting for incoming keys…"</string>
-    <string name="transfer_connecting">"Connecting…"</string>
-    <string name="first_time_secure_wifi_transfer">"Secure Wifi Transfer"</string>
-    <string name="menu_secure_wifi_transfer">"Secure Wifi Transfer"</string>
-    <string name="transfer_confirm_cancel">"Cancel"</string>
-    <string name="transfer_confirm_ok">"Send"</string>
-    <string name="transfer_confirm_title">"Send your key?"</string>
-    <string name="transfer_confirm_text">"This will transfer full access to your key to the connected device. You should never send your own keys to devices you don't own!"</string>
-    <string name="button_scan_again">"Scan Again"</string>
-    <string name="transfer_error_wifi_text">"Connection failed!"</string>
-    <string name="transfer_error_wifi_text_instructions">"Make sure you are on the same network, then scan again."</string>
-    <string name="transfer_error_wifi_text_instructions_ssid">"Make sure you are on the &quot;%s&quot; network, then scan again."</string>
 
     <string name="status_check_key">Checking key status…</string>
     <string name="status_search_local">Searching in key list…</string>
@@ -1855,7 +1541,6 @@
     <string name="use_key_no_name">Use key: <![CDATA[<no name>]]></string>
     <string name="title_select_key">%s wants to set up end-to-end encryption for this address:</string>
     <string name="select_identity_cancel">Disable</string>
-    <string name="select_identity_create">Create a key for me</string>
     <string name="error_save_key_internal">"Internal error saving key!"</string>
     <string name="menu_list_unrelated_keys">List unrelated keys</string>
     <string name="no_keys_gen_title">This is a new address</string>
@@ -1877,16 +1562,9 @@
     <string name="snack_keylist_clipboard_title">Found key data in clipboard!</string>
     <string name="snack_keylist_clipboard_action">View</string>
 
-    <string name="notify_channel_keysync">Keyserver update</string>
     <string name="notify_channel_permission">Permission requests</string>
     <string name="notify_channel_passcache">Passphrase cache</string>
     <string name="notify_channel_orbot">Orbot status</string>
-    <string name="notify_title_keysync">Updating keys…</string>
-    <string name="notify_title_keysync_finished">Finished updating %d keys</string>
-    <string name="notify_content_keysync">Key %d / %d</string>
-    <string name="snack_keysync_start">Started updating all keys…</string>
-    <string name="snack_keysync_finished">Key update successful</string>
-    <string name="snack_keysync_error">An error occurred while updating all keys</string>
 
     <string name="keychoice_cannot_encrypt">This key cannot be used for encryption!</string>
     <string name="keychoice_cannot_sign">This key cannot be used for signing!</string>

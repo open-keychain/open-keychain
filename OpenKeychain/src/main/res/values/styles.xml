@@ -22,17 +22,6 @@
         <item name="android:textColor">@color/card_view_button</item>
     </style>
 
-    <style name="BorderlessButton">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_centerVertical">true</item>
-        <item name="android:background">?android:attr/selectableItemBackground</item>
-        <item name="android:minHeight">0dp</item>
-        <item name="android:minWidth">0dp</item>
-        <item name="android:padding">8dp</item>
-        <item name="android:textColor">@color/card_view_button</item>
-    </style>
-
     <style name="SectionHeader">
         <item name="android:drawableBottom">?attr/sectionHeaderDrawable</item>
         <item name="android:drawablePadding">4dp</item>
@@ -61,9 +50,6 @@
     </style>
 
     <!-- constrain size of backup code input for smaller devices -->
-    <style name="BackupCodeTextStyle">
-        <item name="android:textSize" tools:ignore="SpUsage">14dp</item>
-    </style>
 
     <style name="TransferCodeTextBase">
         <item name="android:gravity">center_vertical</item>

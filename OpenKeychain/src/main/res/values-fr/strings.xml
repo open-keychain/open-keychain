@@ -19,38 +19,27 @@
   <string name="title_share_key">Partager la clé avec…</string>
   <string name="title_share_file">Partager le fichier avec…</string>
   <string name="title_share_message">Partager le texte avec…</string>
-  <string name="title_encrypt_to_file">Chiffrer vers un fichier</string>
-  <string name="title_decrypt_to_file">Déchiffrer vers un fichier</string>
-  <string name="title_import_keys">Importer des clés</string>
-  <string name="title_export_key">Sauvegarder la clé</string>
-  <string name="title_export_keys">Sauvegarder les clés</string>
-  <string name="title_key_not_found">La clé est introuvable</string>
+    <string name="title_import_keys">Importer des clés</string>
+    <string name="title_key_not_found">La clé est introuvable</string>
   <string name="title_send_key">Téléverser vers le serveur de clés</string>
   <string name="title_backup">Sauvegarder la clé</string>
   <string name="title_certify_key">Confirmer la clé</string>
   <string name="title_key_details">Détails sur la clé</string>
   <string name="title_help">Aide</string>
   <string name="title_log_display">Journal</string>
-  <string name="title_exchange_keys">Échanger des clés</string>
-  <string name="title_advanced_key_info">Avancées</string>
+    <string name="title_advanced_key_info">Avancées</string>
   <string name="title_delete_secret_key">Supprimer VOTRE clé « %s » ?</string>
   <string name="title_manage_my_keys">Gérer mes clés</string>
   <string name="title_alert_strip">Dépouiller cette sous-clé</string>
   <!--section-->
   <string name="section_user_ids">Identités</string>
-  <string name="section_security_token">Jeton de sécurité</string>
-  <string name="section_linked_system_contact">Contact système relié</string>
-  <string name="section_should_you_trust">Devriez-vous faire confiance à cette clé ?</string>
-  <string name="section_proof_details">Vérification de preuve</string>
-  <string name="section_keys">Sous-clés</string>
+    <string name="section_keys">Sous-clés</string>
   <string name="section_cloud_search">Recherche de clés</string>
-  <string name="section_cloud_search_summary">Serveur de clés</string>
-  <string name="section_passphrase_cache">Mots de passe et NIP</string>
+    <string name="section_passphrase_cache">Mots de passe et NIP</string>
   <string name="section_passphrase_cache_summary">Gestion</string>
   <string name="section_proxy_settings">Anonymat du réseau</string>
   <string name="section_proxy_settings_summary">Tor, paramètres du mandataire</string>
-  <string name="section_gui">Interface</string>
-  <string name="section_sync_settings">Synchronisation</string>
+    <string name="section_sync_settings">Synchronisation</string>
   <string name="section_sync_settings_summary">Mises à jour automatique des clés, liaison des contacts</string>
   <string name="section_experimental_features">Fonctions expérimentales</string>
   <string name="section_certify">Confirmer</string>
@@ -63,11 +52,9 @@
   <string name="section_current_expiry">Expiration actuelle</string>
   <string name="section_new_expiry">Nouvelle expiration</string>
   <!--button-->
-  <string name="btn_decrypt_verify_file">Déchiffrer, vérifier et enregistrer le fichier</string>
-  <string name="btn_encrypt_share_file">Chiffrer et partager le fichier</string>
+    <string name="btn_encrypt_share_file">Chiffrer et partager le fichier</string>
   <string name="btn_encrypt_save_file">Chiffrer et enregistrer un fichier</string>
-  <string name="btn_save_file">Enregistrer le fichier</string>
-  <string name="btn_save">Enregistrer</string>
+    <string name="btn_save">Enregistrer</string>
   <string name="btn_view_log">Visualiser le journal</string>
   <string name="btn_do_not_save">Annuler</string>
   <string name="btn_delete">Supprimer</string>
@@ -76,13 +63,11 @@
   <string name="btn_export_to_server">Téléverser vers le serveur de clés</string>
   <string name="btn_next">Suivant</string>
   <string name="btn_back">Retour</string>
-  <string name="btn_no">Non</string>
-  <string name="btn_match">Les empreintes correspondent</string>
+    <string name="btn_match">Les empreintes correspondent</string>
   <string name="btn_share_encrypted_signed">Chiffrer/signer et partager le texte</string>
   <string name="btn_copy_encrypted_signed">Chiffrer/signer et copier le texte</string>
   <string name="btn_paste_encrypted_signed">Chiffrer/signer et coller le texte</string>
-  <string name="btn_view_cert_key">Voir la clé de certification</string>
-  <string name="btn_create_key">Créer la clé</string>
+    <string name="btn_create_key">Créer la clé</string>
   <string name="btn_add_files">Ajouter des fichiers</string>
   <string name="btn_share_decrypted_text">Partager</string>
   <string name="btn_open_with">Ouvrir avec…</string>
@@ -94,8 +79,7 @@
   <string name="btn_add_email">Ajouter une adresse courriel supplémentaire</string>
   <string name="btn_unlock">Déverrouiller</string>
   <string name="btn_proceed">Continuer</string>
-  <string name="btn_add_keyserver">Ajouter</string>
-  <string name="btn_save_default">Enregistrer comme valeur par défaut</string>
+    <string name="btn_save_default">Enregistrer comme valeur par défaut</string>
   <string name="btn_saved">Enregistré</string>
   <string name="btn_not_matching">Ne correspondent pas</string>
   <!--Shortcut Strings-->
@@ -104,72 +88,45 @@
   <string name="cd_encrypt_files">Chiffrer des fichiers</string>
   <string name="cd_exchange_keys">Échanger des clés</string>
   <string name="cd_encrypt_text">Chiffrer du texte</string>
-  <string name="cd_share_nfc">Partager par CCP</string>
-  <!--menu-->
+    <!--menu-->
   <string name="menu_preferences">Paramètres</string>
   <string name="menu_help">Aide</string>
   <string name="menu_export_key">Sauvegarder la clé</string>
   <string name="menu_delete_key">Supprimer la clé</string>
-  <string name="menu_status">Visualiser l’état de la clé</string>
-  <string name="menu_manage_keys">Gérer mes clés</string>
+    <string name="menu_manage_keys">Gérer mes clés</string>
   <string name="menu_search">Rechercher</string>
   <string name="menu_open">Ouvrir</string>
   <string name="menu_read_clipboard">Lire du presse-papiers</string>
-  <string name="menu_nfc_preferences">Paramètres CCP</string>
-  <string name="menu_beam_preferences">Paramètres Beam</string>
-  <string name="menu_encrypt_to">Chiffrer vers…</string>
-  <string name="menu_select_all">Tout sélectionner</string>
-  <string name="menu_export_all_keys">Exporter toutes les clés</string>
-  <string name="menu_update_all_keys">Mettre toutes les clés à jour</string>
+    <string name="menu_encrypt_to">Chiffrer vers…</string>
+    <string name="menu_update_all_keys">Mettre toutes les clés à jour</string>
   <string name="menu_certify_fingerprint">Confirmer par une empreinte</string>
-  <string name="menu_certify_fingerprint_phrases">Confirmer par des phrases</string>
-  <string name="menu_share_log">Partager le journal</string>
+    <string name="menu_share_log">Partager le journal</string>
   <string name="menu_change_password">Changer le mot de passe</string>
   <string name="menu_advanced">Avancé</string>
-  <string name="menu_keyserver_add">Ajouter</string>
-  <!--label-->
-  <string name="label_message">Texte</string>
-  <string name="label_file">Fichier</string>
-  <string name="label_files">Fichier(s)</string>
-  <string name="label_file_colon">Fichier :</string>
-  <string name="label_no_passphrase">Aucun mot de passe</string>
+    <!--label-->
+    <string name="label_no_passphrase">Aucun mot de passe</string>
   <string name="label_passphrase">Mot de passe</string>
   <string name="label_pin">NIP</string>
   <string name="label_unlock">Déverrouillage…</string>
   <string name="label_passphrase_again">Répéter le mot de passe</string>
-  <string name="label_show_passphrase">Montrer le mot de passe</string>
-  <string name="label_algorithm">Algorithme</string>
-  <string name="label_algorithm_colon">Algorithme :</string>
-  <string name="label_ascii_armor">Fichier ASCII Armor</string>
-  <string name="label_file_ascii_armor">Activer l’armure ASCII</string>
-  <string name="label_write_version_header">Faire savoir aux autres que vous utilisez OpenKeychain</string>
-  <string name="label_write_version_header_summary">Ajoute « OpenKeychain v2.7 » aux signatures OpenPGP, aux cryptogrammes et aux clés exportées</string>
-  <string name="label_asymmetric_from">Signer avec :</string>
+    <string name="label_algorithm_colon">Algorithme :</string>
+    <string name="label_file_ascii_armor">Activer l’armure ASCII</string>
+    <string name="label_asymmetric_from">Signer avec :</string>
   <string name="label_to">Chiffrer vers</string>
   <string name="label_delete_after_encryption">Supprimer les fichiers après chiffrement</string>
-  <string name="label_delete_after_decryption">Supprimer le fichier après le déchiffrement</string>
-  <string name="label_encryption_algorithm">Algorithme de chiffrement</string>
-  <string name="label_hash_algorithm">Algorithme de hachage</string>
-  <string name="label_symmetric">Chiffrer avec un mot de passe</string>
+    <string name="label_symmetric">Chiffrer avec un mot de passe</string>
   <string name="label_passphrase_cache_subs">Mémoriser les mots de passe par sous-clés</string>
-  <string name="label_message_compression">Compression de texte</string>
-  <string name="label_file_compression">Compression des fichiers</string>
-  <string name="label_keyservers">Gérer les serveurs de clés OpenPGP</string>
-  <string name="label_key_id">ID de clé</string>
-  <string name="label_key_id_colon">ID de la clé :</string>
+    <string name="label_keyservers">Gérer les serveurs de clés OpenPGP</string>
+    <string name="label_key_id_colon">ID de la clé :</string>
   <string name="label_key_created">Créée le %s</string>
   <string name="label_key_created_just_now">Vient d’être créée</string>
   <string name="label_key_type">Type</string>
-  <string name="label_creation">Création</string>
-  <string name="label_creation_colon">Création :</string>
-  <string name="label_expiry">Expiration</string>
+    <string name="label_expiry">Expiration</string>
   <string name="label_valid_from">Valide à partir de</string>
   <string name="label_usage">Utilisation</string>
   <string name="label_revoked">Révoquée</string>
   <string name="label_insecure">Non fiable</string>
-  <string name="label_key_size">Taille de la clé</string>
-  <string name="label_ecc_curve">Courbe elliptique </string>
-  <string name="label_main_user_id">Identité principale</string>
+    <string name="label_main_user_id">Identité principale</string>
   <string name="label_name">Nom</string>
   <string name="label_email">Courriel</string>
   <string name="label_send_key">Publier la certification sur les serveurs de clés</string>
@@ -178,18 +135,15 @@
   <string name="label_keyservers_title">Serveurs de clés </string>
   <string name="label_keyserver_settings_hint">Faire glisser pour changer l’ordre, toucher pour modifier ou supprimer</string>
   <string name="label_selected_keyserver_title">Serveurs de clés sélectionnés</string>
-  <string name="label_selected_smartpgp_authority_title">Autorité sélectionnée</string>
-  <string name="label_preferred">préféré </string>
+    <string name="label_preferred">préféré </string>
   <string name="label_enable_compression">Activer la compression</string>
   <string name="label_enable_self_encrypt">Chiffrer avec la clé du signataire</string>
   <string name="label_encrypt_filenames">Chiffrer les nom de fichier</string>
-  <string name="label_hidden_recipients">Cacher les destinataires</string>
-  <string name="label_smartpgp_verify">SmartPGP : vérifier les certificats</string>
+    <string name="label_smartpgp_verify">SmartPGP : vérifier les certificats</string>
   <string name="label_smartpgp_verify_summary">Valider les certificats des jetons de sécurité SmartPGP par rapport à un ensemble d’autorités de confiance</string>
   <string name="label_smartpgp_roots">SmartPGP : autorités de confiance</string>
   <string name="label_verify_keyserver_connection">Tester la connexion</string>
-  <string name="label_only_trusted_keyserver">Serveur de clés de confiance uniquement</string>
-  <string name="label_enter_keyserver_url">URL</string>
+    <string name="label_enter_keyserver_url">URL</string>
   <string name="label_enter_keyserver_onion">URL .onion Tor facultative</string>
   <string name="label_keyserver_dialog_delete">Supprimer le serveur de clés</string>
   <string name="label_theme">Thème</string>
@@ -197,9 +151,7 @@
   <string name="label_smartpgp_authority_dialog_delete">Supprimer l’autorité</string>
   <string name="pref_keyserver">Serveurs de clés OpenPGP</string>
   <string name="pref_keyserver_summary">Rechercher les clés sur les serveurs de clés OpenPGP choisis (protocole HKP)</string>
-  <string name="pref_facebook">Facebook</string>
-  <string name="pref_facebook_summary">Rechercher des clés sur Facebook, par nom d’utilisateur</string>
-  <string name="pref_wkd">Annuaire de clés Web</string>
+    <string name="pref_wkd">Annuaire de clés Web</string>
   <string name="pref_wkd_summary">Chercher des clés en utilisant l’annuaire de clés Web (WKD)</string>
   <string name="label_sync_settings_keyserver_title">Mises à jour automatiques des clés</string>
   <string name="label_sync_settings_keyserver_summary_on">Tous les trois jours, les clés sont mises à jour à partir du serveur de clés préféré</string>
@@ -227,22 +179,14 @@
   <string name="orbot_install_dialog_install">Installer</string>
   <string name="orbot_install_dialog_content">Orbot doit être installé et doit relayer le trafic. Voulez-vous l’installer maintenant ?</string>
   <string name="orbot_install_dialog_cancel">Annuler</string>
-  <string name="orbot_install_dialog_ignore_tor">Ne pas utiliser Tor</string>
-  <!--StartOrbotDialogFragment strings-->
+    <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">Démarrer Orbot ?</string>
   <string name="orbot_start_dialog_content">Orbot ne semble pas être en fonction. Voulez-vous le lancer et vous connecter à Tor ?</string>
-  <string name="orbot_start_btn">Démarrer Orbot</string>
-  <string name="orbot_start_dialog_start">Démarrer Orbot</string>
+    <string name="orbot_start_dialog_start">Démarrer Orbot</string>
   <string name="orbot_start_dialog_cancel">Annuler</string>
-  <string name="orbot_start_dialog_ignore_tor">Ne pas utiliser Tor</string>
-  <string name="user_id_no_name"><![CDATA[<no name>]]></string>
+    <string name="user_id_no_name"><![CDATA[<no name>]]></string>
   <string name="none"><![CDATA[<none>]]></string>
-  <plurals name="n_keys">
-    <item quantity="one">1 clé</item>
-    <item quantity="many">%d clés</item>
-    <item quantity="other">%d clés</item>
-  </plurals>
-  <plurals name="n_keyservers">
+    <plurals name="n_keyservers">
     <item quantity="one">%d serveur de clés</item>
     <item quantity="many">%d serveurs de clés</item>
     <item quantity="other">%d serveurs de clés</item>
@@ -255,21 +199,8 @@
   <string name="secret_key">Clé secrète :</string>
   <!--choice-->
   <string name="choice_none">Aucune</string>
-  <string name="choice_15secs">15 s</string>
-  <string name="choice_1min">1 min</string>
-  <string name="choice_3mins">3 min</string>
-  <string name="choice_5mins">5 min</string>
-  <string name="choice_10mins">10 min</string>
-  <string name="choice_20mins">20 min</string>
-  <string name="choice_40mins">40 min</string>
-  <string name="choice_1hour">1 heure</string>
-  <string name="choice_2hours">2 heures</string>
-  <string name="choice_4hours">4 heures</string>
-  <string name="choice_8hours">8 heures</string>
-  <string name="choice_forever">pour toujours</string>
-  <string name="choice_select_cert">Choisir une clé</string>
-  <string name="filemanager_title_open">Ouvrir…</string>
-  <string name="rsa_2048">RSA 2048</string>
+    <string name="choice_select_cert">Choisir une clé</string>
+    <string name="rsa_2048">RSA 2048</string>
   <string name="rsa_2048_description_html">taille de fichier moindre, jugée sûre jusqu’à 2030</string>
   <string name="rsa_3072">RSA 3072</string>
   <string name="rsa_3072_description_html">recommandée, jugée sûre jusqu’à 2040</string>
@@ -287,8 +218,7 @@
   <string name="usage_sign">Signer</string>
   <string name="usage_encrypt">Chiffrer</string>
   <string name="usage_sign_and_encrypt">Signer et chiffrer</string>
-  <string name="error">Erreur</string>
-  <string name="error_message">Erreur : %s</string>
+    <string name="error_message">Erreur : %s</string>
   <string name="theme_auto">Automatique</string>
   <string name="theme_light">Clair</string>
   <string name="theme_dark">Sombre</string>
@@ -306,8 +236,7 @@
   <string name="passphrase_keyboard_hint_numeric">Passer au clavier numérique</string>
   <string name="passphrase_transfer">Saisir le code de transfert</string>
   <string name="passphrase_transfer_autocrypt">Pour importer ce message de configuration Autocrypt, saisir le code de transfert :</string>
-  <string name="pin_for">Saisir le NIP pour « %s »</string>
-  <string name="security_token_pin_for">Saisir le NIP pour accéder au jeton de sécurité pour « %s »</string>
+    <string name="security_token_pin_for">Saisir le NIP pour accéder au jeton de sécurité pour « %s »</string>
   <string name="security_token_nfc_text">Tenez le jeton de sécurité contre le logo CCP au dos de votre appareil.</string>
   <string name="security_token_nfc_wait">Garder le jeton de sécurité contre le dos de l’appareil</string>
   <string name="security_token_nfc_finished">Retirer le jeton de sécurité maintenant.</string>
@@ -316,36 +245,16 @@
   <string name="file_delete_confirmation">Les fichiers suivants seront détruits : %s</string>
   <string name="file_delete_successful">%1$d fichiers sur %2$d ont déjà été supprimés. %3$s</string>
   <string name="no_file_selected">Aucun fichier choisi.</string>
-  <string name="encrypt_sign_successful">Signé ou chiffré avec succès.</string>
-  <string name="encrypt_sign_clipboard_successful">Signé ou chiffré vers le presse-papiers avec succès.</string>
-  <string name="select_encryption_key">Choisir au moins une clé de chiffrement.</string>
+    <string name="select_encryption_key">Choisir au moins une clé de chiffrement.</string>
   <string name="error_no_encryption_or_signature_key">Choisir au moins une clé de chiffrement ou une clé de signature.</string>
-  <string name="specify_file_to_encrypt_to">Veuillez spécifier vers quel fichier chiffrer.\nAVERTISSEMENT : le fichier sera écrasé s’il existe.</string>
-  <string name="specify_file_to_decrypt_to">Veuillez spécifier vers quel fichier déchiffrer.\nAVERTISSEMENT : le fichier sera écrasé s’il existe.</string>
-  <string name="specify_backup_dest">Une sauvegarde excluant vos clés sera faite. Veuillez spécifier un fichier de destination.\nAVERTISSEMENT : le fichier sera écrasé s’il existe.</string>
-  <string name="specify_backup_dest_single">Cette clé sera partagée. Veuillez spécifier un fichier de destination.\nAVERTISSEMENT : le fichier sera écrasé s’il existe.</string>
-  <string name="specify_backup_dest_secret_single">Une sauvegarde complète de votre clé sera faite. Veuillez spécifier un fichier de destination.\nAVERTISSEMENT : le fichier sera écrasé s’il existe.</string>
-  <string name="specify_backup_dest_secret">Une sauvegarde complète de toutes les clés, la vôtre incluse, sera faite. Veuillez spécifier un fichier de destination.\nAVERTISSEMENT : le fichier sera écrasé s’il existe.</string>
-  <string name="key_deletion_confirmation_multi">Voulez-vous vraiment supprimer toutes les clés sélectionnées ?</string>
+    <string name="key_deletion_confirmation_multi">Voulez-vous vraiment supprimer toutes les clés sélectionnées ?</string>
   <string name="secret_key_deletion_confirmation">Après suppression, vous ne pourrez plus déchiffrer les messages/fichiers chiffrés avec cette clé, et vous perdrez toutes les confirmations faites avec elle.</string>
   <string name="public_key_deletetion_confirmation">Supprimer la clé « %s » ?</string>
-  <string name="also_export_secret_keys">Importer aussi les clés secrètes</string>
-  <string name="reinstall_openkeychain">Vous venez de rencontrer un bogue connu d’Android. Veuillez réinstaller OpenKeychain si voulez relier vos contacts avec des clés.</string>
-  <string name="alert_strip">Dépouiller cette sous-clé la rendra inutilisable sur cet appareil</string>
-  <string name="key_exported">1 clé exportée avec succès.</string>
-  <string name="keys_exported">%d clés exportées avec succès.</string>
-  <string name="no_keys_exported">Aucune clé exportée.</string>
-  <string name="key_creation_el_gamal_info">Note : seules les sous-clés prennent en charge ElGamal.</string>
-  <string name="key_not_found">La clé %08X est introuvable</string>
+    <string name="alert_strip">Dépouiller cette sous-clé la rendra inutilisable sur cet appareil</string>
+    <string name="key_not_found">La clé %08X est introuvable</string>
   <string name="authentication_subkey_not_found">Cette clé n’a pas de sous-clé d’authentification.</string>
-  <plurals name="bad_keys_encountered">
-    <item quantity="one">%d mauvaise clé secrète ignorée. Vous avez peut-être exporté avec l’option\n --export-secret-subkeys\nAssurez-vous d’exporter plutôt avec\n --export-secret-keys.</item>
-    <item quantity="many">%d mauvaises clés secrètes ignorées. Vous avez peut-être exporté avec l’option\n --export-secret-subkeys\nAssurez-vous d’exporter plutôt avec\n --export-secret-keys.</item>
-    <item quantity="other">%d mauvaises clés secrètes ignorées. Vous avez peut-être exporté avec l’option\n --export-secret-subkeys\nAssurez-vous d’exporter plutôt avec\n --export-secret-keys.</item>
-  </plurals>
-  <string name="list_empty">Cette liste est vide</string>
-  <string name="nfc_successful">clé envoyée par NFC Beam CCP avec succès |</string>
-  <string name="key_copied_to_clipboard">La clé a été copié dans le presse-papiers</string>
+    <string name="list_empty">Cette liste est vide</string>
+    <string name="key_copied_to_clipboard">La clé a été copié dans le presse-papiers</string>
   <string name="fingerprint_copied_to_clipboard">L’empreinte a été copiée dans le presse-papiers</string>
   <string name="select_key_to_certify">Veuillez sélectionner une clé à utiliser pour la confirmation</string>
   <string name="text_copied_to_clipboard">La texte a été copié dans le presse-papiers</string>
@@ -355,30 +264,14 @@
          they will be put after "error_message", e.g. "Error: file not found"-->
   <string name="error_file_delete_failed">n’ont pas été supprimés. Les supprimer maintenant ?</string>
   <string name="error_file_added_already">%s a déjà été supprimé.</string>
-  <string name="error_file_not_found">fichier introuvable</string>
-  <string name="error_bad_data">Les données sont mauvaises</string>
-  <string name="error_no_secret_key_found">aucune clé secrète adéquate n’a été trouvée</string>
-  <string name="error_external_storage_not_ready">le stockage externe n’est pas prêt</string>
-  <string name="error_key_size_minimum512bit">la taille de la clé doit être d’au moins 512 bits</string>
-  <string name="error_unknown_algorithm_choice">choix d’algorhitme inconnu</string>
-  <string name="error_user_id_no_email">aucune adresse courriel trouvée</string>
-  <string name="error_key_needs_a_user_id">au moins une identité est nécessaire</string>
-  <string name="error_no_signature_passphrase">aucun mot de passé n’a été donné</string>
-  <string name="error_no_signature_key">aucune clé de signature n’a été donnée</string>
-  <string name="error_invalid_data">Il n’y a aucun contenu OpenPGP chiffré ou signé valide</string>
-  <string name="error_integrity_check_failed">la vérification de l’intégrité a échoué. Les données ont été modifiées</string>
-  <string name="error_wrong_passphrase">mot de passe erroné</string>
-  <string name="error_could_not_extract_private_key">impossible d’extraire la clé privée</string>
+    <string name="error_bad_data">Les données sont mauvaises</string>
+    <string name="error_invalid_data">Il n’y a aucun contenu OpenPGP chiffré ou signé valide</string>
+    <string name="error_could_not_extract_private_key">impossible d’extraire la clé privée</string>
   <string name="error_wrong_security_token">ce jeton de sécurité ne contient pas la clé exigée</string>
   <!--errors without preceding Error:-->
-  <string name="error_jelly_bean_needed">Il vous faut Android 4.1 pour utiliser la fonction CCP Beam d’Android</string>
-  <string name="error_nfc_needed">La CCP doit être activée</string>
-  <string name="error_beam_needed">Beam doit être activé</string>
-  <string name="error_nothing">Rien encore à afficher.</string>
+    <string name="error_nothing">Rien encore à afficher.</string>
   <string name="error_nothing_import">Aucune clé n’a été trouvée</string>
-  <string name="error_contacts_key_id_missing">Échec de récupération de l’ID de clé des contacts</string>
-  <string name="error_generic_report_bug">Une erreur générique est survenue, veuillez créer un nouveau relevé de bogue pour OpenKeychain.</string>
-  <string name="error_denied_storage_permission">Impossible de lire les fichiers du support de stockage, car l’accès a été refusé</string>
+    <string name="error_denied_storage_permission">Impossible de lire les fichiers du support de stockage, car l’accès a été refusé</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">Non signé</string>
   <string name="decrypt_result_invalid_signature">La signature est invalide</string>
@@ -402,14 +295,10 @@
   <string name="progress_done">Terminé.</string>
   <string name="progress_cancel">Annuler</string>
   <string name="progress_cancelling">annulation…</string>
-  <string name="progress_downloading">téléchargement…</string>
-  <string name="progress_saving">enregistrement…</string>
+    <string name="progress_saving">enregistrement…</string>
   <string name="progress_importing">importation…</string>
-  <string name="progress_benchmarking">test de performance…</string>
-  <string name="progress_revoking_uploading">Révocation et téléversement de la clé…</string>
-  <string name="progress_updating">Mise à jour des clés…</string>
-  <string name="progress_exporting">exportation…</string>
-  <string name="progress_uploading">téléversement…</string>
+    <string name="progress_revoking_uploading">Révocation et téléversement de la clé…</string>
+    <string name="progress_uploading">téléversement…</string>
   <string name="progress_building_key">assemblage de la clé…</string>
   <string name="progress_building_master_key">assemblage du trousseau principal…</string>
   <string name="progress_generating_rsa">génération d’une nouvelle clé RSA…</string>
@@ -426,78 +315,47 @@
   <string name="progress_modify_primaryuid">changement de l’ID utilisateur principal…</string>
   <string name="progress_modify_subkeychange">modification des sous-clés…</string>
   <string name="progress_modify_subkeyrevoke">révocation des sous-clés…</string>
-  <string name="progress_modify_subkeystrip">dépouillement des sous-clés…</string>
-  <string name="progress_modify_subkeyadd">ajout des sous-clés…</string>
+    <string name="progress_modify_subkeyadd">ajout des sous-clés…</string>
   <string name="progress_modify_passphrase">modification du mot passe…</string>
   <string name="progress_modify_pin">changement du NIP…</string>
   <string name="progress_modify_admin_pin">changement du NIP d’admin…</string>
   <string name="progress_exporting_key">exportation de la clé…</string>
-  <string name="progress_exporting_keys">exportation des clés…</string>
-  <string name="progress_start">préparation de l’opération…</string>
-  <string name="progress_extracting_signature_key">extraction de la clé de signature…</string>
-  <string name="progress_extracting_key">extraction de la clé…</string>
-  <string name="progress_preparing_streams">préparation des flux…</string>
+    <string name="progress_extracting_signature_key">extraction de la clé de signature…</string>
+    <string name="progress_preparing_streams">préparation des flux…</string>
   <string name="progress_encrypting">chiffrement des données…</string>
-  <string name="progress_prepare_decryption">Début du déchiffrement…</string>
-  <string name="progress_decrypting">Déchiffrement des données…</string>
+    <string name="progress_decrypting">Déchiffrement des données…</string>
   <string name="progress_preparing_signature">préparation de la signature…</string>
   <string name="progress_processing_signature">traitement de la signature…</string>
   <string name="progress_generating_signature">génération de la signature…</string>
   <string name="progress_verifying_signature">vérification de la signature…</string>
   <string name="progress_signing">signature…</string>
-  <string name="progress_certifying">certification…</string>
-  <string name="progress_reading_data">lecture des données…</string>
-  <string name="progress_finding_key">recherche de la clé…</string>
-  <string name="progress_decompressing_data">décompression des données…</string>
-  <string name="progress_verifying_integrity">vérification de l’intégrité…</string>
-  <string name="progress_deleting_securely">suppression sécurisée de « %s »…</string>
-  <string name="progress_deleting">suppression des clés…</string>
+    <string name="progress_reading_data">lecture des données…</string>
+    <string name="progress_deleting">suppression des clés…</string>
   <string name="progress_update_trust">mise à jour des infos de confiance…</string>
   <string name="progress_verifying_keyserver_connection">vérification de la connexion…</string>
   <string name="progress_starting_orbot">Démarrage d’Orbot…</string>
   <!--action strings-->
-  <string name="hint_cloud_search_hint">Chercher par nom, adresse courriel…</string>
-  <!--key bit length selections-->
-  <string name="key_size_2048">2048</string>
-  <string name="key_size_3072">3072</string>
-  <string name="key_size_4096">4096</string>
-  <string name="key_size_8192">8192</string>
-  <string name="key_size_custom">Taille de clé personnalisée</string>
-  <string name="key_size_custom_info">Taper la longueur de la clé personnalisée (bits) :</string>
-  <string name="key_size_custom_info_rsa">La longueur d’une clé RSA doit être supérieure à 1024 et au plus 16 384. Elle doit aussi être un multiple de 8.</string>
-  <string name="key_size_custom_info_dsa">La longueur d’une clé DSA doit être comprise entre 512 et 1024 inclusivement. Elle doit aussi être un multiple de 64.</string>
-  <!--elliptic curve names-->
-  <string name="key_curve_nist_p256">NIST P-256</string>
-  <string name="key_curve_nist_p384">NIST P-384</string>
-  <string name="key_curve_nist_p521">NIST P-521</string>
-  <!--not in for now, see SaveKeyringParcel
-    <string name="key_curve_bp_p256">"Brainpool P-256"</string>
-    <string name="key_curve_bp_p384">"Brainpool P-384"</string>
-    <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
+    <!--key bit length selections-->
+    <!--elliptic curve names-->
+    <!--not in for now, see SaveKeyringParcel
+      <string name="key_curve_bp_p256">"Brainpool P-256"</string>
+      <string name="key_curve_bp_p384">"Brainpool P-384"</string>
+      <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
-  <string name="compression_fast">rapide</string>
-  <string name="compression_very_slow">très lent</string>
-  <!--Help-->
+    <!--Help-->
   <string name="help_tab_start">Commencer</string>
   <string name="help_tab_faq">FAQ</string>
   <string name="help_tab_wot">Confirmation de la clé</string>
-  <string name="help_tab_nfc_beam">Faisceau CCP</string>
-  <string name="help_tab_changelog">Journal des changements</string>
+    <string name="help_tab_changelog">Journal des changements</string>
   <string name="help_tab_license">Licences</string>
   <string name="help_tab_about">À propos de l’appli</string>
   <string name="help_about_version">Version :</string>
-  <string name="help_tab_donations">Faire un don</string>
-  <!--Import-->
-  <string name="import_tab_keyserver">Serveur de clés</string>
-  <string name="import_tab_cloud">Recherche de clés</string>
-  <string name="import_tab_direct">Fichier/presse-papiers</string>
-  <string name="import_tab_qr_code">Code QR/CCP</string>
-  <string name="import_found_keys">%1$d clés trouvées</string>
+    <!--Import-->
+    <string name="import_found_keys">%1$d clés trouvées</string>
   <string name="import_qr_code_wrong">Le format du code QR n’est pas pris en charge (spécification de format : https://github.com/open-keychain/open-keychain/wiki/QR-Codes)</string>
   <string name="import_qr_code_fp">L’empreinte est malformée ou trop courte</string>
   <string name="import_qr_code_too_short_fingerprint">L’empreinte est trop courte</string>
-  <string name="import_qr_code_button">Balayer un code QR</string>
-  <string name="import_qr_code_text">Placez votre appareil photo au-dessus du code QR</string>
+    <string name="import_qr_code_text">Placez votre appareil photo au-dessus du code QR</string>
   <string name="btn_import">Importer</string>
   <string name="btn_import_keys">Importer toutes les clés</string>
   <string name="btn_view_list">Visualiser la liste</string>
@@ -567,9 +425,7 @@
   <!--Revoke result toast (snackbar)-->
   <string name="revoke_ok">clé révoquée avec succès.</string>
   <string name="revoke_fail">Erreur de révocation de la clé</string>
-  <string name="revoke_nothing">Rien à révoquer.</string>
-  <string name="revoke_cancelled">L’opération de révocation a été annulée.</string>
-  <!--Certify result toast-->
+    <!--Certify result toast-->
   <plurals name="certify_keys_ok">
     <item quantity="one">clé%2$s confirmée avec succès</item>
     <item quantity="many">%1$d clés%2$s confirmées avec succès</item>
@@ -592,36 +448,24 @@
   <string name="intent_send_decrypt">Déchiffrer avec OpenKeychain</string>
   <string name="intent_autocrypt_setup">Importer un message de configuration Autocrypt</string>
   <!--Remote API-->
-  <string name="api_settings_show_info">Afficher les informations avancées</string>
-  <string name="api_settings_hide_info">Masquer les informations avancées</string>
-  <string name="api_settings_no_key">Aucune clé choisie</string>
-  <string name="api_settings_select_key">Choisir une clé</string>
-  <string name="api_settings_create_key">Créer une nouvelle clé</string>
+    <string name="api_settings_create_key">Créer une nouvelle clé</string>
   <string name="api_settings_save">Enregistrer</string>
-  <string name="api_settings_cancel">Annuler</string>
-  <string name="api_settings_revoke">Révoquer l’accès</string>
-  <string name="api_settings_start">Lancer l’application</string>
-  <string name="api_settings_package_name">Nom du paquet</string>
+    <string name="api_settings_revoke">Révoquer l’accès</string>
+    <string name="api_settings_package_name">Nom du paquet</string>
   <string name="api_settings_package_certificate">SHA-256 du certificat du paquet</string>
   <string name="api_settings_advanced">Avancés</string>
   <string name="api_settings_allowed_keys">clés autorisées</string>
-  <string name="api_settings_settings">Paramètres</string>
-  <string name="api_register_title">Autoriser l’accès à OpenKeychain ?</string>
+    <string name="api_register_title">Autoriser l’accès à OpenKeychain ?</string>
   <string name="api_register_text">%s demande d’utiliser OpenKeychain comme fournisseur de cryptographie. Une autorisation vous sera encore demandée avant que l’appli puisse utiliser l’une de vos clés pour le déchiffrement.\n\nVous pourrez révoquer l’accès ultérieurement dans l’écran « Applis » d’OpenKeychain.</string>
-  <string name="api_register_allow">Autoriser l’accès</string>
-  <string name="api_register_disallow">Refuser l’accès</string>
-  <string name="api_register_error_select_key">Veuillez choisir une clé</string>
-  <string name="api_select_pub_keys_missing_text">Aucune clé n’a été trouvée pour ces adresses courriel :</string>
+    <string name="api_select_pub_keys_missing_text">Aucune clé n’a été trouvée pour ces adresses courriel :</string>
   <string name="api_select_pub_keys_dublicates_text">Plus d’une clé existe pour ces adresses courriel :</string>
   <string name="api_select_pub_keys_text">Veuillez revoir la liste des destinataires</string>
   <string name="api_select_pub_keys_text_no_user_ids">Veuillez choisir les destinataires</string>
   <string name="api_error_wrong_signature">La vérification de la signature a échoué. Avez-vous installé cette appli à partir d’une source différente ? Si vous êtes sûr que ce n’est pas une attaque, révoquez l’enregistrement de cette appli dans OpenKeychain et enregistrez-la à nouveau.</string>
   <string name="api_select_sign_key_text">Veuillez choisir une de vos clés existantes ou en créer une nouvelle.</string>
-  <string name="api_select_keys_text">Aucune clé autorisée n’est capable de déchiffrer le contenu. Veuillez choisir les clés autorisées.</string>
-  <!--Share-->
+    <!--Share-->
   <string name="share_qr_code_dialog_title">Partager par un code QR</string>
-  <string name="share_nfc_dialog">Partager par CCP</string>
-  <!--retry upload dialog-->
+    <!--retry upload dialog-->
   <string name="retry_up_dialog_title">Échec de téléversement</string>
   <string name="retry_up_dialog_message">Échec de téléversement. Souhaitez-vous réessayer  ?</string>
   <string name="retry_up_dialog_btn_reupload">Réessayer l’opération</string>
@@ -641,38 +485,29 @@
     <item quantity="other">%d clés choisies</item>
   </plurals>
   <string name="key_list_empty_text1">Aucune clé n’a été trouvée</string>
-  <string name="key_list_filter_show_all">Afficher toutes les clés</string>
-  <string name="key_list_filter_show_certified">N’afficher que les clés confirmées</string>
-  <string name="key_list_fab_qr_code">Balayer un code QR</string>
+    <string name="key_list_fab_qr_code">Balayer un code QR</string>
   <string name="key_list_fab_search">Recherche de clés</string>
   <string name="key_list_fab_import">Importer d’un fichier</string>
   <string name="key_list_dummy_title">Vous n’avez pas encore de clé</string>
   <string name="key_list_dummy_subtitle">Cliquer ici pour en créer ou en importer une.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Modifier</string>
-  <string name="key_view_action_encrypt">Chiffrer un texte</string>
-  <string name="key_view_action_encrypt_files">fichiers</string>
-  <string name="key_view_action_certify">Confirmer la clé</string>
+    <string name="key_view_action_certify">Confirmer la clé</string>
   <string name="key_view_action_update">Mise à jour en provenance du serveur de clés</string>
   <string name="key_view_action_share_with">Partager avec…</string>
   <string name="key_view_action_share_ssh_with">Partager comme clé publique SSH avec…</string>
-  <string name="key_view_action_share_nfc">Partager par CCP</string>
-  <string name="key_view_action_upload">Publier sur le serveur de clés</string>
-  <string name="key_view_tab_main">Infos principales</string>
-  <string name="key_view_tab_start">Début</string>
+    <string name="key_view_action_upload">Publier sur le serveur de clés</string>
+    <string name="key_view_tab_start">Début</string>
   <string name="key_view_tab_share">Partager</string>
   <string name="key_view_tab_keys">Sous-clés</string>
-  <string name="key_view_tab_certs">Certificats</string>
-  <string name="user_id_info_revoked_title">Révoquée</string>
+    <string name="user_id_info_revoked_title">Révoquée</string>
   <string name="user_id_info_revoked_text">Cette identité a été révoquée par le propriétaire de la clé. Elle n’est plus valide.</string>
   <string name="user_id_info_certified_title">Confirmée</string>
   <string name="user_id_info_certified_text">Vous avez confirmé l’identité.</string>
   <string name="user_id_info_uncertified_title">Non confirmée</string>
   <string name="user_id_info_uncertified_text">Cette identité n’a pas encore été confirmée. Vous ne pouvez pas être certain si l’identité correspond vraiment à une personne spécifique.</string>
   <!--Key trust-->
-  <string name="key_trust_no_cloud_evidence">Aucune preuve en provenance d’Internet sur la fiabilité de cette clé.</string>
-  <string name="key_trust_start_cloud_search">Lancer la recherche</string>
-  <!--Edit key-->
+    <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Changer le mot de passe</string>
   <string name="edit_key_action_add_identity">Ajouter une identité</string>
   <string name="edit_key_action_add_subkey">Ajouter une sous-clé</string>
@@ -706,12 +541,9 @@
   <string name="create_key_final_text">Vous avez saisie l’identité suivante :</string>
   <string name="create_key_final_robot_text">Créer une clé peut prendre du temps, prenez donc un café en attendant…</string>
   <string name="create_key_final_email_valid_warning">De nombreuses applications fonctionnent mieux lorsqu’on leur fournit des clés qui ne contiennent que des adresses courriel valides</string>
-  <string name="create_key_rsa">(3 sous-clés, RSA, 4096 bits)</string>
-  <string name="create_key_custom">(configuration personnalisée de la clé)</string>
-  <string name="create_key_name_text">Choisissez un nom associé à cette clé. Ce peut être un nom complet, p. ex. « Maxime Tremblay », ou un pseudo, p. ex. « Maxou ».</string>
+    <string name="create_key_name_text">Choisissez un nom associé à cette clé. Ce peut être un nom complet, p. ex. « Maxime Tremblay », ou un pseudo, p. ex. « Maxou ».</string>
   <string name="create_key_email_text">Saisissez votre adresse courriel principale utilisée pour les communications sécurisées.</string>
-  <string name="create_key_passphrase_text">Choisissez un mot de passe fort. Il protège votre clé en cas de vol de votre appareil.</string>
-  <string name="create_key_hint_full_name">Nom complet ou pseudo</string>
+    <string name="create_key_hint_full_name">Nom complet ou pseudo</string>
   <string name="create_key_edit">Changer la configuration de la clé</string>
   <string name="create_key_add_email">Ajouter une adresse courriel</string>
   <string name="create_key_add_email_text">Des adresses courriel supplémentaires sont aussi associées à cette clé et peuvent être utilisées pour des communications sécurisées.</string>
@@ -722,8 +554,7 @@
   <string name="create_key_yubi_key_pin">NIP</string>
   <string name="create_key_yubi_key_admin_pin">NIP d’admin.</string>
   <string name="create_key_yubi_key_pin_repeat">Répéter le NIP</string>
-  <string name="create_key_yubi_key_pin_not_correct">Le NIP est erroné</string>
-  <string name="create_key_yubi_key_pin_too_short">Le NIP doit comporter au moins 6 chiffres</string>
+    <string name="create_key_yubi_key_pin_too_short">Le NIP doit comporter au moins 6 chiffres</string>
   <string name="create_key_yubi_key_pin_insecure">Veuillez choisir un NIP sécurisé, pas 000000, 123456 ou autres combinaisons semblables (les 20 NIP les plus choisis ne sont pas autorisés)</string>
   <string name="create_key_yubi_key_algorithm_text">Veuillez choisir un algorithme pour chaque clé.</string>
   <string name="create_key_yubi_key_algorithm_sign_text">Clé de signature</string>
@@ -733,8 +564,7 @@
   <string name="view_key_my_key">Ma clé</string>
   <string name="view_key_verified">clé confirmée</string>
   <string name="view_key_unverified">Non confirmée : balayez un code QR pour confirmer la clé</string>
-  <string name="view_key_fragment_no_system_contact">&lt;aucun&gt;</string>
-  <!--Add/Edit keyserver-->
+    <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Ajouter un serveur de clés</string>
   <string name="edit_keyserver_dialog_title">Modifier le serveur de clés</string>
   <string name="add_keyserver_connection_verified">La connexion a été vérifiée !</string>
@@ -751,23 +581,13 @@
   <string name="nav_keys">clés</string>
   <string name="nav_encrypt_decrypt">Chiffrer/déchiffrer</string>
   <string name="nav_apps">Applis</string>
-  <string name="drawer_open">Ouvrir le tiroir de navigation</string>
-  <string name="drawer_close">Fermer le tiroir de navigation</string>
-  <string name="my_keys">Mes clés</string>
+    <string name="my_keys">Mes clés</string>
   <string name="nav_backup">Sauvegarder/Restaurer</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Saisir le texte</string>
   <!--certs-->
-  <string name="cert_default">valeur par défaut</string>
-  <string name="cert_none">aucun</string>
-  <string name="cert_casual">rapide</string>
-  <string name="cert_positive">positif</string>
-  <string name="cert_revoke">révoqué</string>
-  <string name="cert_verify_ok">Valider</string>
-  <string name="cert_verify_failed">échec</string>
-  <string name="cert_verify_error">erreur</string>
-  <string name="cert_verify_unavailable">clé non disponible</string>
-  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+    <string name="cert_none">aucun</string>
+    <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <string name="msg_internal_error">Erreur interne</string>
   <string name="msg_cancelled">L’opération a été annulée</string>
   <!--Import Public log entries-->
@@ -778,8 +598,7 @@
   <string name="msg_ip_encode_fail">Échec d’opération causé par une erreur d’encodage</string>
   <string name="msg_ip_error_io_exc">Échec d’opération causé par une erreur d’E/S</string>
   <string name="msg_ip_error_op_exc">Échec d’opération causé par une erreur de base de données</string>
-  <string name="msg_ip_error_remote_ex">Échec d’opération causé par une erreur interne</string>
-  <string name="msg_ip">Importation du trousseau public %s</string>
+    <string name="msg_ip">Importation du trousseau public %s</string>
   <string name="msg_ip_fingerprint_error">L’empreinte de la clé d’importation ne correspond pas à celle attendue</string>
   <string name="msg_ip_fingerprint_ok">Vérification de l’empreinte est correcte</string>
   <string name="msg_ip_insert_keyring">Encodage des données du trousseau</string>
@@ -810,8 +629,7 @@
   <string name="msg_ip_subkey">Traitement de la sous-clé %s</string>
   <string name="msg_ip_subkey_expired">La sous-clé a expiré le %s</string>
   <string name="msg_ip_subkey_expires">La sous-clé expire le %s</string>
-  <string name="msg_ip_subkey_flags_unspecified">Drapeaux de sous-clé : non précisés (« tout » sera supposé)</string>
-  <string name="msg_ip_subkey_flags_cesa">Drapeaux de sous-clé : certifier, chiffrer, signer, authentifier</string>
+    <string name="msg_ip_subkey_flags_cesa">Drapeaux de sous-clé : certifier, chiffrer, signer, authentifier</string>
   <string name="msg_ip_subkey_flags_cesx">Drapeaux de sous-clé : certifier, chiffrer, signer</string>
   <string name="msg_ip_subkey_flags_cexa">Drapeaux de sous-clé : certifier, chiffrer, authentifier</string>
   <string name="msg_ip_subkey_flags_cexx">Drapeaux de sous-clé : certifier, chiffrer</string>
@@ -868,11 +686,9 @@
   <string name="msg_ip_uat_classifying">Organisation des attributs utilisateur</string>
   <string name="msg_ip_uat_revoked">L’attribut utilisateur est révoqué</string>
   <string name="msg_is_bad_type_public">Tentative d’importer le trousseau public comme secret. C’est un bogue, veuillez remplir un relevé.</string>
-  <string name="msg_is_bad_type_uncanon">Tentative d’importation d’un trousseau sans canonicalisation. C’est un bogue, veuillez remplir un relevé.</string>
-  <!--Import Secret log entries-->
+    <!--Import Secret log entries-->
   <string name="msg_is">Importation de la clé secrète %s</string>
-  <string name="msg_is_db_exception">Erreur de base de données</string>
-  <string name="msg_is_importing_subkeys">Traitement des sous-clés secrètes</string>
+    <string name="msg_is_importing_subkeys">Traitement des sous-clés secrètes</string>
   <string name="msg_is_error_io_exc">Erreur d’encodage du trousseau</string>
   <string name="msg_is_merge_public">Fusion des données importées dans le trousseau public existant</string>
   <string name="msg_is_merge_secret">Fusion des données importées dans le trousseau secret existant</string>
@@ -908,8 +724,7 @@
   <string name="msg_kc_sub_bad_err">Suppression du mauvais certificat de liaison de la sous-clé</string>
   <string name="msg_kc_sub_bad_local">Suppression du certificat de liaison de la sous-clé ayant le drapeau « local »</string>
   <string name="msg_kc_sub_bad_keyid">L’ID de l’émetteur de la liaison de la sous-clé ne correspond pas</string>
-  <string name="msg_kc_sub_bad_time">Suppression du certificat de liaison de la sous-clé ayant une estampille temporelle dans le futur</string>
-  <string name="msg_kc_sub_bad_time_early">L’estampille temporelle du certificat de liaison de la sous-clé est antérieur à celui de la clé</string>
+    <string name="msg_kc_sub_bad_time_early">L’estampille temporelle du certificat de liaison de la sous-clé est antérieur à celui de la clé</string>
   <string name="msg_kc_sub_bad_type">Type de certificat de sous-clé inconnu : %s</string>
   <string name="msg_kc_sub_dup">Suppression du certificat redondant de liaison de sous-clé</string>
   <string name="msg_kc_sub_primary_bad">Suppression du certificat de liaison de la sous-clé à cause d’un certificat de liaison principal invalide</string>
@@ -1123,11 +938,7 @@
   <string name="msg_vl_error_wrong_key">Le message n’a pas été signé avec la clé attendue</string>
   <string name="msg_vl_error_no_signature">Il manque des données de signature</string>
   <string name="msg_vl_error_missing_literal">Aucune liste de signatures dans le paquet de données littérales signées</string>
-  <string name="msg_vl_clear_meta_file">Nom de fichier : %s</string>
-  <string name="msg_vl_clear_meta_mime">Type MIME : %s</string>
-  <string name="msg_vl_clear_meta_time">Heure de modification : %s</string>
-  <string name="msg_vl_clear_meta_size">Taille de fichier : %s</string>
-  <string name="msg_vl_clear_signature_check">Vérification des données de signature</string>
+    <string name="msg_vl_clear_signature_check">Vérification des données de signature</string>
   <string name="msg_vl_error_integrity_check">Erreur de vérification de l’intégrité</string>
   <string name="msg_vl_ok">Valider</string>
   <!--Messages for SignEncrypt operation-->
@@ -1148,8 +959,7 @@
   <string name="msg_pse_error_key_sign">La clé de signature choisie ne peut pas signer les données</string>
   <string name="msg_pse_error_sign_key">Erreur de récupération de la clé de signature</string>
   <string name="msg_pse_error_nfc">Erreur de données CCP.</string>
-  <string name="msg_pse_error_no_passphrase">Aucun mot de passe été indiqué</string>
-  <string name="msg_pse_error_pgp">Erreur interne OpenPGP</string>
+    <string name="msg_pse_error_pgp">Erreur interne OpenPGP</string>
   <string name="msg_pse_error_sig">Une exception de signature OpenPGP a été rencontrée</string>
   <string name="msg_pse_error_unlock">Erreur inconnue de déverrouillage de la clé</string>
   <string name="msg_pse_error_key_not_allowed">La clé sélectionnée pour le chiffrement n’est pas autorisée</string>
@@ -1275,8 +1085,7 @@
   <string name="msg_bench_enc_time">Durée de chiffrement : %ss</string>
   <string name="msg_bench_enc_time_avg">Durée moyenne de chiffrement de 5 Mo : %ss</string>
   <string name="msg_bench_dec_time">Durée de déchiffrement : %ss</string>
-  <string name="msg_bench_dec_time_avg">Durée moyenne de déchiffrement de 5 Mo : %ss</string>
-  <string name="msg_bench_s2k_100ms_its">Nombre d’itérations S2K pour 100 ms : %s</string>
+    <string name="msg_bench_s2k_100ms_its">Nombre d’itérations S2K pour 100 ms : %s</string>
   <string name="msg_bench_s2k_for_it">Durée pour %1$s itérations SHA1 S2K : %2$s ms</string>
   <string name="msg_bench_success">Le test de performance est terminé</string>
   <string name="msg_data">Traitement des données d’entrée</string>
@@ -1313,10 +1122,7 @@
   <string name="msg_get_no_enabled_source">Vous devez activer au moins une source de téléchargement</string>
   <string name="msg_download_query_failed">Une erreur est survenue lors de la recherche de clés.</string>
   <!--Messages for Mime parsing operation-->
-  <string name="msg_mime_parsing_start">Analyse de la structure MIME</string>
-  <string name="msg_mime_parsing_error">Échec d’analyse MIME</string>
-  <string name="msg_mime_parsing_success">Analyse MIME réussie</string>
-  <!--PassphraseCache-->
+    <!--PassphraseCache-->
   <string name="passp_cache_notif_touch_to_clear">Toucher pour effacer les mots de passe.</string>
   <plurals name="passp_cache_notif_n_keys">
     <item quantity="one">%d mot de passe a été enregistré</item>
@@ -1330,105 +1136,42 @@
   <string name="keyserver_sync_orbot_notif_title">Synchroniser à partir des serveurs, Orbot exigé</string>
   <string name="keyserver_sync_orbot_notif_msg">Toucher pour démarrer Orbot</string>
   <string name="keyserver_sync_orbot_notif_start">Lancer Orbot</string>
-  <string name="keyserver_sync_orbot_notif_ignore">Directe</string>
-  <!--First Time-->
-  <string name="first_time_text1">Reprenez le contrôle de votre vie privée avec OpenKeychain |</string>
-  <string name="first_time_create_key">Créer ma clé</string>
+    <!--First Time-->
+    <string name="first_time_create_key">Créer ma clé</string>
   <string name="first_time_import_key">Importer la clé d’un fichier</string>
   <string name="first_time_security_token">Utiliser un jeton de sécurité</string>
   <string name="first_time_security_token_subtitle">(Fidesmo, YubiKey NEO, SIGILANCE, …)</string>
   <string name="first_time_skip">Ignorer la configuration</string>
-  <string name="first_time_blank_security_token">Voulez-vous utiliser ce jeton de sécurité vide avec OpenKeychain ?\n\nVeuillez retirer le jeton de sécurité maintenant, vous serez informé quand elle sera requis de nouveau</string>
-  <string name="first_time_blank_security_token_yes">Utiliser ce jeton de sécurité</string>
-  <string name="backup_text">Les sauvegardes incluant vos propres clés ne doivent jamais être partagées avec d’autres personnes</string>
+    <string name="backup_text">Les sauvegardes incluant vos propres clés ne doivent jamais être partagées avec d’autres personnes</string>
   <string name="backup_all">Sauvegarde complète (chiffrée)</string>
   <string name="backup_public_keys">N’exporter que les clés des contacts</string>
   <string name="backup_section">Sauvegarde</string>
   <string name="restore_section">Restaurer</string>
   <!--unsorted-->
-  <string name="section_certifier_id">Certificateur</string>
-  <string name="section_cert">Détails du certificat</string>
-  <string name="label_user_id">identité</string>
-  <string name="unknown_uid"><![CDATA[<unknown>]]></string>
-  <string name="empty_certs">Aucun certificat pour cette clé</string>
-  <string name="certs_text">Seuls les auto-certificats et les certificats validés créés avec vos clés sont affichés ici.</string>
-  <string name="section_uids_to_certify">Identités pour</string>
+    <string name="section_uids_to_certify">Identités pour</string>
   <string name="certify_text">Les clés que vous importez contiennent des « identités » : des noms et des adresses courriel. Pour la confirmation, choisissez exactement celles qui correspondent à ce que vous attendiez.</string>
   <string name="certify_fingerprint_text">Comparez l’empreinte, caractère par caractère, à celle affichée sur l’appareil de l’autre personne.</string>
-  <string name="label_revocation">Raison de la révocation</string>
-  <string name="label_cert_type">Type</string>
-  <string name="error_key_not_found">La clé est introuvable</string>
+    <string name="error_key_not_found">La clé est introuvable</string>
   <string name="error_key_processing">Erreur de traitement de la clé.</string>
   <string name="key_stripped">dépouillée</string>
   <string name="key_divert">sur le jeton de sécurité</string>
-  <string name="key_no_passphrase">aucun mot de passe</string>
-  <string name="key_unavailable">non disponible</string>
-  <string name="secret_cannot_multiple">Vos propres clés ne peuvent être supprimées qu’individuellement</string>
-  <string name="title_view_cert">Voir les détails du certificat</string>
-  <string name="unknown">inconnu</string>
-  <string name="can_sign_not">impossible de signer</string>
-  <string name="error_no_encrypt_subkey">Aucune sous-clé de chiffrement n’est disponible</string>
-  <string name="contact_show_key">Afficher la clé (%s)</string>
-  <string name="swipe_to_update">Glisser vers le bas pour mettre à jour à partir du serveur de clés</string>
-  <string name="error_no_file_selected">Choisir au moins un fichier à chiffrer.</string>
+    <string name="secret_cannot_multiple">Vos propres clés ne peuvent être supprimées qu’individuellement</string>
+    <string name="unknown">inconnu</string>
+    <string name="error_no_encrypt_subkey">Aucune sous-clé de chiffrement n’est disponible</string>
+    <string name="error_no_file_selected">Choisir au moins un fichier à chiffrer.</string>
   <string name="error_multi_files">L’enregistrement de fichiers multiples n’est pas pris en charge. C’est une restriction actuelle d’Android.</string>
   <string name="error_multi_clipboard">Le chiffrement de fichiers multiples vers le presse-papiers n’est pas pris en charge.</string>
   <string name="error_detached_signature">Les opérations de signature seule des fichiers binaires ne sont pas prises en charge. Choisissez au moins une clé de chiffrement.</string>
   <string name="error_empty_text">Taper un texte à chiffrer</string>
   <string name="error_log_share_internal">Erreur interne durant la préparation du journal</string>
-  <string name="key_colon">Clé :</string>
-  <string name="exchange_description">Pour démarrer un échange de clé, choisir le nombre de participants sur la droite, puis cliquer sur le bouton « Démarrer l’échange ».\n\nDeux questions de plus vous seront posées pour garantir que seuls les bonnes personnes participent à l’échange et que les empreintes sont correctes.</string>
-  <string name="btn_start_exchange">Démarrer l’échange</string>
-  <string name="user_id_none"><![CDATA[<none>]]></string>
-  <!--Android Account-->
-  <string name="account_no_manual_account_creation">Vous ne pouvez pas créer de compte OpenKeychain manuellement..</string>
-  <string name="account_privacy_title">Confidentialité</string>
-  <string name="account_privacy_text">OpenKeychain ne synchronise pas vos contacts par Internet. Elle relie seulement les contacts aux clés d’après les noms et les adresses courriel. C’est fait hors ligne sur votre appareil.</string>
-  <string name="sync_notification_permission_required_title">Accès aux contacts exigé</string>
-  <string name="sync_notification_permission_required_text">Toucher pour configurer la liaison aux contacts</string>
-  <!--Passphrase wizard-->
+    <!--Android Account-->
+    <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
-  <string name="title_unlock_method">Choisir une méthode de déverrouillage</string>
-  <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+    <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">Saisir le mot de passe</string>
-  <string name="passphrase">Mot de passe</string>
-  <string name="noPassphrase">Aucun mot de passe</string>
-  <string name="no_passphrase_set">Aucun mot de passe défini</string>
-  <string name="passphrases_match">Les mots de passe ne correspondent pas</string>
-  <string name="passphrase_saved">Mot de passe enregistré</string>
-  <string name="passphrase_invalid">Mot de passe invalide</string>
-  <string name="missing_passphrase">Il manque le mot de passe</string>
-  <string name="passphrase_again">De nouveau</string>
-  <string name="lockpattern">Schéma de verrouillage</string>
-  <string name="lockpatternNFC">CCP + schéma de verrouillage</string>
-  <string name="unlock_method">Méthode de déverrouillage</string>
-  <string name="set_passphrase">Définir le mot de passe</string>
-  <string name="draw_lockpattern">Dessiner le schéma de verrouillage</string>
-  <string name="nfc_title">CCP</string>
-  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-  <string name="nfc_wrong_tag">Mauvaise balise. Veuillez réessayer.</string>
-  <string name="enable_nfc">Veuillez activer la CCP dans vos paramètres</string>
-  <string name="no_nfc_support">Cet appareil ne prend pas en charge la CCP</string>
-  <string name="nfc_write_successful">Écrit avec succès sur la balise CCP</string>
-  <string name="unlocked">Déverrouillé</string>
-  <string name="nfc_settings">Paramètres</string>
-  <string name="snack_security_token_view">Visualiser</string>
-  <string name="snack_security_token_import">Importer</string>
-  <string name="button_bind_key">Relier la clé</string>
-  <string name="security_token_serial_no">No de série : %s</string>
-  <string name="security_token_key_holder">Détenteur de la clé : %s</string>
-  <string name="security_token_key_holder_not_set"><![CDATA[Détenteur de la clé : <not set>]]></string>
-  <string name="security_token_status_bound">Le jeton de sécurité correspond et est relié à la clé</string>
-  <string name="security_token_status_unbound">Le jeton de sécurité correspond et peut être relié à la clé</string>
-  <string name="security_token_status_partly">Le jeton de sécurité correspond et est partiellement relié à la clé</string>
-  <string name="security_token_create">Tenir le jeton de sécurité contre le dos de votre appareil.</string>
-  <string name="security_token_reset_or_import">Ce jeton de sécurité contient déjà une clé.</string>
-  <string name="btn_reset">Réinitialiser</string>
-  <string name="security_token_radio_use_existing">Utiliser une clé existante</string>
-  <string name="security_token_radio_reset">Réinitialiser le jeton</string>
-  <string name="security_token_reset_warning">La réinitialisation du jeton de sécurité détruit complètement les clés qu’il contient. Par la suite, vous ne pourrez plus déchiffrer les messages/les fichiers chiffrés avec cette clé.</string>
-  <string name="snack_security_token_other">Une clé différente est stockée sur le jeton de sécurité</string>
-  <string name="security_token_error">Erreur : %s</string>
+    <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+    <string name="security_token_create">Tenir le jeton de sécurité contre le dos de votre appareil.</string>
+    <string name="security_token_error">Erreur : %s</string>
   <plurals name="security_token_error_pin">
     <item quantity="one">Le NIP est erroné.\nil reste %d essai</item>
     <item quantity="many">Le NIP est erroné.\nIl reste %d essais</item>
@@ -1458,8 +1201,7 @@
   <string name="snack_compression_off">Compression <b>désactivée</b>.</string>
   <string name="snack_self_encrypt_on">Chiffrer avec la clé du signataire est <b>activé</b>.</string>
   <string name="snack_self_encrypt_off">Chiffrer avec la clé du signataire est<b>désactivé</b>.</string>
-  <string name="error_loading_keys">Erreur de chargement des clés</string>
-  <string name="error_empty_log">(erreur, journal vide)</string>
+    <string name="error_empty_log">(erreur, journal vide)</string>
   <string name="error_reading_text">Impossible de lire l’entrée à déchiffrer</string>
   <string name="error_reading_aosp">Échec de lecture des données, ce qui est un bogue du client de courriel Android (problème no 290).</string>
   <string name="error_reading_k9">Des données incomplètes ont été reçues. Essayez de toucher « Télécharger le message complet » dans Courriel K-9 Mail.</string>
@@ -1484,22 +1226,16 @@
   <string name="error_scan_match">Les empreintes ne correspondent pas</string>
   <string name="error_expiry_past">La date d’expiration est dans le passé</string>
   <!--Other Linked Identity strings-->
-  <string name="btn_finish">Terminer</string>
-  <string name="snack_btn_overwrite">Écraser</string>
+    <string name="snack_btn_overwrite">Écraser</string>
   <string name="backup_code_explanation">La sauvegarde sera sécurisée par un code de sauvegarde. Prenez-le en note avant de continuer.</string>
-  <string name="backup_code_enter">Veuillez saisir le code de sauvegarde :</string>
-  <string name="backup_code_ok">Le code est accepté</string>
-  <string name="btn_code_wrotedown">D’accord, je l’ai pris en note</string>
-  <string name="backup_code_wrong">Le code de sauvegarde saisi est erroné.\n L’avez-vous pris en note correctement ?</string>
-  <string name="btn_backup_share">Partager la sauvegarde</string>
+    <string name="btn_backup_share">Partager la sauvegarde</string>
   <string name="btn_backup_save">Enregistrer la sauvegarde</string>
   <string name="btn_backup_export">Exporter la sauvegarde</string>
   <string name="snack_backup_error_saving">Erreur d’enregistrement de la sauvegarde</string>
   <string name="snack_backup_saved">Sauvegarde enregistrée</string>
   <string name="snack_backup_exists">La sauvegarde existe déjà</string>
   <string name="snack_backup_saved_dir">Enregistrée dans le répertoire OpenKeychain</string>
-  <string name="btn_backup_back">Retourner en arrière pour vérifier</string>
-  <string name="snack_text_too_long">Le texte est trop long pour être affiché en entier</string>
+    <string name="snack_text_too_long">Le texte est trop long pour être affiché en entier</string>
   <string name="snack_shared_text_too_long">Le texte partagé a été tronqué car il était trop long</string>
   <string name="share_log_dialog_title">Partager le journal ?</string>
   <string name="share_log_dialog_message">Bien que les journaux peuvent être très utiles pour que les développeurs trouvent des bogues dans OpenKeychain, ils peuvent contenir des informations potentiellement sensibles telles que des données sur les clés mises à jour. Veuillez vous assurez de bien vouloir partager ces informations.</string>
@@ -1516,8 +1252,7 @@
   <string name="cache_ttl_one_day">pendant un jour</string>
   <string name="cache_ttl_forever">jusqu’à l’effacement</string>
   <string name="remember">Mémorisation</string>
-  <string name="security_token_error_pgp_app_not_installed">Aucune appli PGP n’a été trouvée sur le jeton de sécurité</string>
-  <string name="prompt_fidesmo_pgp_install_title">Installer PGP ?</string>
+    <string name="prompt_fidesmo_pgp_install_title">Installer PGP ?</string>
   <string name="prompt_fidesmo_pgp_install_message">Il n’y avait aucune appli PGP disponible sur votre appareil Fidesmo.</string>
   <string name="prompt_fidesmo_pgp_install_button_positive">Installer</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">Annuler</string>
@@ -1525,17 +1260,7 @@
   <string name="prompt_fidesmo_app_install_message">Pour installer PGP, il vous faut l’appli Fidesmo pour Android.</string>
   <string name="prompt_fidesmo_app_install_button_positive">Installer</string>
   <string name="prompt_fidesmo_app_install_button_negative">Annuler</string>
-  <string name="help_donation_paypal_item">Don à OpenKeychain</string>
-  <string-array name="help_donation_google_catalog_values">
-    <item>1 EUR</item>
-    <item>2 EUR</item>
-    <item>3 EUR</item>
-    <item>5 EUR</item>
-    <item>10 EUR</item>
-    <item>50 EUR</item>
-    <item>100 EUR</item>
-  </string-array>
-  <string name="redirect_import_key_title">Balayer avec OpenKeychain</string>
+    <string name="redirect_import_key_title">Balayer avec OpenKeychain</string>
   <string name="redirect_import_key_message">Vous avez balayé un code QR OpenPGP avec une autre appli. Veuillez le balayer directement avec OpenKeychain pour des raisons de sécurité.</string>
   <string name="redirect_import_key_yes">Rebalayer</string>
   <string name="redirect_import_key_no">Ferner</string>
@@ -1547,11 +1272,8 @@
   <string name="button_back">Précédent</string>
   <string name="button_got_it">D’accord</string>
   <string name="requested_key_label">Clé demandée :</string>
-  <string name="error_preselect_sign_key">Erreur de sélection de la clé %s pour la signature</string>
-  <string name="error_preselect_encrypt_key">Erreur de sélection de la clé %s pour le chiffrement</string>
-  <string name="title_key_status">État de la clé</string>
-  <string name="caption_secret_status">Cette clé vous appartient. Vous pouvez l’utiliser pour :</string>
-  <string name="cap_title_confirm">Confirmer d’autres clés</string>
+    <string name="title_key_status">État de la clé</string>
+    <string name="cap_title_confirm">Confirmer d’autres clés</string>
   <string name="cap_cert_ok">Cette clé peut en confirmer d’autres.</string>
   <string name="cap_cert_divert">Cette clé peut en confirmer d’autres en utilisant un jeton de sécurité.</string>
   <string name="cap_cert_stripped">Cette clé est dépouillée, elle ne peut PAS confirmer d’autres clés.</string>
@@ -1571,8 +1293,7 @@
   <string name="cap_decrypt_revoked">Cette clé peut déchiffrer et recevoir des messages, mais elle est révoquée.</string>
   <string name="cap_decrypt_stripped">Cette clé ne peut ni déchiffrer ni recevoir de messages sur cet appareil.</string>
   <string name="cap_decrypt_unavailable">Cette clé n’est pas configurée pour déchiffrer ni recevoir de messages</string>
-  <string name="cap_decrypt_insecure">Cette clé peut déchiffrer et recevoir des messages, mais pas de façon sécurisée</string>
-  <string name="key_health_ok_title">Saine</string>
+    <string name="key_health_ok_title">Saine</string>
   <string name="key_health_ok_subtitle">Cette clé ne présente aucun problème.</string>
   <string name="key_health_divert_title">Saine (jeton de sécurité)</string>
   <string name="key_health_divert_subtitle">Cette clé ne présente aucun problème.</string>
@@ -1602,8 +1323,7 @@
   <string name="key_insecure_unknown_curve_problem">Cette clé utilise l’algorithme <b>%1$s</b> qui ne fait pas partie de la liste d’acceptation.</string>
   <string name="key_insecure_unknown_curve_solution">Cette clé ne peut pas être mise à niveau. Pour des communications sécurisées, le propriétaire doit générer une nouvelle clé.</string>
   <string name="key_insecure_unidentified_problem">Cette clé pose un problème non identifié.</string>
-  <string name="key_insecure_unidentified_solution">Veuillez envoyer un relevé de bogue.</string>
-  <string name="key_expiry_text">Cette clé est arrivée à expiration le <b>%1$s</b>.</string>
+    <string name="key_expiry_text">Cette clé est arrivée à expiration le <b>%1$s</b>.</string>
   <string name="dialog_insecure_title">Avertissement de sécurité</string>
   <string name="dialog_insecure_recommend_title">Action recommandée</string>
   <string name="insecure_encrypt_bitstrength">La clé que vous avez utilisée pour recevoir (déchiffrer) ce message est périmée.\n\nL’algorithme (%s) est configuré avec une robustesse de 1024 bits ou moins, ce qui est considéré comme non sécurisé pour une utilisation normale depuis 2006.</string>
@@ -1621,45 +1341,14 @@
   <string name="insecure_hash_algo">Ce message a été chiffré en utilisant l’algorithme de hachage %s, ce qui est considéré comme non sécurisé et pour le moins inhabituel.</string>
   <string name="dialog_insecure_override">Si vous ne souhaitez pas être averti de ce problème de sécurité particulier à l’avenir, vous pouvez supprimer cet avertissement.</string>
   <string name="dialog_insecure_override_title">Supprimer cet avertissement</string>
-  <string name="dialog_insecure_override_ok_title">L’avertissement a été supprimé</string>
-  <string name="dialog_insecure_override_ok">L’avertissement de sécurité (pour cette clé ou ce message) ne sera plus affiché à l’avenir.</string>
-  <string name="dialog_insecure_button_override">Supprimer</string>
+    <string name="dialog_insecure_button_override">Supprimer</string>
   <string name="dialog_insecure_button_override_confirm">Supprimer (%d)</string>
   <string name="dialog_insecure_button_undo">Rétablir</string>
   <string name="dialog_insecure_button_view_key">Visualiser la clé</string>
   <string name="dialog_insecure_button_ok">Compris</string>
   <string name="usage_authentication">Authentification</string>
   <string name="identity_context_forget">Oublier</string>
-  <string name="button_scan">Balayer</string>
-  <string name="button_more_info">Plus d’infos</string>
-  <string name="transfer_scan_explanation">Pour partager ou importer la configuration de votre clé, établissez une connexion sécurisée en balayant avec l’un ou l’autre des appareils.</string>
-  <string name="transfer_scan_warning">À n’utiliser qu’avec vos propres appareils.</string>
-  <string name="connection_status">État de connexion :</string>
-  <string name="section_transfer_keys">Clés disponibles pour le transfert</string>
-  <string name="section_received_keys">Clés reçues</string>
-  <string name="transfer_scan_only_wifi">Cette fonction ne peut être utilisée qu’avec le Wi-Fi.</string>
-  <string name="button_import">Importer</string>
-  <string name="transfer_status_connected">Connecté</string>
-  <string name="transfer_status_disconnected">Déconnecté</string>
-  <string name="transfer_error_read_incoming">Échec de lecture de la clé entrante</string>
-  <string name="transfer_error_connect">Échec de connexion</string>
-  <string name="transfer_error_listen">Erreur d’attente de connexion</string>
-  <string name="transfer_error_generic">Erreur inconnue de communication</string>
-  <string name="transfer_error_generic_msg">Erreur de communication : %s</string>
-  <string name="transfer_not_available">Désolé, cette fonction ne peut être utilisée qu’avec Android 5 ou ultérieure</string>
-  <string name="transfer_list_empty">Il n’existe aucune clé sur cet appareil qui puisse être envoyée. En attente de clés entrantes…</string>
-  <string name="transfer_connecting">Connexion…</string>
-  <string name="first_time_secure_wifi_transfer">Transfert Wi-Fi sécurisé</string>
-  <string name="menu_secure_wifi_transfer">Transfert Wi-Fi sécurisé</string>
-  <string name="transfer_confirm_cancel">Annuler</string>
-  <string name="transfer_confirm_ok">Envoyer</string>
-  <string name="transfer_confirm_title">Envoyer votre clé ?</string>
-  <string name="transfer_confirm_text">Cela transférera l’accès complet à votre clé à l’appareil connecté. Vous ne devriez jamais envoyer vos propres clés à des appareils dont vous n’est pas propriétaire.</string>
-  <string name="button_scan_again">Rebalayer</string>
-  <string name="transfer_error_wifi_text">Échec de connexion</string>
-  <string name="transfer_error_wifi_text_instructions">Assurez-vous d’être sur le même réseau, puis réanalysez.</string>
-  <string name="transfer_error_wifi_text_instructions_ssid">Assurez-vous d’être sur le réseau « %s », puis réanalysez.</string>
-  <string name="status_check_key">Vérification de l’état de la clé…</string>
+    <string name="status_check_key">Vérification de l’état de la clé…</string>
   <string name="status_search_local">Recherche dans la liste de clés…</string>
   <string name="status_search_uri">Recherche sur l’URL du jeton…</string>
   <string name="status_search_keyserver">Recherche sur le serveur de clés…</string>
@@ -1748,8 +1437,7 @@
   <string name="use_key_no_name">Utiliser la clé : <![CDATA[<no name>]]></string>
   <string name="title_select_key">%s veut mettre en place le chiffrement de bout en bout pour cette adresse :</string>
   <string name="select_identity_cancel">Désactiver</string>
-  <string name="select_identity_create">Créer une clé pour moi</string>
-  <string name="error_save_key_internal">Erreur interne d’enregistrement de la clé</string>
+    <string name="error_save_key_internal">Erreur interne d’enregistrement de la clé</string>
   <string name="menu_list_unrelated_keys">Lister les clés non associées</string>
   <string name="no_keys_gen_title">Cette adresse est nouvelle</string>
   <string name="no_keys_gen_subtitle">Créer une nouvelle clé de chiffrement de bout en bout dans OpenKeychain</string>
@@ -1768,17 +1456,10 @@
   <string name="msg_get_query_not_implemented">Le serveur ne prend pas en charge la requête actuelle. Certains serveurs n’acceptent que les adresses de courriel. Veuillez la redéfinir ou essayer un autre serveur.</string>
   <string name="snack_keylist_clipboard_title">Des données de clé ont été trouvées dans le presse-papiers</string>
   <string name="snack_keylist_clipboard_action">Visualiser</string>
-  <string name="notify_channel_keysync">Mise à jour du serveur de clés</string>
-  <string name="notify_channel_permission">Demandes d’autorisation</string>
+    <string name="notify_channel_permission">Demandes d’autorisation</string>
   <string name="notify_channel_passcache">Cache de la phrase de passe</string>
   <string name="notify_channel_orbot">État d’Orbot</string>
-  <string name="notify_title_keysync">Mise à jour des clés…</string>
-  <string name="notify_title_keysync_finished">%d clés ont été mises à jour</string>
-  <string name="notify_content_keysync">Clé %d / %d</string>
-  <string name="snack_keysync_start">Début de mise à jour de toutes les clés…</string>
-  <string name="snack_keysync_finished">Les clés ont été mises à jour avec succès</string>
-  <string name="snack_keysync_error">Une erreur est survenue lors de la mise à jour de toutes les clés</string>
-  <string name="keychoice_cannot_encrypt">Cette clé ne peut pas être utilisée pour le chiffrement</string>
+    <string name="keychoice_cannot_encrypt">Cette clé ne peut pas être utilisée pour le chiffrement</string>
   <string name="keychoice_cannot_sign">Cette clé ne peut pas être utilisée pour la signature</string>
   <string name="keychoice_insecure">Cette clé ne peut pas être utilisée, car elle n’est pas sûre</string>
   <string name="keychoice_revoked">Cette clé ne peut pas être utilisée, car elle a été révoquée</string>

@@ -11,10 +11,6 @@
     <color name="key_flag_orange">#ff9800</color>
     <color name="key_flag_green">#7bad45</color>
 
-    <color name="password_strength_low">#f44336</color>
-    <color name="password_strength_medium">#ff9800</color>
-    <color name="password_strength_high">#7bad45</color>
-
     <!--
         Standard Android colors:
         http://www.google.com/design/spec/style/color.html#color-color-palette
@@ -30,12 +26,9 @@
     <color name="android_green_dark">#6c983d</color>
 
     <!-- text protection scrim colors -->
-    <color name="translucent_scrim_bottom">#2A000000</color>
-    <color name="translucent_scrim_bottom_center">#2A000000</color>
 
     <!-- linked ID view -->
     <color name="card_view_button">#7bad45</color>
-    <color name="toolbar_photo_tint">#1E7bad45</color>
 
     <color name="pressed_gray">#0c000000</color>
     <color name="selected_gray">#2c000000</color>

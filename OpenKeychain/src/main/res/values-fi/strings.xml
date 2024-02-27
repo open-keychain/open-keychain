@@ -19,11 +19,7 @@
   <string name="title_share_key">Jaa avain...</string>
   <string name="title_share_file">Jaa tiedosto...</string>
   <string name="title_share_message">Jaa teksti...</string>
-  <string name="title_encrypt_to_file">Salaa tiedostoon</string>
-  <string name="title_decrypt_to_file">Pura salaus tiedostoon</string>
   <string name="title_import_keys">Tuo avaimia</string>
-  <string name="title_export_key">Varmuuskopioi avain</string>
-  <string name="title_export_keys">Varmuuskopioi avaimet</string>
   <string name="title_key_not_found">Avainta ei löydy</string>
   <string name="title_send_key">Lähetä avainpalvelimelle</string>
   <string name="title_backup">Varmuuskopioi avain</string>
@@ -31,23 +27,18 @@
   <string name="title_key_details">Avaimen tiedot</string>
   <string name="title_help">Apua</string>
   <string name="title_log_display">Loki</string>
-  <string name="title_exchange_keys">Vaihda avaimia</string>
   <string name="title_advanced_key_info">Lisätietoja</string>
   <string name="title_delete_secret_key">POISTA avaimesi \'1%s\'?</string>
   <string name="title_manage_my_keys">Hallitse avaimiani</string>
   <string name="title_alert_strip">Karsi pois tämä aliavain</string>
   <!--section-->
   <string name="section_user_ids">Identiteetit</string>
-  <string name="section_security_token">Turvatunniste</string>
-  <string name="section_should_you_trust">Pitäiskö sinun luottaa tähän avaimeen?</string>
   <string name="section_keys">Aliavaimet</string>
   <string name="section_cloud_search">Avainten haku</string>
-  <string name="section_cloud_search_summary">Avainpalvelin</string>
   <string name="section_passphrase_cache">Salasanat ja PIN-koodit</string>
   <string name="section_passphrase_cache_summary">Käsittely</string>
   <string name="section_proxy_settings">Verkon anonymiteetti</string>
   <string name="section_proxy_settings_summary">Tor, välityspalvelinasetukset</string>
-  <string name="section_gui">Käyttöliittymä</string>
   <string name="section_experimental_features">Kokeelliset ominaisuudet</string>
   <string name="section_certify">Vahvista</string>
   <string name="section_actions">Toiminnot</string>
@@ -56,10 +47,8 @@
   <string name="section_fingerprint">Sormenjälki</string>
   <string name="section_encrypt">Salaa</string>
   <!--button-->
-  <string name="btn_decrypt_verify_file">Pura, todenna ja tallenna tiedosto</string>
   <string name="btn_encrypt_share_file">Salaa ja jaa tiedosto</string>
   <string name="btn_encrypt_save_file">Salaa ja tallenna tiedosto</string>
-  <string name="btn_save_file">Tallenna tiedost</string>
   <string name="btn_save">Tallenna</string>
   <string name="btn_view_log">Katso loki</string>
   <string name="btn_do_not_save">Peruuta</string>
@@ -69,12 +58,10 @@
   <string name="btn_export_to_server">Lataa avainpalvelimelle</string>
   <string name="btn_next">Seuraava</string>
   <string name="btn_back">Takaisin</string>
-  <string name="btn_no">Ei</string>
   <string name="btn_match">Sormenjäljet täsmäävät</string>
   <string name="btn_share_encrypted_signed">Salaa/allekirjoita ja jaa teksti</string>
   <string name="btn_copy_encrypted_signed">Salaa/allekirjoita ja kopioi teksti</string>
   <string name="btn_paste_encrypted_signed">Salaa/allekirjoita ja liitä teksti</string>
-  <string name="btn_view_cert_key">Näytä varmennusavain</string>
   <string name="btn_create_key">Luo avain</string>
   <string name="btn_add_files">Lisää tiedosto(ja)</string>
   <string name="btn_share_decrypted_text">Jaa</string>
@@ -86,7 +73,6 @@
   <string name="btn_add_email">Lisää lisäsähköpostiosoite</string>
   <string name="btn_unlock">Avaa lukitus</string>
   <string name="btn_proceed">Etene</string>
-  <string name="btn_add_keyserver">Lisää</string>
   <string name="btn_save_default">Tallenna oletukseksi</string>
   <string name="btn_saved">Tallennettu!</string>
   <!--Shortcut Strings-->
@@ -99,56 +85,33 @@
   <string name="menu_help">Apua</string>
   <string name="menu_export_key">Varmuuskopioi avain</string>
   <string name="menu_delete_key">Poista avain</string>
-  <string name="menu_status">Katso avaimen tila</string>
   <string name="menu_manage_keys">Hallitse avaimiani</string>
   <string name="menu_search">Etsi</string>
   <string name="menu_open">Avaa</string>
   <string name="menu_read_clipboard">Lue leikepöydältä</string>
-  <string name="menu_nfc_preferences">NFC-asetukset</string>
-  <string name="menu_beam_preferences">Beam-asetukset</string>
   <string name="menu_encrypt_to">Salaa...</string>
-  <string name="menu_select_all">Valitse kaikki</string>
-  <string name="menu_export_all_keys">Vie kaikki avaimet</string>
   <string name="menu_update_all_keys">Päivitä kaikki avaimet</string>
   <string name="menu_change_password">Vaihda salasana</string>
   <string name="menu_advanced">Lisätietoja</string>
-  <string name="menu_keyserver_add">Lisää</string>
   <!--label-->
-  <string name="label_message">Teksti</string>
-  <string name="label_file">Tiedosto</string>
-  <string name="label_files">Tiedosto(t)</string>
-  <string name="label_file_colon">Tiedosto:</string>
   <string name="label_no_passphrase">Ei salasanaa</string>
   <string name="label_passphrase">Salasana</string>
   <string name="label_pin">PIN</string>
   <string name="label_unlock">Avataan...</string>
   <string name="label_passphrase_again">Toista salasana</string>
-  <string name="label_show_passphrase">Näytä salasana</string>
-  <string name="label_algorithm">Algoritmi</string>
-  <string name="label_ascii_armor">Tiedoston ASCII Armor</string>
   <string name="label_file_ascii_armor">Käytä ASCII Armoria</string>
-  <string name="label_write_version_header">Anna muiden tietää että käytät OpenKeychainia</string>
-  <string name="label_write_version_header_summary">Kirjoittaa \'OpenKeychain v2.7\' OpenPGP-allekirjoituksiin, kryptattuun tekstiin sekä vietyihin avaimiin</string>
   <string name="label_asymmetric_from">Allekirjoita avaimella:</string>
   <string name="label_delete_after_encryption">Poista tiedostot salaamisen jälkeen</string>
-  <string name="label_delete_after_decryption">Poista salauksen purkamisen jälkeen</string>
-  <string name="label_encryption_algorithm">Salausalgoritmi</string>
-  <string name="label_hash_algorithm">Tiivistealgoritmi</string>
   <string name="label_symmetric">Salaa sanasanalla</string>
   <string name="label_passphrase_cache_subs">Muista salasanat aliavaimittain</string>
-  <string name="label_file_compression">Tiedoston pakkaus</string>
   <string name="label_keyservers">Hallitse OpenPGP-avainpalvelimia</string>
-  <string name="label_key_id">Avaimen ID</string>
   <string name="label_key_id_colon">Avaimen ID:</string>
   <string name="label_key_created">Luotu %s</string>
   <string name="label_key_created_just_now">Luotu juuri nyt</string>
   <string name="label_key_type">Tyyppi</string>
-  <string name="label_creation">Luontiaika</string>
   <string name="label_expiry">Vanhenemisaika</string>
   <string name="label_usage">Käyttö</string>
   <string name="label_revoked">Kumottu</string>
-  <string name="label_key_size">Avaimen koko</string>
-  <string name="label_ecc_curve">Elliptinen käyrä</string>
   <string name="label_main_user_id">Pääidentiteetti</string>
   <string name="label_name">Nimi</string>
   <string name="label_email">Sähköposti</string>
@@ -160,7 +123,6 @@
   <string name="label_enable_compression">Käytä pakkausta</string>
   <string name="label_enable_self_encrypt">Salaa allekirjoittajalle</string>
   <string name="label_encrypt_filenames">Salaa tiedostojen nimet</string>
-  <string name="label_hidden_recipients">Piilota vastaanottajat</string>
   <string name="label_smartpgp_verify">SmartPGP: Todenna varmenteet</string>
   <string name="label_smartpgp_verify_summary">Todenna SmartPGP-turvatunnisteiden varmenteet vertaamalla joukkoon luotettuja myöntäjiä</string>
   <string name="label_smartpgp_roots">SmartPGP: Luotetut myöntäjät</string>
@@ -170,8 +132,6 @@
   <string name="label_enter_smartpgp_authority_name">Nimi</string>
   <string name="pref_keyserver">OpenPGP-avainpalvelimet</string>
   <string name="pref_keyserver_summary">Hae avaimia valituilta OpenPGP-palvelimilta (HKP-protokolla)</string>
-  <string name="pref_facebook">Facebook</string>
-  <string name="pref_facebook_summary">Hae avaimia Facebookista käyttäjänimen perusteella</string>
   <string name="pref_wkd_summary">Hae avaimia käyttäen Web Key Directory -mekanismia</string>
   <string name="label_sync_settings_keyserver_summary_on">Avaimet päivitetään ensisijaiselta avainpalvelimelta joka kolmas päivä</string>
   <string name="label_experimental_settings_desc_title">Varoitus</string>
@@ -192,17 +152,10 @@
   <string name="orbot_install_dialog_install">Asenna</string>
   <string name="orbot_install_dialog_content">Orbot pitää olla asennettuna ja aktivoituna liikenteen välittämiseksi sen kautta. Haluatko asentaa sen?</string>
   <string name="orbot_install_dialog_cancel">Peruuta</string>
-  <string name="orbot_install_dialog_ignore_tor">Älä käytä Toria</string>
   <!--StartOrbotDialogFragment strings-->
-  <string name="orbot_start_btn">Käynnistä Orbot</string>
   <string name="orbot_start_dialog_start">Käynnistä Orbot</string>
   <string name="orbot_start_dialog_cancel">Peruuta</string>
-  <string name="orbot_start_dialog_ignore_tor">Älä käytä Toria</string>
   <string name="none"><![CDATA[<none>]]></string>
-  <plurals name="n_keys">
-    <item quantity="one">1 avain</item>
-    <item quantity="other">%d avainta</item>
-  </plurals>
   <plurals name="n_keyservers">
     <item quantity="one">%d avainpalvelin</item>
     <item quantity="other">%d avainpalvelinta</item>
@@ -210,20 +163,7 @@
   <string name="secret_key">Salainen avain:</string>
   <!--choice-->
   <string name="choice_none">Ei mitään</string>
-  <string name="choice_15secs">15 sek.</string>
-  <string name="choice_1min">1 min</string>
-  <string name="choice_3mins">3 min.</string>
-  <string name="choice_5mins">5 min.</string>
-  <string name="choice_10mins">10 min.</string>
-  <string name="choice_20mins">20 min.</string>
-  <string name="choice_40mins">40 min.</string>
-  <string name="choice_1hour">1 tunti</string>
-  <string name="choice_2hours">2 tuntia</string>
-  <string name="choice_4hours">4 tuntia</string>
-  <string name="choice_8hours">8 tuntia</string>
-  <string name="choice_forever">ikuisesti</string>
   <string name="choice_select_cert">Valitse avain</string>
-  <string name="filemanager_title_open">Avaa...</string>
   <string name="ecc_p256_description_html">hyvin pieni tiedostokoko, pidetään turvallisena 2040 asti &lt;br/&gt; &lt;u&gt;kokeellinen eikä tuettu kaikissa toteutuksissa&lt;/u&gt;</string>
   <string name="ecc_p384_description_html">hyvin pieni tiedostokoko, pidetään turvallisena 2040 asti &lt;br/&gt; &lt;u&gt;kokeellinen eikä tuettu kaikissa toteutuksissa&lt;/u&gt;</string>
   <string name="ecc_p521_description_html">pieni tiedostokoko, pidetään turvallisena 2040+ asti &lt;br/&gt; &lt;u&gt;kokeellinen eikä tuettu kaikissa toteutuksissa&lt;/u&gt;</string>
@@ -232,7 +172,6 @@
   <string name="usage_sign">Allekirjoita</string>
   <string name="usage_encrypt">Salaa</string>
   <string name="usage_sign_and_encrypt">Allekirjoita &amp; salaa</string>
-  <string name="error">Virhe</string>
   <string name="error_message">Virhe: %s</string>
   <string name="theme_auto">Automaattinen</string>
   <string name="theme_light">Vaalea</string>
@@ -247,7 +186,6 @@
   <string name="passphrase_for_backup">Anna varmuuskopiontikoodi</string>
   <string name="passphrase_for">Syötä salasana \'%s\':lle</string>
   <string name="passphrase_for_any">Kirjoita salasana</string>
-  <string name="pin_for">Syötä PIN \'%s\':lle</string>
   <string name="security_token_pin_for">Syötä PIN käyttääksesi identiteetin \'%s\' turvatunnistetta</string>
   <string name="security_token_nfc_text">Pidä turvatunniste laitteen takana olevaa NFC-merkkiä vasten.</string>
   <string name="security_token_nfc_wait">Pidä turvatunniste takana!</string>
@@ -259,7 +197,6 @@
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
-  <string name="error_wrong_passphrase">väärä salasana</string>
   <string name="error_wrong_security_token">tässä turvatunnisteessa ei ole tarvittavaa avainta</string>
   <!--errors without preceding Error:-->
   <string name="error_nothing_import">Avaimia ei löytynyt!</string>
@@ -278,11 +215,8 @@
   <string name="progress_cancelling">peruutetaan...</string>
   <string name="progress_saving">tallennetaan...</string>
   <string name="progress_importing">tuodaan...</string>
-  <string name="progress_updating">Päivitetään avaimia...</string>
-  <string name="progress_exporting">viedään...</string>
   <string name="progress_uploading">lähetetään...</string>
   <string name="progress_building_key">rakennetaan avainta...</string>
-  <string name="progress_modify_subkeystrip">karsitaan aliavaimia...</string>
   <!--action strings-->
   <!--key bit length selections-->
   <!--elliptic curve names-->
@@ -298,11 +232,7 @@
   <string name="help_tab_license">Lisenssit</string>
   <string name="help_tab_about">Ohjelmasta</string>
   <string name="help_about_version">Versio:</string>
-  <string name="help_tab_donations">Lahjoita</string>
   <!--Import-->
-  <string name="import_tab_keyserver">Avainpalvelin</string>
-  <string name="import_tab_cloud">Avainten haku</string>
-  <string name="import_qr_code_button">Lue QR-koodi</string>
   <string name="btn_import">Tuo</string>
   <string name="btn_refresh">Virkistä</string>
   <!--Generic result toast-->
@@ -313,13 +243,10 @@
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
-  <string name="api_settings_no_key">Ei avainta valittu</string>
   <string name="api_settings_save">Tallenna</string>
-  <string name="api_settings_cancel">Peruuta</string>
   <string name="api_settings_revoke">Peruuta pääsy ilmoitukseen</string>
   <string name="api_settings_package_name">Pakkausnimi</string>
   <string name="api_settings_advanced">Lisätietoja</string>
-  <string name="api_settings_settings">Asetukset</string>
   <!--Share-->
   <!--retry upload dialog-->
   <string name="retry_up_dialog_title">Lähetys epäonnistui</string>
@@ -332,14 +259,12 @@
   <string name="key_list_fab_import">Tuo tiedostosta</string>
   <!--Key view-->
   <string name="key_view_action_edit">Muokkaa</string>
-  <string name="key_view_action_encrypt">Salaa tekstiä</string>
   <string name="key_view_action_certify">Vahvista avain</string>
   <string name="key_view_action_update">Päivitä avainpalvelimelta</string>
   <string name="key_view_action_upload">Julkaise avainpalvelimella</string>
   <string name="key_view_tab_start">Käynnistä</string>
   <string name="key_view_tab_share">Jaa</string>
   <string name="key_view_tab_keys">Aliavaimet</string>
-  <string name="key_view_tab_certs">Varmenteet</string>
   <string name="user_id_info_revoked_title">Kumottu</string>
   <!--Key trust-->
   <!--Edit key-->
@@ -372,24 +297,18 @@
   <string name="create_key_yubi_key_admin_pin">Ylläpitäjän PIN</string>
   <string name="create_key_yubi_key_algorithm_auth_text">Todennusavain</string>
   <!--View key-->
-  <string name="view_key_fragment_no_system_contact">&lt;ei mitään&gt;</string>
   <!--Add/Edit keyserver-->
   <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
   <string name="nav_keys">Avaimet</string>
   <string name="nav_encrypt_decrypt">Salaa/pura salaus</string>
   <string name="nav_apps">Sovellukset</string>
-  <string name="drawer_open">Avaa navigointilaatikko</string>
-  <string name="drawer_close">Sulje navigointilaatikko</string>
   <string name="my_keys">Avaimeni</string>
   <string name="nav_backup">Varmuuskopioi/palauta</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Syötä tekstiä</string>
   <!--certs-->
-  <string name="cert_default">oletus</string>
   <string name="cert_none">ei mitään</string>
-  <string name="cert_revoke">peruutettu</string>
-  <string name="cert_verify_ok">OK</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
@@ -450,48 +369,22 @@
   <string name="first_time_create_key">Luo minun avaimeni</string>
   <string name="first_time_import_key">Tuo avain tiedostosta</string>
   <string name="first_time_security_token">Käytä turvatunnistetta</string>
-  <string name="first_time_blank_security_token">Haluatko käyttää tätä tyhjää turvatunnistetta OpenKeychainin kanssa?\n\nOle hyvä ja ota turvatunniste nyt pois, sinulle ilmoitetaan, kun sitä tarvitaan uudestaan!</string>
-  <string name="first_time_blank_security_token_yes">Käytä tätä turvatunnistetta</string>
   <string name="backup_text">Varmuuskopioita, joissa on omat avaimesi, ei tule koskaan jakaa muiden ihmisten kanssa!</string>
   <string name="backup_all">Täydellinen varmuuskopio (salattu)</string>
   <string name="backup_section">Varmuuskopio</string>
   <string name="restore_section">Palauta</string>
   <!--unsorted-->
-  <string name="section_cert">Varmenteen tiedot</string>
-  <string name="label_user_id">Identiteetti</string>
-  <string name="label_cert_type">Tyyppi</string>
   <string name="key_stripped">karsittu</string>
   <string name="key_divert">turvatunnisteessa</string>
-  <string name="key_no_passphrase">ei salasanaa</string>
-  <string name="key_unavailable">ei saatavilla</string>
-  <string name="title_view_cert">Katso varmenteen tiedot</string>
   <string name="unknown">tunnistamaton</string>
-  <string name="contact_show_key">Näytä avain (%s)</string>
-  <string name="swipe_to_update">Pyyhkäise alas päivittääksesi avainpalvelimelta</string>
   <string name="error_empty_text">Syötä jotain tekstiä salataksesi!</string>
-  <string name="key_colon">Avain:</string>
-  <string name="user_id_none"><![CDATA[<none>]]></string>
   <!--Android Account-->
-  <string name="account_privacy_title">Yksityisyys</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">Kirjoita salasana</string>
-  <string name="passphrase">Salasana</string>
-  <string name="set_passphrase">Aseta salasana</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-  <string name="nfc_settings">Asetukset</string>
-  <string name="snack_security_token_view">Näkymä</string>
-  <string name="snack_security_token_import">Tuo</string>
-  <string name="security_token_status_bound">Turvatunniste täsmää ja on sidottu avaimeen</string>
-  <string name="security_token_status_unbound">Turvatunniste täsmää, voidaan sitoa avaimeen</string>
-  <string name="security_token_status_partly">Turvatunniste täsmää, osittain sidottu avaimeen</string>
   <string name="security_token_create">Pidä turvatunnistetta laitteesi taustaa vasten.</string>
-  <string name="security_token_reset_or_import">Tämä turvatunniste sisältää jo avaimen.</string>
-  <string name="btn_reset">Nollaa</string>
-  <string name="security_token_radio_reset">Tyhjennä turvatunniste</string>
-  <string name="security_token_reset_warning">Turvatunnisteen tyhjennys tuhoaa siinä olevat avaimet täysin. Et voi myöhemmin purkaa tällä avaimella salattuja viestejä/tiedostoja!</string>
-  <string name="snack_security_token_other">Eri avain tallennettu turvatunnisteeseen!</string>
   <string name="security_token_error">Virhe: %s</string>
   <string name="security_token_error_terminated">Turvatunniste terminointitilassa.</string>
   <string name="security_token_error_unknown">Tuntematon virhe</string>
@@ -509,12 +402,7 @@
   <string name="filename_keys">Avaimen varmuuskopio (kosketa tuodaksesi)</string>
   <string name="progress_processing">Käsitellään...</string>
   <!--Other Linked Identity strings-->
-  <string name="btn_finish">Loppu</string>
   <string name="backup_code_explanation">Varmuuskopio suojataan varmuuskopiontikoodilla. Kirjoita se talteen ennen kuin jatkat!</string>
-  <string name="backup_code_enter">Anna varmuuskopiontikoodi:</string>
-  <string name="backup_code_ok">Koodi hyväksytty!</string>
-  <string name="btn_code_wrotedown">Selvä, kirjoitin sen talteen!</string>
-  <string name="backup_code_wrong">Varmuuskopiontikoodi, jonka syötit on väärä!\nKirjoititko sen talteen oikein?</string>
   <string name="btn_backup_share">Jaa varmuuskopio</string>
   <string name="btn_backup_save">Tallenna varmuuskopio</string>
   <string name="btn_backup_export">Vie varmuuskopio</string>
@@ -533,21 +421,10 @@
   <string name="cache_ttl_one_day">päivän ajan</string>
   <string name="cache_ttl_forever">kunnes tyhjennetään</string>
   <string name="remember">Muista</string>
-  <string name="security_token_error_pgp_app_not_installed">PGP-sovellusta ei löytynyt turvatunnisteelta</string>
   <string name="prompt_fidesmo_pgp_install_button_positive">Asenna</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">Peruuta</string>
   <string name="prompt_fidesmo_app_install_button_positive">Asenna</string>
   <string name="prompt_fidesmo_app_install_button_negative">Peruuta</string>
-  <string name="help_donation_paypal_item">OpenKeyChain-lahjoitus</string>
-  <string-array name="help_donation_google_catalog_values">
-    <item>1 EUR</item>
-    <item>2 EUR</item>
-    <item>3 EUR</item>
-    <item>5 EUR</item>
-    <item>10 EUR</item>
-    <item>50 EUR</item>
-    <item>100 EUR</item>
-  </string-array>
   <string name="redirect_import_key_title">Skannaa OpenKeyChainilla!</string>
   <string name="redirect_import_key_message">Skannasit OpenPGP QR-koodin muulla sovelluksella. Turvallisuuden takia skannaa suoraan OpenKeychainilla.</string>
   <string name="redirect_import_key_yes">Skannaa uudelleen</string>
@@ -578,7 +455,6 @@
   <string name="cap_decrypt_revoked">Tämä avain voi purkaa salauksen/vastaanottaa viestejä, mutta se on mitätöity.</string>
   <string name="cap_decrypt_stripped">Tämä avain ei voi purkaa salausta/vastaanottaa viestejä tässä laitteessa.</string>
   <string name="cap_decrypt_unavailable">Tätä avainta ei ole asetettu purkamaan salausta/vastaanottamaan viestejä.</string>
-  <string name="cap_decrypt_insecure">Tämä avain voi purkaa salauksen/vastaanottaa viestejä, muttei turvallisesti!</string>
   <string name="key_health_ok_title">Toimintakunnossa</string>
   <string name="key_health_divert_title">Toimintakunnossa (turvatunniste)</string>
   <string name="key_health_divert_partial_title">Toimintakunnossa (osittainen tunniste)</string>
@@ -600,14 +476,6 @@
   <string name="dialog_insecure_button_view_key">Näytä avain</string>
   <string name="dialog_insecure_button_ok">Selvä</string>
   <string name="usage_authentication">Todennus</string>
-  <string name="connection_status">Yhteyden tila</string>
-  <string name="button_import">Tuo</string>
-  <string name="transfer_status_connected">Yhdistetty</string>
-  <string name="transfer_connecting">Yhdistetään...</string>
-  <string name="first_time_secure_wifi_transfer">Turvallinen Wifi-siirto</string>
-  <string name="menu_secure_wifi_transfer">Turvallinen Wifi-siirto</string>
-  <string name="transfer_confirm_cancel">Peruuta</string>
-  <string name="transfer_confirm_ok">Lähetä</string>
   <string name="status_check_key">Tarkistetaan avaimen tila...</string>
   <string name="status_search_local">Haetaan avainlistalta...</string>
   <string name="status_search_uri">Haetaan tunnisteen URL-osoitteesta...</string>
@@ -638,12 +506,6 @@
   <string name="backup_code_checkbox">Olen kirjoittanut tämän varmuuskopiointikoodin talteen. En pysty palauttamaan varmuuskopiota ilman sitä.</string>
   <string name="snack_keylist_clipboard_action">Näkymä</string>
   <string name="notify_channel_orbot">Orbotin tila</string>
-  <string name="notify_title_keysync">Päivitetään avaimia...</string>
-  <string name="notify_title_keysync_finished">Saatiin valmiiksi %d:n avaimen päivittäminen</string>
-  <string name="notify_content_keysync">Avain %d / %d</string>
-  <string name="snack_keysync_start">Aloitettiin kaikkien avainten päivitys...</string>
-  <string name="snack_keysync_finished">Avainten päivitys onnistunut</string>
-  <string name="snack_keysync_error">Tapahtui virhe kaikkia avaimia päivitettäessä</string>
   <string name="keychoice_cannot_encrypt">Tätä avainta ei voi käyttää salaukseen!</string>
   <string name="keychoice_cannot_sign">Tätä avainta ei voi käyttää allekirjoittamiseen!</string>
   <string name="keychoice_insecure">Tätä avainta ei voi käyttää, koska se ei ole turvallinen!</string>

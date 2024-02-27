@@ -1,9 +1,0 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <PreferenceScreen
-        android:persistent="false"
-        android:selectable="false"
-        android:summary="@string/account_privacy_text"
-        android:title="@string/account_privacy_title" />
-
-</PreferenceScreen>

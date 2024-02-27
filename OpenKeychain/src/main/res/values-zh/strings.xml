@@ -19,38 +19,27 @@
   <string name="title_share_key">分享密钥</string>
   <string name="title_share_file">分享文件</string>
   <string name="title_share_message">分享文本</string>
-  <string name="title_encrypt_to_file">加密至文件</string>
-  <string name="title_decrypt_to_file">解密至文件</string>
-  <string name="title_import_keys">导入密钥</string>
-  <string name="title_export_key">导出密钥</string>
-  <string name="title_export_keys">导出密钥</string>
-  <string name="title_key_not_found">未找到密钥</string>
+    <string name="title_import_keys">导入密钥</string>
+    <string name="title_key_not_found">未找到密钥</string>
   <string name="title_send_key">上传到密钥服务器</string>
   <string name="title_backup">备份密钥</string>
   <string name="title_certify_key">确认密钥</string>
   <string name="title_key_details">密钥详情</string>
   <string name="title_help">帮助</string>
   <string name="title_log_display">日志</string>
-  <string name="title_exchange_keys">交换密钥</string>
-  <string name="title_advanced_key_info">更多密钥详情</string>
+    <string name="title_advanced_key_info">更多密钥详情</string>
   <string name="title_delete_secret_key">删除你的密钥 \'%s\' ？</string>
   <string name="title_manage_my_keys">管理我的密钥</string>
   <string name="title_alert_strip">剥离子密钥</string>
   <!--section-->
   <string name="section_user_ids">用户标识</string>
-  <string name="section_security_token">安全令牌</string>
-  <string name="section_linked_system_contact">关联的系统联系人</string>
-  <string name="section_should_you_trust">信任此密钥？</string>
-  <string name="section_proof_details">验证</string>
-  <string name="section_keys">子密钥</string>
+    <string name="section_keys">子密钥</string>
   <string name="section_cloud_search">搜索密钥</string>
-  <string name="section_cloud_search_summary">密钥服务器</string>
-  <string name="section_passphrase_cache">密码和 PIN 码</string>
+    <string name="section_passphrase_cache">密码和 PIN 码</string>
   <string name="section_passphrase_cache_summary">正在处理</string>
   <string name="section_proxy_settings">匿名网络</string>
   <string name="section_proxy_settings_summary">Tor 和代理服务器设置</string>
-  <string name="section_gui">界面</string>
-  <string name="section_sync_settings">同步</string>
+    <string name="section_sync_settings">同步</string>
   <string name="section_sync_settings_summary">密钥自动更新，关联联系人</string>
   <string name="section_experimental_features">试验性功能</string>
   <string name="section_certify">确认</string>
@@ -63,11 +52,9 @@
   <string name="section_current_expiry">当前有效期</string>
   <string name="section_new_expiry">新有效期</string>
   <!--button-->
-  <string name="btn_decrypt_verify_file">解密并验证文件</string>
-  <string name="btn_encrypt_share_file">加密并分享文件</string>
+    <string name="btn_encrypt_share_file">加密并分享文件</string>
   <string name="btn_encrypt_save_file">加密至文件</string>
-  <string name="btn_save_file">保存文件</string>
-  <string name="btn_save">保存</string>
+    <string name="btn_save">保存</string>
   <string name="btn_view_log">查看日志</string>
   <string name="btn_do_not_save">取消</string>
   <string name="btn_delete">删除</string>
@@ -76,13 +63,11 @@
   <string name="btn_export_to_server">导出到服务器</string>
   <string name="btn_next">下一步</string>
   <string name="btn_back">返回</string>
-  <string name="btn_no">否</string>
-  <string name="btn_match">密钥指纹符合</string>
+    <string name="btn_match">密钥指纹符合</string>
   <string name="btn_share_encrypted_signed">加密/签名并分享文本</string>
   <string name="btn_copy_encrypted_signed">加密/签名并复制文本</string>
   <string name="btn_paste_encrypted_signed">加密/签名并粘贴文本</string>
-  <string name="btn_view_cert_key">显示密钥</string>
-  <string name="btn_create_key">创建密钥</string>
+    <string name="btn_create_key">创建密钥</string>
   <string name="btn_add_files">添加文件</string>
   <string name="btn_share_decrypted_text">分享</string>
   <string name="btn_open_with">打开为</string>
@@ -94,8 +79,7 @@
   <string name="btn_add_email">添加额外的邮件地址</string>
   <string name="btn_unlock">解锁</string>
   <string name="btn_proceed">继续</string>
-  <string name="btn_add_keyserver">添加</string>
-  <string name="btn_save_default">保存为默认值</string>
+    <string name="btn_save_default">保存为默认值</string>
   <string name="btn_saved">已保存！</string>
   <string name="btn_not_matching">不匹配</string>
   <!--Shortcut Strings-->
@@ -104,72 +88,45 @@
   <string name="cd_encrypt_files">加密文件</string>
   <string name="cd_exchange_keys">交换密钥</string>
   <string name="cd_encrypt_text">加密文本</string>
-  <string name="cd_share_nfc">使用 NFC 分享</string>
-  <!--menu-->
+    <!--menu-->
   <string name="menu_preferences">参数设置</string>
   <string name="menu_help">帮助</string>
   <string name="menu_export_key">备份密钥</string>
   <string name="menu_delete_key">删除密钥</string>
-  <string name="menu_status">查看密钥状态</string>
-  <string name="menu_manage_keys">管理我的密钥</string>
+    <string name="menu_manage_keys">管理我的密钥</string>
   <string name="menu_search">搜索</string>
   <string name="menu_open">打开</string>
   <string name="menu_read_clipboard">从剪贴板读取</string>
-  <string name="menu_nfc_preferences">NFC 设置</string>
-  <string name="menu_beam_preferences">参数</string>
-  <string name="menu_encrypt_to">加密到…</string>
-  <string name="menu_select_all">全选</string>
-  <string name="menu_export_all_keys">导出全部密钥</string>
-  <string name="menu_update_all_keys">更新所有密钥</string>
+    <string name="menu_encrypt_to">加密到…</string>
+    <string name="menu_update_all_keys">更新所有密钥</string>
   <string name="menu_certify_fingerprint">通过指纹确认</string>
-  <string name="menu_certify_fingerprint_phrases">通过短语确认</string>
-  <string name="menu_share_log">分享记录</string>
+    <string name="menu_share_log">分享记录</string>
   <string name="menu_change_password">更改密码</string>
   <string name="menu_advanced">更多密钥详情</string>
-  <string name="menu_keyserver_add">添加</string>
-  <!--label-->
-  <string name="label_message">文本</string>
-  <string name="label_file">文件</string>
-  <string name="label_files">多个文件</string>
-  <string name="label_file_colon">文件:</string>
-  <string name="label_no_passphrase">没有密码</string>
+    <!--label-->
+    <string name="label_no_passphrase">没有密码</string>
   <string name="label_passphrase">密码</string>
   <string name="label_pin">PIN</string>
   <string name="label_unlock">解锁中…</string>
   <string name="label_passphrase_again">重复密码</string>
-  <string name="label_show_passphrase">显示密码</string>
-  <string name="label_algorithm">算法</string>
-  <string name="label_algorithm_colon">算法：</string>
-  <string name="label_ascii_armor">文件 ASCII 封装</string>
-  <string name="label_file_ascii_armor">启用 ASCII 封装</string>
-  <string name="label_write_version_header">写入文件头信息</string>
-  <string name="label_write_version_header_summary">在OpenPGP签名、加密文本和导出密钥中写入 \'OpenKeychain v2.7\' 标记。</string>
-  <string name="label_asymmetric_from">签名密钥：</string>
+    <string name="label_algorithm_colon">算法：</string>
+    <string name="label_file_ascii_armor">启用 ASCII 封装</string>
+    <string name="label_asymmetric_from">签名密钥：</string>
   <string name="label_to">加密到</string>
   <string name="label_delete_after_encryption">加密后删除文件</string>
-  <string name="label_delete_after_decryption">解密后删除</string>
-  <string name="label_encryption_algorithm">加密算法</string>
-  <string name="label_hash_algorithm">哈希算法</string>
-  <string name="label_symmetric">用密码加密</string>
+    <string name="label_symmetric">用密码加密</string>
   <string name="label_passphrase_cache_subs">保存子密钥的密码</string>
-  <string name="label_message_compression">文本压缩</string>
-  <string name="label_file_compression">文件压缩</string>
-  <string name="label_keyservers">管理 OpenPGP 密钥服务器</string>
-  <string name="label_key_id">密钥 ID</string>
-  <string name="label_key_id_colon">密钥 ID：</string>
+    <string name="label_keyservers">管理 OpenPGP 密钥服务器</string>
+    <string name="label_key_id_colon">密钥 ID：</string>
   <string name="label_key_created">创建于 %s</string>
   <string name="label_key_created_just_now">刚刚创建</string>
   <string name="label_key_type">类型</string>
-  <string name="label_creation">创建时间</string>
-  <string name="label_creation_colon">创建时间：</string>
-  <string name="label_expiry">过期时间</string>
+    <string name="label_expiry">过期时间</string>
   <string name="label_valid_from">有效自</string>
   <string name="label_usage">用途</string>
   <string name="label_revoked">已吊销</string>
   <string name="label_insecure">不安全</string>
-  <string name="label_key_size">密钥大小</string>
-  <string name="label_ecc_curve">椭圆曲线</string>
-  <string name="label_main_user_id">主要标识</string>
+    <string name="label_main_user_id">主要标识</string>
   <string name="label_name">姓名</string>
   <string name="label_email">电子邮件</string>
   <string name="label_send_key">将证书发布到密钥服务器</string>
@@ -178,18 +135,15 @@
   <string name="label_keyservers_title">密钥服务器</string>
   <string name="label_keyserver_settings_hint">拖拽以改变次序，点击以编辑/删除</string>
   <string name="label_selected_keyserver_title">已选择的密钥服务器</string>
-  <string name="label_selected_smartpgp_authority_title">已选择的权限</string>
-  <string name="label_preferred">优先</string>
+    <string name="label_preferred">优先</string>
   <string name="label_enable_compression">启用压缩</string>
   <string name="label_enable_self_encrypt">为自己加密</string>
   <string name="label_encrypt_filenames">加密文件名</string>
-  <string name="label_hidden_recipients">隐藏收件人</string>
-  <string name="label_smartpgp_verify">SmartPGP：验证证书</string>
+    <string name="label_smartpgp_verify">SmartPGP：验证证书</string>
   <string name="label_smartpgp_verify_summary">使用可信任机构验证存储于SmartPGP安全令牌上的证书</string>
   <string name="label_smartpgp_roots">智能PGP:可信任的权威机构</string>
   <string name="label_verify_keyserver_connection">连接测试</string>
-  <string name="label_only_trusted_keyserver">只信任该密钥服务器</string>
-  <string name="label_enter_keyserver_url">URL</string>
+    <string name="label_enter_keyserver_url">URL</string>
   <string name="label_enter_keyserver_onion">可选的 Tor .onion URL</string>
   <string name="label_keyserver_dialog_delete">删除密钥服务器</string>
   <string name="label_theme">主题</string>
@@ -197,9 +151,7 @@
   <string name="label_smartpgp_authority_dialog_delete">删除受信方</string>
   <string name="pref_keyserver">OpenPGP 密钥服务器</string>
   <string name="pref_keyserver_summary">在指定的 OpenPGP 密钥服务器上搜索（HKP协议）</string>
-  <string name="pref_facebook">Facebook</string>
-  <string name="pref_facebook_summary">在 Facebook 上根据用户名搜索密钥</string>
-  <string name="pref_wkd">网络密钥目录</string>
+    <string name="pref_wkd">网络密钥目录</string>
   <string name="pref_wkd_summary">使用网络密钥目录搜索密钥</string>
   <string name="label_sync_settings_keyserver_title">自动更新密钥</string>
   <string name="label_sync_settings_keyserver_summary_on">每隔三天，自动与服务器更新密钥</string>
@@ -227,20 +179,14 @@
   <string name="orbot_install_dialog_install">安装</string>
   <string name="orbot_install_dialog_content">必须安装 Orbot 并启用代理传输。您希望安装么?</string>
   <string name="orbot_install_dialog_cancel">取消</string>
-  <string name="orbot_install_dialog_ignore_tor">不使用 Tor</string>
-  <!--StartOrbotDialogFragment strings-->
+    <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">运行 Orbot ？</string>
   <string name="orbot_start_dialog_content">Orbot 未运行。你希望打开并连接 Tor ？</string>
-  <string name="orbot_start_btn">打开 Orbot</string>
-  <string name="orbot_start_dialog_start">运行 Orbot</string>
+    <string name="orbot_start_dialog_start">运行 Orbot</string>
   <string name="orbot_start_dialog_cancel">取消</string>
-  <string name="orbot_start_dialog_ignore_tor">不使用 Tor 代理</string>
-  <string name="user_id_no_name"><![CDATA[<no name>]]></string>
+    <string name="user_id_no_name"><![CDATA[<no name>]]></string>
   <string name="none"><![CDATA[<none>]]></string>
-  <plurals name="n_keys">
-    <item quantity="other">%d 个密钥</item>
-  </plurals>
-  <plurals name="n_keyservers">
+    <plurals name="n_keyservers">
     <item quantity="other">%d 个密钥服务器</item>
   </plurals>
   <plurals name="n_authorities">
@@ -249,21 +195,8 @@
   <string name="secret_key">私钥:</string>
   <!--choice-->
   <string name="choice_none">没有</string>
-  <string name="choice_15secs">15秒</string>
-  <string name="choice_1min">1分钟</string>
-  <string name="choice_3mins">3分钟</string>
-  <string name="choice_5mins">5分钟</string>
-  <string name="choice_10mins">10分钟</string>
-  <string name="choice_20mins">20分钟</string>
-  <string name="choice_40mins">40分钟</string>
-  <string name="choice_1hour">1小时</string>
-  <string name="choice_2hours">2小时</string>
-  <string name="choice_4hours">4小时</string>
-  <string name="choice_8hours">8小时</string>
-  <string name="choice_forever">永远</string>
-  <string name="choice_select_cert">选择一个密钥</string>
-  <string name="filemanager_title_open">打开…</string>
-  <string name="rsa_2048">RSA 2048</string>
+    <string name="choice_select_cert">选择一个密钥</string>
+    <string name="rsa_2048">RSA 2048</string>
   <string name="rsa_2048_description_html">较小的文件，在 2030 年之前被认为是安全的</string>
   <string name="rsa_3072">RSA 3072</string>
   <string name="rsa_3072_description_html">推荐，在 2040 年之前被认为是安全的</string>
@@ -281,8 +214,7 @@
   <string name="usage_sign">签名</string>
   <string name="usage_encrypt">加密</string>
   <string name="usage_sign_and_encrypt">签名 &amp; 加密</string>
-  <string name="error">错误</string>
-  <string name="error_message">错误: %s</string>
+    <string name="error_message">错误: %s</string>
   <string name="theme_auto">自动</string>
   <string name="theme_light">亮色主题</string>
   <string name="theme_dark">深色主题</string>
@@ -300,8 +232,7 @@
   <string name="passphrase_keyboard_hint_numeric">切换到数字键盘</string>
   <string name="passphrase_transfer">输入传输密码</string>
   <string name="passphrase_transfer_autocrypt">输入传输密码以导入此 Autocrypt 安装信息。</string>
-  <string name="pin_for">输入 \'%s\' 的 PIN 码</string>
-  <string name="security_token_pin_for">输入 PIN 码以访问 \'%s\' 的安全令牌</string>
+    <string name="security_token_pin_for">输入 PIN 码以访问 \'%s\' 的安全令牌</string>
   <string name="security_token_nfc_text">将安全令牌贴近设备背面的 NFC 标志.</string>
   <string name="security_token_nfc_wait">请保持安全令牌贴在设备背部！</string>
   <string name="security_token_nfc_finished">现在移开安全令牌.</string>
@@ -310,34 +241,16 @@
   <string name="file_delete_confirmation">将删除以下文件:%s</string>
   <string name="file_delete_successful">共 %2$d 个文件，已删除 %1$d 个.%3$s</string>
   <string name="no_file_selected">没有选中文件</string>
-  <string name="encrypt_sign_successful">加密/签名成功</string>
-  <string name="encrypt_sign_clipboard_successful">加密/签名并复制到剪贴板成功</string>
-  <string name="select_encryption_key">至少选择一个加密密钥</string>
+    <string name="select_encryption_key">至少选择一个加密密钥</string>
   <string name="error_no_encryption_or_signature_key">至少选择一个加密密钥或者签名密钥.</string>
-  <string name="specify_file_to_encrypt_to">请指定加密文件的保存位置。\n警告: 如果文件已存在将被覆盖!</string>
-  <string name="specify_file_to_decrypt_to">请指定解密文件的保存位置。\n警告: 如果文件已存在将被覆盖!</string>
-  <string name="specify_backup_dest">将生成一个不包含您私钥的备份文件，请指定保存位置。\n警告: 如果文件已存在将被覆盖!</string>
-  <string name="specify_backup_dest_single">这个密钥将被分享，请指定一个目标文件。\n警告: 如果文件已存在将被重写!</string>
-  <string name="specify_backup_dest_secret_single">一个包含你的密钥（私钥）的完整的备份将被生成，请指定一个目标文件。\n警告: 如果文件已存在将被重写!</string>
-  <string name="specify_backup_dest_secret">一个包含所有密钥（私钥）的完整备份将被生成，请指定一个目标文件。\n警告: 如果文件已存在将被重写!</string>
-  <string name="key_deletion_confirmation_multi">确认删除所有选中的密钥？</string>
+    <string name="key_deletion_confirmation_multi">确认删除所有选中的密钥？</string>
   <string name="secret_key_deletion_confirmation">删除后你无法解密由这个密钥加密的信息/文件，也无法确认这个密钥签名！</string>
   <string name="public_key_deletetion_confirmation">删除密钥 \'%s\'？</string>
-  <string name="also_export_secret_keys">同时导出私钥</string>
-  <string name="reinstall_openkeychain">你遇到了一个已知的 Android bug。如果你希望将密钥与联系人关联，请重装 OpenKeychain。</string>
-  <string name="alert_strip">剥离该子密钥将使其无法在此设备上使用！</string>
-  <string name="key_exported">成功导出了 1 个密钥。</string>
-  <string name="keys_exported">成功导出了 %d 个密钥。</string>
-  <string name="no_keys_exported">没有导出任何密钥。</string>
-  <string name="key_creation_el_gamal_info">注意：只有子密钥才支持 ElGamal.</string>
-  <string name="key_not_found">找不到密钥 %08X</string>
+    <string name="alert_strip">剥离该子密钥将使其无法在此设备上使用！</string>
+    <string name="key_not_found">找不到密钥 %08X</string>
   <string name="authentication_subkey_not_found">此密钥无身份验证子密钥。</string>
-  <plurals name="bad_keys_encountered">
-    <item quantity="other">忽略了 %d 个无效密钥。您也许在导出密钥时使用了选项\n --export-secret-subkeys\n请确认您是用\n --export-secret-keys\n选项导出密钥。</item>
-  </plurals>
-  <string name="list_empty">这个列表是空的！</string>
-  <string name="nfc_successful">成功通过 NFC 发送密钥!</string>
-  <string name="key_copied_to_clipboard">密钥已复制到剪贴板!</string>
+    <string name="list_empty">这个列表是空的！</string>
+    <string name="key_copied_to_clipboard">密钥已复制到剪贴板!</string>
   <string name="fingerprint_copied_to_clipboard">指纹已复制到剪贴板!</string>
   <string name="select_key_to_certify">选择需要验证的密钥!</string>
   <string name="text_copied_to_clipboard">文本已复制到剪贴板!</string>
@@ -347,30 +260,14 @@
          they will be put after "error_message", e.g. "Error: file not found"-->
   <string name="error_file_delete_failed">还未被删除. 手动删除它们!</string>
   <string name="error_file_added_already">%s  已经被添加了</string>
-  <string name="error_file_not_found">没有找到文件</string>
-  <string name="error_bad_data">数据已损坏!</string>
-  <string name="error_no_secret_key_found">没有找到私钥</string>
-  <string name="error_external_storage_not_ready">外置存储没有就绪</string>
-  <string name="error_key_size_minimum512bit">密钥的大小必须至少 512 位!</string>
-  <string name="error_unknown_algorithm_choice">未知的算法选项</string>
-  <string name="error_user_id_no_email">未找到邮件地址</string>
-  <string name="error_key_needs_a_user_id">至少需要一个用户标识</string>
-  <string name="error_no_signature_passphrase">没有给出密码</string>
-  <string name="error_no_signature_key">没有提供签名密钥</string>
-  <string name="error_invalid_data">没有用 OpenPGP 加密/签名的内容!</string>
-  <string name="error_integrity_check_failed">完整性检查失败! 数据已被篡改!</string>
-  <string name="error_wrong_passphrase">密码错误</string>
-  <string name="error_could_not_extract_private_key">不能提取私钥</string>
+    <string name="error_bad_data">数据已损坏!</string>
+    <string name="error_invalid_data">没有用 OpenPGP 加密/签名的内容!</string>
+    <string name="error_could_not_extract_private_key">不能提取私钥</string>
   <string name="error_wrong_security_token">此安全令牌不包含所需的密钥</string>
   <!--errors without preceding Error:-->
-  <string name="error_jelly_bean_needed">只有 Android 4.1 及以上才支持 Android\'s NFC Beam 功能</string>
-  <string name="error_nfc_needed">必须开启 NFC!</string>
-  <string name="error_beam_needed">必须开启 Beam!</string>
-  <string name="error_nothing">无内容可显示。</string>
+    <string name="error_nothing">无内容可显示。</string>
   <string name="error_nothing_import">未发现密钥！</string>
-  <string name="error_contacts_key_id_missing">从联系人取回密钥 ID 失败！</string>
-  <string name="error_generic_report_bug">发生错误，请建立一个新的错误反馈给 OpenKeychain。</string>
-  <string name="error_denied_storage_permission">不能读取文件因为访问被拒绝</string>
+    <string name="error_denied_storage_permission">不能读取文件因为访问被拒绝</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">未签名</string>
   <string name="decrypt_result_invalid_signature">签名无效！</string>
@@ -394,14 +291,10 @@
   <string name="progress_done">完成。</string>
   <string name="progress_cancel">取消</string>
   <string name="progress_cancelling">正在取消…</string>
-  <string name="progress_downloading">下载中…</string>
-  <string name="progress_saving">保存中…</string>
+    <string name="progress_saving">保存中…</string>
   <string name="progress_importing">导入中…</string>
-  <string name="progress_benchmarking">评测中…</string>
-  <string name="progress_revoking_uploading">吊销并上传密钥中…</string>
-  <string name="progress_updating">更新密钥中…</string>
-  <string name="progress_exporting">导出中…</string>
-  <string name="progress_uploading">上传中…</string>
+    <string name="progress_revoking_uploading">吊销并上传密钥中…</string>
+    <string name="progress_uploading">上传中…</string>
   <string name="progress_building_key">构建密钥中…</string>
   <string name="progress_building_master_key">建立主环中…</string>
   <string name="progress_generating_rsa">产生新的RSA密钥中…</string>
@@ -418,78 +311,47 @@
   <string name="progress_modify_primaryuid">变更主用户标识中…</string>
   <string name="progress_modify_subkeychange">变更子密钥中…</string>
   <string name="progress_modify_subkeyrevoke">吊销子密钥中…</string>
-  <string name="progress_modify_subkeystrip">剥离子密钥中…</string>
-  <string name="progress_modify_subkeyadd">新增子密钥中…</string>
+    <string name="progress_modify_subkeyadd">新增子密钥中…</string>
   <string name="progress_modify_passphrase">变更密码中…</string>
   <string name="progress_modify_pin">变更PIN码中…</string>
   <string name="progress_modify_admin_pin">变更管理者PIN码中…</string>
   <string name="progress_exporting_key">正在导出密钥…</string>
-  <string name="progress_exporting_keys">导出密钥中…</string>
-  <string name="progress_start">准备中…</string>
-  <string name="progress_extracting_signature_key">提取签名密钥中…</string>
-  <string name="progress_extracting_key">提取密钥中…</string>
-  <string name="progress_preparing_streams">准备数据流…</string>
+    <string name="progress_extracting_signature_key">提取签名密钥中…</string>
+    <string name="progress_preparing_streams">准备数据流…</string>
   <string name="progress_encrypting">加密数据中…</string>
-  <string name="progress_prepare_decryption">开始解密…</string>
-  <string name="progress_decrypting">解密数据中…</string>
+    <string name="progress_decrypting">解密数据中…</string>
   <string name="progress_preparing_signature">准备签名中…</string>
   <string name="progress_processing_signature">处理签名中…</string>
   <string name="progress_generating_signature">产生签名中…</string>
   <string name="progress_verifying_signature">验证签名中…</string>
   <string name="progress_signing">签名中…</string>
-  <string name="progress_certifying">正在验证…</string>
-  <string name="progress_reading_data">读取数据中…</string>
-  <string name="progress_finding_key">查找密钥中…</string>
-  <string name="progress_decompressing_data">解缩数据中…</string>
-  <string name="progress_verifying_integrity">完整性验证中…</string>
-  <string name="progress_deleting_securely">安全删除 \'%s\' 中…</string>
-  <string name="progress_deleting">在删除密钥中…</string>
+    <string name="progress_reading_data">读取数据中…</string>
+    <string name="progress_deleting">在删除密钥中…</string>
   <string name="progress_update_trust">正在更新信任信息…</string>
   <string name="progress_verifying_keyserver_connection">验证网络连接中…</string>
   <string name="progress_starting_orbot">启动 Orbot 中…</string>
   <!--action strings-->
-  <string name="hint_cloud_search_hint">通过姓名、邮箱等查找</string>
-  <!--key bit length selections-->
-  <string name="key_size_2048">2048</string>
-  <string name="key_size_3072">3072</string>
-  <string name="key_size_4096">4096</string>
-  <string name="key_size_8192">8192</string>
-  <string name="key_size_custom">自定义密钥长度</string>
-  <string name="key_size_custom_info">输入自定义密钥长度（位）:</string>
-  <string name="key_size_custom_info_rsa">RSA 密钥长度必须大于 1024 并小于等于 16384，且为 8 的倍数。</string>
-  <string name="key_size_custom_info_dsa">DSA 密钥长度必须大于 512 并小于等于1024，且为 64 的倍数。</string>
-  <!--elliptic curve names-->
-  <string name="key_curve_nist_p256">NIST P-256</string>
-  <string name="key_curve_nist_p384">NIST P-384</string>
-  <string name="key_curve_nist_p521">NIST P-521</string>
-  <!--not in for now, see SaveKeyringParcel
-    <string name="key_curve_bp_p256">"Brainpool P-256"</string>
-    <string name="key_curve_bp_p384">"Brainpool P-384"</string>
-    <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
+    <!--key bit length selections-->
+    <!--elliptic curve names-->
+    <!--not in for now, see SaveKeyringParcel
+      <string name="key_curve_bp_p256">"Brainpool P-256"</string>
+      <string name="key_curve_bp_p384">"Brainpool P-384"</string>
+      <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
-  <string name="compression_fast">快</string>
-  <string name="compression_very_slow">非常慢</string>
-  <!--Help-->
+    <!--Help-->
   <string name="help_tab_start">开始</string>
   <string name="help_tab_faq">常见问题</string>
   <string name="help_tab_wot">密钥认证</string>
-  <string name="help_tab_nfc_beam">NFC Beam</string>
-  <string name="help_tab_changelog">更新日志</string>
+    <string name="help_tab_changelog">更新日志</string>
   <string name="help_tab_license">许可证</string>
   <string name="help_tab_about">关于</string>
   <string name="help_about_version">版本:</string>
-  <string name="help_tab_donations">捐赠</string>
-  <!--Import-->
-  <string name="import_tab_keyserver">密钥服务器</string>
-  <string name="import_tab_cloud">搜索密钥</string>
-  <string name="import_tab_direct">文件/剪切板</string>
-  <string name="import_tab_qr_code">二维码/NFC</string>
-  <string name="import_found_keys">找到%1$d个密钥</string>
+    <!--Import-->
+    <string name="import_found_keys">找到%1$d个密钥</string>
   <string name="import_qr_code_wrong">二维码格式不支持 (格式规范: https://github.com/open-keychain/open-keychain/wiki/QR-Codes)!</string>
   <string name="import_qr_code_fp">指纹异常或太短！</string>
   <string name="import_qr_code_too_short_fingerprint">指纹太短！</string>
-  <string name="import_qr_code_button">扫描二维码</string>
-  <string name="import_qr_code_text">将您的镜头对准二维码！</string>
+    <string name="import_qr_code_text">将您的镜头对准二维码！</string>
   <string name="btn_import">导入</string>
   <string name="btn_import_keys">导入所有密钥</string>
   <string name="btn_view_list">查看列表</string>
@@ -539,9 +401,7 @@
   <!--Revoke result toast (snackbar)-->
   <string name="revoke_ok">吊销密钥成功。</string>
   <string name="revoke_fail">吊销密钥出错！</string>
-  <string name="revoke_nothing">没有待吊销的密钥。</string>
-  <string name="revoke_cancelled">吊销操作已取消。</string>
-  <!--Certify result toast-->
+    <!--Certify result toast-->
   <plurals name="certify_keys_ok">
     <item quantity="other">成功确认了 %1$d 个密钥%2$s。</item>
   </plurals>
@@ -558,36 +418,24 @@
   <string name="intent_send_decrypt">OpenKeychain: 解密</string>
   <string name="intent_autocrypt_setup">导入自加密安装信息</string>
   <!--Remote API-->
-  <string name="api_settings_show_info">显示高级信息</string>
-  <string name="api_settings_hide_info">隐藏高级信息</string>
-  <string name="api_settings_no_key">尚未选择密钥</string>
-  <string name="api_settings_select_key">选择密钥</string>
-  <string name="api_settings_create_key">创建密钥</string>
+    <string name="api_settings_create_key">创建密钥</string>
   <string name="api_settings_save">保存</string>
-  <string name="api_settings_cancel">取消</string>
-  <string name="api_settings_revoke">吊销访问</string>
-  <string name="api_settings_start">启动应用</string>
-  <string name="api_settings_package_name">包名</string>
+    <string name="api_settings_revoke">吊销访问</string>
+    <string name="api_settings_package_name">包名</string>
   <string name="api_settings_package_certificate">应用证书指纹（SHA-256）</string>
   <string name="api_settings_advanced">更多密钥详情</string>
   <string name="api_settings_allowed_keys">允许的密钥</string>
-  <string name="api_settings_settings">设置</string>
-  <string name="api_register_title">允许到OpenKeyChain的访问吗？</string>
+    <string name="api_register_title">允许到OpenKeyChain的访问吗？</string>
   <string name="api_register_text">%s请要求使用 OpenKeychain 作为加密源。在这个应用程序使用你的密钥进行解密之前，我们将询问你是否授权。\n\n你也可以稍后在 OpenKeychain 的“Apps”界面内吊销授权</string>
-  <string name="api_register_allow">允许访问</string>
-  <string name="api_register_disallow">禁止访问</string>
-  <string name="api_register_error_select_key">请选择一个密钥！</string>
-  <string name="api_select_pub_keys_missing_text">没有与这些邮件地址对应的密钥：</string>
+    <string name="api_select_pub_keys_missing_text">没有与这些邮件地址对应的密钥：</string>
   <string name="api_select_pub_keys_dublicates_text">多个密钥与这些邮箱对应:</string>
   <string name="api_select_pub_keys_text">请确认收件人列表！</string>
   <string name="api_select_pub_keys_text_no_user_ids">请选择接收人！</string>
   <string name="api_error_wrong_signature">签名检查失败！您是否由其他途径安装了该应用？如果您确定该应用没安全问题，请在 OpenKeychain 里面吊销此应用的访问权限然后重新认证。</string>
   <string name="api_select_sign_key_text">请选择一个已有的密钥或者新建一个。</string>
-  <string name="api_select_keys_text">未能从已允许的密钥中找到能解密该内容的密钥，请选择允许的密钥。</string>
-  <!--Share-->
+    <!--Share-->
   <string name="share_qr_code_dialog_title">通过二维码分享</string>
-  <string name="share_nfc_dialog">通过 NFC 分享</string>
-  <!--retry upload dialog-->
+    <!--retry upload dialog-->
   <string name="retry_up_dialog_title">上传失败</string>
   <string name="retry_up_dialog_message">上传失败，是否重试？</string>
   <string name="retry_up_dialog_btn_reupload">重试</string>
@@ -605,38 +453,29 @@
     <item quantity="other">已选择 %d 个密钥。</item>
   </plurals>
   <string name="key_list_empty_text1">未发现密钥！</string>
-  <string name="key_list_filter_show_all">显示所有密钥</string>
-  <string name="key_list_filter_show_certified">仅显示确认过的密钥</string>
-  <string name="key_list_fab_qr_code">扫描二维码</string>
+    <string name="key_list_fab_qr_code">扫描二维码</string>
   <string name="key_list_fab_search">搜索密钥</string>
   <string name="key_list_fab_import">从文件导入</string>
   <string name="key_list_dummy_title">你还没有任何密钥！</string>
   <string name="key_list_dummy_subtitle">轻触这里以创建或导入一个密钥。</string>
   <!--Key view-->
   <string name="key_view_action_edit">编辑</string>
-  <string name="key_view_action_encrypt">加密文本</string>
-  <string name="key_view_action_encrypt_files">多个文件</string>
-  <string name="key_view_action_certify">确认密钥</string>
+    <string name="key_view_action_certify">确认密钥</string>
   <string name="key_view_action_update">从密钥服务器更新</string>
   <string name="key_view_action_share_with">分享到…</string>
   <string name="key_view_action_share_ssh_with">将 SSH 公钥分享到...</string>
-  <string name="key_view_action_share_nfc">通过NFC分享</string>
-  <string name="key_view_action_upload">上传至密钥服务器</string>
-  <string name="key_view_tab_main">主要信息</string>
-  <string name="key_view_tab_start">开始</string>
+    <string name="key_view_action_upload">上传至密钥服务器</string>
+    <string name="key_view_tab_start">开始</string>
   <string name="key_view_tab_share">分享</string>
   <string name="key_view_tab_keys">子密钥</string>
-  <string name="key_view_tab_certs">认证列表</string>
-  <string name="user_id_info_revoked_title">已吊销</string>
+    <string name="user_id_info_revoked_title">已吊销</string>
   <string name="user_id_info_revoked_text">该用户标识已被密钥拥有者吊销，即不再可用</string>
   <string name="user_id_info_certified_title">已验证</string>
   <string name="user_id_info_certified_text">该用户标识已被您验证</string>
   <string name="user_id_info_uncertified_title">未验证</string>
   <string name="user_id_info_uncertified_text">该用户标识还未被验证，您不能确定它是否属于指定的用户。</string>
   <!--Key trust-->
-  <string name="key_trust_no_cloud_evidence">网上没有关于此密钥可信度的证明</string>
-  <string name="key_trust_start_cloud_search">开始搜索</string>
-  <!--Edit key-->
+    <!--Edit key-->
   <string name="edit_key_action_change_passphrase">变更密码</string>
   <string name="edit_key_action_add_identity">添加用户标识</string>
   <string name="edit_key_action_add_subkey">添加子密钥</string>
@@ -670,12 +509,9 @@
   <string name="create_key_final_text">您输入了以下用户标识:</string>
   <string name="create_key_final_robot_text">生成密钥可能需要相当长的一段时间，您可以边喝咖啡边等待…</string>
   <string name="create_key_final_email_valid_warning">提供仅包含有效电子邮件地址的密钥可以让许多应用更好的运行</string>
-  <string name="create_key_rsa">(3个子密钥，RSA，4096位)</string>
-  <string name="create_key_custom">（自定义密钥配置）</string>
-  <string name="create_key_name_text">选择一个关联到此密钥的名字，可以是全名，例如‘John Doe’，或者一个妮称‘Johnny’。</string>
+    <string name="create_key_name_text">选择一个关联到此密钥的名字，可以是全名，例如‘John Doe’，或者一个妮称‘Johnny’。</string>
   <string name="create_key_email_text">输入你用来加密通信的主邮件地址</string>
-  <string name="create_key_passphrase_text">选择一个强壮密码.在你的设备丢失时它能保护你的密钥.</string>
-  <string name="create_key_hint_full_name">全名或昵称</string>
+    <string name="create_key_hint_full_name">全名或昵称</string>
   <string name="create_key_edit">更改密钥配置</string>
   <string name="create_key_add_email">添加邮件地址</string>
   <string name="create_key_add_email_text">其它能用此密钥通信的邮件地址</string>
@@ -686,8 +522,7 @@
   <string name="create_key_yubi_key_pin">PIN</string>
   <string name="create_key_yubi_key_admin_pin">Admin PIN</string>
   <string name="create_key_yubi_key_pin_repeat">重复PIN</string>
-  <string name="create_key_yubi_key_pin_not_correct">错误的PIN!</string>
-  <string name="create_key_yubi_key_pin_too_short">PIN最少要求为6位数字!</string>
+    <string name="create_key_yubi_key_pin_too_short">PIN最少要求为6位数字!</string>
   <string name="create_key_yubi_key_pin_insecure">请设置一个安全的PIN，不能是000000、123456或者类似的密码组合（最常见密码前20名均不被允许）</string>
   <string name="create_key_yubi_key_algorithm_text">请为每一个密钥选择其对应的加密算法</string>
   <string name="create_key_yubi_key_algorithm_sign_text">签名密钥</string>
@@ -697,8 +532,7 @@
   <string name="view_key_my_key">我的密钥</string>
   <string name="view_key_verified">已确认的密钥</string>
   <string name="view_key_unverified">未确认：扫描二维码以确认密钥！</string>
-  <string name="view_key_fragment_no_system_contact">&lt;无&gt;</string>
-  <!--Add/Edit keyserver-->
+    <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">添加密钥服务器</string>
   <string name="edit_keyserver_dialog_title">编辑密钥服务器</string>
   <string name="add_keyserver_connection_verified">连接认证成功！</string>
@@ -715,23 +549,13 @@
   <string name="nav_keys">密钥</string>
   <string name="nav_encrypt_decrypt">加密/解密</string>
   <string name="nav_apps">关联的应用</string>
-  <string name="drawer_open">打开抽屉</string>
-  <string name="drawer_close">关闭抽屉</string>
-  <string name="my_keys">我的密钥</string>
+    <string name="my_keys">我的密钥</string>
   <string name="nav_backup">备份/恢复</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">此处输入要加密的内容</string>
   <!--certs-->
-  <string name="cert_default">默认</string>
-  <string name="cert_none">无</string>
-  <string name="cert_casual">随意</string>
-  <string name="cert_positive">正面的</string>
-  <string name="cert_revoke">已吊销</string>
-  <string name="cert_verify_ok">正常</string>
-  <string name="cert_verify_failed">失败！</string>
-  <string name="cert_verify_error">错误！</string>
-  <string name="cert_verify_unavailable">密钥不可用</string>
-  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+    <string name="cert_none">无</string>
+    <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <string name="msg_internal_error">内部错误！</string>
   <string name="msg_cancelled">操作已取消</string>
   <!--Import Public log entries-->
@@ -742,8 +566,7 @@
   <string name="msg_ip_encode_fail">由于编码错误，操作失败</string>
   <string name="msg_ip_error_io_exc">由于i/o异常，操作失败</string>
   <string name="msg_ip_error_op_exc">由于数据库错误，操作失败</string>
-  <string name="msg_ip_error_remote_ex">由于内部错误，操作失败</string>
-  <string name="msg_ip">正在导入公钥密钥环 %s</string>
+    <string name="msg_ip">正在导入公钥密钥环 %s</string>
   <string name="msg_ip_fingerprint_error">正在导入的密钥指纹匹配失败</string>
   <string name="msg_ip_fingerprint_ok">指纹检验正常</string>
   <string name="msg_ip_insert_keyring">正在编码密钥环数据</string>
@@ -774,8 +597,7 @@
   <string name="msg_ip_subkey">正在处理子密钥 %s</string>
   <string name="msg_ip_subkey_expired">子密钥过期于 %s</string>
   <string name="msg_ip_subkey_expires">子密钥过期于 %s</string>
-  <string name="msg_ip_subkey_flags_unspecified">子密钥用途：未指定(假定为全部 )</string>
-  <string name="msg_ip_subkey_flags_cesa">子密钥用途：认证，加密，签名，授权</string>
+    <string name="msg_ip_subkey_flags_cesa">子密钥用途：认证，加密，签名，授权</string>
   <string name="msg_ip_subkey_flags_cesx">子密钥用途：认证，加密，签名</string>
   <string name="msg_ip_subkey_flags_cexa">子密钥用途：认证，加密，授权</string>
   <string name="msg_ip_subkey_flags_cexx">子密钥用途：认证，加密</string>
@@ -826,11 +648,9 @@
   <string name="msg_ip_uat_classifying">对用户属性进行分类</string>
   <string name="msg_ip_uat_revoked">用户属性已吊销</string>
   <string name="msg_is_bad_type_public">试图把公钥导入为私钥，这是一个漏洞，请报告错误！</string>
-  <string name="msg_is_bad_type_uncanon">试图导入一个没有标准化的私钥，这是一个BUG，请提交错误报告！</string>
-  <!--Import Secret log entries-->
+    <!--Import Secret log entries-->
   <string name="msg_is">导入密钥 %s</string>
-  <string name="msg_is_db_exception">数据库错误！</string>
-  <string name="msg_is_importing_subkeys">正在处理子密钥私钥</string>
+    <string name="msg_is_importing_subkeys">正在处理子密钥私钥</string>
   <string name="msg_is_error_io_exc">密钥环编码时出错！</string>
   <string name="msg_is_merge_public">正在合并导入的数据到现有的公钥密钥环</string>
   <string name="msg_is_merge_secret">正在合并已导入的数据到现有的私有密钥环</string>
@@ -866,8 +686,7 @@
   <string name="msg_kc_sub_bad_err">移除损坏的子密钥绑定认证</string>
   <string name="msg_kc_sub_bad_local">移除含有\'本地\'标记的子密钥绑定认证</string>
   <string name="msg_kc_sub_bad_keyid">子密钥绑定签发者ID不匹配</string>
-  <string name="msg_kc_sub_bad_time">正在移除带有未来时间戳的子密钥绑定认证</string>
-  <string name="msg_kc_sub_bad_time_early">子密钥绑定认证的时间戳早于密钥的时间戳！</string>
+    <string name="msg_kc_sub_bad_time_early">子密钥绑定认证的时间戳早于密钥的时间戳！</string>
   <string name="msg_kc_sub_bad_type">未知的子密钥认证类型：%s</string>
   <string name="msg_kc_sub_dup">移除多余的子密钥环绑定认证</string>
   <string name="msg_kc_sub_primary_bad">由于主密钥绑定认证无效，移除子密钥绑定认证</string>
@@ -1077,11 +896,7 @@
   <string name="msg_vl_error_wrong_key">消息没有用预期的密钥签名！</string>
   <string name="msg_vl_error_no_signature">缺失签名数据！</string>
   <string name="msg_vl_error_missing_literal">签名文字数据包中无数据</string>
-  <string name="msg_vl_clear_meta_file">文件名：%s</string>
-  <string name="msg_vl_clear_meta_mime">MIME 类型：%s</string>
-  <string name="msg_vl_clear_meta_time">修改日期：%s</string>
-  <string name="msg_vl_clear_meta_size">文件大小：%s</string>
-  <string name="msg_vl_clear_signature_check">正在检验签名数据</string>
+    <string name="msg_vl_clear_signature_check">正在检验签名数据</string>
   <string name="msg_vl_error_integrity_check">完整性检查错误！</string>
   <string name="msg_vl_ok">正常</string>
   <!--Messages for SignEncrypt operation-->
@@ -1102,8 +917,7 @@
   <string name="msg_pse_error_key_sign">选定的签名密钥无法签名数据！</string>
   <string name="msg_pse_error_sign_key">获取签名密钥时出现错误！</string>
   <string name="msg_pse_error_nfc">NFC 数据错误！</string>
-  <string name="msg_pse_error_no_passphrase">没有提供密码！</string>
-  <string name="msg_pse_error_pgp">OpenPGP 内部错误！</string>
+    <string name="msg_pse_error_pgp">OpenPGP 内部错误！</string>
   <string name="msg_pse_error_sig">遇到 OpenPGP 签名异常！</string>
   <string name="msg_pse_error_unlock">未知的密钥解锁错误！</string>
   <string name="msg_pse_error_key_not_allowed">不允许选择此密钥用于加密</string>
@@ -1215,8 +1029,7 @@
   <string name="msg_bench_enc_time">加密时间: %ss</string>
   <string name="msg_bench_enc_time_avg">5MB 加密平均时间: %ss</string>
   <string name="msg_bench_dec_time">解密时间: %ss</string>
-  <string name="msg_bench_dec_time_avg">5MB 解密平均时间: %ss</string>
-  <string name="msg_bench_s2k_100ms_its">100ms S2K迭代次数: %s</string>
+    <string name="msg_bench_s2k_100ms_its">100ms S2K迭代次数: %s</string>
   <string name="msg_bench_s2k_for_it">%1$s 次 SHA1 S2K 操作耗时: %2$sms</string>
   <string name="msg_bench_success">性能测试完成！</string>
   <string name="msg_data">正在输入数据</string>
@@ -1253,10 +1066,7 @@
   <string name="msg_get_no_enabled_source">启用至少一个信息源用于下载！</string>
   <string name="msg_download_query_failed">搜索密钥时出错。</string>
   <!--Messages for Mime parsing operation-->
-  <string name="msg_mime_parsing_start">正在解析 MIME 结构</string>
-  <string name="msg_mime_parsing_error">MIME 解析成功！</string>
-  <string name="msg_mime_parsing_success">MIME 解析成功！</string>
-  <!--PassphraseCache-->
+    <!--PassphraseCache-->
   <string name="passp_cache_notif_touch_to_clear">点击以清除密码缓存</string>
   <plurals name="passp_cache_notif_n_keys">
     <item quantity="other">已保存 %d 个密码</item>
@@ -1268,105 +1078,42 @@
   <string name="keyserver_sync_orbot_notif_title">需要 Orbot 才能从服务器同步</string>
   <string name="keyserver_sync_orbot_notif_msg">轻按以启动Orbot</string>
   <string name="keyserver_sync_orbot_notif_start">打开Orbot</string>
-  <string name="keyserver_sync_orbot_notif_ignore">直连</string>
-  <!--First Time-->
-  <string name="first_time_text1">用OpenKeychain重新找回您的隐私！</string>
-  <string name="first_time_create_key">创建密钥</string>
+    <!--First Time-->
+    <string name="first_time_create_key">创建密钥</string>
   <string name="first_time_import_key">从文件导入密钥</string>
   <string name="first_time_security_token">使用安全令牌</string>
   <string name="first_time_security_token_subtitle">(Fidesmo, YubiKey NEO, SIGILANCE, …)</string>
   <string name="first_time_skip">跳过设置</string>
-  <string name="first_time_blank_security_token">您希望将此空白的安全令牌用于 OpenKeychain 吗？\n\n现在请将安全令牌移开，当再次需要时，我们会提示您！</string>
-  <string name="first_time_blank_security_token_yes">使用该安全令牌</string>
-  <string name="backup_text">含有您私钥的备份在任何情况下都不能分享给其他人！</string>
+    <string name="backup_text">含有您私钥的备份在任何情况下都不能分享给其他人！</string>
   <string name="backup_all">完整备份（已加密的）</string>
   <string name="backup_public_keys">仅导出联系人密钥</string>
   <string name="backup_section">备份</string>
   <string name="restore_section">恢复</string>
   <!--unsorted-->
-  <string name="section_certifier_id">认证人</string>
-  <string name="section_cert">认证详情</string>
-  <string name="label_user_id">用户标识</string>
-  <string name="unknown_uid"><![CDATA[<unknown>]]></string>
-  <string name="empty_certs">该密钥的证书不存在</string>
-  <string name="certs_text">此处仅显示自认证及被您的密钥所验证的凭证。</string>
-  <string name="section_uids_to_certify">用户标识</string>
+    <string name="section_uids_to_certify">用户标识</string>
   <string name="certify_text">您正在导入的密钥包含了“用户标识”：姓名和邮件地址。选择那些完全符合您预期的以确认这些信息。</string>
   <string name="certify_fingerprint_text">请逐字比对这里的短语和同伴设备上显示的的指纹。</string>
-  <string name="label_revocation">吊销原因</string>
-  <string name="label_cert_type">输入</string>
-  <string name="error_key_not_found">未找到密钥</string>
+    <string name="error_key_not_found">未找到密钥</string>
   <string name="error_key_processing">处理密钥出现错误！</string>
   <string name="key_stripped">已剥离</string>
   <string name="key_divert">存储于安全令牌上</string>
-  <string name="key_no_passphrase">没有密码</string>
-  <string name="key_unavailable">不可用</string>
-  <string name="secret_cannot_multiple">只能逐个删除您的密钥！</string>
-  <string name="title_view_cert">查看认证详情</string>
-  <string name="unknown">未知</string>
-  <string name="can_sign_not">无法签署</string>
-  <string name="error_no_encrypt_subkey">没有加密子密钥！</string>
-  <string name="contact_show_key">显示密钥 (%s)</string>
-  <string name="swipe_to_update">向下滑动从密钥服务器更新</string>
-  <string name="error_no_file_selected">至少选择一个待加密的文件！</string>
+    <string name="secret_cannot_multiple">只能逐个删除您的密钥！</string>
+    <string name="unknown">未知</string>
+    <string name="error_no_encrypt_subkey">没有加密子密钥！</string>
+    <string name="error_no_file_selected">至少选择一个待加密的文件！</string>
   <string name="error_multi_files">由于 Android 系统限制，不支持保存多个文件。</string>
   <string name="error_multi_clipboard">不支持加密多个文件到剪贴板。</string>
   <string name="error_detached_signature">不支持对二进制文件只签名而不加密，请至少选择一个加密密钥。</string>
   <string name="error_empty_text">输入待加密文本!</string>
   <string name="error_log_share_internal">初始化日志时发生内部错误！</string>
-  <string name="key_colon">密钥：</string>
-  <string name="exchange_description">在开始密钥交换之前，在右侧指定参与者的数量，然后点击“开始交换”按钮。\n\n您将被要求回答两个问题以确认由正确的参与者参与交换过程，并且他们的指纹是正确的。</string>
-  <string name="btn_start_exchange">开始交换</string>
-  <string name="user_id_none"><![CDATA[<none>]]></string>
-  <!--Android Account-->
-  <string name="account_no_manual_account_creation">不能手动创建 OpenKeychain 账户。</string>
-  <string name="account_privacy_title">隐私</string>
-  <string name="account_privacy_text">OpenKeychain 不会同步你的通讯录到互联网。它只会通过姓名和邮件地址来匹配密钥。这是在你的设备上离线完成的。</string>
-  <string name="sync_notification_permission_required_title">需要访问联系人的权限</string>
-  <string name="sync_notification_permission_required_text">点击以配置关联到联系人</string>
-  <!--Passphrase wizard-->
+    <!--Android Account-->
+    <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
-  <string name="title_unlock_method">选择一个解锁方法</string>
-  <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+    <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">输入密码</string>
-  <string name="passphrase">密码</string>
-  <string name="noPassphrase">没有密码</string>
-  <string name="no_passphrase_set">没有设置密码</string>
-  <string name="passphrases_match">密码匹配</string>
-  <string name="passphrase_saved">密码已保存</string>
-  <string name="passphrase_invalid">密码无效</string>
-  <string name="missing_passphrase">缺少密码</string>
-  <string name="passphrase_again">重复</string>
-  <string name="lockpattern">锁屏图案</string>
-  <string name="lockpatternNFC">NFC + 锁屏图案</string>
-  <string name="unlock_method">解锁方法</string>
-  <string name="set_passphrase">设置密码</string>
-  <string name="draw_lockpattern">绘制锁屏图案</string>
-  <string name="nfc_title">NFC</string>
-  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-  <string name="nfc_wrong_tag">NFC 标签不匹配，请重试。</string>
-  <string name="enable_nfc">请在设置中激活 NFC</string>
-  <string name="no_nfc_support">该设备不支持 NFC</string>
-  <string name="nfc_write_successful">已成功写入 NFC 标签</string>
-  <string name="unlocked">已解锁</string>
-  <string name="nfc_settings">设置</string>
-  <string name="snack_security_token_view">查看</string>
-  <string name="snack_security_token_import">导入</string>
-  <string name="button_bind_key">绑定密钥</string>
-  <string name="security_token_serial_no">序列号： %s</string>
-  <string name="security_token_key_holder">密钥持有人： %s</string>
-  <string name="security_token_key_holder_not_set"><![CDATA[Key holder: <not set>]]></string>
-  <string name="security_token_status_bound">安全信息匹配并且已绑定到密钥</string>
-  <string name="security_token_status_unbound">安全信息匹配并且可绑定到密钥</string>
-  <string name="security_token_status_partly">安全信息匹配并且已部分绑定到密钥</string>
-  <string name="security_token_create">请将安全令牌贴在您设备的背部</string>
-  <string name="security_token_reset_or_import">这枚安全令牌已经存储了一个密钥</string>
-  <string name="btn_reset">重置</string>
-  <string name="security_token_radio_use_existing">使用现存的密钥</string>
-  <string name="security_token_radio_reset">重置令牌</string>
-  <string name="security_token_reset_warning">重置安全令牌将完全摧毁其内部的密钥。之后您将无法使用该密钥加解密消息或文件！</string>
-  <string name="snack_security_token_other">安全令牌中存有不同的密钥！</string>
-  <string name="security_token_error">错误： %s</string>
+    <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+    <string name="security_token_create">请将安全令牌贴在您设备的背部</string>
+    <string name="security_token_error">错误： %s</string>
   <plurals name="security_token_error_pin">
     <item quantity="other">PIN码错误！\n剩余%d次尝试机会。</item>
   </plurals>
@@ -1394,8 +1141,7 @@
   <string name="snack_compression_off">压缩 <b>禁用</b>.</string>
   <string name="snack_self_encrypt_on">为自己加密<b>启用</b></string>
   <string name="snack_self_encrypt_off">为自己加密<b>禁用</b></string>
-  <string name="error_loading_keys">加载密钥出现错误！</string>
-  <string name="error_empty_log">(错误，空日志)</string>
+    <string name="error_empty_log">(错误，空日志)</string>
   <string name="error_reading_text">解密时无法读取输入！</string>
   <string name="error_reading_aosp">读取数据失败，这是 Android 邮件客户端的一个错误 !（错误 #290）</string>
   <string name="error_reading_k9">收到不完整数据，尝试在 K-9 Mail 中点击 “下载完整消息”！</string>
@@ -1420,22 +1166,16 @@
   <string name="error_scan_match">指纹不匹配！</string>
   <string name="error_expiry_past">过期时间为过去！</string>
   <!--Other Linked Identity strings-->
-  <string name="btn_finish">完成</string>
-  <string name="snack_btn_overwrite">重写</string>
+    <string name="snack_btn_overwrite">重写</string>
   <string name="backup_code_explanation">备份将使用代码加密。请在继续操作前将其抄写下来！</string>
-  <string name="backup_code_enter">请输入备份代码:</string>
-  <string name="backup_code_ok">编码已接受!</string>
-  <string name="btn_code_wrotedown">好的，我已经抄写下来了！</string>
-  <string name="backup_code_wrong">您输入的备份代码不正确！\n您确认已将代码正确抄写下来了吗？</string>
-  <string name="btn_backup_share">分享备份</string>
+    <string name="btn_backup_share">分享备份</string>
   <string name="btn_backup_save">保存备份</string>
   <string name="btn_backup_export">导出备份</string>
   <string name="snack_backup_error_saving">备份时出现错误！</string>
   <string name="snack_backup_saved">备份已保存</string>
   <string name="snack_backup_exists">备份已存在!</string>
   <string name="snack_backup_saved_dir">已保存到 OpenKeychain 目录</string>
-  <string name="btn_backup_back">后退并检查</string>
-  <string name="snack_text_too_long">文本过长，无法完整显示！</string>
+    <string name="snack_text_too_long">文本过长，无法完整显示！</string>
   <string name="snack_shared_text_too_long">分享文本因过长而被截断！</string>
   <string name="share_log_dialog_title">分享日志?</string>
   <string name="share_log_dialog_message">日志对开发者查找 OpenKeychain 的错误非常有用，但其可能包含诸如更新密钥这样的敏感信息。请确认您愿意分享此类信息。</string>
@@ -1452,8 +1192,7 @@
   <string name="cache_ttl_one_day">一天</string>
   <string name="cache_ttl_forever">直到被清除</string>
   <string name="remember">记住</string>
-  <string name="security_token_error_pgp_app_not_installed">在安全令牌中没有找到 PGP 应用</string>
-  <string name="prompt_fidesmo_pgp_install_title">安装 PGP？</string>
+    <string name="prompt_fidesmo_pgp_install_title">安装 PGP？</string>
   <string name="prompt_fidesmo_pgp_install_message">您的 Fidesmo 设备上没有可用的 PGP 应用。</string>
   <string name="prompt_fidesmo_pgp_install_button_positive">安装</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">取消</string>
@@ -1461,17 +1200,7 @@
   <string name="prompt_fidesmo_app_install_message">您需要 Fidesmo Android 应用才能安装 PGP.</string>
   <string name="prompt_fidesmo_app_install_button_positive">安装</string>
   <string name="prompt_fidesmo_app_install_button_negative">取消</string>
-  <string name="help_donation_paypal_item">OpenKeychain 捐赠</string>
-  <string-array name="help_donation_google_catalog_values">
-    <item>1 欧元</item>
-    <item>2 欧元</item>
-    <item>3 欧元</item>
-    <item>5 欧元</item>
-    <item>10 欧元</item>
-    <item>50 欧元</item>
-    <item>100 欧元</item>
-  </string-array>
-  <string name="redirect_import_key_title">使用 OpenKeychain  扫描！</string>
+    <string name="redirect_import_key_title">使用 OpenKeychain  扫描！</string>
   <string name="redirect_import_key_message">您使用第三方应用扫描了一个 OpenPGP 二维码。请直接使用 Openkeychain 扫描以确保安全。</string>
   <string name="redirect_import_key_yes">重新扫描</string>
   <string name="redirect_import_key_no">关闭</string>
@@ -1483,11 +1212,8 @@
   <string name="button_back">返回</string>
   <string name="button_got_it">知道了</string>
   <string name="requested_key_label">所需的密钥：</string>
-  <string name="error_preselect_sign_key">选择签名密钥%s时出现问题！</string>
-  <string name="error_preselect_encrypt_key">选择加密密钥%s时出现问题！</string>
-  <string name="title_key_status">密钥状态</string>
-  <string name="caption_secret_status">这是你的密钥。你可以使用它来：</string>
-  <string name="cap_title_confirm">确认其他密钥</string>
+    <string name="title_key_status">密钥状态</string>
+    <string name="cap_title_confirm">确认其他密钥</string>
   <string name="cap_cert_ok">此密钥可用于确认其他密钥。</string>
   <string name="cap_cert_divert">此密钥可在安全令牌的配合下确认其他密钥。</string>
   <string name="cap_cert_stripped">这个密钥已被剥离，它不能确认其他的密钥。</string>
@@ -1507,8 +1233,7 @@
   <string name="cap_decrypt_revoked">此密钥可用于解密/接收消息，但已被吊销。</string>
   <string name="cap_decrypt_stripped">此密钥不能在此设备上解密/接收消息。</string>
   <string name="cap_decrypt_unavailable">此密钥未配置为解密/接收消息用途！</string>
-  <string name="cap_decrypt_insecure">此密钥可用于解密/接收消息，但不安全！</string>
-  <string name="key_health_ok_title">正常</string>
+    <string name="key_health_ok_title">正常</string>
   <string name="key_health_ok_subtitle">未发现密钥有问题。</string>
   <string name="key_health_divert_title">正常（安全令牌）</string>
   <string name="key_health_divert_subtitle">未发现密钥有问题。</string>
@@ -1538,8 +1263,7 @@
   <string name="key_insecure_unknown_curve_problem">此密钥使用 <b>%1$s</b> 算法，这个算法不在白名单中。</string>
   <string name="key_insecure_unknown_curve_solution">此密钥不能升级。为了通信安全，密钥持有者必须重新生成新的密钥</string>
   <string name="key_insecure_unidentified_problem">此密钥出现了一个尚未定义的问题</string>
-  <string name="key_insecure_unidentified_solution">请发送一个缺陷报告。</string>
-  <string name="key_expiry_text">该密钥已于 <b>%1$s</b> 过期</string>
+    <string name="key_expiry_text">该密钥已于 <b>%1$s</b> 过期</string>
   <string name="dialog_insecure_title">安全警告</string>
   <string name="dialog_insecure_recommend_title">建议的操作</string>
   <string name="insecure_encrypt_bitstrength">你选择用于接收（解密）信息的密钥已经过时！\n\n你配置的小于等于1024位的（%s）算法密钥，早在2006年就被认为在一般使用中不安全了。</string>
@@ -1557,45 +1281,14 @@
   <string name="insecure_hash_algo">这条信息使用%s哈希算法签名，这被认为是不安全的，或者至少是不主流的</string>
   <string name="dialog_insecure_override">如果你不想再收到此类安全问题的警告，你可以禁用此警告</string>
   <string name="dialog_insecure_override_title">忽略此警告</string>
-  <string name="dialog_insecure_override_ok_title">警告已忽略</string>
-  <string name="dialog_insecure_override_ok">针对（此密钥/信息）的安全警告将不会再次出现。</string>
-  <string name="dialog_insecure_button_override">覆盖</string>
+    <string name="dialog_insecure_button_override">覆盖</string>
   <string name="dialog_insecure_button_override_confirm">覆盖（%d）</string>
   <string name="dialog_insecure_button_undo">不覆盖</string>
   <string name="dialog_insecure_button_view_key">查看密钥</string>
   <string name="dialog_insecure_button_ok">知道了</string>
   <string name="usage_authentication">认证</string>
   <string name="identity_context_forget">忘记</string>
-  <string name="button_scan">扫描</string>
-  <string name="button_more_info">更多信息</string>
-  <string name="transfer_scan_explanation">使用另一设备扫描二维码，以建立安全连接来分享或导入密钥。</string>
-  <string name="transfer_scan_warning">务必仅在您自己的设备上使用！</string>
-  <string name="connection_status">连接状态：</string>
-  <string name="section_transfer_keys">可用于传输的密钥</string>
-  <string name="section_received_keys">已接收的密钥</string>
-  <string name="transfer_scan_only_wifi">这个功能仅可用于Wifi网络</string>
-  <string name="button_import">导入</string>
-  <string name="transfer_status_connected">已连接</string>
-  <string name="transfer_status_disconnected">已断开连接！</string>
-  <string name="transfer_error_read_incoming">无法读取传入的密钥！</string>
-  <string name="transfer_error_connect">连接失败！</string>
-  <string name="transfer_error_listen">等待连接时出现错误！</string>
-  <string name="transfer_error_generic">未知传输错误！</string>
-  <string name="transfer_error_generic_msg">通讯错误:%s</string>
-  <string name="transfer_not_available">抱歉，这个功能仅可用于Android 5及更新的版本 :(</string>
-  <string name="transfer_list_empty">该设备上无可供发送的密钥。正在等待传入的密钥......</string>
-  <string name="transfer_connecting">连接中…</string>
-  <string name="first_time_secure_wifi_transfer">安全 Wifi 传输</string>
-  <string name="menu_secure_wifi_transfer">安全 Wifi 传输</string>
-  <string name="transfer_confirm_cancel">取消</string>
-  <string name="transfer_confirm_ok">发送</string>
-  <string name="transfer_confirm_title">发送你的密钥？</string>
-  <string name="transfer_confirm_text">这将会传输密钥的完整访问权到已连接的设备。你不应发送密钥到一个你不拥有的设备上。</string>
-  <string name="button_scan_again">重新扫描</string>
-  <string name="transfer_error_wifi_text">连接失败！</string>
-  <string name="transfer_error_wifi_text_instructions">请确保两设备均在同一网络上，然后重新扫描。</string>
-  <string name="transfer_error_wifi_text_instructions_ssid">请确保两设备均在“%s”网络上，然后重新扫描。</string>
-  <string name="status_check_key">正在检查密钥状态......</string>
+    <string name="status_check_key">正在检查密钥状态......</string>
   <string name="status_search_local">正在于密钥列表中搜索......</string>
   <string name="status_search_uri">在令牌URL上搜索…</string>
   <string name="status_search_keyserver">正在于密钥服务器中搜索......</string>
@@ -1680,8 +1373,7 @@
   <string name="use_key_no_name">使用密钥：<![CDATA[<no name>]]></string>
   <string name="title_select_key">%s想要设置端到端加密到这个地址：</string>
   <string name="select_identity_cancel">禁用</string>
-  <string name="select_identity_create">为我生成一个密钥</string>
-  <string name="error_save_key_internal">保存密钥时发生内部错误！</string>
+    <string name="error_save_key_internal">保存密钥时发生内部错误！</string>
   <string name="menu_list_unrelated_keys">列出无关密钥</string>
   <string name="no_keys_gen_title">这是一个新地址</string>
   <string name="no_keys_gen_subtitle">在OpenKeychain中生成一个新的端到端密钥</string>
@@ -1700,17 +1392,10 @@
   <string name="msg_get_query_not_implemented">此服务器不支持当前的查询！有些服务器只接受电子邮件地址查询。请重新定义关键词或者尝试使用另一个服务器。</string>
   <string name="snack_keylist_clipboard_title">在剪贴板中发现密钥数据！</string>
   <string name="snack_keylist_clipboard_action">查看</string>
-  <string name="notify_channel_keysync">密钥服务器升级</string>
-  <string name="notify_channel_permission">权限请求</string>
+    <string name="notify_channel_permission">权限请求</string>
   <string name="notify_channel_passcache">密码短语缓存</string>
   <string name="notify_channel_orbot">Orbot 状态</string>
-  <string name="notify_title_keysync">更新密钥中…</string>
-  <string name="notify_title_keysync_finished">已完成%d个密钥的更新</string>
-  <string name="notify_content_keysync">密钥%d/%d</string>
-  <string name="snack_keysync_start">开始更新所有密钥…</string>
-  <string name="snack_keysync_finished">成功更新密钥</string>
-  <string name="snack_keysync_error">更新密钥时出现问题</string>
-  <string name="keychoice_cannot_encrypt">此密钥不能被用于加密！</string>
+    <string name="keychoice_cannot_encrypt">此密钥不能被用于加密！</string>
   <string name="keychoice_cannot_sign">此密钥不能被用于签名！</string>
   <string name="keychoice_insecure">此密钥不安全，无法使用！</string>
   <string name="keychoice_revoked">此密钥已被吊销，无法使用！</string>

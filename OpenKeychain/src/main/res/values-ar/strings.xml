@@ -17,10 +17,7 @@
   <string name="title_share_key">شارك المفتاح بواسطة ...</string>
   <string name="title_share_file">شارك الملف عبر ...</string>
   <string name="title_share_message">شارك النص عبر ...</string>
-  <string name="title_encrypt_to_file">تعمية نحو ملف</string>
   <string name="title_import_keys">استيراد المفاتيح</string>
-  <string name="title_export_key">النسخ الإحتياطي للمفتاح</string>
-  <string name="title_export_keys">النسخ الإحتياطي للمفاتيح</string>
   <string name="title_key_not_found">لم يتم العثور على المفتاح</string>
   <string name="title_send_key">التحميل على خادم المفاتيح</string>
   <string name="title_backup">النسخ الإحتياطي للمفتاح</string>
@@ -28,21 +25,15 @@
   <string name="title_key_details">تفاصيل المفتاح</string>
   <string name="title_help">المساعدة</string>
   <string name="title_log_display">السجل</string>
-  <string name="title_exchange_keys">تبادل المفاتيح</string>
   <string name="title_advanced_key_info">متقدم</string>
   <string name="title_manage_my_keys">إدارة المفاتيح الخاصة بي</string>
   <!--section-->
   <string name="section_user_ids">الهويات</string>
-  <string name="section_security_token">شارة الأمان</string>
-  <string name="section_should_you_trust">هل تود الثقة في هذا المفتاح ؟</string>
-  <string name="section_proof_details">دليل التحقق</string>
   <string name="section_keys">المفاتيح التابعة</string>
   <string name="section_cloud_search">البحث عن مفاتيح</string>
-  <string name="section_cloud_search_summary">خادم المفاتيح</string>
   <string name="section_passphrase_cache">الكلمات السرية و الرموز</string>
   <string name="section_proxy_settings">الخصوصية على الشبكة</string>
   <string name="section_proxy_settings_summary">إعدادات وكيل البروكسي و شبكة تور</string>
-  <string name="section_gui">واجهة المستخدم</string>
   <string name="section_sync_settings">المزامنة</string>
   <string name="section_experimental_features">ميزات تجريبية</string>
   <string name="section_certify">تأكيد </string>
@@ -57,7 +48,6 @@
   <!--button-->
   <string name="btn_encrypt_share_file">تشفير و مشاركة ملف</string>
   <string name="btn_encrypt_save_file">تعمية و حفظ الملف</string>
-  <string name="btn_save_file">إحفظ الملف</string>
   <string name="btn_save">حفظ</string>
   <string name="btn_view_log">عرض السجل</string>
   <string name="btn_do_not_save">إلغاء</string>
@@ -67,11 +57,9 @@
   <string name="btn_export_to_server">التحميل على خادم المفاتيح</string>
   <string name="btn_next">التالي</string>
   <string name="btn_back">السابق</string>
-  <string name="btn_no">ﻻ</string>
   <string name="btn_match">البصمات متطابقة</string>
   <string name="btn_share_encrypted_signed">تشفير أو توقيع و مشاركة نص</string>
   <string name="btn_copy_encrypted_signed">تعمية/توقيع ثم نسخ النص</string>
-  <string name="btn_view_cert_key">الإطلاع على شهادة المفتاح</string>
   <string name="btn_create_key">إنشاء مفتاح</string>
   <string name="btn_share_decrypted_text">شارك</string>
   <string name="btn_open_with">إفتح بواسطة ...</string>
@@ -83,7 +71,6 @@
   <string name="btn_add_email">إضافة عنوان بريد إلكتروني آخر</string>
   <string name="btn_unlock">إلغاء القفل</string>
   <string name="btn_proceed">مواصلة</string>
-  <string name="btn_add_keyserver">إضافة</string>
   <string name="btn_save_default">حفظ كافتراضي</string>
   <string name="btn_saved">تم الإحتفاظ به</string>
   <string name="btn_not_matching">غير متطابقة</string>
@@ -92,62 +79,39 @@
   <string name="cd_encrypt_files">تعمية الملفات</string>
   <string name="cd_exchange_keys">تبادل المفاتيح</string>
   <string name="cd_encrypt_text">تعمية نص</string>
-  <string name="cd_share_nfc">شارك عبر الـ NFC</string>
   <!--menu-->
   <string name="menu_preferences">الإعدادات</string>
   <string name="menu_help">المساعدة</string>
   <string name="menu_export_key">انسخ المفتاح احتياطيا</string>
   <string name="menu_delete_key">حذف مفتاح</string>
-  <string name="menu_status">عرض حالة المفتاح</string>
   <string name="menu_manage_keys">إدارة المفاتيح الخاصة بي</string>
   <string name="menu_search">بحث</string>
   <string name="menu_open">مفتوح</string>
   <string name="menu_read_clipboard">القراءة من الحافظة</string>
-  <string name="menu_nfc_preferences">إعدادات NFC</string>
-  <string name="menu_select_all">اختر الكل</string>
-  <string name="menu_export_all_keys">تصدير كل المفاتيح</string>
   <string name="menu_update_all_keys">تحديث كل المفاتيح</string>
   <string name="menu_certify_fingerprint">التأكيد ببصمة</string>
-  <string name="menu_certify_fingerprint_phrases">التأكيد بواسطة عبارة</string>
   <string name="menu_share_log">مشاركة السجل</string>
   <string name="menu_change_password">تغيير كلمة السر</string>
   <string name="menu_advanced">متقدم</string>
-  <string name="menu_keyserver_add">إضافة</string>
   <!--label-->
-  <string name="label_message">نص</string>
-  <string name="label_file">ملف</string>
-  <string name="label_files">الملف(الملفات)</string>
-  <string name="label_file_colon">ملف :</string>
   <string name="label_no_passphrase">دون كلمة السر</string>
   <string name="label_passphrase">كلمة السر</string>
   <string name="label_pin">رمز PIN</string>
   <string name="label_unlock">جار إلغاء القفل ...</string>
   <string name="label_passphrase_again">إعادة إدخال كلمة السر</string>
-  <string name="label_show_passphrase">عرض كلمة السر</string>
-  <string name="label_algorithm">الخوارزمية</string>
   <string name="label_algorithm_colon">الخوارزمية :</string>
-  <string name="label_write_version_header">أخبر الآخرين أنك تستخدِم أوبن كي تشاين</string>
   <string name="label_asymmetric_from">التوقيع بـ :</string>
   <string name="label_to">تعمية إلى</string>
   <string name="label_delete_after_encryption">حذف الملفات بعد التعمية</string>
-  <string name="label_delete_after_decryption">حذف بعد فك التعمية</string>
-  <string name="label_encryption_algorithm">خوارزمية التعمية</string>
   <string name="label_symmetric">تشفير بكلمة سرية</string>
-  <string name="label_message_compression">ضغط النص</string>
-  <string name="label_file_compression">ضغط الملف</string>
   <string name="label_keyservers">إدارة خوادم مفاتيح OpenPGP</string>
-  <string name="label_key_id">هوية المفتاح</string>
   <string name="label_key_id_colon">مُعرِّف المفتاح :</string>
   <string name="label_key_type">النوع</string>
-  <string name="label_creation">خلق</string>
-  <string name="label_creation_colon">الإنشاء :</string>
   <string name="label_expiry">المدة</string>
   <string name="label_valid_from">ساري من</string>
   <string name="label_usage">استعمال</string>
   <string name="label_revoked">ملغى</string>
   <string name="label_insecure">غير آمن</string>
-  <string name="label_key_size">حجم المفتاح</string>
-  <string name="label_ecc_curve">منحنى إهليلجي</string>
   <string name="label_main_user_id">الهوية الرئيسية</string>
   <string name="label_name">الاسم</string>
   <string name="label_email">البريد الإلكتروني</string>
@@ -159,17 +123,13 @@
   <string name="label_enable_compression">تفعيل الضغط</string>
   <string name="label_enable_self_encrypt">تشفير إلى المُوَقِّع</string>
   <string name="label_encrypt_filenames">تعمية أسماء الملفات</string>
-  <string name="label_hidden_recipients">إخفاء المستلمين</string>
   <string name="label_verify_keyserver_connection">التحقق من الربط</string>
-  <string name="label_only_trusted_keyserver">خادم المفاتيح الموثوق فيه فقط</string>
   <string name="label_enter_keyserver_url">العنوان</string>
   <string name="label_keyserver_dialog_delete">حذف خادم المفاتيح</string>
   <string name="label_theme">السمة</string>
   <string name="label_enter_smartpgp_authority_name">الاسم</string>
   <string name="label_smartpgp_authority_dialog_delete">حذف السُّلطة</string>
   <string name="pref_keyserver">خوادم مفاتيح OpenPGP</string>
-  <string name="pref_facebook">فيس بوك</string>
-  <string name="pref_facebook_summary">البحث عن مفاتيح على الفايسبوك بإسم المستخدمين</string>
   <string name="label_sync_settings_keyserver_title">تحديثات تلقائية للمفاتيح</string>
   <string name="label_sync_settings_wifi_title">زامن فقط على الواي فاي</string>
   <string name="label_experimental_settings_desc_title">تحذير</string>
@@ -190,40 +150,16 @@
   <string name="orbot_install_dialog_title">هل توَدّ تنصيب تطبيق أوربوت لاستخدام شبكة تور ؟</string>
   <string name="orbot_install_dialog_install">تثبيت</string>
   <string name="orbot_install_dialog_cancel">إلغاء</string>
-  <string name="orbot_install_dialog_ignore_tor">لا تستعن بشبكة تور</string>
   <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">هل توَدّ تشغيل تطبيق أوربوت ؟</string>
-  <string name="orbot_start_btn">بدء تشغيل Orbot</string>
   <string name="orbot_start_dialog_start">بدء تشغيل Orbot</string>
   <string name="orbot_start_dialog_cancel">إلغاء</string>
-  <string name="orbot_start_dialog_ignore_tor">لا تستعن بشبكة تور</string>
   <string name="user_id_no_name"><![CDATA[<no name>]]></string>
   <string name="none"><![CDATA[<none>]]></string>
-  <plurals name="n_keys">
-    <item quantity="zero">%d مفاتيح</item>
-    <item quantity="one">مفتاح واحد</item>
-    <item quantity="two">مفتاحيْن</item>
-    <item quantity="few">%d مفاتيح</item>
-    <item quantity="many">%d مفاتيح</item>
-    <item quantity="other">%d مفاتيح</item>
-  </plurals>
   <string name="secret_key">المفتاح السري :</string>
   <!--choice-->
   <string name="choice_none">لا شيء</string>
-  <string name="choice_15secs">15 ثانية</string>
-  <string name="choice_1min">دقيقة</string>
-  <string name="choice_3mins">3 دقائق</string>
-  <string name="choice_5mins">5 دقائق</string>
-  <string name="choice_10mins">10 دقائق</string>
-  <string name="choice_20mins">20 دقيقة</string>
-  <string name="choice_40mins">40 دقيقة</string>
-  <string name="choice_1hour">ساعة</string>
-  <string name="choice_2hours">ساعتين</string>
-  <string name="choice_4hours">4 ساعات</string>
-  <string name="choice_8hours">8 ساعات</string>
-  <string name="choice_forever">إلى الأبد</string>
   <string name="choice_select_cert">إختر مفتاحًا</string>
-  <string name="filemanager_title_open">إفتح …</string>
   <string name="rsa_2048">RSA 2048</string>
   <string name="rsa_3072">RSA 3072</string>
   <string name="rsa_4096">RSA 4096</string>
@@ -233,7 +169,6 @@
   <string name="usage_sign">للتوقيع</string>
   <string name="usage_encrypt">تشفير</string>
   <string name="usage_sign_and_encrypt">للتوقيع و للتشفير</string>
-  <string name="error">خطأ</string>
   <string name="error_message">خطأ : %s</string>
   <string name="theme_auto">تلقائي</string>
   <string name="theme_light">نهاري</string>
@@ -253,9 +188,6 @@
   <string name="error_no_encryption_or_signature_key">على الأقل قم باختيار مفتاح للتعمية أو للتوقيع.</string>
   <string name="key_deletion_confirmation_multi">هل تريد حقًا حذف كافة المفاتيح التي اخترتَها ؟</string>
   <string name="public_key_deletetion_confirmation">هل تريد حذف المفتاح \'%s\' ؟</string>
-  <string name="also_export_secret_keys">مع تصدير المفاتيح السرية أيضا</string>
-  <string name="key_exported">تم تصدير مفتاح واحد بنجاح.</string>
-  <string name="no_keys_exported">لم يتم تصدير أي مفتاح.</string>
   <string name="list_empty">هذه القائمة فارغة !</string>
   <string name="key_copied_to_clipboard">تم نسخ المفتاح إلى الحافظة !</string>
   <string name="fingerprint_copied_to_clipboard">تم نسخ البصمة إلى الحافظة !</string>
@@ -263,13 +195,9 @@
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
-  <string name="error_file_not_found">الملف غير موجود</string>
   <string name="error_bad_data">بيانات غير صالحة !</string>
-  <string name="error_user_id_no_email">لم يتم العثور على أي عنوان بريد إلكتروني</string>
   <string name="error_invalid_data">لم يُعثَر على أية بيانات صحيحة مُعمّاة أو مُوقعة بأوبن بي جي بي !</string>
-  <string name="error_wrong_passphrase">كلمة السر خاطئة</string>
   <!--errors without preceding Error:-->
-  <string name="error_nfc_needed">يجب تشغيل الـ NFC !</string>
   <string name="error_nothing">ليس هناك ما نعرضُه حاليًا.</string>
   <string name="error_nothing_import">لم يتم العثور على أي مفتاح !</string>
   <!--results shown after decryption/verification-->
@@ -288,11 +216,8 @@
   <string name="progress_done">تم.</string>
   <string name="progress_cancel">إلغاء</string>
   <string name="progress_cancelling">إلغاء ...</string>
-  <string name="progress_downloading">التنزيل جارٍ ...</string>
   <string name="progress_saving">جارٍ الإحتفاظ …</string>
   <string name="progress_importing">عملية الإستيراد جارية ...</string>
-  <string name="progress_updating">تحديث المفاتيح ...</string>
-  <string name="progress_exporting">تصدير ...</string>
   <string name="progress_uploading">عملية الرفع جارية ...</string>
   <string name="progress_building_key">إنشاء المفتاح ...</string>
   <string name="progress_generating_rsa">عملية توليد مفتاح RSA جديد جارية …</string>
@@ -302,7 +227,6 @@
   <string name="progress_modify_subkeyadd">إضافة المفاتيح الفرعية ...</string>
   <string name="progress_modify_passphrase">جارٍ تعديل كلمة السر …</string>
   <string name="progress_encrypting">عملية تعمية البيانات جارية …</string>
-  <string name="progress_prepare_decryption">جارٍ فك التعمية …</string>
   <string name="progress_preparing_signature">جارٍ تهيئة التوقيع …</string>
   <string name="progress_processing_signature">مُعالَجة التوقيع جارية …</string>
   <string name="progress_generating_signature">عملية توليد التوقيع جارية …</string>
@@ -313,22 +237,12 @@
   <string name="progress_starting_orbot">جارٍ تشغيل أوربوت …</string>
   <!--action strings-->
   <!--key bit length selections-->
-  <string name="key_size_2048">2048</string>
-  <string name="key_size_3072">3072</string>
-  <string name="key_size_4096">4096</string>
-  <string name="key_size_8192">8192</string>
-  <string name="key_size_custom">حجم مفتاح مخصص</string>
   <!--elliptic curve names-->
-  <string name="key_curve_nist_p256">NIST P-256</string>
-  <string name="key_curve_nist_p384">NIST P-384</string>
-  <string name="key_curve_nist_p521">NIST P-521</string>
   <!--not in for now, see SaveKeyringParcel
     <string name="key_curve_bp_p256">"Brainpool P-256"</string>
     <string name="key_curve_bp_p384">"Brainpool P-384"</string>
     <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
-  <string name="compression_fast">سريع</string>
-  <string name="compression_very_slow">بطيء جدا</string>
   <!--Help-->
   <string name="help_tab_start">إبدأ</string>
   <string name="help_tab_faq">الأسئلة الشائعة</string>
@@ -337,13 +251,8 @@
   <string name="help_tab_license">الرخص</string>
   <string name="help_tab_about">حول</string>
   <string name="help_about_version">النسخة:</string>
-  <string name="help_tab_donations">ادعم</string>
   <!--Import-->
-  <string name="import_tab_keyserver">خادم المفاتيح</string>
-  <string name="import_tab_cloud">البحث عن مفاتيح</string>
-  <string name="import_tab_direct">ملف / حافظة</string>
   <string name="import_qr_code_too_short_fingerprint">بصمة المفتاح قصيرة جدا !</string>
-  <string name="import_qr_code_button">مسح رمز كيو آر</string>
   <string name="btn_import">إستيراد</string>
   <string name="btn_import_keys">إستيراد جميع المفاتيح</string>
   <string name="btn_refresh">تحديث</string>
@@ -363,25 +272,15 @@
   <string name="intent_send_encrypt">التعمية بواسطة أوبن كي تشاين</string>
   <string name="intent_send_decrypt">فك للتعمية بواسطة أوبن كي تشاين</string>
   <!--Remote API-->
-  <string name="api_settings_show_info">إظهار المعلومات المتقدمة</string>
-  <string name="api_settings_hide_info">إخفاء المعلومات المتقدمة</string>
-  <string name="api_settings_no_key">لم يتم تعيين أي مفتاح</string>
-  <string name="api_settings_select_key">إختر مفتاحًا</string>
   <string name="api_settings_create_key">إنشاء مفتاح جديد</string>
   <string name="api_settings_save">حفظ</string>
-  <string name="api_settings_cancel">إلغاء</string>
   <string name="api_settings_revoke">إلغاء حق الوصول</string>
-  <string name="api_settings_start">تشغيل التطبيق</string>
   <string name="api_settings_package_name">إسم الحزمة</string>
   <string name="api_settings_advanced">متقدم</string>
   <string name="api_settings_allowed_keys">المفاتيح المسموحة</string>
-  <string name="api_settings_settings">الإعدادات</string>
-  <string name="api_register_allow">السماح بالنفاذ</string>
-  <string name="api_register_error_select_key">يرجى اختيار مفتاح !</string>
   <string name="api_select_pub_keys_text_no_user_ids">يرجى اختيار المتلقين !</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">شارك بواسطة رمز كيو آر</string>
-  <string name="share_nfc_dialog">شارك بواسطة الـ NFC</string>
   <!--retry upload dialog-->
   <string name="retry_up_dialog_title">فَشِلتْ عملية الرفع</string>
   <string name="retry_up_dialog_btn_reupload">إعادة العملية</string>
@@ -392,29 +291,23 @@
   <string name="del_rev_dialog_choice_delete">إحذف فقط</string>
   <!--Key list-->
   <string name="key_list_empty_text1">لم يتم العثور على أي مفتاح !</string>
-  <string name="key_list_filter_show_all">عرض جميع المفاتيح</string>
   <string name="key_list_fab_qr_code">مسح رمز كيو آر</string>
   <string name="key_list_fab_search">البحث عن مفاتيح</string>
   <string name="key_list_fab_import">استيراد من ملف</string>
   <!--Key view-->
   <string name="key_view_action_edit">تحرير</string>
-  <string name="key_view_action_encrypt">تعمية نص</string>
-  <string name="key_view_action_encrypt_files">الملفات</string>
   <string name="key_view_action_certify">تأكيد المفتاح</string>
   <string name="key_view_action_update">التحديث مِن خادوم المفاتيح</string>
   <string name="key_view_action_share_with">شارك بواسطة ...</string>
   <string name="key_view_action_share_ssh_with">شارك كمفتاح SSH عمومي بواسطة ...</string>
-  <string name="key_view_tab_main">المعلومات الرئيسية</string>
   <string name="key_view_tab_start">إبدأ</string>
   <string name="key_view_tab_share">شارك</string>
   <string name="key_view_tab_keys">المفاتيح الفرعية</string>
-  <string name="key_view_tab_certs">الشهادات</string>
   <string name="user_id_info_revoked_title">ملغى</string>
   <string name="user_id_info_certified_title">هوية مؤكَّدة</string>
   <string name="user_id_info_certified_text">تمّ تأكيد هذه الهوية مِن طرفك.</string>
   <string name="user_id_info_uncertified_title">هوية غير مؤكَّدة</string>
   <!--Key trust-->
-  <string name="key_trust_start_cloud_search">إبدأ البحث</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">غير كلمة السر</string>
   <string name="edit_key_action_add_identity">إضافة هوية</string>
@@ -429,7 +322,6 @@
   <string name="create_key_empty">هذا الحقل إلزامي</string>
   <string name="create_key_passphrases_not_equal">كلمات السر غير متطابقة</string>
   <string name="create_key_final_text">لقد قمت بإدخال الهوية التالية :</string>
-  <string name="create_key_rsa">(3 مفاتيح فرعية, RSA, 4096 bit)</string>
   <string name="create_key_name_text">قم باختيار الإسم الذي تريد إشراكه مع هذا المفتاح. يمكن للإسم أن يكون كاملا، مثال \'جون دوي\' أو إسمًا مُستعارًا كـ \'جوني\'.</string>
   <string name="create_key_email_text">أدخِل عنوان بريدك الإلكتروني الذي تستخدِمُه في التواصل الآمِن.</string>
   <string name="create_key_hint_full_name">الإسم الكامل أو الإسم المستعار</string>
@@ -456,27 +348,18 @@
   <string name="nav_keys">المفاتيح</string>
   <string name="nav_encrypt_decrypt">تشفير / فك التشفير</string>
   <string name="nav_apps">تطبيقات</string>
-  <string name="drawer_open">فتح قائمة التصفح</string>
-  <string name="drawer_close">إغلاق قائمة التصفح</string>
   <string name="my_keys">مفاتيحي</string>
   <string name="nav_backup">حفظ أو إستعادة</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">قم بتحرير نص</string>
   <!--certs-->
-  <string name="cert_default">الإفتراضية</string>
   <string name="cert_none">ﻻشيئ</string>
-  <string name="cert_positive">إيجابية</string>
-  <string name="cert_revoke">ملغاة</string>
-  <string name="cert_verify_ok">موافق</string>
-  <string name="cert_verify_error">خطأ !</string>
-  <string name="cert_verify_unavailable">مفتاح غير متوفّر</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <string name="msg_cancelled">لقد أُلغيَت العملية.</string>
   <!--Import Public log entries-->
   <string name="msg_ip_uid_cert_error">خطأ أثناء معالَجة الشهادة !</string>
   <string name="msg_ip_uat_cert_error">خطأ أثناء معالَجة الشهادة !</string>
   <!--Import Secret log entries-->
-  <string name="msg_is_db_exception">خطأ في قاعدة البيانات !</string>
   <string name="msg_is_importing_subkeys">معالَجة المفاتيح الفرعية السرية</string>
   <!--Keyring Canonicalization log entries-->
   <!--Keyring merging log entries-->
@@ -499,9 +382,6 @@
   <string name="msg_dc_error_no_signature">معطيات التوقيع ناقصة!</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl_error_no_signature">معطيات التوقيع ناقصة!</string>
-  <string name="msg_vl_clear_meta_file">إسم الملف : %s</string>
-  <string name="msg_vl_clear_meta_time">تاريخ التعديل : %s</string>
-  <string name="msg_vl_clear_meta_size">حجم الملف : %s</string>
   <string name="msg_vl_ok">موافق</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
@@ -535,36 +415,17 @@
   <string name="backup_section">النسخ الاحتياطي</string>
   <string name="restore_section">إستعادة</string>
   <!--unsorted-->
-  <string name="section_cert">تفاصيل الشهادة </string>
-  <string name="label_user_id">الهوية</string>
   <string name="section_uids_to_certify">هويات</string>
-  <string name="label_cert_type">النوع</string>
   <string name="error_key_not_found">مفتاح غير موجود!</string>
   <string name="error_key_processing">خطأ أثناء عملية معالجة المفتاح !</string>
-  <string name="key_no_passphrase">دون كلمة السر</string>
-  <string name="key_unavailable">غير متواجد</string>
-  <string name="title_view_cert">الإطلاع على تفاصيل الشهادة</string>
   <string name="unknown">غير معروف</string>
   <string name="error_empty_text">قم بكتابة نص تود تعميتة !</string>
-  <string name="key_colon">المفتاح:</string>
-  <string name="btn_start_exchange">بداية التبادل</string>
-  <string name="user_id_none"><![CDATA[<none>]]></string>
   <!--Android Account-->
-  <string name="account_privacy_title">الخصوصية</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">إدخال كلمة السر</string>
-  <string name="passphrase">كلمة السر</string>
-  <string name="noPassphrase">دون كلمة السر</string>
-  <string name="unlock_method">طريقة إلغاء القفل</string>
-  <string name="set_passphrase">اضبطْ كلمة السر</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-  <string name="nfc_settings">الإعدادات</string>
-  <string name="snack_security_token_view">مراجعة</string>
-  <string name="snack_security_token_import">إستيراد</string>
-  <string name="security_token_serial_no">الرقم التسلسلي: %s</string>
-  <string name="btn_reset">إعادة الضبط</string>
   <string name="security_token_error">خطأ : %s</string>
   <string name="security_token_error_unknown">خطأ مجهول</string>
   <string name="security_token_error_try_again">أعد المحاولة</string>
@@ -575,13 +436,10 @@
   <string name="error_clipboard_copy">طرأ خطأ أثناء نسخ البيانات إلى الحافظة !</string>
   <string name="error_clipboard_bad">تعذّرَت قراءة المفاتيح من الحافظة !</string>
   <!--Other Linked Identity strings-->
-  <string name="btn_finish">نهاية</string>
   <string name="backup_code_explanation">سوف يتم تأمين النسخة الإحتياطية برمز أمان. يُرجى كتابة هذا الرمز في مكان آخَر قبل مُواصلة هذه الخطوة !</string>
-  <string name="btn_code_wrotedown">حسنا، لقد قمت بكتابته !</string>
   <string name="btn_backup_share">شارك النسخة الاحتياطية</string>
   <string name="btn_backup_save">احفظ النسخة الاحتياطية</string>
   <string name="btn_backup_export">صدّر النسخة الاحتياطية</string>
-  <string name="btn_backup_back">العودة للتحقق ثانية</string>
   <string name="share_log_dialog_title">هل تود مشاركة السجل ؟</string>
   <string name="share_log_dialog_share_button">شارك</string>
   <string name="share_log_dialog_cancel_button">إلغاء</string>
@@ -632,18 +490,6 @@
   <string name="dialog_insecure_button_view_key">عرض المفتاح</string>
   <string name="dialog_insecure_button_ok">فهمت ذلك</string>
   <string name="usage_authentication">للمصادقة</string>
-  <string name="button_scan">مسح</string>
-  <string name="button_more_info">المزيد من المعلومات</string>
-  <string name="transfer_scan_only_wifi">لا يُمكن استخدام هذه الميزة إلّا على الواي فاي.</string>
-  <string name="button_import">إستيراد</string>
-  <string name="transfer_status_connected">متصل</string>
-  <string name="transfer_status_disconnected">غير متصل!</string>
-  <string name="transfer_connecting">...جاري الاتصال </string>
-  <string name="first_time_secure_wifi_transfer">نقل آمن عبر الواي فاي</string>
-  <string name="menu_secure_wifi_transfer">نقل آمن عبر الواي فاي</string>
-  <string name="transfer_confirm_cancel">إلغاء</string>
-  <string name="transfer_confirm_ok">أرسلْ</string>
-  <string name="button_scan_again">إعادة المسح</string>
   <string name="status_check_key">عملية فحص حالة المفتاح جارية ...</string>
   <string name="token_reset_confirm_ok">إعادة الضبط</string>
   <string name="token_result_not_found">مفتاح غير موجود!</string>
@@ -663,8 +509,6 @@
   <string name="key_gen_finish">نهاية</string>
   <string name="button_goto_openkeychain">الانتقال إلى أوبن كي تشاين</string>
   <string name="snack_keylist_clipboard_action">الاطلاع</string>
-  <string name="notify_title_keysync">تحديث المفاتيح ...</string>
-  <string name="notify_content_keysync">مفتاح %d / %d</string>
   <string name="keylist_header_anonymous">مجهول</string>
   <string name="keylist_header_special">#</string>
   <string name="share_key">شارك المفتاح</string>

@@ -15,8 +15,7 @@
   <!--section-->
   <string name="section_user_ids">Identiteter</string>
   <string name="section_keys">undernøgler</string>
-  <string name="section_cloud_search_summary">Nøgleserver</string>
-  <string name="section_certify">Bekræft</string>
+    <string name="section_certify">Bekræft</string>
   <string name="section_actions">Handlinger</string>
   <string name="section_share_key">Nøgle</string>
   <string name="section_key_server">Nøgleserver</string>
@@ -29,14 +28,12 @@
   <string name="btn_okay">Okay</string>
   <string name="btn_next">Næste</string>
   <string name="btn_back">Tilbage</string>
-  <string name="btn_no">Nej</string>
-  <string name="btn_share_decrypted_text">Del</string>
+    <string name="btn_share_decrypted_text">Del</string>
   <string name="btn_copy_decrypted_text">Kopier til udklipsholder</string>
   <string name="btn_encrypt_files">Krypter filer</string>
   <string name="btn_unlock">Lås op</string>
   <string name="btn_proceed">Fortsæt</string>
-  <string name="btn_add_keyserver">Tilføje</string>
-  <!--Shortcut Strings-->
+    <!--Shortcut Strings-->
   <!--Content Description-->
   <string name="cd_encrypt_files">Krypter filer</string>
   <!--menu-->
@@ -45,18 +42,12 @@
   <string name="menu_delete_key">Slet nøgle</string>
   <string name="menu_search">Søg</string>
   <string name="menu_open">Åbn</string>
-  <string name="menu_select_all">Vælg alle</string>
-  <string name="menu_change_password">Skift adgangskode</string>
+    <string name="menu_change_password">Skift adgangskode</string>
   <string name="menu_advanced">Avanceret</string>
-  <string name="menu_keyserver_add">Tilføje</string>
-  <!--label-->
-  <string name="label_message">Tekst</string>
-  <string name="label_file">Fil</string>
-  <string name="label_passphrase">Adgangskode</string>
+    <!--label-->
+    <string name="label_passphrase">Adgangskode</string>
   <string name="label_unlock">Låser op…</string>
-  <string name="label_algorithm">Algoritme</string>
-  <string name="label_key_id">Nøgle ID</string>
-  <string name="label_key_type">Type</string>
+    <string name="label_key_type">Type</string>
   <string name="label_expiry">Ophør</string>
   <string name="label_usage">Forbrug</string>
   <string name="label_revoked">Tilbagekaldt</string>
@@ -64,11 +55,9 @@
   <string name="label_email">Email</string>
   <string name="label_fingerprint">Fingeraftryk</string>
   <string name="label_preferred">foretrukket</string>
-  <string name="label_hidden_recipients">Skjul modtagere</string>
-  <string name="label_enter_keyserver_url">URL</string>
+    <string name="label_enter_keyserver_url">URL</string>
   <string name="label_enter_smartpgp_authority_name">Navn</string>
-  <string name="pref_facebook">Facebook</string>
-  <string name="label_experimental_settings_desc_title">Advarsel</string>
+    <string name="label_experimental_settings_desc_title">Advarsel</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Aktiver Tor</string>
   <string name="pref_proxy_host_title">Proxy-vært</string>
@@ -85,8 +74,7 @@
   <!--choice-->
   <string name="choice_none">Ingen</string>
   <string name="usage_encrypt">Kryptér</string>
-  <string name="error">Fejl</string>
-  <!--sentences-->
+    <!--sentences-->
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -110,10 +98,8 @@
   <string name="help_tab_changelog">Ændringslog</string>
   <string name="help_tab_about">Om</string>
   <string name="help_about_version">Version:</string>
-  <string name="help_tab_donations">Doner</string>
-  <!--Import-->
-  <string name="import_tab_keyserver">Nøgleserver</string>
-  <string name="btn_import">Importér</string>
+    <!--Import-->
+    <string name="btn_import">Importér</string>
   <string name="btn_refresh">Genopfrisk</string>
   <!--Generic result toast-->
   <string name="snackbar_details">Detaljer</string>
@@ -124,10 +110,8 @@
   <!--Intent labels-->
   <!--Remote API-->
   <string name="api_settings_save">Gem</string>
-  <string name="api_settings_cancel">Annuller</string>
-  <string name="api_settings_advanced">Avanceret</string>
-  <string name="api_settings_settings">Indstillinger</string>
-  <!--Share-->
+    <string name="api_settings_advanced">Avanceret</string>
+    <!--Share-->
   <!--retry upload dialog-->
   <!--Delete or revoke private key dialog-->
   <!--Delete Or Revoke Dialog spinner-->
@@ -150,11 +134,8 @@
   <string name="nav_apps">Apps</string>
   <!--hints-->
   <!--certs-->
-  <string name="cert_default">default</string>
-  <string name="cert_none">ingen</string>
-  <string name="cert_revoke">tilbagekaldt</string>
-  <string name="cert_verify_ok">OK</string>
-  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+    <string name="cert_none">ingen</string>
+    <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
   <!--Keyring Canonicalization log entries-->
@@ -183,26 +164,15 @@
   <!--First Time-->
   <string name="backup_section">Sikkerhedskopiér</string>
   <!--unsorted-->
-  <string name="label_user_id">Identitet</string>
-  <string name="label_cert_type">Type</string>
-  <string name="error_key_not_found">Krypteringsnøgle ikke fundet!</string>
-  <string name="key_unavailable">ikke tilgængelig</string>
-  <string name="unknown">ukendt</string>
+    <string name="error_key_not_found">Krypteringsnøgle ikke fundet!</string>
+    <string name="unknown">ukendt</string>
   <!--Android Account-->
-  <string name="account_privacy_title">Privatliv</string>
-  <!--Passphrase wizard-->
+    <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
-  <string name="passphrase">Adgangskode</string>
-  <string name="set_passphrase">Sæt password</string>
-  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-  <string name="nfc_settings">Indstillinger</string>
-  <string name="snack_security_token_view">Gennemse</string>
-  <string name="snack_security_token_import">Importér</string>
-  <string name="btn_reset">Nulstille</string>
-  <!--Other Linked Identity strings-->
-  <string name="btn_finish">Afslut</string>
-  <string name="share_log_dialog_share_button">Del</string>
+    <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+    <!--Other Linked Identity strings-->
+    <string name="share_log_dialog_share_button">Del</string>
   <string name="share_log_dialog_cancel_button">Annuller</string>
   <string name="menu_uids_save">Gem</string>
   <string name="prompt_fidesmo_pgp_install_button_positive">Installer</string>
@@ -214,12 +184,7 @@
   <string name="button_back">Tilbage</string>
   <string name="key_health_revoked_title">Tilbagekaldt</string>
   <string name="keyserver_title_published">Publiceret</string>
-  <string name="button_import">Importér</string>
-  <string name="transfer_status_connected">Forbundet</string>
-  <string name="transfer_connecting">Forbinder...</string>
-  <string name="transfer_confirm_cancel">Annuller</string>
-  <string name="transfer_confirm_ok">Send</string>
-  <string name="token_reset_confirm_ok">Nulstille</string>
+    <string name="token_reset_confirm_ok">Nulstille</string>
   <string name="token_result_not_found">Krypteringsnøgle ikke fundet!</string>
   <string name="token_action_import">Importér</string>
   <string name="token_unlock_ok">Lås op</string>

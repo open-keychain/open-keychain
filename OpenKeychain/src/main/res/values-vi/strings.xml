@@ -19,11 +19,7 @@
   <string name="title_share_key">Chia sẻ khóa với…</string>
   <string name="title_share_file">Chia sẻ tệp với…</string>
   <string name="title_share_message">Chia sẻ văn bản với…</string>
-  <string name="title_encrypt_to_file">Mã hóa vào tệp</string>
-  <string name="title_decrypt_to_file">Giải mã tệp tin</string>
   <string name="title_import_keys">Nhập khóa</string>
-  <string name="title_export_key">Xuất khóa</string>
-  <string name="title_export_keys">Xuất khóa</string>
   <string name="title_key_not_found">Không tìm thấy khóa nào</string>
   <string name="title_send_key">Tải khóa lên máy chủ</string>
   <string name="title_backup">Sao lưu khóa</string>
@@ -31,25 +27,18 @@
   <string name="title_key_details">Chi tiết về khóa</string>
   <string name="title_help">Trợ giúp</string>
   <string name="title_log_display">Nhật ký</string>
-  <string name="title_exchange_keys">Trao đổi khóa</string>
   <string name="title_advanced_key_info">Nâng cao</string>
   <string name="title_delete_secret_key">Xóa khóa \'%s\'?</string>
   <string name="title_manage_my_keys">Quản lý khóa của tôi</string>
   <string name="title_alert_strip">Lược bỏ khóa này</string>
   <!--section-->
   <string name="section_user_ids">Định danh</string>
-  <string name="section_security_token">Thiết bị an toàn</string>
-  <string name="section_linked_system_contact">Danh bạ hệ thống được liên kết</string>
-  <string name="section_should_you_trust">Bạn có nên tin tưởng khóa này?</string>
-  <string name="section_proof_details">Xác nhận minh chứng</string>
   <string name="section_keys">Khóa con</string>
   <string name="section_cloud_search">Tìm kiếm kháo</string>
-  <string name="section_cloud_search_summary">Máy chủ lưu khóa</string>
   <string name="section_passphrase_cache">Mật khẩu và mã PIN</string>
   <string name="section_passphrase_cache_summary">Xử lý</string>
   <string name="section_proxy_settings">Mạng nặc danh</string>
   <string name="section_proxy_settings_summary">Tor, Các thiết lập Proxy</string>
-  <string name="section_gui">Giao diện</string>
   <string name="section_sync_settings">Đồng bộ</string>
   <string name="section_sync_settings_summary">Cập nhật khóa và liên kết với danh bạ một cách tự động</string>
   <string name="section_experimental_features">Tính năng đang thử nghiệm</string>
@@ -63,10 +52,8 @@
   <string name="section_current_expiry">Hạn dùng hiện tại</string>
   <string name="section_new_expiry">Hạn dùng mới</string>
   <!--button-->
-  <string name="btn_decrypt_verify_file">Giải mã, kiểm tra và lưu tệp</string>
   <string name="btn_encrypt_share_file">Mã hóa và chia sẻ tệp</string>
   <string name="btn_encrypt_save_file">Mã hóa và lưu tệp</string>
-  <string name="btn_save_file">Lưu tệp</string>
   <string name="btn_save">Lưu</string>
   <string name="btn_view_log">Xem nhật ký</string>
   <string name="btn_do_not_save">Hủy bỏ</string>
@@ -76,12 +63,10 @@
   <string name="btn_export_to_server">Tải khóa lên máy chủ</string>
   <string name="btn_next">Tiếp</string>
   <string name="btn_back">Quay về</string>
-  <string name="btn_no">Không</string>
   <string name="btn_match">Mã nhận dạng phù hợp</string>
   <string name="btn_share_encrypted_signed">Mã hóa/ký số và chia sẻ văn bản</string>
   <string name="btn_copy_encrypted_signed">Mã hóa/ký số và sao chép văn bản</string>
   <string name="btn_paste_encrypted_signed">Mã hóa/ký số và dán văn bản</string>
-  <string name="btn_view_cert_key">Hiển thị khóa chứng thư số</string>
   <string name="btn_create_key">Tạo khóa mới</string>
   <string name="btn_add_files">Thêm tệp</string>
   <string name="btn_share_decrypted_text">Chia sẻ</string>
@@ -94,7 +79,6 @@
   <string name="btn_add_email">Thêm địa chỉ thư bổ sung</string>
   <string name="btn_unlock">Mở khóa</string>
   <string name="btn_proceed">Tiếp tục</string>
-  <string name="btn_add_keyserver">Thêm</string>
   <string name="btn_save_default">Lưu làm mặc định</string>
   <string name="btn_saved">Đã lưu lại</string>
   <string name="btn_not_matching">Không phù hợp</string>
@@ -104,71 +88,44 @@
   <string name="cd_encrypt_files">Mã hóa tệp tin</string>
   <string name="cd_exchange_keys">Trao đổi khóa</string>
   <string name="cd_encrypt_text">Mã hóa văn bản</string>
-  <string name="cd_share_nfc">Chia sẻ quan NFC</string>
   <!--menu-->
   <string name="menu_preferences">Thiết lập</string>
   <string name="menu_help">Trợ giúp</string>
   <string name="menu_export_key">Sao lưu khóa</string>
   <string name="menu_delete_key">Xóa khóa</string>
-  <string name="menu_status">Xem trạng thái mã khoá</string>
   <string name="menu_manage_keys">Quản lý khóa của tôi</string>
   <string name="menu_search">Tìm kiếm</string>
   <string name="menu_open">Mở</string>
   <string name="menu_read_clipboard">Đọc từ Clipboard</string>
-  <string name="menu_nfc_preferences">Cấu hình NFC</string>
-  <string name="menu_beam_preferences">Cấu hình Beam</string>
   <string name="menu_encrypt_to">Mã hóa vào…</string>
-  <string name="menu_select_all">Chọn tất cả</string>
-  <string name="menu_export_all_keys">Xuất tất cả khóa</string>
   <string name="menu_update_all_keys">Cập nhật tất cả khóa</string>
   <string name="menu_certify_fingerprint">Xác nhận bằng mã nhận dạng</string>
-  <string name="menu_certify_fingerprint_phrases">Xác nhận bằng mật khẩu</string>
   <string name="menu_share_log">Chia sẻ nhật ký</string>
   <string name="menu_change_password">Thay đổi mật khẩu</string>
   <string name="menu_advanced">Nâng cao</string>
-  <string name="menu_keyserver_add">Thêm</string>
   <!--label-->
-  <string name="label_message">Văn bản</string>
-  <string name="label_file">Tệp tin</string>
-  <string name="label_files">Tệp tin</string>
-  <string name="label_file_colon">Tệp tin:</string>
   <string name="label_no_passphrase">Không có mật khẩu</string>
   <string name="label_passphrase">Mật khẩu</string>
   <string name="label_pin">Mã PIN</string>
   <string name="label_unlock">Đang mở khóa…</string>
   <string name="label_passphrase_again">Lặp lại mật khẩu</string>
-  <string name="label_show_passphrase">Hiển thị mật khẩu</string>
-  <string name="label_algorithm">Thuật toán</string>
   <string name="label_algorithm_colon">Thuật toán:</string>
-  <string name="label_ascii_armor">Tệp đóng gói dạng ASCII</string>
   <string name="label_file_ascii_armor">Bật ASCII Armor</string>
-  <string name="label_write_version_header">Để người khác biết bạn đang dùng OpenKeychain</string>
-  <string name="label_write_version_header_summary">Thêm cụm từ \'OpenKeychain v2.7\' vào chữ ký, nội dung mã và khóa xuất ra dạng PGP</string>
   <string name="label_asymmetric_from">Ký số với:</string>
   <string name="label_to">Mã hóa vào</string>
   <string name="label_delete_after_encryption">Xóa tệp gốc sau khi mã hóa</string>
-  <string name="label_delete_after_decryption">Xóa tệp mã sau khi giải mã</string>
-  <string name="label_encryption_algorithm">Thuật toán mã hóa</string>
-  <string name="label_hash_algorithm">Thuật toán băm</string>
   <string name="label_symmetric">Mã hóa với mật khẩu</string>
   <string name="label_passphrase_cache_subs">Ghi nhớ mật khẩu bằng khóa con</string>
-  <string name="label_message_compression">Nén văn bản</string>
-  <string name="label_file_compression">Nén tệp tin</string>
   <string name="label_keyservers">Quản lý các máy chủ mã khóa OpenPGP</string>
-  <string name="label_key_id">ID của khóa</string>
   <string name="label_key_id_colon">ID mã khoá:</string>
   <string name="label_key_created">Đã tạo %s</string>
   <string name="label_key_created_just_now">Đã tạo ngay lúc này</string>
   <string name="label_key_type">Kiểu</string>
-  <string name="label_creation">Tạo</string>
-  <string name="label_creation_colon">Tạo:</string>
   <string name="label_expiry">Hạn dùng</string>
   <string name="label_valid_from">Có hiệu lực từ</string>
   <string name="label_usage">Đã dùng</string>
   <string name="label_revoked">Thu hồi</string>
   <string name="label_insecure">Không bảo mật</string>
-  <string name="label_key_size">Kích cỡ khóa</string>
-  <string name="label_ecc_curve">Đường cong Elliptic</string>
   <string name="label_main_user_id">Định danh chính</string>
   <string name="label_name">Tên</string>
   <string name="label_email">Thư điện tử</string>
@@ -178,17 +135,14 @@
   <string name="label_keyservers_title">Máy chủ khóa</string>
   <string name="label_keyserver_settings_hint">Nhấp và thả để thay đổi thứ tự, chạm để sửa/xóa</string>
   <string name="label_selected_keyserver_title">Máy chủ đã chọn</string>
-  <string name="label_selected_smartpgp_authority_title">Người có thẩm quyền đã chọn</string>
   <string name="label_preferred">Được ưu tiên</string>
   <string name="label_enable_compression">Bật tính năng nén</string>
   <string name="label_enable_self_encrypt">Mã hoá vào người ký</string>
   <string name="label_encrypt_filenames">Mã cả tên tệp</string>
-  <string name="label_hidden_recipients">Ẩn người nhận</string>
   <string name="label_smartpgp_verify">SmartPGP: Xác minh các chứng chỉ</string>
   <string name="label_smartpgp_verify_summary">Xác minh các chứng chỉ trên Token bảo mật của SmartPGP đối chiếu với một tập hợp những người có thẩm quyền được tin cậy</string>
   <string name="label_smartpgp_roots">SmartPGP: Người có thẩm quyền được tin cậy</string>
   <string name="label_verify_keyserver_connection">Kiểm tra kết nối</string>
-  <string name="label_only_trusted_keyserver">Chỉ với máy chủ tin cậy</string>
   <string name="label_enter_keyserver_url">URL</string>
   <string name="label_enter_keyserver_onion">URL .onion của Tor không bắt buộc</string>
   <string name="label_keyserver_dialog_delete">Xóa máy chủ lưu trữ</string>
@@ -197,8 +151,6 @@
   <string name="label_smartpgp_authority_dialog_delete">Xoá người có thẩm quyền</string>
   <string name="pref_keyserver">Máy chủ lưu khóa</string>
   <string name="pref_keyserver_summary">Tìm kiếm khóa lưu ở các máy chủ (theo giao thức HKP)</string>
-  <string name="pref_facebook">Facebook</string>
-  <string name="pref_facebook_summary">Tìm khóa lưu trên Facebook theo tài khoản</string>
   <string name="pref_wkd">Danh mục mã khoá web</string>
   <string name="pref_wkd_summary">Tìm kiếm mã khoá bằng Danh mục mã khoá web</string>
   <string name="label_sync_settings_keyserver_title">Cập nhật khóa tự động</string>
@@ -227,19 +179,11 @@
   <string name="orbot_install_dialog_install">Cài đặt</string>
   <string name="orbot_install_dialog_content">Bạn phải cài đặt và kích hoạt Orbot để đưa lưu lượng vào proxy qua nó. Bạn có muốn cài đặt nó không?</string>
   <string name="orbot_install_dialog_cancel">Hủy</string>
-  <string name="orbot_install_dialog_ignore_tor">Không sử dụng Tor</string>
   <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">Khởi động Orbot?</string>
   <string name="orbot_start_dialog_content">Orbot có vẻ đang không chạy. Bạn có muốn khởi động nó và kết nối đến Tor không?</string>
-  <string name="orbot_start_btn">Khởi động Orbot</string>
   <string name="orbot_start_dialog_start">Khởi động Orbot</string>
   <string name="orbot_start_dialog_cancel">Hủy</string>
-  <string name="orbot_start_dialog_ignore_tor">Không sử dụng Tor</string>
-  <string name="user_id_no_name">1]]&gt;</string>
-  <string name="none">1]]&gt;</string>
-  <plurals name="n_keys">
-    <item quantity="other">%d mã khoá</item>
-  </plurals>
   <plurals name="n_keyservers">
     <item quantity="other">%d máy chủ mã khoá</item>
   </plurals>
@@ -249,20 +193,7 @@
   <string name="secret_key">Mã khoá bí mật:</string>
   <!--choice-->
   <string name="choice_none">Không có</string>
-  <string name="choice_15secs">15 giây</string>
-  <string name="choice_1min">1 phút</string>
-  <string name="choice_3mins">3 phút</string>
-  <string name="choice_5mins">5 phút</string>
-  <string name="choice_10mins">10 phút</string>
-  <string name="choice_20mins">20 phút</string>
-  <string name="choice_40mins">40 phút</string>
-  <string name="choice_1hour">1 tiếng</string>
-  <string name="choice_2hours">2 tiếng</string>
-  <string name="choice_4hours">4 tiếng</string>
-  <string name="choice_8hours">8 tiếng</string>
-  <string name="choice_forever">mãi mãi</string>
   <string name="choice_select_cert">Chọn mã khoá</string>
-  <string name="filemanager_title_open">Mở...</string>
   <string name="rsa_2048">RSA 2048</string>
   <string name="rsa_2048_description_html">kích cỡ tệp nhỏ hơn, được coi là bảo mật cho đến năm 2030</string>
   <string name="rsa_3072">RSA 3072</string>
@@ -276,7 +207,6 @@
   <string name="usage_sign">Chữ ký</string>
   <string name="usage_encrypt">Mã hóa</string>
   <string name="usage_sign_and_encrypt">Ký &amp; Mã hoá</string>
-  <string name="error">Lỗi</string>
   <string name="error_message">Lỗi: %s</string>
   <string name="theme_auto">Tự động</string>
   <string name="theme_light">Sáng</string>
@@ -295,7 +225,6 @@
   <string name="passphrase_keyboard_hint_numeric">Chuyển sang bàn phím chữ số</string>
   <string name="passphrase_transfer">Nhập mã truyền</string>
   <string name="passphrase_transfer_autocrypt">Để nhập Thông báo thiết lập Autocrypt này, hãy nhập mã truyền:</string>
-  <string name="pin_for">Nhập mã PIN cho \'%s\'</string>
   <string name="security_token_pin_for">Nhập mã PIN để truy cập Token bảo mật cho \'%s\'</string>
   <string name="security_token_nfc_text">Giữ Token bảo mật đối diện với dấu NFC ở mặt lưng của thiết bị.</string>
   <string name="security_token_nfc_wait">Giữ Token bảo mật ở mặt lưng!</string>
@@ -305,33 +234,15 @@
   <string name="file_delete_confirmation">Các tệp sau sẽ bị xoá: %s</string>
   <string name="file_delete_successful">%1$d trong số %2$d tệp đã bị xoá. %3$s</string>
   <string name="no_file_selected">Không có tệp nào được chọn.</string>
-  <string name="encrypt_sign_successful">Ký và/hoặc mã hoá thành công.</string>
-  <string name="encrypt_sign_clipboard_successful">Ký và/hoặc mã hoá vào bộ nhớ tạm thành công.</string>
   <string name="select_encryption_key">Chọn ít nhất một mã khoá mã hoá.</string>
   <string name="error_no_encryption_or_signature_key">Chọn ít nhất một mã khoá mã hoá hoặc mã khoá chữ ký.</string>
-  <string name="specify_file_to_encrypt_to">Vui lòng chỉ định tệp để mã hoá vào.\nCẢNH BÁO: Tệp sẽ bị ghi đè nếu nó có tồn tại!</string>
-  <string name="specify_file_to_decrypt_to">Vui lòng chỉ định tệp để giải mã vào.\nCẢNH BÁO: Tệp sẽ bị ghi đè nếu nó có tồn tại!</string>
-  <string name="specify_backup_dest">Một bản sao lưu không bao gồm các mã khoá của bạn sẽ được tạo, vui lòng chỉ định tệp đích.\nCẢNH BÁO: Tệp sẽ bị ghi đè nếu nó có tồn tại!</string>
-  <string name="specify_backup_dest_single">Mã khoá này sẽ được chia sẻ, vui lòng chỉ định tệp đích.\nCẢNH BÁO: Tệp sẽ bị ghi đè nếu nó có tồn tại!</string>
-  <string name="specify_backup_dest_secret_single">Một bản sao lưu đầy đủ chứa mã khoá của bạn sẽ được tạo, vui lòng chỉ định tệp đích.\nCẢNH BÁO: Tệp sẽ bị ghi đè nếu nó có tồn tại!</string>
-  <string name="specify_backup_dest_secret">Một bản sao lưu đầy đủ chứa tất cả mã khoá bao gồm cả mã khoá của bạn sẽ được tạo, vui lòng chỉ định tệp đích.\nCẢNH BÁO: Tệp sẽ bị ghi đè nếu nó có tồn tại!</string>
   <string name="key_deletion_confirmation_multi">Bạn có thực sự muốn xoá tất cả mã khoá đã chọn không?</string>
   <string name="secret_key_deletion_confirmation">Sau khi xoá, bạn sẽ không thể giải mã các tin nhắn/tệp đã mã hoá bằng mã khoá này và bạn sẽ mất tất cả xác nhận mã khoá đã làm bằng nó!</string>
   <string name="public_key_deletetion_confirmation">Xoá mã khoá \'%s\'?</string>
-  <string name="also_export_secret_keys">Cũng xuất các mã khoá bí mật</string>
-  <string name="reinstall_openkeychain">Bạn đã gặp một lỗi đã biết ở Android. Vui lòng cài đặt lại OpenKeychain nếu bạn muốn liên kết danh bạ với các mã khoá.</string>
   <string name="alert_strip">Việc lột mã khoá con này ra sẽ làm nó không sử dụng được trên thiết bị này!</string>
-  <string name="key_exported">Xuất 1 mã khoá thành công.</string>
-  <string name="keys_exported">Xuất %d mã khoá thành công.</string>
-  <string name="no_keys_exported">Không có mã khoá nào được xuất.</string>
-  <string name="key_creation_el_gamal_info">Lưu ý: chỉ có các mã khoá con mới hỗ trợ ElGamal.</string>
   <string name="key_not_found">Không thể tìm thấy mã khoá %08X.</string>
   <string name="authentication_subkey_not_found">Mã khoá này không có mã khoá con xác thực.</string>
-  <plurals name="bad_keys_encountered">
-    <item quantity="other">Đã bỏ qua %d mã khoá bí mật bị lỗi. Có lẽ bạn đã xuất bằng tuỳ chọn\n --export-secret-subkeys\nHãy chắc chắn là bạn xuất bằng\n --export-secret-keys\nthay vào đó.\"</item>
-  </plurals>
   <string name="list_empty">Danh sách này trống!</string>
-  <string name="nfc_successful">Gửi mã khoá bằng NFC Beam thành công!</string>
   <string name="key_copied_to_clipboard">Mã khoá đã được sao chép vào bộ nhớ tạm!</string>
   <string name="fingerprint_copied_to_clipboard">Mã kiểm tra đã được sao chép vào bộ nhớ tạm!</string>
   <string name="select_key_to_certify">Vui lòng chọn mã khoá được sử dụng để xác nhận!</string>
@@ -342,29 +253,13 @@
          they will be put after "error_message", e.g. "Error: file not found"-->
   <string name="error_file_delete_failed">đã không bị xoá. Hãy xoá chúng theo cách thủ công!</string>
   <string name="error_file_added_already">%s đã được thêm sẵn rồi.</string>
-  <string name="error_file_not_found">không tìm thấy tệp</string>
   <string name="error_bad_data">Dữ liệu bị lỗi!</string>
-  <string name="error_no_secret_key_found">không tìm thấy mã khoá bí mật phù hợp nào</string>
-  <string name="error_external_storage_not_ready">kho lưu trữ ngoài chưa sẵn sàng</string>
-  <string name="error_key_size_minimum512bit">kích cỡ mã khoá phải ít nhất là 512bit</string>
-  <string name="error_unknown_algorithm_choice">lựa chọn thuật toán không xác định</string>
-  <string name="error_user_id_no_email">không tìm thấy địa chỉ email nào</string>
-  <string name="error_key_needs_a_user_id">cần ít nhất một danh tính</string>
-  <string name="error_no_signature_passphrase">không có mật khẩu nào được nhập</string>
-  <string name="error_no_signature_key">không có mã khoá chữ ký nào được nhập</string>
   <string name="error_invalid_data">Không có nội dung OpenPGP được mã hoá hoặc ký và hợp lệ nào!</string>
-  <string name="error_integrity_check_failed">kiểm tra tính nguyên vẹn thất bại! Dữ liệu đã bị sửa đổi!</string>
-  <string name="error_wrong_passphrase">mật khẩu sai</string>
   <string name="error_could_not_extract_private_key">không thể trích xuất mã khoá riêng tư</string>
   <string name="error_wrong_security_token">token bảo mật này không chứa mã khoá được yêu cầu</string>
   <!--errors without preceding Error:-->
-  <string name="error_jelly_bean_needed">Bạn cần Android 4.1 để sử dụng tính năng NFC Beam của Android!</string>
-  <string name="error_nfc_needed">NFC phải được bật!</string>
-  <string name="error_beam_needed">Beam phải được bật!</string>
   <string name="error_nothing">Chưa có gì để hiển thị.</string>
   <string name="error_nothing_import">Không tìm thấy mã khoá nào!</string>
-  <string name="error_contacts_key_id_missing">Lấy ID mã khoá từ các liên hệ thất bại!</string>
-  <string name="error_generic_report_bug">Đã có lỗi chung chung xảy ra, vui lòng tạo một bản báo cáo lỗi mới cho OpenKeychain.</string>
   <string name="error_denied_storage_permission">Không thể đọc tệp từ bộ nhớ vì quyền truy cập đã bị từ chối!</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">Không được ký</string>
@@ -389,13 +284,9 @@
   <string name="progress_done">Xong.</string>
   <string name="progress_cancel">Hủy</string>
   <string name="progress_cancelling">đang huỷ...</string>
-  <string name="progress_downloading">đang tải xuống...</string>
   <string name="progress_saving">đang lưu...</string>
   <string name="progress_importing">đang nhập...</string>
-  <string name="progress_benchmarking">đang đo điểm chuẩn...</string>
   <string name="progress_revoking_uploading">Đang thu hồi và tải mã khoá lên...</string>
-  <string name="progress_updating">Đang cập nhật các mã khoá...</string>
-  <string name="progress_exporting">đang xuất...</string>
   <string name="progress_uploading">đang tải lên...</string>
   <string name="progress_building_key">đang xây dựng mã khoá...</string>
   <string name="progress_building_master_key">đang xây dựng chùm chính...</string>
@@ -413,77 +304,46 @@
   <string name="progress_modify_primaryuid">đang thay đổi ID người dùng chính...</string>
   <string name="progress_modify_subkeychange">đang sửa đổi các mã khoá con...</string>
   <string name="progress_modify_subkeyrevoke">đang thu hồi các mã khoá con...</string>
-  <string name="progress_modify_subkeystrip">đang lột các mã khoá con ra...</string>
   <string name="progress_modify_subkeyadd">đang thêm các mã khoá con...</string>
   <string name="progress_modify_passphrase">đang đổi mật khẩu...</string>
   <string name="progress_modify_pin">đang đổi mã PIN...</string>
   <string name="progress_modify_admin_pin">đang đổi mã PIN Quản trị viên...</string>
   <string name="progress_exporting_key">đang xuất mã khoá...</string>
-  <string name="progress_exporting_keys">đang xuất các mã khoá...</string>
-  <string name="progress_start">đang chuẩn bị hoạt động...</string>
   <string name="progress_extracting_signature_key">đang trích xuất mã khoá chữ ký...</string>
-  <string name="progress_extracting_key">đang trích xuất mã khoá...</string>
   <string name="progress_preparing_streams">đang chuẩn bị các luồng truyền...</string>
   <string name="progress_encrypting">đang mã hoá dữ liệu...</string>
-  <string name="progress_prepare_decryption">Đang bắt đầu giải mã...</string>
   <string name="progress_decrypting">Đang giải mã dữ liệu...</string>
   <string name="progress_preparing_signature">đang chuẩn bị chữ ký...</string>
   <string name="progress_processing_signature">đang xử lý chữ ký...</string>
   <string name="progress_generating_signature">đang tạo chữ ký...</string>
   <string name="progress_verifying_signature">đang xác minh chữ ký...</string>
   <string name="progress_signing">đang ký...</string>
-  <string name="progress_certifying">đang chứng nhận...</string>
   <string name="progress_reading_data">đang đọc dữ liệu...</string>
-  <string name="progress_finding_key">đang tìm mã khoá...</string>
-  <string name="progress_decompressing_data">đang giải nén dữ liệu...</string>
-  <string name="progress_verifying_integrity">đang xác minh tính nguyên vẹn...</string>
-  <string name="progress_deleting_securely">đang xoá \'%s\' một cách bảo mật...</string>
   <string name="progress_deleting">đang xoá các mã khoá...</string>
   <string name="progress_update_trust">đang cập nhật thông tin về sự tin cậy...</string>
   <string name="progress_verifying_keyserver_connection">đang xác minh kết nối...</string>
   <string name="progress_starting_orbot">Đang khởi động Orbot...</string>
   <!--action strings-->
-  <string name="hint_cloud_search_hint">Tìm kiếm qua Tên, Email...</string>
   <!--key bit length selections-->
-  <string name="key_size_2048">2048</string>
-  <string name="key_size_3072">3072</string>
-  <string name="key_size_4096">4096</string>
-  <string name="key_size_8192">8192</string>
-  <string name="key_size_custom">Kích cỡ mã khoá tuỳ chỉnh</string>
-  <string name="key_size_custom_info">Nhập độ dài mã khoá tuỳ chỉnh (tính bằng bit):</string>
-  <string name="key_size_custom_info_rsa">Độ dài mã khoá RSA phải lớn hơn 1024 và tối đa là 16384. Đồng thời, nó phải là bội số của 8.</string>
-  <string name="key_size_custom_info_dsa">Độ dài mã khoá DSA phải tối thiểu là 512 và tối đa là 1024. Đồng thời, nó phải là bội số của 64.</string>
   <!--elliptic curve names-->
-  <string name="key_curve_nist_p256">NIST P-256</string>
-  <string name="key_curve_nist_p384">NIST P-384</string>
-  <string name="key_curve_nist_p521">NIST P-521</string>
   <!--not in for now, see SaveKeyringParcel
     <string name="key_curve_bp_p256">"Brainpool P-256"</string>
     <string name="key_curve_bp_p384">"Brainpool P-384"</string>
     <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
-  <string name="compression_fast">nhanh</string>
-  <string name="compression_very_slow">rất chậm</string>
   <!--Help-->
   <string name="help_tab_start">Bắt đầu</string>
   <string name="help_tab_faq">Câu Hỏi Thường Gặp</string>
   <string name="help_tab_wot">Xác nhận mã khoá</string>
-  <string name="help_tab_nfc_beam">NFC Beam</string>
   <string name="help_tab_changelog">Ký sự thay đổi</string>
   <string name="help_tab_license">Giấy phép</string>
   <string name="help_tab_about">Giới thiệu</string>
   <string name="help_about_version">Phiên bản:</string>
-  <string name="help_tab_donations">Quyên góp</string>
   <!--Import-->
-  <string name="import_tab_keyserver">Máy chủ lưu khóa</string>
-  <string name="import_tab_cloud">Tìm kiếm kháo</string>
-  <string name="import_tab_direct">Tệp/Bộ nhớ tạm</string>
-  <string name="import_tab_qr_code">Mã QR/NFC</string>
   <string name="import_found_keys">Đã tìm thấy %1$d mã khoá</string>
   <string name="import_qr_code_wrong">Định dạng mã QR không được hỗ trợ (thông số định dạng: https://github.com/open-keychain/open-keychain/wiki/QR-Codes)!</string>
   <string name="import_qr_code_fp">Mã kiểm tra bị lỗi hoặc quá ngắn!</string>
   <string name="import_qr_code_too_short_fingerprint">Mã kiểm tra quá ngắn!</string>
-  <string name="import_qr_code_button">Quét mã QR</string>
   <string name="import_qr_code_text">Đặt máy ảnh lên trên mã QR!</string>
   <string name="btn_import">Nhập</string>
   <string name="btn_import_keys">Nhập tất cả mã khoá</string>
@@ -534,8 +394,6 @@
   <!--Revoke result toast (snackbar)-->
   <string name="revoke_ok">Thu hồi mã khoá thành công.</string>
   <string name="revoke_fail">Lỗi khi thu hồi mã khoá!</string>
-  <string name="revoke_nothing">Không có gì để thu hồi.</string>
-  <string name="revoke_cancelled">Đã huỷ hoạt động thu hồi.</string>
   <!--Certify result toast-->
   <plurals name="certify_keys_ok">
     <item quantity="other">Xác nhận %1$d mã khoá thành công%2$s.</item>
@@ -553,35 +411,23 @@
   <string name="intent_send_decrypt">Giải mã bằng OpenKeychain</string>
   <string name="intent_autocrypt_setup">Nhập Thông báo thiết lập Autocrypt</string>
   <!--Remote API-->
-  <string name="api_settings_show_info">Hiện thông tin nâng cao</string>
-  <string name="api_settings_hide_info">Ẩn thông tin nâng cao</string>
-  <string name="api_settings_no_key">Không có mã khoá nào được chọn</string>
-  <string name="api_settings_select_key">Chọn mã khoá</string>
   <string name="api_settings_create_key">Tạo mã khoá mới</string>
   <string name="api_settings_save">Lưu</string>
-  <string name="api_settings_cancel">Hủy</string>
   <string name="api_settings_revoke">Thu hồi quyền truy cập</string>
-  <string name="api_settings_start">Khởi động ứng dụng</string>
   <string name="api_settings_package_name">Tên gói</string>
   <string name="api_settings_package_certificate">SHA-256 của chứng chỉ gói</string>
   <string name="api_settings_advanced">Nâng cao</string>
   <string name="api_settings_allowed_keys">Mã khoá được cho phép</string>
-  <string name="api_settings_settings">Thiết đặt</string>
   <string name="api_register_title">Cho phép quyền truy cập vào OpenKeychain?</string>
   <string name="api_register_text">%s yêu cầu sử dụng OpenKeychain là một nhà cung cấp mã hoá. Bạn vẫn sẽ được hỏi xin quyền trước khi ứng dụng đó có thể sử dụng bất kỳ mã khoá nào của bạn để giải mã.\n\nBạn có thể thu hồi quyền truy cập vào lúc sau trong màn hình \'Ứng dụng\' trong OpenKeychain.</string>
-  <string name="api_register_allow">Cho phép truy cập</string>
-  <string name="api_register_disallow">Huỷ cho phép truy cập</string>
-  <string name="api_register_error_select_key">Vui lòng chọn mã khoá!</string>
   <string name="api_select_pub_keys_missing_text">Không tìm thấy mã khoá nào cho các địa chỉ email này:</string>
   <string name="api_select_pub_keys_dublicates_text">Có nhiều hơn một mã khoá cho các địa chỉ email này:</string>
   <string name="api_select_pub_keys_text">Vui lòng xem xét danh sách người nhận!</string>
   <string name="api_select_pub_keys_text_no_user_ids">Vui lòng chọn những người nhận!</string>
   <string name="api_error_wrong_signature">Kiểm tra chữ ký thất bại! Bạn có cài đặt ứng dụng này từ một nguồn khác không vậy? Nếu bạn chắc chắn là đây không phải là một cuộc tấn công thì hãy thu hồi việc đăng ký của ứng dụng trong OpenKeychain và sau đó đăng ký lại ứng dụng.</string>
   <string name="api_select_sign_key_text">Vui lòng chọn một trong số các mã khoá hiện có hoặc tạo một mã khoá mới.</string>
-  <string name="api_select_keys_text">Không có mã khoá được cho phép nào có thể giải mã nội dung. Vui lòng chọn các mã khoá được cho phép.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Chia sẻ bằng mã QR</string>
-  <string name="share_nfc_dialog">Chia sẻ bằng NFC</string>
   <!--retry upload dialog-->
   <string name="retry_up_dialog_title">Tải lên thất bại</string>
   <string name="retry_up_dialog_message">Tải lên thất bại. Bạn có muốn thử lại hành động này không?</string>
@@ -600,8 +446,6 @@
     <item quantity="other">Đã chọn %d mã khoá.</item>
   </plurals>
   <string name="key_list_empty_text1">Không tìm thấy mã khoá nào!</string>
-  <string name="key_list_filter_show_all">Hiện tất cả mã khoá</string>
-  <string name="key_list_filter_show_certified">Chỉ hiện các mã khoá được xác nhận</string>
   <string name="key_list_fab_qr_code">Quét mã QR</string>
   <string name="key_list_fab_search">Tìm kiếm kháo</string>
   <string name="key_list_fab_import">Nhập từ tệp</string>
@@ -609,19 +453,14 @@
   <string name="key_list_dummy_subtitle">Nhấn vào đây để tạo hoặc nhập một mã khoá.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Chỉnh sửa</string>
-  <string name="key_view_action_encrypt">Mã hóa văn bản</string>
-  <string name="key_view_action_encrypt_files">tệp</string>
   <string name="key_view_action_certify">Xác nhận mã khoá</string>
   <string name="key_view_action_update">Cập nhật từ máy chủ mã khoá</string>
   <string name="key_view_action_share_with">Chia sẻ bằng...</string>
   <string name="key_view_action_share_ssh_with">Chia sẻ dưới dạng mã khoá công khai SSH bằng...</string>
-  <string name="key_view_action_share_nfc">Chia sẻ qua NFC</string>
   <string name="key_view_action_upload">Xuất bản trên máy chủ mã khoá</string>
-  <string name="key_view_tab_main">Thông tin chính</string>
   <string name="key_view_tab_start">Bắt đầu</string>
   <string name="key_view_tab_share">Chia sẻ</string>
   <string name="key_view_tab_keys">Khóa con</string>
-  <string name="key_view_tab_certs">Chứng chỉ</string>
   <string name="user_id_info_revoked_title">Thu hồi</string>
   <string name="user_id_info_revoked_text">Danh tính này đã bị chủ sở hữu mã khoá thu hồi. Nó không còn hợp lệ nữa.</string>
   <string name="user_id_info_certified_title">Được xác nhận</string>
@@ -629,8 +468,6 @@
   <string name="user_id_info_uncertified_title">Không được xác nhận</string>
   <string name="user_id_info_uncertified_text">Danh tính này chưa được xác nhận. Bạn không thể chắc rằng danh tính này có thực sự tương ứng với một người cụ thể không.</string>
   <!--Key trust-->
-  <string name="key_trust_no_cloud_evidence">Không có bằng chứng nào từ Internet về sự đáng tin cậy của mã khoá này.</string>
-  <string name="key_trust_start_cloud_search">Bắt đầu tìm kiếm</string>
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Đổi mật khẩu</string>
   <string name="edit_key_action_add_identity">Thêm danh tính</string>
@@ -665,11 +502,8 @@
   <string name="create_key_final_text">Bạn đã nhập danh tính sau:</string>
   <string name="create_key_final_robot_text">Việc tạo mã khoá có thể mất một lúc, hãy uống một cốc cà phê trong lúc đó...</string>
   <string name="create_key_final_email_valid_warning">Nhiều ứng dụng hoạt động tốt hơn khi được cung cấp các mã khoá chỉ chứa các địa chỉ email hợp lệ</string>
-  <string name="create_key_rsa">(3 mã khoá con, RSA, 4096 bit)</string>
-  <string name="create_key_custom">(thiết lập mã khoá tuỳ chỉnh)</string>
   <string name="create_key_name_text">Chọn một cái tên được liên kết với mã khoá này. Tên này có thể là họ tên đầy đủ, vd: \'John Doe\', hoặc biệt danh, vd: \'Johnny\'.</string>
   <string name="create_key_email_text">Nhập địa chỉ email chính của bạn được sử dụng để giao tiếp bảo mật.</string>
-  <string name="create_key_passphrase_text">Chọn một mật khẩu mạnh. Nó bảo vệ mã khoá khi thiết bị của bạn bị trộm.</string>
   <string name="create_key_hint_full_name">Họ tên đầy đủ hoặc biệt danh</string>
   <string name="create_key_edit">Thay đổi thiết lập mã khoá</string>
   <string name="create_key_add_email">Thêm địa chỉ email</string>
@@ -681,7 +515,6 @@
   <string name="create_key_yubi_key_pin">Mã PIN</string>
   <string name="create_key_yubi_key_admin_pin">Mã PIN Quản trị viên</string>
   <string name="create_key_yubi_key_pin_repeat">Lặp lại mã PIN</string>
-  <string name="create_key_yubi_key_pin_not_correct">Mã PIN không chính xác!</string>
   <string name="create_key_yubi_key_pin_too_short">Mã PIN phải có ít nhất 6 chữ số!</string>
   <string name="create_key_yubi_key_pin_insecure">Vui lòng chọn một mã PIN bảo mật, không phải 000000, 123456 hay các kết hợp tương tự (top 20 mã PIN được chọn nhiều nhất không được cho phép)</string>
   <string name="create_key_yubi_key_algorithm_text">Vui lòng chọn một thuật toán cho mỗi mã khoá.</string>
@@ -692,7 +525,6 @@
   <string name="view_key_my_key">Mã khoá của tôi</string>
   <string name="view_key_verified">Mã khoá đã xác nhận</string>
   <string name="view_key_unverified">Chưa xác nhận: Quét mã QR để xác nhận mã khoá!</string>
-  <string name="view_key_fragment_no_system_contact">&lt;không có&gt;</string>
   <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Thêm máy chủ mã khoá</string>
   <string name="edit_keyserver_dialog_title">Chỉnh sửa máy chủ mã khoá</string>
@@ -710,22 +542,12 @@
   <string name="nav_keys">Quản lý Khóa</string>
   <string name="nav_encrypt_decrypt">Tiện ích bảo mật</string>
   <string name="nav_apps">Ứng dụng đã cấp quyền</string>
-  <string name="drawer_open">Open navigation drawer</string>
-  <string name="drawer_close">Close navigation drawer</string>
   <string name="my_keys">Khóa của tôi</string>
   <string name="nav_backup">Sao lưu/Khôi phục</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Nhập văn bản</string>
   <!--certs-->
-  <string name="cert_default">mặc định</string>
   <string name="cert_none">không có</string>
-  <string name="cert_casual">thông thường</string>
-  <string name="cert_positive">tích cực</string>
-  <string name="cert_revoke">đã hủy bỏ</string>
-  <string name="cert_verify_ok">OK</string>
-  <string name="cert_verify_failed">thất bại!</string>
-  <string name="cert_verify_error">lỗi!</string>
-  <string name="cert_verify_unavailable">mã khoá không có sẵn</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <string name="msg_internal_error">Lỗi nội bộ!</string>
   <string name="msg_cancelled">Đã huỷ hoạt động.</string>
@@ -737,7 +559,6 @@
   <string name="msg_ip_encode_fail">Hoạt động thất bại do lỗi mã hoá</string>
   <string name="msg_ip_error_io_exc">Hoạt động thất bại do lỗi i/o</string>
   <string name="msg_ip_error_op_exc">Hoạt động thất bại do lỗi cơ sở dữ liệu</string>
-  <string name="msg_ip_error_remote_ex">Hoạt động thất bại do lỗi nội bộ</string>
   <string name="msg_ip">Đang nhập chùm chìa khoá công khai %s</string>
   <string name="msg_ip_fingerprint_error">Mã kiểm tra của mã khoá đang nhập không khớp với dự kiến!</string>
   <string name="msg_ip_fingerprint_ok">Kiểm tra mã kiểm tra OK</string>
@@ -769,7 +590,6 @@
   <string name="msg_ip_subkey">Đang xử lý mã khoá con %s</string>
   <string name="msg_ip_subkey_expired">Mã khoá con đã hết hạn vào %s</string>
   <string name="msg_ip_subkey_expires">Mã khoá con sẽ hết hạn vào %s</string>
-  <string name="msg_ip_subkey_flags_unspecified">Thuộc tính mã khoá con: không được chỉ định (đang cho là tất cả)</string>
   <string name="msg_ip_subkey_flags_cesa">Thuộc tính mã khoá con: chứng nhận, mã hoá, ký, xác thực</string>
   <string name="msg_ip_subkey_flags_cesx">Thuộc tính mã khoá con: chứng nhận, mã hoá, ký</string>
   <string name="msg_ip_subkey_flags_cexa">Thuộc tính mã khoá con: chứng nhận, mã hoá, xác thực</string>
@@ -821,10 +641,8 @@
   <string name="msg_ip_uat_classifying">Đang phân loại thuộc tính người dùng</string>
   <string name="msg_ip_uat_revoked">Thuộc tính người dùng đã được thu hồi</string>
   <string name="msg_is_bad_type_public">Đã cố gắng nhập chùm chìa khoá công khai làm bí mật. Đây là một lỗi, vui lòng gửi báo cáo!</string>
-  <string name="msg_is_bad_type_uncanon">Đã cố gắng nhập chùm chìa khoá mà không có hợp thức hoá. Đây là một lỗi, vui lòng gửi báo cáo!</string>
   <!--Import Secret log entries-->
   <string name="msg_is">Đang nhập mã khoá bí mật %s</string>
-  <string name="msg_is_db_exception">Lỗi cơ sở dữ liệu!</string>
   <string name="msg_is_importing_subkeys">Đang xử lý các mã khoá con bí mật</string>
   <string name="msg_is_error_io_exc">Lỗi khi mã hoá chùm chìa khoá</string>
   <string name="msg_is_merge_public">Đang hợp nhất dữ liệu đã nhập vào chùm chìa khoá công khai hiện có</string>
@@ -1020,25 +838,14 @@
   <!--First Time-->
   <string name="restore_section">Phục hồi</string>
   <!--unsorted-->
-  <string name="label_user_id">Danh tính</string>
-  <string name="label_cert_type">Loại</string>
   <string name="error_key_not_found">Không tìm thấy mã khoá!</string>
-  <string name="key_unavailable">không có sẵn</string>
   <string name="unknown">không biết</string>
-  <string name="user_id_none">1]]&gt;</string>
   <!--Android Account-->
-  <string name="account_privacy_title">Riêng tư</string>
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">Điền mật khẩu</string>
-  <string name="passphrase">Mật khẩu</string>
-  <string name="set_passphrase">Cài đặt mật khẩu</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-  <string name="nfc_settings">Thiết đặt</string>
-  <string name="snack_security_token_view">Xem</string>
-  <string name="snack_security_token_import">Nhập</string>
-  <string name="btn_reset">Đặt lại</string>
   <string name="security_token_error">Lỗi: %s</string>
   <plurals name="security_token_error_pin">
     <item quantity="other">Mã PIN không đúng!\nCòn lại %d lần thử.</item>
@@ -1054,12 +861,10 @@
   <string name="security_token_error_chaining_error">Token bảo mật mong đợi lệnh cuối trong một chuỗi.</string>
   <string name="security_token_error_header">Token bảo mật báo cáo byte %s không hợp lệ.</string>
   <!--Other Linked Identity strings-->
-  <string name="btn_finish">Kết thúc</string>
   <string name="share_log_dialog_share_button">Chia sẻ</string>
   <string name="share_log_dialog_cancel_button">Hủy</string>
   <string name="menu_uids_save">Lưu</string>
   <string name="remember">Ghi nhớ</string>
-  <string name="security_token_error_pgp_app_not_installed">Không tìm thấy ứng dụng PGP nào trên token bảo mật</string>
   <string name="prompt_fidesmo_pgp_install_title">Cài đặt PGP?</string>
   <string name="prompt_fidesmo_pgp_install_message">Không có ứng dụng PGP nào có sẵn trên thiết bị Fidesmo của bạn.</string>
   <string name="prompt_fidesmo_pgp_install_button_positive">Cài đặt</string>
@@ -1068,16 +873,6 @@
   <string name="prompt_fidesmo_app_install_message">Để cài đặt PGP bạn cần ứng dụng Fidesmo cho Android.</string>
   <string name="prompt_fidesmo_app_install_button_positive">Cài đặt</string>
   <string name="prompt_fidesmo_app_install_button_negative">Hủy</string>
-  <string name="help_donation_paypal_item">Quyên góp cho OpenKeychain</string>
-  <string-array name="help_donation_google_catalog_values">
-    <item>1 EUR</item>
-    <item>2 EUR</item>
-    <item>3 EUR</item>
-    <item>5 EUR</item>
-    <item>10 EUR</item>
-    <item>50 EUR</item>
-    <item>100 EUR</item>
-  </string-array>
   <string name="redirect_import_key_title">Quét bằng OpenKeychain!</string>
   <string name="redirect_import_key_message">Bạn đã quét một mã QR OpenPGP bằng một ứng dụng khác. Vui lòng quét trực tiếp bằng OpenKeychain để cho an toàn.</string>
   <string name="redirect_import_key_yes">Quét lại</string>
@@ -1088,7 +883,6 @@
   <string name="button_back">Lùi</string>
   <string name="button_got_it">Hiểu rõ</string>
   <string name="title_key_status">Trạng thái mã khoá</string>
-  <string name="caption_secret_status">Mã khoá này là của bạn. Bạn có thể sử dụng nó để:</string>
   <string name="cap_title_confirm">Xác nhận các mã khoá khác</string>
   <string name="cap_cert_ok">Mã khoá này có thể xác nhận các mã khoá khác.</string>
   <string name="key_health_ok_subtitle">Không tìm thấy vấn đề về mã khóa.</string>
@@ -1109,13 +903,6 @@
   <string name="keyserver_title_not_published">Chưa Xuất Bản</string>
   <string name="dialog_insecure_title">Cảnh Báo An Ninh</string>
   <string name="dialog_insecure_button_ok">Hiểu rõ</string>
-  <string name="button_more_info">Cần nhiều thông tin</string>
-  <string name="button_import">Nhập</string>
-  <string name="transfer_status_connected">Đã kết nối</string>
-  <string name="transfer_status_disconnected">Ngắt kết nối!</string>
-  <string name="transfer_connecting">Đang kết nối...</string>
-  <string name="transfer_confirm_cancel">Hủy</string>
-  <string name="transfer_confirm_ok">Gửi</string>
   <string name="token_reset_confirm_ok">Đặt lại</string>
   <string name="token_result_not_found">Không tìm thấy mã khoá!</string>
   <string name="token_action_import">Nhập</string>
@@ -1148,7 +935,6 @@
   <string name="key_gen_back">Lùi</string>
   <string name="key_gen_finish">Kết thúc</string>
   <string name="snack_keylist_clipboard_action">Xem</string>
-  <string name="notify_title_keysync">Đang cập nhật các mã khoá...</string>
   <string name="keylist_item_key_id">ID mã khóa: %s</string>
   <string name="keylist_header_anonymous">Ẩn danh</string>
   <string name="share_key_clipboard">Chia sẻ mã khoá qua bộ nhớ tạm</string>

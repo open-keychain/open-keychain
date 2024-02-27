@@ -19,38 +19,27 @@
   <string name="title_share_key">Partajează cheia cu...</string>
   <string name="title_share_file">Partajează fișierul cu...</string>
   <string name="title_share_message">Partajează textul cu...</string>
-  <string name="title_encrypt_to_file">Criptează în fișier</string>
-  <string name="title_decrypt_to_file">Decriptează în fișier</string>
-  <string name="title_import_keys">Importă chei</string>
-  <string name="title_export_key">Exportă o copie de rezervă a cheii</string>
-  <string name="title_export_keys">Exporta o copie de rezervă a cheilor</string>
-  <string name="title_key_not_found">Cheia nu a fost găsită</string>
+    <string name="title_import_keys">Importă chei</string>
+    <string name="title_key_not_found">Cheia nu a fost găsită</string>
   <string name="title_send_key">Trimite la serverul de chei</string>
   <string name="title_backup">Exportă o copie de siguranță a cheii</string>
   <string name="title_certify_key">Confirmă cheia</string>
   <string name="title_key_details">Detalii cheie</string>
   <string name="title_help">Ajutor</string>
   <string name="title_log_display">Jurnal</string>
-  <string name="title_exchange_keys">Schimbă chei</string>
-  <string name="title_advanced_key_info">Avansat</string>
+    <string name="title_advanced_key_info">Avansat</string>
   <string name="title_delete_secret_key">Șterge cheia TA \'%s\'?</string>
   <string name="title_manage_my_keys">Gestionează cheile mele</string>
   <string name="title_alert_strip">Dezactivează subcheia</string>
   <!--section-->
   <string name="section_user_ids">Identități</string>
-  <string name="section_security_token">Token de securitate</string>
-  <string name="section_linked_system_contact">Contact de system asociat</string>
-  <string name="section_should_you_trust">Ar trebui să ai încredere în această cheie?</string>
-  <string name="section_proof_details">Dovadă de verificare</string>
-  <string name="section_keys">Subchei</string>
+    <string name="section_keys">Subchei</string>
   <string name="section_cloud_search">Căutare chei</string>
-  <string name="section_cloud_search_summary">Server de chei</string>
-  <string name="section_passphrase_cache">Parole și PIN-uri</string>
+    <string name="section_passphrase_cache">Parole și PIN-uri</string>
   <string name="section_passphrase_cache_summary">Administrare</string>
   <string name="section_proxy_settings">Anonimitate Rețea</string>
   <string name="section_proxy_settings_summary">Tor, configurare proxy</string>
-  <string name="section_gui">Interfață</string>
-  <string name="section_sync_settings">Sincronizare</string>
+    <string name="section_sync_settings">Sincronizare</string>
   <string name="section_sync_settings_summary">Actualizare automată chei, asociare contacte</string>
   <string name="section_experimental_features">Funcționalități experimentale</string>
   <string name="section_certify">Confirmă</string>
@@ -63,11 +52,9 @@
   <string name="section_current_expiry">Expirare curentă</string>
   <string name="section_new_expiry">Expirare nouă</string>
   <!--button-->
-  <string name="btn_decrypt_verify_file">Decriptează, verifică și salvează fișierul</string>
-  <string name="btn_encrypt_share_file">Criptează și partajează fișierul</string>
+    <string name="btn_encrypt_share_file">Criptează și partajează fișierul</string>
   <string name="btn_encrypt_save_file">Criptează și salvează fișierul</string>
-  <string name="btn_save_file">Salvează fișierul</string>
-  <string name="btn_save">Salvează</string>
+    <string name="btn_save">Salvează</string>
   <string name="btn_view_log">Vezi jurnalul</string>
   <string name="btn_do_not_save">Anulare</string>
   <string name="btn_delete">Șterge</string>
@@ -76,13 +63,11 @@
   <string name="btn_export_to_server">Trimite la serverul de chei</string>
   <string name="btn_next">Înainte</string>
   <string name="btn_back">Înapoi</string>
-  <string name="btn_no">Nu</string>
-  <string name="btn_match">Amprentele digitale se potrivesc</string>
+    <string name="btn_match">Amprentele digitale se potrivesc</string>
   <string name="btn_share_encrypted_signed">Criptează/semnează și partajează textul</string>
   <string name="btn_copy_encrypted_signed">Criptează/semnează și copie textul</string>
   <string name="btn_paste_encrypted_signed">Criptează/semnează și lipește textul</string>
-  <string name="btn_view_cert_key">Vezi cheia de certificare</string>
-  <string name="btn_create_key">Creează cheia</string>
+    <string name="btn_create_key">Creează cheia</string>
   <string name="btn_add_files">Adaugă fișier(e)</string>
   <string name="btn_share_decrypted_text">Partajează</string>
   <string name="btn_open_with">Deschide cu...</string>
@@ -94,8 +79,7 @@
   <string name="btn_add_email">Adaugă o adresă de email adițională</string>
   <string name="btn_unlock">Deblochează</string>
   <string name="btn_proceed">Continua</string>
-  <string name="btn_add_keyserver">Adaugă</string>
-  <string name="btn_save_default">Salvează ca implicit</string>
+    <string name="btn_save_default">Salvează ca implicit</string>
   <string name="btn_saved">Salvat!</string>
   <string name="btn_not_matching">Nu se potrivesc</string>
   <!--Shortcut Strings-->
@@ -104,72 +88,45 @@
   <string name="cd_encrypt_files">Criptează fișiere</string>
   <string name="cd_exchange_keys">Schimbă chei</string>
   <string name="cd_encrypt_text">Criptează text</string>
-  <string name="cd_share_nfc">Partajează print NFC</string>
-  <!--menu-->
+    <!--menu-->
   <string name="menu_preferences">Setări</string>
   <string name="menu_help">Ajutor</string>
   <string name="menu_export_key">Exportă o copie de rezervă a cheii</string>
   <string name="menu_delete_key">Șterge cheia</string>
-  <string name="menu_status">Vezi starea cheii</string>
-  <string name="menu_manage_keys">Gestionează cheile mele</string>
+    <string name="menu_manage_keys">Gestionează cheile mele</string>
   <string name="menu_search">Caută</string>
   <string name="menu_open">Deschide</string>
   <string name="menu_read_clipboard">Citește din clipboard</string>
-  <string name="menu_nfc_preferences">Setări NFC</string>
-  <string name="menu_beam_preferences">Setări Beam</string>
-  <string name="menu_encrypt_to">Criptează către...</string>
-  <string name="menu_select_all">Selectează tot</string>
-  <string name="menu_export_all_keys">Exportă toate cheile</string>
-  <string name="menu_update_all_keys">Actualizează toate cheile</string>
+    <string name="menu_encrypt_to">Criptează către...</string>
+    <string name="menu_update_all_keys">Actualizează toate cheile</string>
   <string name="menu_certify_fingerprint">Confirmă cu amprenta digitală</string>
-  <string name="menu_certify_fingerprint_phrases">Confirmă cu fraze</string>
-  <string name="menu_share_log">Partajează jurnal</string>
+    <string name="menu_share_log">Partajează jurnal</string>
   <string name="menu_change_password">Schimbă parola</string>
   <string name="menu_advanced">Avansat</string>
-  <string name="menu_keyserver_add">Adaugă</string>
-  <!--label-->
-  <string name="label_message">Text</string>
-  <string name="label_file">Fișier</string>
-  <string name="label_files">Fișier(e)</string>
-  <string name="label_file_colon">Fișier:</string>
-  <string name="label_no_passphrase">Nici o parolă</string>
+    <!--label-->
+    <string name="label_no_passphrase">Nici o parolă</string>
   <string name="label_passphrase">Parolă</string>
   <string name="label_pin">PIN</string>
   <string name="label_unlock">Se deblochează...</string>
   <string name="label_passphrase_again">Repetă parola</string>
-  <string name="label_show_passphrase">Arată parola</string>
-  <string name="label_algorithm">Algoritm</string>
-  <string name="label_algorithm_colon">Algoritm:</string>
-  <string name="label_ascii_armor">Fișier ASCII Armor</string>
-  <string name="label_file_ascii_armor">Activează ASCII Armor</string>
-  <string name="label_write_version_header">Anunța pe altcineva că folosești OpenKeychain</string>
-  <string name="label_write_version_header_summary">Adaugă \'OpenKeychain v2.7\' la semnaturile OpenPGP, textul criptat și cheile exportate</string>
-  <string name="label_asymmetric_from">Semnează cu:</string>
+    <string name="label_algorithm_colon">Algoritm:</string>
+    <string name="label_file_ascii_armor">Activează ASCII Armor</string>
+    <string name="label_asymmetric_from">Semnează cu:</string>
   <string name="label_to">Crisptează către</string>
   <string name="label_delete_after_encryption">Șterge fișierele după criptare</string>
-  <string name="label_delete_after_decryption">Șterge după decriptare</string>
-  <string name="label_encryption_algorithm">Algoritm de criptare</string>
-  <string name="label_hash_algorithm">Algoritm hash</string>
-  <string name="label_symmetric">Criptează cu parolă</string>
+    <string name="label_symmetric">Criptează cu parolă</string>
   <string name="label_passphrase_cache_subs">Reține parolele după subcheie</string>
-  <string name="label_message_compression">Compresie de text</string>
-  <string name="label_file_compression">Compresie de fișiere</string>
-  <string name="label_keyservers">Gestionează serverele de chei OpenPGP</string>
-  <string name="label_key_id">ID cheie</string>
-  <string name="label_key_id_colon">ID cheie:</string>
+    <string name="label_keyservers">Gestionează serverele de chei OpenPGP</string>
+    <string name="label_key_id_colon">ID cheie:</string>
   <string name="label_key_created">Creată pe %s</string>
   <string name="label_key_created_just_now">Creată chiar acum</string>
   <string name="label_key_type">Tip</string>
-  <string name="label_creation">Creare</string>
-  <string name="label_creation_colon">Creare:</string>
-  <string name="label_expiry">Expirare</string>
+    <string name="label_expiry">Expirare</string>
   <string name="label_valid_from">Valabil de la</string>
   <string name="label_usage">Utilizare</string>
   <string name="label_revoked">Revocat</string>
   <string name="label_insecure">Nesigur</string>
-  <string name="label_key_size">Mărime cheie</string>
-  <string name="label_ecc_curve">Curbă eliptică</string>
-  <string name="label_main_user_id">Identitate principală</string>
+    <string name="label_main_user_id">Identitate principală</string>
   <string name="label_name">Nume</string>
   <string name="label_email">Email</string>
   <string name="label_send_key">Publică certificarea pe serverele de chei</string>
@@ -178,18 +135,15 @@
   <string name="label_keyservers_title">Servere de chei</string>
   <string name="label_keyserver_settings_hint">Trage pentru reordonare, atinge pentru a edita/șterge</string>
   <string name="label_selected_keyserver_title">Serverul de chei selectat</string>
-  <string name="label_selected_smartpgp_authority_title">Autoritatea selectată</string>
-  <string name="label_preferred">preferat</string>
+    <string name="label_preferred">preferat</string>
   <string name="label_enable_compression">Activează compresia</string>
   <string name="label_enable_self_encrypt">Criptează către semnatar</string>
   <string name="label_encrypt_filenames">Criptează numele fișierelor</string>
-  <string name="label_hidden_recipients">Ascunde destinatarii</string>
-  <string name="label_smartpgp_verify">SmartPGP: Verifică certificate</string>
+    <string name="label_smartpgp_verify">SmartPGP: Verifică certificate</string>
   <string name="label_smartpgp_verify_summary">Verifică certificatele de pe jetoanele de securitate SmartPGP comparând cu un set de autorități de încredere</string>
   <string name="label_smartpgp_roots">SmartPGP: Autorități de încredere</string>
   <string name="label_verify_keyserver_connection">Verifică conexiunea</string>
-  <string name="label_only_trusted_keyserver">Doar serverul de chei de încredere</string>
-  <string name="label_enter_keyserver_url">URL</string>
+    <string name="label_enter_keyserver_url">URL</string>
   <string name="label_enter_keyserver_onion">URL Tor .onion optional</string>
   <string name="label_keyserver_dialog_delete">Șterge serverul de chei</string>
   <string name="label_theme">Temă</string>
@@ -197,9 +151,7 @@
   <string name="label_smartpgp_authority_dialog_delete">Șterge autoritatea</string>
   <string name="pref_keyserver">Servere de chei OpenPGP</string>
   <string name="pref_keyserver_summary">Caută cheile pe serverele OpenPGP selectate (protocol HKP)</string>
-  <string name="pref_facebook">Facebook</string>
-  <string name="pref_facebook_summary">Caută cheile pe Facebook după nume de utilizator</string>
-  <string name="pref_wkd">Catalog de chei Web</string>
+    <string name="pref_wkd">Catalog de chei Web</string>
   <string name="pref_wkd_summary">Caută cheile folosind catalogul de chei Web (WKD)</string>
   <string name="label_sync_settings_keyserver_title">Actualizări de chei automate</string>
   <string name="label_sync_settings_keyserver_summary_on">La fiecare trei zile, cheile sunt actualizate de la serverul de chei preferat</string>
@@ -227,22 +179,14 @@
   <string name="orbot_install_dialog_install">Instalează</string>
   <string name="orbot_install_dialog_content">Trebuie să aveți Orbot instalat si activ pentru a ruta traficul prin el. Doriți să-l instalați acum?</string>
   <string name="orbot_install_dialog_cancel">Anulare</string>
-  <string name="orbot_install_dialog_ignore_tor">Nu folosi Tor</string>
-  <!--StartOrbotDialogFragment strings-->
+    <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">Pornesc Orbot?</string>
   <string name="orbot_start_dialog_content">Orbot nu pare să ruleze. Doriți să-l porniți acum și să vă conectați la Tor?</string>
-  <string name="orbot_start_btn">Pornește Orbot</string>
-  <string name="orbot_start_dialog_start">Pornire Orbot</string>
+    <string name="orbot_start_dialog_start">Pornire Orbot</string>
   <string name="orbot_start_dialog_cancel">Anulare</string>
-  <string name="orbot_start_dialog_ignore_tor">Nu folosi Tor</string>
-  <string name="user_id_no_name"><![CDATA[<no name>]]></string>
+    <string name="user_id_no_name"><![CDATA[<no name>]]></string>
   <string name="none"><![CDATA[<none>]]></string>
-  <plurals name="n_keys">
-    <item quantity="one">1 cheie</item>
-    <item quantity="few">%d chei</item>
-    <item quantity="other">%d chei</item>
-  </plurals>
-  <plurals name="n_keyservers">
+    <plurals name="n_keyservers">
     <item quantity="one">%dserver de chei</item>
     <item quantity="few">%dservere de chei</item>
     <item quantity="other">%dservere de chei</item>
@@ -255,21 +199,8 @@
   <string name="secret_key">Cheie secretă:</string>
   <!--choice-->
   <string name="choice_none">Nici unul</string>
-  <string name="choice_15secs">15 sec</string>
-  <string name="choice_1min">1 min</string>
-  <string name="choice_3mins">3 min</string>
-  <string name="choice_5mins">5 min</string>
-  <string name="choice_10mins">10 min</string>
-  <string name="choice_20mins">20 min</string>
-  <string name="choice_40mins">40 min</string>
-  <string name="choice_1hour">1 oră</string>
-  <string name="choice_2hours">2 ore</string>
-  <string name="choice_4hours">4 ore</string>
-  <string name="choice_8hours">8 ore</string>
-  <string name="choice_forever">pentru totdeauna</string>
-  <string name="choice_select_cert">Selectează o cheie</string>
-  <string name="filemanager_title_open">Deschide...</string>
-  <string name="rsa_2048">RSA 2048</string>
+    <string name="choice_select_cert">Selectează o cheie</string>
+    <string name="rsa_2048">RSA 2048</string>
   <string name="rsa_2048_description_html">dimensiune de fișier mai mică, considerat sigur până în 2030</string>
   <string name="rsa_3072">RSA 3072</string>
   <string name="rsa_3072_description_html">recomandat, considerat sigur până în 2040</string>
@@ -286,8 +217,7 @@
   <string name="usage_sign">Semnează</string>
   <string name="usage_encrypt">Criptează</string>
   <string name="usage_sign_and_encrypt">Semnează și Criptează</string>
-  <string name="error">Eroare</string>
-  <string name="error_message">Eroare: %s</string>
+    <string name="error_message">Eroare: %s</string>
   <string name="theme_auto">Automatic</string>
   <string name="theme_light">Deschisă</string>
   <string name="theme_dark">Închisă</string>
@@ -305,8 +235,7 @@
   <string name="passphrase_keyboard_hint_numeric">Comută la tastatura numerică</string>
   <string name="passphrase_transfer">Introduceți codul de transfer</string>
   <string name="passphrase_transfer_autocrypt">Pentru a importa acest mesaj de configurare Autocrypt, introduceți codul de transfer:</string>
-  <string name="pin_for">Introduceți PIN-ul pentru \'%s\'</string>
-  <string name="security_token_pin_for">Introduceți PIN-ul pentru a accesa jetonul de securitate pentru \'%s\'</string>
+    <string name="security_token_pin_for">Introduceți PIN-ul pentru a accesa jetonul de securitate pentru \'%s\'</string>
   <string name="security_token_nfc_text">Țineți jetonul de securitate lângă logo-ul NFC de pe spatele dispozitivului.</string>
   <string name="security_token_nfc_wait">Țineți jetonul de securitate lângă spatele dispozitivului.</string>
   <string name="security_token_nfc_finished">Indepărtați jetonul de securitate acum.</string>
@@ -315,36 +244,16 @@
   <string name="file_delete_confirmation"> Următoarele fișiere vor fi șterse: %s</string>
   <string name="file_delete_successful">%1$d din %2$d fisiere au fost șterse. %3$s</string>
   <string name="no_file_selected">Niciun fișier selectat.</string>
-  <string name="encrypt_sign_successful">Semnare și/sau criptare cu succes.</string>
-  <string name="encrypt_sign_clipboard_successful">Semnare și/sau criptare cu succes către clipboard.</string>
-  <string name="select_encryption_key">Selectați cel puțin o cheie pentru criptare.</string>
+    <string name="select_encryption_key">Selectați cel puțin o cheie pentru criptare.</string>
   <string name="error_no_encryption_or_signature_key">Selectați cel puțin o cheie pentru criptare sau o cheie pentru semnare.</string>
-  <string name="specify_file_to_encrypt_to">Vă rog specificați în care fișier să criptez.\nAVERTISMENT: Fisierul va fi suprascris dacă există deja!</string>
-  <string name="specify_file_to_decrypt_to">Vă rog specificați în care fișier să decriptez.\nAVERTISMENT: Fisierul va fi suprascris dacă există deja!</string>
-  <string name="specify_backup_dest">Va fi creată o copie de siguranță care exclude cheile dumneavoastră, vă rog specificați un fișier destinație.\nAVERTISMENT: Fișierul va fi suprascris dacă există deja!</string>
-  <string name="specify_backup_dest_single">Cheia va fi partajată, vă rog specificați un fișier destinație.\nAVERTISMENT: Fișierul va fi suprascris dacă există deja!</string>
-  <string name="specify_backup_dest_secret_single">Va fi creată o copie de siguranță completă, vă rog specificați un fișier destinație.\nAVERTISMENT: Fișierul va fi suprascris dacă există deja!</string>
-  <string name="specify_backup_dest_secret">Va fi creată o copie de siguranță completă a tuturor cheilor, inclusiv cheile dumneavoastră, vă rog specificați un fișier destinație.\nAVERTISMENT: Fișierul va fi suprascris dacă există deja!</string>
-  <string name="key_deletion_confirmation_multi">Doriți întradevăr să ștergeți toate cheile selectate?</string>
+    <string name="key_deletion_confirmation_multi">Doriți întradevăr să ștergeți toate cheile selectate?</string>
   <string name="secret_key_deletion_confirmation">După ștergere nu veți mai putea decripta mesaje/fișiere criptate cu această cheie și veți pierde toate confirmările de chei pe care le-ați făcut cu aceasta!</string>
   <string name="public_key_deletetion_confirmation">Ștergeți cheia \'%s\'?</string>
-  <string name="also_export_secret_keys">Exportă și cheile secrete</string>
-  <string name="reinstall_openkeychain">Ați întâmpinat o eroare cunoscută din Android. Vă rog reinstalați OpenKeychain dacă doriți să atașați contactele dumneavoastră de chei.</string>
-  <string name="alert_strip">Dezactivarea acestei subchei o va face neutilizabilă pe acest dispozitiv!</string>
-  <string name="key_exported">Am exportat cu succes o cheie.</string>
-  <string name="keys_exported">Am exportat cu success %d chei.</string>
-  <string name="no_keys_exported">Nicio cheie exportată.</string>
-  <string name="key_creation_el_gamal_info">Notă: doar subcheile suportă ElGamal.</string>
-  <string name="key_not_found">Nu am găsit cheia %08X.</string>
+    <string name="alert_strip">Dezactivarea acestei subchei o va face neutilizabilă pe acest dispozitiv!</string>
+    <string name="key_not_found">Nu am găsit cheia %08X.</string>
   <string name="authentication_subkey_not_found">Această cheie nu are o subcheie pentru autentificare.</string>
-  <plurals name="bad_keys_encountered">
-    <item quantity="one">%d cheie secretă incorectă ignorată. Poate ați exportat cu opțiunea\n --export-secret-subkeys\nVă rog exportați în schimb cu opțiunea\n --export-secret-keys.\"</item>
-    <item quantity="few">%d chei secrete incorecte ignorate. Poate ați exportat cu opțiunea\n --export-secret-subkeys\nVă rog exportați în schimb cu opțiunea\n --export-secret-keys.\"</item>
-    <item quantity="other">%dchei secrete incorecte ignorate. Poate ați exportat cu opțiunea\n --export-secret-subkeys\nVă rog exportați în schimb cu opțiunea\n --export-secret-keys.\"</item>
-  </plurals>
-  <string name="list_empty">Această listă e goală!</string>
-  <string name="nfc_successful">Am trimis cu succes cheia cu NFC Beam!</string>
-  <string name="key_copied_to_clipboard">Cheia a fost copiată in clipboard!</string>
+    <string name="list_empty">Această listă e goală!</string>
+    <string name="key_copied_to_clipboard">Cheia a fost copiată in clipboard!</string>
   <string name="fingerprint_copied_to_clipboard">Amprenta a fost copiată in clipboard!</string>
   <string name="select_key_to_certify">Vă rog selectați o cheie de folosit pentru confirmare!</string>
   <string name="text_copied_to_clipboard">Textul a fost copiat in clipboard!</string>
@@ -354,30 +263,14 @@
          they will be put after "error_message", e.g. "Error: file not found"-->
   <string name="error_file_delete_failed">nu au fost șterse. Ștergeți-le manual!</string>
   <string name="error_file_added_already">%s a fost deja adăugat.</string>
-  <string name="error_file_not_found">fișierul nu a fost găsit</string>
-  <string name="error_bad_data">Datele sunt incorecte!</string>
-  <string name="error_no_secret_key_found">nicio cheie secretă adecvată nu a fost găsită</string>
-  <string name="error_external_storage_not_ready">dispozitivul de stocare extern nu este pregătit</string>
-  <string name="error_key_size_minimum512bit">dimensiunea cheii trebuie să fie măcar 512 biți</string>
-  <string name="error_unknown_algorithm_choice">algoritmul ales nu este cunoscut</string>
-  <string name="error_user_id_no_email">nu a fost găsită nicio adresă de email</string>
-  <string name="error_key_needs_a_user_id">E nevoie de măcar o identitate</string>
-  <string name="error_no_signature_passphrase">nu a fost dată nicio parolă</string>
-  <string name="error_no_signature_key">nu a fost dată nicio cheie pentru semnare</string>
-  <string name="error_invalid_data">Nu există conținut criptat sau semnat OpenPGP valid.</string>
-  <string name="error_integrity_check_failed">Verificarea de integritate a eșuat! Datele au fost modificate!</string>
-  <string name="error_wrong_passphrase">parolă greșită</string>
-  <string name="error_could_not_extract_private_key">nu am putut să extrag cheia privată</string>
+    <string name="error_bad_data">Datele sunt incorecte!</string>
+    <string name="error_invalid_data">Nu există conținut criptat sau semnat OpenPGP valid.</string>
+    <string name="error_could_not_extract_private_key">nu am putut să extrag cheia privată</string>
   <string name="error_wrong_security_token">jetonul de securitate nu conține cheia necesară</string>
   <!--errors without preceding Error:-->
-  <string name="error_jelly_bean_needed">E nevoie de Android 4.1 pentru a utiliza Android NFC Beam!</string>
-  <string name="error_nfc_needed">NFC trebuie să fie activ!</string>
-  <string name="error_beam_needed">Beam trebuie să fie activ!</string>
-  <string name="error_nothing">Nimic de afișat până acum.</string>
+    <string name="error_nothing">Nimic de afișat până acum.</string>
   <string name="error_nothing_import">Nicio cheie găsită!</string>
-  <string name="error_contacts_key_id_missing">Obținerea de ID cheie din contacte a eșuat!</string>
-  <string name="error_generic_report_bug">Am întâmpinat o eroare generică, vă rog trimiteți un raport de eroare pentru OpenKeychain.</string>
-  <string name="error_denied_storage_permission">Nu pot citi fișiere de pe suportul de stocare pentru că accesul a fost refuzat!</string>
+    <string name="error_denied_storage_permission">Nu pot citi fișiere de pe suportul de stocare pentru că accesul a fost refuzat!</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">Fără semnătură</string>
   <string name="decrypt_result_invalid_signature">Semnătură invalidă!</string>
@@ -401,14 +294,10 @@
   <string name="progress_done">Gata.</string>
   <string name="progress_cancel">Anulare</string>
   <string name="progress_cancelling">anulare...</string>
-  <string name="progress_downloading">descărcare...</string>
-  <string name="progress_saving">salvare...</string>
+    <string name="progress_saving">salvare...</string>
   <string name="progress_importing">import...</string>
-  <string name="progress_benchmarking">test de performanță...</string>
-  <string name="progress_revoking_uploading">Revoc si trimit cheia...</string>
-  <string name="progress_updating">Trimit cheile...</string>
-  <string name="progress_exporting">export...</string>
-  <string name="progress_uploading">trimitere...</string>
+    <string name="progress_revoking_uploading">Revoc si trimit cheia...</string>
+    <string name="progress_uploading">trimitere...</string>
   <string name="progress_building_key">creare cheie...</string>
   <string name="progress_building_master_key">construirea inelului primar...</string>
   <string name="progress_generating_rsa">se generează o nouă cheie RSA...</string>
@@ -425,78 +314,47 @@
   <string name="progress_modify_primaryuid">se schimbă ID-ul utilizator primar...</string>
   <string name="progress_modify_subkeychange">se modifică subche...</string>
   <string name="progress_modify_subkeyrevoke">se revocă subche...</string>
-  <string name="progress_modify_subkeystrip">se dezactivează subchei...</string>
-  <string name="progress_modify_subkeyadd">se adaugă subchei...</string>
+    <string name="progress_modify_subkeyadd">se adaugă subchei...</string>
   <string name="progress_modify_passphrase">se schimbă parola...</string>
   <string name="progress_modify_pin">se schimbă PIN-ul...</string>
   <string name="progress_modify_admin_pin">se schimbă PIN-ul de administrare...</string>
   <string name="progress_exporting_key">se exportă cheia...</string>
-  <string name="progress_exporting_keys">se exportă cheile...</string>
-  <string name="progress_start">se pregătește activitatea...</string>
-  <string name="progress_extracting_signature_key">se extrage cheia pentru semnătură...</string>
-  <string name="progress_extracting_key">se extrage cheia...</string>
-  <string name="progress_preparing_streams">se pregătesc fluxurile...</string>
+    <string name="progress_extracting_signature_key">se extrage cheia pentru semnătură...</string>
+    <string name="progress_preparing_streams">se pregătesc fluxurile...</string>
   <string name="progress_encrypting">se criptează date...</string>
-  <string name="progress_prepare_decryption">Pornesc decriptarea...</string>
-  <string name="progress_decrypting">Se decriptează date...</string>
+    <string name="progress_decrypting">Se decriptează date...</string>
   <string name="progress_preparing_signature">se pregătește semnătura...</string>
   <string name="progress_processing_signature">se procesează semnătura...</string>
   <string name="progress_generating_signature">se generează semnătura...</string>
   <string name="progress_verifying_signature">se verifică semnătura...</string>
   <string name="progress_signing">se semnează...</string>
-  <string name="progress_certifying">se certifică...</string>
-  <string name="progress_reading_data">se citesc date...</string>
-  <string name="progress_finding_key">se caută cheia...</string>
-  <string name="progress_decompressing_data">se decomprimă date...</string>
-  <string name="progress_verifying_integrity">se verifică integritatea...</string>
-  <string name="progress_deleting_securely">se șterge securizat \'%s\'...</string>
-  <string name="progress_deleting">se șterg cheile...</string>
+    <string name="progress_reading_data">se citesc date...</string>
+    <string name="progress_deleting">se șterg cheile...</string>
   <string name="progress_update_trust">se actualizează informațiile despre încredere...</string>
   <string name="progress_verifying_keyserver_connection">se verifică conectivitatea...</string>
   <string name="progress_starting_orbot">Se pornește Orbot...</string>
   <!--action strings-->
-  <string name="hint_cloud_search_hint">Căutare după nume, email...</string>
-  <!--key bit length selections-->
-  <string name="key_size_2048">2048</string>
-  <string name="key_size_3072">3072</string>
-  <string name="key_size_4096">4096</string>
-  <string name="key_size_8192">8192</string>
-  <string name="key_size_custom">Dimensiune cheie personalizată</string>
-  <string name="key_size_custom_info">Introduceți dimensiune cheie personalizată (în biți):</string>
-  <string name="key_size_custom_info_rsa">Dimensiunea cheii RSA trebuie să fie mai mare de 1024 și cel mult 16384. De asemenea trebuie să fie multiplu de 8.</string>
-  <string name="key_size_custom_info_dsa">Dimensiunea cheii DSA trebuie să fie cel puțin 512 si cel mult 1024. De asemenea trebuie să fie un multiplu de 64.</string>
-  <!--elliptic curve names-->
-  <string name="key_curve_nist_p256">NIST P-256</string>
-  <string name="key_curve_nist_p384">NIST P-384</string>
-  <string name="key_curve_nist_p521">NIST P-521</string>
-  <!--not in for now, see SaveKeyringParcel
-    <string name="key_curve_bp_p256">"Brainpool P-256"</string>
-    <string name="key_curve_bp_p384">"Brainpool P-384"</string>
-    <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
+    <!--key bit length selections-->
+    <!--elliptic curve names-->
+    <!--not in for now, see SaveKeyringParcel
+      <string name="key_curve_bp_p256">"Brainpool P-256"</string>
+      <string name="key_curve_bp_p384">"Brainpool P-384"</string>
+      <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
-  <string name="compression_fast">rapid</string>
-  <string name="compression_very_slow">foarte încet</string>
-  <!--Help-->
+    <!--Help-->
   <string name="help_tab_start">Start</string>
   <string name="help_tab_faq">FAQ</string>
   <string name="help_tab_wot">Confirmare cheie</string>
-  <string name="help_tab_nfc_beam">NFC Beam</string>
-  <string name="help_tab_changelog">Jurnal de schimbări</string>
+    <string name="help_tab_changelog">Jurnal de schimbări</string>
   <string name="help_tab_license">Licențe</string>
   <string name="help_tab_about">Despre</string>
   <string name="help_about_version">Versiune:</string>
-  <string name="help_tab_donations">Donează</string>
-  <!--Import-->
-  <string name="import_tab_keyserver">Server de chei</string>
-  <string name="import_tab_cloud">Căutare chei</string>
-  <string name="import_tab_direct">Fișier/Clipboard</string>
-  <string name="import_tab_qr_code">Cod QR/NFC</string>
-  <string name="import_found_keys">Am găsit %1$d chei</string>
+    <!--Import-->
+    <string name="import_found_keys">Am găsit %1$d chei</string>
   <string name="import_qr_code_wrong">Formatul codului QR nu este suportat (specificația formatului: https://github.com/open-keychain/open-keychain/wiki/QR-Codes)!</string>
   <string name="import_qr_code_fp">Amprenta este greșită sau prea scurtă!</string>
   <string name="import_qr_code_too_short_fingerprint">Amprenta este prea scurtă!</string>
-  <string name="import_qr_code_button">Scanează cod QR</string>
-  <string name="import_qr_code_text">Țineți camera foto deasupra codului QR!</string>
+    <string name="import_qr_code_text">Țineți camera foto deasupra codului QR!</string>
   <string name="btn_import">Importă</string>
   <string name="btn_import_keys">Importă toate cheile</string>
   <string name="btn_view_list">Vezi lista</string>
@@ -566,9 +424,7 @@
   <!--Revoke result toast (snackbar)-->
   <string name="revoke_ok">Cheie revocată cu succes.</string>
   <string name="revoke_fail">Eroare la revocarea cheii!</string>
-  <string name="revoke_nothing">Nimic de revocat.</string>
-  <string name="revoke_cancelled">Operația de revocare a fost anulată.</string>
-  <!--Certify result toast-->
+    <!--Certify result toast-->
   <plurals name="certify_keys_ok">
     <item quantity="one">Cheia %2$s confirmată cu succes.</item>
     <item quantity="few">%1$d chei %2$s confirmate cu succes.</item>
@@ -591,36 +447,24 @@
   <string name="intent_send_decrypt">Decriptează cu OpenKeychain</string>
   <string name="intent_autocrypt_setup">Importă mesaj de configurare Autocrypt</string>
   <!--Remote API-->
-  <string name="api_settings_show_info">Arată informațiile avansate</string>
-  <string name="api_settings_hide_info">Ascunde informațiile avansate</string>
-  <string name="api_settings_no_key">Nicio cheie selectată</string>
-  <string name="api_settings_select_key">Selectează cheia</string>
-  <string name="api_settings_create_key">Creează o cheie nouă</string>
+    <string name="api_settings_create_key">Creează o cheie nouă</string>
   <string name="api_settings_save">Salvează</string>
-  <string name="api_settings_cancel">Anulare</string>
-  <string name="api_settings_revoke">Revocă accesul</string>
-  <string name="api_settings_start">Pornește aplicația</string>
-  <string name="api_settings_package_name">Nume de pachet</string>
+    <string name="api_settings_revoke">Revocă accesul</string>
+    <string name="api_settings_package_name">Nume de pachet</string>
   <string name="api_settings_package_certificate">SHA-256 pentru certificatul pachetului</string>
   <string name="api_settings_advanced">Avansat</string>
   <string name="api_settings_allowed_keys">Chei permise</string>
-  <string name="api_settings_settings">Setări</string>
-  <string name="api_register_title">Permite accesul la OpenKeychain?</string>
+    <string name="api_register_title">Permite accesul la OpenKeychain?</string>
   <string name="api_register_text">%s cere să utilizeze OpenKeychain ca furnizor de criptografie. Vi se va cere permisiunea și înainte ca aplicația să poată folisi oricare din cheile dumneavoastră pentru decriptare.\n\nPuteți revoca accesul mai târziu pe ecranul  \'Aplicații\' din OpenKeychain.</string>
-  <string name="api_register_allow">Permite accesul</string>
-  <string name="api_register_disallow">Refuză accesul</string>
-  <string name="api_register_error_select_key">Vă rog selectați o cheie!</string>
-  <string name="api_select_pub_keys_missing_text">Nu au fost găsite chei pentru aceste adrese de email:</string>
+    <string name="api_select_pub_keys_missing_text">Nu au fost găsite chei pentru aceste adrese de email:</string>
   <string name="api_select_pub_keys_dublicates_text">Există mai multe chei pentru aceste adrese de email:</string>
   <string name="api_select_pub_keys_text">Vă rog să verificați lista de destinatari!</string>
   <string name="api_select_pub_keys_text_no_user_ids">Vă rog să selectați destinatarii!</string>
   <string name="api_error_wrong_signature">Verificarea semnăturii a esuat! Ați instalat aplicația din altă sursă? Dacă sunteți sigur că acesta nu este un atac, revocați inregistrarea acestei aplicații in OpenKeychain apoi inregistrați aplicația din nou.</string>
   <string name="api_select_sign_key_text">Vă rog selectați una din cheile dumneavoastră existente sau creați o cheie nouă.</string>
-  <string name="api_select_keys_text">Niciuna din cheile permise nu poate decripta conținutul. Vă rog selectați cheile permise.</string>
-  <!--Share-->
+    <!--Share-->
   <string name="share_qr_code_dialog_title">Partajează prin cod QR</string>
-  <string name="share_nfc_dialog">Partajează prin NFC</string>
-  <!--retry upload dialog-->
+    <!--retry upload dialog-->
   <string name="retry_up_dialog_title">Încărcare eșuată</string>
   <string name="retry_up_dialog_message">Încărcare eșuată. Doriți să încercați din nou?</string>
   <string name="retry_up_dialog_btn_reupload">Încearcă din nou</string>
@@ -640,38 +484,29 @@
     <item quantity="other">%d chei selectate.</item>
   </plurals>
   <string name="key_list_empty_text1">Nicio cheie găsită!</string>
-  <string name="key_list_filter_show_all">Arată toate cheile</string>
-  <string name="key_list_filter_show_certified">Arată numai cheile confirmate</string>
-  <string name="key_list_fab_qr_code">Scanează cod QR</string>
+    <string name="key_list_fab_qr_code">Scanează cod QR</string>
   <string name="key_list_fab_search">Căutare chei</string>
   <string name="key_list_fab_import">Importă dintr-un fișier</string>
   <string name="key_list_dummy_title">Nu aveți nicio cheie încă!</string>
   <string name="key_list_dummy_subtitle">Apăsați aici pentru a crea sau importa una.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Editează</string>
-  <string name="key_view_action_encrypt">Criptează text</string>
-  <string name="key_view_action_encrypt_files">fișiere</string>
-  <string name="key_view_action_certify">Confirmă cheia</string>
+    <string name="key_view_action_certify">Confirmă cheia</string>
   <string name="key_view_action_update">Actualizează de pe serverul de chei</string>
   <string name="key_view_action_share_with">Partajează cu...</string>
   <string name="key_view_action_share_ssh_with">Partajează drept cheie publică SSH cu...</string>
-  <string name="key_view_action_share_nfc">Partajează prin NFC</string>
-  <string name="key_view_action_upload">Publică pe serverul de chei</string>
-  <string name="key_view_tab_main">Informații de bază</string>
-  <string name="key_view_tab_start">Start</string>
+    <string name="key_view_action_upload">Publică pe serverul de chei</string>
+    <string name="key_view_tab_start">Start</string>
   <string name="key_view_tab_share">Partajează</string>
   <string name="key_view_tab_keys">Subchei</string>
-  <string name="key_view_tab_certs">Certificate</string>
-  <string name="user_id_info_revoked_title">Revocat</string>
+    <string name="user_id_info_revoked_title">Revocat</string>
   <string name="user_id_info_revoked_text">Această identitate a fost revocată de proprietarul cheii. Nu mai este validă.</string>
   <string name="user_id_info_certified_title">Confirmat</string>
   <string name="user_id_info_certified_text">Această identitate a fost confirmată de dumneavoastră.</string>
   <string name="user_id_info_uncertified_title">Neconfirmat</string>
   <string name="user_id_info_uncertified_text">Această identitate nu a fost încă confirmată. Nu puteți fi sigur dacă identitatea chiar corespunde unei anumite persoane.</string>
   <!--Key trust-->
-  <string name="key_trust_no_cloud_evidence">Nicio dovadă de pe Internet asupra gradului de încredere al cheii.</string>
-  <string name="key_trust_start_cloud_search">Pornește căutarea</string>
-  <!--Edit key-->
+    <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Schimbă parola</string>
   <string name="edit_key_action_add_identity">Adaugă o identitate</string>
   <string name="edit_key_action_add_subkey">Adaugă o subcheie</string>
@@ -705,12 +540,9 @@
   <string name="create_key_final_text">Ai introdus următoarea identitate:</string>
   <string name="create_key_final_robot_text">Crearea cheii o să dureze ceva timp, servește o cafea între timp...</string>
   <string name="create_key_final_email_valid_warning">Multe aplicații funcționează mai bine când primesc chei care conțin doar adrese email valide</string>
-  <string name="create_key_rsa">(3 subchei, RSA, 4096 biți)</string>
-  <string name="create_key_custom">(configurație personalizată a cheii)</string>
-  <string name="create_key_name_text">Alege un nume asociat cu această cheie. Acesta poate fi un nume complet, ex., \'John Doe\', sau o poreclă, ex., \'Johnny\'</string>
+    <string name="create_key_name_text">Alege un nume asociat cu această cheie. Acesta poate fi un nume complet, ex., \'John Doe\', sau o poreclă, ex., \'Johnny\'</string>
   <string name="create_key_email_text">Introdu adresă ta principală de email folosită pentru comunicare în siguranță.</string>
-  <string name="create_key_passphrase_text">Alege o parolă puternică. Îți va proteja cheia ta dacă dispozitivul tău este furat.</string>
-  <string name="create_key_hint_full_name">Nume complet sau poreclă</string>
+    <string name="create_key_hint_full_name">Nume complet sau poreclă</string>
   <string name="create_key_edit">Schimbă configurația cheii</string>
   <string name="create_key_add_email">Adaugă adresă de email</string>
   <string name="create_key_add_email_text">Adrese de email adiționale pot fi asociate acestei chei și pot fi folosite pentru comunicare securizată.</string>
@@ -721,8 +553,7 @@
   <string name="create_key_yubi_key_pin">PIN</string>
   <string name="create_key_yubi_key_admin_pin">PIN de administrator</string>
   <string name="create_key_yubi_key_pin_repeat">Repetați PIN-ul</string>
-  <string name="create_key_yubi_key_pin_not_correct">PIN-ul nu este corect!</string>
-  <string name="create_key_yubi_key_pin_too_short">PIN-ul trebuie să aibă cel puțin 6 cifre!</string>
+    <string name="create_key_yubi_key_pin_too_short">PIN-ul trebuie să aibă cel puțin 6 cifre!</string>
   <string name="create_key_yubi_key_pin_insecure">Vă rog alegeți un PIN bun, nu 000000, 123456 sau combinații similare (cele mai utilizate 20 de coduri PIN nu sunt permise)</string>
   <string name="create_key_yubi_key_algorithm_text">Vă rog alegeți un algoritm pentru fiecare cheie.</string>
   <string name="create_key_yubi_key_algorithm_sign_text">Cheie pentru semnare</string>
@@ -732,8 +563,7 @@
   <string name="view_key_my_key">Cheia mea</string>
   <string name="view_key_verified">Cheie confirmată</string>
   <string name="view_key_unverified">Neconfirmată: Scanează codul QR pentru a confirma cheia!</string>
-  <string name="view_key_fragment_no_system_contact">&lt;nici unul&gt;</string>
-  <!--Add/Edit keyserver-->
+    <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Adaugă server de chei</string>
   <string name="edit_keyserver_dialog_title">Modifică serverul de chei</string>
   <string name="add_keyserver_connection_verified">Conexiune verificată!</string>
@@ -750,23 +580,13 @@
   <string name="nav_keys">Chei</string>
   <string name="nav_encrypt_decrypt">Criptare/Decriptare</string>
   <string name="nav_apps">Aplicații</string>
-  <string name="drawer_open">Deschide sertarul de navigare</string>
-  <string name="drawer_close">Închide sertarul de navigare</string>
-  <string name="my_keys">Cheile mele</string>
+    <string name="my_keys">Cheile mele</string>
   <string name="nav_backup">Backup/Restaurare</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Introduceți text</string>
   <!--certs-->
-  <string name="cert_default">implicit</string>
-  <string name="cert_none">Nici unul</string>
-  <string name="cert_casual">ocazional</string>
-  <string name="cert_positive">pozitiv</string>
-  <string name="cert_revoke">revocată</string>
-  <string name="cert_verify_ok">OK</string>
-  <string name="cert_verify_failed">Eșuat!</string>
-  <string name="cert_verify_error">eroare!</string>
-  <string name="cert_verify_unavailable">cheie indisponibilă</string>
-  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+    <string name="cert_none">Nici unul</string>
+    <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <string name="msg_internal_error">Eroare internă!</string>
   <string name="msg_cancelled">Operație anulată.</string>
   <!--Import Public log entries-->
@@ -777,8 +597,7 @@
   <string name="msg_ip_encode_fail">Operația a eșuat din cauza unei erori de încodare</string>
   <string name="msg_ip_error_io_exc">Operația a eșuat din cauza unei erori de i/o</string>
   <string name="msg_ip_error_op_exc">Operația a eșuat din cauza unei erori de bază de date</string>
-  <string name="msg_ip_error_remote_ex">Operația a eșuat din cauza unei erori interne</string>
-  <string name="msg_ip">Se importă inelul public %s</string>
+    <string name="msg_ip">Se importă inelul public %s</string>
   <string name="msg_ip_fingerprint_error">Amprenta cheii importate nu se potrivește cu cea așteptată!</string>
   <string name="msg_ip_fingerprint_ok">Verificarea de amprentă OK</string>
   <string name="msg_ip_insert_keyring">Se încodează datele inelului de chei</string>
@@ -809,8 +628,7 @@
   <string name="msg_ip_subkey">Se procesează subcheia %s</string>
   <string name="msg_ip_subkey_expired">Subcheie expirată pe %s</string>
   <string name="msg_ip_subkey_expires">Subcheia expiră pe %s</string>
-  <string name="msg_ip_subkey_flags_unspecified">Marcajele subcheii: nespecificate (se asuma că toate)</string>
-  <string name="msg_ip_subkey_flags_cesa">Marcajele subcheii: certificare, criptare, semnare, autentificare</string>
+    <string name="msg_ip_subkey_flags_cesa">Marcajele subcheii: certificare, criptare, semnare, autentificare</string>
   <string name="msg_ip_subkey_flags_cesx">Marcajele subcheii: certificare, criptare, semnare</string>
   <string name="msg_ip_subkey_flags_cexa">Marcajele subcheii: certificare, criptare, autentificare</string>
   <string name="msg_ip_subkey_flags_cexx">Marcajele subcheii: certificare, criptare</string>
@@ -867,11 +685,9 @@
   <string name="msg_ip_uat_classifying">Se clasifică atributele utilizator</string>
   <string name="msg_ip_uat_revoked">ID-ul utilizator este revocat</string>
   <string name="msg_is_bad_type_public">S-a încercat importarea unui inel de chei public drept unul secret. Aceasta este o eroare, vă rugăm trimiteți un raport de eroare!</string>
-  <string name="msg_is_bad_type_uncanon">S-a încercat importarea unui inel de chi fără aducere la forma canonică. Aceasta este o eroare, vă rog trimiteți un raport de eroare!</string>
-  <!--Import Secret log entries-->
+    <!--Import Secret log entries-->
   <string name="msg_is">Se importă cheia secretă %s</string>
-  <string name="msg_is_db_exception">Eroare bază de date!</string>
-  <string name="msg_is_importing_subkeys">Se procesează subcheile secrete</string>
+    <string name="msg_is_importing_subkeys">Se procesează subcheile secrete</string>
   <string name="msg_is_error_io_exc">Eroare la encodarea inelului de chei</string>
   <string name="msg_is_merge_public">Se adaugă datele importate în inelul de chei publice existent</string>
   <string name="msg_is_merge_secret">Se adaugă datele importate în inelul de chei secrete existent</string>
@@ -907,8 +723,7 @@
   <string name="msg_kc_sub_bad_err">Se înlătură un certificat de legare subcheie incorect</string>
   <string name="msg_kc_sub_bad_local">Se înlătură certificatul de legare subcheie cu marcajul \'local\'</string>
   <string name="msg_kc_sub_bad_keyid">ID-ul emitentul de legătură de subcheie nu se potrivește</string>
-  <string name="msg_kc_sub_bad_time">Se înlătură certificatul de legare subcheie cu marcaj de timp în viitor</string>
-  <string name="msg_kc_sub_bad_time_early">Certificatul de legare subcheie are marcaj de timp mai vechi decât cheia acestuia!</string>
+    <string name="msg_kc_sub_bad_time_early">Certificatul de legare subcheie are marcaj de timp mai vechi decât cheia acestuia!</string>
   <string name="msg_kc_sub_bad_type">Tipul certificatului de subcheie este necunoscut: %s</string>
   <string name="msg_kc_sub_dup">Se înlătură un certificat de legare subcheie redundant</string>
   <string name="msg_kc_sub_primary_bad">Se înlătură certificatul de legare subcheie din cauza certificatului de legătură primară invalid</string>
@@ -1122,11 +937,7 @@
   <string name="msg_vl_error_wrong_key">Mesajul nu este semnat cu cheia așteptată!</string>
   <string name="msg_vl_error_no_signature">Semnătura lipsește!</string>
   <string name="msg_vl_error_missing_literal">Nu sunt date în pachetul de date literale semnate</string>
-  <string name="msg_vl_clear_meta_file">Nume de fișier: %s</string>
-  <string name="msg_vl_clear_meta_mime">Tip MIME: %s</string>
-  <string name="msg_vl_clear_meta_time">Marcaj de modificare: %s</string>
-  <string name="msg_vl_clear_meta_size">Dimensiune fișier: %s</string>
-  <string name="msg_vl_clear_signature_check">Se verifică semnătura</string>
+    <string name="msg_vl_clear_signature_check">Se verifică semnătura</string>
   <string name="msg_vl_error_integrity_check">Eroare la verificarea integrității!</string>
   <string name="msg_vl_ok">OK</string>
   <!--Messages for SignEncrypt operation-->
@@ -1147,8 +958,7 @@
   <string name="msg_pse_error_key_sign">Cheia de semnare selectată nu poate fi folosită pentru semnare!</string>
   <string name="msg_pse_error_sign_key">Eroare la obținerea cheii de semnare!</string>
   <string name="msg_pse_error_nfc">Eroare de date NFC!</string>
-  <string name="msg_pse_error_no_passphrase">Nicio parolă dată!</string>
-  <string name="msg_pse_error_pgp">Oroare internă OpenPGP!</string>
+    <string name="msg_pse_error_pgp">Oroare internă OpenPGP!</string>
   <string name="msg_pse_error_sig">Am întâmpinat o eroare de semnătură OpenPGP!</string>
   <string name="msg_pse_error_unlock">Eroare necunoscută la descuierea cheii!</string>
   <string name="msg_pse_error_key_not_allowed">Cheia selectată pentru criptare nu este permisă</string>
@@ -1274,8 +1084,7 @@
   <string name="msg_bench_enc_time">Durata criptarării: %ss</string>
   <string name="msg_bench_enc_time_avg">Durata medie de criptare pentru 5MB: %ss</string>
   <string name="msg_bench_dec_time">Durata decriptării: %ss</string>
-  <string name="msg_bench_dec_time_avg">Durata medie de decriptare pentru 5MB: %ss</string>
-  <string name="msg_bench_s2k_100ms_its">Numărul de iterații S2K pentru 100ms: %s</string>
+    <string name="msg_bench_s2k_100ms_its">Numărul de iterații S2K pentru 100ms: %s</string>
   <string name="msg_bench_s2k_for_it">Durata pentru %1$s iterații S2K SHA1:%2$sms</string>
   <string name="msg_bench_success">S-a terminat testarea performanței!</string>
   <string name="msg_data">Se procesează datele de intrare</string>
@@ -1312,10 +1121,7 @@
   <string name="msg_get_no_enabled_source">Activați măcar o sursă pentru descărcare!</string>
   <string name="msg_download_query_failed">A fost întâmpinată o eroare la căutarea de chei.</string>
   <!--Messages for Mime parsing operation-->
-  <string name="msg_mime_parsing_start">Se parcurge structura MIME</string>
-  <string name="msg_mime_parsing_error">Parcurgerea MIME a eșuat</string>
-  <string name="msg_mime_parsing_success">Parcurgerea MIME a avut succes!</string>
-  <!--PassphraseCache-->
+    <!--PassphraseCache-->
   <string name="passp_cache_notif_touch_to_clear">Apăsați pentru a curăța parolele.</string>
   <plurals name="passp_cache_notif_n_keys">
     <item quantity="one">%dparolă salvată</item>
@@ -1329,105 +1135,42 @@
   <string name="keyserver_sync_orbot_notif_title">Sincronizarea de la servere necesită Orbot</string>
   <string name="keyserver_sync_orbot_notif_msg">Apasă pentru a porni Orbot</string>
   <string name="keyserver_sync_orbot_notif_start">Pornire Orbot</string>
-  <string name="keyserver_sync_orbot_notif_ignore">Direct</string>
-  <!--First Time-->
-  <string name="first_time_text1">Recuperează-ți intimitatea cu OpenKeychain!</string>
-  <string name="first_time_create_key">Creează cheia mea</string>
+    <!--First Time-->
+    <string name="first_time_create_key">Creează cheia mea</string>
   <string name="first_time_import_key">Importă o cheie dintr-un fișier</string>
   <string name="first_time_security_token">Folosește un jeton de securitate</string>
   <string name="first_time_security_token_subtitle">(Fidesmo, YubiKey NEO, SIGILANCE, ...)</string>
   <string name="first_time_skip">Sari peste configurare</string>
-  <string name="first_time_blank_security_token">Doriți să utilizați acest jeton de securitate cu OpenKeychain?\n\nVă rog scoateți jetonul de securitate acum, veți fi rugat să-l introduceți din nou când va fi nevoie din nou!</string>
-  <string name="first_time_blank_security_token_yes">Utilizează acest jeton de securitate</string>
-  <string name="backup_text">Copiile de rezervă care includ cheile proprii nu trebuiesc partajate niciodată cu alte persoane!</string>
+    <string name="backup_text">Copiile de rezervă care includ cheile proprii nu trebuiesc partajate niciodată cu alte persoane!</string>
   <string name="backup_all">Copie de sigurantă completă (criptată)</string>
   <string name="backup_public_keys">Exportă doar cheile contactelor</string>
   <string name="backup_section">Copie de rezervă</string>
   <string name="restore_section">Restaurare</string>
   <!--unsorted-->
-  <string name="section_certifier_id">Certifică</string>
-  <string name="section_cert">Detaliile certificatului</string>
-  <string name="label_user_id">Identitate</string>
-  <string name="unknown_uid"><![CDATA[<unknown>]]></string>
-  <string name="empty_certs">Niciun certificat pentru această cheie</string>
-  <string name="certs_text">Doar auto-certificatele validate și certificatele validated create cu cheile dumneavoastră sunt afișate aici.</string>
-  <string name="section_uids_to_certify">Identități pentru</string>
+    <string name="section_uids_to_certify">Identități pentru</string>
   <string name="certify_text">Cheile pe care le importați conțin  “identități”: nume și adrese de e-mail. Selectați-le exact pe cele care corespund așteptărilor dumneavoastră pentru confirmare.</string>
   <string name="certify_fingerprint_text">Comparați amprenta, caracter cu caracter, cu cea afișată pe dispozitivul partenerului dumneavoastră.</string>
-  <string name="label_revocation">Motivul revocării</string>
-  <string name="label_cert_type">Tip</string>
-  <string name="error_key_not_found">Cheia nu a fost găsită!</string>
+    <string name="error_key_not_found">Cheia nu a fost găsită!</string>
   <string name="error_key_processing">Eroare la procesarea cheii!</string>
   <string name="key_stripped">decapat</string>
   <string name="key_divert">pe jeton de securitate</string>
-  <string name="key_no_passphrase">nici o parolă</string>
-  <string name="key_unavailable">indisponibil</string>
-  <string name="secret_cannot_multiple">Cheile proprii pot fi șterse doar individual!</string>
-  <string name="title_view_cert">Vezi detalii despre certificat</string>
-  <string name="unknown">necunoscut</string>
-  <string name="can_sign_not">nu poate semna</string>
-  <string name="error_no_encrypt_subkey">Nu este disponibilă nicio subcheie de criptare!</string>
-  <string name="contact_show_key">Afișați cheia (%s)</string>
-  <string name="swipe_to_update">Glisați în jos pentru a actualiza de la serverul de chei</string>
-  <string name="error_no_file_selected">Selectați cel puțin un fișier de criptat!</string>
+    <string name="secret_cannot_multiple">Cheile proprii pot fi șterse doar individual!</string>
+    <string name="unknown">necunoscut</string>
+    <string name="error_no_encrypt_subkey">Nu este disponibilă nicio subcheie de criptare!</string>
+    <string name="error_no_file_selected">Selectați cel puțin un fișier de criptat!</string>
   <string name="error_multi_files">Nu se acceptă salvarea mai multor fișiere. Aceasta este o limitare a sistemului Android actual.</string>
   <string name="error_multi_clipboard">Nu se acceptă criptarea mai multor fișiere în clipboard.</string>
   <string name="error_detached_signature">Nu este acceptată operarea numai prin semnătură a fișierelor binare, selectați cel puțin o cheie de criptare.</string>
   <string name="error_empty_text">Introduceți un text pentru a cripta!</string>
   <string name="error_log_share_internal">Eroare internă în timpul pregătirii jurnalului!</string>
-  <string name="key_colon">Cheie:</string>
-  <string name="exchange_description">Pentru a începe un schimb de chei, alegeți numărul de participanți din partea dreaptă, apoi apăsați butonul “Start exchange” .\n\nVă vor fi puse încă două întrebări pentru a vă asigura că numai participanții potriviți sunt în schimb și că amprentele lor digitale sunt corecte.</string>
-  <string name="btn_start_exchange">Pornește schimbul</string>
-  <string name="user_id_none"><![CDATA[<none>]]></string>
-  <!--Android Account-->
-  <string name="account_no_manual_account_creation">Nu puteți crea conturi OpenKeychain manual.</string>
-  <string name="account_privacy_title">Confidențialitate</string>
-  <string name="account_privacy_text">OpenKeychain nu vă sincronizează contactele cu internetul. Acesta leagă doar contactele de chei pe baza numelor și a adreselor de e-mail. Acest lucru se face offline pe dispozitivul dumneavoastră.</string>
-  <string name="sync_notification_permission_required_title">Acces la contactele necesare</string>
-  <string name="sync_notification_permission_required_text">Atingeți pentru a configura legătura cu contactele</string>
-  <!--Passphrase wizard-->
+    <!--Android Account-->
+    <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
-  <string name="title_unlock_method">Alegeți o metodă de deblocare</string>
-  <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+    <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">Introdu parola</string>
-  <string name="passphrase">Parolă</string>
-  <string name="noPassphrase">Nici o parolă</string>
-  <string name="no_passphrase_set">Nu este setată nici o parolă</string>
-  <string name="passphrases_match">Parolele se potrivesc</string>
-  <string name="passphrase_saved">Parolă salvată</string>
-  <string name="passphrase_invalid">Parolă invalidă</string>
-  <string name="missing_passphrase">Lipsește parola</string>
-  <string name="passphrase_again">Din nou</string>
-  <string name="lockpattern">Șablon de blocare</string>
-  <string name="lockpatternNFC">NFC + Șablon de blocare</string>
-  <string name="unlock_method">Metoda de deblocare</string>
-  <string name="set_passphrase">Setează parola</string>
-  <string name="draw_lockpattern">Desenați modelul de blocare</string>
-  <string name="nfc_title">NFC</string>
-  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-  <string name="nfc_wrong_tag">Etichetă greșită. Vă rugăm să încercați din nou.</string>
-  <string name="enable_nfc">Vă rugăm să activați NFC în setările dumneavoastră.</string>
-  <string name="no_nfc_support">Acest dispozitiv nu suportă NFC</string>
-  <string name="nfc_write_successful">Scris cu succes pe eticheta NFC</string>
-  <string name="unlocked">Deblocat</string>
-  <string name="nfc_settings">Setări</string>
-  <string name="snack_security_token_view">Vizualizare</string>
-  <string name="snack_security_token_import">Importă</string>
-  <string name="button_bind_key">Cheie de legătură</string>
-  <string name="security_token_serial_no">Serial No: %s</string>
-  <string name="security_token_key_holder">Suport pentru chei: %s</string>
-  <string name="security_token_key_holder_not_set"><![CDATA[Key holder: <not set>]]></string>
-  <string name="security_token_status_bound">Acest jeton de securitate se potrivește și este legat de cheie</string>
-  <string name="security_token_status_unbound">Acest jeton de securitate se potrivește, poate fi legat de cheie</string>
-  <string name="security_token_status_partly">Acest jeton de securitate se potrivește, parțial legat de cheie</string>
-  <string name="security_token_create">Țineți acest jeton de securitate pe partea din spate a dispozitivului dumneavoastră.</string>
-  <string name="security_token_reset_or_import">Acest jeton de securitate conține deja o cheie.</string>
-  <string name="btn_reset">Resetează </string>
-  <string name="security_token_radio_use_existing">Utilizați cheia existentă</string>
-  <string name="security_token_radio_reset">Resetare jeton</string>
-  <string name="security_token_reset_warning">Resetarea unui jeton de securitate distruge complet cheile de pe acesta. Ulterior, nu veți mai putea decripta mesajele/fișierele criptate cu această cheie!</string>
-  <string name="snack_security_token_other">Cheie diferită stocată pe acest jeton de securitate!</string>
-  <string name="security_token_error">Eroare: %s</string>
+    <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+    <string name="security_token_create">Țineți acest jeton de securitate pe partea din spate a dispozitivului dumneavoastră.</string>
+    <string name="security_token_error">Eroare: %s</string>
   <plurals name="security_token_error_pin">
     <item quantity="one">PIN incorect!\n%d rămîne o încercare.</item>
     <item quantity="few">PIN incorect\n%d încercări rămase.</item>
@@ -1457,8 +1200,7 @@
   <string name="snack_compression_off">Compresie <b>dezactivată</b>.</string>
   <string name="snack_self_encrypt_on">Criptare către semnatar <b>activată</b>.</string>
   <string name="snack_self_encrypt_off">Criptare către semnatar <b>dezactivată</b>.</string>
-  <string name="error_loading_keys">Eroare la încărcarea cheilor!</string>
-  <string name="error_empty_log">(eroare, jurnal gol)</string>
+    <string name="error_empty_log">(eroare, jurnal gol)</string>
   <string name="error_reading_text">Nu s-a putut citi intrarea pentru decriptare!</string>
   <string name="error_reading_aosp">Nu a reușit să citească datele, aceasta este o eroare în clientul de e-mail Android! (Problema nr. 290)</string>
   <string name="error_reading_k9">Ați primit date incomplete, încercați să atingeți \"Descărcați mesajul complet\" în K-9 Mail!</string>
@@ -1483,22 +1225,16 @@
   <string name="error_scan_match">Amprentele nu s-au potrivit!</string>
   <string name="error_expiry_past">Data de expirare este în trecut!</string>
   <!--Other Linked Identity strings-->
-  <string name="btn_finish">Termină</string>
-  <string name="snack_btn_overwrite">Suprascrie</string>
+    <string name="snack_btn_overwrite">Suprascrie</string>
   <string name="backup_code_explanation">Copia de rezervă va fi securizată cu un cod de rezervă. Notați-l înainte de a continua!</string>
-  <string name="backup_code_enter">Vă rugăm să introduceți codul de rezervă:</string>
-  <string name="backup_code_ok">Cod acceptat!</string>
-  <string name="btn_code_wrotedown">OK, am scris-o!</string>
-  <string name="backup_code_wrong">Codul de rezervă pe care l-ați introdus este greșit!\nL-ați scris corect?</string>
-  <string name="btn_backup_share">Distribuie backup</string>
+    <string name="btn_backup_share">Distribuie backup</string>
   <string name="btn_backup_save">Salvați copia de rezervă</string>
   <string name="btn_backup_export">Copie de rezervă de export</string>
   <string name="snack_backup_error_saving">Eroare la salvarea copiei de rezervă!</string>
   <string name="snack_backup_saved">Copie de rezervă salvată</string>
   <string name="snack_backup_exists">Copia de rezervă există deja!</string>
   <string name="snack_backup_saved_dir">Salvat în directorul OpenKeychain</string>
-  <string name="btn_backup_back">Du-te înapoi pentru a verifica</string>
-  <string name="snack_text_too_long">Textul este prea lung pentru a fi afișat în întregime!</string>
+    <string name="snack_text_too_long">Textul este prea lung pentru a fi afișat în întregime!</string>
   <string name="snack_shared_text_too_long">Textul partajat a fost tăiat pentru că era prea lung!</string>
   <string name="share_log_dialog_title">Distribuie jurnalul?</string>
   <string name="share_log_dialog_message">În timp ce jurnalele pot fi foarte utile pentru dezvoltatori pentru a găsi bug-uri în OpenKeychain, acestea pot conține informații potențial sensibile, cum ar fi date despre cheile actualizate. Vă rugăm să vă asigurați că sunteți de acord cu partajarea acestor informații.</string>
@@ -1515,8 +1251,7 @@
   <string name="cache_ttl_one_day">pentru o zi</string>
   <string name="cache_ttl_forever">până când se șterge</string>
   <string name="remember">Amintiți-vă</string>
-  <string name="security_token_error_pgp_app_not_installed">Nu a fost găsit niciun app PGP pe acest jeton de securitate</string>
-  <string name="prompt_fidesmo_pgp_install_title">Instalez PGP?</string>
+    <string name="prompt_fidesmo_pgp_install_title">Instalez PGP?</string>
   <string name="prompt_fidesmo_pgp_install_message">Pe dispozitivul Fidesmo nu era disponibilă niciun app PGP.</string>
   <string name="prompt_fidesmo_pgp_install_button_positive">Instalează</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">Anulare</string>
@@ -1524,17 +1259,7 @@
   <string name="prompt_fidesmo_app_install_message">Pentru a instala PGP aveți nevoie de app-ul Fidesmo pentru Android.</string>
   <string name="prompt_fidesmo_app_install_button_positive">Instalează</string>
   <string name="prompt_fidesmo_app_install_button_negative">Anulare</string>
-  <string name="help_donation_paypal_item">Donație OpenKeychain</string>
-  <string-array name="help_donation_google_catalog_values">
-    <item>1 EURO</item>
-    <item>2 EURO</item>
-    <item>3 EURO</item>
-    <item>5 EURO</item>
-    <item>10 EURO</item>
-    <item>50 EURO</item>
-    <item>100 EURO</item>
-  </string-array>
-  <string name="redirect_import_key_title">Scanați cu OpenKeychain!</string>
+    <string name="redirect_import_key_title">Scanați cu OpenKeychain!</string>
   <string name="redirect_import_key_message">Ați scanat un cod QR OpenPGP cu alt app. Vă rugăm să scanați direct cu Openkeychain pentru a fi în siguranță.</string>
   <string name="redirect_import_key_yes">Scanați din nou</string>
   <string name="redirect_import_key_no">Închide</string>
@@ -1546,11 +1271,8 @@
   <string name="button_back">Înapoi</string>
   <string name="button_got_it">Am înțeles</string>
   <string name="requested_key_label">Cheia solicitată:</string>
-  <string name="error_preselect_sign_key">Eroare la selectarea cheii %s pentru semnare!</string>
-  <string name="error_preselect_encrypt_key">Eroare la selectarea cheii %s pentru criptare!</string>
-  <string name="title_key_status">Stare cheie</string>
-  <string name="caption_secret_status">Această cheie este a ta. O puteți folosi pentru:</string>
-  <string name="cap_title_confirm">Confirmați alte chei</string>
+    <string name="title_key_status">Stare cheie</string>
+    <string name="cap_title_confirm">Confirmați alte chei</string>
   <string name="cap_cert_ok">Această cheie poate confirma alte chei.</string>
   <string name="cap_cert_divert">Această cheie poate confirma alte chei, utilizând un jeton de securitate.</string>
   <string name="cap_cert_stripped">Această cheie este decapată, NU poate confirma alte chei.</string>
@@ -1570,8 +1292,7 @@
   <string name="cap_decrypt_revoked">Această cheie poate decripta/recepționa mesaje, dar este revocată.</string>
   <string name="cap_decrypt_stripped">Această cheie nu poate decripta/recepționa mesaje pe acest dispozitiv.</string>
   <string name="cap_decrypt_unavailable">Această cheie nu este configurată pentru a decripta/recepționa mesaje!</string>
-  <string name="cap_decrypt_insecure">Această cheie poate decripta/recepționa mesaje, dar nu în mod sigur!</string>
-  <string name="key_health_ok_title">Sănătos</string>
+    <string name="key_health_ok_title">Sănătos</string>
   <string name="key_health_ok_subtitle">Nu s-au găsit probleme la cheie.</string>
   <string name="key_health_divert_title">Sănătos (Jeton de securitate)</string>
   <string name="key_health_divert_subtitle">Nu s-au găsit probleme la cheie.</string>
@@ -1601,8 +1322,7 @@
   <string name="key_insecure_unknown_curve_problem">Această cheie utilizează <b>%1$s</b> un algoritm care nu se află în lista celor permise.</string>
   <string name="key_insecure_unknown_curve_solution">Această cheie nu poate fi modernizată. Pentru o comunicare sigură, proprietarul trebuie să genereze o nouă cheie.</string>
   <string name="key_insecure_unidentified_problem">Există o problemă neidentificată cu această cheie.</string>
-  <string name="key_insecure_unidentified_solution">Vă rugăm să trimiteți un raport de eroare.</string>
-  <string name="key_expiry_text">Această cheie a expirat la data de <b>%1$s</b>.</string>
+    <string name="key_expiry_text">Această cheie a expirat la data de <b>%1$s</b>.</string>
   <string name="dialog_insecure_title">Atenționare de securitate</string>
   <string name="dialog_insecure_recommend_title">Acțiune recomandată</string>
   <string name="insecure_encrypt_bitstrength">Cheia pe care ați folosit-o pentru a primi (decripta) acest mesaj este depășită!\n\nAlgoritmul (%s)  este configurat cu o tărie de 1024 de bits sau mai puțin, care a fost considerată nesigură pentru utilizarea generală încă din 2006.</string>
@@ -1620,45 +1340,14 @@
   <string name="insecure_hash_algo">Acest mesaj a fost semnat cu ajutorul %s algoritmului hashing. Acest lucru este considerat nesigur, sau cel puțin exotic!</string>
   <string name="dialog_insecure_override">Dacă nu doriți să fiți avertizat în viitor cu privire la această problemă de securitate specifică, puteți suprima acest avertisment.</string>
   <string name="dialog_insecure_override_title">Suprimați acest avertisment</string>
-  <string name="dialog_insecure_override_ok_title">Avertisment suprimat</string>
-  <string name="dialog_insecure_override_ok">Avertizarea de securitate (pentru această cheie/mesaj) nu va mai fi afișată în viitor.</string>
-  <string name="dialog_insecure_button_override">Suprimare</string>
+    <string name="dialog_insecure_button_override">Suprimare</string>
   <string name="dialog_insecure_button_override_confirm">Suprimare (%d)</string>
   <string name="dialog_insecure_button_undo">De-Suprimare</string>
   <string name="dialog_insecure_button_view_key">Vezi cheia</string>
   <string name="dialog_insecure_button_ok">Am înteles</string>
   <string name="usage_authentication">Autentificare</string>
   <string name="identity_context_forget">Uitați de</string>
-  <string name="button_scan">Scanare</string>
-  <string name="button_more_info">Mai multe informații</string>
-  <string name="transfer_scan_explanation">Pentru a partaja sau importa configurarea cheii, stabiliți o conexiune securizată prin scanare cu oricare dintre dispozitive.</string>
-  <string name="transfer_scan_warning">Utilizați numai cu propriile dispozitive!</string>
-  <string name="connection_status">Starea conexiunii:</string>
-  <string name="section_transfer_keys">Chei disponibile pentru transfer</string>
-  <string name="section_received_keys">Chei primite</string>
-  <string name="transfer_scan_only_wifi">Această funcție poate fi utilizată numai pe Wifi.</string>
-  <string name="button_import">Importă</string>
-  <string name="transfer_status_connected">Conectat</string>
-  <string name="transfer_status_disconnected">Deconectat!</string>
-  <string name="transfer_error_read_incoming">A eșuat citirea cheii primite!</string>
-  <string name="transfer_error_connect">Conexiunea a eșuat!</string>
-  <string name="transfer_error_listen">Eroare în așteptarea conexiunii!</string>
-  <string name="transfer_error_generic">Eroare de comunicare necunoscută!</string>
-  <string name="transfer_error_generic_msg">Eroare de comunicare: %s</string>
-  <string name="transfer_not_available">Ne pare rău, această funcție poate fi utilizată doar pe Android 5 sau mai nou :(</string>
-  <string name="transfer_list_empty">Nu există chei pe acest dispozitiv care să poată fi trimise.  Așteptați cheile primite...</string>
-  <string name="transfer_connecting">Se conectează...</string>
-  <string name="first_time_secure_wifi_transfer">Transfer Wifi securizat</string>
-  <string name="menu_secure_wifi_transfer">Transfer Wifi securizat</string>
-  <string name="transfer_confirm_cancel">Anulare</string>
-  <string name="transfer_confirm_ok">Trimite</string>
-  <string name="transfer_confirm_title">Să-ți trimit cheia?</string>
-  <string name="transfer_confirm_text">Acest lucru va transfera acces complet la cheia dvs. către dispozitivul conectat. Nu trebuie să trimiteți niciodată cheile proprii către dispozitive pe care nu le dețineți!</string>
-  <string name="button_scan_again">Scanați din nou</string>
-  <string name="transfer_error_wifi_text">Conexiunea a eșuat!</string>
-  <string name="transfer_error_wifi_text_instructions">Asigurați-vă că vă aflați în aceeași rețea, apoi scanați din nou.</string>
-  <string name="transfer_error_wifi_text_instructions_ssid">Asigurați-vă că vă aflați în rețeaua \"%s\" apoi scanați din nou.</string>
-  <string name="status_check_key">Verificarea stării cheii...</string>
+    <string name="status_check_key">Verificarea stării cheii...</string>
   <string name="status_search_local">Căutarea în lista de chei...</string>
   <string name="status_search_uri">Căutarea cu jeton URL...</string>
   <string name="status_search_keyserver">Căutarea pe serverele de chei...</string>
@@ -1747,8 +1436,7 @@
   <string name="use_key_no_name">Utilizați cheia: <![CDATA[<no name>]]></string>
   <string name="title_select_key">%s dorește să configureze criptarea end-to-end pentru această adresă:</string>
   <string name="select_identity_cancel">Dezactivează</string>
-  <string name="select_identity_create">Creați o cheie pentru mine</string>
-  <string name="error_save_key_internal">Eroare internă de salvare a cheii!</string>
+    <string name="error_save_key_internal">Eroare internă de salvare a cheii!</string>
   <string name="menu_list_unrelated_keys">Lista cheilor fără legătură</string>
   <string name="no_keys_gen_title">Aceasta este o adresă nouă</string>
   <string name="no_keys_gen_subtitle">Creați o nouă cheie end-to-end în OpenKeychain</string>
@@ -1767,17 +1455,10 @@
   <string name="msg_get_query_not_implemented">Serverul nu acceptă interogarea curentă! Unele servere acceptă doar adrese de e-mail. Vă rugăm să redefiniți sau să încercați un alt server.</string>
   <string name="snack_keylist_clipboard_title">Am găsit date cheie în clipboard!</string>
   <string name="snack_keylist_clipboard_action">Vizualizare</string>
-  <string name="notify_channel_keysync">Actualizare server de chei</string>
-  <string name="notify_channel_permission">Cereri de permisiune</string>
+    <string name="notify_channel_permission">Cereri de permisiune</string>
   <string name="notify_channel_passcache">Memoria cache a frazei de acces</string>
   <string name="notify_channel_orbot">Stare Orbot</string>
-  <string name="notify_title_keysync">Trimit cheile...</string>
-  <string name="notify_title_keysync_finished">A terminat de actualizat %d  cheile</string>
-  <string name="notify_content_keysync">Cheie %d / %d</string>
-  <string name="snack_keysync_start">Am început să actualizez toate cheile...</string>
-  <string name="snack_keysync_finished">Actualizare cheie reușită</string>
-  <string name="snack_keysync_error">S-a produs o eroare în timpul actualizării tuturor cheilor</string>
-  <string name="keychoice_cannot_encrypt">Această cheie nu poate fi utilizată pentru criptare!</string>
+    <string name="keychoice_cannot_encrypt">Această cheie nu poate fi utilizată pentru criptare!</string>
   <string name="keychoice_cannot_sign">Această cheie nu poate fi utilizată pentru semnare!</string>
   <string name="keychoice_insecure">Această cheie nu poate fi utilizată deoarece este nesigură!</string>
   <string name="keychoice_revoked">Această cheie nu poate fi utilizată deoarece este revocată!</string>
