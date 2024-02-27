@@ -11,7 +11,6 @@ import androidx.annotation.StringRes;
 
 
 public class NotificationChannelManager {
-    public static final String KEYSERVER_SYNC = "keyserverSync";
     public static final String PERMISSION_REQUESTS = "permissionRequests";
     public static final String PASSPHRASE_CACHE = "passphraseCache";
     public static final String ORBOT = "orbot";
@@ -37,7 +36,6 @@ public class NotificationChannelManager {
             return;
         }
 
-        createNotificationChannel(KEYSERVER_SYNC, R.string.notify_channel_keysync, NotificationManager.IMPORTANCE_MIN);
         createNotificationChannel(PERMISSION_REQUESTS, R.string.notify_channel_permission, NotificationManager.IMPORTANCE_MIN);
         createNotificationChannel(PASSPHRASE_CACHE, R.string.notify_channel_passcache, NotificationManager.IMPORTANCE_NONE);
         createNotificationChannel(ORBOT, R.string.notify_channel_orbot, NotificationManager.IMPORTANCE_DEFAULT);
