@@ -1,5 +1,9 @@
 [//]: # (Beachte: Bitte schreibe jeden Satz in eine eigene Zeile, Transifex wird jede Zeile in ein eigenes Übesetzungsfeld setzen!)
 
+## 5.7
+  Korrekturen für Curve25519
+  IDEA-Verschlüsselungsverfahren wird jetzt als unsicher angesehen
+
 ## 5.6
   * Kompatibilität mit Android 10 und höher
   * Einige Fehlerbehebungen

@@ -275,7 +275,7 @@
   <string name="ecc_p384_description_html">非常小的文件尺寸，在 2040 年之前被认为是安全的 &lt;br/&gt; &lt;u&gt;试验性质且不被所有实现所支持&lt;/u&gt;</string>
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">较小的文件尺寸，在 2040 之后若干年也被认为是安全的 &lt;br/&gt; &lt;u&gt;试验性质且不被所有实现所支持&lt;/u&gt;</string>
-  <string name="ecc_25519">Ed25519 / Cv25519（爱德华曲线数字签名算法）</string>
+  <string name="ecc_25519">Ed25519 / Cv25519 </string>
   <string name="ecc_25519_description_html">较小的文件尺寸，在 2040 之后若干年也被认为是安全的 &lt;br/&gt; &lt;u&gt;试验性质且不被所有实现所支持&lt;/u&gt;</string>
   <string name="usage_none">无 (只绑定子密钥)</string>
   <string name="usage_sign">签名</string>
@@ -283,8 +283,9 @@
   <string name="usage_sign_and_encrypt">签名 &amp; 加密</string>
   <string name="error">错误</string>
   <string name="error_message">错误: %s</string>
-  <string name="theme_dark">深色主题</string>
+  <string name="theme_auto">自动</string>
   <string name="theme_light">亮色主题</string>
+  <string name="theme_dark">深色主题</string>
   <string name="strip">剥离</string>
   <!--sentences-->
   <string name="wrong_passphrase">密码错误.</string>
@@ -957,7 +958,7 @@
   <string name="msg_mf_error_restricted">尝试无密码执行限制操作！这是一个编程错误，请发送错误报告！</string>
   <string name="msg_mf_error_revoked_primary">无法吊销主用户标识!</string>
   <string name="msg_mf_error_null_expiry">在子密钥创建过程中不允许过期时间为“与之前相同”。这是一个编程错误，请发送错误报告！</string>
-  <string name="msg_mf_error_noop">无事可做！</string>
+  <string name="msg_mf_error_noop">无操作</string>
   <string name="msg_mf_error_passphrase_master">解密主密钥时发生重大错误！这可能是一个编程错误，请提交一份错误报告！</string>
   <string name="msg_mf_error_passphrases_unchanged">未变更任何密码！</string>
   <string name="msg_mf_error_pgp">OpenPGP 内部错误！</string>

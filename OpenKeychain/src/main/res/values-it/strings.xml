@@ -8,6 +8,7 @@
   <string name="title_encrypt_files">Codifica</string>
   <string name="title_decrypt">Decodifica</string>
   <string name="title_add_subkey">Aggiungi sottochiave</string>
+  <string name="title_change_master_key">Cambia la chiave principale</string>
   <string name="title_edit_key">Modifica chiave</string>
   <string name="title_preferences">Impostazioni</string>
   <string name="title_api_registered_apps">Applicazioni</string>
@@ -104,6 +105,7 @@
   <string name="menu_help">Aiuto</string>
   <string name="menu_export_key">Chiave di Backup</string>
   <string name="menu_delete_key">Cancella chiave</string>
+  <string name="menu_status">Stato chiave</string>
   <string name="menu_manage_keys">Gestisci mie chiavi</string>
   <string name="menu_search">Cerca</string>
   <string name="menu_open">Apri</string>
@@ -150,6 +152,7 @@
   <string name="label_keyservers">Gestisci i keyserver OpenPGP</string>
   <string name="label_key_id">ID Chiave</string>
   <string name="label_key_id_colon">ID chiave:</string>
+  <string name="label_key_created_just_now">Appena creata</string>
   <string name="label_key_type">Tipo</string>
   <string name="label_creation">Creazione</string>
   <string name="label_creation_colon">Creazione:</string>
@@ -163,6 +166,7 @@
   <string name="label_main_user_id">Identità Primaria</string>
   <string name="label_name">Nome</string>
   <string name="label_email">Email</string>
+  <string name="label_send_key">Pubblica certificato sui server delle chiavi</string>
   <string name="label_fingerprint">Impronta</string>
   <string name="expiry_date_dialog_title">Impostare la data di scadenza</string>
   <string name="label_keyservers_title">Server chiavi</string>
@@ -222,10 +226,12 @@
   <string name="none"><![CDATA[<none>]]></string>
   <plurals name="n_keys">
     <item quantity="one">1 chiave</item>
+    <item quantity="many">%d chiavi</item>
     <item quantity="other">%d chiavi</item>
   </plurals>
   <plurals name="n_keyservers">
     <item quantity="one">%d server delle chiavi</item>
+    <item quantity="many">%d server delle chiavi</item>
     <item quantity="other">%d server delle chiavi</item>
   </plurals>
   <string name="secret_key">Chiave Privata:</string>
@@ -263,8 +269,9 @@
   <string name="usage_sign_and_encrypt">Firma &amp; Codifica</string>
   <string name="error">Errore</string>
   <string name="error_message">Errore: %s</string>
-  <string name="theme_dark">Scuro</string>
+  <string name="theme_auto">Automatica</string>
   <string name="theme_light">Chiaro</string>
+  <string name="theme_dark">Scuro</string>
   <!--sentences-->
   <string name="wrong_passphrase">Password errata</string>
   <string name="no_filemanager_installed">Nessun gestore file compatibile installato.</string>
@@ -307,6 +314,7 @@
   <string name="key_not_found">Impossibile trovare la chiave %08X.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d chiave segreta corrotta ignorata. Tra l\'altro hai esportato con l\'opzione\n --export-secret-subkeys\nAssicurati di esportare con\n --export-secret-keys\ninvece.</item>
+    <item quantity="many">%d chiavi segrete corrotte ignorate. Tra l\'altro hai esportato con l\'opzione\n --export-secret-subkeys\nAssicurati di esportare con\n --export-secret-keys\ninvece.</item>
     <item quantity="other">%d chiavi segrete corrotte ignorate. Tra l\'altro hai esportato con l\'opzione\n --export-secret-subkeys\nAssicurati di esportare con\n --export-secret-keys\ninvece.</item>
   </plurals>
   <string name="list_empty">Lista vuota!</string>
@@ -366,6 +374,7 @@
   <string name="progress_done">Fatto.</string>
   <string name="progress_cancel">Annulla</string>
   <string name="progress_cancelling">cancellando...</string>
+  <string name="progress_downloading">Scaricamento in corso...</string>
   <string name="progress_saving">salvataggio...</string>
   <string name="progress_importing">importazione...</string>
   <string name="progress_benchmarking">verifica prestazioni del sistema...</string>
@@ -468,26 +477,32 @@
   <!--Import result toast-->
   <plurals name="import_keys_added_and_updated_1">
     <item quantity="one">Importazione di una chiave riuscita</item>
+    <item quantity="many">Importazione di %1$d chiavi riuscita</item>
     <item quantity="other">Importazione di %1$d chiavi riuscita</item>
   </plurals>
   <plurals name="import_keys_added_and_updated_2">
     <item quantity="one">e aggiornato una chiave%2$s.</item>
+    <item quantity="many">e aggiornate %1$d chiavi%2$s.</item>
     <item quantity="other">e aggiornate %1$d chiavi%2$s.</item>
   </plurals>
   <plurals name="import_keys_added">
     <item quantity="one">Chiave%2$s importata correttamente.</item>
+    <item quantity="many">%1$d chiavi%2$s importate correttamente.</item>
     <item quantity="other">%1$d chiavi%2$s importate correttamente.</item>
   </plurals>
   <plurals name="import_keys_updated">
     <item quantity="one">Chiave%2$s aggiornata con successo.</item>
+    <item quantity="many">Aggiornate %1$d chiavi%2$s con successo.</item>
     <item quantity="other">Aggiornate %1$d chiavi%2$s con successo.</item>
   </plurals>
   <plurals name="import_keys_with_errors">
     <item quantity="one">Importazione fallita per una chiave!</item>
+    <item quantity="many">Importazioni fallite per %d chiavi!</item>
     <item quantity="other">Importazioni fallite per %d chiavi!</item>
   </plurals>
   <plurals name="import_error">
     <item quantity="one">Importazione fallita!</item>
+    <item quantity="many">Importazione di %d chiavi fallite!</item>
     <item quantity="other">Importazione di %d chiavi fallite!</item>
   </plurals>
   <string name="import_warn_missing">Chiave non trovata nei keyserver</string>
@@ -496,14 +511,17 @@
   <!--Delete result toast-->
   <plurals name="delete_ok_but_fail_1">
     <item quantity="one">Eliminazione di una chiave riuscita</item>
+    <item quantity="many">Eliminazione di %1$d chiavi riuscita</item>
     <item quantity="other">Eliminazione di %1$d chiavi riuscita</item>
   </plurals>
   <plurals name="delete_ok_but_fail_2">
     <item quantity="one">, ma fallita l\'eliminazione di una chiave%2$s.</item>
+    <item quantity="many">, ma fallita l\'eliminazione di %1$d chiavi%2$s.</item>
     <item quantity="other">, ma fallita l\'eliminazione di %1$d chiavi%2$s.</item>
   </plurals>
   <plurals name="delete_ok">
     <item quantity="one">Eliminazione chiave riuscita%2$s.</item>
+    <item quantity="many">Eliminazione %1$d chiavi riuscita%2$s.</item>
     <item quantity="other">Eliminazione %1$d chiavi riuscita%2$s.</item>
   </plurals>
   <string name="delete_nothing">Niente da cancellare.</string>
@@ -516,14 +534,17 @@
   <!--Certify result toast-->
   <plurals name="certify_keys_ok">
     <item quantity="one">Confermata correttamente la chiave%2$s.</item>
+    <item quantity="many">Confermate correttamente %1$d chiavi%2$s.</item>
     <item quantity="other">Confermate correttamente %1$d chiavi%2$s.</item>
   </plurals>
   <plurals name="certify_keys_with_errors">
     <item quantity="one">Certificazione fallita!</item>
+    <item quantity="many">Certificazione fallita per %d chiavi!</item>
     <item quantity="other">Certificazione fallita per %d chiavi!</item>
   </plurals>
   <plurals name="certify_error">
     <item quantity="one">Certificazione fallita!</item>
+    <item quantity="many">Certificazione di %d chiavi fallita!</item>
     <item quantity="other">Certificazione di %d chiavi fallita!</item>
   </plurals>
   <!--Intent labels-->
@@ -576,6 +597,7 @@
   <!--Key list-->
   <plurals name="key_list_selected_keys">
     <item quantity="one">1 chiave selezionata.</item>
+    <item quantity="many">%d chiavi selezionate.</item>
     <item quantity="other">%d chiavi selezionate.</item>
   </plurals>
   <string name="key_list_empty_text1">Nessuna chiave trovata!</string>
@@ -675,6 +697,7 @@
   <string name="keyserver_preference_deleted">%s cancellato</string>
   <string name="keyserver_preference_cannot_delete_last">Impossibile eliminare il server chiavi. Ne serve almeno uno!</string>
   <!--Add/Edit SmartPGP authority-->
+  <string name="add_smartpgp_authority_dialog_title">Aggiungi autorità</string>
   <!--Navigation Drawer-->
   <string name="nav_keys">Chiavi</string>
   <string name="nav_encrypt_decrypt">Codifica/Decodifica</string>
@@ -749,11 +772,13 @@
   <string name="msg_ip_uid_cert_good_revoke">Trovato buon certificato di revoca da %1$s</string>
   <plurals name="msg_ip_uid_certs_unknown">
     <item quantity="one">Ignoro un certificato rilasciato da chiavi pubbliche sconosciute</item>
+    <item quantity="many">Ignoro %s certificati rilasciati da chiavi pubbliche sconosciute</item>
     <item quantity="other">Ignoro %s certificati rilasciati da chiavi pubbliche sconosciute</item>
   </plurals>
   <string name="msg_ip_uid_classifying_zero">Classificazione ID utenti (nessuna chiave fidata disponibile)</string>
   <plurals name="msg_ip_uid_classifying">
     <item quantity="one">Classificazione ID utenti (usando una chiave fidata)</item>
+    <item quantity="many">Classificazione ID utenti (usando %s chiavi fidate)</item>
     <item quantity="other">Classificazione ID utenti (usando %s chiavi fidate)</item>
   </plurals>
   <string name="msg_ip_uid_reorder">Riordino ID utente</string>
@@ -768,6 +793,7 @@
   <string name="msg_ip_uat_cert_good_revoke">Trovato buon certificato di revoca da %1$s</string>
   <plurals name="msg_ip_uat_certs_unknown">
     <item quantity="one">Ignoro un certificato rilasciato da una chiave pubblica sconosciuta</item>
+    <item quantity="many">Ignoro %s certificati rilasciati da chiavi pubbliche sconosciute</item>
     <item quantity="other">Ignoro %s certificati rilasciati da chiavi pubbliche sconosciute</item>
   </plurals>
   <string name="msg_ip_uat_classifying">Classificazione attributi utente</string>
@@ -810,11 +836,13 @@
   <string name="msg_kc_success">Canonicalizzazione del portachiavi avvenuta con successo, nessuna modifica</string>
   <plurals name="msg_kc_success_bad">
     <item quantity="one">Canonicalizzazione portachiavi con successo, rimosso un certificato errato</item>
+    <item quantity="many">Canonicalizzazione portachiavi con successo, rimossi %d certificati errati</item>
     <item quantity="other">Canonicalizzazione portachiavi con successo, rimossi %d certificati errati</item>
   </plurals>
   <string name="msg_kc_success_bad_and_red">Canonicalizzazione portachiavi con successo, rimossi %1$s certificati errati e %2$s certificati ridondanti</string>
   <plurals name="msg_kc_success_redundant">
     <item quantity="one">Canonicalizzazione portachiavi con successo, rimosso un certificato ridondante</item>
+    <item quantity="many">Canonicalizzazione portachiavi con successo, rimossi %d certificati ridondanti</item>
     <item quantity="other">Canonicalizzazione portachiavi con successo, rimossi %d certificati ridondanti</item>
   </plurals>
   <string name="msg_kc_uid_remove">Rimozione ID utente non valido \'%s\'</string>
@@ -908,6 +936,7 @@
   <string name="msg_crt_upload_success">Chiave caricata con successo sul server</string>
   <plurals name="msg_import">
     <item quantity="one">Importazione della chiave</item>
+    <item quantity="many">Importazione di %d chiavi</item>
     <item quantity="other">Importazione di %d chiavi</item>
   </plurals>
   <string name="msg_import_fetch_error_not_found">Chiave non trovata!</string>
@@ -927,6 +956,7 @@
   <string name="msg_del_error_multi_secret">Le chiavi segrete possono essere cancellate solo individualmente!</string>
   <plurals name="msg_del">
     <item quantity="one">Cancellazione di una chiave</item>
+    <item quantity="many">Cancellazione di %d chiavi</item>
     <item quantity="other">Cancellazione di %d chiavi</item>
   </plurals>
   <string name="msg_del_key">Cancellazione chiave %s</string>
@@ -1013,6 +1043,7 @@
   <string name="security_token_error">Errore: %s</string>
   <plurals name="security_token_error_pin">
     <item quantity="one">PIN errato!\n%d tentativo rimasto.</item>
+    <item quantity="many">PIN errato!\n%d tentativi rimasti.</item>
     <item quantity="other">PIN errato!\n%d tentativi rimasti.</item>
   </plurals>
   <string name="security_token_error_unknown">Errore sconosciuto</string>
@@ -1103,6 +1134,7 @@
   <string name="key_gen_finish">Termina</string>
   <string name="snack_keylist_clipboard_action">Mostra</string>
   <string name="notify_channel_passcache">Memorizza password</string>
+  <string name="notify_channel_orbot">Stato di Orbot</string>
   <string name="notify_title_keysync">Aggiorna chiavi...</string>
   <string name="keylist_item_key_id">ID chiave: %s</string>
   <string name="keylist_header_anonymous">Anonimo</string>

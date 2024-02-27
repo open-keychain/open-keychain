@@ -267,14 +267,14 @@
   <string name="ecc_p256">ECC P-256</string>
   <string name="ecc_p384">ECC P-384</string>
   <string name="ecc_p521">ECC P-521</string>
-  <string name="ecc_25519">Ed25519 / Cv25519</string>
   <string name="usage_sign">Signa</string>
   <string name="usage_encrypt">Xifra</string>
   <string name="usage_sign_and_encrypt">Signa &amp; Xifra</string>
   <string name="error">Error</string>
   <string name="error_message">Error: %s</string>
-  <string name="theme_dark">Fosc</string>
+  <string name="theme_auto">Automàtic</string>
   <string name="theme_light">Clar</string>
+  <string name="theme_dark">Fosc</string>
   <!--sentences-->
   <string name="wrong_passphrase">Contrasenya incorrecta.</string>
   <string name="no_filemanager_installed">No hi ha cap gestor de fitxers compatible instal·lat.</string>
@@ -688,7 +688,7 @@
   <string name="msg_ip_master_expires">L\'anell de claus expira a %s</string>
   <string name="msg_ip_reinsert_secret">Inserint de nou la clau secreta</string>
   <string name="msg_ip_uid_cert_good">S\'ha trobat un certificat correcte per %1$s</string>
-  <string name="msg_ip_uat_cert_good">S\'ha trobat un certificat correcte per %1$s</string>
+  <string name="msg_ip_uat_cert_good">S\\'ha trobat un certificat correcte per %1$s</string>
   <!--Import Secret log entries-->
   <!--Keyring Canonicalization log entries-->
   <!--Keyring merging log entries-->
@@ -754,6 +754,7 @@
   <string name="button_got_it">D\'acord</string>
   <string name="key_health_revoked_title">revocat</string>
   <string name="key_health_insecure_title">Insegur</string>
+  <string name="keyserver_title_published">Published</string>
   <string name="dialog_insecure_button_ok">Entesos</string>
   <string name="usage_authentication">Autenticació</string>
   <string name="button_import">Subscriu-me</string>

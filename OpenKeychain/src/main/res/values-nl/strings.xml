@@ -277,7 +277,6 @@
   <string name="ecc_p384_description_html">heel kleine bestandsgrootte, wordt beschouwd als veilig tot 2040 &lt;br/&gt; &lt;u&gt;experimenteel en niet ondersteund door alle implementaties&lt;/u&gt;</string>
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">kleine bestandsgrootte, wordt beschouwd als veilig tot na 2040 &lt;br/&gt; &lt;u&gt; experimenteel en niet ondersteund door alle implementaties&lt;/u&gt;</string>
-  <string name="ecc_25519">Ed25519 / Cv25519</string>
   <string name="ecc_25519_description_html">kleine bestandsgrootte, wordt beschouwd als veilig tot na 2040 &lt;br/&gt; &lt;u&gt; experimenteel en niet ondersteund door alle implementaties&lt;/u&gt;</string>
   <string name="usage_none">Geen (alleen binden aan subsleutel)</string>
   <string name="usage_sign">Ondertekenen</string>
@@ -285,8 +284,9 @@
   <string name="usage_sign_and_encrypt">Ondertekenen en versleutelen</string>
   <string name="error">Fout</string>
   <string name="error_message">Fout: %s</string>
-  <string name="theme_dark">Donker</string>
+  <string name="theme_auto">Automatisch</string>
   <string name="theme_light">Licht</string>
+  <string name="theme_dark">Donker</string>
   <string name="strip">Strippen</string>
   <!--sentences-->
   <string name="wrong_passphrase">Wachtwoord verkeerd.</string>

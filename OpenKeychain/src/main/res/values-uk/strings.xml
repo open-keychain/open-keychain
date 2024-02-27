@@ -8,6 +8,7 @@
   <string name="title_encrypt_files">Зашифрувати</string>
   <string name="title_decrypt">Розшифрувати</string>
   <string name="title_add_subkey">Додати підключ</string>
+  <string name="title_change_master_key">Змінити основний ключ</string>
   <string name="title_edit_key">Редагувати ключ</string>
   <string name="title_preferences">Налаштування</string>
   <string name="title_api_registered_apps">Програми</string>
@@ -291,8 +292,9 @@
   <string name="usage_sign_and_encrypt">Підписати  &amp; Зашифрувати</string>
   <string name="error">Помилка</string>
   <string name="error_message">Помилка: %s</string>
-  <string name="theme_dark">Темна</string>
+  <string name="theme_auto">Автоматично</string>
   <string name="theme_light">Світла</string>
+  <string name="theme_dark">Темна</string>
   <string name="strip">Зачистити</string>
   <!--sentences-->
   <string name="wrong_passphrase">Неправильний пароль.</string>
@@ -417,6 +419,7 @@
   <string name="progress_exporting">експортується…</string>
   <string name="progress_uploading">відвантаження…</string>
   <string name="progress_building_key">будується ключ…</string>
+  <string name="progress_building_master_key">побудова основного кільця…</string>
   <string name="progress_generating_rsa">генерується новий ключ RSA…</string>
   <string name="progress_generating_dsa">генерується новий ключ DSA…</string>
   <string name="progress_generating_elgamal">генерується новий ключ ElGamal…</string>
@@ -804,8 +807,26 @@
   <string name="msg_ip_insert_keyring">Шифруються дані із в\'язки</string>
   <string name="msg_ip_insert_keys">Аналізуються ключі</string>
   <string name="msg_ip_prepare">Підготовка операцій з базою даних</string>
+  <string name="msg_ip_master">Обробляється основний ключ %s</string>
   <string name="msg_ip_master_expired">В\'язка закінчилася %s</string>
   <string name="msg_ip_master_expires">В\'язка закінчується %s</string>
+  <string name="msg_ip_master_flags_unspecified">Основний прапор: не встановлено (дозволити всі)</string>
+  <string name="msg_ip_master_flags_cesa">Основні прапори: сертифікувати, шифрувати, підписувати, авторизувати</string>
+  <string name="msg_ip_master_flags_cesx">Основні прапори: сертифікувати, шифрувати, підписувати</string>
+  <string name="msg_ip_master_flags_cexa">Основні прапори: сертифікувати, шифрувати, авторизувати</string>
+  <string name="msg_ip_master_flags_cexx">Основні прапори: сертифікувати, шифрувати</string>
+  <string name="msg_ip_master_flags_cxsa">Основні прапори: сертифікувати, підписувати, авторизувати</string>
+  <string name="msg_ip_master_flags_cxsx">Основні прапори: сертифікувати, підписувати</string>
+  <string name="msg_ip_master_flags_cxxa">Основні прапори: сертифікувати, авторизувати</string>
+  <string name="msg_ip_master_flags_cxxx">Основні прапори: сертифікувати</string>
+  <string name="msg_ip_master_flags_xesa">Основні прапори: шифрувати, підписувати, авторизувати</string>
+  <string name="msg_ip_master_flags_xesx">Основні прапори: шифрувати, підписувати</string>
+  <string name="msg_ip_master_flags_xexa">Основні прапори: шифрувати, авторизувати</string>
+  <string name="msg_ip_master_flags_xexx">Основні прапори: шифрувати</string>
+  <string name="msg_ip_master_flags_xxsa">Основні прапори: підписувати, авторизувати</string>
+  <string name="msg_ip_master_flags_xxsx">Основні прапори: підписувати</string>
+  <string name="msg_ip_master_flags_xxxa">Основні прапори: авторизувати</string>
+  <string name="msg_ip_master_flags_xxxx">Основні прапори: немає</string>
   <string name="msg_ip_merge_public">Об\'єднання імпортованих даних у наявну публічну в\'язку ключів</string>
   <string name="msg_ip_merge_secret">Об\'єднання імпортованих даних в наявну секретну в\'язку ключів</string>
   <string name="msg_ip_subkey">Опрацьовується підключ %s</string>
@@ -894,9 +915,16 @@
   <string name="msg_kc_secret">Канонізація секретної в\'язки %s</string>
   <string name="msg_kc_error_v3">Цей ключ OpenPGP версії 3 є застарілим та більше не використовується!</string>
   <string name="msg_kc_error_no_uid">В\'язка ключів не має чинних ідентифікаторів користувача!</string>
+  <string name="msg_kc_error_master_algo">Основний ключ використовує невідомий (%s) алгоритм!</string>
   <string name="msg_kc_error_dup_key">Залежний ключ %s повторюється у в\'язці ключів. В\'язку ключів пошкоджено, не імпортується!</string>
+  <string name="msg_kc_master">Обробляється основний ключ…</string>
+  <string name="msg_kc_master_bad_type">Видалення сертифіката невідомого типу основного ключа  (%s)</string>
+  <string name="msg_kc_master_bad_local">Видалення сертифіката основного ключа з прапором \'локальний\'</string>
+  <string name="msg_kc_master_bad_err">Видалення поганого сертифіката основного ключа</string>
   <string name="msg_kc_master_bad_time">Видалення в\'язки ключів сертифікату відкликання з майбутньою відміткою часу</string>
   <string name="msg_kc_master_bad_type_uid">Видалення ідентифікатора користувача сертифіката в поганій позиції</string>
+  <string name="msg_kc_master_bad">Видалення поганого сертифіката основного ключа</string>
+  <string name="msg_kc_master_local">Видалення сертифіката основного ключа з прапором \'локальний\'</string>
   <string name="msg_kc_revoke_dup">Видалення сертифікату відкликання надлишкових в\'язок ключів</string>
   <string name="msg_kc_notation_dup">Видалення надлишкової примітки сертифіката</string>
   <string name="msg_kc_notation_empty">Видалення порожньої примітки сертифіката</string>
@@ -972,7 +1000,10 @@
   <string name="msg_mg_found_new">Знайдено %s нових сертифікатів у в\'язці</string>
   <string name="msg_mg_unchanged">Нема що зливати</string>
   <!--createSecretKeyRing-->
+  <string name="msg_cr">Створення нового основного ключа</string>
+  <string name="msg_cr_error_no_master">Не вказано параметрів основного ключа!</string>
   <string name="msg_cr_error_no_user_id">В\'язки мають бути створені з як мінімум одним ідентифікатором користувача!</string>
+  <string name="msg_cr_error_no_certify">Основний ключ повинен мати прапор сертифікації!</string>
   <string name="msg_cr_error_null_expiry">Час закінчення дії ключа не може бути ранішим за час створення ключа. Це програмна помилка, будь ласка, повідомте через звіт про помилку!</string>
   <string name="msg_cr_error_keysize_2048">Розмір ключа має бути більшим чи дорівнювати 2048!</string>
   <string name="msg_cr_error_no_curve">Не зазначено розмір ключа! Це програмна помилка, будь ласка повідомте через звіт про помилку!</string>
@@ -994,12 +1025,14 @@
   <string name="msg_mf_error_fingerprint">Дійсний відбиток ключа не зібгається з очікуваним!</string>
   <string name="msg_mf_error_keyid">Немає ІД ключа. Це внутрішня помилка! Будь ласка, надішліть звіт про ваду!</string>
   <string name="msg_mf_error_integrity">Внутрішня помилка - збій перевірки цілісності!</string>
+  <string name="msg_mf_error_master_none">Не знайдено основного сертифікату для операцій! (Усе відкликано?)</string>
   <string name="msg_mf_error_noexist_primary">Вказаний поганий ІД первинного користувача!</string>
   <string name="msg_mf_error_noexist_revoke">Вказаний поганий ІД первинного користувача!</string>
   <string name="msg_mf_error_restricted">Спроба виконати обмежену операцію без пароля! Це програмна помилка. Будь ласка, повідомте через звіт про помилки!</string>
   <string name="msg_mf_error_revoked_primary">ІД відхилених користувачів не може бути первинним!</string>
   <string name="msg_mf_error_null_expiry">Час закінчення не може бути \"такий як раніше\" для створення підключа. Це програмна помилка. Будь ласка, повідомте через звіт про помилки!</string>
   <string name="msg_mf_error_noop">Немає задач!</string>
+  <string name="msg_mf_error_passphrase_master">Фатальна помилка розшифрування основного ключа! Це програмна помилка. Будь ласка, повідомте через звіт про помилки!</string>
   <string name="msg_mf_error_passphrases_unchanged">Пароль не змінено!</string>
   <string name="msg_mf_error_pgp">Внутрішня помилка OpenPGP!</string>
   <string name="msg_mf_error_sig">Виняток підпису!</string>
@@ -1008,6 +1041,7 @@
   <string name="msg_mf_error_conflicting_nfc_commands">Не можу перемістити ключ на маркер безпеки під час операції створення підпису на картці.</string>
   <string name="msg_mf_error_duplicate_keytocard_for_slot">Маркер безпеки підтримує лише один слот на ключ</string>
   <string name="msg_mf_error_invalid_flags_for_keytocard">Недопустимі прапори для ключа маркера безпеки.</string>
+  <string name="msg_mf_master">Зміна основних сертифікатів</string>
   <string name="msg_mf_passphrase">Зміна паролю для набору ключів</string>
   <string name="msg_mf_pin">Зміна PIN на карті</string>
   <string name="msg_mf_admin_pin">Зміна PIN адміністратора на карті</string>
@@ -1054,6 +1088,7 @@
   <string name="msg_pr_subkey_nomatch">Залежний ключ не на маркері безпеки: %s</string>
   <string name="msg_pr_success">Ключ успішно просунуто</string>
   <!--Other messages used in OperationLogs-->
+  <string name="msg_ek_error_dummy">Не можу редагувати в\'язку ключів з відокремленим основним ключем!</string>
   <string name="msg_ek_error_not_found">Ключ не знайдено!</string>
   <!--Messages for DecryptVerify operation-->
   <string name="msg_dc_askip_bad_flags">Ключ не є шифрувальним, пропускаю...</string>
@@ -1184,11 +1219,15 @@
     <item quantity="other">Сертифікування %1$d користувацьких атрибутів для ключа %2$s</item>
   </plurals>
   <string name="msg_crt_error_self">Не можу видати сертифікат самому собі як цей!</string>
+  <string name="msg_crt_error_master_not_found">Основний ключ не знайдено!</string>
   <string name="msg_crt_error_nothing">Сертифіковані ключі відсутні!</string>
+  <string name="msg_crt_error_unlock">Помилка розблокування основного ключа!</string>
   <string name="msg_crt">Сертифікування в\'язки ключів</string>
+  <string name="msg_crt_master_fetch">Отримання сертифіката основного ключа</string>
   <string name="msg_crt_nfc_return">Повернення до NFC екрану</string>
   <string name="msg_crt_save">Зберігання сертифікованого ключа %s</string>
   <string name="msg_crt_saving">Зберігання в\'язки ключів</string>
+  <string name="msg_crt_unlock">Розблокування основного ключа</string>
   <string name="msg_crt_success">Успішно сертифіковані сутності</string>
   <string name="msg_crt_warn_not_found">Ключ не знайдено!</string>
   <string name="msg_crt_warn_cert_failed">Генерування сертифікатів невдале!</string>
@@ -1596,6 +1635,7 @@
   <string name="keyserver_last_updated_never">Остання перевірка: ніколи</string>
   <string name="key_insecure_bitstrength_2048_problem">Ключ використовує <b>%1$s</b> алгоритм стійкістю <b>%2$s біт</b>. Ключ безпеки повинен мати як мінімум 2048 біт.</string>
   <string name="key_insecure_bitstrength_2048_solution">Цей ключ не може бути модернізованим. Для безпечної комунікації власник має згенерувати новий ключ.</string>
+  <string name="key_insecure_unknown_curve_problem">Цей ключ використовує <b>%1$s</b> алгоритм, який не в білому списку.</string>
   <string name="key_insecure_unknown_curve_solution">Цей ключ не може бути модернізованим. Для безпечної комунікації власник має згенерувати новий ключ.</string>
   <string name="key_insecure_unidentified_problem">Виникла невизначена проблема з цим ключем.</string>
   <string name="key_insecure_unidentified_solution">Будь ласка надішліть звіт про помилку.</string>
@@ -1606,6 +1646,8 @@
   <string name="insecure_encrypt_bitstrength_suggestion">Цей ключ у використанні небезпечний та не може бути модернізований. Для безпечної комунікації Ви маєте створити новий ключ!</string>
   <string name="insecure_sign_bitstrength">Ключ яким відправлено (підписано) це повідомлення є застарілим!\n\nАлгоритм (%s) налаштовано на довжину 1024 біти чи менше, що вважається небезпечним з 2006 року.</string>
   <string name="insecure_sign_bitstrength_suggestion">Цей ключ у використанні небезпечний та не може бути модернізований. Для безпечної комунікації відправник має створити новий ключ!</string>
+  <string name="insecure_encrypt_not_secure_curve">Ключ, який отримав (розшифрував) це повідомлення, використовує еліптичну криву з OID %1$s, якої немає в списку захищених кривих!!</string>
+  <string name="insecure_sign_not_secure_curve">Ключ, з якого було надіслано (підписано) це повідомлення, використовує еліптичну криву з OID  %1$s, якої немає у списку безпечних кривих!</string>
   <string name="insecure_encrypt_unidentified">Виникла невизначена проблема безпеки з ключем, який було використано для отримання (розшифрування) цього повідомлення!</string>
   <string name="insecure_sign_unidentified">Виникла невизначена проблема безпеки з ключем, який було використано для відправки (підписування) цього повідомлення!</string>
   <string name="insecure_report_suggestion">Це може бути проблема в OpenKeychain. Будь ласка, звітуйте через відстежувач проблем!</string>

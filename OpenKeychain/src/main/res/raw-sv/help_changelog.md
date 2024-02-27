@@ -1,4 +1,8 @@
-[//]: # (NOTERING: Var vänlig och sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
+[//]: # (NOTERING: Sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
+
+## 5.7
+  * Fixes for Curve25519
+  * IDEA cipher is now considered insecure
 
 ## 5.6
   * Compatibility with Android 10 and higher
@@ -362,7 +366,7 @@ Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Pa
 
   * Account adding crash on Froyo fixed
   * Secure file deletion
-  * Option to delete key file after import
+  * Alternativ för att ta bort nyckelfil efter import
   * Stream encryption/decryption (gallery, etc.)
   * New options (language, force v3 signatures)
   * Interface changes

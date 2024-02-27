@@ -1,4 +1,4 @@
-[//]: # (NOTERING: Var vänlig och sätt varje mening på sin egna rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
+[//]: # (NOTERING: Sätt varje mening på sin egna rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
 
 Avancerade panelen låter dig
 * dela nyckel på icke-rekommenderade sätt

@@ -1,411 +1,415 @@
 [//]: # (NOTĂ: Vă rugăm să puneți fiecare frază pe o linie separată, Transifex pune fiecare linie in câmpul ei de traducere!)
 
+## 5.7
+  * Corecții pentru Curve25519
+  * Cifrul IDEA este acum considerat nesigur
+
 ## 5.6
-  * Compatibility with Android 10 and higher
-  * Several bug fixes
+  * Compatibilitate cu Android 10 și superior
+  * Mai multe remedieri de erori
 
 ## 5.5
-  * Fix decryption from clipboard on Android 10
+  * Rezolvă decriptarea din clipboard pe Android 10
 
 ## 5.4
-  * Add WKD Advanced method
-  * Add COTECH Security Key Shop
+  * Adăugați metoda WKD Advanced
+  * Adăugați COTECH Security Key Shop
 
 ## 5.3
-  * Use keys.openpgp.org as default keyserver
+  * Utilizați keys.openpgp.org ca server de chei implicit
 
 ## 5.2
-  * Improved key import from clipboard
+  * Îmbunătățirea importului de chei din clipboard
 
 ## 5.1
-  * Support for Ledger Nano S
-  * Support Web Key Directory (WKD) search
-  * Fixed potential API security issue
+  * Suport pentru Ledger Nano S
+  * Sprijină căutarea în Web Key Directory (WKD)
+  * A rezolvat o potențială problemă de securitate API
 
 ## 5.0
-  * Improved Autocrypt support
+  * Suport îmbunătățit pentru Autocrypt
 
 ## 4.9
 
-  * Curve25519 support
-  * Improved support for security tokens
+  * Suportul Curve25519
+  * Suport îmbunătățit pentru jetoane de securitate
 
 ## 4.8
 
-  * Improved support for USB tokens: Gnuk, Nitrokey models, YubiKey 4 models
-  * Feature to find the position of the device's NFC reader
+  * Suport îmbunătățit pentru jetoane USB: Gnuk, modelele Nitrokey, modelele YubiKey 4
+  * Funcție pentru a găsi poziția cititorului NFC al dispozitivului
 
 ## 4.7
 
-  * Improved import from clipboard
-  * New key creation wizard for Security Tokens
-  * Removed password cache "time to live" setting
+  * Îmbunătățirea importului din clipboard
+  * Noul asistent de creare a cheilor pentru jetoane de securitate
+  * A eliminat setarea "time to live" a cache-ului de parole
 
 
 ## 4.6
 
-  * Import your keys using our new Secure Wi-Fi Transfer mechanism
+  * Importă-ți cheile folosind noul nostru mecanism de transfer Wi-Fi securizat
 
 
 ## 4.5
 
-  * Detailed description of security problems
-  * Display keyserver status per key
-  * Support for EdDSA
-  * Fix pgp.mit.edu (new certificate)
+  * Descrierea detaliată a problemelor de securitate
+  * Afișați starea serverului de chei pentru fiecare cheie
+  * Sprijin pentru EdDSA
+  * Corectarea pgp.mit.edu (certificat nou)
 
 
 ## 4.4
 
-  * New key status displays detailed information why a key is considered insecure or defective
+  * Starea cheii noi afișează informații detaliate despre motivul pentru care o cheie este considerată nesigură sau defectuoasă.
 
 
 ## 4.3
 
-  * Better support for large keys
-  * Fix import of Gpg4win files with broken encodings
+  * Suport mai bun pentru chei mari
+  * Corectarea importului de fișiere Gpg4win cu codificări rupte
 
 
 ## 4.2
 
-  * Experimental support for Elliptic Curve Encryption with Security Tokens
-  * Redesigned key import screen
-  * Design improvements to key lists
-  * Support for keyserver onion addresses
+  * Suport experimental pentru criptarea cu curbă eliptică cu jetoane de securitate
+  * Ecranul de import al cheilor a fost reproiectat
+  * Îmbunătățiri de design pentru listele cheie
+  * Suport pentru adresele onion ale serverului de chei
 
 
 ## 4.1
 
-  * Better detection of emails and other content when opened
+  * O mai bună detectare a e-mailurilor și a altor conținuturi atunci când sunt deschise
 
 
 ## 4.0
 
-  * Experimental support for Security Tokens over USB
-  * Allow password changing of stripped keys
+  * Suport experimental pentru jetoane de securitate prin USB
+  * Permiteți schimbarea parolei de chei decapate
 
 
 ## 3.9
 
-  * Detection and handling of text data
-  * Performance improvements
-  * UI improvements for Security Token handling
+  * Detectarea și manipularea datelor text
+  * Îmbunătățiri de performanță
+  * Îmbunătățiri ale interfeței pentru manipularea unui jeton de securitate
 
 
 ## 3.8
 
-  * Redesigned key editing
-  * Choose remember time individually when entering passwords
-  * Facebook key import
+  * Reproiectat editare cheie
+  * Alegeți să vă amintiți timpul individual atunci când introduceți parolele
+  * Import de chei Facebook
 
 
 ## 3.7
 
-  * Improved Android 6 support (permissions, integration into text selection)
-  * API: Version 10
+  * Suport îmbunătățit pentru Android 6 (permisiuni, integrare în selecția de text)
+  * API: Versiunea 10
 
 
 ## 3.6
 
-  * Encrypted backups
-  * Security fixes based on external security audit
-  * YubiKey NEO key creation wizard
-  * Basic internal MIME support
-  * Automatic key synchronization
-  * Experimental feature: link keys to Github, Twitter accounts
-  * Experimental feature: key confirmation via phrases
-  * Experimental feature: dark theme
-  * API: Version 9
+  * Copii de rezervă criptate
+  * Corecții de securitate bazate pe un audit de securitate extern
+  * Expertul de creare a cheilor YubiKey NEO
+  * Suport MIME intern de bază
+  * Sincronizare automată a cheilor
+  * Caracteristică experimentală: chei de legătură cu Github, conturi Twitter
+  * Caracteristică experimentală: confirmarea cheilor prin fraze
+  * Caracteristică experimentală: temă întunecată
+  * API: Versiunea 9
 
 
 ## 3.5
 
-  * Key revocation on key deletion
-  * Improved checks for insecure cryptography
-  * Fix: Don't close OpenKeychain after first time wizard succeeds
-  * API: Version 8
+  * Revocarea cheii la ștergerea cheii
+  * Verificări îmbunătățite pentru criptografie nesigură
+  * Corecție: Nu închideți OpenKeychain după prima dată când expertul reușește
+  * API: Versiunea 8
 
 
 ## 3.4
 
-  * Anonymous key download over Tor
-  * Proxy support
-  * Better YubiKey error handling
+  * Transfer anonim de chei prin Tor
+  * Suport pentru Proxy
+  * O mai bună gestionare a erorilor YubiKey
 
 
 ## 3.3
 
-  * New decryption screen
-  * Decryption of multiple files at once
-  * Better handling of YubiKey errors
+  * Un nou ecran de decriptare
+  * Decriptarea mai multor fișiere în același timp
+  * O mai bună gestionare a erorilor YubiKey
 
 
 ## 3.2
 
-  * First version with full YubiKey support available from the user interface: Edit keys, bind YubiKey to keys,...
-  * Material design
-  * Integration of QR Code Scanning (New permissions required)
-  * Improved key creation wizard
-  * Fix missing contacts after sync
-  * Requires Android 4
-  * Redesigned key screen
-  * Simplify crypto preferences, better selection of secure ciphers
-  * API: Detached signatures, free selection of signing key,...
-  * Fix: Some valid keys were shown revoked or expired
-  * Don't accept signatures by expired or revoked subkeys
-  * Keybase.io support in advanced view
-  * Method to update all keys at once
+  * Prima versiune cu suport complet pentru YubiKey disponibil din interfața de utilizator: Editarea tastelor, legarea YubiKey la taste,...
+  * Design material
+  * Integrarea scanării codurilor QR (sunt necesare permisiuni noi)
+  * Îmbunătățirea asistentului de creare a cheilor
+  * Corectați contactele lipsă după sincronizare
+  * Necesită Android 4
+  * Ecranul cheie reproiectat
+  * Simplificarea preferințelor criptografice, o selecție mai bună a cifrelor sigure
+  * API: Semnături detașate, selecție liberă a cheii de semnare,...
+  * Corectare: Unele chei valide au fost afișate revocate sau expirate
+  * Nu acceptați semnături cu subchei expirate sau revocate
+  * Suport Keybase.io în vizualizarea avansată
+  * Metoda de a actualiza toate cheile deodată
 
 
 ## 3.1.2
 
-  * Fix key export to files (now for real)
+  * Corectați exportul de chei în fișiere (acum pe bune)
 
 
 ## 3.1.1
 
-  * Fix key export to files (they were written partially)
-  * Fix crash on Android 2.3
+  * Corectarea exportului de chei către fișiere (au fost scrise parțial)
+  * Corectați crash-ul pe Android 2.3
 
 
 ## 3.1
 
-  * Fix crash on Android 5
-  * New certify screen
-  * Secure Exchange directly from key list (SafeSlinger library)
-  * New QR Code program flow
-  * Redesigned decrypt screen
-  * New icon usage and colors
-  * Fix import of secret keys from Symantec Encryption Desktop
-  * Experimental YubiKey support: Subkey IDs are now checked correctly
+  * Corectați crash-ul pe Android 5
+  * Un nou ecran de certificare
+  * Schimb securizat direct din lista de chei (bibliotecă SafeSlinger)
+  * Noul QR Code program flow
+  * Ecran de decriptare reproiectat
+  * Noua pictogramă de utilizare și culori
+  * Corectarea importului de chei secrete de la Symantec Encryption Desktop
+  * Suport experimental pentru YubiKey: ID-urile subcheie sunt acum verificate corect
 
 
 ## 3.0.1
 
-  * Better handling of large key imports
-  * Improved subkey selection
+  * O mai bună gestionare a importurilor de chei mari
+  * Îmbunătățirea selecției subcheie
 
 
 ## 3.0
 
-  * Propose installable compatible apps in apps list
-  * New design for decryption screens
-  * Many fixes for key import, also fixes stripped keys
-  * Honor and display key authenticate flags
-  * User interface to generate custom keys
-  * Fixing user ID revocation certificates
-  * New cloud search (searches over traditional keyservers and keybase.io)
-  * Support for stripping keys inside OpenKeychain
-  * Experimental YubiKey support: Support for signature generation and decryption
+  * Propuneți aplicații compatibile instalabile în lista de aplicații
+  * Design nou pentru ecranele de decriptare
+  * Multe corecții pentru importul de chei, de asemenea, corectează cheile dezbrăcate
+  * Onorează și afișează indicatoarele de autentificare a cheilor
+  * Interfață utilizator pentru a genera chei personalizate
+  * Corectarea certificatelor de revocare a ID-ului de utilizator
+  * Noua căutare în cloud (căutări peste keyserverele tradiționale și keybase.io)
+  * Sprijin pentru scoaterea cheilor în interiorul OpenKeychain
+  * Suport experimental pentru YubiKey: Suport pentru generarea și decriptarea semnăturilor
 
 
 ## 2.9.2
 
-  * Fix keys broken in 2.9.1
-  * Experimental YubiKey support: Decryption now working via API
+  * Reparați cheile sparte în 2.9.1
+  * Suport experimental pentru YubiKey: Decriptarea funcționează acum prin API
 
 
 ## 2.9.1
 
-  * Split encrypt screen into two
-  * Fix key flags handling (now supporting Mailvelope 0.7 keys)
-  * Improved passphrase handling
-  * Key sharing via SafeSlinger
-  * Experimental YubiKey support: Preference to allow other PINs, currently only signing via the OpenPGP API works, not inside of OpenKeychain
-  * Fix usage of stripped keys
-  * SHA256 as default for compatibility
-  * Intent API has changed, see https://github.com/open-keychain/open-keychain/wiki/Intent-API
-  * OpenPGP API now handles revoked/expired keys and returns all user ids
+  * Împărțiți ecranul de criptare în două
+  * Corectarea manipulării indicatoarelor cheie (acum suportă cheile Mailvelope 0.7)
+  * Manipulare îmbunătățită a frazei de trecere
+  * Partajarea cheilor prin SafeSlinger
+  * Suport experimental pentru YubiKey: Preferinta de a permite alte PIN-uri, în prezent funcționează doar semnarea prin API OpenPGP, nu în interiorul OpenKeychain.
+  * Corectați utilizarea de chei decapate
+  * SHA256 ca implicit pentru compatibilitate
+  * API-ul de intenție s-a schimbat, consultați https://github.com/open-keychain/open-keychain/wiki/Intent-API
+  * OpenPGP API se ocupă acum de cheile revocate/expirate și returnează toate ID-urile de utilizator.
 
 
 ## 2.9
 
-  * Fixing crashes introduced in v2.8
-  * Experimental ECC support
-  * Experimental YubiKey support: Only signing with imported keys
+  * Rezolvarea erorilor introduse în v2.8
+  * Suport ECC experimental
+  * Suport experimental pentru YubiKey: Doar semnarea cu chei importate
 
 
 ## 2.8
 
-  * So many bugs have been fixed in this release that we focus on the main new features
-  * Key edit: awesome new design, key revocation
-  * Key import: awesome new design, secure keyserver connections via hkps, keyserver resolving via DNS SRV records
-  * New first time screen
-  * New key creation screen: autocompletion of name and email based on your personal Android accounts
-  * File encryption: awesome new design, support for encrypting multiple files
-  * New icons to show status of key (by Brennan Novak)
-  * Important bug fix: Importing of large key collections from a file is now possible
-  * Notification showing cached passphrases
-  * Keys are connected to Android's contacts
+  * Atât de multe bug-uri au fost corectate în această versiune încât ne concentrăm pe principalele noutăți
+  * Editare cheie: un nou design minunat, revocarea cheii
+  * Importul de chei: un nou design minunat, conexiuni sigure la serverul de chei prin hkps, rezolvarea serverului de chei prin înregistrări DNS SRV.
+  * Un nou ecran pentru prima dată
+  * Ecran nou de creare a cheii: autocompletare a numelui și a e-mailului pe baza conturilor personale Android
+  * Criptarea fișierelor: un nou design minunat, suport pentru criptarea mai multor fișiere
+  * Noi pictograme pentru a arăta starea cheii (de Brennan Novak)
+  * Corecție importantă de erori: Importul colecțiilor mari de chei dintr-un fișier este acum posibil.
+  * Notificare care arată frazele de acces în memoria cache
+  * Cheile sunt conectate la contactele Android
 
-This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar
+Această versiune nu ar fi fost posibilă fără munca lui Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar
 
 ## 2.7
 
-  * Purple! (Dominik, Vincent)
-  * New key view design (Dominik, Vincent)
-  * New flat Android buttons (Dominik, Vincent)
-  * API fixes (Dominik)
-  * Keybase.io import (Tim Bray)
+  * Purpuriu! (Dominik, Vincent)
+  * Noul design de vizualizare a cheilor (Dominik, Vincent)
+  * Noi butoane plate pentru Android (Dominik, Vincent)
+  * Corecții API (Dominik)
+  * Importare Keybase.io (Tim Bray)
 
 
 ## 2.6.1
 
-  * Some fixes for regression bugs
+  * Unele corecții pentru bug-uri de regresie
 
 
 ## 2.6
 
-  * Key certifications (thanks to Vincent Breitmoser)
-  * Support for GnuPG partial secret keys (thanks to Vincent Breitmoser)
-  * New design for signature verification
-  * Custom key length (thanks to Greg Witczak)
-  * Fix share-functionality from other apps
+  * Certificări cheie (mulțumiri lui Vincent Breitmoser)
+  * Suport pentru chei secrete parțiale GnuPG (mulțumiri lui Vincent Breitmoser)
+  * Un nou design pentru verificarea semnăturii
+  * Lungime cheie personalizată (mulțumiri lui Greg Witczak)
+  * Corectează funcționalitatea de partajare din alte aplicații
 
 
 ## 2.5
 
-  * Fix decryption of symmetric OpenPGP messages/files
-  * Refactored key edit screen (thanks to Ash Hughes)
-  * New modern design for encrypt/decrypt screens
-  * OpenPGP API version 3 (multiple api accounts, internal fixes, key lookup)
+  * Corectă decriptarea mesajelor/fișierelor OpenPGP simetrice
+  * Refacerea ecranului de editare a cheilor (mulțumiri lui Ash Hughes)
+  * Un nou design modern pentru ecranele de criptare/decriptare
+  * OpenPGP API versiunea 3 (mai multe conturi API, corecturi interne, căutare de chei)
 
 
 ## 2.4
-Thanks to all applicants of Google Summer of Code 2014 who made this release feature rich and bug free!
-Besides several small patches, a notable number of patches are made by the following people (in alphabetical order):
+Mulțumim tuturor solicitanților de la Google Summer of Code 2014 care au făcut ca această versiune să fie bogată în funcții și fără erori!
+Pe lângă câteva patch-uri mici, un număr important de patch-uri sunt realizate de următoarele persoane (în ordine alfabetică):
 Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.
 
-  * New unified key list
-  * Colorized key fingerprint
-  * Support for keyserver ports
-  * Deactivate possibility to generate weak keys
-  * Much more internal work on the API
-  * Certify user ids
-  * Keyserver query based on machine-readable output
-  * Lock navigation drawer on tablets
-  * Suggestions for emails on creation of keys
-  * Search in public key lists
-  * And much more improvements and fixes…
+  * Noua listă de chei unificată
+  * Amprenta cheie colorată
+  * Suport pentru porturile serverului de chei
+  * Dezactivați posibilitatea de a genera chei slabe
+  * Mult mai multă muncă internă pe API
+  * Certificarea ID-urilor de utilizator
+  * Interogare a serverului de chei bazată pe o ieșire care poate fi citită automat
+  * Blocați sertarul de navigare pe tablete
+  * Sugestii pentru e-mailuri privind crearea de chei
+  * Căutare în listele de chei publice
+  * Și mult mai multe îmbunătățiri și corecturi...
 
 
 ## 2.3.1
 
-  * Hotfix for crash when upgrading from old versions
+  * Hotfix pentru crash la actualizarea de la versiuni vechi
 
 
 ## 2.3
 
-  * Remove unnecessary export of public keys when exporting secret key (thanks to Ash Hughes)
-  * Fix setting expiry dates on keys (thanks to Ash Hughes)
-  * More internal fixes when editing keys (thanks to Ash Hughes)
-  * Querying keyservers directly from the import screen
-  * Fix layout and dialog style on Android 2.2-3.0
-  * Fix crash on keys with empty user ids
-  * Fix crash and empty lists when coming back from signing screen
-  * Bouncy Castle (cryptography library) updated from 1.47 to 1.50 and build from source
-  * Fix upload of key from signing screen
+  * Eliminați exportul inutil de chei publice atunci când exportați cheia secretă (mulțumiri lui Ash Hughes)
+  * Fixarea datelor de expirare pe chei (mulțumiri lui Ash Hughes)
+  * Mai multe corecturi interne la editarea tastelor (mulțumiri lui Ash Hughes)
+  * Interogarea serverelor de chei direct din ecranul de import
+  * Corectarea aspectului și a stilului de dialog pe Android 2.2-3.0
+  * Reparați blocarea pe chei cu ID-uri de utilizator goale
+  * Reparați blocarea și listele goale atunci când reveniți de pe ecranul de semnare
+  * Bouncy Castle (bibliotecă criptografică) actualizată de la 1.47 la 1.50 și construită din sursă
+  * Reparați încărcarea cheii de pe ecranul de semnare
 
 
 ## 2.2
 
-  * New design with navigation drawer
-  * New public key list design
-  * New public key view
-  * Bug fixes for importing of keys
-  * Key cross-certification (thanks to Ash Hughes)
-  * Handle UTF-8 passwords properly (thanks to Ash Hughes)
-  * First version with new languages (thanks to the contributors on Transifex)
-  * Sharing of keys via QR Codes fixed and improved
-  * Package signature verification for API
+  * Design nou cu sertar de navigare
+  * Noul design al listei de chei publice
+  * Noua vizualizare a cheilor publice
+  * Corecții de erori pentru importul de chei
+  * Certificare încrucișată cheie (mulțumiri lui Ash Hughes)
+  * Gestionați parolele UTF-8 în mod corespunzător (mulțumiri lui Ash Hughes)
+  * Prima versiune cu limbi noi (mulțumită contribuitorilor de pe Transifex)
+  * Împărtășirea cheilor prin coduri QR corectate și îmbunătățite
+  * Verificarea semnăturii pachetului pentru API
 
 
 ## 2.1.1
 
-  * API Updates, preparation for K-9 Mail integration
+  * Actualizări API, pregătire pentru integrarea K-9 Mail
 
 
 ## 2.1
 
-  * Lots of bug fixes
-  * New API for developers
-  * PRNG bug fix by Google
+  * O mulțime de remedieri de erori
+  * Noul API pentru dezvoltatori
+  * PRNG bug fix de la Google
 
 
 ## 2.0
 
-  * Complete redesign
-  * Share public keys via QR codes, NFC beam
-  * Sign keys
-  * Upload keys to server
-  * Fixes import issues
-  * New AIDL API
+  * Reproiectare completă
+  * Partajați cheile publice prin coduri QR, fascicul NFC
+  * Chei de semnalizare
+  * Încărcați chei pe server
+  * Corectează problemele de import
+  * Nou AIDL API
 
 
 ## 1.0.8
 
-  * Basic keyserver support
+  * Suport de bază pentru serverul de chei
   * App2sd
-  * More choices for passphrase cache: 1, 2, 4, 8, hours
-  * Translations: Norwegian Bokmål (thanks, Sander Danielsen), Chinese (thanks, Zhang Fredrick)
-  * Bugfixes
-  * Optimizations
+  * Mai multe opțiuni pentru memoria cache a frazei de acces: 1, 2, 4, 8, ore
+  * Traduceri: norvegiană Bokmål (mulțumiri, Sander Danielsen), chineză (mulțumiri, Zhang Fredrick)
+  * Corecții de erori
+  * Optimizări
 
 
 ## 1.0.7
 
-  * Fixed problem with signature verification of texts with trailing newline
-  * More options for passphrase cache time to live (20, 40, 60 mins)
+  * A fost rezolvată o problemă cu verificarea semnăturii în cazul textelor cu linie nouă la sfârșit.
+  * Mai multe opțiuni pentru timpul de viață al memoriei cache a frazei de acces (20, 40, 60 de minute)
 
 
 ## 1.0.6
 
-  * Account adding crash on Froyo fixed
-  * Secure file deletion
-  * Option to delete key file after import
-  * Stream encryption/decryption (gallery, etc.)
-  * New options (language, force v3 signatures)
-  * Interface changes
-  * Bugfixes
+  * Cont adăugând crash pe Froyo reparat
+  * Ștergerea sigură a fișierelor
+  * Opțiunea de a șterge fișierul cheie după import
+  * Criptarea/decriptarea fluxurilor (galerie, etc.)
+  * Noi opțiuni (limbă, forțați semnăturile v3)
+  * Modificări ale interfeței
+  * Corecții de erori
 
 
 ## 1.0.5
 
-  * German and Italian translation
-  * Much smaller package, due to reduced BC sources
-  * New preferences GUI
-  * Layout adjustment for localization
-  * Signature bugfix
+  * Traducere în germană și italiană
+  * Pachet mult mai mic, datorită reducerii surselor BC
+  * Noua interfață grafică a preferințelor
+  * Ajustarea layout-ului pentru localizare
+  * Semnătura corectării de erori
 
 
 ## 1.0.4
 
-  * Fixed another crash caused by some SDK bug with query builder
+  * A rezolvat un alt crash cauzat de un bug SDK cu constructorul de interogări
 
 
 ## 1.0.3
 
-  * Fixed crashes during encryption/signing and possibly key export
+  * A corectat erori în timpul criptării/semnării și, eventual, a exportului de chei.
 
 
 ## 1.0.2
 
-  * Filterable key lists
-  * Smarter pre-selection of encryption keys
-  * New Intent handling for VIEW and SEND, allows files to be encrypted/decrypted out of file managers
-  * Fixes and additional features (key preselection) for K-9 Mail, new beta build available
+  * Liste de chei filtrabile
+  * O preselecție mai inteligentă a cheilor de criptare
+  * Noua manipulare a intențiilor pentru VIEW și SEND, permite ca fișierele să fie criptate/decriptate în afara managerilor de fișiere.
+  * Corecții și caracteristici suplimentare (preselecția tastelor) pentru K-9 Mail, este disponibilă o nouă versiune beta.
 
 
 ## 1.0.1
 
-  * GMail account listing was broken in 1.0.0, fixed again
+  * Listarea conturilor GMail a fost stricată în 1.0.0, reparată din nou
 
 
 ## 1.0.0
 
-  * K-9 Mail integration, APG supporting beta build of K-9 Mail
-  * Support of more file managers (including ASTRO)
-  * Slovenian translation
-  * New database, much faster, less memory usage
-  * Defined Intents and content provider for other apps
-  * Bugfixes
+  * Integrare K-9 Mail, APG suportă versiunea beta a K-9 Mail
+  * Suport pentru mai mulți manageri de fișiere (inclusiv ASTRO)
+  * Traducere în slovenă
+  * Noua bază de date, mult mai rapidă, mai puțină utilizare a memoriei
+  * Defined Intents și furnizor de conținut pentru alte aplicații
+  * Corecții de erori

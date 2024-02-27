@@ -8,6 +8,7 @@
   <string name="title_encrypt_files">เข้ารหัสลับ</string>
   <string name="title_decrypt">ถอดรหัสลับ</string>
   <string name="title_add_subkey">เพิ่มกุญแจย่อย</string>
+  <string name="title_change_master_key">เปลี่ยนกุญแจหลัก</string>
   <string name="title_edit_key">แก้กุญแจ</string>
   <string name="title_preferences">การตั้งค่า</string>
   <string name="title_api_registered_apps">แอป</string>
@@ -34,6 +35,7 @@
   <string name="title_advanced_key_info">ขั้นสูง</string>
   <string name="title_delete_secret_key">ลบกุญแจ \'%s\' **ของคุณเอง** หรือไม่?</string>
   <string name="title_manage_my_keys">จัดการกุญแจของฉัน</string>
+  <string name="title_alert_strip">เอากุญแจย่อยนี้ออก</string>
   <!--section-->
   <string name="section_user_ids">อัตลักษณ์</string>
   <string name="section_should_you_trust">คุณควรเชื่อถือกุญแจนี้หรือไม่?</string>
@@ -224,27 +226,44 @@
   <string name="choice_select_cert">เลือกกุญแจ</string>
   <string name="filemanager_title_open">เปิด...</string>
   <string name="rsa_2048">RSA 2048</string>
+  <string name="rsa_2048_description_html">ขนาดแฟ้มเล็กกว่า ถือว่าปลอดภัยจนถึงปี 2573</string>
   <string name="rsa_3072">RSA 3072</string>
+  <string name="rsa_3072_description_html">แนะนำให้ใช้ ถือว่าปลอดภัยจนถึงปี 2583</string>
   <string name="rsa_4096">RSA 4096</string>
+  <string name="rsa_4096_description_html">ขนาดแฟ้มใหญ่กว่า ถือว่าปลอดภัยจนถึงปี 2583 หรือหลังจากนั้น</string>
   <string name="ecc_p256">ECC P-256</string>
   <string name="ecc_p384">ECC P-384</string>
   <string name="ecc_p521">ECC P-521</string>
-  <string name="ecc_25519">Ed25519 / Cv25519</string>
   <string name="usage_sign">เซ็น</string>
   <string name="usage_encrypt">การเข้ารหัสลับของข้อความ</string>
   <string name="usage_sign_and_encrypt">เซ็นและเข้ารหัสลับ</string>
   <string name="error">ข้อผิดพลาด</string>
   <string name="error_message">ผิดพลาด: %s</string>
-  <string name="theme_dark">มืด</string>
+  <string name="theme_auto">อัตโนมัติ</string>
   <string name="theme_light">สว่าง</string>
+  <string name="theme_dark">มืด</string>
   <!--sentences-->
+  <string name="wrong_passphrase">รหัสผ่านผิด</string>
+  <string name="no_filemanager_installed">ไม่มีตัวจัดการแฟ้มที่ใช้งานด้วยกันได้ติดตั้งอยู่</string>
+  <string name="passphrases_do_not_match">รหัสผ่านไม่ตรงกัน</string>
+  <string name="passphrase_must_not_be_empty">กรุณาใส่รหัสผ่าน</string>
   <string name="passphrase_for_symmetric_encryption">ใส่รหัสผ่าน</string>
+  <string name="passphrase_for_backup">ใส่รหัสสำรอง</string>
+  <string name="passphrase_for">ใส่รหัสผ่านสำหรับ \'%s\'</string>
   <string name="passphrase_for_any">ใส่รหัสผ่าน</string>
+  <string name="passphrase_keyboard_hint_alpha">สลับไปแป้นพิมพ์ตัวอักษร</string>
+  <string name="passphrase_keyboard_hint_numeric">สลับไปแป้นพิมพ์ตัวเลข</string>
+  <string name="passphrase_transfer">ใส่รหัสถ่ายโอน</string>
+  <string name="pin_for">ใส่รหัส PIN สำหรับ \'%s\'</string>
+  <string name="file_delete_confirmation_title">ลบแฟ้มต้นฉบับหรือไม่?</string>
+  <string name="file_delete_confirmation">แฟ้มต่อไปนี้จะถูกลบ: %s</string>
+  <string name="no_file_selected">ไม่มีแฟ้มใดถูกเลือก</string>
   <string name="encrypt_sign_successful">เซ็นและ/หรือเข้ารหัสลับสำเร็จ</string>
   <string name="encrypt_sign_clipboard_successful">เซ็นและ/หรือเข้ารหัสลับไปยังคลิปบอร์ดสำเร็จ</string>
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
+  <string name="error_user_id_no_email">ไม่พบที่อยู่อีเมล</string>
   <string name="error_no_signature_key">ไม่มีกุญแจลายเซ็นมาให้</string>
   <!--errors without preceding Error:-->
   <string name="error_nothing_import">ไม่พบกุญแจ!</string>
@@ -256,16 +275,25 @@
   <string name="decrypt_result_signature_expired_key">เซ็นด้วยกุญแจ <b>ที่หมดอายุแล้ว</b>!</string>
   <string name="decrypt_result_signature_revoked_key">เซ็นด้วยกุญแจ <b>ที่ถูกเพิกถอนแล้ว</b>!</string>
   <string name="decrypt_result_signature_missing_key">เซ็นด้วยกุญแจ <b>สาธารณะที่ไม่รู้ที่มา</b></string>
+  <string name="decrypt_result_encrypted">เข้ารหัสลับอยู่</string>
+  <string name="decrypt_result_not_encrypted">ไม่ได้เข้ารหัสลับ</string>
+  <string name="decrypt_result_insecure">การเข้ารหัสลับที่ไม่ปลอดภัย</string>
   <string name="decrypt_result_action_show">แสดง</string>
+  <string name="decrypt_result_action_Lookup">ค้น</string>
   <!--Add keys-->
+  <string name="add_keys_my_key">กุญแจของฉัน:</string>
   <!--progress dialogs, usually ending in '…'-->
+  <string name="progress_done">เสร็จสิ้น</string>
   <string name="progress_cancel">ยกเลิก</string>
+  <string name="progress_cancelling">กำลังยกเลิก...</string>
+  <string name="progress_downloading">กำลังดาวน์โหลด...</string>
   <string name="progress_saving">กำลังบันทึก...</string>
   <string name="progress_importing">กำลังนำเข้า...</string>
   <string name="progress_revoking_uploading">กำลังเพิกถอนและอัปโหลดกุญแจ...</string>
   <string name="progress_updating">กำลังปรับปรุงกุญแจ...</string>
   <string name="progress_exporting">กำลังส่งออก...</string>
   <string name="progress_uploading">กำลังอัปโหลด...</string>
+  <string name="progress_building_key">กำลังสร้างกุญแจ...</string>
   <string name="progress_modify_passphrase">กำลังเปลี่ยนรหัสผ่าน...</string>
   <string name="progress_modify_pin">กำลังเปลี่ยน PIN...</string>
   <string name="progress_exporting_key">กำลังส่งออกกุญแจ...</string>
@@ -291,6 +319,7 @@
   <string name="key_size_3072">3072</string>
   <string name="key_size_4096">4096</string>
   <string name="key_size_8192">8192</string>
+  <string name="key_size_custom">ขนาดกุญแจที่กำหนดเอง</string>
   <!--elliptic curve names-->
   <string name="key_curve_nist_p256">NIST P-256</string>
   <string name="key_curve_nist_p384">NIST P-384</string>
@@ -302,20 +331,28 @@
   <!--compression-->
   <!--Help-->
   <string name="help_tab_start">เริ่ม</string>
+  <string name="help_tab_faq">คำถามพบบ่อย</string>
   <string name="help_tab_changelog">สมุดบันทึกสิ่งของใหม่</string>
+  <string name="help_tab_license">สัญญาอนุญาต</string>
   <string name="help_tab_about">เกี่ยวกับ</string>
   <string name="help_about_version">Version:</string>
   <string name="help_tab_donations">บริจาค</string>
   <!--Import-->
   <string name="import_tab_keyserver">เซิร์ฟเวอร์กุญแจ</string>
   <string name="import_tab_cloud">ค้นหากุญแจ</string>
+  <string name="import_found_keys">พบกุญแจ %1$d ดอก</string>
   <string name="import_qr_code_button">สแกนรหัสคิวอาร์</string>
   <string name="btn_import">นำเข้า</string>
+  <string name="btn_import_keys">นำเข้ากุญแจทั้งหมด</string>
+  <string name="btn_view_list">ดูรายการ</string>
   <string name="btn_refresh">แสดงใหม่</string>
+  <string name="btn_go_to_key">ไปที่กุญแจ</string>
   <!--Generic result toast-->
   <string name="snackbar_details">รายละเอียด</string>
   <!--Import result toast-->
   <!--Delete result toast-->
+  <string name="delete_nothing">ไม่มีอะไรให้ลบ</string>
+  <string name="delete_cancelled">การลบถูกยกเลิก</string>
   <!--Revoke result toast (snackbar)-->
   <string name="revoke_ok">เพิกถอนกุญแจสำเร็จแล้ว</string>
   <string name="revoke_nothing">ไม่มีอะไรให้เพิกถอน</string>
@@ -343,6 +380,8 @@
   <string name="key_list_empty_text1">ไม่พบกุญแจ!</string>
   <string name="key_list_fab_qr_code">สแกนรหัสคิวอาร์</string>
   <string name="key_list_fab_search">ค้นหากุญแจ</string>
+  <string name="key_list_fab_import">นำเข้าจากแฟ้ม</string>
+  <string name="key_list_dummy_subtitle">คลิกที่นี่เพื่อสร้างหรือนำเข้า</string>
   <!--Key view-->
   <string name="key_view_action_edit">แก้ไข</string>
   <string name="key_view_action_encrypt">เข้ารหัสลับข้อความ</string>
@@ -382,9 +421,12 @@
   <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
   <string name="nav_keys">กุญแจ</string>
+  <string name="nav_encrypt_decrypt">เข้ารหัสลับ/ถอดรหัสลับ</string>
   <string name="nav_apps">แอป</string>
   <string name="my_keys">กุญแจของฉัน</string>
+  <string name="nav_backup">สำรอง/กู้คืน</string>
   <!--hints-->
+  <string name="encrypt_content_edit_text_hint">พิมพ์​ข้อความ</string>
   <!--certs-->
   <string name="cert_default">ปริยาย</string>
   <string name="cert_none">ไม่มี</string>
@@ -392,6 +434,7 @@
   <string name="cert_positive">ตรวจยืนยันแล้ว (positive)</string>
   <string name="cert_revoke">ถูกเพิกถอน</string>
   <string name="cert_verify_ok">ตกลง</string>
+  <string name="cert_verify_failed">ล้มเหลว!</string>
   <string name="cert_verify_error">ผิดพลาด!</string>
   <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
@@ -461,7 +504,7 @@
   <string name="keyserver_sync_orbot_notif_start">เริ่ม Orbot</string>
   <!--First Time-->
   <string name="first_time_create_key">สร้างกุญแจของฉัน</string>
-  <string name="first_time_import_key">นำเข้ากุญแจจากไฟล์</string>
+  <string name="first_time_import_key">นำเข้ากุญแจจากแฟ้ม</string>
   <string name="first_time_skip">ข้ามการติดตั้ง</string>
   <string name="backup_section">สำรอง</string>
   <string name="restore_section">คืนค่า</string>

@@ -1,4 +1,4 @@
-[//]: # (NOTERING: Var vänlig och sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
+[//]: # (NOTERING: Sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
 
 ## Hur aktiverar jag OpenKeychain i K-9 Mail?
 Följ dessa steg för att använda OpenKeychain tillsammans med K-9 Mail:

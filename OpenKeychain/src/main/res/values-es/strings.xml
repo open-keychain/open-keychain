@@ -8,6 +8,7 @@
   <string name="title_encrypt_files">Cifrar</string>
   <string name="title_decrypt">Descifrar</string>
   <string name="title_add_subkey">Añadir subclave</string>
+  <string name="title_change_master_key">Cambiar clave primaria</string>
   <string name="title_edit_key"> Editar clave</string>
   <string name="title_preferences">Configuración</string>
   <string name="title_api_registered_apps">Aplicaciones</string>
@@ -238,14 +239,17 @@
   <string name="none"><![CDATA[<none>]]></string>
   <plurals name="n_keys">
     <item quantity="one">1 clave</item>
+    <item quantity="many">%d claves</item>
     <item quantity="other">%d claves</item>
   </plurals>
   <plurals name="n_keyservers">
     <item quantity="one">%d servidor de claves</item>
+    <item quantity="many">%d servidores de claves</item>
     <item quantity="other">%d servidores de claves</item>
   </plurals>
   <plurals name="n_authorities">
     <item quantity="one">%d autoridad</item>
+    <item quantity="many">%d autoridades</item>
     <item quantity="other">%d autoridades</item>
   </plurals>
   <string name="secret_key">Clave secreta:</string>
@@ -277,7 +281,6 @@
   <string name="ecc_p384_description_html">tamaño de fichero muy pequeño, se considera seguro hasta 2040 &lt;br/&gt; &lt;u&gt;experimental y no soportado por todas las implementaciones&lt;/u&gt;</string>
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">tamaño de fichero pequeño, considerado seguro aún después del 2040 &lt;br/&gt; &lt;u&gt;es experimental y no está soportado por todas las implementaciones&lt;/u&gt;</string>
-  <string name="ecc_25519">Ed25519 / Cv25519</string>
   <string name="ecc_25519_description_html">tamaño minúsculo de fichero, considerado seguro hasta 2040+ &lt;br/&gt; &lt;u&gt;experimental y no soportado por todas las impolementaciones&lt;/u&gt;</string>
   <string name="usage_none">Ninguna (sólo subclave vinculada)</string>
   <string name="usage_sign">Firmar</string>
@@ -285,8 +288,9 @@
   <string name="usage_sign_and_encrypt">Firmar &amp; Cifrar</string>
   <string name="error">Error</string>
   <string name="error_message">Error: %s</string>
-  <string name="theme_dark">Oscuro</string>
+  <string name="theme_auto">Automática</string>
   <string name="theme_light">Claro</string>
+  <string name="theme_dark">Oscuro</string>
   <string name="strip">Desnudarla</string>
   <!--sentences-->
   <string name="wrong_passphrase">Contraseña incorrecta.</string>
@@ -335,6 +339,7 @@
   <string name="authentication_subkey_not_found">Esta clave no tiene una subclave de autentificación.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d clave secreta (privada) errónea ignorada. Quizá exportó con la opción\n --export-secret-subkeys\nAsegúrese de que exporta con\n --export-secret-keys\nen su lugar.\"</item>
+    <item quantity="many">%d claves secretas (privadas) erróneas ignoradas. Quizá exportó con la opción\n --export-secret-subkeys\nAsegúrese de que exporta con\n --export-secret-keys\nen su lugar.\"</item>
     <item quantity="other">%d claves secretas (privadas) erróneas ignoradas. Quizá exportó con la opción\n --export-secret-subkeys\nAsegúrese de que exporta con\n --export-secret-keys\nen su lugar.\"</item>
   </plurals>
   <string name="list_empty">¡Esta lista está vacía!</string>
@@ -405,6 +410,7 @@
   <string name="progress_exporting">exportando...</string>
   <string name="progress_uploading">subiendo...</string>
   <string name="progress_building_key">construyendo la clave...</string>
+  <string name="progress_building_master_key">creando anillo primario…</string>
   <string name="progress_generating_rsa">generando nueva clave RSA...</string>
   <string name="progress_generating_dsa">generando nueva clave DSA...</string>
   <string name="progress_generating_elgamal">generando nueva clave ElGamal...</string>
@@ -503,26 +509,32 @@
   <!--Import result toast-->
   <plurals name="import_keys_added_and_updated_1">
     <item quantity="one">Se importó con éxito una clave</item>
+    <item quantity="many">Se importaron con éxito %1$d claves</item>
     <item quantity="other">Se importaron con éxito %1$d claves</item>
   </plurals>
   <plurals name="import_keys_added_and_updated_2">
     <item quantity="one">y se actualizó una clave%2$s.</item>
+    <item quantity="many">y se actualizaron %1$d claves%2$s.</item>
     <item quantity="other">y se actualizaron %1$d claves%2$s.</item>
   </plurals>
   <plurals name="import_keys_added">
     <item quantity="one">Clave%2$s importada con éxito.</item>
+    <item quantity="many">%1$d claves%2$s importadas con éxito.</item>
     <item quantity="other">%1$d claves%2$s importadas con éxito.</item>
   </plurals>
   <plurals name="import_keys_updated">
     <item quantity="one">Clave%2$s actualizada con éxito.</item>
+    <item quantity="many">%1$d claves%2$s actualizadas con éxito.</item>
     <item quantity="other">%1$d claves%2$s actualizadas con éxito.</item>
   </plurals>
   <plurals name="import_keys_with_errors">
     <item quantity="one">¡La importación falló para una clave!</item>
+    <item quantity="many">¡La importación fallo para %d claves!</item>
     <item quantity="other">¡La importación fallo para %d claves!</item>
   </plurals>
   <plurals name="import_error">
     <item quantity="one">¡Fallo al importar!</item>
+    <item quantity="many">¡Fallo al importar %d claves!</item>
     <item quantity="other">¡Fallo al importar %d claves!</item>
   </plurals>
   <string name="import_warn_missing">Clave no encontrada en los servidores de claves.</string>
@@ -531,18 +543,22 @@
   <!--Delete result toast-->
   <plurals name="delete_ok_but_fail_1">
     <item quantity="one">Una clave borrada con éxito</item>
+    <item quantity="many">%1$d claves borradas con éxito</item>
     <item quantity="other">%1$d claves borradas con éxito</item>
   </plurals>
   <plurals name="delete_ok_but_fail_2">
     <item quantity="one">, pero no se pudo borrar una clave%2$s.</item>
+    <item quantity="many">, pero no se pudieron borrar %1$d claves%2$s.</item>
     <item quantity="other">, pero no se pudieron borrar %1$d claves%2$s.</item>
   </plurals>
   <plurals name="delete_ok">
     <item quantity="one">Se borró con éxito una clave%2$s.</item>
+    <item quantity="many">Se borraron con éxito %1$d claves%2$s.</item>
     <item quantity="other">Se borraron con éxito %1$d claves%2$s.</item>
   </plurals>
   <plurals name="delete_fail">
     <item quantity="one">Error borrando una clave.</item>
+    <item quantity="many">Error borrando %1$d claves.</item>
     <item quantity="other">Error borrando %1$d claves.</item>
   </plurals>
   <string name="delete_nothing">No hay nada que borrar.</string>
@@ -555,14 +571,17 @@
   <!--Certify result toast-->
   <plurals name="certify_keys_ok">
     <item quantity="one">Se confirmó una clave%2$s con éxito.</item>
+    <item quantity="many">Se confirmaron %1$d claves%2$s con éxito.</item>
     <item quantity="other">Se confirmaron %1$d claves%2$s con éxito.</item>
   </plurals>
   <plurals name="certify_keys_with_errors">
     <item quantity="one">¡La certificación falló!</item>
+    <item quantity="many">¡La certificación falló para %d claves!</item>
     <item quantity="other">¡La certificación falló para %d claves!</item>
   </plurals>
   <plurals name="certify_error">
     <item quantity="one">¡La certificación falló!</item>
+    <item quantity="many">¡La certificación de %d claves falló!</item>
     <item quantity="other">¡La certificación de %d claves falló!</item>
   </plurals>
   <!--Intent labels-->
@@ -617,6 +636,7 @@
   <!--Key list-->
   <plurals name="key_list_selected_keys">
     <item quantity="one">1 clave seleccionada.</item>
+    <item quantity="many">%d claves seleccionadas.</item>
     <item quantity="other">%d claves seleccionadas.</item>
   </plurals>
   <string name="key_list_empty_text1">¡No se encontraron claves!</string>
@@ -764,8 +784,26 @@
   <string name="msg_ip_insert_keyring">Codificando datos del juego de claves</string>
   <string name="msg_ip_insert_keys">Analizando claves</string>
   <string name="msg_ip_prepare">Preparando base de datos de operaciones</string>
+  <string name="msg_ip_master">Procesando clave primaria %s</string>
   <string name="msg_ip_master_expired">El juego de claves caducó el %s</string>
   <string name="msg_ip_master_expires">El juego de claves caduca el %s</string>
+  <string name="msg_ip_master_flags_unspecified">Indicadores primarios: sin especificar (asumiendo todos)</string>
+  <string name="msg_ip_master_flags_cesa">Indicadores primarios: certificar, cifrar, firmar, autentificar</string>
+  <string name="msg_ip_master_flags_cesx">Indicadores primarios: certificar, cifrar, firmar</string>
+  <string name="msg_ip_master_flags_cexa">Indicadores primarios: certificar, cifrar, autenticar</string>
+  <string name="msg_ip_master_flags_cexx">Indicadores primarios: certificar, cifrar</string>
+  <string name="msg_ip_master_flags_cxsa">Indicadores primarios: certificar, firmar, autenticar</string>
+  <string name="msg_ip_master_flags_cxsx">Indicadores primarios: certificar, firmar</string>
+  <string name="msg_ip_master_flags_cxxa">Indicadores primarios: certificar, autenticar</string>
+  <string name="msg_ip_master_flags_cxxx">Indicadores primarios: certificar</string>
+  <string name="msg_ip_master_flags_xesa">Indicadores primarios: cifrar, firmar, autenticar</string>
+  <string name="msg_ip_master_flags_xesx">Indicadores primarios: cifrar, firmar</string>
+  <string name="msg_ip_master_flags_xexa">Indicadores primarios: cifrar, autenticar</string>
+  <string name="msg_ip_master_flags_xexx">Indicadores primarios: cifrar</string>
+  <string name="msg_ip_master_flags_xxsa">Indicadores primarios: firmar, autenticar</string>
+  <string name="msg_ip_master_flags_xxsx">Indicadores primarios: firmar</string>
+  <string name="msg_ip_master_flags_xxxa">Indicadores primarios: autenticar</string>
+  <string name="msg_ip_master_flags_xxxx">Indicadores primarios: ninguno</string>
   <string name="msg_ip_merge_public">Incorporando datos importados al juego de claves públicas existente</string>
   <string name="msg_ip_merge_secret">Incorporando datos importados al juego de claves secretas (privadas) existente</string>
   <string name="msg_ip_subkey">Procesando subclave %s</string>
@@ -800,11 +838,13 @@
   <string name="msg_ip_uid_cert_good_revoke">Se encontró un certificado de revocación correcto emitido por %1$s</string>
   <plurals name="msg_ip_uid_certs_unknown">
     <item quantity="one">Ignorando un certificado publicado por una clave pública desconocida</item>
+    <item quantity="many">Ignorando %s certificados publicados por claves públicas desconocidas</item>
     <item quantity="other">Ignorando %s certificados publicados por claves públicas desconocidas</item>
   </plurals>
   <string name="msg_ip_uid_classifying_zero">Clasificando identidades de usuario (no hay claves de confianza disponibles)</string>
   <plurals name="msg_ip_uid_classifying">
     <item quantity="one">Clasificando identidades de usuario (usando una clave de confianza)</item>
+    <item quantity="many">Clasificando identidades de usuario (usando %s claves de confianza)</item>
     <item quantity="other">Clasificando identidades de usuario (usando %s claves de confianza)</item>
   </plurals>
   <string name="msg_ip_uid_reorder">Re-ordenando identidades de usuario</string>
@@ -821,6 +861,7 @@
   <string name="msg_ip_uat_cert_good_revoke">Hallada revocación de certificado correcta emitida por %1$s </string>
   <plurals name="msg_ip_uat_certs_unknown">
     <item quantity="one">Ignorando un certificado publicado por una clave pública desconocida</item>
+    <item quantity="many">Ignorando %s certificados publicados por claves públicas desconocidas</item>
     <item quantity="other">Ignorando %s certificados publicados por claves públicas desconocidas</item>
   </plurals>
   <string name="msg_ip_uat_classifying">Clasificando atributos de usuario</string>
@@ -848,9 +889,16 @@
   <string name="msg_kc_secret">Canonicalizando el juego de claves secretas (privadas) %s</string>
   <string name="msg_kc_error_v3">¡Esta es una clave OpenPGP versión 3, que ha sido desechada y ya no está soportada!</string>
   <string name="msg_kc_error_no_uid">¡El juego de claves no tiene identidades de usuario válidas!</string>
+  <string name="msg_kc_error_master_algo">¡La clave primaria usa un algoritmo (%s) desconocido!</string>
   <string name="msg_kc_error_dup_key">La subclave %s aparece dos veces en el juego de claves. El juego está mal formado, ¡no se va a importar!</string>
+  <string name="msg_kc_master">Procesando clave primaria</string>
+  <string name="msg_kc_master_bad_type">Eliminando certificado de clave primaria de tipo desconocido (%s)</string>
+  <string name="msg_kc_master_bad_local">Eliminando certificado de clave primaria con indicativo \'local\'</string>
+  <string name="msg_kc_master_bad_err">Eliminando certificado de clave primaria erróneo</string>
   <string name="msg_kc_master_bad_time">Eliminando certificado de revocación de juego de claves con marca de tiempo futura</string>
   <string name="msg_kc_master_bad_type_uid">Eliminando certificado de identidad de usuario en posición incorrecta</string>
+  <string name="msg_kc_master_bad">Eliminando certificado de clave primaria erróneo</string>
+  <string name="msg_kc_master_local">Eliminando certificado de clave primaria con indicativo \'local\'</string>
   <string name="msg_kc_revoke_dup">Eliminando certificado redundante de revocación de juego de claves</string>
   <string name="msg_kc_notation_dup">Eliminando certificado redundante de notación</string>
   <string name="msg_kc_notation_empty">Eliminando certificado de notación vacío</string>
@@ -876,11 +924,13 @@
   <string name="msg_kc_success">Canonicalización del juego de claves completada, no hay cambios</string>
   <plurals name="msg_kc_success_bad">
     <item quantity="one">Canonicalización del juego de claves completada, se eliminó un certificado erróneo</item>
+    <item quantity="many">Canonicalización del juego de claves completada, se eliminaron %d certificados erróneos</item>
     <item quantity="other">Canonicalización del juego de claves completada, se eliminaron %d certificados erróneos</item>
   </plurals>
   <string name="msg_kc_success_bad_and_red">Canonicalización del juego de claves completada, eliminado(s) %1$s certificado(s) erróneo(s) y %2$s redundante(s)</string>
   <plurals name="msg_kc_success_redundant">
     <item quantity="one">Canonicalización del juego de claves completada, se eliminó un certificado redundante</item>
+    <item quantity="many">Canonicalización del juego de claves completada, se eliminaron %d certificados redundantes</item>
     <item quantity="other">Canonicalización del juego de claves completada, se eliminaron %d certificados redundantes</item>
   </plurals>
   <string name="msg_kc_uid_bad_err">Eliminando auto-certificado erróneo para la identidad \'%s\' de usuario</string>
@@ -922,7 +972,10 @@
   <string name="msg_mg_found_new">Se encontraron %s nuevos certificados en el juego de claves</string>
   <string name="msg_mg_unchanged">Nada que incorporar</string>
   <!--createSecretKeyRing-->
+  <string name="msg_cr">Generando nueva clave primaria</string>
+  <string name="msg_cr_error_no_master">¡No se especificaron opciones de clave primaria!</string>
   <string name="msg_cr_error_no_user_id">¡Los juegos de claves tienen que crearse con al menos una identidad de usuario!</string>
+  <string name="msg_cr_error_no_certify">¡La clave primaria debe tener indicador de certificado!</string>
   <string name="msg_cr_error_null_expiry">El periodo de caducidad no puede ser \'el mismo que antes\' al crear una clave. Esto es un error de programación, por favor, ¡consigne un informe de fallo!</string>
   <string name="msg_cr_error_keysize_2048">¡El tamaño de la clave debe ser mayor o igual a 2048!</string>
   <string name="msg_cr_error_no_curve">¡No se especificó tamaño de clave! Esto es un error de programación, por favor, ¡consigne un informe de fallo!</string>
@@ -944,12 +997,14 @@
   <string name="msg_mf_error_fingerprint">¡La actual huella de validación de clave no coincide con la esperada!</string>
   <string name="msg_mf_error_keyid">No hay identidad (ID) de clave. Esto es un error interno, por favor, ¡consigne un informe de fallo!</string>
   <string name="msg_mf_error_integrity">Error interno, ¡fallo en la comprobación de integridad!</string>
+  <string name="msg_mf_error_master_none">¡No se encontró un certificado primario sobre el que operar! (¿Se revocaron todos?)</string>
   <string name="msg_mf_error_noexist_primary">¡Se especificó una identidad principal de usuario errónea!</string>
   <string name="msg_mf_error_noexist_revoke">¡Se especificó una identidad de usuario para revocación errónea!</string>
   <string name="msg_mf_error_restricted">¡Se intentó ejecutar una operación restringida sin contraseña! Esto es un error de programación, por favor, ¡consigne un informe de fallo!</string>
   <string name="msg_mf_error_revoked_primary">¡Las identificaciones de usuario revocadas no pueden ser las principales!</string>
   <string name="msg_mf_error_null_expiry">El periodo caducidad no puede ser \"el mismo de antes\" al crear una subclave. Esto es un error de programación, por favor ¡consigne un informe de fallo!</string>
   <string name="msg_mf_error_noop">¡No hay nada que hacer!</string>
+  <string name="msg_mf_error_passphrase_master">¡Error fatal descifrando la clave primaria! Probablemente esto sea un error de programación, por favor ¡haga un informe de error!</string>
   <string name="msg_mf_error_passphrases_unchanged">¡No se cambió contraseña alguna!</string>
   <string name="msg_mf_error_pgp">¡Error OpenPGP interno!</string>
   <string name="msg_mf_error_sig">¡Excepción con la firma!</string>
@@ -958,6 +1013,7 @@
   <string name="msg_mf_error_conflicting_nfc_commands">No se puede mover la clave al token de seguridad en la misma operación que crea una firma sobre-tarjeta.</string>
   <string name="msg_mf_error_duplicate_keytocard_for_slot">El token de seguridad soporta sólo una posición para cada tipo de clave.</string>
   <string name="msg_mf_error_invalid_flags_for_keytocard">Indicativos de clave no válidos para la clave del token de seguridad.</string>
+  <string name="msg_mf_master">Modificando certificaciones primarias</string>
   <string name="msg_mf_passphrase">Cambiando contraseña para el juego de claves</string>
   <string name="msg_mf_pin">Cambiando el PIN en la tarjeta</string>
   <string name="msg_mf_admin_pin">Cambiando el PIN de Admin en la tarjeta</string>
@@ -1004,6 +1060,7 @@
   <string name="msg_pr_subkey_nomatch">Subclave ausente del token de seguridad: %s</string>
   <string name="msg_pr_success">La clave se promocionó con éxito</string>
   <!--Other messages used in OperationLogs-->
+  <string name="msg_ek_error_dummy">¡No se pudo editar el juego de claves (keyring) con la clave maestra desnuda!</string>
   <string name="msg_ek_error_not_found">¡Clave no encontrada!</string>
   <!--Messages for DecryptVerify operation-->
   <string name="msg_dc_askip_bad_flags">La clave no es una clave de cifrado, omitiendo...</string>
@@ -1123,18 +1180,24 @@
   <string name="msg_crt_certifying">Generando certificaciones</string>
   <plurals name="msg_crt_certify_uids">
     <item quantity="one">Certificando una identidad de usuario para la clave %2$s</item>
+    <item quantity="many">Certificando %1$d identidades de usuario para la clave %2$s</item>
     <item quantity="other">Certificando %1$d identidades de usuario para la clave %2$s</item>
   </plurals>
   <plurals name="msg_crt_certify_uats">
     <item quantity="one">Certificando un atributo de usuario para la clave %2$s</item>
+    <item quantity="many">Certificando %1$d atributos de usuario para la clave %2$s</item>
     <item quantity="other">Certificando %1$d atributos de usuario para la clave %2$s</item>
   </plurals>
   <string name="msg_crt_error_self">¡No se puede emitir un auto-certificado como este!</string>
+  <string name="msg_crt_error_master_not_found">¡Clave primaria no encontrada!</string>
   <string name="msg_crt_error_nothing">¡No se certificaron claves!</string>
+  <string name="msg_crt_error_unlock">¡Error desbloqueando la clave primaria!</string>
   <string name="msg_crt">Certificando juegos de claves</string>
+  <string name="msg_crt_master_fetch">Recuperando clave primaria certificadora</string>
   <string name="msg_crt_nfc_return">Volviendo a la pantalla NFC</string>
   <string name="msg_crt_save">Guardando clave certificada %s</string>
   <string name="msg_crt_saving">Guardando juegos de claves</string>
+  <string name="msg_crt_unlock">Desbloqueando clave primaria</string>
   <string name="msg_crt_success">Identificaciones certificadas con éxito</string>
   <string name="msg_crt_warn_not_found">¡Clave no encontrada!</string>
   <string name="msg_crt_warn_cert_failed">¡La generación de certificado falló!</string>
@@ -1143,6 +1206,7 @@
   <string name="msg_crt_upload_success">Clave subida al servidor con éxito</string>
   <plurals name="msg_import">
     <item quantity="one">Importando clave</item>
+    <item quantity="many">Importando %d claves</item>
     <item quantity="other">Importando %d claves</item>
   </plurals>
   <string name="msg_import_fetch_error_decode">¡Error al descifrar juego de claves descargado!</string>
@@ -1162,6 +1226,7 @@
   <string name="msg_import_success">¡Operación de importado exitosa!</string>
   <plurals name="msg_backup">
     <item quantity="one">Copia de seguridad con una clave</item>
+    <item quantity="many">Copia de seguridad con %d claves</item>
     <item quantity="other">Copia de seguridad con %d claves</item>
   </plurals>
   <string name="msg_backup_all">Copia de seguridad con todas las llaves</string>
@@ -1185,16 +1250,19 @@
   <string name="msg_del_error_multi_secret">¡Las claves secretas (privadas) sólo se pueden borrar individualmente!</string>
   <plurals name="msg_del">
     <item quantity="one">Borrando una clave</item>
+    <item quantity="many">Borrando %d claves</item>
     <item quantity="other">Borrando %d claves</item>
   </plurals>
   <string name="msg_del_key">Borrando clave %s</string>
   <string name="msg_del_key_fail">No se pudo borrar clave %s</string>
   <plurals name="msg_del_ok">
     <item quantity="one">Clave borrada con éxito</item>
+    <item quantity="many">%d claves borradas con éxito</item>
     <item quantity="other">%d claves borradas con éxito</item>
   </plurals>
   <plurals name="msg_del_fail">
     <item quantity="one">No se pudo borrar una clave</item>
+    <item quantity="many">No se pudieron borrar %d claves</item>
     <item quantity="other">No se pudieron borrar %d claves</item>
   </plurals>
   <string name="msg_revoke_error_empty">¡Nada que revocar!</string>
@@ -1251,6 +1319,7 @@
   <string name="passp_cache_notif_touch_to_clear">Pulsar para limpiar las contraseñas.</string>
   <plurals name="passp_cache_notif_n_keys">
     <item quantity="one">%d contraseña guardada</item>
+    <item quantity="many">%d contraseñas guardadas</item>
     <item quantity="other">%d contraseñas guardadas</item>
   </plurals>
   <string name="passp_cache_notif_keys">Contraseñas guardadas</string>
@@ -1361,6 +1430,7 @@
   <string name="security_token_error">Error: %s</string>
   <plurals name="security_token_error_pin">
     <item quantity="one">¡PIN incorrecto!\nLe queda %d intento.</item>
+    <item quantity="many">¡PIN incorrecto!\nLe quedan %d intentos.</item>
     <item quantity="other">¡PIN incorrecto!\nLe quedan %d intentos.</item>
   </plurals>
   <string name="security_token_error_terminated">Token de seguridad en estado de terminación.</string>
@@ -1528,6 +1598,7 @@
   <string name="keyserver_last_updated_never">Última comprobación: Nunca</string>
   <string name="key_insecure_bitstrength_2048_problem">Esta clave usa el algoritmo <b>%1$s</b> con una fortaleza de <b>%2$s bits</b>. Una clave segura debe tener una fortaleza de 2048 bits.</string>
   <string name="key_insecure_bitstrength_2048_solution">Esta clave no se puede actualizar. Para una comunicación segura, el titular debe generar una nueva clave.</string>
+  <string name="key_insecure_unknown_curve_problem">Esta clave usa el algoritmo <b>%1$s</b>, que no está permitido.</string>
   <string name="key_insecure_unknown_curve_solution">Esta clave no se puede actualizar. Para una comunicación segura, el titular debe generar una nueva clave.</string>
   <string name="key_insecure_unidentified_problem">Hay un problema no identificado con esta clave.</string>
   <string name="key_insecure_unidentified_solution">Por favor, remita un informe de fallos.</string>
@@ -1538,6 +1609,8 @@
   <string name="insecure_encrypt_bitstrength_suggestion">La clave en uso no es segura, y no se puede actualizar. ¡Para comunicarse de forma segura, tiene que crear una nueva clave!</string>
   <string name="insecure_sign_bitstrength">¡La clave que envió (firmó) este mensaje está desactualizada!\n\nEl algoritmo (%s) está configurado con una fortaleza de 1024 bits o menos, lo que ha sido considerado no seguro para uso general desde 2006.</string>
   <string name="insecure_sign_bitstrength_suggestion">La clave en uso no es segura, y no se puede actualizar. ¡Para comunicarse de forma segura, el remitente tiene que crear una nueva clave!</string>
+  <string name="insecure_encrypt_not_secure_curve">La clave que recibió (descifró) este mensaje usa la curva elíptica con OID %1$s, ¡que no está en la lista de curvas seguras!</string>
+  <string name="insecure_sign_not_secure_curve">La clave con la que se envió (firmó) este mensaje usa la curva elíptica con OID %1$s, ¡que no está en la lista de curvas seguras!</string>
   <string name="insecure_encrypt_unidentified">¡Hay un problema de seguridad no identificado con la clave usada para recibir (descifrar) este mensaje!</string>
   <string name="insecure_sign_unidentified">¡Hay un problema de seguridad no identificado con la clave usada para enviar (firmar) este mensaje!</string>
   <string name="insecure_report_suggestion">¡Esto podría ser un problema en OpenKeychain, por favor, informe en nuestro rastreador de problemas!</string>
@@ -1612,6 +1685,7 @@
   <string name="token_unlock_attempts_none">Ha agotado los intentos de desbloqueo</string>
   <plurals name="token_unlock_attempts">
     <item quantity="one">Le queda 1 intento</item>
+    <item quantity="many">Le quedan %d intentos</item>
     <item quantity="other">Le quedan %d intentos</item>
   </plurals>
   <string name="token_error_locked_indefinitely">Demasiados intentos de reinicialización. ¡El token no se puede desbloquear!</string>
@@ -1663,6 +1737,7 @@
   <string name="msg_trust_count_none">No hay claves que actualizar</string>
   <plurals name="msg_trust_count">
     <item quantity="one">Actualizando 1 clave</item>
+    <item quantity="many">Actualizando %d claves</item>
     <item quantity="other">Actualizando %d claves</item>
   </plurals>
   <string name="button_locate_nfc">¿Dónde está mi lector NFC?</string>

@@ -3,26 +3,26 @@
 ## Potwiedzenie klucza
 Bez potwierdzenia nie masz pewności czy klucz odpowiada danej osobie.
 Najłatwiejszą drogą potwierdzenia klucza jest zeskanowanie kodu QR lub wysłanie go przez NFC
-To confirm keys between more than two persons, we suggest using the key exchange method available for your keys.
+W celu potwierdzenia kluczy pomiędzy więcej niż dwoma osobami, sugerujemy skorzystanie z dostępnej metody wymiany dla twoich kluczy.
 
 ## Stan klucza
 
 <img src="status_signature_verified_cutout_24dp"/>  
-Confirmed: You have already confirmed this key, e.g., by scanning the QR Code.  
+Potwierdzony: Potwierdzono już ten klucz, np. skanując kod QR.  
 <img src="status_signature_unverified_cutout_24dp"/>  
-Unconfirmed: This key has not been confirmed yet. You cannot be sure if the key really corresponds to a specific person.  
+Niepotwierdzony: Ten klucz nie został jeszcze potwierdzony. Nie ma pewności, czy klucz rzeczywiście odpowiada konkretnej osobie.  
 <img src="status_signature_expired_cutout_24dp"/>  
-Expired: This key is no longer valid. Only the owner can extend its validity.  
+Wygaśnięty: Ten klucz nie jest już ważny. Tylko właściciel może przedłużyć jego ważność.  
 <img src="status_signature_revoked_cutout_24dp"/>  
-Revoked: This key is no longer valid. It has been revoked by its owner.
+Wycofany: Ten klucz nie jest już ważny. Został odwołany przez swojego właściciela.
 
 ## Zaawansowane informacje
-A "key confirmation" in OpenKeychain is implemented by creating a certification according to the OpenPGP standard.
-This certification is a ["generic certification (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) described in the standard by:
-"The issuer of this certification does not make any particular assertion as to how well the certifier has checked that the owner of the key is in fact the person described by the User ID."
+"Potwierdzenie klucza" w OpenKeychain jest realizowane poprzez stworzenie certyfikatu zgodnie ze standardem OpenPGP.
+Ten certyfikat to ["ogólny certyfikat (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) opisanym w standardzie przez:
+"Wystawca tego certyfikatu nie składa żadnego szczególnego zapewnienia co do tego, jak dobrze certyfikujący sprawdził, że właścicielem klucza jest w rzeczywistości osoba opisana przez ID użytkownika."
 
-Traditionally, certifications (also with higher certification levels, such as "positive certifications" (0x13)) are organized in OpenPGP's Web of Trust.
-Our model of key confirmation is a much simpler concept to avoid common usability problems related to this Web of Trust.
-We assume that keys are verified only to a certain degree that is still usable enough to be executed "on the go".
-We also do not implement (potentially transitive) trust signatures or an ownertrust database like in GnuPG.
-Furthermore, keys which contain at least one user ID certified by a trusted key will be marked as "confirmed" in the key listings.
+Tradycyjnie certyfikaty (również o wyższych poziomach certyfikacji, takich jak "pozytywne certyfikaty" (0x13)) są zorganizowane w OpenPGP's Web of Trust.
+Nasz model potwierdzania kluczy jest znacznie prostszą koncepcją, która pozwala uniknąć powszechnych problemów użyteczności związanych z tym Web of Trust.
+Zakładamy, że klucze są weryfikowane tylko do pewnego stopnia, który jest jeszcze na tyle użyteczny, że można go wykonać "w biegu".
+Nie implementujemy również (potencjalnie przechodnich) podpisów zaufania ani bazy zaufania właściciela, jak w GnuPG.
+Ponadto klucze, które zawierają co najmniej jeden identyfikator użytkownika poświadczony przez zaufany klucz, zostaną oznaczone w zestawieniach kluczy jako "potwierdzone".

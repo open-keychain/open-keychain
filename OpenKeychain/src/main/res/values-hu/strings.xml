@@ -175,7 +175,7 @@
   <string name="label_fingerprint">Ujjlenyomat</string>
   <string name="expiry_date_dialog_title">Lejárati dátum beállítása</string>
   <string name="label_keyservers_title">Kulcskiszolgálók</string>
-  <string name="label_keyserver_settings_hint">Húzza a sorrend megváltoztatásához, érintse meg a szerkesztéshez vagy törléshez</string>
+  <string name="label_keyserver_settings_hint">Húzza a sorrend megváltoztatásához, koppintson a szerkesztéshez vagy törléshez</string>
   <string name="label_selected_keyserver_title">Kiválasztott kulcskiszolgáló</string>
   <string name="label_selected_smartpgp_authority_title">Kiválasztott szolgáltató</string>
   <string name="label_preferred">előnyben részesített</string>
@@ -277,7 +277,6 @@
   <string name="ecc_p384_description_html">nagyon kis fájlméret, biztonságosnak tekintve 2040-ig &lt;br/&gt; &lt;u&gt;kísérleti és nem minden megvalósítás támogatja&lt;/u&gt;</string>
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">kis fájlméret, biztonságosnak tekintve legalább 2040-ig &lt;br/&gt; &lt;u&gt;kísérleti és nem minden megvalósítás támogatja&lt;/u&gt;</string>
-  <string name="ecc_25519">Ed25519 / Cv25519</string>
   <string name="ecc_25519_description_html">kis fájlméret, biztonságosnak tekintve legalább 2040-ig &lt;br/&gt; &lt;u&gt;kísérleti és nem minden megvalósítás támogatja&lt;/u&gt;</string>
   <string name="usage_none">Nincs (csak alkulcs kötés)</string>
   <string name="usage_sign">Aláírás</string>
@@ -285,8 +284,9 @@
   <string name="usage_sign_and_encrypt">Aláírás és titkosítás</string>
   <string name="error">Hiba</string>
   <string name="error_message">Hiba: %s</string>
-  <string name="theme_dark">Sötét</string>
+  <string name="theme_auto">Automatikus</string>
   <string name="theme_light">Világos</string>
+  <string name="theme_dark">Sötét</string>
   <string name="strip">Feldarabolás</string>
   <!--sentences-->
   <string name="wrong_passphrase">Hibás jelszó.</string>
@@ -387,6 +387,7 @@
   <string name="decrypt_result_not_encrypted">Nem titkosított</string>
   <string name="decrypt_result_insecure">Nem biztonságos titkosítás</string>
   <string name="decrypt_result_action_show">Megjelenít</string>
+  <string name="decrypt_result_action_Lookup">Kereső</string>
   <!--Add keys-->
   <string name="add_keys_my_key">Kulcsom:</string>
   <!--progress dialogs, usually ending in '…'-->
@@ -579,6 +580,7 @@
   <string name="drawer_close">Navigációs fiók bezárása</string>
   <!--hints-->
   <!--certs-->
+  <string name="cert_default">default</string>
   <string name="cert_none">semmi</string>
   <string name="cert_revoke">visszavont</string>
   <string name="cert_verify_ok">OK</string>
@@ -627,6 +629,7 @@
   <string name="keyserver_sync_orbot_notif_title">Szinkronizáláshoz Orbotra van szükség</string>
   <string name="keyserver_sync_orbot_notif_start">Orbot indítása</string>
   <!--First Time-->
+  <string name="first_time_skip">Beállítás Kihagyása</string>
   <string name="backup_section">Mentés</string>
   <!--unsorted-->
   <string name="label_user_id">Identitás</string>
@@ -668,6 +671,7 @@
   <string name="button_back">Vissza</string>
   <string name="button_got_it">Megvan</string>
   <string name="cap_title_decrypt">Üzenetek visszafejtése</string>
+  <string name="key_health_expired_title">Lejárt</string>
   <string name="key_health_revoked_title">Visszavont</string>
   <string name="key_health_insecure_title">Nem biztonságos</string>
   <string name="keyserver_title_published">Közzétett</string>

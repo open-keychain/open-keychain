@@ -1,5 +1,9 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 5.7
+  * Исправления Curve25519
+  * Шифр IDEA отнесён к небезопасным
+
 ## 5.6
   * Совместимость с Android 10 и выше
   * Исправлено несколько ошибок

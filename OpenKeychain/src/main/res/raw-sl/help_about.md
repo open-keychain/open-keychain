@@ -1,12 +1,12 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
-[https://www.openkeychain.org](https://www.openkeychain.org)
+
 
 [OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
 
 Licenca: GPLv3+
 
-[//]: # (NOTE: Alphabetic ordering)
+
 
 ## Main Developers
   * Dominik Schürmann (Skrbnik)

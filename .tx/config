@@ -1,6 +1,6 @@
 [main]
 host     = https://www.transifex.com
-lang_map = nl_BE: nl-rBE, he: iw, zh_TW: zh-rTW, es_MX: es-rMX, pt_BR: pt-rBR
+lang_map = nl_BE: nl-rBE, he: iw, zh_TW: zh-rTW, es_MX: es-rMX, pt_BR: pt-rBR, pt_PT: pt-rPT
 
 [o:otf:p:open-keychain:r:advanced]
 file_filter            = OpenKeychain/src/main/res/raw-<lang>/advanced.md

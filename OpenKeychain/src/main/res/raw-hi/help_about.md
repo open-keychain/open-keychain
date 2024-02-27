@@ -1,12 +1,12 @@
 [//]: # (नोट: कृपया प्रत्येक वाक्य को अपनी पंक्ति में रखें, ट्रांसइफेक्स हर पंक्ति को अपने अनुवाद क्षेत्र में रखता है!)
 
-[https://www.openkeychain.org](https://www.openkeychain.org)
+
 
 [OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
 
 License: GPLv3+
 
-[//]: # (NOTE: Alphabetic ordering)
+
 
 ## Main Developers
   * Dominik Schürmann (Maintainer)

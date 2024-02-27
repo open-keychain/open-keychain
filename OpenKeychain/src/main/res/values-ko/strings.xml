@@ -270,7 +270,6 @@
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">파일 크기 매우 작음, 2040년 이후 까지의 보안을 고려함&lt;br/&gt;
 &lt;u&gt;실험용으로 모든 작업에서 지원되진 않음 &lt;/u&gt;</string>
-  <string name="ecc_25519">Ed25519 / Cv25519</string>
   <string name="ecc_25519_description_html">파일 크기 매우 작음, 2040년 이후 까지의 보안을 고려함&lt;br/&gt;
 &lt;u&gt;실험용으로 모든 작업에서 지원되진 않음 &lt;/u&gt;</string>
   <string name="usage_none">없음 (하위 키 바인딩 만 사용)</string>
@@ -279,8 +278,9 @@
   <string name="usage_sign_and_encrypt">서명 &amp; 암호화</string>
   <string name="error">에러</string>
   <string name="error_message">에러: %s</string>
-  <string name="theme_dark">어두움</string>
+  <string name="theme_auto">자동</string>
   <string name="theme_light">밝음</string>
+  <string name="theme_dark">어두움</string>
   <string name="strip">제거</string>
   <!--sentences-->
   <string name="wrong_passphrase">암호가 틀렸습니다.</string>
@@ -746,6 +746,9 @@
   <string name="msg_ip_uid_cert_new">인증서가 더 최신이라, 이전 것을 대체합니다.</string>
   <string name="msg_ip_uid_cert_good">%1$s에 의해 좋은 인증서를 찾았습니다.</string>
   <string name="msg_ip_uid_cert_good_revoke">%1$s에 의해 좋은 인증서 폐기 발견</string>
+  <plurals name="msg_ip_uid_certs_unknown">
+    <item quantity="other">알 수없는 공개 키로 발행 된%s 개의 인증서 무시</item>
+  </plurals>
   <string name="msg_ip_uid_classifying_zero">사용자 ID 분류 (신뢰할 수있는 키 없음)</string>
   <plurals name="msg_ip_uid_classifying">
     <item quantity="other">사용자 ID 분류 (신뢰할 수있는 키 %s 사용중)</item>
@@ -834,6 +837,7 @@
   <string name="first_time_import_key">파일에서 키 불러오기</string>
   <string name="first_time_security_token">보안 토큰 사용</string>
   <string name="backup_section">백업</string>
+  <string name="restore_section">복구</string>
   <!--unsorted-->
   <string name="label_user_id">정체</string>
   <string name="label_cert_type">종류</string>

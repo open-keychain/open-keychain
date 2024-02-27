@@ -230,14 +230,14 @@
   <string name="ecc_p256">ECC P-256</string>
   <string name="ecc_p384">ECC P-384</string>
   <string name="ecc_p521">ECC P-521</string>
-  <string name="ecc_25519">Ed25519 / Cv25519</string>
   <string name="usage_sign">للتوقيع</string>
   <string name="usage_encrypt">تشفير</string>
   <string name="usage_sign_and_encrypt">للتوقيع و للتشفير</string>
   <string name="error">خطأ</string>
   <string name="error_message">خطأ : %s</string>
-  <string name="theme_dark">ليلي</string>
+  <string name="theme_auto">تلقائي</string>
   <string name="theme_light">نهاري</string>
+  <string name="theme_dark">ليلي</string>
   <!--sentences-->
   <string name="wrong_passphrase">كلمة السر غير صحيحة.</string>
   <string name="passphrases_do_not_match">كلمات السر غير متطابقة.</string>
@@ -370,6 +370,7 @@
   <string name="api_settings_create_key">إنشاء مفتاح جديد</string>
   <string name="api_settings_save">حفظ</string>
   <string name="api_settings_cancel">إلغاء</string>
+  <string name="api_settings_revoke">إلغاء حق الوصول</string>
   <string name="api_settings_start">تشغيل التطبيق</string>
   <string name="api_settings_package_name">إسم الحزمة</string>
   <string name="api_settings_advanced">متقدم</string>

@@ -90,6 +90,7 @@
   <string name="btn_encrypt_text">Enkriptatu idazkia</string>
   <string name="btn_add_email">Gehitu post@ helbide gehigarriak</string>
   <string name="btn_unlock">Desblokeatu</string>
+  <string name="btn_proceed">Proceder</string>
   <string name="btn_add_keyserver">Gehitu</string>
   <string name="btn_save_default">Gorde berezkoa bezala</string>
   <string name="btn_saved">Gordeta!</string>
@@ -268,14 +269,13 @@
   <string name="ecc_p256">ECC P-256</string>
   <string name="ecc_p384">ECC P-384</string>
   <string name="ecc_p521">ECC P-521</string>
-  <string name="ecc_25519">Ed25519 / Cv25519</string>
   <string name="usage_sign">Sinatu</string>
   <string name="usage_encrypt">Enkriptatu</string>
   <string name="usage_sign_and_encrypt">Sinatu eta Enkriptatu</string>
   <string name="error">Akatsa</string>
   <string name="error_message">Akatsa: %s</string>
-  <string name="theme_dark">Iluna</string>
   <string name="theme_light">Argia</string>
+  <string name="theme_dark">Iluna</string>
   <!--sentences-->
   <string name="wrong_passphrase">Sarhitz okerra.</string>
   <string name="no_filemanager_installed">Ez dago agiri kudeatzaile bateragarririk ezarrita.</string>

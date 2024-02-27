@@ -1,29 +1,29 @@
-[//]: # (NOTĂ: Vă rugăm să puneți fiecare frază pe o linie separată, Transifex pune fiecare linie in câmpul ei de traducere!)
+[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
 [https://www.openkeychain.org](https://www.openkeychain.org)
 
-[OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
+[OpenKeychain](https://www.openkeychain.org) este o implementare OpenPGP pentru Android.
 
-License: GPLv3+
+Licență: GPLv3+
 
 [//]: # (NOTE: Alphabetic ordering)
 
-## Main Developers
-  * Dominik Schürmann (Maintainer)
+## Dezvoltatorii principali
+  * Dominik Schürmann (Administrator)
   * Vincent Breitmoser
 
-## Top Contributors
+## Contribuitori de top
   * Adithya Abraham Philip
   * Andrea Torlaschi
   * Arnaud Fontaine
   * Ash Hughes
   * 'mar-v-in'
   * Nikita Mikhailov
-  * 'Thialfihar' (APG developer)
+  * 'Thialfihar' (APG dezvoltator)
   * Tim Bray
   * Tobias Erthal
 
-## Occasional Contributors
+## Colaboratori ocazionali
   * Alex Fong Jie Wen
   * Andrea Torlaschi
   * Art O Cathain

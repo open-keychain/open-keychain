@@ -1,4 +1,8 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+
+
+## 5.7
+  * Fixes for Curve25519
+  * IDEA cipher is now considered insecure
 
 ## 5.6
   * Compatibility with Android 10 and higher

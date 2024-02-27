@@ -8,6 +8,7 @@
   <string name="title_encrypt_files">Kryptera</string>
   <string name="title_decrypt">Dekryptera</string>
   <string name="title_add_subkey">Lägg till undernyckel</string>
+  <string name="title_change_master_key">Ändra primära nyckeln</string>
   <string name="title_edit_key">Redigera nyckel</string>
   <string name="title_preferences">Inställningar</string>
   <string name="title_api_registered_apps">Appar</string>
@@ -24,7 +25,7 @@
   <string name="title_export_key">Säkerhetskopiera nyckel</string>
   <string name="title_export_keys">Säkerhetskopiera nycklar</string>
   <string name="title_key_not_found">Nyckel hittades inte</string>
-  <string name="title_send_key">Skicka till nyckelserver</string>
+  <string name="title_send_key">Ladda upp till nyckelserver</string>
   <string name="title_backup">Säkerhetskopiera nyckel</string>
   <string name="title_certify_key">Bekräfta nyckel</string>
   <string name="title_key_details">Nyckelinformation</string>
@@ -32,7 +33,7 @@
   <string name="title_log_display">Logg</string>
   <string name="title_exchange_keys">Utbyt nycklar</string>
   <string name="title_advanced_key_info">Avancerat</string>
-  <string name="title_delete_secret_key">Radera DIN nyckel \"%s\"?</string>
+  <string name="title_delete_secret_key">Ta bort DIN nyckel \"%s\"?</string>
   <string name="title_manage_my_keys">Hantera mina nycklar</string>
   <string name="title_alert_strip">Avskala den här undernyckeln</string>
   <!--section-->
@@ -69,7 +70,7 @@
   <string name="btn_save">Spara</string>
   <string name="btn_view_log">Visa logg</string>
   <string name="btn_do_not_save">Avbryt</string>
-  <string name="btn_delete">Radera</string>
+  <string name="btn_delete">Ta bort</string>
   <string name="btn_no_date">Inget utgångsdatum</string>
   <string name="btn_okay">Okej</string>
   <string name="btn_export_to_server">Ladda upp till nyckelserver</string>
@@ -108,7 +109,7 @@
   <string name="menu_preferences">Inställningar</string>
   <string name="menu_help">Hjälp</string>
   <string name="menu_export_key">Säkerhetskopiera nyckel</string>
-  <string name="menu_delete_key">Radera nyckel</string>
+  <string name="menu_delete_key">Ta bort nyckel</string>
   <string name="menu_status">Visa nyckelstatus</string>
   <string name="menu_manage_keys">Hantera mina nycklar</string>
   <string name="menu_search">Sök</string>
@@ -145,8 +146,8 @@
   <string name="label_write_version_header_summary">Skriver \'OpenKeychain v2.7\' till OpenPGP-signaturer, chiffertext och exporterade nycklar.</string>
   <string name="label_asymmetric_from">Signera med:</string>
   <string name="label_to">Kryptera till</string>
-  <string name="label_delete_after_encryption">Radera filer efter kryptering</string>
-  <string name="label_delete_after_decryption">Radera efter dekryptering</string>
+  <string name="label_delete_after_encryption">Ta bort filer efter kryptering</string>
+  <string name="label_delete_after_decryption">Ta bort efter dekryptering</string>
   <string name="label_encryption_algorithm">Krypteringsalgoritm</string>
   <string name="label_hash_algorithm">Hash-algoritm</string>
   <string name="label_symmetric">Kryptera med lösenord</string>
@@ -205,7 +206,7 @@
   <string name="label_sync_settings_keyserver_summary_off">Nycklar uppdateras inte automatiskt</string>
   <string name="label_sync_settings_wifi_title">Synkronisera endast över Wi-Fi</string>
   <string name="label_experimental_settings_desc_title">Varning</string>
-  <string name="label_experimental_settings_desc_summary">Dessa funktioner är ännu inte färdiga eller resultat av användarupplevelse/säkerhetsforskning. Lita därför inte på deras säkerhet och var snäll och rapportera inte problem du stöter på!</string>
+  <string name="label_experimental_settings_desc_summary">Dessa funktioner är ännu inte färdiga eller resultat av användarupplevelse/säkerhetsforskning. Lita därför inte på deras säkerhet och rapportera inte problem du stöter på!</string>
   <string name="label_experimental_settings_theme_summary">(Ikonerna och många skärmar är ännu inte justerade för mörkt tema)</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Aktivera Tor</string>
@@ -277,7 +278,6 @@
   <string name="ecc_p384_description_html">mycket liten filstorlek, anses säker till 2040 &lt;br/&gt; &lt;u&gt;experimentell och stöds inte av alla implementeringar&lt;/u&gt;</string>
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">liten filstorlek, anses säker till 2040+ &lt;br/&gt; &lt;u&gt;experimentell och stöds inte av alla implementeringar&lt;/u&gt;</string>
-  <string name="ecc_25519">Ed25519 / Cv25519</string>
   <string name="ecc_25519_description_html">liten filstorlek, anses säker till 2040+ &lt;br/&gt; &lt;u&gt;experimentell och stöds inte av alla implementeringar&lt;/u&gt;</string>
   <string name="usage_none">Ingen (endast undernyckelbindning)</string>
   <string name="usage_sign">Signera</string>
@@ -285,14 +285,15 @@
   <string name="usage_sign_and_encrypt">Signera &amp; kryptera</string>
   <string name="error">Fel</string>
   <string name="error_message">Fel: %s</string>
-  <string name="theme_dark">Mörkt</string>
+  <string name="theme_auto">Automatiskt</string>
   <string name="theme_light">Ljust</string>
+  <string name="theme_dark">Mörkt</string>
   <string name="strip">Avskala den</string>
   <!--sentences-->
   <string name="wrong_passphrase">Fel lösenord.</string>
   <string name="no_filemanager_installed">Ingen kompatibel filhanterare är installerad.</string>
   <string name="passphrases_do_not_match">Lösenorden stämde inte överens.</string>
-  <string name="passphrase_must_not_be_empty">Var god ange ett lösenord.</string>
+  <string name="passphrase_must_not_be_empty">Ange ett lösenord.</string>
   <string name="passphrase_for_symmetric_encryption">Skriv lösenord</string>
   <string name="passphrase_for_backup">Ange säkerhetskopieringskod</string>
   <string name="passphrase_for">Ange lösenord för \'%s\'</string>
@@ -307,9 +308,9 @@
   <string name="security_token_nfc_wait">Håll säkerhetstoken mot baksidan!</string>
   <string name="security_token_nfc_finished">Ta bort säkerhetstoken nu.</string>
   <string name="security_token_nfc_try_again_text">Ta bort säkerhetstoken nu och tryck på FÖRSÖK IGEN.</string>
-  <string name="file_delete_confirmation_title">Radera orginalfiler?</string>
-  <string name="file_delete_confirmation">Följande filer kommer raderas:%s</string>
-  <string name="file_delete_successful">%1$d av %2$d filer har raderats.%3$s</string>
+  <string name="file_delete_confirmation_title">Ta bort orginalfiler?</string>
+  <string name="file_delete_confirmation">Följande filer kommer tas bort:%s</string>
+  <string name="file_delete_successful">%1$d av %2$d filer har tagits bort.%3$s</string>
   <string name="no_file_selected">Inga valda filer.</string>
   <string name="encrypt_sign_successful">Signerades och/eller krypterades.</string>
   <string name="encrypt_sign_clipboard_successful">Signerades och/eller krypterades till urklipp.</string>
@@ -323,7 +324,7 @@
   <string name="specify_backup_dest_secret">En fullständig säkerhetskopia av alla nycklar inklusive er, kommer att göras, ange en destinationsfil.\nVarning: Fil kommer att skrivas över om den finns!</string>
   <string name="key_deletion_confirmation_multi">Vill du verkligen radera alla markerade nycklar?</string>
   <string name="secret_key_deletion_confirmation">Efter radering kommer du inte att kunna dekryptera meddelanden/filer som krypterats med den här nyckeln och förlorar alla viktiga bekräftelser gjorda med den!</string>
-  <string name="public_key_deletetion_confirmation">Radera nyckel \'%s\'?</string>
+  <string name="public_key_deletetion_confirmation">Ta bort nyckel \'%s\'?</string>
   <string name="also_export_secret_keys">Exportera även privata nycklar</string>
   <string name="reinstall_openkeychain">Du stötte på ett känd fel hos Android. Installera om OpenKeychain om du vill koppla ihop dina kontakter med nycklar.</string>
   <string name="alert_strip">Att avskala den här undernyckeln gör den oanvändbar på den här enheten!</string>
@@ -347,7 +348,7 @@
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
-  <string name="error_file_delete_failed">har inte raderats. Radera dem manuellt!</string>
+  <string name="error_file_delete_failed">har inte tagits bort. Ta bort dem manuellt!</string>
   <string name="error_file_added_already">%s har redan lagts till.</string>
   <string name="error_file_not_found">fil hittades inte</string>
   <string name="error_bad_data">Dåliga data!</string>
@@ -377,12 +378,12 @@
   <string name="decrypt_result_no_signature">Inte signerat</string>
   <string name="decrypt_result_invalid_signature">Ogiltig signatur!</string>
   <string name="decrypt_result_insecure_cryptography">Ogiltig signatur (osäker kryptering)!</string>
-  <string name="decrypt_result_signature_uncertified">Undertecknad av <b>obekräftad</b> nyckel</string>
+  <string name="decrypt_result_signature_uncertified">Signerad av <b>obekräftad</b> nyckel</string>
   <string name="decrypt_result_signature_secret">Signerat av din nyckel</string>
   <string name="decrypt_result_signature_certified">Signerat av bekräftad nyckel</string>
   <string name="decrypt_result_signature_expired_key">Signerad av <b>utgången</b> nyckel!</string>
   <string name="decrypt_result_signature_revoked_key">Signerad av <b>återkallad</b> nyckel!</string>
-  <string name="decrypt_result_signature_missing_key">Signerad av <b>okänd publik nyckel</b></string>
+  <string name="decrypt_result_signature_missing_key">Signerad av <b>okänd offentlig nyckel</b></string>
   <string name="decrypt_result_encrypted">Krypterat</string>
   <string name="decrypt_result_not_encrypted">Inte krypterat</string>
   <string name="decrypt_result_insecure">Osäker kryptering</string>
@@ -400,11 +401,12 @@
   <string name="progress_saving">sparar…</string>
   <string name="progress_importing">importerar…</string>
   <string name="progress_benchmarking">jämför...</string>
-  <string name="progress_revoking_uploading">Återkallar och skicka nyckel…</string>
+  <string name="progress_revoking_uploading">Återkallar och laddar upp nyckel…</string>
   <string name="progress_updating">Uppdaterar nycklar...</string>
   <string name="progress_exporting">exporterar…</string>
-  <string name="progress_uploading">skickar…</string>
+  <string name="progress_uploading">laddar upp…</string>
   <string name="progress_building_key">bygger nyckel…</string>
+  <string name="progress_building_master_key">bygger primärnyckel...</string>
   <string name="progress_generating_rsa">genererar ny RSA-nyckel…</string>
   <string name="progress_generating_dsa">genererar ny DSA-nyckel…</string>
   <string name="progress_generating_elgamal">genererar ny ElGamal-nyckel…</string>
@@ -434,7 +436,7 @@
   <string name="progress_prepare_decryption">Börjar dekryptering...</string>
   <string name="progress_decrypting">Dekrypterar data...</string>
   <string name="progress_preparing_signature">förebereder signatur…</string>
-  <string name="progress_processing_signature">bearbetar signatur…</string>
+  <string name="progress_processing_signature">behandlar signatur…</string>
   <string name="progress_generating_signature">genererar signatur…</string>
   <string name="progress_verifying_signature">verifierar signatur…</string>
   <string name="progress_signing">signerar…</string>
@@ -530,16 +532,16 @@
   <string name="import_error_nothing_cancelled">Import avbruten.</string>
   <!--Delete result toast-->
   <plurals name="delete_ok_but_fail_1">
-    <item quantity="one">Raderade en nyckel</item>
-    <item quantity="other">Raderade %1$d nycklar</item>
+    <item quantity="one">Tog bort en nyckel</item>
+    <item quantity="other">Tog bort %1$d nycklar</item>
   </plurals>
   <plurals name="delete_ok_but_fail_2">
     <item quantity="one">, men misslyckades med att radera en nyckel%2$s.</item>
     <item quantity="other">, men misslyckades med att radera %1$d nycklar%2$s.</item>
   </plurals>
   <plurals name="delete_ok">
-    <item quantity="one">Raderade nyckel%2$s.</item>
-    <item quantity="other">Raderade %1$d nycklar%2$s.</item>
+    <item quantity="one">Tog bort nyckel%2$s.</item>
+    <item quantity="other">Tog bort %1$d nycklar%2$s.</item>
   </plurals>
   <plurals name="delete_fail">
     <item quantity="one">Fel vid borttagning av en nyckel.</item>
@@ -596,20 +598,20 @@
   <string name="api_select_pub_keys_text">Se över listan med mottagare!</string>
   <string name="api_select_pub_keys_text_no_user_ids">Välj mottagare!</string>
   <string name="api_error_wrong_signature">Signaturkontroll misslyckades! Har du installerat appen från en annan källa? Om du är säker på att det här inte är en attack, återkalla den här appens registrering i OpenKeychain och registrera sen om appen igen.</string>
-  <string name="api_select_sign_key_text">Välj en av dina existerande nycklar eller skapa en ny.</string>
-  <string name="api_select_keys_text">Ingen av de tillåtna nycklarna lyckas dekryptera innehållet. Var god välj de rätta nycklarna.</string>
+  <string name="api_select_sign_key_text">Välj en av dina befintliga nycklar eller skapa en ny.</string>
+  <string name="api_select_keys_text">Ingen av de tillåtna nycklarna lyckas dekryptera innehållet. Välj de rätta nycklarna.</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Dela med QR-kod</string>
   <string name="share_nfc_dialog">Dela med NFC</string>
   <!--retry upload dialog-->
-  <string name="retry_up_dialog_title">Överföringen misslyckades</string>
-  <string name="retry_up_dialog_message">Överföringen misslyckades. Vill du försöka igen?</string>
+  <string name="retry_up_dialog_title">Uppladdningen misslyckades</string>
+  <string name="retry_up_dialog_message">Uppladdningen misslyckades. Vill du försöka igen?</string>
   <string name="retry_up_dialog_btn_reupload">Försök operation igen</string>
   <string name="retry_up_dialog_btn_cancel">Avbryt operation</string>
   <!--Delete or revoke private key dialog-->
-  <string name="del_rev_dialog_message">Om du inte längre vill använda denna nyckel bör den återkallas och skickas. Välj \"TA BORT ENDAST\" om du vill ta bort nyckeln från OpenKeychain men fortsätta använda den från någon annanstans.</string>
+  <string name="del_rev_dialog_message">Om du inte längre vill använda denna nyckel bör den återkallas och laddas upp. Välj \"TA BORT ENDAST\" om du vill ta bort nyckeln från OpenKeychain men fortsätta använda den från någon annanstans.</string>
   <string name="del_rev_dialog_title">Återkalla/Ta bort nyckel \"%s\"</string>
-  <string name="del_rev_dialog_btn_revoke">Återkalla och skicka</string>
+  <string name="del_rev_dialog_btn_revoke">Återkalla och ladda upp</string>
   <string name="del_rev_dialog_btn_delete">Ta endast bort</string>
   <!--Delete Or Revoke Dialog spinner-->
   <string name="del_rev_dialog_choice_delete">Ta endast bort</string>
@@ -751,24 +753,42 @@
   <string name="msg_cancelled">Operation avbruten.</string>
   <!--Import Public log entries-->
   <string name="msg_ip_apply_batch">Tillämpa inmatning av batchoperation.</string>
-  <string name="msg_ip_bad_type_secret">Försökte att importera hemlig nyckelring som publik. Detta är ett fel, skicka en felrapport!</string>
-  <string name="msg_ip_delete_old_fail">Ingen gammal nyckel raderad (skapa en ny?)</string>
-  <string name="msg_ip_delete_old_ok">Raderade gammal nyckel från databas</string>
+  <string name="msg_ip_bad_type_secret">Försökte att importera hemlig nyckelring som offentlig. Detta är ett fel, skicka en felrapport!</string>
+  <string name="msg_ip_delete_old_fail">Ingen gammal nyckel borttagen (skapa en ny?)</string>
+  <string name="msg_ip_delete_old_ok">Tog bort gammal nyckel från databas</string>
   <string name="msg_ip_encode_fail">Operationen misslyckades på grund av ett kodningsfel</string>
   <string name="msg_ip_error_io_exc">Drift misslyckades på grund av i/o-fel</string>
   <string name="msg_ip_error_op_exc">Operationen misslyckades på grund av ett databasfel</string>
   <string name="msg_ip_error_remote_ex">Operationen misslyckades på grund av ett internt fel</string>
-  <string name="msg_ip">Importerar publik nyckelring %s</string>
+  <string name="msg_ip">Importerar offentlig nyckelring %s</string>
   <string name="msg_ip_fingerprint_error">Fingeravtryck av importnyckel matchar inte förväntning!</string>
   <string name="msg_ip_fingerprint_ok">Kontroll av fingeravtyck OK</string>
   <string name="msg_ip_insert_keyring">Kodar nyckelringens data</string>
   <string name="msg_ip_insert_keys">Läser nycklar</string>
   <string name="msg_ip_prepare">Förebereder databasoperationer</string>
+  <string name="msg_ip_master">Behandlar primära nyckeln %s</string>
   <string name="msg_ip_master_expired">Nyckelring gick ut %s</string>
   <string name="msg_ip_master_expires">Nyckelring löper ut %s</string>
-  <string name="msg_ip_merge_public">Slår ihop importerade data med befintlig publik nyckelring</string>
+  <string name="msg_ip_master_flags_unspecified">Primära flaggor: ospecificerade (förutsatt alla)</string>
+  <string name="msg_ip_master_flags_cesa">Primära flaggor: certifiera, kryptera, signera, autentisera</string>
+  <string name="msg_ip_master_flags_cesx">Primära flaggor: certifiera, kryptera, signera</string>
+  <string name="msg_ip_master_flags_cexa">Primära flaggor: certifiera, kryptera, autentisera</string>
+  <string name="msg_ip_master_flags_cexx">Primära flaggor: certifiera, kryptera</string>
+  <string name="msg_ip_master_flags_cxsa">Primära flaggor: certifiera, signera, autentisera</string>
+  <string name="msg_ip_master_flags_cxsx">Primära flaggor: certifiera, signera</string>
+  <string name="msg_ip_master_flags_cxxa">Primära flaggor: certifiera, autentisera</string>
+  <string name="msg_ip_master_flags_cxxx">Primära flaggor: certifiera</string>
+  <string name="msg_ip_master_flags_xesa">Primära flaggor: kryptera, signera, autentisera</string>
+  <string name="msg_ip_master_flags_xesx">Primära flaggor: kryptera, signera</string>
+  <string name="msg_ip_master_flags_xexa">Primära flaggor: kryptera, autentisera</string>
+  <string name="msg_ip_master_flags_xexx">Primära flaggor: kryptera</string>
+  <string name="msg_ip_master_flags_xxsa">Primära flaggor: signera, autentisera</string>
+  <string name="msg_ip_master_flags_xxsx">Primära flaggor: signera</string>
+  <string name="msg_ip_master_flags_xxxa">Primära flaggor: autentisera</string>
+  <string name="msg_ip_master_flags_xxxx">Primära flaggor: ingen</string>
+  <string name="msg_ip_merge_public">Slår ihop importerade data med befintlig offentlig nyckelring</string>
   <string name="msg_ip_merge_secret">Sammanfoga importerad data till befintlig hemlig nyckelring</string>
-  <string name="msg_ip_subkey">Bearbetar undernyckel %s</string>
+  <string name="msg_ip_subkey">Behandlar undernyckel %s</string>
   <string name="msg_ip_subkey_expired">Undernyckel gick ut %s</string>
   <string name="msg_ip_subkey_expires">Undernyckel löper ut %s</string>
   <string name="msg_ip_subkey_flags_unspecified">Flaggor för undernyckel: ospecificerat (antar alla)</string>
@@ -788,11 +808,11 @@
   <string name="msg_ip_subkey_flags_xxsx">Flaggor för undernyckel: signera</string>
   <string name="msg_ip_subkey_flags_xxxa">Flaggor för undernyckel: autentisera</string>
   <string name="msg_ip_subkey_flags_xxxx">Flaggor för undernyckel: ingen</string>
-  <string name="msg_ip_success">Importerade publik nyckelring</string>
+  <string name="msg_ip_success">Importerade offentlig nyckelring</string>
   <string name="msg_ip_success_identical">Nyckelringen innehåller ingen ny information, inget att göra</string>
   <string name="msg_ip_reinsert_secret">Sätter in hemlig nyckel på nytt</string>
   <string name="msg_ip_uid_cert_bad">Stötte på ett dåligt certifikat!</string>
-  <string name="msg_ip_uid_cert_error">Fel vid bearbetning av certifikat!</string>
+  <string name="msg_ip_uid_cert_error">Fel vid behandling av certifikat!</string>
   <string name="msg_ip_uid_cert_nonrevoke">Har redan ett icke-återkalleligt certifikat, hoppar över.</string>
   <string name="msg_ip_uid_cert_old">Certifikat är äldre än det förra, hoppar över.</string>
   <string name="msg_ip_uid_cert_new">Certifikat är mer aktuellt, ersätter det förra.</string>
@@ -808,34 +828,34 @@
     <item quantity="other">Klassificerar användar-ID:n (använder %s tillförlitliga nycklar)</item>
   </plurals>
   <string name="msg_ip_uid_reorder">Ordnar om användar-ID:n</string>
-  <string name="msg_ip_uid_processing">Bearbetar användar-ID %s</string>
+  <string name="msg_ip_uid_processing">Behandlar användar-ID %s</string>
   <string name="msg_ip_uid_revoked">Användar-ID är återkallat</string>
-  <string name="msg_ip_uat_processing_image">Bearbetar användarattribut av typen bild</string>
-  <string name="msg_ip_uat_processing_unknown">Bearbetar användarattribut av okänd typ</string>
+  <string name="msg_ip_uat_processing_image">Behandlar användarattribut av typen bild</string>
+  <string name="msg_ip_uat_processing_unknown">Behandlar användarattribut av okänd typ</string>
   <string name="msg_ip_uat_cert_bad">Stötte på ett dåligt certifikat!</string>
-  <string name="msg_ip_uat_cert_error">Fel vid bearbetning av certifikat!</string>
+  <string name="msg_ip_uat_cert_error">Fel vid behandling av certifikat!</string>
   <string name="msg_ip_uat_cert_nonrevoke">Har redan ett icke-återkalleligt certifikat, hoppar över.</string>
   <string name="msg_ip_uat_cert_old">Certifikat är äldre än det förra, hoppar över.</string>
   <string name="msg_ip_uat_cert_new">Certifikat är mer aktuellt, ersätter det förra.</string>
   <string name="msg_ip_uat_cert_good">Hittade ett bra certifikat från %1$s</string>
   <string name="msg_ip_uat_cert_good_revoke">Hittade bra certifikatåterkallning från %1$s</string>
   <plurals name="msg_ip_uat_certs_unknown">
-    <item quantity="one">Hoppar över ett certifikat utfärdat av en okänd publik nyckel</item>
+    <item quantity="one">Hoppar över ett certifikat utfärdat av en okänd offentlig nyckel</item>
     <item quantity="other">Hoppar över %s certifikat utfärdade av okända öppna nycklar</item>
   </plurals>
   <string name="msg_ip_uat_classifying">Klassificerar användarattribut</string>
   <string name="msg_ip_uat_revoked">Användarattribut är återkallat</string>
-  <string name="msg_is_bad_type_public">Försökte att importera publik nyckelring som hemlig. Detta är ett fel, skicka en felrapport!</string>
+  <string name="msg_is_bad_type_public">Försökte att importera offentlig nyckelring som hemlig. Detta är ett fel, skicka en felrapport!</string>
   <string name="msg_is_bad_type_uncanon">Försökte importera en nyckelring utan canonicalization. Detta är ett fel, skicka en rapport!</string>
   <!--Import Secret log entries-->
   <string name="msg_is">Importerar hemlig nyckel %s</string>
   <string name="msg_is_db_exception">Databasfel!</string>
-  <string name="msg_is_importing_subkeys">Bearbetar hemliga undernycklar</string>
+  <string name="msg_is_importing_subkeys">Behandlar hemliga undernycklar</string>
   <string name="msg_is_error_io_exc">Fel vid kodning av nyckelring</string>
-  <string name="msg_is_merge_public">Slår ihop importerade data med befintlig publik nyckelring</string>
+  <string name="msg_is_merge_public">Slår ihop importerade data med befintlig offentlig nyckelring</string>
   <string name="msg_is_merge_secret">Sammanfoga importerade data till befintlig hemlig nyckelring</string>
   <string name="msg_is_merge_special">Sammanfoga i självcertifikatdata från offentlig nyckelring</string>
-  <string name="msg_is_pubring_generate">Genererar publik nyckelring från privat nyckelring</string>
+  <string name="msg_is_pubring_generate">Genererar offentlig nyckelring från privat nyckelring</string>
   <string name="msg_is_subkey_nonexistent">Undernyckel %s inte tillgänglig i privat nyckelring</string>
   <string name="msg_is_subkey_ok">Märkt hemlig undernyckel %s som tillgänglig</string>
   <string name="msg_is_subkey_empty">Märkt hemlig undernyckel %s  som tillgänglig, med tomt lösenord</string>
@@ -844,24 +864,34 @@
   <string name="msg_is_success_identical">Nyckelringen innehåller inga nya data inget att göra</string>
   <string name="msg_is_success">Importerade privat nyckelring</string>
   <!--Keyring Canonicalization log entries-->
+  <string name="msg_kc_public">Kanoniserar offentlig nyckelring %s</string>
+  <string name="msg_kc_secret">Kanoniserar hemlig nyckelring %s</string>
   <string name="msg_kc_error_v3">Den här nyckeln är skapad med OpenPGP version 3, vilken är en föråldrad version som inte längre stöds!</string>
   <string name="msg_kc_error_no_uid">Nyckelringen har inga giltiga användar-ID:n!</string>
+  <string name="msg_kc_error_master_algo">Den primära nyckeln använder en okänd (%s) algoritm!</string>
+  <string name="msg_kc_master">Behandlar primärnyckel</string>
   <string name="msg_kc_master_bad_time">Tar bort återkallelsecertifikat för nyckelring med framtida tidstämpel</string>
   <string name="msg_kc_master_bad_type_uid">Tar bort användar-ID-certifikat i dåligt läge</string>
   <string name="msg_kc_revoke_dup">Tar bort överflödigt återkallelsecertifikat för nyckelring</string>
   <string name="msg_kc_notation_empty">Ta bort tomt notationscertifikat</string>
-  <string name="msg_kc_sub">Bearbetar undernyckel %s</string>
+  <string name="msg_kc_sub">Behandlar undernyckel %s</string>
   <string name="msg_kc_sub_bad">Tar bort ogiltigt bindningscertifikat för undernyckeln</string>
   <string name="msg_kc_sub_bad_err">Tar bort dåligt bindningscertifikat för undernyckel</string>
   <string name="msg_kc_sub_bad_local">Tar bort bindningscertifikat för undernyckel med \"lokal\" flagga</string>
   <string name="msg_kc_sub_bad_time">Tar bort undernyckelbindningscertifikat med framtida tidsstämpel</string>
   <string name="msg_kc_sub_bad_time_early">Undernyckelbindningscertifikatet har tidigare tidsstämpel än dess nyckel!</string>
   <string name="msg_kc_sub_bad_type">Okänd undernyckel certifikattyp: %s</string>
+  <string name="msg_kc_sub_dup">Tar bort överflödigt bindningscertifikat för undernyckel</string>
+  <string name="msg_kc_sub_primary_bad">Tar bort bindningscertifikat för undernyckel på grund av ogiltigt primärt bindningscertifikat</string>
+  <string name="msg_kc_sub_primary_bad_err">Tar bort bindningscertifikat för undernyckel på grund av dåligt primärt bindningscertifikat</string>
+  <string name="msg_kc_sub_primary_none">Tar bort bindningscertifikat för undernyckel på grund av att det primära bindningscertifikatet saknas</string>
   <string name="msg_kc_sub_no_cert">Inget giltigt certifikat hittades för %s, tar bort från nyckelring</string>
   <string name="msg_kc_sub_revoke_bad_err">Tar bort dåligt återkallelsecertifikat för undernyckel</string>
   <string name="msg_kc_sub_revoke_bad">Tar bort dåligt återkallelsecertifikat för undernyckel</string>
   <string name="msg_kc_sub_revoke_dup">Tar bort överflödigt återkallelsecertifikat för undernyckel</string>
   <string name="msg_kc_sub_unknown_algo">Undernyckel använder en okänd algoritm, importerar inte…</string>
+  <string name="msg_kc_success">Nyckelringskanonisering lyckades, inga förändringar</string>
+  <string name="msg_kc_success_bad_and_red">Nyckelringskanoniseringen lyckades, tog bort %1$s felaktiga och %2$s överflödiga certifikat</string>
   <string name="msg_kc_uid_bad_err">Tar bort dåligt eget-certifikat för användar-ID \'%s\'</string>
   <string name="msg_kc_uid_bad_local">Ta bort user ID-certifikat med \"lokal\" flagga</string>
   <string name="msg_kc_uid_bad_time">Tar bort användar-ID med framtida tidstämpel</string>
@@ -875,8 +905,8 @@
   <string name="msg_kc_uid_remove">Tar bort ogiltigt användar-ID \'%s\'</string>
   <string name="msg_kc_uid_dup">Tar bort duplicerat användar-ID \"%s\". Nyckelringen innehöll två av dem. Detta kan resultera i saknade certifikat!</string>
   <string name="msg_kc_uid_warn_encoding">Användar-ID verifieras inte som UTF-8!</string>
-  <string name="msg_kc_uat_jpeg">Bearbetar användarattribut av typ JPEG</string>
-  <string name="msg_kc_uat_unknown">Bearbetar användarattribut av okänd typ</string>
+  <string name="msg_kc_uat_jpeg">Behandlar användarattribut av typ JPEG</string>
+  <string name="msg_kc_uat_unknown">Behandlar användarattribut av okänd typ</string>
   <string name="msg_kc_uat_bad_err">Tar bort dåligt självcertifikat för användarattribut</string>
   <string name="msg_kc_uat_bad_local">Ta bort användarattributcertifikat med \"lokal\" flagga</string>
   <string name="msg_kc_uat_bad_time">Tar bort användarattribut med framtida tidsstämpel</string>
@@ -886,18 +916,23 @@
   <string name="msg_kc_uat_remove">Tar bort ogiltigt användarattribut</string>
   <string name="msg_kc_uat_warn_encoding">Användar-ID verifieras inte som UTF-8!</string>
   <!--Keyring merging log entries-->
+  <string name="msg_mg_error_secret_dummy">Ny offentlig undernyckel hittades, men hemlig undernyckelgenerering stöds inte!</string>
   <string name="msg_mg_error_heterogeneous">Försökte att slå ihop nyckelringar med olika fingeravtryck!</string>
   <string name="msg_mg_error_encode">Allvarligt fel vid kodning av signatur!</string>
-  <string name="msg_mg_public">Slår ihop till publik nyckelring %s</string>
+  <string name="msg_mg_public">Slår ihop till offentlig nyckelring %s</string>
   <string name="msg_mg_secret">Slår ihop till hemlig nyckelring %s</string>
   <string name="msg_mg_new_subkey">Lägger till ny undernyckel %s</string>
   <string name="msg_mg_found_new">Hittade %s nya certifikat i nyckelring</string>
   <string name="msg_mg_unchanged">Inget att slå ihop</string>
   <!--createSecretKeyRing-->
+  <string name="msg_cr">Skapar ny primärnyckel</string>
+  <string name="msg_cr_error_no_master">Inga primära nyckelalternativ angivna!</string>
   <string name="msg_cr_error_no_user_id">Nyckelringar måste skapas med minst ett användar-ID!</string>
+  <string name="msg_cr_error_no_certify">Primärnyckeln måste ha certifieringsflagga!</string>
+  <string name="msg_cr_error_null_expiry">Utgångstiden kan inte vara \"samma som tidigare\" när nyckel skapas. Detta är ett programmeringsfel, skicka en felrapport!</string>
   <string name="msg_cr_error_keysize_2048">Nyckelstorleken måste vara större eller lika med 2048!</string>
-  <string name="msg_cr_error_no_curve">Ingen nyckelstorlek specificerad! Detta är ett programmeringsfel, vänligen lämna in en felrapport!</string>
-  <string name="msg_cr_error_no_keysize">Ingen elliptisk kurva specificerad! Detta är ett programmeringsfel, vänligen lämna in en felrapport!</string>
+  <string name="msg_cr_error_no_curve">Ingen nyckelstorlek specificerad! Detta är ett programmeringsfel, skicka in en felrapport!</string>
+  <string name="msg_cr_error_no_keysize">Ingen elliptisk kurva specificerad! Detta är ett programmeringsfel, skicka in en felrapport!</string>
   <string name="msg_cr_error_internal_pgp">Internt OpenPGP-fel!</string>
   <string name="msg_cr_error_unknown_algo">Okänd algoritm vald. Detta är ett programmeringsfel, skicka en felrapport!</string>
   <string name="msg_cr_error_flags_dsa">Dåliga nyckelflaggor valda, DSA kan inte användas för kryptering!</string>
@@ -910,24 +945,28 @@
   <string name="msg_mf_divert">Kommer att använda säkerhetstoken för kryptooperationer</string>
   <string name="msg_mf_error_all_keys_stripped">Alla nycklar är avskalade!</string>
   <string name="msg_mf_error_divert_newsub">Skapandet av nya undernycklar stöds inte för primära nycklar på säkerhetstoken!</string>
-  <string name="msg_mf_error_divert_serial">Serienumret för en nyckel på säkerhetstoken måste vara 16 byte! Detta är ett programmeringsfel, vänligen lämna in en felrapport!</string>
+  <string name="msg_mf_error_divert_serial">Serienumret för en nyckel på säkerhetstoken måste vara 16 byte! Detta är ett programmeringsfel, skicka in en felrapport!</string>
   <string name="msg_mf_error_encode">Kodnings undantag!</string>
   <string name="msg_mf_error_fingerprint">Det verkliga nyckelfingeravtrycket stämmer inte överens med det som förväntades!</string>
   <string name="msg_mf_error_keyid">Inget nyckel-ID. Det här är ett internt fel, skicka en felrapport!</string>
   <string name="msg_mf_error_integrity">Internt fel, integritetskontrollen misslyckades!</string>
+  <string name="msg_mf_error_master_none">Inget primärt certifikat hittades för att verka på! (Alla återkallade?)</string>
   <string name="msg_mf_error_noexist_primary">Dåligt primärt användar-ID angivet!</string>
   <string name="msg_mf_error_noexist_revoke">Dåligt användar-ID för återkallelse angivet!</string>
-  <string name="msg_mf_error_restricted">Försökte utföra begränsad operation utan lösenord! Detta är ett programmeringsfel, vänligen lämna in en felrapport!</string>
+  <string name="msg_mf_error_restricted">Försökte utföra begränsad operation utan lösenord! Detta är ett programmeringsfel, skicka in en felrapport!</string>
   <string name="msg_mf_error_revoked_primary">Återkallade användar-ID:n kan inte vara primära!</string>
-  <string name="msg_mf_error_null_expiry">Utgångstiden kan inte vara \"samma som tidigare\" på undernyckelskapandet. Detta är ett programmeringsfel, vänligen lämna in en felrapport!</string>
+  <string name="msg_mf_error_null_expiry">Utgångstiden kan inte vara \"samma som tidigare\" på undernyckelskapandet. Detta är ett programmeringsfel, skicka in en felrapport!</string>
   <string name="msg_mf_error_noop">Inget att göra!</string>
+  <string name="msg_mf_error_passphrase_master">Allvarligt fel vid dekryptering av primära nyckeln! Detta är troligtvis ett programmeringsfel, skicka en felrapport!</string>
   <string name="msg_mf_error_passphrases_unchanged">Inget lösenord ändrat!</string>
   <string name="msg_mf_error_pgp">Internt OpenPGP-fel!</string>
   <string name="msg_mf_error_sig">Undantag för signatur!</string>
   <string name="msg_mf_error_sub_stripped">Det går inte att ändra avskalad undernyckel %s!</string>
+  <string name="msg_mf_error_subkey_missing">Försökte att verka på den saknade nyckeln %s!</string>
   <string name="msg_mf_error_conflicting_nfc_commands">Det går inte att flytta nyckeln till säkerhetstoken i samma åtgärd som skapar en signatur på kortet.</string>
   <string name="msg_mf_error_duplicate_keytocard_for_slot">Säkerhetstoken stöder endast en öppning per nyckeltyp.</string>
   <string name="msg_mf_error_invalid_flags_for_keytocard">Olämpliga nyckelflaggor för säkerhetstoken-nyckel.</string>
+  <string name="msg_mf_master">Ändra primära certifieringar</string>
   <string name="msg_mf_passphrase">Ändra lösenord för nyckelring</string>
   <string name="msg_mf_pin">Ändrar PIN-kod på kort</string>
   <string name="msg_mf_admin_pin">Ändrar administratör-PIN-kod på kort</string>
@@ -960,9 +999,9 @@
   <!--Edit Key (higher level than modify)-->
   <string name="msg_ed">Utför nyckeloperation</string>
   <string name="msg_ed_caching_new">Cachelagra nytt lösenord</string>
-  <string name="msg_ed_error_no_parcel">Saknas SaveKeyringParcel! (detta är en bugg, vänligen rapportera)</string>
+  <string name="msg_ed_error_no_parcel">Saknas SaveKeyringParcel! (detta är en bugg, rapportera)</string>
   <string name="msg_ed_error_key_not_found">Nyckel hittades inte!</string>
-  <string name="msg_ed_error_extract_public_upload">Fel vid uppackande av offentlig nyckel för uppladdning!</string>
+  <string name="msg_ed_error_extract_public_upload">Fel vid uppackning av offentlig nyckel för uppladdning!</string>
   <string name="msg_ed_fetching">Hämta nyckel för att ändra (%s)</string>
   <string name="msg_ed_success">Nyckeloperation lyckades</string>
   <!--Promote key-->
@@ -970,6 +1009,7 @@
   <string name="msg_pr_fetching">Hämtar nyckel för att ändra (%s)</string>
   <string name="msg_pr_subkey_nomatch">Undernyckel inte på säkerhetstoken: %s</string>
   <!--Other messages used in OperationLogs-->
+  <string name="msg_ek_error_dummy">Det går inte att redigera nyckelring med avskalad primärnyckel!</string>
   <string name="msg_ek_error_not_found">Nyckel hittades inte!</string>
   <!--Messages for DecryptVerify operation-->
   <string name="msg_dc_askip_bad_flags">Nyckeln är inte en krypteringsnyckel, hoppar över...</string>
@@ -977,6 +1017,9 @@
   <string name="msg_dc_askip_no_key">Data inte krypterade med känd nyckel, hoppar över…</string>
   <string name="msg_dc_askip_not_allowed">Data inte krypterade med tillåten nyckel, hoppar över…</string>
   <string name="msg_dc_asym">Hittade block med asymmetriskt krypterade data för nyckel %s</string>
+  <string name="msg_dc_backup_version">Hittade backupVersion-rubrik: \"%s\"</string>
+  <string name="msg_dc_passphrase_format">Hittade Passphrase-Format-rubrik: \"%s\"</string>
+  <string name="msg_dc_passphrase_begin">Hittade Passphrase-Begin-rubrik: \"%s\"</string>
   <string name="msg_dc_clear_decompress">Packar upp komprimerade data</string>
   <string name="msg_dc_clear_meta_file">Filnamn: %s</string>
   <string name="msg_dc_clear_meta_mime">MIME-typ: %s</string>
@@ -987,7 +1030,7 @@
   <string name="msg_dc_clear_signature_check">Verifierar signaturdata</string>
   <string name="msg_dc_clear_signature_ok">Signaturkontroll OK</string>
   <string name="msg_dc_clear_signature">Sparar signaturdata till senare</string>
-  <string name="msg_dc_clear">Bearbetar klartextdata</string>
+  <string name="msg_dc_clear">Behandlar klartextdata</string>
   <string name="msg_dc_error_bad_passphrase">Fel vid upplåsning av nyckel, dåligt lösenord!</string>
   <string name="msg_dc_error_sym_passphrase">Fel vid dekryptering av data! (Dåligt lösenord?)</string>
   <string name="msg_dc_error_corrupt_data">Data är korrupt!</string>
@@ -1011,6 +1054,8 @@
   <string name="msg_dc">Startar dekrypteringsoperation…</string>
   <string name="msg_dc_sym_skip">Symmetriska data inte tillåten, hoppar över…</string>
   <string name="msg_dc_sym">Hittade block med symmetriskt krypterade data</string>
+  <string name="msg_dc_trail_asym">Påträffade efterföljande, asymmetriskt krypterade data för nyckeln %s</string>
+  <string name="msg_dc_trail_sym">Påträffade efterföljande, symmetriskt krypterade data</string>
   <string name="msg_dc_unlocking">Låser upp hemlig nyckel</string>
   <string name="msg_dc_insecure_encryption_key">Osäker krypteringsnyckel användes! Detta kan hända för att nyckeln är gammal, eller från en attack.</string>
   <string name="msg_dc_insecure_symmetric_encryption_algo">Osäker krypteringsalgoritm har använts! Detta kan hända för att applikationen har gått ur datumet, eller från en attack.</string>
@@ -1084,12 +1129,13 @@
   <string name="msg_crt_nfc_return">Återgår till NFC-skärmen</string>
   <string name="msg_crt_save">Sparar certifierad nyckel %s</string>
   <string name="msg_crt_saving">Sparar nyckelringar</string>
+  <string name="msg_crt_unlock">Låser upp primära nyckeln</string>
   <string name="msg_crt_success">Certifierade identiteter</string>
   <string name="msg_crt_warn_not_found">Nyckel hittades inte!</string>
   <string name="msg_crt_warn_cert_failed">Certifikat generering misslyckades!</string>
   <string name="msg_crt_warn_save_failed">Spara operation misslyckades!</string>
   <string name="msg_crt_warn_upload_failed">Uppladdningsoperationen misslyckades!</string>
-  <string name="msg_crt_upload_success">Skickade nyckel till server</string>
+  <string name="msg_crt_upload_success">Uppladningen av nyckel till server lyckades</string>
   <plurals name="msg_import">
     <item quantity="one">Importerar nyckel</item>
     <item quantity="other">Importerar %d nycklar</item>
@@ -1114,24 +1160,24 @@
     <item quantity="other">Säkerhetskopiering med %d nycklar</item>
   </plurals>
   <string name="msg_backup_all">Säkerhetskopiering med alla nycklar</string>
-  <string name="msg_backup_public">Skapa säkerhetskopia av publik nyckel %s</string>
+  <string name="msg_backup_public">Skapa säkerhetskopia av offentlig nyckel %s</string>
   <string name="msg_backup_secret">Skapa säkerhetskopia av hemlig nyckel %s</string>
   <string name="msg_backup_error_uri_open">Fel vid öppnande av URI-ström!</string>
   <string name="msg_backup_error_db">Databasfel!</string>
   <string name="msg_backup_error_io">Inmatnings-/utmatningsfel!</string>
   <string name="msg_backup_success">Säkerhetskopieringen lyckades</string>
-  <string name="msg_upload">Ladda upp offentlig nyckel</string>
+  <string name="msg_upload">Laddar upp offentlig nyckel</string>
   <string name="msg_upload_proxy_direct">Använder proxy: Ingen</string>
   <string name="msg_upload_proxy_tor">Använder proxy: TOR</string>
   <string name="msg_upload_proxy">Använder proxy: %s</string>
   <string name="msg_upload_server">Server: %s</string>
   <string name="msg_upload_key">Nyckel-ID: %s</string>
-  <string name="msg_upload_error_key">Fel vid förbehandling av viktiga data!</string>
+  <string name="msg_upload_error_key">Fel vid förbehandling av nyckeldata!</string>
   <string name="msg_upload_error_not_found">Nyckel hittades inte!</string>
-  <string name="msg_upload_error_upload">Fel vid sändning av nyckel till server! Kontrollera din internetanslutning</string>
-  <string name="msg_upload_success">Sändning till nyckelserver lyckades</string>
+  <string name="msg_upload_error_upload">Fel vid uppladdning av nyckel till server! Kontrollera din internetanslutning</string>
+  <string name="msg_upload_success">Uppladdning till nyckelserver lyckades</string>
   <string name="msg_del_error_empty">Inget att radera!</string>
-  <string name="msg_del_error_multi_secret">Hemliga nycklar kan bara raderas var för sig!</string>
+  <string name="msg_del_error_multi_secret">Hemliga nycklar kan bara tas bort var för sig!</string>
   <plurals name="msg_del">
     <item quantity="one">Raderar en nyckel</item>
     <item quantity="other">Raderar %d nycklar</item>
@@ -1139,8 +1185,8 @@
   <string name="msg_del_key">Raderar nyckel %s</string>
   <string name="msg_del_key_fail">Misslyckades med att radera nyckel %s</string>
   <plurals name="msg_del_ok">
-    <item quantity="one">Raderade nyckel</item>
-    <item quantity="other">Raderade %d nycklar</item>
+    <item quantity="one">Tog bort nyckel</item>
+    <item quantity="other">Tog bort %d nycklar</item>
   </plurals>
   <plurals name="msg_del_fail">
     <item quantity="one">Misslyckades med att radera en nyckel</item>
@@ -1156,23 +1202,28 @@
   <string name="msg_bench_dec_time">Dekrypteringstid: %ss</string>
   <string name="msg_bench_dec_time_avg">Genomsnittlig tid för att dekryptera 5 MB: %ss</string>
   <string name="msg_bench_s2k_for_it">Tid för %1$s SHA1 S2K-iterationer: %2$sms</string>
-  <string name="msg_data">Bearbetar inmatningsdata</string>
+  <string name="msg_data">Behandlar inmatningsdata</string>
   <string name="msg_data_openpgp">Försöker att behandla OpenPGP-data</string>
+  <string name="msg_data_detached">Stötte på fristående signatur</string>
   <string name="msg_data_detached_clear">Rensar tidigare, osignerade data!</string>
+  <string name="msg_data_detached_sig">Behandlar fristående signatur</string>
+  <string name="msg_data_detached_raw">Behandlar signerade data</string>
   <string name="msg_data_detached_trailing">Hoppa över efterföljande data efter signerad del!</string>
   <string name="msg_data_mime_filename">Filnamn: \'%s\'</string>
   <string name="msg_data_mime_from_extension">Gissar MIME-typ från utökning</string>
   <string name="msg_data_mime_length">Innehållslängd: %s</string>
   <string name="msg_data_mime_charset">Teckenuppsättning är \"%s\"</string>
   <string name="msg_data_mime_charset_faulty">Teckenuppsättning är \"%s\", men avkodning misslyckades!</string>
-  <string name="msg_data_mime_part">Bearbetar MIME-del</string>
+  <string name="msg_data_mime_part">Behandlar MIME-del</string>
   <string name="msg_data_mime_type">Innehållstyp: %s</string>
-  <string name="msg_get_success">Hämtning lyckades!</string>
+  <string name="msg_data_ok">Databehandlingen lyckades</string>
+  <string name="msg_get_success">Hämtningen lyckades!</string>
   <string name="msg_get_file_not_found">Inmatningsfilen hittades inte!</string>
   <string name="msg_get_no_valid_keys">Inga giltiga nycklar hittades i fil/urklipp!</string>
-  <string name="msg_get_too_many_responses">Nyckel sökfråga gav alltför många kandidater. Vänligen förfina din förfråga!</string>
-  <string name="msg_get_query_too_short">Sökfråga för kort. Vänligen förfina din förfråga!</string>
+  <string name="msg_get_too_many_responses">Nyckel sökfråga gav alltför många kandidater. Förfina din förfrågan!</string>
+  <string name="msg_get_query_too_short">Sökfråga för kort. Förfina din förfrågan!</string>
   <string name="msg_get_query_too_short_or_too_many_responses">Ingen eller för många nycklar har hittats. Förbättra din förfrågan!</string>
+  <string name="msg_get_no_enabled_source">Aktivera minst en källa för hämtning!</string>
   <string name="msg_download_query_failed">Ett fel uppstod vid sökning efter nycklar.</string>
   <!--Messages for Mime parsing operation-->
   <!--PassphraseCache-->
@@ -1196,7 +1247,7 @@
   <string name="first_time_security_token">Använd säkerhetstoken</string>
   <string name="first_time_security_token_subtitle">(Fidesmo, YubiKey NEO, SIGILANCE, …)</string>
   <string name="first_time_skip">Hoppa över inställning</string>
-  <string name="first_time_blank_security_token">Vill du använda denna tomma säkerhetstoken med OpenKeychain?\n\nVänligen ta bort säkerhetstoken nu, du kommer att frågas när den behövs igen!</string>
+  <string name="first_time_blank_security_token">Vill du använda denna tomma säkerhetstoken med OpenKeychain?\n\nTa bort säkerhetstoken nu, du kommer att frågas när den behövs igen!</string>
   <string name="first_time_blank_security_token_yes">Använd denna säkerhetstoken</string>
   <string name="backup_text">Säkerhetskopior som innehåller dina egna nycklar får aldrig delas med andra personer!</string>
   <string name="backup_all">Full säkerhetskopiering (krypterad)</string>
@@ -1216,12 +1267,12 @@
   <string name="label_revocation">Anledning till återkallelse</string>
   <string name="label_cert_type">Typ</string>
   <string name="error_key_not_found">Nyckel hittades inte!</string>
-  <string name="error_key_processing">Fel vid bearbetning av nyckel!</string>
+  <string name="error_key_processing">Fel vid behandling av nyckel!</string>
   <string name="key_stripped">avskalad</string>
   <string name="key_divert">på säkerhetstoken</string>
   <string name="key_no_passphrase">inget lösenord</string>
   <string name="key_unavailable">otillgänglig</string>
-  <string name="secret_cannot_multiple">Dina egna nycklar kan bara raderas var för sig!</string>
+  <string name="secret_cannot_multiple">Dina egna nycklar kan bara tas bort var för sig!</string>
   <string name="title_view_cert">Visa certifikatinformation</string>
   <string name="unknown">okänd</string>
   <string name="can_sign_not">kan inte signera</string>
@@ -1262,8 +1313,8 @@
   <string name="draw_lockpattern">Dra låsmönster</string>
   <string name="nfc_title">NFC</string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-  <string name="nfc_wrong_tag">Fel Tag. Försök igen.</string>
-  <string name="enable_nfc">Vänligen aktivera NFC i dina inställningar</string>
+  <string name="nfc_wrong_tag">Fel tagg. Försök igen.</string>
+  <string name="enable_nfc">Aktivera NFC i dina inställningar</string>
   <string name="no_nfc_support">Denna enhet stöder inte NFC</string>
   <string name="unlocked">Upplåst</string>
   <string name="nfc_settings">Inställningar</string>
@@ -1295,7 +1346,7 @@
   <string name="security_token_error_generic">Kommunikationsfel. Förmodligen har säkerhetstoken tagits bort för tidigt.</string>
   <string name="security_token_error_try_again">Försök igen</string>
   <string name="security_token_not_supported">Denna säkerhetstoken stöds inte ännu av OpenKeychain</string>
-  <string name="btn_delete_original">Radera ursprunglig fil</string>
+  <string name="btn_delete_original">Ta bort ursprunglig fil</string>
   <string name="snack_encrypt_filenames_on">Filnamn <b>är</b> krypterad.</string>
   <string name="snack_encrypt_filenames_off">Filnamn <b>är inte</b> krypterade.</string>
   <string name="snack_armor_on">Utmatning kodad som text.</string>
@@ -1308,7 +1359,7 @@
   <string name="error_empty_log">(fel, tom logg)</string>
   <string name="error_reading_text">Kunde inte läsa indata för att dekryptera!</string>
   <string name="error_reading_aosp">Det gick inte att läsa data, det här är ett fel i Android-e-postklienten! (Problem #290)</string>
-  <string name="error_reading_k9">Mottog ofullständiga data, försök att trycka \"Hämta komplett meddelande\" i K-9 Mail!</string>
+  <string name="error_reading_k9">Mottog ofullständiga data, försök att trycka på \"Hämta hela meddelandet\" i K-9 Mail!</string>
   <string name="filename_unknown">Okänt filnamn (tryck för att öppna)</string>
   <string name="filename_unknown_text">Text (tryck för att visa)</string>
   <string name="filename_keys">Nyckel säkerhetskopiering (rör för att importera)</string>
@@ -1317,7 +1368,7 @@
   <string name="view_internal">Visa i OpenKeychain</string>
   <string name="error_preparing_data">Fel vid förberedning av data!</string>
   <string name="label_clip_title">Krypterade data</string>
-  <string name="progress_processing">Bearbetar...</string>
+  <string name="progress_processing">Behandlar...</string>
   <string name="error_saving_file">Fil vid sparande av fil!</string>
   <string name="file_saved">Fil sparad!</string>
   <string name="file_delete_ok">Originalfilen borttagen.</string>
@@ -1379,7 +1430,7 @@
     <item>100 EUR</item>
   </string-array>
   <string name="redirect_import_key_title">Skanna med OpenKeychain!</string>
-  <string name="redirect_import_key_message">Du skannade en OpenPGP QR-kod med en annan app. Vänligen skanna med Openkeychain direkt för att vara säker.</string>
+  <string name="redirect_import_key_message">Du skannade en OpenPGP QR-kod med en annan app. Skanna med Openkeychain direkt för att vara säker.</string>
   <string name="redirect_import_key_yes">Skanna igen</string>
   <string name="redirect_import_key_no">Stäng</string>
   <string name="request_permission_title">Tillåt åtkomst till din nyckel?</string>
@@ -1444,7 +1495,7 @@
   <string name="key_insecure_bitstrength_2048_solution">Denna nyckel kan inte uppgraderas. För säker kommunikation måste ägaren generera en ny nyckel.</string>
   <string name="key_insecure_unknown_curve_solution">Denna nyckel kan inte uppgraderas. För säker kommunikation måste ägaren generera en ny nyckel.</string>
   <string name="key_insecure_unidentified_problem">Det finns ett oidentifierat problem med denna nyckel.</string>
-  <string name="key_insecure_unidentified_solution">Vänligen skicka in en felrapport.</string>
+  <string name="key_insecure_unidentified_solution">Skicka in en felrapport.</string>
   <string name="key_expiry_text">Denna nyckel löpte ut <b>%1$s</b>.</string>
   <string name="dialog_insecure_title">Säkerhetsvarning</string>
   <string name="dialog_insecure_recommend_title">Rekommenderad åtgärd</string>
@@ -1452,6 +1503,7 @@
   <string name="insecure_encrypt_bitstrength_suggestion">Nyckeln som används är osäker och kan inte uppgraderas. För att kommunicera säkert måste du skapa en ny nyckel!</string>
   <string name="insecure_sign_bitstrength">Nyckeln du använde för att skicka (signera) detta meddelande är föråldrad!\n\nAlgoritmen (%s) är konfigurerad med en styrka på 1024 bitar eller mindre, vilket har ansetts vara osäkert för allmänt bruk sedan 2006.</string>
   <string name="insecure_sign_bitstrength_suggestion">Nyckeln som används är osäker och kan inte uppgraderas. För att kommunicera säkert måste avsändaren skapa en ny nyckel!</string>
+  <string name="insecure_sign_unidentified">Det finns ett oidentifierat säkerhetsproblem med nyckeln som används för att skicka (signera) detta meddelande!</string>
   <string name="insecure_mdc_suggestion">En saknad MDC är ett problem i sändningsprogrammet, eller en attack. För säker end-to-end kommunikation, ska meddelanden också signeras av avsändaren!</string>
   <string name="dialog_insecure_button_view_key">Visa nyckel</string>
   <string name="dialog_insecure_button_ok">Förstått</string>
@@ -1502,7 +1554,7 @@
   <string name="token_result_key_found">Nyckel hittad!</string>
   <string name="token_result_token_ok">Klar för användning!</string>
   <string name="token_result_empty">Token är tom</string>
-  <string name="token_put_key_unsupported">Vänligen ställ in denna säkerhetstoken med GnuPG. OpenKeychain stöder för närvarande endast signering/dekryptering med denna säkerhetstoken.</string>
+  <string name="token_put_key_unsupported">Ställ in denna säkerhetstoken med GnuPG. OpenKeychain stöder för närvarande endast signering/dekryptering med denna säkerhetstoken.</string>
   <string name="token_action_retry">Försök söka igen</string>
   <string name="token_action_load_from_file">Läs in från fil</string>
   <string name="token_action_reset">Återställ säkerhetstoken</string>
@@ -1534,11 +1586,11 @@
   <string name="msg_ret_curi_mismatch">Nyckeln matchar inte</string>
   <string name="msg_ret_curi_ok">Nyckel hittad</string>
   <string name="msg_ret_curi_open">Öppningswebbadress: %s</string>
-  <string name="msg_ret_curi_start">Ladda nyckel från fil eller dokument...</string>
-  <string name="msg_ret_ks_error">Ett fel inträffade vid sökning efter nycklar!</string>
+  <string name="msg_ret_curi_start">Läser in nyckel från fil eller dokument...</string>
+  <string name="msg_ret_ks_error">Okänt fel vid sökning efter nyckel!</string>
   <string name="msg_ret_ks_error_not_found">Nyckel hittades inte</string>
-  <string name="msg_ret_ks_fp_match">Hittad nyckels fingeravtryck matchar</string>
-  <string name="msg_ret_ks_fp_mismatch">Hittad nyckels fingeravtryck matchar Inte!</string>
+  <string name="msg_ret_ks_fp_match">Hämtade nyckelns fingeravtrycksmatchningar</string>
+  <string name="msg_ret_ks_fp_mismatch">Hämtad nyckels fingeravtryck matchar inte!</string>
   <string name="msg_ret_ks_ok">Nyckel hittad</string>
   <string name="msg_ret_ks_start">Söker efter nyckel på nyckelservrar…</string>
   <string name="msg_ret_local_not_found">Nyckel hittades inte</string>
@@ -1557,15 +1609,21 @@
   <string name="label_usb_untested">Tillåt otestade USB-enheter</string>
   <string name="use_key">Använd nyckel: %s</string>
   <string name="use_key_no_name">Använd nyckel: <![CDATA[<no name>]]></string>
+  <string name="title_select_key">%s vill ställa in ände-till-ände-kryptering för denna adress:</string>
   <string name="select_identity_cancel">Inaktivera</string>
   <string name="select_identity_create">Skapa en nyckel för mig</string>
   <string name="menu_list_unrelated_keys">Lista orelaterade nycklar</string>
   <string name="no_keys_gen_title">Detta är en ny adress</string>
+  <string name="no_keys_gen_subtitle">Skapa ny ände-till-ände-nyckel i OpenKeychain</string>
   <string name="no_keys_import_title">Jag har redan en nyckel</string>
+  <string name="no_keys_import_subtitle">Importera ände-till-ände-nyckel från annan enhet</string>
   <string name="key_list_import">Använd en annan nyckel</string>
-  <string name="key_gen_progress">Vänligen vänta…</string>
+  <string name="key_gen_progress">Vänta…</string>
   <string name="key_gen_back">Tillbaka</string>
   <string name="key_gen_finish">Avsluta</string>
+  <string name="key_gen_done">Skapade ände-till-ände-nyckel!</string>
+  <string name="key_import_text">För att använda en ände-till-ände-nyckel måste den importeras till OpenKeychain.</string>
+  <string name="key_import_text_autocrypt_setup_msg">För att importera din befintliga inställning från en annan enhet, kan du också öppna ett Autocrypt-inställningsmeddelande i %s.</string>
   <string name="button_goto_openkeychain">Gå till OpenKeychain</string>
   <string name="snack_keylist_clipboard_title">Hittade nyckeldata i urklipp!</string>
   <string name="snack_keylist_clipboard_action">Visa</string>

@@ -239,14 +239,17 @@
   <string name="none"><![CDATA[<none>]]></string>
   <plurals name="n_keys">
     <item quantity="one">1 clé</item>
+    <item quantity="many">%d clés</item>
     <item quantity="other">%d clés</item>
   </plurals>
   <plurals name="n_keyservers">
     <item quantity="one">%d serveur de clés</item>
+    <item quantity="many">%d serveurs de clés</item>
     <item quantity="other">%d serveurs de clés</item>
   </plurals>
   <plurals name="n_authorities">
     <item quantity="one">%d autorité</item>
+    <item quantity="many">%d autorités</item>
     <item quantity="other">%d autorités</item>
   </plurals>
   <string name="secret_key">Clé secrète :</string>
@@ -278,7 +281,7 @@
   <string name="ecc_p384_description_html">très petite taille de fichier, jugée sûre jusqu’à 2040 &lt;br/&gt; &lt;u&gt;expérimentale et non prise en charge par toutes les versions&lt;/u&gt;</string>
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">petite taille de fichier, jugée sûre jusqu’à 2040+ &lt;br/&gt; &lt;u&gt;expérimentale et non prise en charge par toutes les versions&lt;/u&gt;</string>
-  <string name="ecc_25519">Ed25519 / Cv25519</string>
+  <string name="ecc_25519">Ed25519/Cv25519</string>
   <string name="ecc_25519_description_html">petite taille de fichier, jugée sûre jusqu’à 2040+ &lt;br/&gt; &lt;u&gt;expérimentale et non prise en charge par toutes les versions&lt;/u&gt;</string>
   <string name="usage_none">Aucune (liaison de la sous-clé seulement)</string>
   <string name="usage_sign">Signer</string>
@@ -286,8 +289,9 @@
   <string name="usage_sign_and_encrypt">Signer et chiffrer</string>
   <string name="error">Erreur</string>
   <string name="error_message">Erreur : %s</string>
-  <string name="theme_dark">Sombre</string>
+  <string name="theme_auto">Automatique</string>
   <string name="theme_light">Clair</string>
+  <string name="theme_dark">Sombre</string>
   <string name="strip">La dépouiller</string>
   <!--sentences-->
   <string name="wrong_passphrase">Le mot de passe est erroné.</string>
@@ -336,6 +340,7 @@
   <string name="authentication_subkey_not_found">Cette clé n’a pas de sous-clé d’authentification.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d mauvaise clé secrète ignorée. Vous avez peut-être exporté avec l’option\n --export-secret-subkeys\nAssurez-vous d’exporter plutôt avec\n --export-secret-keys.</item>
+    <item quantity="many">%d mauvaises clés secrètes ignorées. Vous avez peut-être exporté avec l’option\n --export-secret-subkeys\nAssurez-vous d’exporter plutôt avec\n --export-secret-keys.</item>
     <item quantity="other">%d mauvaises clés secrètes ignorées. Vous avez peut-être exporté avec l’option\n --export-secret-subkeys\nAssurez-vous d’exporter plutôt avec\n --export-secret-keys.</item>
   </plurals>
   <string name="list_empty">Cette liste est vide</string>
@@ -505,26 +510,32 @@
   <!--Import result toast-->
   <plurals name="import_keys_added_and_updated_1">
     <item quantity="one">Une clé importée avec succès</item>
+    <item quantity="many">%1$d clés importées avec succès</item>
     <item quantity="other">%1$d clés importées avec succès</item>
   </plurals>
   <plurals name="import_keys_added_and_updated_2">
     <item quantity="one">et une clé%2$s mise à jour.</item>
+    <item quantity="many">et %1$d clés%2$s mises à jour.</item>
     <item quantity="other">et %1$d clés%2$s mises à jour.</item>
   </plurals>
   <plurals name="import_keys_added">
     <item quantity="one">Une clé%2$s importée avec succès.</item>
+    <item quantity="many">%1$d clés%2$s importées avec succès.</item>
     <item quantity="other">%1$d clés%2$s importées avec succès.</item>
   </plurals>
   <plurals name="import_keys_updated">
     <item quantity="one">Une clé%2$s mise à jour avec succès.</item>
+    <item quantity="many">%1$d clés%2$s mises à jour avec succès</item>
     <item quantity="other">%1$d clés%2$s mises à jour avec succès</item>
   </plurals>
   <plurals name="import_keys_with_errors">
     <item quantity="one">Échec d’importation pour une clé</item>
+    <item quantity="many">Échec d’importation pour %d clés</item>
     <item quantity="other">Échec d’importation pour %d clés</item>
   </plurals>
   <plurals name="import_error">
     <item quantity="one">Échec d’importation</item>
+    <item quantity="many">Échec d’importation pour %d clés</item>
     <item quantity="other">Échec d’importation pour %d clés</item>
   </plurals>
   <string name="import_warn_missing">La clé n’a pas été trouvée sur les serveurs de clés.</string>
@@ -533,18 +544,22 @@
   <!--Delete result toast-->
   <plurals name="delete_ok_but_fail_1">
     <item quantity="one">Une clé a été supprimée avec succès</item>
+    <item quantity="many">%1$d clés ont été supprimées avec succès</item>
     <item quantity="other">%1$d clés ont été supprimées avec succès</item>
   </plurals>
   <plurals name="delete_ok_but_fail_2">
     <item quantity="one">, mais échec de suppression d’une key%2$s.</item>
+    <item quantity="many">, mais échec de suppression de %1$d key%2$s.</item>
     <item quantity="other">, mais échec de suppression de %1$d key%2$s.</item>
   </plurals>
   <plurals name="delete_ok">
     <item quantity="one">Une key%2$s supprimée avec succès.</item>
+    <item quantity="many">%1$d key%2$s supprimées avec succès.</item>
     <item quantity="other">%1$d key%2$s supprimées avec succès.</item>
   </plurals>
   <plurals name="delete_fail">
     <item quantity="one">Erreur de suppression d’une clé.</item>
+    <item quantity="many">Erreur de suppression d’%1$d clés.</item>
     <item quantity="other">Erreur de suppression d’%1$d clés.</item>
   </plurals>
   <string name="delete_nothing">Rien à supprimer.</string>
@@ -557,14 +572,17 @@
   <!--Certify result toast-->
   <plurals name="certify_keys_ok">
     <item quantity="one">clé%2$s confirmée avec succès</item>
+    <item quantity="many">%1$d clés%2$s confirmées avec succès</item>
     <item quantity="other">%1$d clés%2$s confirmées avec succès</item>
   </plurals>
   <plurals name="certify_keys_with_errors">
     <item quantity="one">La certification a échoué</item>
+    <item quantity="many">La certification de %d clés a échoué</item>
     <item quantity="other">La certification de %d clés a échoué</item>
   </plurals>
   <plurals name="certify_error">
     <item quantity="one">La certification a échoué</item>
+    <item quantity="many">La certification de %d clés a échoué</item>
     <item quantity="other">La certification de %d clés a échoué</item>
   </plurals>
   <!--Intent labels-->
@@ -619,6 +637,7 @@
   <!--Key list-->
   <plurals name="key_list_selected_keys">
     <item quantity="one">1 clé choisie</item>
+    <item quantity="many">%d clés choisies</item>
     <item quantity="other">%d clés choisies</item>
   </plurals>
   <string name="key_list_empty_text1">Aucune clé n’a été trouvée</string>
@@ -820,11 +839,13 @@
   <string name="msg_ip_uid_cert_good_revoke">Une bonne révocation de certificat par %1$s a été trouvée</string>
   <plurals name="msg_ip_uid_certs_unknown">
     <item quantity="one">Un certificat ignoré provenant d’une clé publique inconnue</item>
+    <item quantity="many">%s certificats ignorés provenant de clés publiques inconnues</item>
     <item quantity="other">%s certificats ignorés provenant de clés publiques inconnues</item>
   </plurals>
   <string name="msg_ip_uid_classifying_zero">Classification des ID utilisateurs (aucune clé de confiance n’est disponible)</string>
   <plurals name="msg_ip_uid_classifying">
     <item quantity="one">Classification des ID utilisateurs (en utilisant une clé de confiance)</item>
+    <item quantity="many">Classification des ID utilisateurs (en utilisant %s clés de confiance)</item>
     <item quantity="other">Classification des ID utilisateurs (en utilisant %s clés de confiance)</item>
   </plurals>
   <string name="msg_ip_uid_reorder">Réorganisation des ID utilisateurs</string>
@@ -841,6 +862,7 @@
   <string name="msg_ip_uat_cert_good_revoke">Une révocation d’un bon certificat par %1$s a été trouvée</string>
   <plurals name="msg_ip_uat_certs_unknown">
     <item quantity="one">Un certificat provenant d’une clé publique inconnue est ignoré</item>
+    <item quantity="many">%s certificats provenant de clés publiques inconnues sont ignorés</item>
     <item quantity="other">%s certificats provenant de clés publiques inconnues sont ignorés</item>
   </plurals>
   <string name="msg_ip_uat_classifying">Organisation des attributs utilisateur</string>
@@ -903,11 +925,13 @@
   <string name="msg_kc_success">Canonicalisation du trousseau réussie, aucun changement</string>
   <plurals name="msg_kc_success_bad">
     <item quantity="one">Canonicalisation du trousseau réussie, un certificat erroné supprimé</item>
+    <item quantity="many">Canonicalisation du trousseau réussie, %d certificats erronés supprimés</item>
     <item quantity="other">Canonicalisation du trousseau réussie, %d certificats erronés supprimés</item>
   </plurals>
   <string name="msg_kc_success_bad_and_red">Canonicalisation du trousseau réussie, %1$s certificats erronés et %2$s certificats redondants supprimés</string>
   <plurals name="msg_kc_success_redundant">
     <item quantity="one">Canonicalisation du trousseau réussie, un certificat redondant supprimé</item>
+    <item quantity="many">Canonicalisation du trousseau réussie, %d certificats redondants supprimés</item>
     <item quantity="other">Canonicalisation du trousseau réussie, %d certificats redondants supprimés</item>
   </plurals>
   <string name="msg_kc_uid_bad_err">Suppression du mauvais auto-certificat pour l’ID utilisateur « %s »</string>
@@ -1157,10 +1181,12 @@
   <string name="msg_crt_certifying">Générations des certifications</string>
   <plurals name="msg_crt_certify_uids">
     <item quantity="one">Certification d’un ID utilisateur pour la clé %2$s</item>
+    <item quantity="many">Certification de %1$d ID utilisateur pour la clé %2$s</item>
     <item quantity="other">Certification de %1$d ID utilisateur pour la clé %2$s</item>
   </plurals>
   <plurals name="msg_crt_certify_uats">
     <item quantity="one">Certification d’un attribut utilisateur pour la clé %2$s</item>
+    <item quantity="many">Certification de %1$d attributs utilisateur pour la clé %2$s</item>
     <item quantity="other">Certification de %1$d attributs utilisateur pour la clé %2$s</item>
   </plurals>
   <string name="msg_crt_error_self">Un auto-certificat ne peut pas être délivré ainsi</string>
@@ -1181,6 +1207,7 @@
   <string name="msg_crt_upload_success">clé téléversée vers le serveur avec succès</string>
   <plurals name="msg_import">
     <item quantity="one">Importation de la clé</item>
+    <item quantity="many">Importation de %d clés</item>
     <item quantity="other">Importation de %d clés</item>
   </plurals>
   <string name="msg_import_fetch_error_decode">Erreur de décodage du trousseau récupéré</string>
@@ -1200,6 +1227,7 @@
   <string name="msg_import_success">L’opération d’importation est réussie</string>
   <plurals name="msg_backup">
     <item quantity="one">Sauvegarder avec une clé</item>
+    <item quantity="many">Sauvegarder avec %d clés</item>
     <item quantity="other">Sauvegarder avec %d clés</item>
   </plurals>
   <string name="msg_backup_all">Sauvegarder avec toutes les clés</string>
@@ -1223,16 +1251,19 @@
   <string name="msg_del_error_multi_secret">Les clés secrètes ne peuvent être supprimées qu’individuellement</string>
   <plurals name="msg_del">
     <item quantity="one">Suppression d’une clé</item>
+    <item quantity="many">Suppression de %d clés</item>
     <item quantity="other">Suppression de %d clés</item>
   </plurals>
   <string name="msg_del_key">Suppression de la clé %s</string>
   <string name="msg_del_key_fail">Échec de suppression de la clé %s</string>
   <plurals name="msg_del_ok">
     <item quantity="one">Suppression de la clé réussie</item>
+    <item quantity="many">Suppression de %d clés réussie</item>
     <item quantity="other">Suppression de %d clés réussie</item>
   </plurals>
   <plurals name="msg_del_fail">
     <item quantity="one">Échec de suppression d’une clé</item>
+    <item quantity="many">Échec de suppression de %d clés</item>
     <item quantity="other">Échec de suppression de %d clés</item>
   </plurals>
   <string name="msg_revoke_error_empty">Rien à révoquer.</string>
@@ -1289,6 +1320,7 @@
   <string name="passp_cache_notif_touch_to_clear">Toucher pour effacer les mots de passe.</string>
   <plurals name="passp_cache_notif_n_keys">
     <item quantity="one">%d mot de passe a été enregistré</item>
+    <item quantity="many">%d mots de passe ont été enregistrés</item>
     <item quantity="other">%d mots de passe ont été enregistrés</item>
   </plurals>
   <string name="passp_cache_notif_keys">Mots de passe enregistrés</string>
@@ -1399,6 +1431,7 @@
   <string name="security_token_error">Erreur : %s</string>
   <plurals name="security_token_error_pin">
     <item quantity="one">Le NIP est erroné.\nil reste %d essai</item>
+    <item quantity="many">Le NIP est erroné.\nIl reste %d essais</item>
     <item quantity="other">Le NIP est erroné.\nIl reste %d essais</item>
   </plurals>
   <string name="security_token_error_terminated">Le jeton de sécurité est en état de fin d’opération.</string>
@@ -1653,6 +1686,7 @@
   <string name="token_unlock_attempts_none">Le maximum de tentatives a été atteint</string>
   <plurals name="token_unlock_attempts">
     <item quantity="one">Il reste une tentative</item>
+    <item quantity="many">Il reste %d tentatives</item>
     <item quantity="other">Il reste %d tentatives</item>
   </plurals>
   <string name="token_error_locked_indefinitely">Trop de tentatives de réinitialisation. Le jeton ne peut pas être déverrouillé</string>
@@ -1704,6 +1738,7 @@
   <string name="msg_trust_count_none">Il n’y a pas de clé à mettre à jour</string>
   <plurals name="msg_trust_count">
     <item quantity="one">Mise à jour d’une clé</item>
+    <item quantity="many">Mise à jour de %d clés</item>
     <item quantity="other">Mise à jour de %d clés</item>
   </plurals>
   <string name="button_locate_nfc">Où est mon lecteur CCP ?</string>

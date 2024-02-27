@@ -1,4 +1,4 @@
-[//]: # (NOTERING: Var vänlig och sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
+[//]: # (NOTERING: Sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
 
 ## Nyckelbekräftelse
 Utan bekräftelse kan du inte vara säker på om en nyckel verkligen motsvarar en viss person.

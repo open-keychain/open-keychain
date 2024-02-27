@@ -1,5 +1,9 @@
 [//]: # (تذکر: هر جمله در همان خط!)
 
+## 5.7
+  * Fixes for Curve25519
+  * IDEA cipher is now considered insecure
+
 ## 5.6
   * Compatibility with Android 10 and higher
   * Several bug fixes

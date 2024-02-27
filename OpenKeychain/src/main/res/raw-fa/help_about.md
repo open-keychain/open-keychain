@@ -1,6 +1,6 @@
 [//]: # (تذکر: هر جمله در همان خط!)
 
-[https://www.openkeychain.org](https://www.openkeychain.org)
+
 
 [OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
 

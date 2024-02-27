@@ -1,5 +1,9 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 5.7
+  * Fixes for Curve25519
+  * IDEA cipher is now considered insecure
+
 ## 5.6
   * Compatibility with Android 10 and higher
   * Several bug fixes
@@ -145,10 +149,10 @@
   * First version with full YubiKey support available from the user interface: Edit keys, bind YubiKey to keys,...
   * Material design
   * Integration of QR Code Scanning (New permissions required)
-  * Improved key creation wizard
-  * Fix missing contacts after sync
+  * Ulepszony kreator tworzenia kluczy
+  * Naprawiono brakujące kontakty po synchronizacji
   * Wymaga Androida 4
-  * Redesigned key screen
+  * Przeprojektowano ekran z kluczami
   * Simplify crypto preferences, better selection of secure ciphers
   * API: Detached signatures, free selection of signing key,...
   * Fix: Some valid keys were shown revoked or expired
@@ -238,7 +242,7 @@
   * Notification showing cached passphrases
   * Keys are connected to Android's contacts
 
-This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar
+To wydanie nie byłoby możliwe bez pracy następujących osób: Vincent Breitmoser (GSoC 2014), mar-v-in (GSoC 2014), Daniel Albert, Art O Cathain, Daniel Haß, Tim Bray, Thialfihar
 
 ## 2.7
 
@@ -272,8 +276,8 @@ This release wouldn't be possible without the work of Vincent Breitmoser (GSoC 2
 
 
 ## 2.4
-Thanks to all applicants of Google Summer of Code 2014 who made this release feature rich and bug free!
-Besides several small patches, a notable number of patches are made by the following people (in alphabetical order):
+Podziękowania dla wszystkich wnioskodawców Google Summer of Code 2014, którzy sprawili, że to wydanie jest bogate w funkcje i wolne od błędów!
+Poza kilkoma małymi usprawnieniami, godną uwagi liczbę usprawnień wykonują następujące osoby (w kolejności alfabetycznej):
 Daniel Hammann, Daniel Haß, Greg Witczak, Miroojin Bakshi, Nikhil Peter Raj, Paul Sarbinowski, Sreeram Boyapati, Vincent Breitmoser.
 
   * New unified key list

@@ -1,28 +1,28 @@
 [//]: # (NOTĂ: Vă rugăm să puneți fiecare frază pe o linie separată, Transifex pune fiecare linie in câmpul ei de traducere!)
 
-## Key Confirmation
-Without confirmation, you cannot be sure if a key really corresponds to a specific person.
-The simplest way to confirm a key is by scanning the QR Code or exchanging it via NFC.
-To confirm keys between more than two persons, we suggest using the key exchange method available for your keys.
+## Confirmarea cheii
+Fără confirmare, nu puteți fi sigur că o cheie corespunde cu adevărat unei anumite persoane.
+Cel mai simplu mod de a confirma o cheie este scanarea codului QR sau schimbul prin NFC.
+Pentru a confirma cheile între mai mult de două persoane, vă sugerăm să folosiți metoda de schimb de chei disponibilă pentru cheile dumneavoastră.
 
-## Key Status
+## Starea cheii
 
 <img src="status_signature_verified_cutout_24dp"/>  
-Confirmed: You have already confirmed this key, e.g., by scanning the QR Code.  
+Confirmat: Ați confirmat deja această cheie, de exemplu, prin scanarea codului QR.  
 <img src="status_signature_unverified_cutout_24dp"/>  
-Unconfirmed: This key has not been confirmed yet. You cannot be sure if the key really corresponds to a specific person.  
+Neconfirmat: Această cheie nu a fost confirmată încă. Nu puteți fi sigur că această cheie corespunde într-adevăr unei anumite persoane.  
 <img src="status_signature_expired_cutout_24dp"/>  
-Expired: This key is no longer valid. Only the owner can extend its validity.  
+A expirat: Această cheie nu mai este valabilă. Numai proprietarul îi poate extinde valabilitatea.  
 <img src="status_signature_revoked_cutout_24dp"/>  
-Revoked: This key is no longer valid. It has been revoked by its owner.
+Revocată: Această cheie nu mai este valabilă. Ea a fost revocată de către proprietarul său.
 
-## Advanced Information
-A "key confirmation" in OpenKeychain is implemented by creating a certification according to the OpenPGP standard.
-This certification is a ["generic certification (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) described in the standard by:
-"The issuer of this certification does not make any particular assertion as to how well the certifier has checked that the owner of the key is in fact the person described by the User ID."
+## Informații avansate
+O "confirmare a cheii" în OpenKeychain este implementată prin crearea unei certificări în conformitate cu standardul OpenPGP.
+Această certificare este o ["certificare generică (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) descrisă în standard prin:
+"Emitentul acestei certificări nu face nicio afirmație specială cu privire la cât de bine a verificat certificatorul că proprietarul cheii este de fapt persoana descrisă de ID-ul utilizatorului."
 
-Traditionally, certifications (also with higher certification levels, such as "positive certifications" (0x13)) are organized in OpenPGP's Web of Trust.
-Our model of key confirmation is a much simpler concept to avoid common usability problems related to this Web of Trust.
-We assume that keys are verified only to a certain degree that is still usable enough to be executed "on the go".
-We also do not implement (potentially transitive) trust signatures or an ownertrust database like in GnuPG.
-Furthermore, keys which contain at least one user ID certified by a trusted key will be marked as "confirmed" in the key listings.
+În mod tradițional, certificările (de asemenea, cu niveluri de certificare mai înalte, cum ar fi "certificările pozitive" (0x13)) sunt organizate în Web of Trust al OpenPGP.
+Modelul nostru de confirmare a cheilor este un concept mult mai simplu pentru a evita problemele comune de utilizare legate de această rețea de încredere.
+Presupunem că cheile sunt verificate doar până la un anumit grad care este încă suficient de utilizabil pentru a fi executat "în mișcare".
+De asemenea, nu implementăm semnături de încredere (potențial tranzitive) sau o bază de date de încredere proprie ca în GnuPG.
+În plus, cheile care conțin cel puțin un ID de utilizator certificat de o cheie de încredere vor fi marcate ca fiind "confirmate" în listele de chei.

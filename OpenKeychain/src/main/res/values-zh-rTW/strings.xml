@@ -8,12 +8,12 @@
   <string name="title_encrypt_files">加密</string>
   <string name="title_decrypt">解密</string>
   <string name="title_add_subkey">新增子金鑰</string>
+  <string name="title_change_master_key">修改主金鑰</string>
   <string name="title_edit_key">編輯金鑰</string>
   <string name="title_preferences">設定</string>
   <string name="title_api_registered_apps">應用程式</string>
   <string name="title_key_server_preference">OpenPGP金鑰伺服器</string>
-  <string name="title_smartpgp_authorities_preference">SmartPGP: 可信任的授權者
-</string>
+  <string name="title_smartpgp_authorities_preference">SmartPGP: 可信任的授權者</string>
   <string name="title_change_passphrase">修改金鑰密碼</string>
   <string name="title_share_fingerprint_with">分享指紋…</string>
   <string name="title_share_key">分享金鑰…</string>
@@ -99,7 +99,7 @@
   <string name="btn_saved">已儲存</string>
   <string name="btn_not_matching">不符合</string>
   <!--Shortcut Strings-->
-  <string name="shortcut_debug">調試操作</string>
+  <string name="shortcut_debug">除錯選項</string>
   <!--Content Description-->
   <string name="cd_encrypt_files">加密檔案</string>
   <string name="cd_exchange_keys">交換金鑰</string>
@@ -266,14 +266,14 @@
   <string name="ecc_p256">ECC P-256</string>
   <string name="ecc_p384">ECC P-384</string>
   <string name="ecc_p521">ECC P-521</string>
-  <string name="ecc_25519">Ed25519 / Cv25519</string>
   <string name="usage_sign">簽名</string>
   <string name="usage_encrypt">加密</string>
   <string name="usage_sign_and_encrypt">簽署並加密</string>
   <string name="error">錯誤</string>
   <string name="error_message">錯誤: %s</string>
-  <string name="theme_dark">深色</string>
+  <string name="theme_auto">竹</string>
   <string name="theme_light">亮色</string>
+  <string name="theme_dark">深色</string>
   <!--sentences-->
   <string name="wrong_passphrase">密碼錯誤。</string>
   <string name="no_filemanager_installed">找不到相容的檔案管理員。</string>
@@ -547,9 +547,11 @@
   <string name="retry_up_dialog_btn_reupload">重試</string>
   <string name="retry_up_dialog_btn_cancel">取消</string>
   <!--Delete or revoke private key dialog-->
+  <string name="del_rev_dialog_btn_revoke">撤銷與上傳</string>
   <string name="del_rev_dialog_btn_delete">只刪除金鑰</string>
   <!--Delete Or Revoke Dialog spinner-->
   <string name="del_rev_dialog_choice_delete">只刪除金鑰</string>
+  <string name="del_rev_dialog_choice_rev_upload">撤銷與上傳</string>
   <!--Key list-->
   <plurals name="key_list_selected_keys">
     <item quantity="other">已選取 %d 個金鑰</item>
@@ -560,6 +562,8 @@
   <string name="key_list_fab_qr_code">掃描二維條碼</string>
   <string name="key_list_fab_search">金鑰搜尋</string>
   <string name="key_list_fab_import">從檔案匯入</string>
+  <string name="key_list_dummy_title">你還沒有任何金鑰！</string>
+  <string name="key_list_dummy_subtitle">按這裡來建立或匯入一個</string>
   <!--Key view-->
   <string name="key_view_action_edit">編輯</string>
   <string name="key_view_action_encrypt">加密文字</string>
@@ -567,7 +571,9 @@
   <string name="key_view_action_certify">確認金鑰</string>
   <string name="key_view_action_update">從金鑰伺服器更新</string>
   <string name="key_view_action_share_with">分享...</string>
+  <string name="key_view_action_share_ssh_with">以 SSH 公鑰分享</string>
   <string name="key_view_action_share_nfc">以NFC分享</string>
+  <string name="key_view_action_upload">發佈到金錀伺服器</string>
   <string name="key_view_tab_main">摘要</string>
   <string name="key_view_tab_start">快速上手</string>
   <string name="key_view_tab_share">分享</string>
@@ -576,6 +582,7 @@
   <string name="user_id_info_revoked_title">已撤銷</string>
   <string name="user_id_info_revoked_text">這個身分識別被金鑰持有人撤銷，已不再有效。</string>
   <string name="user_id_info_certified_title">已確認</string>
+  <string name="user_id_info_uncertified_title">未確認</string>
   <!--Key trust-->
   <string name="key_trust_start_cloud_search">開始搜尋</string>
   <!--Edit key-->
@@ -601,6 +608,7 @@
   <string name="edit_key_error_add_identity">新增至少一組身分識別！</string>
   <string name="edit_key_error_add_subkey">新增至少一組子金鑰！</string>
   <!--Create key-->
+  <string name="create_key_upload">發佈到金錀伺服器</string>
   <string name="create_key_empty">必填欄位</string>
   <string name="create_key_passphrases_not_equal">密碼不相符</string>
   <string name="create_key_final_text">您輸入了以下資訊：</string>
@@ -615,10 +623,19 @@
   <string name="create_key_add_email">新增電子郵件</string>
   <string name="create_key_add_email_text">附加的電子郵件同樣與您的金鑰有所關聯，可以提供您安全的通訊。</string>
   <string name="create_key_email_already_exists_text">電子郵件地址已經存在</string>
+  <string name="create_key_email_empty_email">Email 不能為空</string>
+  <string name="create_key_yubi_key_pin_text">請輸入一個 6 位數的 PIN 碼</string>
+  <string name="create_key_yubi_key_admin_pin_text">請在安全的地方紀錄你的主要 PIN (在你輸入 3 次錯誤的 PIN 碼時，我們將要求你輸入這組主要 PIN 碼)</string>
   <string name="create_key_yubi_key_pin">PIN碼</string>
   <string name="create_key_yubi_key_admin_pin">管理者PIN碼</string>
   <string name="create_key_yubi_key_pin_repeat">重複PIN碼</string>
   <string name="create_key_yubi_key_pin_not_correct">PIN碼不正確！</string>
+  <string name="create_key_yubi_key_pin_too_short">PIN 碼必須至少 6 個數字以上！</string>
+  <string name="create_key_yubi_key_pin_insecure">請輸入一個安全的 PIN 碼，而不是像 000000 或是 123456 這樣的 (最常用的 20 組 PIN 碼將不被允許)</string>
+  <string name="create_key_yubi_key_algorithm_text">請為每組金錀選擇加密演算法</string>
+  <string name="create_key_yubi_key_algorithm_sign_text">簽章金鑰</string>
+  <string name="create_key_yubi_key_algorithm_dec_text">解密金錀</string>
+  <string name="create_key_yubi_key_algorithm_auth_text">驗證金錀</string>
   <!--View key-->
   <string name="view_key_my_key">我的金鑰：</string>
   <string name="view_key_verified">已確認金鑰</string>
@@ -627,6 +644,7 @@
   <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">新增金鑰伺服器</string>
   <string name="edit_keyserver_dialog_title">編輯金鑰伺服器</string>
+  <string name="add_keyserver_connection_verified">連線確認</string>
   <string name="add_keyserver_without_verification">已新增金鑰伺服器但並未進行驗證。</string>
   <string name="add_keyserver_invalid_url">URL無效！</string>
   <string name="keyserver_preference_deleted">已刪除 %s</string>
@@ -872,6 +890,7 @@
   <string name="button_cancel">取消</string>
   <string name="button_back">返回</string>
   <string name="button_got_it">收到！</string>
+  <string name="key_health_expired_title">過期</string>
   <string name="key_health_revoked_title">撒銷</string>
   <string name="key_health_insecure_title">不安全</string>
   <string name="keyserver_title_published">釋出</string>
@@ -912,11 +931,20 @@
   <string name="key_gen_progress">請稍候...</string>
   <string name="key_gen_back">返回</string>
   <string name="key_gen_finish">結束</string>
+  <string name="key_gen_finishing">這在完成設定…</string>
   <string name="button_goto_openkeychain">前往 Openkeychain</string>
   <string name="snack_keylist_clipboard_action">檢視</string>
   <string name="notify_channel_passcache">快取口令</string>
   <string name="notify_channel_orbot">Orbot 狀態</string>
   <string name="notify_title_keysync">正在更新金鑰...</string>
+  <string name="snack_keysync_start">開始更新金鐱</string>
+  <string name="snack_keysync_finished">金鑰更新完成</string>
+  <string name="snack_keysync_error">更新金鑰的過程中發生錯誤</string>
+  <string name="keychoice_cannot_encrypt">這組金鑰不能用來加密！</string>
+  <string name="keychoice_cannot_sign">這組金鑰不能用來簽章！</string>
+  <string name="keychoice_insecure">這組金鑰因其不安全而無法使用！</string>
+  <string name="keychoice_revoked">這組金鑰已被撤消而無法使用！</string>
+  <string name="keychoice_expired">這組金鑰已經過期而無法使用！</string>
   <string name="keylist_item_key_id">金鑰 ID: %s</string>
   <string name="keylist_header_anonymous">匿名</string>
   <string name="keylist_header_special">#</string>

@@ -8,7 +8,7 @@
 ## สถานะกุญแจ
 
 <img src="status_signature_verified_cutout_24dp"/>  
-Confirmed: You have already confirmed this key, e.g., by scanning the QR Code.  
+ยืนยันแล้ว: คุณได้ยืนยันกุญแจนี้แล้ว เช่น โดยการสแกนรหัส QR  
 <img src="status_signature_unverified_cutout_24dp"/>  
 Unconfirmed (ไม่ยืนยัน): กุญแจนี้ยังไม่ถูกยืนยัน คุณไม่สามารถแน่ใจได้ว่ากุญแจดอกนี้จะเป็นกุญแจสำหรับบุคคลคนหนึ่งจริงๆ  
 <img src="status_signature_expired_cutout_24dp"/>  
@@ -17,9 +17,9 @@ Expired (หมดอายุ): กุญแจนี้ใช้ไม่ไ�
 Revoked (ถูกเพิกถอน): กุญแจนี้ใช้ไม่ได้อีกต่อไปแล้ว มันถูกเพิกถอนโดยเจ้าของของมัน
 
 ## ข้อมูลขั้นสูง
-A "key confirmation" in OpenKeychain is implemented by creating a certification according to the OpenPGP standard.
-This certification is a ["generic certification (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) described in the standard by:
-"The issuer of this certification does not make any particular assertion as to how well the certifier has checked that the owner of the key is in fact the person described by the User ID."
+"การยืนยันกุญแจ" ใน OpenKeychain นั้นทำโดยการสร้างใบรับรองตามมาตรฐาน OpenPGP
+ใบรับรองดังกล่าวคือ ["generic certification (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1) ซึ่งในถูกอธิบายในมาตรฐานดังนี้:
+"ผู้ออกใบรับรองนี้ไม่ได้อ้างยืนยันอย่างเฉพาะเจาะจง ว่าผู้รับรองได้ตรวจสอบอย่างไรว่า เจ้าของกุญแจนั้นเป็นบุคคลตามที่อธิบายใน User ID จริง"
 
 Traditionally, certifications (also with higher certification levels, such as "positive certifications" (0x13)) are organized in OpenPGP's Web of Trust.
 Our model of key confirmation is a much simpler concept to avoid common usability problems related to this Web of Trust.

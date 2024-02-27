@@ -230,10 +230,12 @@
   <string name="none"><![CDATA[<none>]]></string>
   <plurals name="n_keys">
     <item quantity="one">1 clave</item>
+    <item quantity="many">%d claves</item>
     <item quantity="other">%d claves</item>
   </plurals>
   <plurals name="n_keyservers">
     <item quantity="one">%d servidor de claves</item>
+    <item quantity="many">%d servidores de claves</item>
     <item quantity="other">%d servidores de claves</item>
   </plurals>
   <string name="secret_key">Clave secreta:</string>
@@ -256,13 +258,12 @@
   <string name="ecc_p256">ECC P-256</string>
   <string name="ecc_p384">ECC P-384</string>
   <string name="ecc_p521">ECC P-521</string>
-  <string name="ecc_25519">Ed25519 / Cv25519</string>
   <string name="usage_sign">Firmar</string>
   <string name="usage_encrypt">Cifrar</string>
   <string name="error">Error</string>
   <string name="error_message">Error: %s</string>
-  <string name="theme_dark">Oscuro</string>
   <string name="theme_light">Claro</string>
+  <string name="theme_dark">Oscuro</string>
   <!--sentences-->
   <string name="wrong_passphrase">Contraseña incorrecta.</string>
   <string name="no_filemanager_installed">No hay instalado un administrador de archivos compatible.</string>
@@ -367,6 +368,7 @@
   <!--PassphraseCache-->
   <plurals name="passp_cache_notif_n_keys">
     <item quantity="one">%d contraseña guardada</item>
+    <item quantity="many">%d contraseñas guardadas</item>
     <item quantity="other">%d contraseñas guardadas</item>
   </plurals>
   <string name="passp_cache_notif_pwd">Contraseña</string>

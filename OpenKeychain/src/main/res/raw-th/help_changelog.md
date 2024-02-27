@@ -1,8 +1,12 @@
 [//]: # (หมายเหตุ: กรุณาใส่ทุกประโยคลงในบรรทัดของตัวเอง Transifex จะใส่ทุกบรรทัดลงในช่องสำหรับแปลของมันเอง!)
 
+## 5.7
+  * Fixes for Curve25519
+  * IDEA cipher is now considered insecure
+
 ## 5.6
   * Compatibility with Android 10 and higher
-  * Several bug fixes
+  * แก้ไขข้อผิดพลาดจำนวนเล็กน้อย
 
 ## 5.5
   * แก้ไขการถอดรหัสลับจากคลิปบอร์ดบนแอนดรอยด์ 10

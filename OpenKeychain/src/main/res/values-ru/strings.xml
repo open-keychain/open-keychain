@@ -176,7 +176,7 @@
   <string name="label_fingerprint">Отпечаток</string>
   <string name="expiry_date_dialog_title">Срок годности</string>
   <string name="label_keyservers_title">Серверы ключей</string>
-  <string name="label_keyserver_settings_hint">Переместите для смены приоритета, зажмите чтобы редактировать/удалить</string>
+  <string name="label_keyserver_settings_hint">Перетаскивание для смены приоритета, нажатие для редактирования/удаления</string>
   <string name="label_selected_keyserver_title">Выбранный сервер ключей</string>
   <string name="label_selected_smartpgp_authority_title">Выбранный центр</string>
   <string name="label_preferred">предпочитаемый</string>
@@ -292,8 +292,9 @@
   <string name="usage_sign_and_encrypt">Подписать и зашифровать</string>
   <string name="error">Ошибка</string>
   <string name="error_message">Ошибка: %s</string>
-  <string name="theme_dark">Тёмная</string>
+  <string name="theme_auto">Автоматически</string>
   <string name="theme_light">Светлая</string>
+  <string name="theme_dark">Тёмная</string>
   <string name="strip">Отделить</string>
   <!--sentences-->
   <string name="wrong_passphrase">Неправильный пароль</string>

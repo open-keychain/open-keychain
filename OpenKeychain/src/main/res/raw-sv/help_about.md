@@ -1,4 +1,4 @@
-[//]: # (NOTERING: Var vänlig och sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
+[//]: # (NOTERING: Sätt varje mening på sin egen rad, Transifex sätter varje rad i sitt eget fält för översättningar!)
 
 [https://www.openkeychain.org](https://www.openkeychain.org)
 

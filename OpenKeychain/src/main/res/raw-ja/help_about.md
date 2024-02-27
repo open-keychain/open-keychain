@@ -4,7 +4,7 @@
 
 [OpenKeychain](https://www.openkeychain.org) は Android における OpenPGP 実装です。
 
-ライセンス: GPLv3以降
+ライセンス: GPLv3 以降
 
 [//]: # (NOTE: Alphabetic ordering)
 
@@ -23,7 +23,7 @@
   * Tim Bray
   * Tobias Erthal
 
-## 時折貢献してくれる方たち
+## 時折貢献してくれる開発者
   * Alex Fong Jie Wen
   * Andrea Torlaschi
   * Art O Cathain

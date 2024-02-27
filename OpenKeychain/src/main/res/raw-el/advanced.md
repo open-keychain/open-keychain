@@ -1,4 +1,4 @@
-[//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
+
 
 Η οθόνη Προχωρημένα σας επιτρέπει να
 * μοιραστείτε το κλειδί σας με μη συνιστώμενους τρόπους

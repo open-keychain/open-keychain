@@ -1,18 +1,22 @@
 [//]: # (NOTA: coloque cada frase em sua própria linha, o Transifex coloca cada linha em seu próprio campo de tradução!)
 
+## 5.7
+  * Correções para Curve25519
+  * A cifra IDEA agora é considerada insegura
+
 ## 5.6
-  * Compatibility with Android 10 and higher
-  * Several bug fixes
+  * Compatibilidade com Android 10 e superior
+  * Várias correções de bugs
 
 ## 5.5
-  * Fix decryption from clipboard on Android 10
+  * Corrigir a descriptografia da área de transferência no Android 10
 
 ## 5.4
-  * Add WKD Advanced method
-  * Add COTECH Security Key Shop
+  * Adicionar método avançado WKD
+  * Adicionar COTECH Security Key Shop
 
 ## 5.3
-  * Use keys.openpgp.org as default keyserver
+  * Use keys.openpgp.org como servidor de chaves padrão
 
 ## 5.2
   * Melhorias na importação de chaves da área de transferência

@@ -19,7 +19,7 @@ Geri alındı: Bu anahtar artık geçerli değil. Sahibi onu geri aldı.
 ## Gelişmiş Bilgiler
 OpenKeychain'de bir "anahtar onaylama", OpenPGP standardına göre bir sertifikalandırma oluşturarak uygulanır.
 Bu sertifikalandırma, standartta şu şekilde açıklanan ["genel bir sertifikalandırmadır (0x10)"](http://tools.ietf.org/html/rfc4880#section-5.2.1):
-"The issuer of this certification does not make any particular assertion as to how well the certifier has checked that the owner of the key is in fact the person described by the User ID."
+Onayı veren kişi, anahtar sahibinin gerçekten de kullanıcı kimliğinde betimlenen kişi olup olmadığını ne kadar iyi kontrol ettiği hakkında belirli bir beyanda bulunmaz.
 
 Traditionally, certifications (also with higher certification levels, such as "positive certifications" (0x13)) are organized in OpenPGP's Web of Trust.
 Our model of key confirmation is a much simpler concept to avoid common usability problems related to this Web of Trust.

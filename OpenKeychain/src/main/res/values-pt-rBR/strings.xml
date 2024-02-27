@@ -8,6 +8,7 @@
   <string name="title_encrypt_files">Encriptar</string>
   <string name="title_decrypt">Decriptar</string>
   <string name="title_add_subkey">Adicionar subchave</string>
+  <string name="title_change_master_key">Mudar chave-primária</string>
   <string name="title_edit_key">Editar chave</string>
   <string name="title_preferences">Configurações</string>
   <string name="title_api_registered_apps">Aplicativos</string>
@@ -238,14 +239,17 @@
   <string name="none"><![CDATA[<nenhum>]]></string>
   <plurals name="n_keys">
     <item quantity="one">1 chave</item>
+    <item quantity="many">%d chaves</item>
     <item quantity="other">%d chaves</item>
   </plurals>
   <plurals name="n_keyservers">
     <item quantity="one">%d servidor de chave</item>
+    <item quantity="many">%d servidores de chaves</item>
     <item quantity="other">%d servidores de chaves</item>
   </plurals>
   <plurals name="n_authorities">
     <item quantity="one">%d autoridade</item>
+    <item quantity="many">%d autoridades</item>
     <item quantity="other">%d autoridades</item>
   </plurals>
   <string name="secret_key">Chave Secreta:</string>
@@ -285,8 +289,9 @@
   <string name="usage_sign_and_encrypt">Assinar e Encriptar</string>
   <string name="error">Erro</string>
   <string name="error_message">Erro: %s</string>
-  <string name="theme_dark">Escuro</string>
+  <string name="theme_auto">Automático</string>
   <string name="theme_light">Claro</string>
+  <string name="theme_dark">Escuro</string>
   <string name="strip">Extirpar</string>
   <!--sentences-->
   <string name="wrong_passphrase">Senha incorreta.</string>
@@ -335,6 +340,7 @@
   <string name="authentication_subkey_not_found">Esta chave não possui uma subchave de autenticação.</string>
   <plurals name="bad_keys_encountered">
     <item quantity="one">%d chave inválida foi ignorada. Talvez você a tenha exportado com a opção\n --export-secret-subkeys\nCertifique-se de exportá-la com\n --export-secret-keys\nao invés.\"</item>
+    <item quantity="many">%d chaves inválidas foram ignoradas. Talvez você as tenha exportado com a opção\n --export-secret-subkeys\nCertifique-se de exportá-las com\n --export-secret-keys\nao invés.\"</item>
     <item quantity="other">%d chaves inválidas foram ignoradas. Talvez você as tenha exportado com a opção\n --export-secret-subkeys\nCertifique-se de exportá-las com\n --export-secret-keys\nao invés.\"</item>
   </plurals>
   <string name="list_empty">Esta lista está vazia!</string>
@@ -405,6 +411,7 @@
   <string name="progress_exporting">exportando...</string>
   <string name="progress_uploading">enviando...</string>
   <string name="progress_building_key">construindo chave...</string>
+  <string name="progress_building_master_key">construindo anel primário…</string>
   <string name="progress_generating_rsa">gerando nova chave RSA...</string>
   <string name="progress_generating_dsa">gerando nova chave DSA...</string>
   <string name="progress_generating_elgamal">gerando nova chave ElGamal...</string>
@@ -503,26 +510,32 @@
   <!--Import result toast-->
   <plurals name="import_keys_added_and_updated_1">
     <item quantity="one">Uma chave importada com sucesso</item>
+    <item quantity="many">%1$d chaves importadas com sucesso</item>
     <item quantity="other">%1$d chaves importadas com sucesso</item>
   </plurals>
   <plurals name="import_keys_added_and_updated_2">
     <item quantity="one">e uma chave atualizada%2$s.</item>
+    <item quantity="many">e %1$d chaves atualizadas%2$s.</item>
     <item quantity="other">e %1$d chaves atualizadas%2$s.</item>
   </plurals>
   <plurals name="import_keys_added">
     <item quantity="one">Chave importada com sucesso%2$s.</item>
+    <item quantity="many">%1$d chaves importadas com sucesso%2$s.</item>
     <item quantity="other">%1$d chaves importadas com sucesso%2$s.</item>
   </plurals>
   <plurals name="import_keys_updated">
     <item quantity="one">Chave atualizada com sucesso%2$s.</item>
+    <item quantity="many">%1$d chaves atualizadas com sucesso%2$s.</item>
     <item quantity="other">%1$d chaves atualizadas com sucesso%2$s.</item>
   </plurals>
   <plurals name="import_keys_with_errors">
     <item quantity="one">Falha na importação de uma chave!</item>
+    <item quantity="many">Falha na importação de %d chaves!</item>
     <item quantity="other">Falha na importação de %d chaves!</item>
   </plurals>
   <plurals name="import_error">
     <item quantity="one">A importação falhou!</item>
+    <item quantity="many">A importação de %d chaves falhou!</item>
     <item quantity="other">A importação de %d chaves falhou!</item>
   </plurals>
   <string name="import_warn_missing">Chave não encontrada nos servidores de chaves.</string>
@@ -531,18 +544,22 @@
   <!--Delete result toast-->
   <plurals name="delete_ok_but_fail_1">
     <item quantity="one">Uma chave excluída com sucesso</item>
+    <item quantity="many">%1$d chaves excluídas com sucesso</item>
     <item quantity="other">%1$d chaves excluídas com sucesso</item>
   </plurals>
   <plurals name="delete_ok_but_fail_2">
     <item quantity="one">, mas falhou ao excluir uma chave%2$s.</item>
+    <item quantity="many">, mas falhou ao excluir %1$d chaves%2$s.</item>
     <item quantity="other">, mas falhou ao excluir %1$d chaves%2$s.</item>
   </plurals>
   <plurals name="delete_ok">
     <item quantity="one">Chave excluída com sucesso%2$s.</item>
+    <item quantity="many">%1$d chaves excluídas com sucesso%2$s.</item>
     <item quantity="other">%1$d chaves excluídas com sucesso%2$s.</item>
   </plurals>
   <plurals name="delete_fail">
     <item quantity="one">Erro excluindo uma chave.</item>
+    <item quantity="many">Erro excluindo %1$d chaves.</item>
     <item quantity="other">Erro excluindo %1$d chaves.</item>
   </plurals>
   <string name="delete_nothing">Nada a excluir.</string>
@@ -555,14 +572,17 @@
   <!--Certify result toast-->
   <plurals name="certify_keys_ok">
     <item quantity="one">Chave confirmada com sucesso%2$s.</item>
+    <item quantity="many">%1$d chaves confirmadas com sucesso%2$s.</item>
     <item quantity="other">%1$d chaves confirmadas com sucesso%2$s.</item>
   </plurals>
   <plurals name="certify_keys_with_errors">
     <item quantity="one">Falha na certificação!</item>
+    <item quantity="many">Falha na certificação de %d chaves!</item>
     <item quantity="other">Falha na certificação de %d chaves!</item>
   </plurals>
   <plurals name="certify_error">
     <item quantity="one">A certificação falhou!</item>
+    <item quantity="many">A certificação de %d chaves falhou!</item>
     <item quantity="other">A certificação de %d chaves falhou!</item>
   </plurals>
   <!--Intent labels-->
@@ -617,6 +637,7 @@
   <!--Key list-->
   <plurals name="key_list_selected_keys">
     <item quantity="one">Uma chave selecionada.</item>
+    <item quantity="many">%d chaves selecionadas.</item>
     <item quantity="other">%d chaves selecionadas.</item>
   </plurals>
   <string name="key_list_empty_text1">Nenhuma chave encontrada!</string>
@@ -764,8 +785,26 @@
   <string name="msg_ip_insert_keyring">Codificando dados do chaveiro</string>
   <string name="msg_ip_insert_keys">Analisando chaves</string>
   <string name="msg_ip_prepare">Preparando operações de banco de dados</string>
+  <string name="msg_ip_master">Processando chave-primária%s</string>
   <string name="msg_ip_master_expired">O chaveiro expirou em %s</string>
   <string name="msg_ip_master_expires">O chaveiro expira em %s</string>
+  <string name="msg_ip_master_flags_unspecified">Sinalizadores primários: não especificados (assumindo todos)</string>
+  <string name="msg_ip_master_flags_cesa">Sinalizadores primários: certificar, criptografar, assinar, autenticar.</string>
+  <string name="msg_ip_master_flags_cesx">Sinalizadores primários: certificar, criptografar, assinar.</string>
+  <string name="msg_ip_master_flags_cexa">Sinalizadores primários: certificar, criptografar, autenticar.</string>
+  <string name="msg_ip_master_flags_cexx">Sinalizadores primários: certificar, criptografar.</string>
+  <string name="msg_ip_master_flags_cxsa">Sinalizadores primários: certificar, assinar, autenticar</string>
+  <string name="msg_ip_master_flags_cxsx">Sinalizadores primários: certificar, assinar.</string>
+  <string name="msg_ip_master_flags_cxxa">Sinalizadores primários: certificar, autenticar.</string>
+  <string name="msg_ip_master_flags_cxxx">Sinalizadores primários: certificar.</string>
+  <string name="msg_ip_master_flags_xesa">Sinalizadores primários: criptografar, assinar, autenticar.</string>
+  <string name="msg_ip_master_flags_xesx">Sinalizadores primários: criptografar, assinar.</string>
+  <string name="msg_ip_master_flags_xexa">Sinalizadores primários: criptografar, autenticar.</string>
+  <string name="msg_ip_master_flags_xexx">Sinalizadores primários: criptografar.</string>
+  <string name="msg_ip_master_flags_xxsa">Sinalizadores primários: assinar, autenticar.</string>
+  <string name="msg_ip_master_flags_xxsx">Sinalizadores primários: sinal.</string>
+  <string name="msg_ip_master_flags_xxxa">Sinalizadores primários: autenticar.</string>
+  <string name="msg_ip_master_flags_xxxx">Sinalizadores primários: nenhum.</string>
   <string name="msg_ip_merge_public">Unindo os dados importados com o chaveiro público existente</string>
   <string name="msg_ip_merge_secret">Unindo os dados importados com o chaveiro secreto existente</string>
   <string name="msg_ip_subkey">Processando subchave %s</string>
@@ -800,11 +839,13 @@
   <string name="msg_ip_uid_cert_good_revoke">Encontrado um certificado válido de revogação de %1$s</string>
   <plurals name="msg_ip_uid_certs_unknown">
     <item quantity="one">Ignorando um certificado emitido por uma chave pública desconhecida.</item>
+    <item quantity="many">Ignorando %s certificados emitidos por chaves públicas desconhecidas.</item>
     <item quantity="other">Ignorando %s certificados emitidos por chaves públicas desconhecidas.</item>
   </plurals>
   <string name="msg_ip_uid_classifying_zero">Classificando IDs de usuário (nenhuma chave confiável está disponível)</string>
   <plurals name="msg_ip_uid_classifying">
     <item quantity="one">Classificando IDs de usuário (usando uma chave confiável)</item>
+    <item quantity="many">Classificando IDs de usuário (usando chaves confiáveis %s)</item>
     <item quantity="other">Classificando IDs de usuário (usando chaves confiáveis %s)</item>
   </plurals>
   <string name="msg_ip_uid_reorder">Reordenando IDs de usuário</string>
@@ -821,6 +862,7 @@
   <string name="msg_ip_uat_cert_good_revoke">Encontrado um certificado de revigação válido de %1$s</string>
   <plurals name="msg_ip_uat_certs_unknown">
     <item quantity="one">Ignorando um certificado emitido por uma chave pública desconhecida</item>
+    <item quantity="many">Ignorando %s certificados emitidos por chaves públicas desconhecidas</item>
     <item quantity="other">Ignorando %s certificados emitidos por chaves públicas desconhecidas</item>
   </plurals>
   <string name="msg_ip_uat_classifying">Classificando atributos de usuário</string>
@@ -848,9 +890,16 @@
   <string name="msg_kc_secret">Canonicalizando chaveiro secreto %s</string>
   <string name="msg_kc_error_v3">Esta é uma chave OpenPGP versão 3, que está obsoleta e não é mais suportada!</string>
   <string name="msg_kc_error_no_uid">O chaveiro não possui IDs de usuário válidos!</string>
+  <string name="msg_kc_error_master_algo">A chave primária usa um algoritmo desconhecido (%s)!</string>
   <string name="msg_kc_error_dup_key">Subchave %s duplicada no chaveiro. O chaveiro está mal-formado, não importando!</string>
+  <string name="msg_kc_master">Processando chave primária.</string>
+  <string name="msg_kc_master_bad_type">Removendo certificado de chave primária de tipo desconhecido (%s)</string>
+  <string name="msg_kc_master_bad_local">Removendo certificado de chave primária com sinalizador \'local\'</string>
+  <string name="msg_kc_master_bad_err">Removendo certificado de chave primária inválido.</string>
   <string name="msg_kc_master_bad_time">Removendo certificado de revogação do chaveiro com carimbo de data no futuro</string>
   <string name="msg_kc_master_bad_type_uid">Removendo certificado de ID de usuário em posição inválida</string>
+  <string name="msg_kc_master_bad">Removendo certificado de chave primária inválido.</string>
+  <string name="msg_kc_master_local">Removendo certificado de chave primária com sinalizador \'local\'</string>
   <string name="msg_kc_revoke_dup">Removendo certificado de revogação de chaveiro redundante</string>
   <string name="msg_kc_notation_dup">Removendo certificado de notação redundante</string>
   <string name="msg_kc_notation_empty">Removendo certificado de notação vazio</string>
@@ -876,11 +925,13 @@
   <string name="msg_kc_success">A canonicalização do chaveiro foi executada com sucesso, nenhuma alteração</string>
   <plurals name="msg_kc_success_bad">
     <item quantity="one">A canonicalização do chaveiro foi executada com sucesso, um certificado incorreto foi removido</item>
+    <item quantity="many">A canonicalização do chaveiro foi executada com sucesso, %d certificados incorretos foram removidos</item>
     <item quantity="other">A canonicalização do chaveiro foi executada com sucesso, %d certificados incorretos foram removidos</item>
   </plurals>
   <string name="msg_kc_success_bad_and_red">A canonicalização do chaveiro foi executada com sucesso, %1$s certificados incorretos e %2$s redundantes foram removidos</string>
   <plurals name="msg_kc_success_redundant">
     <item quantity="one">A canonicalização do chaveiro foi executada com sucesso, m certificado incorreto foi removido</item>
+    <item quantity="many">A canonicalização do chaveiro foi executada com sucesso, %d certificados redundantes foram removidos</item>
     <item quantity="other">A canonicalização do chaveiro foi executada com sucesso, %d certificados redundantes foram removidos</item>
   </plurals>
   <string name="msg_kc_uid_bad_err">Removendo auto-certificado inválido para ID de usuário \'%s\'</string>
@@ -922,7 +973,10 @@
   <string name="msg_mg_found_new">%s novos certificados encontrados no chaveiro</string>
   <string name="msg_mg_unchanged">Para para unir</string>
   <!--createSecretKeyRing-->
+  <string name="msg_cr">Gerando nova chave primária.</string>
+  <string name="msg_cr_error_no_master">Nenhuma opção de chave primária especificada!</string>
   <string name="msg_cr_error_no_user_id">Os chaveiros precisam ser criados com ao menos uma ID de usuário</string>
+  <string name="msg_cr_error_no_certify">A chave primária deve ter sinalizador de certificação!</string>
   <string name="msg_cr_error_null_expiry">A data de expiração não pode ser \"a mesma de antes\" na criação da chave. Isto é um erro programático, por favor, abra um relatório de erro!</string>
   <string name="msg_cr_error_keysize_2048">O tamanho da chave deve ser maior ou igual a 2048!</string>
   <string name="msg_cr_error_no_curve">Nenhum tamanho de chave foi especificado! Isto é um erro programático, por favor, envie um relatório de erro!</string>
@@ -944,12 +998,14 @@
   <string name="msg_mf_error_fingerprint">A impressão digital atual da chave não confere com o esperado!</string>
   <string name="msg_mf_error_keyid">Nenhuma ID de chave. Isto é um erro interno, por favor, envie um relatório de erro!</string>
   <string name="msg_mf_error_integrity">Erro interno, a verificação de integridade falhou!</string>
+  <string name="msg_mf_error_master_none">Nenhum certificado primário encontrado para operar! (Tudo revogado?)</string>
   <string name="msg_mf_error_noexist_primary">Foi especificado um ID de usuário primário inválido!</string>
   <string name="msg_mf_error_noexist_revoke">Foi especificado um ID de usuário para revogação inválido!</string>
   <string name="msg_mf_error_restricted">Tentou-se executar uma operação restrita sem senha! Isto é um erro programático, por favor, envie um relatório de erro!</string>
   <string name="msg_mf_error_revoked_primary">IDs de usuário revogados não podem ser primários!</string>
   <string name="msg_mf_error_null_expiry">A data de expiração não pode ser \"a mesma de antes\" na criação de subchave. Este é um erro programático, por favor, abra um relatório de erro!</string>
   <string name="msg_mf_error_noop">Nada a fazer!</string>
+  <string name="msg_mf_error_passphrase_master">Erro fatal ao descriptografar a chave primária! Provavelmente é um erro de programação. Envie um relatório de bug!</string>
   <string name="msg_mf_error_passphrases_unchanged">Nenhuma senha alterada!</string>
   <string name="msg_mf_error_pgp">Erro interno de OpenPGP!</string>
   <string name="msg_mf_error_sig">Exceção na assinatura!</string>
@@ -958,6 +1014,7 @@
   <string name="msg_mf_error_conflicting_nfc_commands">Não é possível mover a chave para o Token de Segurança na mesma operação que cria uma assinatura no cartão.</string>
   <string name="msg_mf_error_duplicate_keytocard_for_slot">O Token de Segurança suporta apenas um compartimento por tipo de chave.</string>
   <string name="msg_mf_error_invalid_flags_for_keytocard">Sinalizadores impróprios para a chave do Token de Segurança</string>
+  <string name="msg_mf_master">Modificando certificações primárias.</string>
   <string name="msg_mf_passphrase">Modificando senha para o chaveiro</string>
   <string name="msg_mf_pin">Modificando PIN no cartão</string>
   <string name="msg_mf_admin_pin">Modificando o PIN Administrativo no cartão</string>
@@ -1004,6 +1061,7 @@
   <string name="msg_pr_subkey_nomatch">A subchave não está no Token de Segurança: %s</string>
   <string name="msg_pr_success">Chave promovida com sucesso</string>
   <!--Other messages used in OperationLogs-->
+  <string name="msg_ek_error_dummy">Não é possível editar o chaveiro com chave primária removida!</string>
   <string name="msg_ek_error_not_found">Chave não encontrada!</string>
   <!--Messages for DecryptVerify operation-->
   <string name="msg_dc_askip_bad_flags">Esta não é uma chave de encriptação, ignorando...</string>
@@ -1123,18 +1181,24 @@
   <string name="msg_crt_certifying">Gerando certificações</string>
   <plurals name="msg_crt_certify_uids">
     <item quantity="one">Certificando uma ID de usuário para a chave %2$s</item>
+    <item quantity="many">Certificando %1$d IDs de usuário para a chave %2$s</item>
     <item quantity="other">Certificando %1$d IDs de usuário para a chave %2$s</item>
   </plurals>
   <plurals name="msg_crt_certify_uats">
     <item quantity="one">Certificando um atributo de usuário para a chave %2$s</item>
+    <item quantity="many">Certificando %1$d atributos de usuário para a chave %2$s</item>
     <item quantity="other">Certificando %1$d atributos de usuário para a chave %2$s</item>
   </plurals>
   <string name="msg_crt_error_self">Não é possível emitir auto-certificados desta maneira!</string>
+  <string name="msg_crt_error_master_not_found">Chave primária não encontrada!</string>
   <string name="msg_crt_error_nothing">Nenhuma chave certificada!</string>
+  <string name="msg_crt_error_unlock">Erro ao desbloquear a chave primária!</string>
   <string name="msg_crt">Certificando chaveiros</string>
+  <string name="msg_crt_master_fetch">Buscando chave primária de certificação</string>
   <string name="msg_crt_nfc_return">Retornando à tela do NFC</string>
   <string name="msg_crt_save">Salvando chave certificada %s</string>
   <string name="msg_crt_saving">Salvando chaveiros</string>
+  <string name="msg_crt_unlock">Desbloqueando chave primária.</string>
   <string name="msg_crt_success">Identidades certificadas com sucesso</string>
   <string name="msg_crt_warn_not_found">Chave não encontrada!</string>
   <string name="msg_crt_warn_cert_failed">Falha na geração do certificado!</string>
@@ -1143,6 +1207,7 @@
   <string name="msg_crt_upload_success">Chave enviada para o servidor com sucesso</string>
   <plurals name="msg_import">
     <item quantity="one">Importando chave</item>
+    <item quantity="many">Importando %d chaves</item>
     <item quantity="other">Importando %d chaves</item>
   </plurals>
   <string name="msg_import_fetch_error_decode">Erro ao decodificar a chave recuperada!</string>
@@ -1162,6 +1227,7 @@
   <string name="msg_import_success">Importado com sucesso!</string>
   <plurals name="msg_backup">
     <item quantity="one">Backup com uma chave</item>
+    <item quantity="many">Backup com %d chaves</item>
     <item quantity="other">Backup com %d chaves</item>
   </plurals>
   <string name="msg_backup_all">Backup com todas as chaves</string>
@@ -1185,16 +1251,19 @@
   <string name="msg_del_error_multi_secret">Chaves secretas só podem ser excluídas individualmente!</string>
   <plurals name="msg_del">
     <item quantity="one">Excluindo uma chave</item>
+    <item quantity="many">Excluindo %d chaves</item>
     <item quantity="other">Excluindo %d chaves</item>
   </plurals>
   <string name="msg_del_key">Excluindo chave %s</string>
   <string name="msg_del_key_fail">Falha ao excluir chave %s</string>
   <plurals name="msg_del_ok">
     <item quantity="one">Chave excluída com sucesso</item>
+    <item quantity="many">%d chaves excluídas com sucesso</item>
     <item quantity="other">%d chaves excluídas com sucesso</item>
   </plurals>
   <plurals name="msg_del_fail">
     <item quantity="one">Erro ao excluir uma chave.</item>
+    <item quantity="many">Erro ao excluir %d chaves.</item>
     <item quantity="other">Erro ao excluir %d chaves.</item>
   </plurals>
   <string name="msg_revoke_error_empty">Nada para revogar!</string>
@@ -1251,6 +1320,7 @@
   <string name="passp_cache_notif_touch_to_clear">Toque para limpar as senhas</string>
   <plurals name="passp_cache_notif_n_keys">
     <item quantity="one">%d senha salva</item>
+    <item quantity="many">%d senhas salvas</item>
     <item quantity="other">%d senhas salvas</item>
   </plurals>
   <string name="passp_cache_notif_keys">Senhas salvas</string>
@@ -1361,6 +1431,7 @@
   <string name="security_token_error">Erro: %s</string>
   <plurals name="security_token_error_pin">
     <item quantity="one">PIN incorreto!\n%d tentativa restante.</item>
+    <item quantity="many">PIN incorreto!\n%d tentativas restantes.</item>
     <item quantity="other">PIN incorreto!\n%d tentativas restantes.</item>
   </plurals>
   <string name="security_token_error_terminated">Token de Segurança em estado de terminação.</string>
@@ -1528,6 +1599,7 @@
   <string name="keyserver_last_updated_never">Última verificação: Nunca</string>
   <string name="key_insecure_bitstrength_2048_problem">Esta chave usa o algoritmo <b>%1$s</b> com uma força de <b>%2$s bits</b>. Uma chave segura deve ter uma força de 2048 bits.</string>
   <string name="key_insecure_bitstrength_2048_solution">Esta chave não pode ser atualizada. Para comunicação segura, o proprietário deve gerar uma nova chave.</string>
+  <string name="key_insecure_unknown_curve_problem">Essa chave usa o <b>%1$s</b> algoritmo, que não está na lista de permissões.</string>
   <string name="key_insecure_unknown_curve_solution">Esta chave não pode ser atualizada. Para comunicação segura, o proprietário deve gerar uma nova chave.</string>
   <string name="key_insecure_unidentified_problem">Há um problema não identificado com esta chave.</string>
   <string name="key_insecure_unidentified_solution">Por favor, abra um ticket de bug.</string>
@@ -1538,6 +1610,8 @@
   <string name="insecure_encrypt_bitstrength_suggestion">Esta chave é insegura e não pode ser atualizada. Para se comunicar seguramente, você precisa criar uma nova chave!</string>
   <string name="insecure_sign_bitstrength">A chave que enviou (assinou) esta mensagem está desatualizada!\n\nO algoritmo (%s) está configurado com uma força de 1024 bits ou menos, o que foi considerado inseguro para uso geral desde 2006.</string>
   <string name="insecure_sign_bitstrength_suggestion">A chave em uso é insegura e não pode ser atualizada. Para se comunicar seguramente, o remetente precisa criar uma nova chave!</string>
+  <string name="insecure_encrypt_not_secure_curve">A chave que recebeu (descriptografou) esta mensagem está usando a curva elíptica com OID %1$s, que não está na lista de curvas seguras!</string>
+  <string name="insecure_sign_not_secure_curve">A chave a partir da qual esta mensagem foi enviada (assinada) está usando a curva elíptica com OID %1$s, que não está na lista de curvas seguras!</string>
   <string name="insecure_encrypt_unidentified">Há um problema não identificado de segurança com a chave usada para receber (decriptar) esta mensagem!</string>
   <string name="insecure_sign_unidentified">Há um problema não identificado de segurança com a chave usada para enviar (assinar) esta mensagem!</string>
   <string name="insecure_report_suggestion">Isto pode ser um problema no OpenKeychain, por favor reporte em nosso sistema de rastreamento de bugs!</string>
@@ -1612,6 +1686,7 @@
   <string name="token_unlock_attempts_none">Nenhuma tentativa de desbloqueio restante</string>
   <plurals name="token_unlock_attempts">
     <item quantity="one">1 tentativa restante</item>
+    <item quantity="many">%d tentativas restantes</item>
     <item quantity="other">%d tentativas restantes</item>
   </plurals>
   <string name="token_error_locked_indefinitely">Muitas tentativas de redefinição. O token não pode ser desbloqueado!</string>
@@ -1663,6 +1738,7 @@
   <string name="msg_trust_count_none">Nenhuma chave a atualizar</string>
   <plurals name="msg_trust_count">
     <item quantity="one">Atualizando 1 chave</item>
+    <item quantity="many">Atualizando %d chaves</item>
     <item quantity="other">Atualizando %d chaves</item>
   </plurals>
   <string name="button_locate_nfc">Onde está meu leitor NFC?</string>

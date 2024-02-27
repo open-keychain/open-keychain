@@ -1,5 +1,9 @@
 [//]: # (CHÚ Ý: Xin hãy để mỗi câu văn bản trên một dòng, Transifex sẽ chuyển từng dòng vào cho từng trường đã được dịch sang các ngôn ngữ!)
 
+## 5.7
+  * Fixes for Curve25519
+  * IDEA cipher is now considered insecure
+
 ## 5.6
   * Compatibility with Android 10 and higher
   * Several bug fixes

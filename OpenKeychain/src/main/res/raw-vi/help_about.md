@@ -1,12 +1,12 @@
 [//]: # (CHÚ Ý: Xin hãy để mỗi câu văn bản trên một dòng, Transifex sẽ chuyển từng dòng vào cho từng trường đã được dịch sang các ngôn ngữ!)
 
-[https://www.openkeychain.org](https://www.openkeychain.org)
+
 
 [OpenKeychain](https://www.openkeychain.org) is an OpenPGP implementation for Android.
 
 License: GPLv3+
 
-[//]: # (NOTE: Alphabetic ordering)
+
 
 ## Main Developers
   * Dominik Schürmann (Maintainer)

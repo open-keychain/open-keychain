@@ -8,13 +8,14 @@
   <string name="title_encrypt_files">Cifrar</string>
   <string name="title_decrypt">Descifrar</string>
   <string name="title_add_subkey">Engadir subchave</string>
+  <string name="title_change_master_key">Cambiar chave primaria</string>
   <string name="title_edit_key">Editar Chave</string>
   <string name="title_preferences">Axustes</string>
   <string name="title_api_registered_apps">Apps</string>
   <string name="title_key_server_preference">Servidores de chaves OpenPGP</string>
   <string name="title_smartpgp_authorities_preference">SmartPGP: Autoridades de confianza</string>
   <string name="title_change_passphrase">Cambiar contrasinal</string>
-  <string name="title_share_fingerprint_with">Compartir pegada con...</string>
+  <string name="title_share_fingerprint_with">Compartir impresión con...</string>
   <string name="title_share_key">Compartir chave con...</string>
   <string name="title_share_file">Compartir ficheiro con...</string>
   <string name="title_share_message">Compartir texto con...</string>
@@ -56,7 +57,7 @@
   <string name="section_actions">Accións</string>
   <string name="section_share_key">Chave</string>
   <string name="section_key_server">Servidor de chaves</string>
-  <string name="section_fingerprint">Pegada</string>
+  <string name="section_fingerprint">Impresión dixital</string>
   <string name="section_encrypt">Cifrar</string>
   <string name="section_decrypt">Descifrar/Verificar</string>
   <string name="section_current_expiry">Caducidade actual</string>
@@ -76,7 +77,7 @@
   <string name="btn_next">Seguinte</string>
   <string name="btn_back">Anterior</string>
   <string name="btn_no">Non</string>
-  <string name="btn_match">As pegadas coinciden</string>
+  <string name="btn_match">As impresións coinciden</string>
   <string name="btn_share_encrypted_signed">Cifrar/firmar e compartir texto</string>
   <string name="btn_copy_encrypted_signed">Cifrar/firmar e copiar texto</string>
   <string name="btn_paste_encrypted_signed">Cifrar/firmar e pegar texto</string>
@@ -119,7 +120,7 @@
   <string name="menu_select_all">Seleccionar todo</string>
   <string name="menu_export_all_keys">Exportar todas as chaves</string>
   <string name="menu_update_all_keys">Actualizar todas as chaves</string>
-  <string name="menu_certify_fingerprint">Confirmar con pegada</string>
+  <string name="menu_certify_fingerprint">Confirmar con impresión dixital</string>
   <string name="menu_certify_fingerprint_phrases">Confirmar con frase</string>
   <string name="menu_share_log">Compartir rexistro</string>
   <string name="menu_change_password">Cambiar contrasinal</string>
@@ -144,9 +145,9 @@
   <string name="label_write_version_header_summary">Escribe \'OpenKeychain v2.7\' nas firmas OpenPGP, texto cifrado e chaves exportadas</string>
   <string name="label_asymmetric_from">Firmar con:</string>
   <string name="label_to">Cifrar a</string>
-  <string name="label_delete_after_encryption">Eliminar ficheiros despois do cifrado</string>
+  <string name="label_delete_after_encryption">Eliminar ficheiros despois da cifraxe</string>
   <string name="label_delete_after_decryption">Elimilar despois de descifrar</string>
-  <string name="label_encryption_algorithm">Algoritmo de cifrado</string>
+  <string name="label_encryption_algorithm">Algoritmo de cifraxe</string>
   <string name="label_hash_algorithm">Algoritmo de Hash</string>
   <string name="label_symmetric">Cifrar con contrasinal</string>
   <string name="label_passphrase_cache_subs">Lembrar contrasinais por subchave</string>
@@ -171,7 +172,7 @@
   <string name="label_name">Nome</string>
   <string name="label_email">Email</string>
   <string name="label_send_key">Publicar certificación no servidor de chaves</string>
-  <string name="label_fingerprint">Pegada</string>
+  <string name="label_fingerprint">Impresión dixital</string>
   <string name="expiry_date_dialog_title">Establecer data de caducidade</string>
   <string name="label_keyservers_title">Servidores de chaves</string>
   <string name="label_keyserver_settings_hint">Arrastre para cambiar a orde, toque para editar/eliminar</string>
@@ -276,7 +277,6 @@
   <string name="ecc_p384_description_html">tamaño moi pequeno, considerado seguro ate 2040  &lt;br/&gt; &lt;u&gt;experimental e non soportado por todas as instalacións&lt;/u&gt;</string>
   <string name="ecc_p521">ECC P-521</string>
   <string name="ecc_p521_description_html">ficheiro pequeno, considerado seguro máis aló do 2040  &lt;br/&gt; &lt;u&gt;experimental e non habilitado en todas as instalacións&lt;/u&gt;</string>
-  <string name="ecc_25519">Ed25519 / Cv25519</string>
   <string name="ecc_25519_description_html">ficheiro pequeno, considerado seguro máis aló do 2040  &lt;br/&gt; &lt;u&gt;experimental e non habilitado en todas as instalacións&lt;/u&gt;</string>
   <string name="usage_none">Ningún (so para ligar subchaves)</string>
   <string name="usage_sign">Firma</string>
@@ -284,8 +284,9 @@
   <string name="usage_sign_and_encrypt">Firma &amp; Cifra</string>
   <string name="error">Fallo</string>
   <string name="error_message">Fallo: %s</string>
-  <string name="theme_dark">Oscuro</string>
+  <string name="theme_auto">Automática</string>
   <string name="theme_light">Claro</string>
+  <string name="theme_dark">Oscuro</string>
   <string name="strip">Quitalo</string>
   <!--sentences-->
   <string name="wrong_passphrase">Contrasinal incorrecto.</string>
@@ -312,10 +313,10 @@
   <string name="no_file_selected">Non hai ficheiros seleccionados.</string>
   <string name="encrypt_sign_successful">Cifrado e/ou asinado correctamente.</string>
   <string name="encrypt_sign_clipboard_successful">Asinado e/ou cifrado correctamente ao portapapeis.</string>
-  <string name="select_encryption_key">Escolla polo menos unha chave de cifrado.</string>
-  <string name="error_no_encryption_or_signature_key">Escolla cando menos unha chave de cifrado ou sinatura.</string>
-  <string name="specify_file_to_encrypt_to">Por favor indique a qué ficheiro cifrado vai crear.\nAVISO: Si xa existe será sobreescrito!</string>
-  <string name="specify_file_to_decrypt_to">Por favor indique qué ficheiro descifrado vai crear.\nAVISO: será sobreescrito si xa existe!</string>
+  <string name="select_encryption_key">Escolle polo menos unha chave de cifraxe.</string>
+  <string name="error_no_encryption_or_signature_key">Elixe polo menos unha chave de cifraxe ou sinatura.</string>
+  <string name="specify_file_to_encrypt_to">Indique o ficheiro cifrado que se vai crear.\nAVISO: Se xa existe será sobreescrito!</string>
+  <string name="specify_file_to_decrypt_to">Indique o nome do ficheiro descifrado que se creará.\nAVISO: será sobreescrito se xa existe!</string>
   <string name="specify_backup_dest">Crearase unha copia de respaldo excluíndo as súas chaves, por favor indique o destino do ficheiro.\nAVISO: sobreescribirase o ficheiro si xa existe!</string>
   <string name="specify_backup_dest_single">Compartirase a chave, por favor indique o ficheiro de destino.\nAVISO: será sobreescrito si xa existe!</string>
   <string name="specify_backup_dest_secret_single">Crearase un respaldo completo da súa chave, por favor indique o nome do ficheiro.\nAVISO: será sobreescrito si xa existe!</string>
@@ -339,7 +340,7 @@
   <string name="list_empty">A lista está baldeira!</string>
   <string name="nfc_successful">Enviouse correctamente a chave no fluxo NFC!</string>
   <string name="key_copied_to_clipboard">Copiouse a chave ao portapapeis!</string>
-  <string name="fingerprint_copied_to_clipboard">A pegada foi copiada ao portapapeis!</string>
+  <string name="fingerprint_copied_to_clipboard">Copiouse a impresión dixital ao portapapeis!</string>
   <string name="select_key_to_certify">Por favor seleccione a chave a utilizar para a confirmación!</string>
   <string name="text_copied_to_clipboard">Copiouse o texto ao portapapeis!</string>
   <string name="how_to_import">Como importar isto ao meu PC de escritorio?</string>
@@ -358,7 +359,7 @@
   <string name="error_key_needs_a_user_id">precisa cando menos unha identidade</string>
   <string name="error_no_signature_passphrase">non se proporcionou contrasinal</string>
   <string name="error_no_signature_key">non se proporcionou chave de sinatura</string>
-  <string name="error_invalid_data">Contido OpenPGP con cifrado ou asinado non válidos!</string>
+  <string name="error_invalid_data">Contido OpenPGP con cifraxe ou sinatura non válidos!</string>
   <string name="error_integrity_check_failed">fallo na comprobación da integridade! Os datos foron modificados!</string>
   <string name="error_wrong_passphrase">contrasinal incorrecto</string>
   <string name="error_could_not_extract_private_key">non se puido extraer a chave privada</string>
@@ -375,7 +376,7 @@
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">Non asinado</string>
   <string name="decrypt_result_invalid_signature">Sinatura non válida!</string>
-  <string name="decrypt_result_insecure_cryptography">Sinatura non válida (Cifrado Non seguro)!</string>
+  <string name="decrypt_result_insecure_cryptography">Sinatura non válida (Criptografía Non segura)!</string>
   <string name="decrypt_result_signature_uncertified">Asinado por chave <b>non confirmada</b></string>
   <string name="decrypt_result_signature_secret">Asinado pola súa chave</string>
   <string name="decrypt_result_signature_certified">Asinado por chave confirmada</string>
@@ -384,7 +385,7 @@
   <string name="decrypt_result_signature_missing_key">Asinado por <b>chave pública descoñecida</b></string>
   <string name="decrypt_result_encrypted">Cifrado</string>
   <string name="decrypt_result_not_encrypted">Non cifrado</string>
-  <string name="decrypt_result_insecure">Cifrado non seguro</string>
+  <string name="decrypt_result_insecure">Cifraxe non segura</string>
   <string name="decrypt_result_action_show">Amosar</string>
   <string name="decrypt_result_action_Lookup">Buscar</string>
   <string name="decrypt_invalid_text">Ou ben a sinatura non é válida ou a chave foi revogada. Non pode asegurarse quen escribiu o texto. Quere amosalo igualmente?</string>
@@ -486,8 +487,8 @@
   <string name="import_tab_qr_code">NFC/Código QR</string>
   <string name="import_found_keys">Atopáronse %1$d chaves</string>
   <string name="import_qr_code_wrong">Formato do Código QR non soportado (especificación do formato: https://github.com/open-keychain/open-keychain/wiki/QR-Codes)!</string>
-  <string name="import_qr_code_fp">A pegada está mal construída ou é demasiado corta!</string>
-  <string name="import_qr_code_too_short_fingerprint">A pegada é demasiado corta!</string>
+  <string name="import_qr_code_fp">A impresión está mal construída ou é demasiado curta!</string>
+  <string name="import_qr_code_too_short_fingerprint">A impresión é demasiado curta!</string>
   <string name="import_qr_code_button">Escanear Código QR</string>
   <string name="import_qr_code_text">Sitúe a cámara sobre o Código QR!</string>
   <string name="btn_import">Importar</string>
@@ -758,8 +759,8 @@
   <string name="msg_ip_error_op_exc">A operación fallou debido a un erro na base de datos</string>
   <string name="msg_ip_error_remote_ex">A operación fallou debido a un erro interno</string>
   <string name="msg_ip">Importando o chaveiro público %s</string>
-  <string name="msg_ip_fingerprint_error">A pegada da chave de importación non coincide co agardado!</string>
-  <string name="msg_ip_fingerprint_ok">Comprobación correcta da pegada </string>
+  <string name="msg_ip_fingerprint_error">A impresión da chave de importación non coincide co agardado!</string>
+  <string name="msg_ip_fingerprint_ok">Comprobación correcta da impresión </string>
   <string name="msg_ip_insert_keyring">Codificando datos do chaveiro</string>
   <string name="msg_ip_insert_keys">Procesando chaves</string>
   <string name="msg_ip_prepare">Preparando operacións da base de datos</string>
@@ -870,7 +871,7 @@
   <string name="msg_kc_sub_revoke_bad">Eliminando o certificado de revogación de subchave non válido</string>
   <string name="msg_kc_sub_revoke_dup">Eliminando o certificado de revogación de subchave redundante</string>
   <string name="msg_kc_sub_unknown_algo">A subchave usa un algoritmo descoñecido, non se vai importar...</string>
-  <string name="msg_kc_sub_algo_bad_encrpyt">A subchave ten sinal de uso para cifrado, mais o algoritmo non é axeitado para cifrado.</string>
+  <string name="msg_kc_sub_algo_bad_encrpyt">A subchave ten marca de uso para cifrar, mais o algoritmo non é axeitado para cifraxe.</string>
   <string name="msg_kc_sub_algo_bad_sign">A subchave ten sinal de uso para asinado, mais o algoritmo non é axeitado para asinado.</string>
   <string name="msg_kc_success">Canonización de chaveiro exitosa, sen cambios</string>
   <plurals name="msg_kc_success_bad">
@@ -909,7 +910,7 @@
   <string name="msg_kc_uat_revoke_old">Eliminando o certificado de revogación desactualizado para o atributo de usuario</string>
   <string name="msg_kc_uat_warn_encoding">O ID de usuario non valida como UTF-8!</string>
   <!--Keyring merging log entries-->
-  <string name="msg_mg_error_heterogeneous">Tentouse fusionar chaveiros con distintas pegadas dixitais!</string>
+  <string name="msg_mg_error_heterogeneous">Tentouse fusionar chaveiros con distintas impresións dixitais!</string>
   <string name="msg_mg_error_encode">Erro fatal codificando a sinatura!</string>
   <string name="msg_mg_public">Fusionando no chaveiro público %s</string>
   <string name="msg_mg_secret">Fusionando no chaveiro secreto %s</string>
@@ -920,10 +921,10 @@
   <string name="msg_cr_error_no_user_id">Os chaveiros deben crearse polo menos cun ID de usuaria!</string>
   <string name="msg_cr_error_keysize_2048">O tamaño da chave debe ser maior ou igual a 2048!</string>
   <string name="msg_cr_error_internal_pgp">Erro interno de OpenPGP!</string>
-  <string name="msg_cr_error_flags_dsa">Sinais inválidos seleccionados, DSA non pode ser usado para cifrado!</string>
+  <string name="msg_cr_error_flags_dsa">Marcas non seleccionados, DSA non pode ser usado para cifrar!</string>
   <string name="msg_cr_error_flags_elgamal">Sinais inválidos seleccionados, ElGamal non pode ser usado para asinado!</string>
-  <string name="msg_cr_error_flags_ecdsa">Sinais inválidos seleccionados, ECDSA non pode ser usado para cifrado!</string>
-  <string name="msg_cr_error_flags_eddsa">Sinais inválidos seleccionados, EdDSA non pode ser usado para cifrado!</string>
+  <string name="msg_cr_error_flags_ecdsa">Marcas non válidas seleccionadas, ECDSA non pode ser usado para cifrar!</string>
+  <string name="msg_cr_error_flags_eddsa">Marcas non válidas seleccionadas, EdDSA non pode ser usado para cifrar!</string>
   <string name="msg_cr_error_flags_ecdh">Sinais inválidos seleccionados, ECDH non pode ser usado para asinado!</string>
   <!--modifySecretKeyRing-->
   <string name="msg_mr">Modificando o chaveiro %s</string>
@@ -967,7 +968,7 @@
   <!--Other messages used in OperationLogs-->
   <string name="msg_ek_error_not_found">Chave non atopada!</string>
   <!--Messages for DecryptVerify operation-->
-  <string name="msg_dc_askip_bad_flags">A chave non é de cifrado, saltando...</string>
+  <string name="msg_dc_askip_bad_flags">A chave non é de cifraxe, omitindo...</string>
   <string name="msg_dc_askip_unavailable">A chave non está disponíbel, saltando...</string>
   <string name="msg_dc_asym">Atopouse un bloque de datos cifrados asimétricamente para a chave %s</string>
   <string name="msg_dc_clear_meta_file">Nome do ficheiro: %s</string>
@@ -988,8 +989,8 @@
   <string name="msg_dc_ok">Descifrado/Verificación finalizada</string>
   <string name="msg_dc_pass_cached">Utilizando contrasinal desde a caché</string>
   <string name="msg_dc_pending_passphrase">Requírese contrasinal, solicitando entrada do usuario...</string>
-  <string name="msg_dc_prep_streams">Preparando fluxos para descifrado</string>
-  <string name="msg_dc">Iniciando a operación de descifrado...</string>
+  <string name="msg_dc_prep_streams">Preparando fluxos para descifrar</string>
+  <string name="msg_dc">Iniciando a operación de descifraxe...</string>
   <string name="msg_dc_unlocking">Desbloqueando chave secreta</string>
   <!--Messages for VerifySignedLiteralData operation-->
   <string name="msg_vl">Iniciando a comprobación de sinatura</string>
@@ -1002,26 +1003,26 @@
   <string name="msg_vl_error_integrity_check">Comprobación de integridade errónea!</string>
   <string name="msg_vl_ok">OK</string>
   <!--Messages for SignEncrypt operation-->
-  <string name="msg_se">Iniciando a operación de sinatura/cifrado</string>
+  <string name="msg_se">Iniciando a operación de sinatura/cifraxe</string>
   <!--Messages for PgpSignEncrypt operation-->
-  <string name="msg_pse_asymmetric">Preparando chaves públicas para cifrado</string>
+  <string name="msg_pse_asymmetric">Preparando chaves públicas para cifrar</string>
   <string name="msg_pse_compressing">Preparando compresión</string>
   <string name="msg_pse_encrypting">Cifrando datos</string>
   <string name="msg_pse_error_bad_passphrase">Contrasinal incorrecto!</string>
   <string name="msg_pse_error_no_passphrase">Non se proporcionou contrasinal!</string>
   <string name="msg_pse_error_pgp">Erro interno de OpenPGP!</string>
   <string name="msg_pse_error_unlock">Erro descoñecido desbloqueando chave!</string>
-  <string name="msg_pse_error_revoked_or_expired">Unha chave revogada/caducada non pode ser usada para xeración de sinaturas ou cifrado</string>
+  <string name="msg_pse_error_revoked_or_expired">Unha chave revogada/caducada non pode ser usada para creación de sinaturas ou cifraxe</string>
   <string name="msg_pse_key_ok">Cifrando para a chave: %s</string>
-  <string name="msg_pse_key_unknown">Non se atopa a chave para cifrado: %s</string>
-  <string name="msg_pse_key_warn">Chave errónea para cifrado: %s</string>
-  <string name="msg_pse_ok">Operación de Asinado/Cifrado correcta!</string>
+  <string name="msg_pse_key_unknown">Non se atopa a chave para cifrar: %s</string>
+  <string name="msg_pse_key_warn">Chave non válida para cifrar: %s</string>
+  <string name="msg_pse_ok">Operación de Asinado/Cifraxe correcta!</string>
   <string name="msg_pse_pending_passphrase">Requírese contrasinal, solicitando entrada do usuario...</string>
-  <string name="msg_pse_signing">Asinando datos (sen cifrado)</string>
+  <string name="msg_pse_signing">Asinando datos (sen cifraxe)</string>
   <string name="msg_pse_signing_cleartext">Creando sinatura en texto claro</string>
   <string name="msg_pse_sigcrypting">Cifrando datos con sinatura</string>
-  <string name="msg_pse">Iniciando a operación de sinature e/ou cifrado</string>
-  <string name="msg_pse_symmetric">Preparando cifrado simétrico</string>
+  <string name="msg_pse">Iniciando a operación de sinatura e/ou cifraxe</string>
+  <string name="msg_pse_symmetric">Preparando cifraxe simétrica</string>
   <!--Messages for Authentication operation-->
   <string name="msg_auth">Iniciando a operación de autenticación</string>
   <string name="msg_auth_error_key_auth">Non se pode atopar a chave de autenticación seleccionada</string>
@@ -1076,9 +1077,9 @@
   <string name="msg_revoke_key">Revogando chave %s</string>
   <string name="msg_revoke_key_fail">Erro revogando a chave</string>
   <string name="msg_revoke_ok">Chave revogada correctamente</string>
-  <string name="msg_bench_enc_time">Tempo de cifrado: %ss</string>
+  <string name="msg_bench_enc_time">Tempo de cifraxe: %ss</string>
   <string name="msg_bench_enc_time_avg">Tempo medio en cifrar 5MB: %ss</string>
-  <string name="msg_bench_dec_time">Tempo de descifrado: %ss</string>
+  <string name="msg_bench_dec_time">Tempo de descifraxe: %ss</string>
   <string name="msg_bench_dec_time_avg">Tempo medio en descifrar 5MB: %ss</string>
   <string name="msg_bench_s2k_100ms_its">Conta de iteracións S2K en 100ms: %s</string>
   <string name="msg_bench_s2k_for_it">Tempo para %1$s iteracións SHA1 S2K: %2$sms</string>
@@ -1121,9 +1122,9 @@
   <string name="key_no_passphrase">sen contrasinal</string>
   <string name="unknown">descoñecido</string>
   <string name="contact_show_key">Amosar chave (%s)</string>
-  <string name="error_multi_clipboard">Non está soportado o cifrado de múltiples ficheiros cara o portapapeis.</string>
+  <string name="error_multi_clipboard">Non hai soporte para cifrar varios ficheiros e poñelos no portapais.</string>
   <string name="key_colon">Chave:</string>
-  <string name="exchange_description">Para comezar un intercambio de chaves, elixe o número de participantes no lado dereito e preme no botón de “Comezar intercambio”.\n\nFaránseche dúas preguntas máis para asegurarse de que só os participantes desexados están no intercambio e que as súas pegadas dixitais son correctas.</string>
+  <string name="exchange_description">Para comezar un intercambio de chaves, elixe o número de participantes no lado dereito e preme no botón de “Comezar intercambio”.\n\nFaránseche dúas preguntas máis para asegurarse de que só os participantes desexados están no intercambio e que as súas impresións dixitais son correctas.</string>
   <string name="btn_start_exchange">Iniciar intercambio</string>
   <string name="user_id_none"><![CDATA[<none>]]></string>
   <!--Android Account-->
@@ -1186,8 +1187,8 @@
   <string name="error_clipboard_empty">O portapapeis está baleiro!</string>
   <string name="error_clipboard_copy">Erro copiando datos ao portapapeis!</string>
   <string name="error_clipboard_bad">Non foi posíbel ler chaves desde o portapapeis!</string>
-  <string name="error_scan_fp">Erro escaneando a pegada dixital!</string>
-  <string name="error_scan_match">As pegadas dixitais non coinciden!</string>
+  <string name="error_scan_fp">Erro escaneando a impresión dixital!</string>
+  <string name="error_scan_match">As impresións dixitais non coinciden!</string>
   <string name="error_expiry_past">A data de caducidade está no pasado!</string>
   <!--Other Linked Identity strings-->
   <string name="btn_finish">Rematar</string>
@@ -1233,7 +1234,7 @@
   <string name="button_got_it">Comprendido</string>
   <string name="requested_key_label">Chave solicitada:</string>
   <string name="error_preselect_sign_key">Erro seleccionando a chave %s para asinado!</string>
-  <string name="error_preselect_encrypt_key">Erro seleccionando a chave %s para cifrado!</string>
+  <string name="error_preselect_encrypt_key">Erro ao elexir a chave %s para cifrar!</string>
   <string name="title_key_status">Estado da chave</string>
   <string name="caption_secret_status">Est chave é túa. Podes usala para:</string>
   <string name="cap_title_confirm">Confirmar outras chaves</string>
@@ -1322,7 +1323,7 @@
   <string name="token_result_not_found">Chave non atopada!</string>
   <string name="token_result_key_found">Chave atopada!</string>
   <string name="token_result_token_ok">Listo para usar!</string>
-  <string name="token_put_key_unsupported">Por favor, configure este Testemuño de Seguridade usando GnuPG. Actualmente, OpenKeychain só soporta asinado/descifrado con este Testemuño de Seguridade.</string>
+  <string name="token_put_key_unsupported">Por favor, configure este Testemuño de Seguridade usando GnuPG. Actualmente, OpenKeychain só soporta sinatura/cifraxe con este Testemuño de Seguridade.</string>
   <string name="token_action_retry">Reintentar a busca</string>
   <string name="token_action_load_from_file">Cargar desde ficheiro</string>
   <string name="token_action_import">Importar</string>
@@ -1351,8 +1352,8 @@
   <string name="msg_ret_curi_ok">Chave atopada</string>
   <string name="msg_ret_curi_open">Abrindo URL: %s</string>
   <string name="msg_ret_ks_error_not_found">Chave non atopada</string>
-  <string name="msg_ret_ks_fp_match">As pegadas das chaves recuperadas coinciden</string>
-  <string name="msg_ret_ks_fp_mismatch">As pegadas das chaves recuperadas non coinciden!</string>
+  <string name="msg_ret_ks_fp_match">As impresións das chaves recuperadas coinciden</string>
+  <string name="msg_ret_ks_fp_mismatch">As impresións das chaves recuperadas non coinciden!</string>
   <string name="msg_ret_ks_ok">Chave atopada</string>
   <string name="msg_ret_local_search">Buscando a chave: %s</string>
   <string name="msg_ret_local_not_found">Chave non atopada</string>
@@ -1371,7 +1372,7 @@
   <string name="button_locate_nfc">Onde está o meu lector de NFC?</string>
   <string name="use_key">Usar chave: %s</string>
   <string name="use_key_no_name">Usar chave: <![CDATA[<no name>]]></string>
-  <string name="title_select_key">%s quere configurar cifrado de extremo a extremo para este enderezo:</string>
+  <string name="title_select_key">%s quere configurar cifraxe de extremo a extremo para este enderezo:</string>
   <string name="select_identity_cancel">Inhabilitar</string>
   <string name="select_identity_create">Crear unha chave para min</string>
   <string name="error_save_key_internal">Erro interno gardando chave!</string>
@@ -1392,7 +1393,7 @@
   <string name="snack_keysync_start">Iniciouse a actualización de todas as chaves...</string>
   <string name="snack_keysync_finished">Actualización de chaves exitosa</string>
   <string name="snack_keysync_error">Produciuse un erro mentres se actualizaban todas as chaves</string>
-  <string name="keychoice_cannot_encrypt">Esta chave non pode usarse para cifrado!</string>
+  <string name="keychoice_cannot_encrypt">Esta chave non pode usarse para cifrar!</string>
   <string name="keychoice_cannot_sign">Esta chave non pode usarse para asinado!</string>
   <string name="keychoice_insecure">Esta chave non pode usarse porque é insegura!</string>
   <string name="keychoice_revoked">Esta chave non pode usarse porque está revogada!</string>

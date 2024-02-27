@@ -1,5 +1,9 @@
 [//]: # (नोट: कृपया प्रत्येक वाक्य को अपनी पंक्ति में रखें, ट्रांसइफेक्स हर पंक्ति को अपने अनुवाद क्षेत्र में रखता है!)
 
+## 5.7
+  * Fixes for Curve25519
+  * IDEA cipher is now considered insecure
+
 ## 5.6
   * Compatibility with Android 10 and higher
   * Several bug fixes
