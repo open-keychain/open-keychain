@@ -13,27 +13,26 @@
   * Fixes light/dark mode toggle for passphrase dialog 
 
 ## 6.0.0
-  * Updates for Android 14 
+  * Updates for Android 14
   * Support NitroKey 3
   * Support autofill in passphrase dialog
   * ECC 25519 is now the default generated key type
-  * enable encrypt for eddsa
-  * fix key usage spinner 
-  * fixes cv25519 encryption key generation
-  * fixes some UI elements that didn't support dark mode 
-  * Fix behavior for duplicate user ids 
+  * Fix key usage selection
+  * Fixes cv25519 encryption key generation
+  * Fixes some UI elements that didn't support dark mode
+  * Fix behavior for duplicate user ids
 
 ## 5.8.2
   * Remove donation dialog
 
 ## 5.8.0
-  * fixes some network related crashes on newer devices
-  * fixes a crash that could occur when NFC disconnects
-  * security fixes
-  * add automatic theme
+  * Fixes some network related crashes on newer devices
+  * Fixes a crash that could occur when NFC disconnects
+  * Security fixes
+  * Add automatic theme
 
 ## 5.7.5
-  * code optimizations related to EdDSA signature
+  * Code optimizations related to EdDSA signature
 
 ## 5.7.4
   * Fixes a bug parsing response from keyserver
