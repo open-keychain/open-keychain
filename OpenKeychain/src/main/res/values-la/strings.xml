@@ -8,7 +8,7 @@
   <!--button-->
   <string name="btn_save">Memorare</string>
   <string name="btn_do_not_save">Claudere</string>
-    <!--Shortcut Strings-->
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <!--menu-->
   <string name="menu_help">Auxilium</string>
@@ -25,7 +25,7 @@
   <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_cancel">Claudere</string>
   <!--choice-->
-    <!--sentences-->
+  <!--sentences-->
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -45,7 +45,7 @@
   <!--Help-->
   <string name="help_tab_changelog">Historia mutationum</string>
   <string name="help_tab_about">De Crommyautomato</string>
-    <!--Import-->
+  <!--Import-->
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
@@ -54,7 +54,7 @@
   <!--Intent labels-->
   <!--Remote API-->
   <string name="api_settings_save">Memorare</string>
-    <!--Share-->
+  <!--Share-->
   <!--retry upload dialog-->
   <!--Delete or revoke private key dialog-->
   <!--Delete Or Revoke Dialog spinner-->
@@ -91,7 +91,7 @@
   <!--First Time-->
   <!--unsorted-->
   <!--Android Account-->
-    <!--Passphrase wizard-->
+  <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->

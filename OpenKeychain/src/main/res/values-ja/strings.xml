@@ -19,27 +19,27 @@
   <string name="title_share_key">…で鍵を共有</string>
   <string name="title_share_file">…でファイルを共有</string>
   <string name="title_share_message">…でテキストを共有</string>
-    <string name="title_import_keys">鍵をインポート</string>
-    <string name="title_key_not_found">鍵が見つかりませんでした</string>
+  <string name="title_import_keys">鍵をインポート</string>
+  <string name="title_key_not_found">鍵が見つかりませんでした</string>
   <string name="title_send_key">鍵サーバーへアップロード</string>
   <string name="title_backup">鍵をバックアップ</string>
   <string name="title_certify_key">鍵を検証</string>
   <string name="title_key_details">鍵の概要</string>
   <string name="title_help">ヘルプ</string>
   <string name="title_log_display">ログ</string>
-    <string name="title_advanced_key_info">詳細</string>
+  <string name="title_advanced_key_info">詳細</string>
   <string name="title_delete_secret_key">あなたの鍵「%s」を削除しますか？</string>
   <string name="title_manage_my_keys">自分の鍵を管理</string>
   <string name="title_alert_strip">副鍵をストリップ</string>
   <!--section-->
   <string name="section_user_ids">ユーザー ID</string>
-    <string name="section_keys">副鍵</string>
+  <string name="section_keys">副鍵</string>
   <string name="section_cloud_search">鍵の検索</string>
-    <string name="section_passphrase_cache">パスワードと PIN</string>
+  <string name="section_passphrase_cache">パスワードと PIN</string>
   <string name="section_passphrase_cache_summary">取り扱い</string>
   <string name="section_proxy_settings">ネットワークの匿名性</string>
   <string name="section_proxy_settings_summary">Tor、プロキシーの設定</string>
-    <string name="section_sync_settings">同期</string>
+  <string name="section_sync_settings">同期</string>
   <string name="section_sync_settings_summary">鍵の自動更新と連絡先のリンク</string>
   <string name="section_experimental_features">実験機能</string>
   <string name="section_certify">確認</string>
@@ -52,9 +52,9 @@
   <string name="section_current_expiry">現在の有効期限</string>
   <string name="section_new_expiry">新しい有効期限</string>
   <!--button-->
-    <string name="btn_encrypt_share_file">暗号化してファイルを共有</string>
+  <string name="btn_encrypt_share_file">暗号化してファイルを共有</string>
   <string name="btn_encrypt_save_file">暗号化してファイルを保存</string>
-    <string name="btn_save">保存</string>
+  <string name="btn_save">保存</string>
   <string name="btn_view_log">ログを見る</string>
   <string name="btn_do_not_save">キャンセル</string>
   <string name="btn_delete">削除</string>
@@ -63,11 +63,11 @@
   <string name="btn_export_to_server">鍵サーバーへアップロード</string>
   <string name="btn_next">次へ</string>
   <string name="btn_back">戻る</string>
-    <string name="btn_match">フィンガープリントが一致</string>
+  <string name="btn_match">フィンガープリントが一致</string>
   <string name="btn_share_encrypted_signed">暗号化/署名してテキストを共有</string>
   <string name="btn_copy_encrypted_signed">暗号化/署名してテキストをコピー</string>
   <string name="btn_paste_encrypted_signed">暗号化/署名してテキストを貼り付け</string>
-    <string name="btn_create_key">鍵を生成</string>
+  <string name="btn_create_key">鍵を生成</string>
   <string name="btn_add_files">ファイルを追加</string>
   <string name="btn_share_decrypted_text">共有</string>
   <string name="btn_open_with">…で開く</string>
@@ -79,7 +79,7 @@
   <string name="btn_add_email">予備のメールアドレスを追加</string>
   <string name="btn_unlock">ロック解除</string>
   <string name="btn_proceed">続行</string>
-    <string name="btn_save_default">デフォルトとして保存</string>
+  <string name="btn_save_default">デフォルトとして保存</string>
   <string name="btn_saved">保存しました！</string>
   <string name="btn_not_matching">一致しませんでした</string>
   <!--Shortcut Strings-->
@@ -88,45 +88,45 @@
   <string name="cd_encrypt_files">ファイルを暗号化</string>
   <string name="cd_exchange_keys">鍵を交換</string>
   <string name="cd_encrypt_text">テキストを暗号化</string>
-    <!--menu-->
+  <!--menu-->
   <string name="menu_preferences">設定</string>
   <string name="menu_help">ヘルプ</string>
   <string name="menu_export_key">鍵をバックアップ</string>
   <string name="menu_delete_key">鍵を削除</string>
-    <string name="menu_manage_keys">自分の鍵を管理</string>
+  <string name="menu_manage_keys">自分の鍵を管理</string>
   <string name="menu_search">検索</string>
   <string name="menu_open">開く</string>
   <string name="menu_read_clipboard">クリップボードから読み取り</string>
-    <string name="menu_encrypt_to">暗号化…</string>
-    <string name="menu_update_all_keys">すべての鍵を更新</string>
+  <string name="menu_encrypt_to">暗号化…</string>
+  <string name="menu_update_all_keys">すべての鍵を更新</string>
   <string name="menu_certify_fingerprint">フィンガープリントで検証</string>
-    <string name="menu_share_log">ログを共有</string>
+  <string name="menu_share_log">ログを共有</string>
   <string name="menu_change_password">パスワードを変更</string>
   <string name="menu_advanced">詳細</string>
-    <!--label-->
-    <string name="label_no_passphrase">パスワードなし</string>
+  <!--label-->
+  <string name="label_no_passphrase">パスワードなし</string>
   <string name="label_passphrase">パスワード</string>
   <string name="label_pin">PIN</string>
   <string name="label_unlock">ロック解除中…</string>
   <string name="label_passphrase_again">もう一度パスワードを入力</string>
-    <string name="label_algorithm_colon">アルゴリズム:</string>
-    <string name="label_file_ascii_armor">ASCII Armor ファイルを有効にする</string>
-    <string name="label_asymmetric_from">署名:</string>
+  <string name="label_algorithm_colon">アルゴリズム:</string>
+  <string name="label_file_ascii_armor">ASCII Armor ファイルを有効にする</string>
+  <string name="label_asymmetric_from">署名:</string>
   <string name="label_to">暗号化…</string>
   <string name="label_delete_after_encryption">暗号化後にファイルを削除する</string>
-    <string name="label_symmetric">パスワードで暗号化する</string>
+  <string name="label_symmetric">パスワードで暗号化する</string>
   <string name="label_passphrase_cache_subs">副鍵でパスワードを記録する</string>
-    <string name="label_keyservers">OpenPGP 鍵サーバーを管理</string>
-    <string name="label_key_id_colon">鍵 ID:</string>
+  <string name="label_keyservers">OpenPGP 鍵サーバーを管理</string>
+  <string name="label_key_id_colon">鍵 ID:</string>
   <string name="label_key_created">作成: %s</string>
   <string name="label_key_created_just_now">たった今作成</string>
   <string name="label_key_type">形式</string>
-    <string name="label_expiry">有効期限</string>
+  <string name="label_expiry">有効期限</string>
   <string name="label_valid_from">有効化</string>
   <string name="label_usage">用途</string>
   <string name="label_revoked">失効</string>
   <string name="label_insecure">安全でない</string>
-    <string name="label_main_user_id">メインのユーザー ID</string>
+  <string name="label_main_user_id">メインのユーザー ID</string>
   <string name="label_name">名前</string>
   <string name="label_email">メールアドレス</string>
   <string name="label_send_key">鍵サーバーで証明書を公開</string>
@@ -135,15 +135,15 @@
   <string name="label_keyservers_title">鍵サーバー</string>
   <string name="label_keyserver_settings_hint">ドラッグで順序変更、タップで編集/削除</string>
   <string name="label_selected_keyserver_title">選択した鍵サーバー</string>
-    <string name="label_preferred">優先</string>
+  <string name="label_preferred">優先</string>
   <string name="label_enable_compression">圧縮を有効にする</string>
   <string name="label_enable_self_encrypt">署名者を暗号化する</string>
   <string name="label_encrypt_filenames">ファイル名を暗号化する</string>
-    <string name="label_smartpgp_verify">SmartPGP: 証明書を検証</string>
+  <string name="label_smartpgp_verify">SmartPGP: 証明書を検証</string>
   <string name="label_smartpgp_verify_summary">信頼された認証局のセットに対して SmartPGP セキュリティトークンの証明書を検証します</string>
   <string name="label_smartpgp_roots">SmartPGP: 信頼された認証局</string>
   <string name="label_verify_keyserver_connection">接続をテストする</string>
-    <string name="label_enter_keyserver_url">URL</string>
+  <string name="label_enter_keyserver_url">URL</string>
   <string name="label_enter_keyserver_onion">オプションの Tor .onion URL</string>
   <string name="label_keyserver_dialog_delete">鍵サーバーを削除</string>
   <string name="label_theme">テーマ</string>
@@ -151,7 +151,7 @@
   <string name="label_smartpgp_authority_dialog_delete">認証局を削除</string>
   <string name="pref_keyserver">OpenPGP 鍵サーバー</string>
   <string name="pref_keyserver_summary">選択した OpenPGP 鍵サーバーで鍵を検索します (HKP プロトコル)</string>
-    <string name="pref_wkd">ウェブキーディレクトリ</string>
+  <string name="pref_wkd">ウェブキーディレクトリ</string>
   <string name="pref_wkd_summary">ウェブキーディレクトリを使用して鍵を検索します</string>
   <string name="label_sync_settings_keyserver_title">鍵の自動更新</string>
   <string name="label_sync_settings_keyserver_summary_on">3 日ごとに鍵サーバーから鍵を更新します</string>
@@ -179,14 +179,14 @@
   <string name="orbot_install_dialog_install">インストール</string>
   <string name="orbot_install_dialog_content">Orbot をインストールして、プロキシートラフィックを有効にする必要があります。インストールしますか？</string>
   <string name="orbot_install_dialog_cancel">キャンセル</string>
-    <!--StartOrbotDialogFragment strings-->
+  <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">Orbot を起動しますか？</string>
   <string name="orbot_start_dialog_content">Orbot が停止しているようです。起動して Tor に接続しますか？</string>
-    <string name="orbot_start_dialog_start">Orbot を起動</string>
+  <string name="orbot_start_dialog_start">Orbot を起動</string>
   <string name="orbot_start_dialog_cancel">キャンセル</string>
-    <string name="user_id_no_name"><![CDATA[<no name>]]></string>
+  <string name="user_id_no_name"><![CDATA[<no name>]]></string>
   <string name="none"><![CDATA[<none>]]></string>
-    <plurals name="n_keyservers">
+  <plurals name="n_keyservers">
     <item quantity="other">%d 件の鍵サーバー</item>
   </plurals>
   <plurals name="n_authorities">
@@ -195,8 +195,8 @@
   <string name="secret_key">秘密鍵:</string>
   <!--choice-->
   <string name="choice_none">なし</string>
-    <string name="choice_select_cert">鍵を選択</string>
-    <string name="rsa_2048">RSA 2048</string>
+  <string name="choice_select_cert">鍵を選択</string>
+  <string name="rsa_2048">RSA 2048</string>
   <string name="rsa_2048_description_html">比較的小さいファイルサイズ。2030 年までは安全であると考えられます</string>
   <string name="rsa_3072">RSA 3072</string>
   <string name="rsa_3072_description_html">推奨。2040 年までは安全であると考えられます</string>
@@ -214,7 +214,7 @@
   <string name="usage_sign">署名</string>
   <string name="usage_encrypt">暗号化</string>
   <string name="usage_sign_and_encrypt">署名と暗号化</string>
-    <string name="error_message">エラー: %s</string>
+  <string name="error_message">エラー: %s</string>
   <string name="theme_auto">自動</string>
   <string name="theme_light">ライト</string>
   <string name="theme_dark">ダーク</string>
@@ -232,7 +232,7 @@
   <string name="passphrase_keyboard_hint_numeric">数字キーボードに切り替え</string>
   <string name="passphrase_transfer">転送コードを入力</string>
   <string name="passphrase_transfer_autocrypt">この Autocrypt セットアップメッセージをインポートするには、転送コードを入力してください:</string>
-    <string name="security_token_pin_for">セキュリティトークン「%s」にアクセスするために PIN を入力してください</string>
+  <string name="security_token_pin_for">セキュリティトークン「%s」にアクセスするために PIN を入力してください</string>
   <string name="security_token_nfc_text">セキュリティトークンをデバイスの背面にある NFC の印に対向させて固定してください。</string>
   <string name="security_token_nfc_wait">セキュリティトークンを背面に保持しつづけてください！</string>
   <string name="security_token_nfc_finished">セキュリティトークンを取り外してください。</string>
@@ -241,16 +241,16 @@
   <string name="file_delete_confirmation">以下のファイルを削除します: %s</string>
   <string name="file_delete_successful">%2$d 件中 %1$d 件のファイルの削除が完了しました。%3$s</string>
   <string name="no_file_selected">ファイルが選択されていません。</string>
-    <string name="select_encryption_key">少なくとも 1 件の暗号鍵を選択して下さい。</string>
+  <string name="select_encryption_key">少なくとも 1 件の暗号鍵を選択して下さい。</string>
   <string name="error_no_encryption_or_signature_key">少なくとも 1 件の暗号鍵か署名鍵を選択してください。</string>
-    <string name="key_deletion_confirmation_multi">本当に選択したすべての鍵を削除しますか？</string>
+  <string name="key_deletion_confirmation_multi">本当に選択したすべての鍵を削除しますか？</string>
   <string name="secret_key_deletion_confirmation">削除後はこの鍵で暗号化されたメッセージ/ファイルを復号できなくなります。またこの鍵で行われたすべての鍵検証を失います！</string>
   <string name="public_key_deletetion_confirmation">鍵「%s」を削除しますか？</string>
-    <string name="alert_strip">この副鍵をストリップすると、このデバイスで使用できなくなります！</string>
-    <string name="key_not_found">鍵 %08X は見つかりませんでした。</string>
+  <string name="alert_strip">この副鍵をストリップすると、このデバイスで使用できなくなります！</string>
+  <string name="key_not_found">鍵 %08X は見つかりませんでした。</string>
   <string name="authentication_subkey_not_found">この鍵には認証用の副鍵はありません。</string>
-    <string name="list_empty">このリストは空白です！</string>
-    <string name="key_copied_to_clipboard">鍵がクリップボードにコピーされました！</string>
+  <string name="list_empty">このリストは空白です！</string>
+  <string name="key_copied_to_clipboard">鍵がクリップボードにコピーされました！</string>
   <string name="fingerprint_copied_to_clipboard">フィンガープリントがクリップボードにコピーされました！</string>
   <string name="select_key_to_certify">検証に使う鍵を選択してください！</string>
   <string name="text_copied_to_clipboard">テキストがクリップボードにコピーされました！</string>
@@ -260,14 +260,14 @@
          they will be put after "error_message", e.g. "Error: file not found"-->
   <string name="error_file_delete_failed">削除されていません。手動で削除してください！</string>
   <string name="error_file_added_already">%s はすでに追加されています。</string>
-    <string name="error_bad_data">問題のあるデータです！</string>
-    <string name="error_invalid_data">正しく暗号化や署名されてない OpenPGP コンテンツです！</string>
-    <string name="error_could_not_extract_private_key">秘密鍵を取り出せませんでした</string>
+  <string name="error_bad_data">問題のあるデータです！</string>
+  <string name="error_invalid_data">正しく暗号化や署名されてない OpenPGP コンテンツです！</string>
+  <string name="error_could_not_extract_private_key">秘密鍵を取り出せませんでした</string>
   <string name="error_wrong_security_token">このセキュリティトークンに必要な鍵がありませんでした</string>
   <!--errors without preceding Error:-->
-    <string name="error_nothing">まだ表示するものはありません。</string>
+  <string name="error_nothing">まだ表示するものはありません。</string>
   <string name="error_nothing_import">鍵が見つかりませんでした！</string>
-    <string name="error_denied_storage_permission">アクセスが拒否されたため、ストレージからファイルを読み込みできません！</string>
+  <string name="error_denied_storage_permission">アクセスが拒否されたため、ストレージからファイルを読み込みできません！</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">署名されていません</string>
   <string name="decrypt_result_invalid_signature">無効な署名です！</string>
@@ -291,10 +291,10 @@
   <string name="progress_done">完了。</string>
   <string name="progress_cancel">キャンセル</string>
   <string name="progress_cancelling">キャンセル中…</string>
-    <string name="progress_saving">保存中…</string>
+  <string name="progress_saving">保存中…</string>
   <string name="progress_importing">インポート中…</string>
-    <string name="progress_revoking_uploading">鍵の失効とアップロード中…</string>
-    <string name="progress_uploading">アップロード中…</string>
+  <string name="progress_revoking_uploading">鍵の失効とアップロード中…</string>
+  <string name="progress_uploading">アップロード中…</string>
   <string name="progress_building_key">鍵の構築中…</string>
   <string name="progress_building_master_key">主鍵束の構築中…</string>
   <string name="progress_generating_rsa">新しい RSA 鍵の生成中…</string>
@@ -311,47 +311,47 @@
   <string name="progress_modify_primaryuid">主ユーザー ID の変更中…</string>
   <string name="progress_modify_subkeychange">副鍵の変更中…</string>
   <string name="progress_modify_subkeyrevoke">副鍵の失効中…</string>
-    <string name="progress_modify_subkeyadd">副鍵の追加中…</string>
+  <string name="progress_modify_subkeyadd">副鍵の追加中…</string>
   <string name="progress_modify_passphrase">パスワードの変更中…</string>
   <string name="progress_modify_pin">PIN の変更中…</string>
   <string name="progress_modify_admin_pin">管理者 PIN の変更中…</string>
   <string name="progress_exporting_key">鍵のエクスポート中…</string>
-    <string name="progress_extracting_signature_key">署名鍵の取り出し中…</string>
-    <string name="progress_preparing_streams">ストリームの準備中…</string>
+  <string name="progress_extracting_signature_key">署名鍵の取り出し中…</string>
+  <string name="progress_preparing_streams">ストリームの準備中…</string>
   <string name="progress_encrypting">データの暗号化中…</string>
-    <string name="progress_decrypting">データの復号中…</string>
+  <string name="progress_decrypting">データの復号中…</string>
   <string name="progress_preparing_signature">署名の準備中…</string>
   <string name="progress_processing_signature">署名の処理中…</string>
   <string name="progress_generating_signature">署名の生成中…</string>
   <string name="progress_verifying_signature">署名の検証中…</string>
   <string name="progress_signing">署名中…</string>
-    <string name="progress_reading_data">データの読み込み中…</string>
-    <string name="progress_deleting">鍵の削除中…</string>
+  <string name="progress_reading_data">データの読み込み中…</string>
+  <string name="progress_deleting">鍵の削除中…</string>
   <string name="progress_update_trust">信頼情報の更新中…</string>
   <string name="progress_verifying_keyserver_connection">接続の検証中…</string>
   <string name="progress_starting_orbot">Orbot を起動中…</string>
   <!--action strings-->
-    <!--key bit length selections-->
-    <!--elliptic curve names-->
-    <!--not in for now, see SaveKeyringParcel
-      <string name="key_curve_bp_p256">"Brainpool P-256"</string>
-      <string name="key_curve_bp_p384">"Brainpool P-384"</string>
-      <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
+  <!--key bit length selections-->
+  <!--elliptic curve names-->
+  <!--not in for now, see SaveKeyringParcel
+    <string name="key_curve_bp_p256">"Brainpool P-256"</string>
+    <string name="key_curve_bp_p384">"Brainpool P-384"</string>
+    <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
-    <!--Help-->
+  <!--Help-->
   <string name="help_tab_start">開始</string>
   <string name="help_tab_faq">FAQ</string>
   <string name="help_tab_wot">鍵の検証</string>
-    <string name="help_tab_changelog">更新履歴</string>
+  <string name="help_tab_changelog">更新履歴</string>
   <string name="help_tab_license">ライセンス</string>
   <string name="help_tab_about">アプリについて</string>
   <string name="help_about_version">バージョン:</string>
-    <!--Import-->
-    <string name="import_found_keys">%1$d 件の鍵が見つかりました</string>
+  <!--Import-->
+  <string name="import_found_keys">%1$d 件の鍵が見つかりました</string>
   <string name="import_qr_code_wrong">対応していない QR コードフォーマットです！ (フォーマット仕様: https://github.com/open-keychain/open-keychain/wiki/QR-Codes)</string>
   <string name="import_qr_code_fp">フィンガープリントの形式が間違っているか、短すぎます！</string>
   <string name="import_qr_code_too_short_fingerprint">フィンガープリントが短すぎます！</string>
-    <string name="import_qr_code_text">カメラを QR コードにかざしてください！</string>
+  <string name="import_qr_code_text">カメラを QR コードにかざしてください！</string>
   <string name="btn_import">インポート</string>
   <string name="btn_import_keys">すべての鍵をインポート</string>
   <string name="btn_view_list">リストを表示</string>
@@ -401,7 +401,7 @@
   <!--Revoke result toast (snackbar)-->
   <string name="revoke_ok">鍵を失効させました。</string>
   <string name="revoke_fail">鍵の失効エラーが発生しました！</string>
-    <!--Certify result toast-->
+  <!--Certify result toast-->
   <plurals name="certify_keys_ok">
     <item quantity="other">%1$d 件の鍵%2$sを検証しました。</item>
   </plurals>
@@ -418,24 +418,24 @@
   <string name="intent_send_decrypt">OpenKeychain で復号</string>
   <string name="intent_autocrypt_setup">Autocrypt セットアップメッセージをインポート</string>
   <!--Remote API-->
-    <string name="api_settings_create_key">新しい鍵を生成する</string>
+  <string name="api_settings_create_key">新しい鍵を生成する</string>
   <string name="api_settings_save">保存</string>
-    <string name="api_settings_revoke">アクセス権限を削除</string>
-    <string name="api_settings_package_name">パッケージ名</string>
+  <string name="api_settings_revoke">アクセス権限を削除</string>
+  <string name="api_settings_package_name">パッケージ名</string>
   <string name="api_settings_package_certificate">パッケージの署名の SHA-256</string>
   <string name="api_settings_advanced">詳細</string>
   <string name="api_settings_allowed_keys">許可された鍵</string>
-    <string name="api_register_title">OpenKeychain へのアクセスを許可しますか？</string>
+  <string name="api_register_title">OpenKeychain へのアクセスを許可しますか？</string>
   <string name="api_register_text">%s が暗号化プロバイダーとして OpenKeyChain の使用を要求しています。鍵を復号に使用する前にもアクセス許可を求められます。\n\n後で OpenKeychain の「アプリ」画面からアクセス権限を取り消せます。</string>
-    <string name="api_select_pub_keys_missing_text">メールアドレスの鍵が見つかりませんでした:</string>
+  <string name="api_select_pub_keys_missing_text">メールアドレスの鍵が見つかりませんでした:</string>
   <string name="api_select_pub_keys_dublicates_text">メールアドレスの鍵が複数存在します:</string>
   <string name="api_select_pub_keys_text">宛先リストを確認してください！</string>
   <string name="api_select_pub_keys_text_no_user_ids">宛先を選択してください！</string>
   <string name="api_error_wrong_signature">署名確認に失敗しました！ 間違ったところからこのアプリをインストールしていませんか？ もし間違いなく攻撃されていないなら、OpenKeychain からこのアプリの登録を取り消し、もう一度アプリを登録してください。</string>
   <string name="api_select_sign_key_text">すでにある鍵から選択するか、新規に作成してください。</string>
-    <!--Share-->
+  <!--Share-->
   <string name="share_qr_code_dialog_title">QR コードで共有</string>
-    <!--retry upload dialog-->
+  <!--retry upload dialog-->
   <string name="retry_up_dialog_title">アップロード失敗</string>
   <string name="retry_up_dialog_message">アップロードに失敗しました。もう一度実行しますか？</string>
   <string name="retry_up_dialog_btn_reupload">再実行</string>
@@ -453,29 +453,29 @@
     <item quantity="other">%d 件の鍵を選択中。</item>
   </plurals>
   <string name="key_list_empty_text1">鍵が見つかりませんでした！</string>
-    <string name="key_list_fab_qr_code">QR コードをスキャン</string>
+  <string name="key_list_fab_qr_code">QR コードをスキャン</string>
   <string name="key_list_fab_search">鍵を検索</string>
   <string name="key_list_fab_import">ファイルからインポート</string>
   <string name="key_list_dummy_title">まだ鍵がありません！</string>
   <string name="key_list_dummy_subtitle">作成またはインポートするには、ここをクリックしてください。</string>
   <!--Key view-->
   <string name="key_view_action_edit">編集</string>
-    <string name="key_view_action_certify">鍵を検証</string>
+  <string name="key_view_action_certify">鍵を検証</string>
   <string name="key_view_action_update">鍵サーバーから更新</string>
   <string name="key_view_action_share_with">...で共有</string>
   <string name="key_view_action_share_ssh_with">…で SSH 公開鍵として共有</string>
-    <string name="key_view_action_upload">鍵サーバーで公開</string>
-    <string name="key_view_tab_start">開始</string>
+  <string name="key_view_action_upload">鍵サーバーで公開</string>
+  <string name="key_view_tab_start">開始</string>
   <string name="key_view_tab_share">共有</string>
   <string name="key_view_tab_keys">副鍵</string>
-    <string name="user_id_info_revoked_title">失効</string>
+  <string name="user_id_info_revoked_title">失効</string>
   <string name="user_id_info_revoked_text">このユーザー ID は鍵の所有者により失効されました。もう有効ではありません。</string>
   <string name="user_id_info_certified_title">検証済み</string>
   <string name="user_id_info_certified_text">このユーザー ID はあなたが検証しました。</string>
   <string name="user_id_info_uncertified_title">未検証</string>
   <string name="user_id_info_uncertified_text">このユーザー ID はまだ検証されていません。ユーザー ID が本当に特定の人に対応しているか判断できません。</string>
   <!--Key trust-->
-    <!--Edit key-->
+  <!--Edit key-->
   <string name="edit_key_action_change_passphrase">パスワードを変更</string>
   <string name="edit_key_action_add_identity">ユーザー ID を追加</string>
   <string name="edit_key_action_add_subkey">副鍵を追加</string>
@@ -509,9 +509,9 @@
   <string name="create_key_final_text">以下のユーザー ID を入力しました:</string>
   <string name="create_key_final_robot_text">鍵を生成しています。しばらくの間、コーヒーでもどうぞ…</string>
   <string name="create_key_final_email_valid_warning">有効なメールアドレスのみを含む鍵のほうが、多くのアプリケーションでうまく動作します</string>
-    <string name="create_key_name_text">この鍵に紐付ける名前を選択してください。「山田太郎」のようにフルネームでも、「たろすけ」のようにニックネームでも構いません。</string>
+  <string name="create_key_name_text">この鍵に紐付ける名前を選択してください。「山田太郎」のようにフルネームでも、「たろすけ」のようにニックネームでも構いません。</string>
   <string name="create_key_email_text">あなたが安全な通信で使う、メインのメールアドレスを入力してください。</string>
-    <string name="create_key_hint_full_name">フルネームまたはニックネーム</string>
+  <string name="create_key_hint_full_name">フルネームまたはニックネーム</string>
   <string name="create_key_edit">鍵の構成を変更</string>
   <string name="create_key_add_email">メールアドレスを追加</string>
   <string name="create_key_add_email_text">追加のメールアドレスもこの鍵に紐付けられ、安全な通信に使えるようになります。</string>
@@ -522,7 +522,7 @@
   <string name="create_key_yubi_key_pin">PIN</string>
   <string name="create_key_yubi_key_admin_pin">管理者 PIN</string>
   <string name="create_key_yubi_key_pin_repeat">もう一度 PIN を入力</string>
-    <string name="create_key_yubi_key_pin_too_short">PIN は最低 6 桁は必要です！</string>
+  <string name="create_key_yubi_key_pin_too_short">PIN は最低 6 桁は必要です！</string>
   <string name="create_key_yubi_key_pin_insecure">000000、123456、のようなよくある組み合わせではない、安全な PIN を選んでください (最も選択される上位 20 個の PIN は利用できません)</string>
   <string name="create_key_yubi_key_algorithm_text">それぞれの鍵のアルゴリズムを選択してください。</string>
   <string name="create_key_yubi_key_algorithm_sign_text">署名鍵</string>
@@ -532,7 +532,7 @@
   <string name="view_key_my_key">自分の鍵</string>
   <string name="view_key_verified">検証済みの鍵</string>
   <string name="view_key_unverified">未確認: QR コードをスキャンして鍵を確認！</string>
-    <!--Add/Edit keyserver-->
+  <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">鍵サーバーを追加</string>
   <string name="edit_keyserver_dialog_title">鍵サーバーを編集</string>
   <string name="add_keyserver_connection_verified">接続が検証されました！</string>
@@ -549,13 +549,13 @@
   <string name="nav_keys">鍵</string>
   <string name="nav_encrypt_decrypt">暗号化/復号</string>
   <string name="nav_apps">アプリ</string>
-    <string name="my_keys">自分の鍵</string>
+  <string name="my_keys">自分の鍵</string>
   <string name="nav_backup">バックアップ/復元</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">テキストを入力</string>
   <!--certs-->
-    <string name="cert_none">なし</string>
-    <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <string name="cert_none">なし</string>
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <string name="msg_internal_error">内部エラーが発生しました！</string>
   <string name="msg_cancelled">操作をキャンセルしました。</string>
   <!--Import Public log entries-->
@@ -566,7 +566,7 @@
   <string name="msg_ip_encode_fail">エンコーディング エラーにより操作に失敗しました</string>
   <string name="msg_ip_error_io_exc">I/O エラーにより操作に失敗しました</string>
   <string name="msg_ip_error_op_exc">データベースエラーにより操作に失敗しました</string>
-    <string name="msg_ip">公開鍵束 %s をインポート中</string>
+  <string name="msg_ip">公開鍵束 %s をインポート中</string>
   <string name="msg_ip_fingerprint_error">インポートした鍵のフィンガープリントが想定と一致しません！</string>
   <string name="msg_ip_fingerprint_ok">フィンガープリント確認 OK</string>
   <string name="msg_ip_insert_keyring">鍵束データのエンコーディング中</string>
@@ -597,7 +597,7 @@
   <string name="msg_ip_subkey">副鍵 %s の処理中</string>
   <string name="msg_ip_subkey_expired">%s に副鍵の有効期限が切れました</string>
   <string name="msg_ip_subkey_expires">%s に副鍵が期限が切れます</string>
-    <string name="msg_ip_subkey_flags_cesa">副鍵のフラグ: 検証、暗号化、署名、認証</string>
+  <string name="msg_ip_subkey_flags_cesa">副鍵のフラグ: 検証、暗号化、署名、認証</string>
   <string name="msg_ip_subkey_flags_cesx">副鍵のフラグ: 検証、暗号化、署名</string>
   <string name="msg_ip_subkey_flags_cexa">副鍵のフラグ: 検証、暗号化、認証</string>
   <string name="msg_ip_subkey_flags_cexx">副鍵のフラグ: 検証、暗号化</string>
@@ -648,9 +648,9 @@
   <string name="msg_ip_uat_classifying">ユーザー属性の検証中</string>
   <string name="msg_ip_uat_revoked">ユーザー属性が失効しました</string>
   <string name="msg_is_bad_type_public">公開鍵束を秘密としてインポートを試行するバグが発生しました。修正のため、バグ報告にご協力ください！</string>
-    <!--Import Secret log entries-->
+  <!--Import Secret log entries-->
   <string name="msg_is">秘密鍵 %s のインポート中</string>
-    <string name="msg_is_importing_subkeys">秘密鍵の副鍵の処理中</string>
+  <string name="msg_is_importing_subkeys">秘密鍵の副鍵の処理中</string>
   <string name="msg_is_error_io_exc">鍵束のエンコーディングエラーが発生しました</string>
   <string name="msg_is_merge_public">インポートしたデータを既存の公開鍵束にマージ中</string>
   <string name="msg_is_merge_secret">インポートしたデータを既存の秘密鍵束にマージ中</string>
@@ -686,7 +686,7 @@
   <string name="msg_kc_sub_bad_err">問題のある副鍵バインド証明書の削除中</string>
   <string name="msg_kc_sub_bad_local">「ローカル」フラグ付きの副鍵バインド証明書の削除中</string>
   <string name="msg_kc_sub_bad_keyid">副鍵バインドの発行者 ID がミスマッチ</string>
-    <string name="msg_kc_sub_bad_time_early">副鍵バインド証明書のタイムスタンプは鍵より前の日時になっています！</string>
+  <string name="msg_kc_sub_bad_time_early">副鍵バインド証明書のタイムスタンプは鍵より前の日時になっています！</string>
   <string name="msg_kc_sub_bad_type">未知の形式の副鍵の証明書: %s</string>
   <string name="msg_kc_sub_dup">重複している副鍵バインド証明書の削除中</string>
   <string name="msg_kc_sub_primary_bad">主鍵バインド証明書が無効なため、副鍵バインド証明書を削除中</string>
@@ -896,7 +896,7 @@
   <string name="msg_vl_error_wrong_key">メッセージが想定された鍵で署名されていません！</string>
   <string name="msg_vl_error_no_signature">署名データがありません！</string>
   <string name="msg_vl_error_missing_literal">署名済み固定データパケットにデータがありません</string>
-    <string name="msg_vl_clear_signature_check">署名データの検証中</string>
+  <string name="msg_vl_clear_signature_check">署名データの検証中</string>
   <string name="msg_vl_error_integrity_check">完全性チェックでエラーが発生しました！</string>
   <string name="msg_vl_ok">OK</string>
   <!--Messages for SignEncrypt operation-->
@@ -917,7 +917,7 @@
   <string name="msg_pse_error_key_sign">選択された署名鍵ではデータに署名できません！</string>
   <string name="msg_pse_error_sign_key">署名鍵の取得中にエラーが発生しました！</string>
   <string name="msg_pse_error_nfc">NFC データのエラーが発生しました！</string>
-    <string name="msg_pse_error_pgp">内部の OpenPGP のエラーが発生しました！</string>
+  <string name="msg_pse_error_pgp">内部の OpenPGP のエラーが発生しました！</string>
   <string name="msg_pse_error_sig">OpenPGP 署名の例外に遭遇しました！</string>
   <string name="msg_pse_error_unlock">鍵のロック解除で不明なエラーが発生しました！</string>
   <string name="msg_pse_error_key_not_allowed">暗号化用に選択された鍵は許可されていません</string>
@@ -1029,7 +1029,7 @@
   <string name="msg_bench_enc_time">暗号化時間: %s 秒</string>
   <string name="msg_bench_enc_time_avg">5 MB の暗号化の平均時間: %s 秒</string>
   <string name="msg_bench_dec_time">復号時間: %s 秒</string>
-    <string name="msg_bench_s2k_100ms_its">100 ミリ秒間の S2K の繰り返し回数: %s</string>
+  <string name="msg_bench_s2k_100ms_its">100 ミリ秒間の S2K の繰り返し回数: %s</string>
   <string name="msg_bench_s2k_for_it">%1$s SHA1 S2K の繰り返しの所要時間: %2$s ミリ秒</string>
   <string name="msg_bench_success">ベンチマークを完了しました！</string>
   <string name="msg_data">入力データの処理中</string>
@@ -1066,7 +1066,7 @@
   <string name="msg_get_no_enabled_source">ダウンロード元を少なくとも 1 つ有効にしてください！</string>
   <string name="msg_download_query_failed">鍵の検索中にエラーが発生しました。</string>
   <!--Messages for Mime parsing operation-->
-    <!--PassphraseCache-->
+  <!--PassphraseCache-->
   <string name="passp_cache_notif_touch_to_clear">タップしてパスワードをクリア</string>
   <plurals name="passp_cache_notif_n_keys">
     <item quantity="other">%d 件のパスワードが保存されました</item>
@@ -1078,42 +1078,42 @@
   <string name="keyserver_sync_orbot_notif_title">サーバーからの同期には Orbot が必要です</string>
   <string name="keyserver_sync_orbot_notif_msg">タップして Orbot を起動</string>
   <string name="keyserver_sync_orbot_notif_start">Orbot を起動</string>
-    <!--First Time-->
-    <string name="first_time_create_key">自分の鍵を作る</string>
+  <!--First Time-->
+  <string name="first_time_create_key">自分の鍵を作る</string>
   <string name="first_time_import_key">ファイルから鍵をインポート</string>
   <string name="first_time_security_token">セキュリティトークンを使用</string>
   <string name="first_time_security_token_subtitle">(Fidesmo, YubiKey NEO, SIGILANCE, …)</string>
   <string name="first_time_skip">セットアップをスキップ</string>
-    <string name="backup_text">あなた自身の鍵を含んだバックアップは、決して他の人と共有しないでください！</string>
+  <string name="backup_text">あなた自身の鍵を含んだバックアップは、決して他の人と共有しないでください！</string>
   <string name="backup_all">完全バックアップ (暗号化)</string>
   <string name="backup_public_keys">連絡先の鍵のみエクスポート</string>
   <string name="backup_section">バックアップ</string>
   <string name="restore_section">復元</string>
   <!--unsorted-->
-    <string name="section_uids_to_certify">ユーザー ID</string>
+  <string name="section_uids_to_certify">ユーザー ID</string>
   <string name="certify_text">インポートした鍵には \"ユーザー ID\": 名前とメールアドレス を含みます。想定と一致しているか確認し、選択してください。</string>
   <string name="certify_fingerprint_text">フィンガープリントを、一文字ずつ、相手の端末に表示されているものと比較してください。</string>
-    <string name="error_key_not_found">鍵が見つかりませんでした！</string>
+  <string name="error_key_not_found">鍵が見つかりませんでした！</string>
   <string name="error_key_processing">鍵の処理中にエラーが発生しました！</string>
   <string name="key_stripped">ストリップ済み</string>
   <string name="key_divert">セキュリティトークン上</string>
-    <string name="secret_cannot_multiple">あなたが所有する鍵は個別にしか削除できません！</string>
-    <string name="unknown">不明</string>
-    <string name="error_no_encrypt_subkey">暗号化の副鍵がありません！</string>
-    <string name="error_no_file_selected">暗号化するファイルを少なくとも 1 つ選択してください！</string>
+  <string name="secret_cannot_multiple">あなたが所有する鍵は個別にしか削除できません！</string>
+  <string name="unknown">不明</string>
+  <string name="error_no_encrypt_subkey">暗号化の副鍵がありません！</string>
+  <string name="error_no_file_selected">暗号化するファイルを少なくとも 1 つ選択してください！</string>
   <string name="error_multi_files">複数ファイルの保存には対応していません。これは現在の Android の制限です。</string>
   <string name="error_multi_clipboard">クリップボードへの複数ファイルの暗号化には対応していません。</string>
   <string name="error_detached_signature">バイナリファイルの署名のみの操作には対応していません。最低 1 つは暗号化鍵を選択してください。</string>
   <string name="error_empty_text">暗号化したいテキストを入力してください！</string>
   <string name="error_log_share_internal">ログの準備中に内部エラーが発生しました！</string>
-    <!--Android Account-->
-    <!--Passphrase wizard-->
+  <!--Android Account-->
+  <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
-    <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">パスワードを入力</string>
-    <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-    <string name="security_token_create">デバイスの背面にセキュリティトークンをかざしてください。</string>
-    <string name="security_token_error">エラー: %s</string>
+  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="security_token_create">デバイスの背面にセキュリティトークンをかざしてください。</string>
+  <string name="security_token_error">エラー: %s</string>
   <plurals name="security_token_error_pin">
     <item quantity="other">PIN が正しくありません！\n残り %d 回試行できます。</item>
   </plurals>
@@ -1141,7 +1141,7 @@
   <string name="snack_compression_off">圧縮が<b>無効</b>です。</string>
   <string name="snack_self_encrypt_on">署名の暗号化が<b>有効</b>になりました。</string>
   <string name="snack_self_encrypt_off">署名の暗号化が<b>無効</b>になりました。</string>
-    <string name="error_empty_log">(エラー、空のログ)</string>
+  <string name="error_empty_log">(エラー、空のログ)</string>
   <string name="error_reading_text">復号する入力内容が読み取れません！</string>
   <string name="error_reading_aosp">データの読み込みに失敗しました。これは Android メールクライアントのバグです！ (Issue #290)</string>
   <string name="error_reading_k9">不完全なデータを受信しました。 K-9 Mail で、\'すべてダウンロード\' を押してみてください！</string>
@@ -1166,16 +1166,16 @@
   <string name="error_scan_match">フィンガープリントが一致しませんでした！</string>
   <string name="error_expiry_past">有効期限が過去の日時です！</string>
   <!--Other Linked Identity strings-->
-    <string name="snack_btn_overwrite">上書き</string>
+  <string name="snack_btn_overwrite">上書き</string>
   <string name="backup_code_explanation">バックアップは、バックアップコードで保護されます。先に進む前に必ず書き留めてください！</string>
-    <string name="btn_backup_share">バックアップを共有</string>
+  <string name="btn_backup_share">バックアップを共有</string>
   <string name="btn_backup_save">バックアップを保存</string>
   <string name="btn_backup_export">バックアップをエクスポート</string>
   <string name="snack_backup_error_saving">バックアップの保存中にエラーが発生しました！</string>
   <string name="snack_backup_saved">バックアップを保存しました</string>
   <string name="snack_backup_exists">バックアップはすでに存在します！</string>
   <string name="snack_backup_saved_dir">OpenKeychain ディレクトリに保存しました</string>
-    <string name="snack_text_too_long">テキストが長すぎてすべて表示できません！</string>
+  <string name="snack_text_too_long">テキストが長すぎてすべて表示できません！</string>
   <string name="snack_shared_text_too_long">長すぎたため、共有テキストをカットしました！</string>
   <string name="share_log_dialog_title">ログを共有しますか？</string>
   <string name="share_log_dialog_message">開発者が OpenKeychain のバグを見つけるのにログは非常に参考になりますが、更新された鍵に関するデータなど、潜在的な機密情報が含まれることがあります。この情報を共有しても大丈夫であることを確認してください。</string>
@@ -1192,7 +1192,7 @@
   <string name="cache_ttl_one_day">1 日間</string>
   <string name="cache_ttl_forever">クリアされるまで</string>
   <string name="remember">記憶期間</string>
-    <string name="prompt_fidesmo_pgp_install_title">PGP をインストールしますか？</string>
+  <string name="prompt_fidesmo_pgp_install_title">PGP をインストールしますか？</string>
   <string name="prompt_fidesmo_pgp_install_message">お使いの Fidesmo デバイスには利用できる PGP アプリがありません。</string>
   <string name="prompt_fidesmo_pgp_install_button_positive">インストール</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">キャンセル</string>
@@ -1200,7 +1200,7 @@
   <string name="prompt_fidesmo_app_install_message">PGP をインストールするには Fidesmo Android アプリが必要です。</string>
   <string name="prompt_fidesmo_app_install_button_positive">インストール</string>
   <string name="prompt_fidesmo_app_install_button_negative">キャンセル</string>
-    <string name="redirect_import_key_title">OpenKeychain でスキャン！</string>
+  <string name="redirect_import_key_title">OpenKeychain でスキャン！</string>
   <string name="redirect_import_key_message">別のアプリで OpenPGP QR コードをスキャンしました。安全のために Openkeychain で直接スキャンしてください。</string>
   <string name="redirect_import_key_yes">もう一度スキャン</string>
   <string name="redirect_import_key_no">閉じる</string>
@@ -1212,8 +1212,8 @@
   <string name="button_back">戻る</string>
   <string name="button_got_it">了解</string>
   <string name="requested_key_label">要求した鍵:</string>
-    <string name="title_key_status">鍵のステータス</string>
-    <string name="cap_title_confirm">他の鍵を確認</string>
+  <string name="title_key_status">鍵のステータス</string>
+  <string name="cap_title_confirm">他の鍵を確認</string>
   <string name="cap_cert_ok">この鍵は他の鍵を確認できます。</string>
   <string name="cap_cert_divert">この鍵は、セキュリティトークンを使用して他の鍵を確認できます。</string>
   <string name="cap_cert_stripped">この鍵はストリップされています。他の鍵は確認できません。</string>
@@ -1233,7 +1233,7 @@
   <string name="cap_decrypt_revoked">この鍵はメッセージを復号/受信できますが、失効しています。</string>
   <string name="cap_decrypt_stripped">この鍵は、このデバイスでメッセージを復号/受信できません。</string>
   <string name="cap_decrypt_unavailable">この鍵はメッセージを復号/受信できるように設定されていません！</string>
-    <string name="key_health_ok_title">問題なし</string>
+  <string name="key_health_ok_title">問題なし</string>
   <string name="key_health_ok_subtitle">鍵の問題は確認されませんでした。</string>
   <string name="key_health_divert_title">問題なし (セキュリティトークン)</string>
   <string name="key_health_divert_subtitle">鍵の問題は確認されませんでした。</string>
@@ -1263,7 +1263,7 @@
   <string name="key_insecure_unknown_curve_problem">この鍵は許可リストに登録されていない <b>%1$s</b>アルゴリズムを使用しています。</string>
   <string name="key_insecure_unknown_curve_solution">この鍵はアップグレードできません。 安全な通信のために、所有者は新しい鍵を生成してください。</string>
   <string name="key_insecure_unidentified_problem">この鍵には未確認の問題があります。</string>
-    <string name="key_expiry_text">この鍵は <b>%1$s</b> に有効期限が切れます。</string>
+  <string name="key_expiry_text">この鍵は <b>%1$s</b> に有効期限が切れます。</string>
   <string name="dialog_insecure_title">セキュリティ警告</string>
   <string name="dialog_insecure_recommend_title">推奨アクション</string>
   <string name="insecure_encrypt_bitstrength">このメッセージの受信 (復号) に使用した鍵が古くなっています！\n\nアルゴリズム (%s) は、2006 年以降の一般的な使用では安全でないと考えられていた 1024 ビット以下の強度で構成されています。</string>
@@ -1281,14 +1281,14 @@
   <string name="insecure_hash_algo">このメッセージは、%s ハッシュアルゴリズムを使用して署名されています。 これは安全でないか、異質なものとみなされます！</string>
   <string name="dialog_insecure_override">この特定のセキュリティ問題について今後警告したくない場合は、この警告を抑制することができます。</string>
   <string name="dialog_insecure_override_title">この警告を無視</string>
-    <string name="dialog_insecure_button_override">無視</string>
+  <string name="dialog_insecure_button_override">無視</string>
   <string name="dialog_insecure_button_override_confirm">無視 (%d)</string>
   <string name="dialog_insecure_button_undo">無視を解除</string>
   <string name="dialog_insecure_button_view_key">鍵を表示</string>
   <string name="dialog_insecure_button_ok">了解</string>
   <string name="usage_authentication">認証</string>
   <string name="identity_context_forget">記憶しない</string>
-    <string name="status_check_key">鍵のステータスを確認中…</string>
+  <string name="status_check_key">鍵のステータスを確認中…</string>
   <string name="status_search_local">鍵リストを検索中…</string>
   <string name="status_search_uri">トークン URL で検索中…</string>
   <string name="status_search_keyserver">鍵サーバーで検索中…</string>
@@ -1373,7 +1373,7 @@
   <string name="use_key_no_name">鍵を使用: <![CDATA[<no name>]]></string>
   <string name="title_select_key">%s は、このアドレスのエンドツーエンド暗号化のセットアップを要求しています:</string>
   <string name="select_identity_cancel">キャンセル</string>
-    <string name="error_save_key_internal">鍵の保存で内部エラーが発生しました！</string>
+  <string name="error_save_key_internal">鍵の保存で内部エラーが発生しました！</string>
   <string name="menu_list_unrelated_keys">関連のない鍵を一覧表示</string>
   <string name="no_keys_gen_title">これは新しいアドレスです</string>
   <string name="no_keys_gen_subtitle">OpenKeychain で新しいエンドツーエンド暗号化鍵を作成します</string>
@@ -1392,10 +1392,10 @@
   <string name="msg_get_query_not_implemented">サーバーは現在のクエリをサポートしていません！ 一部のサーバーはメールアドレスのみを受け入れます。再定義するか、別のサーバーを試してください。</string>
   <string name="snack_keylist_clipboard_title">クリップボードにデータが見つかりました！</string>
   <string name="snack_keylist_clipboard_action">表示</string>
-    <string name="notify_channel_permission">権限のリクエスト</string>
+  <string name="notify_channel_permission">権限のリクエスト</string>
   <string name="notify_channel_passcache">パスフレーズキャッシュ</string>
   <string name="notify_channel_orbot">Orbot の状態</string>
-    <string name="keychoice_cannot_encrypt">この鍵は暗号化に使用できません！</string>
+  <string name="keychoice_cannot_encrypt">この鍵は暗号化に使用できません！</string>
   <string name="keychoice_cannot_sign">この鍵は署名に使用できません！</string>
   <string name="keychoice_insecure">この鍵は安全ではないため使用できません！</string>
   <string name="keychoice_revoked">この鍵は失効しているため使用できません！</string>

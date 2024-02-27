@@ -18,26 +18,26 @@
   <string name="title_share_key">Διαμοιρασμός κλειδιού με...</string>
   <string name="title_share_file">Διαμοιρασμός αρχείου με...</string>
   <string name="title_share_message">Διαμοιρασμός κειμένου με...</string>
-    <string name="title_import_keys">Εισαγωγή Κλειδιών</string>
-    <string name="title_key_not_found">Δεν Βρέθηκε το Κλειδί</string>
+  <string name="title_import_keys">Εισαγωγή Κλειδιών</string>
+  <string name="title_key_not_found">Δεν Βρέθηκε το Κλειδί</string>
   <string name="title_send_key">Ανεβάστε στο Διακομιστή Κλειδιών</string>
   <string name="title_backup">Αντίγραφο ασφαλείας κλειδιού</string>
   <string name="title_certify_key">Επιβεβαίωση Κλειδιού</string>
   <string name="title_key_details">Λεπτομέρειες Κλειδιού</string>
   <string name="title_help">Βοήθεια</string>
   <string name="title_log_display">Αρχείο Καταγραφής</string>
-    <string name="title_advanced_key_info">Προχωρημένες</string>
+  <string name="title_advanced_key_info">Προχωρημένες</string>
   <string name="title_delete_secret_key">Διαγραφή του ΔΙΚΟΥ ΣΑΣ κλειδιού \'%s\'; </string>
   <string name="title_manage_my_keys">Διαχείριση των κλειδιών μου</string>
   <!--section-->
   <string name="section_user_ids">Ταυτότητες</string>
-    <string name="section_keys">Υποκλειδιά</string>
+  <string name="section_keys">Υποκλειδιά</string>
   <string name="section_cloud_search">Αναζήτηση Κλειδιών</string>
-    <string name="section_passphrase_cache">Κωδικοί πρόσβασης και PINs</string>
+  <string name="section_passphrase_cache">Κωδικοί πρόσβασης και PINs</string>
   <string name="section_passphrase_cache_summary">Διαχείριση</string>
   <string name="section_proxy_settings">Δικτυακή Ανωνυμία</string>
   <string name="section_proxy_settings_summary">Tor, Ρυθμίσεις Διαμεσολαβητή (Proxy)</string>
-    <string name="section_sync_settings">Συγχρονισμός</string>
+  <string name="section_sync_settings">Συγχρονισμός</string>
   <string name="section_sync_settings_summary">Αυτόματες ενημερώσεις κλειδιών, συσχέτιση επαφών</string>
   <string name="section_experimental_features">Πειραματικές Λειτουργίες</string>
   <string name="section_certify">Επιβεβαίωση</string>
@@ -50,9 +50,9 @@
   <string name="section_current_expiry">Τωρινή λήξη</string>
   <string name="section_new_expiry">Νέα λήξη</string>
   <!--button-->
-    <string name="btn_encrypt_share_file">Κρυπτογράφηση και κοινοποίηση αρχείου</string>
+  <string name="btn_encrypt_share_file">Κρυπτογράφηση και κοινοποίηση αρχείου</string>
   <string name="btn_encrypt_save_file">Κρυπτογράφηση και αποθήκευση αρχείου</string>
-    <string name="btn_save">Αποθήκευση</string>
+  <string name="btn_save">Αποθήκευση</string>
   <string name="btn_view_log">Προβολή αρχείου καταγραφής</string>
   <string name="btn_do_not_save">Ακύρωση</string>
   <string name="btn_delete">Διαγραφή</string>
@@ -60,12 +60,12 @@
   <string name="btn_okay">OΚ</string>
   <string name="btn_next">Επόμενο</string>
   <string name="btn_back">Πίσω</string>
-    <string name="btn_create_key">Δημιουργίας κλειδιού</string>
+  <string name="btn_create_key">Δημιουργίας κλειδιού</string>
   <string name="btn_share_decrypted_text">Κοινή χρήση</string>
   <string name="btn_copy_decrypted_text">Αντιγραφή στο πρόχειρο</string>
   <string name="btn_unlock">Ξεκλείδωμα</string>
   <string name="btn_proceed">Προχωρώ</string>
-    <!--Shortcut Strings-->
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Ρυθμίσεις</string>
@@ -74,23 +74,24 @@
   <string name="menu_manage_keys">Διαχείριση των κλειδιών μου</string>
   <string name="menu_search">Αναζήτηση</string>
   <string name="menu_open">Ανοικτό</string>
-    <string name="menu_change_password">Αλλαγή κωδικού πρόσβασης</string>
+  <string name="menu_change_password">Αλλαγή κωδικού πρόσβασης</string>
   <string name="menu_advanced">Προχωρημένες</string>
-    <!--label-->
-    <string name="label_passphrase">Κωδικός Πρόσβασης</string>
+  <!--label-->
+  <string name="label_passphrase">Κωδικός Πρόσβασης</string>
   <string name="label_unlock">Ξεκλειδώνεται...</string>
-    <string name="label_key_type">Τύπος</string>
-    <string name="label_usage">Χρήση</string>
+  <string name="label_key_id_colon">Αναγνωριστικό κλειδιού:</string>
+  <string name="label_key_type">Τύπος</string>
+  <string name="label_usage">Χρήση</string>
   <string name="label_revoked">Ανακλημένο</string>
   <string name="label_name">Όνομα</string>
   <string name="label_email">Email</string>
   <string name="label_fingerprint">Αποτύπωμα</string>
-    <string name="label_smartpgp_roots">SmartPGP: Έμπιστες αρχές</string>
+  <string name="label_smartpgp_roots">SmartPGP: Έμπιστες αρχές</string>
   <string name="label_enter_keyserver_url">URL</string>
   <string name="label_theme">Θέμμα</string>
   <string name="label_enter_smartpgp_authority_name">Όνομα</string>
   <string name="pref_keyserver">Διακομιστές κλειδιών OpenPGP</string>
-    <string name="label_experimental_settings_desc_title">Προειδοποίηση</string>
+  <string name="label_experimental_settings_desc_title">Προειδοποίηση</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Ενεργοποίηση του Tor</string>
   <string name="pref_proxy_host_title">Διαμεσολαβητής υποδοχής</string>
@@ -103,13 +104,14 @@
   <string name="orbot_install_dialog_install">Εγκατάσταση</string>
   <string name="orbot_install_dialog_cancel">Ακύρωση</string>
   <!--StartOrbotDialogFragment strings-->
-    <string name="orbot_start_dialog_start">Εκκίνηση Orbot</string>
+  <string name="orbot_start_dialog_start">Εκκίνηση Orbot</string>
   <string name="orbot_start_dialog_cancel">Ακύρωση</string>
   <!--choice-->
   <string name="choice_none">Καμία</string>
-    <string name="usage_sign">Υπόγραψε</string>
+  <string name="usage_sign">Υπόγραψε</string>
   <string name="usage_encrypt">Κρυπτογράφηση</string>
-    <!--sentences-->
+  <string name="theme_auto">Αυτόματο</string>
+  <!--sentences-->
   <string name="passphrase_for_symmetric_encryption">Εισαγωγή κωδικού</string>
   <string name="passphrase_for_any">Εισαγωγή κωδικού</string>
   <!--errors
@@ -137,8 +139,8 @@
   <string name="help_tab_license">Αδειες</string>
   <string name="help_tab_about">Σχετικά με το OONI</string>
   <string name="help_about_version">Έκδοση</string>
-    <!--Import-->
-    <string name="btn_import">Εισαγωγή</string>
+  <!--Import-->
+  <string name="btn_import">Εισαγωγή</string>
   <string name="btn_refresh">Ανανέωση</string>
   <!--Generic result toast-->
   <string name="snackbar_details">Λεπτομέρειες</string>
@@ -148,9 +150,10 @@
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
-    <string name="api_settings_save">Αποθήκευση</string>
-    <string name="api_settings_advanced">Προχωρημένες</string>
-    <!--Share-->
+  <string name="api_settings_save">Αποθήκευση</string>
+  <string name="api_settings_revoke">Ανάκληση πρόσβασης</string>
+  <string name="api_settings_advanced">Προχωρημένες</string>
+  <!--Share-->
   <!--retry upload dialog-->
   <string name="retry_up_dialog_title">Αποτυχία μεταφόρτωσης</string>
   <!--Delete or revoke private key dialog-->
@@ -174,11 +177,12 @@
   <!--Add/Edit keyserver-->
   <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
+  <string name="nav_keys">Κλειδιά</string>
   <string name="nav_apps">Εφαρμογές</string>
-    <!--hints-->
+  <!--hints-->
   <!--certs-->
-    <string name="cert_none">κανένα</string>
-    <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <string name="cert_none">κανένα</string>
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
   <!--Keyring Canonicalization log entries-->
@@ -203,17 +207,17 @@
   <string name="backup_section">Αντίγραφο ασφαλείας </string>
   <string name="restore_section">Επαναφορά</string>
   <!--unsorted-->
-    <string name="unknown">άγνωστο</string>
-    <!--Android Account-->
-    <!--Passphrase wizard-->
+  <string name="unknown">άγνωστο</string>
+  <!--Android Account-->
+  <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">Εισαγωγή κωδικού</string>
-    <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-    <string name="security_token_error_unknown">Άγνωστο Σφάλμα</string>
+  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="security_token_error_unknown">Άγνωστο Σφάλμα</string>
   <string name="security_token_error_try_again">Προσπαθήστε ξανά</string>
   <!--Other Linked Identity strings-->
-    <string name="share_log_dialog_share_button">Κοινή χρήση</string>
+  <string name="share_log_dialog_share_button">Κοινή χρήση</string>
   <string name="share_log_dialog_cancel_button">Ακύρωση</string>
   <string name="menu_uids_save">Αποθήκευση</string>
   <string name="prompt_fidesmo_pgp_install_button_positive">Εγκατάσταση</string>
@@ -228,7 +232,7 @@
   <string name="keyserver_title_published">Δημοσιεύτηκε</string>
   <string name="dialog_insecure_title">Προειδοποίηση Ασφαλείας</string>
   <string name="dialog_insecure_button_ok">Το κατάλαβα</string>
-    <string name="token_reset_confirm_ok">Μηδενισμός</string>
+  <string name="token_reset_confirm_ok">Μηδενισμός</string>
   <string name="token_action_import">Εισαγωγή</string>
   <string name="token_unlock_ok">Ξεκλείδωμα</string>
   <string name="select_identity_cancel">Απενεργοποίηση</string>

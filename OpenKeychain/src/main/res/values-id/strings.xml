@@ -19,7 +19,8 @@
   <string name="title_advanced_key_info">Advanced </string>
   <!--section-->
   <string name="section_user_ids">Identitas</string>
-    <string name="section_sync_settings">Sinkronisasi</string>
+  <string name="section_keys">Sub-kunci</string>
+  <string name="section_sync_settings">Sinkronisasi</string>
   <string name="section_certify">Konfirmasi</string>
   <string name="section_actions">Tindakan</string>
   <string name="section_share_key">Key </string>
@@ -34,54 +35,62 @@
   <string name="btn_okay">Oke</string>
   <string name="btn_next">Selanjutnya</string>
   <string name="btn_back">Kembali</string>
-    <string name="btn_share_decrypted_text">Share </string>
+  <string name="btn_share_decrypted_text">Share </string>
   <string name="btn_copy_decrypted_text">Salin ke clipboard</string>
+  <string name="btn_encrypt_files">Enkripsikan berkas</string>
   <string name="btn_unlock">Tidak terkunci</string>
   <string name="btn_proceed">Lanjutkan</string>
-    <!--Shortcut Strings-->
+  <!--Shortcut Strings-->
   <!--Content Description-->
+  <string name="cd_encrypt_files">Enkripsikan berkas</string>
   <!--menu-->
   <string name="menu_preferences">Pengaturan</string>
   <string name="menu_help">Bantuan</string>
   <string name="menu_delete_key">Hapus key</string>
   <string name="menu_search">Cari</string>
   <string name="menu_open">Terbuka</string>
-    <string name="menu_change_password">Ubah kata sandi</string>
+  <string name="menu_change_password">Ubah kata sandi</string>
   <string name="menu_advanced">Advanced </string>
-    <!--label-->
-    <string name="label_passphrase">Password </string>
+  <!--label-->
+  <string name="label_passphrase">Password </string>
   <string name="label_unlock">Membuka kunci...</string>
-    <string name="label_key_type">Tipe</string>
+  <string name="label_key_type">Tipe</string>
   <string name="label_expiry">Waktu kadarluarsa</string>
   <string name="label_usage">Usage </string>
   <string name="label_revoked">Dicabut</string>
   <string name="label_name">Nama</string>
   <string name="label_email">Email </string>
   <string name="label_fingerprint">Fingerprint</string>
-    <string name="label_enter_keyserver_url">URL </string>
+  <string name="label_preferred">Memilih</string>
+  <string name="label_enter_keyserver_url">URL </string>
   <string name="label_theme">Theme </string>
   <string name="label_enter_smartpgp_authority_name">Nama</string>
   <string name="pref_keyserver">Server kunci OpenPGP</string>
-    <string name="label_experimental_settings_desc_title">Peringatan</string>
+  <string name="label_experimental_settings_desc_title">Peringatan</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Aktifkan Tor</string>
   <string name="pref_proxy_host_title">Host Proxy</string>
   <string name="pref_proxy_port_title">Port Proxy</string>
   <string name="pref_proxy_type_title">Tipe Proxy</string>
   <!--proxy type choices and values-->
+  <string name="pref_proxy_type_choice_http">HTTP</string>
   <string name="pref_proxy_type_choice_socks">SOCKS</string>
   <!--OrbotHelper strings-->
   <!--InstallDialogFragment strings-->
   <string name="orbot_install_dialog_install">Menginstal</string>
   <string name="orbot_install_dialog_cancel">Batalkan</string>
   <!--StartOrbotDialogFragment strings-->
-    <string name="orbot_start_dialog_start">Memulai Orbot</string>
+  <string name="orbot_start_dialog_start">Memulai Orbot</string>
   <string name="orbot_start_dialog_cancel">Batalkan</string>
   <!--choice-->
   <string name="choice_none">Tidak ada</string>
   <string name="usage_encrypt">Enkripsi</string>
-    <!--sentences-->
+  <string name="theme_auto">Otomatis</string>
+  <string name="theme_light">Terang</string>
+  <string name="theme_dark">Gelap</string>
+  <!--sentences-->
   <string name="passphrase_for_symmetric_encryption">Masukkan kata sandi</string>
+  <string name="passphrase_for">Masukkan kata sandi untuk \'%s\'</string>
   <string name="passphrase_for_any">Masukkan kata sandi</string>
   <!--errors
          no punctuation, all lowercase,
@@ -112,8 +121,8 @@
   <string name="help_tab_license">Lisensi</string>
   <string name="help_tab_about">Tentang</string>
   <string name="help_about_version">Versi:</string>
-    <!--Import-->
-    <string name="btn_import">impor</string>
+  <!--Import-->
+  <string name="btn_import">impor</string>
   <string name="btn_refresh">Refresh </string>
   <!--Generic result toast-->
   <string name="snackbar_details">Detail</string>
@@ -123,19 +132,23 @@
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
-    <string name="api_settings_save">Simpan</string>
-    <string name="api_settings_advanced">Advanced </string>
-    <!--Share-->
+  <string name="api_settings_save">Simpan</string>
+  <string name="api_settings_revoke">Mencabut akses</string>
+  <string name="api_settings_advanced">Advanced </string>
+  <!--Share-->
   <!--retry upload dialog-->
   <string name="retry_up_dialog_title">Gagal mengunggah</string>
   <!--Delete or revoke private key dialog-->
   <!--Delete Or Revoke Dialog spinner-->
   <!--Key list-->
+  <string name="key_list_fab_qr_code">Pindai kode QR</string>
   <!--Key view-->
   <string name="key_view_action_edit">Edit </string>
+  <string name="key_view_action_certify">Konfirmasi kunci</string>
   <string name="key_view_tab_start">Mulai</string>
   <string name="key_view_tab_share">Share </string>
-    <string name="user_id_info_revoked_title">Dicabut</string>
+  <string name="key_view_tab_keys">Sub-kunci</string>
+  <string name="user_id_info_revoked_title">Dicabut</string>
   <!--Key trust-->
   <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Ubah kata sandi</string>
@@ -147,10 +160,10 @@
   <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
   <string name="nav_apps">Aplikasi</string>
-    <!--hints-->
+  <!--hints-->
   <!--certs-->
-    <string name="cert_none">Tidak ada</string>
-    <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <string name="cert_none">Tidak ada</string>
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
   <!--Keyring Canonicalization log entries-->
@@ -178,18 +191,19 @@
   <!--Keyserver sync-->
   <string name="keyserver_sync_orbot_notif_start">Memulai Orbot</string>
   <!--First Time-->
+  <string name="backup_section">Cadangan</string>
   <string name="restore_section">Kembalikan</string>
   <!--unsorted-->
-    <string name="error_key_not_found">Kunci tidak ditemukan!</string>
-    <string name="unknown">tidak diketahui</string>
+  <string name="error_key_not_found">Kunci tidak ditemukan!</string>
+  <string name="unknown">tidak diketahui</string>
   <!--Android Account-->
-    <!--Passphrase wizard-->
+  <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">Masukkan kata sandi</string>
-    <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-    <!--Other Linked Identity strings-->
-    <string name="share_log_dialog_share_button">Share </string>
+  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <!--Other Linked Identity strings-->
+  <string name="share_log_dialog_share_button">Share </string>
   <string name="share_log_dialog_cancel_button">Batalkan</string>
   <string name="menu_uids_save">Simpan</string>
   <string name="prompt_fidesmo_pgp_install_button_positive">Menginstal</string>
@@ -197,12 +211,15 @@
   <string name="prompt_fidesmo_app_install_button_positive">Menginstal</string>
   <string name="prompt_fidesmo_app_install_button_negative">Batalkan</string>
   <string name="redirect_import_key_no">Tutup</string>
+  <string name="button_allow">Izinkan</string>
   <string name="button_cancel">Batalkan</string>
   <string name="button_back">Kembali</string>
+  <string name="button_got_it">Mengerti</string>
   <string name="key_health_expired_title">Kedaluwarsa</string>
   <string name="key_health_revoked_title">Dicabut</string>
   <string name="keyserver_title_published">Telah dipublikasikan</string>
-    <string name="token_reset_confirm_ok">Reset</string>
+  <string name="dialog_insecure_button_ok">Mengerti</string>
+  <string name="token_reset_confirm_ok">Reset</string>
   <string name="token_result_not_found">Kunci tidak ditemukan!</string>
   <string name="token_action_import">impor</string>
   <string name="token_unlock_ok">Tidak terkunci</string>

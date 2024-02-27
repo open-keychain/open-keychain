@@ -4,18 +4,23 @@
     http://developer.android.com/guide/topics/resources/string-resource.html (scroll down to "Escaping apostrophes and quotes").-->
   <!--title-->
   <string name="title_preferences">Arventennoù</string>
+  <string name="title_change_passphrase">Cheñch ar ger-tremen</string>
   <string name="title_key_details">Munudoù an alc\'hwez</string>
   <string name="title_help">Skoazell</string>
   <string name="title_log_display">Renabl</string>
   <string name="title_advanced_key_info">Araokaet</string>
   <!--section-->
+  <string name="section_certify">Kadarnaat</string>
+  <string name="section_share_key">Alc\'hwez</string>
   <!--button-->
   <string name="btn_save">Enrollañ</string>
   <string name="btn_do_not_save">Nullañ</string>
   <string name="btn_delete">Dilemel</string>
   <string name="btn_next">De-heul</string>
-    <string name="btn_share_decrypted_text">Rannañ</string>
-    <!--Shortcut Strings-->
+  <string name="btn_back">Kent</string>
+  <string name="btn_share_decrypted_text">Rannañ</string>
+  <string name="btn_unlock">Dibrennañ</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">Arventennoù</string>
@@ -24,15 +29,20 @@
   <string name="menu_open">Digeriñ</string>
   <string name="menu_change_password">Cheñch ar ger-tremen</string>
   <string name="menu_advanced">Araokaet</string>
-    <!--label-->
+  <!--label-->
   <string name="label_passphrase">Ger-tremen</string>
+  <string name="label_unlock">O tibrennañ…</string>
+  <string name="label_key_id_colon">ID an alc\'hwez:</string>
   <string name="label_key_type">Doare</string>
   <string name="label_name">Anv</string>
   <string name="label_email">Postel</string>
+  <string name="label_enter_keyserver_url">URL</string>
   <string name="label_theme">Tem</string>
   <string name="label_enter_smartpgp_authority_name">Anv</string>
-    <!--Proxy Preferences-->
+  <string name="label_experimental_settings_desc_title">Diwallit</string>
+  <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Gweredekaat Tor</string>
+  <string name="pref_proxy_type_title">Seurt proxy</string>
   <!--proxy type choices and values-->
   <!--OrbotHelper strings-->
   <!--InstallDialogFragment strings-->
@@ -41,8 +51,10 @@
   <string name="orbot_start_dialog_cancel">Nullañ</string>
   <!--choice-->
   <string name="choice_none">Hini ebet</string>
-    <string name="theme_dark">Teñval</string>
+  <string name="usage_sign">Sign</string>
+  <string name="theme_auto">Emgefreek</string>
   <string name="theme_light">Gouloù</string>
+  <string name="theme_dark">Teñval</string>
   <!--sentences-->
   <string name="passphrase_for_symmetric_encryption">Ebarzhiñ ar ger-tremen</string>
   <string name="passphrase_for_any">Ebarzhiñ ar ger-tremen</string>
@@ -69,8 +81,9 @@
   <string name="help_tab_changelog">Cheñchadurioù</string>
   <string name="help_tab_about">Diwar-benn</string>
   <string name="help_about_version">Version:</string>
-    <!--Import-->
+  <!--Import-->
   <string name="btn_import">Emporzhiañ</string>
+  <string name="btn_refresh">Refresh</string>
   <!--Generic result toast-->
   <string name="snackbar_details">Munudoù</string>
   <!--Import result toast-->
@@ -80,9 +93,9 @@
   <!--Intent labels-->
   <!--Remote API-->
   <string name="api_settings_save">Enrollañ</string>
-    <string name="api_settings_package_name">Anv ar pak</string>
+  <string name="api_settings_package_name">Anv ar pak</string>
   <string name="api_settings_advanced">Araokaet</string>
-    <!--Share-->
+  <!--Share-->
   <!--retry upload dialog-->
   <!--Delete or revoke private key dialog-->
   <!--Delete Or Revoke Dialog spinner-->
@@ -93,16 +106,17 @@
   <string name="key_view_tab_share">Rannañ</string>
   <!--Key trust-->
   <!--Edit key-->
+  <string name="edit_key_action_change_passphrase">Cheñch ar ger-tremen</string>
   <!--Create key-->
   <string name="create_key_passphrases_not_equal">Ne glot ket ar gerioù-tremen</string>
   <!--View key-->
   <!--Add/Edit keyserver-->
   <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
-    <!--hints-->
+  <!--hints-->
   <!--certs-->
   <string name="cert_none">hini ebet</string>
-    <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
   <!--Keyring Canonicalization log entries-->
@@ -124,13 +138,13 @@
   <!--Keyserver sync-->
   <!--First Time-->
   <!--unsorted-->
-    <!--Android Account-->
+  <!--Android Account-->
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">Ebarzhiñ ar ger-tremen</string>
-    <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-    <!--Other Linked Identity strings-->
+  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <!--Other Linked Identity strings-->
   <string name="share_log_dialog_share_button">Rannañ</string>
   <string name="share_log_dialog_cancel_button">Nullañ</string>
   <string name="menu_uids_save">Enrollañ</string>
@@ -139,8 +153,13 @@
   <string name="redirect_import_key_no">Serriñ</string>
   <string name="button_allow">Aotren</string>
   <string name="button_cancel">Nullañ</string>
+  <string name="button_back">Kent</string>
   <string name="button_got_it">Deuet eo ganin</string>
+  <string name="keyserver_title_published">Published</string>
   <string name="dialog_insecure_button_ok">Deuet eo ganin</string>
-    <string name="token_action_import">Emporzhiañ</string>
+  <string name="token_action_import">Emporzhiañ</string>
+  <string name="token_unlock_ok">Dibrennañ</string>
+  <string name="select_identity_cancel">Lazhañ</string>
+  <string name="key_gen_back">Kent</string>
   <string name="keylist_header_anonymous">Anonymous</string>
 </resources>

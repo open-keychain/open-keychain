@@ -18,26 +18,26 @@
   <string name="title_share_key">Del nøkkel med…</string>
   <string name="title_share_file">Del fil med…</string>
   <string name="title_share_message">Del tekst med…</string>
-    <string name="title_import_keys">Importer nøkler</string>
-    <string name="title_key_not_found">Finner ikke nøkkel</string>
+  <string name="title_import_keys">Importer nøkler</string>
+  <string name="title_key_not_found">Finner ikke nøkkel</string>
   <string name="title_send_key">Last opp til nøkkeltjener</string>
   <string name="title_backup">Sikkerhetskopi</string>
   <string name="title_certify_key">Bekreft nøkkel</string>
   <string name="title_key_details">Nøkkeldetaljer</string>
   <string name="title_help">Hjelp</string>
   <string name="title_log_display">Logg</string>
-    <string name="title_advanced_key_info">Avansert</string>
+  <string name="title_advanced_key_info">Avansert</string>
   <string name="title_delete_secret_key">Slett DIN nøkkel \"%s\"?</string>
   <string name="title_manage_my_keys">Behandle nøklene mine</string>
   <string name="title_alert_strip">Fjern denne undernøkkelen</string>
   <!--section-->
   <string name="section_user_ids">Identiteter</string>
-    <string name="section_keys">Undernøkler</string>
+  <string name="section_keys">Undernøkler</string>
   <string name="section_cloud_search">Finn nøkkel</string>
-    <string name="section_passphrase_cache">Passord og PIN-koder</string>
+  <string name="section_passphrase_cache">Passord og PIN-koder</string>
   <string name="section_proxy_settings">Nettverks-anonymitet</string>
   <string name="section_proxy_settings_summary">Tor, mellomtjener-innstillinger</string>
-    <string name="section_sync_settings">Synkronisering</string>
+  <string name="section_sync_settings">Synkronisering</string>
   <string name="section_sync_settings_summary">Automatisk nøkkel-oppdatering, kontakt-lenking</string>
   <string name="section_experimental_features">Eksperimentelle funksjoner</string>
   <string name="section_certify">Bekreft</string>
@@ -50,9 +50,9 @@
   <string name="section_current_expiry">Gjeldende forfall</string>
   <string name="section_new_expiry">Nytt forfall</string>
   <!--button-->
-    <string name="btn_encrypt_share_file">Krypter og del fil</string>
+  <string name="btn_encrypt_share_file">Krypter og del fil</string>
   <string name="btn_encrypt_save_file">Krypter og lagre fil</string>
-    <string name="btn_save">Lagre</string>
+  <string name="btn_save">Lagre</string>
   <string name="btn_view_log">Se logg</string>
   <string name="btn_do_not_save">Avbryt</string>
   <string name="btn_delete">Slett</string>
@@ -61,11 +61,11 @@
   <string name="btn_export_to_server">Last opp til nøkkelserver</string>
   <string name="btn_next">Neste</string>
   <string name="btn_back">Tilbake</string>
-    <string name="btn_match">Fingeravtrykkene samsvarer</string>
+  <string name="btn_match">Fingeravtrykkene samsvarer</string>
   <string name="btn_share_encrypted_signed">Krypter/signer og del tekst</string>
   <string name="btn_copy_encrypted_signed">Krypter/signer og kopier tekst</string>
   <string name="btn_paste_encrypted_signed">Krypter/signer og lim inn tekst</string>
-    <string name="btn_create_key">Opprett nøkkel</string>
+  <string name="btn_create_key">Opprett nøkkel</string>
   <string name="btn_add_files">Legg til fil(er)</string>
   <string name="btn_share_decrypted_text">Del</string>
   <string name="btn_open_with">Åpne med…</string>
@@ -77,7 +77,7 @@
   <string name="btn_add_email">Legg til ytterligere e-postadresse</string>
   <string name="btn_unlock">Lås opp</string>
   <string name="btn_proceed">Fortsett</string>
-    <string name="btn_save_default">Lagre som forvalg</string>
+  <string name="btn_save_default">Lagre som forvalg</string>
   <string name="btn_saved">Lagret!</string>
   <string name="btn_not_matching">Samsvarer ikke</string>
   <!--Shortcut Strings-->
@@ -85,45 +85,45 @@
   <string name="cd_encrypt_files">Krypter filer</string>
   <string name="cd_exchange_keys">Utveksle nøkler</string>
   <string name="cd_encrypt_text">Krypter tekst</string>
-    <!--menu-->
+  <!--menu-->
   <string name="menu_preferences">Innstillinger</string>
   <string name="menu_help">Hjelp</string>
   <string name="menu_export_key">Sikkerhetskopier nøkkel</string>
   <string name="menu_delete_key">Slett nøkkel</string>
-    <string name="menu_manage_keys">Behandle mine nøkler</string>
+  <string name="menu_manage_keys">Behandle mine nøkler</string>
   <string name="menu_search">Søk</string>
   <string name="menu_open">Åpne</string>
   <string name="menu_read_clipboard">Les fra utklippstavle</string>
-    <string name="menu_encrypt_to">Krypter til…</string>
-    <string name="menu_update_all_keys">Oppdater alle nøkler</string>
+  <string name="menu_encrypt_to">Krypter til…</string>
+  <string name="menu_update_all_keys">Oppdater alle nøkler</string>
   <string name="menu_certify_fingerprint">Bekreft med fingeravtrykk</string>
-    <string name="menu_share_log">Del logg</string>
+  <string name="menu_share_log">Del logg</string>
   <string name="menu_change_password">Endre passord</string>
   <string name="menu_advanced">Avansert</string>
-    <!--label-->
-    <string name="label_no_passphrase">Inget passord</string>
+  <!--label-->
+  <string name="label_no_passphrase">Inget passord</string>
   <string name="label_passphrase">Passord</string>
   <string name="label_pin">PIN</string>
   <string name="label_unlock">Låser opp…</string>
   <string name="label_passphrase_again">Gjenta passord</string>
-    <string name="label_algorithm_colon">Algoritme:</string>
-    <string name="label_file_ascii_armor">Aktiver ASCII-rustningen</string>
-    <string name="label_asymmetric_from">Signer med:</string>
+  <string name="label_algorithm_colon">Algoritme:</string>
+  <string name="label_file_ascii_armor">Aktiver ASCII-rustningen</string>
+  <string name="label_asymmetric_from">Signer med:</string>
   <string name="label_to">Krypter til</string>
   <string name="label_delete_after_encryption">Slett filer etter kryptering</string>
-    <string name="label_symmetric">Krypter med passord</string>
+  <string name="label_symmetric">Krypter med passord</string>
   <string name="label_passphrase_cache_subs">Husk på passord utifra undernøkler</string>
-    <string name="label_keyservers">Behandle OpenPGP-nøkkeltjenere</string>
-    <string name="label_key_id_colon">Nøkkel-ID:</string>
+  <string name="label_keyservers">Behandle OpenPGP-nøkkeltjenere</string>
+  <string name="label_key_id_colon">Nøkkel-ID:</string>
   <string name="label_key_created">Opprettet %s</string>
   <string name="label_key_created_just_now">Opprettet akkurat nå</string>
   <string name="label_key_type">Type</string>
-    <string name="label_expiry">Utløper</string>
+  <string name="label_expiry">Utløper</string>
   <string name="label_valid_from">Gyldig fra</string>
   <string name="label_usage">Bruk</string>
   <string name="label_revoked">Tilbakekalt</string>
   <string name="label_insecure">Usikker</string>
-    <string name="label_main_user_id">Hovedidentitet</string>
+  <string name="label_main_user_id">Hovedidentitet</string>
   <string name="label_name">Navn</string>
   <string name="label_email">E-post</string>
   <string name="label_send_key">Publiser sertifisering på nøkkeltjenere</string>
@@ -132,15 +132,15 @@
   <string name="label_keyservers_title">Nøkkeltjenere</string>
   <string name="label_keyserver_settings_hint">Dra for å endre rekkefølge, trykk for å redigere/slette</string>
   <string name="label_selected_keyserver_title">Valgt nøkkeltjener</string>
-    <string name="label_preferred">foretrukket</string>
+  <string name="label_preferred">foretrukket</string>
   <string name="label_enable_compression">Skru på komprimering</string>
   <string name="label_enable_self_encrypt">Krypter til signereren</string>
   <string name="label_encrypt_filenames">Krypter filnavn</string>
-    <string name="label_smartpgp_verify">SmartPGP: Bekreft signaturer</string>
+  <string name="label_smartpgp_verify">SmartPGP: Bekreft signaturer</string>
   <string name="label_smartpgp_verify_summary">Verifiser sertifikatene til SmartPGP-sikkerhetssjetonger opp mot et sett med troverdige myndigheter</string>
   <string name="label_smartpgp_roots">SmartPGP: Betrodde myndigheter</string>
   <string name="label_verify_keyserver_connection">Test forbindelsen</string>
-    <string name="label_enter_keyserver_url">Nettadresse</string>
+  <string name="label_enter_keyserver_url">Nettadresse</string>
   <string name="label_enter_keyserver_onion">Valgfri Tor-.onionnettadresse</string>
   <string name="label_keyserver_dialog_delete">Slett nøkkeltjener</string>
   <string name="label_theme">Drakt</string>
@@ -148,7 +148,7 @@
   <string name="label_smartpgp_authority_dialog_delete">Slett myndighet</string>
   <string name="pref_keyserver">OpenPGP-nøkkeltjenere</string>
   <string name="pref_keyserver_summary">Velg nøkler på utvalgte OpenPGP-nøkkeltjenere (HKP-protokoll)</string>
-    <string name="label_sync_settings_keyserver_title">Automatiske nøkkeloppdateringer</string>
+  <string name="label_sync_settings_keyserver_title">Automatiske nøkkeloppdateringer</string>
   <string name="label_sync_settings_keyserver_summary_on">Hver tredje dag, vil nøkler bli oppdatert fra foretrukket nøkkeltjener</string>
   <string name="label_sync_settings_keyserver_summary_off">Nøkler blir ikke automatisk oppdatert</string>
   <string name="label_sync_settings_wifi_title">Bare synkroniser på Wi-Fi</string>
@@ -174,14 +174,14 @@
   <string name="orbot_install_dialog_install">Installer</string>
   <string name="orbot_install_dialog_content">Du må ha Orbot installert og aktivert for å mellomtjene trafikk gjennom det. Ønsker du å installere Orbot?</string>
   <string name="orbot_install_dialog_cancel">Avbryt</string>
-    <!--StartOrbotDialogFragment strings-->
+  <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">Start Orbot?</string>
   <string name="orbot_start_dialog_content">Orbot later ikke til å kjøre. Ønsker du å starte det og koble til Tor?</string>
-    <string name="orbot_start_dialog_start">Start Orbot</string>
+  <string name="orbot_start_dialog_start">Start Orbot</string>
   <string name="orbot_start_dialog_cancel">Avbryt</string>
-    <string name="user_id_no_name"><![CDATA[<no name>]]></string>
+  <string name="user_id_no_name"><![CDATA[<no name>]]></string>
   <string name="none"><![CDATA[<none>]]></string>
-    <plurals name="n_keyservers">
+  <plurals name="n_keyservers">
     <item quantity="one">%d nøkkeltjener</item>
     <item quantity="other">%d nøkkeltjenere</item>
   </plurals>
@@ -192,8 +192,8 @@
   <string name="secret_key">Hemmelig nøkkel:</string>
   <!--choice-->
   <string name="choice_none">Ingen</string>
-    <string name="choice_select_cert">Velg en nøkkel</string>
-    <string name="rsa_2048">RSA 2048</string>
+  <string name="choice_select_cert">Velg en nøkkel</string>
+  <string name="rsa_2048">RSA 2048</string>
   <string name="rsa_2048_description_html">mindre filstørrelse, antatt sikker til 2030</string>
   <string name="rsa_3072">RSA 3072</string>
   <string name="rsa_3072_description_html">anbefalt, antatt sikker til 2040</string>
@@ -205,7 +205,7 @@
   <string name="usage_sign">Signer</string>
   <string name="usage_encrypt">Krypter</string>
   <string name="usage_sign_and_encrypt">Signer &amp; krypter</string>
-    <string name="error_message">Feil: %s</string>
+  <string name="error_message">Feil: %s</string>
   <string name="theme_auto">Automatisk</string>
   <string name="theme_light">Lyst</string>
   <string name="theme_dark">Mørkt</string>
@@ -221,7 +221,7 @@
   <string name="passphrase_keyboard_hint_alpha">Bytt til alfabetisk tastatur</string>
   <string name="passphrase_keyboard_hint_numeric">Bytt til numerisk tastatur</string>
   <string name="passphrase_transfer">Skriv inn overføringskoden</string>
-    <string name="security_token_pin_for">Skriv inn PIN for å få tilgang til sikkerhetssymbol for \'%s\'</string>
+  <string name="security_token_pin_for">Skriv inn PIN for å få tilgang til sikkerhetssymbol for \'%s\'</string>
   <string name="security_token_nfc_text">Hold sikkerhetssymbolet mot NFC-markøren på baksiden av din enhet.</string>
   <string name="security_token_nfc_wait">Hold sikkerhetssymbolet mot baksiden!</string>
   <string name="security_token_nfc_finished">Ta bort sikkerhetssymbolet nå.</string>
@@ -232,9 +232,9 @@
   <string name="no_file_selected">Ingen fil valgt.</string>
   <string name="select_encryption_key">Velg minst én krypteringsnøkkel.</string>
   <string name="error_no_encryption_or_signature_key">Velg minst én krypteringsnøkkel eller en signeringsnøkkel.</string>
-    <string name="key_deletion_confirmation_multi">Ønsker du virkelig å slette alle valgte nøkler?</string>
+  <string name="key_deletion_confirmation_multi">Ønsker du virkelig å slette alle valgte nøkler?</string>
   <string name="public_key_deletetion_confirmation">Vil du slette nøkkelen \'%s\'?</string>
-    <string name="key_not_found">Fant ikke nøkkelen %08X.</string>
+  <string name="key_not_found">Fant ikke nøkkelen %08X.</string>
   <string name="list_empty">Listen er tom!</string>
   <string name="key_copied_to_clipboard">Nøkkelen har blitt kopiert til utklippstavlen!</string>
   <string name="text_copied_to_clipboard">Nøkkelen har blitt kopiert til utklippstavlen!</string>
@@ -242,10 +242,10 @@
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
   <string name="error_file_added_already">%s har allerede blitt lagt til.</string>
-    <string name="error_bad_data">Ugyldig data!</string>
-    <string name="error_could_not_extract_private_key">kunne ikke pakke ut privat nøkkel</string>
+  <string name="error_bad_data">Ugyldig data!</string>
+  <string name="error_could_not_extract_private_key">kunne ikke pakke ut privat nøkkel</string>
   <!--errors without preceding Error:-->
-    <string name="error_nothing">Ingenting å vise enda.</string>
+  <string name="error_nothing">Ingenting å vise enda.</string>
   <string name="error_nothing_import">Fant ingen nøkler!</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">Ikke signert</string>
@@ -266,9 +266,9 @@
   <string name="progress_done">Ferdig:</string>
   <string name="progress_cancel">Avbryt</string>
   <string name="progress_cancelling">avbryter…</string>
-    <string name="progress_saving">lagrer…</string>
+  <string name="progress_saving">lagrer…</string>
   <string name="progress_importing">importerer…</string>
-    <string name="progress_uploading">laster opp…</string>
+  <string name="progress_uploading">laster opp…</string>
   <string name="progress_building_key">bygger nøkkel…</string>
   <string name="progress_generating_elgamal">oppretter ny ElGamal-nøkkel…</string>
   <string name="progress_generating_ecdsa">oppretter ny ECDSA-nøkkel…</string>
@@ -286,38 +286,38 @@
   <string name="progress_modify_passphrase">endrer passord…</string>
   <string name="progress_modify_pin">endrer PIN…</string>
   <string name="progress_modify_admin_pin">endrer administrator-PIN…</string>
-    <string name="progress_extracting_signature_key">pakker ut signaturnøkkel…</string>
-    <string name="progress_encrypting">krypterer data…</string>
-    <string name="progress_decrypting">Dekrypterer data…</string>
+  <string name="progress_extracting_signature_key">pakker ut signaturnøkkel…</string>
+  <string name="progress_encrypting">krypterer data…</string>
+  <string name="progress_decrypting">Dekrypterer data…</string>
   <string name="progress_preparing_signature">forbereder signatur…</string>
   <string name="progress_processing_signature">behandler signatur…</string>
   <string name="progress_generating_signature">oppretter signatur…</string>
   <string name="progress_verifying_signature">bekrefter signatur…</string>
   <string name="progress_signing">signerer…</string>
-    <string name="progress_reading_data">leser data…</string>
-    <string name="progress_deleting">sletter nøkler…</string>
+  <string name="progress_reading_data">leser data…</string>
+  <string name="progress_deleting">sletter nøkler…</string>
   <string name="progress_verifying_keyserver_connection">verifiserer tilkoblingen …</string>
   <string name="progress_starting_orbot">Starter Orbot…</string>
   <!--action strings-->
-    <!--key bit length selections-->
-    <!--elliptic curve names-->
-    <!--not in for now, see SaveKeyringParcel
-      <string name="key_curve_bp_p256">"Brainpool P-256"</string>
-      <string name="key_curve_bp_p384">"Brainpool P-384"</string>
-      <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
+  <!--key bit length selections-->
+  <!--elliptic curve names-->
+  <!--not in for now, see SaveKeyringParcel
+    <string name="key_curve_bp_p256">"Brainpool P-256"</string>
+    <string name="key_curve_bp_p384">"Brainpool P-384"</string>
+    <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
-    <!--Help-->
+  <!--Help-->
   <string name="help_tab_start">Start</string>
   <string name="help_tab_faq">O-S-S</string>
   <string name="help_tab_wot">Nøkkelbekreftelse</string>
-    <string name="help_tab_changelog">Endringslogg</string>
+  <string name="help_tab_changelog">Endringslogg</string>
   <string name="help_tab_license">Lisenser</string>
   <string name="help_tab_about">Om</string>
   <string name="help_about_version">Versjon:</string>
-    <!--Import-->
-    <string name="import_found_keys">Fant %1$d nøkler</string>
+  <!--Import-->
+  <string name="import_found_keys">Fant %1$d nøkler</string>
   <string name="import_qr_code_too_short_fingerprint">Fingeravtrykket er for kort!</string>
-    <string name="import_qr_code_text">Hold kameraet ditt over QR-koden!</string>
+  <string name="import_qr_code_text">Hold kameraet ditt over QR-koden!</string>
   <string name="btn_import">Importer</string>
   <string name="btn_import_keys">Importer alle nøklene</string>
   <string name="btn_view_list">Vis listen</string>
@@ -354,20 +354,20 @@
   <!--Intent labels-->
   <string name="intent_send_encrypt">Krypter med OpenKeychain</string>
   <!--Remote API-->
-    <string name="api_settings_create_key">Opprett ny nøkkel</string>
+  <string name="api_settings_create_key">Opprett ny nøkkel</string>
   <string name="api_settings_save">Lagre</string>
-    <string name="api_settings_revoke">Tilbakekall tilgang</string>
-    <string name="api_settings_package_name">Pakkenavn</string>
+  <string name="api_settings_revoke">Tilbakekall tilgang</string>
+  <string name="api_settings_package_name">Pakkenavn</string>
   <string name="api_settings_package_certificate">SHA-256 av pakkesertifikat</string>
   <string name="api_settings_advanced">Avansert</string>
   <string name="api_settings_allowed_keys">Tillatte nøkler</string>
-    <string name="api_register_text">%s ber om å bruke OpenKeychain som en kryptoleverandør. Du vil fortsatt bli spurt om godkjenning før appen kan bruke noen av nøklene dine for dekryptering.\n\nDu kan trekke fra tillatelsen senere i \'Apper\'-skjermen i OpenKeychain.</string>
-    <string name="api_select_pub_keys_missing_text">Ingen nøkler ble funnet for disse e-postadressene</string>
+  <string name="api_register_text">%s ber om å bruke OpenKeychain som en kryptoleverandør. Du vil fortsatt bli spurt om godkjenning før appen kan bruke noen av nøklene dine for dekryptering.\n\nDu kan trekke fra tillatelsen senere i \'Apper\'-skjermen i OpenKeychain.</string>
+  <string name="api_select_pub_keys_missing_text">Ingen nøkler ble funnet for disse e-postadressene</string>
   <string name="api_select_pub_keys_dublicates_text">Mer enn én nøkkel finnes for disse e-postadressene:</string>
   <string name="api_select_pub_keys_text_no_user_ids">Vennligst velg mottakerne!</string>
   <!--Share-->
   <string name="share_qr_code_dialog_title">Del med QR-kode</string>
-    <!--retry upload dialog-->
+  <!--retry upload dialog-->
   <string name="retry_up_dialog_title">Opplasting mislyktes</string>
   <string name="retry_up_dialog_message">Opplasting mislyktes. Vil du forsøke igjen?</string>
   <string name="retry_up_dialog_btn_reupload">Forsøk igjen</string>
@@ -385,28 +385,28 @@
     <item quantity="other">%d nøkler valgt</item>
   </plurals>
   <string name="key_list_empty_text1">Fant ingen nøkler!</string>
-    <string name="key_list_fab_qr_code">Skann QR-kode</string>
+  <string name="key_list_fab_qr_code">Skann QR-kode</string>
   <string name="key_list_fab_search">Nøkkelsøk</string>
   <string name="key_list_fab_import">Importer fra fil</string>
   <string name="key_list_dummy_title">Du har ikke noen nøkler ennå!</string>
   <string name="key_list_dummy_subtitle">Klikk her for å lage eller importere en.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Rediger</string>
-    <string name="key_view_action_certify">Bekreft nøkkel</string>
+  <string name="key_view_action_certify">Bekreft nøkkel</string>
   <string name="key_view_action_update">Oppdater fra nøkkeltjener</string>
   <string name="key_view_action_share_with">Del med…</string>
   <string name="key_view_action_share_ssh_with">Del som en offentlig SSH-nøkkel med …</string>
-    <string name="key_view_action_upload">Publiser til en nøkkeltjener</string>
-    <string name="key_view_tab_start">Start</string>
+  <string name="key_view_action_upload">Publiser til en nøkkeltjener</string>
+  <string name="key_view_tab_start">Start</string>
   <string name="key_view_tab_share">Del</string>
   <string name="key_view_tab_keys">Undernøkler</string>
-    <string name="user_id_info_revoked_title">Tilbakekalt</string>
+  <string name="user_id_info_revoked_title">Tilbakekalt</string>
   <string name="user_id_info_certified_title">Bekreftet</string>
   <string name="user_id_info_certified_text">Denne identiteten har blitt bekreftet av deg.</string>
   <string name="user_id_info_uncertified_title">Ikke bekreftet</string>
   <string name="user_id_info_uncertified_text">Denne identiteten har ikke blitt bekreftet enda. Du kan ikke være sikker på at identiteten faktisk samsvarer med en spesifikk person.</string>
   <!--Key trust-->
-    <!--Edit key-->
+  <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Endre passord</string>
   <string name="edit_key_action_add_identity">Legg til identitet</string>
   <string name="edit_key_action_add_subkey">Legg til undernøkkel</string>
@@ -429,7 +429,7 @@
   <string name="create_key_yubi_key_pin">PIN</string>
   <string name="create_key_yubi_key_admin_pin">Administrator-PIN</string>
   <string name="create_key_yubi_key_pin_repeat">Gjenta PIN</string>
-    <string name="create_key_yubi_key_pin_too_short">PIN må være ihvertfall 6 tegn lang!</string>
+  <string name="create_key_yubi_key_pin_too_short">PIN må være ihvertfall 6 tegn lang!</string>
   <string name="create_key_yubi_key_algorithm_sign_text">Signaturnøkkel</string>
   <string name="create_key_yubi_key_algorithm_dec_text">Dekrypteringsnøkkel</string>
   <string name="create_key_yubi_key_algorithm_auth_text">Autentiseringsnøkkel</string>
@@ -451,13 +451,13 @@
   <string name="nav_keys">Nøkler</string>
   <string name="nav_encrypt_decrypt">Krypter/dekrypter</string>
   <string name="nav_apps">Programmer</string>
-    <string name="my_keys">Mine nøkler</string>
+  <string name="my_keys">Mine nøkler</string>
   <string name="nav_backup">Sikkerhetskopier/gjenopprett</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Skriv inn tekst her</string>
   <!--certs-->
-    <string name="cert_none">ingen</string>
-    <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <string name="cert_none">ingen</string>
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <string name="msg_internal_error">Intern feil!</string>
   <string name="msg_cancelled">Handlingen ble avbrutt.</string>
   <!--Import Public log entries-->
@@ -467,7 +467,7 @@
   <string name="msg_ip_uid_revoked">Bruker-IDen har blitt trukket tilbake</string>
   <!--Import Secret log entries-->
   <string name="msg_is">Importerer den hemmelige nøkkelen %s</string>
-    <string name="msg_is_success">Importeringen av hemmelig nøkkelring var vellykket</string>
+  <string name="msg_is_success">Importeringen av hemmelig nøkkelring var vellykket</string>
   <!--Keyring Canonicalization log entries-->
   <string name="msg_kc_error_v3">Dette er en OpenPGP versjon 3-nøkkel, som har blitt utfaset og som ikke lenger er støttet!</string>
   <string name="msg_kc_sub">Behandler %s-undernøkkelen</string>
@@ -494,13 +494,13 @@
   <string name="msg_dc_clear_meta_size_unknown">Filstørrelse: Ukjent</string>
   <string name="msg_dc_unlocking">Låser opp den hemmelige nøkkelen</string>
   <!--Messages for VerifySignedLiteralData operation-->
-    <string name="msg_vl_ok">OK</string>
+  <string name="msg_vl_ok">OK</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <string name="msg_pse_encrypting">Krypterer data</string>
   <string name="msg_pse_error_bad_passphrase">Dårlig passord!</string>
   <string name="msg_pse_error_nfc">NFC-datafeil!</string>
-    <string name="msg_pse_error_pgp">Intern OpenPGP-feil!</string>
+  <string name="msg_pse_error_pgp">Intern OpenPGP-feil!</string>
   <string name="msg_pse_key_unknown">Manglende nøkkel for kryptering: %s</string>
   <!--Messages for Authentication operation-->
   <string name="msg_auth_error_bad_passphrase">Dårlig passord!</string>
@@ -557,27 +557,27 @@
   <string name="backup_section">Sikkerhetskopier</string>
   <string name="restore_section">Gjenopprett</string>
   <!--unsorted-->
-    <string name="section_uids_to_certify">Identiteter for</string>
-    <string name="error_key_not_found">Nøkkel ikke funnet!</string>
+  <string name="section_uids_to_certify">Identiteter for</string>
+  <string name="error_key_not_found">Nøkkel ikke funnet!</string>
   <string name="error_key_processing">Feil under behandling av nøkkel!</string>
-    <string name="secret_cannot_multiple">Dine egne nøkler kan bare slettes hver for seg!</string>
-    <string name="unknown">ukjent</string>
-    <string name="error_no_file_selected">Velg minst én fil å kryptere!</string>
-    <!--Android Account-->
-    <!--Passphrase wizard-->
+  <string name="secret_cannot_multiple">Dine egne nøkler kan bare slettes hver for seg!</string>
+  <string name="unknown">ukjent</string>
+  <string name="error_no_file_selected">Velg minst én fil å kryptere!</string>
+  <!--Android Account-->
+  <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">Skriv inn passord</string>
-    <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-    <string name="security_token_error">Feil: %s</string>
+  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="security_token_error">Feil: %s</string>
   <string name="security_token_error_unknown">Ukjent feil</string>
   <string name="security_token_error_try_again">Prøv igjen</string>
   <string name="btn_delete_original">Slett orginalfil</string>
   <string name="file_delete_ok">Originalfil slettet.</string>
   <!--Other Linked Identity strings-->
-    <string name="snack_btn_overwrite">Overskriv</string>
+  <string name="snack_btn_overwrite">Overskriv</string>
   <string name="backup_code_explanation">Sikkerhetskopien vil bli sikret med en sikkerhetskopieringskode. Skriv den ned før du fortsetter!</string>
-    <string name="btn_backup_share">Del sikkerhetskopi</string>
+  <string name="btn_backup_share">Del sikkerhetskopi</string>
   <string name="btn_backup_save">Lagre sikkerhetskopi</string>
   <string name="snack_backup_saved">Sikkerhetskopi lagret</string>
   <string name="share_log_dialog_title">Del logg?</string>
@@ -594,7 +594,7 @@
   <string name="prompt_fidesmo_app_install_title">Installer Fidesmo?</string>
   <string name="prompt_fidesmo_app_install_button_positive">Installer</string>
   <string name="prompt_fidesmo_app_install_button_negative">Avbryt</string>
-    <string name="redirect_import_key_no">Lukk</string>
+  <string name="redirect_import_key_no">Lukk</string>
   <string name="button_allow">Tillat</string>
   <string name="button_cancel">Avbryt</string>
   <string name="button_back">Tilbake</string>
@@ -631,7 +631,7 @@
   <string name="dialog_insecure_title">Sikkerhetsadvarsel</string>
   <string name="dialog_insecure_recommend_title">Anbefalt handling</string>
   <string name="dialog_insecure_button_ok">Skjønner</string>
-    <string name="status_check_key">Sjekker nøkkelstatusen …</string>
+  <string name="status_check_key">Sjekker nøkkelstatusen …</string>
   <string name="status_search_keyserver">Søker i nøkkeltjenere …</string>
   <string name="token_reset_confirm_ok">Tilbakestill</string>
   <string name="token_result_not_found">Nøkkel ikke funnet!</string>
@@ -647,7 +647,7 @@
   <string name="key_gen_back">Tilbake</string>
   <string name="key_gen_finish">Ferdig</string>
   <string name="snack_keylist_clipboard_action">Vis</string>
-    <string name="keylist_item_key_id">Nøkkel-ID: %s</string>
+  <string name="keylist_item_key_id">Nøkkel-ID: %s</string>
   <string name="keylist_header_anonymous">Anonym</string>
   <string name="share_key_clipboard">Del nøkkel via utklippstavlen</string>
   <string name="share_key">Del nøkkel</string>

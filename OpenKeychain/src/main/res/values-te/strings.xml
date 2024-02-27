@@ -10,7 +10,7 @@
   <string name="btn_do_not_save">రద్దు</string>
   <string name="btn_next">తరువాత</string>
   <string name="btn_share_decrypted_text">వంతు</string>
-    <!--Shortcut Strings-->
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">సెట్టింగులు</string>
@@ -18,7 +18,7 @@
   <string name="menu_search">శోధన</string>
   <string name="menu_open">తెరవండి</string>
   <string name="menu_change_password">పాస్ వర్డ్ ను మార్చండి</string>
-    <!--label-->
+  <!--label-->
   <string name="label_name">Name</string>
   <string name="label_enter_smartpgp_authority_name">Name</string>
   <!--Proxy Preferences-->
@@ -31,7 +31,7 @@
   <string name="orbot_start_dialog_cancel">రద్దు</string>
   <!--choice-->
   <string name="choice_none"> ఏమీ కాదు</string>
-    <!--sentences-->
+  <!--sentences-->
   <string name="passphrase_for_symmetric_encryption">రహస్య సంకేతం తెలపండి
 </string>
   <string name="passphrase_for_any">రహస్య సంకేతం తెలపండి
@@ -55,7 +55,7 @@
   <!--Help-->
   <string name="help_tab_about">గురించి</string>
   <string name="help_about_version">Version:</string>
-    <!--Import-->
+  <!--Import-->
   <!--Generic result toast-->
   <!--Import result toast-->
   <!--Delete result toast-->
@@ -63,7 +63,7 @@
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
-    <!--Share-->
+  <!--Share-->
   <!--retry upload dialog-->
   <!--Delete or revoke private key dialog-->
   <!--Delete Or Revoke Dialog spinner-->
@@ -106,7 +106,7 @@
   <string name="enter_passphrase">రహస్య సంకేతం తెలపండి
 </string>
   <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-    <!--Other Linked Identity strings-->
+  <!--Other Linked Identity strings-->
   <string name="share_log_dialog_share_button">వంతు</string>
   <string name="share_log_dialog_cancel_button">రద్దు</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">రద్దు</string>

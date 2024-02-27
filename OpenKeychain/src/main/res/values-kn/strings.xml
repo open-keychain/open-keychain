@@ -16,15 +16,15 @@
   <string name="btn_okay"> ಸರಿ</string>
   <string name="btn_next">ಮುಂದೆ</string>
   <string name="btn_back">ಹಿಂದೆ</string>
-    <string name="btn_share_decrypted_text">ಹಂಚು</string>
-    <!--Shortcut Strings-->
+  <string name="btn_share_decrypted_text">ಹಂಚು</string>
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">ಸಿದ್ಧತೆಗಳು</string>
   <string name="menu_help">Help</string>
   <string name="menu_advanced">ಮುಂದುವರೆದ</string>
-    <!--label-->
-    <string name="label_passphrase">ಪಾಸ್‌ವರ್ಡ್</string>
+  <!--label-->
+  <string name="label_passphrase">ಪಾಸ್‌ವರ್ಡ್</string>
   <string name="label_name">Name</string>
   <string name="label_enter_smartpgp_authority_name">Name</string>
   <!--Proxy Preferences-->
@@ -37,7 +37,7 @@
   <string name="orbot_start_dialog_cancel">Cancel</string>
   <!--choice-->
   <string name="choice_none">ಎನೂ ಇಲ್ಲ</string>
-    <!--sentences-->
+  <!--sentences-->
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -68,9 +68,9 @@
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
-    <string name="api_settings_save">ಉಳಿಸು</string>
-    <string name="api_settings_advanced">ಮುಂದುವರೆದ</string>
-    <!--Share-->
+  <string name="api_settings_save">ಉಳಿಸು</string>
+  <string name="api_settings_advanced">ಮುಂದುವರೆದ</string>
+  <!--Share-->
   <!--retry upload dialog-->
   <!--Delete or revoke private key dialog-->
   <!--Delete Or Revoke Dialog spinner-->
@@ -87,7 +87,7 @@
   <!--Navigation Drawer-->
   <!--hints-->
   <!--certs-->
-    <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
   <!--Keyring Canonicalization log entries-->
@@ -100,7 +100,7 @@
   <!--Messages for DecryptVerify operation-->
   <string name="msg_dc_clear_meta_size">ಫೈಲ್ ಗಾತ್ರ: %s</string>
   <!--Messages for VerifySignedLiteralData operation-->
-    <string name="msg_vl_ok">ಸರಿ</string>
+  <string name="msg_vl_ok">ಸರಿ</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
@@ -114,8 +114,8 @@
   <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
-    <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-    <string name="security_token_error_try_again">ಮರಳಿ ಪ್ರಯತ್ನಿಸಿ</string>
+  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="security_token_error_try_again">ಮರಳಿ ಪ್ರಯತ್ನಿಸಿ</string>
   <!--Other Linked Identity strings-->
   <string name="share_log_dialog_share_button">ಹಂಚು</string>
   <string name="share_log_dialog_cancel_button">Cancel</string>
@@ -124,6 +124,6 @@
   <string name="prompt_fidesmo_app_install_button_negative">Cancel</string>
   <string name="button_cancel">Cancel</string>
   <string name="button_back">ಹಿಂದೆ</string>
-    <string name="token_reset_confirm_ok">ಮರುಹೊಂದಿಸಿ</string>
+  <string name="token_reset_confirm_ok">ಮರುಹೊಂದಿಸಿ</string>
   <string name="key_gen_back">ಹಿಂದೆ</string>
 </resources>

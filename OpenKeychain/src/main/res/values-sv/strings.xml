@@ -19,27 +19,27 @@
   <string name="title_share_key">Dela nyckel med…</string>
   <string name="title_share_file">Dela fil med…</string>
   <string name="title_share_message">Dela text med...</string>
-    <string name="title_import_keys">Importera nycklar</string>
-    <string name="title_key_not_found">Nyckel hittades inte</string>
+  <string name="title_import_keys">Importera nycklar</string>
+  <string name="title_key_not_found">Nyckel hittades inte</string>
   <string name="title_send_key">Ladda upp till nyckelserver</string>
   <string name="title_backup">Säkerhetskopiera nyckel</string>
   <string name="title_certify_key">Bekräfta nyckel</string>
   <string name="title_key_details">Nyckelinformation</string>
   <string name="title_help">Hjälp</string>
   <string name="title_log_display">Logg</string>
-    <string name="title_advanced_key_info">Avancerat</string>
+  <string name="title_advanced_key_info">Avancerat</string>
   <string name="title_delete_secret_key">Ta bort DIN nyckel \"%s\"?</string>
   <string name="title_manage_my_keys">Hantera mina nycklar</string>
   <string name="title_alert_strip">Avskala den här undernyckeln</string>
   <!--section-->
   <string name="section_user_ids">Identiteter</string>
-    <string name="section_keys">Undernycklar</string>
+  <string name="section_keys">Undernycklar</string>
   <string name="section_cloud_search">Nyckelsökning</string>
-    <string name="section_passphrase_cache">Lösenord och PIN-koder</string>
+  <string name="section_passphrase_cache">Lösenord och PIN-koder</string>
   <string name="section_passphrase_cache_summary">Hantering</string>
   <string name="section_proxy_settings">Nätverksanonymitet</string>
   <string name="section_proxy_settings_summary">Tor, proxyinställningar</string>
-    <string name="section_sync_settings">Synkronisering</string>
+  <string name="section_sync_settings">Synkronisering</string>
   <string name="section_sync_settings_summary">Automatiska nyckeluppdateringar, kontaktlänkning</string>
   <string name="section_experimental_features">Experimentella funktioner</string>
   <string name="section_certify">Bekräfta</string>
@@ -52,9 +52,9 @@
   <string name="section_current_expiry">Aktuellt utgångsdatum</string>
   <string name="section_new_expiry">Nytt utgångsdaum</string>
   <!--button-->
-    <string name="btn_encrypt_share_file">Kryptera och dela fil</string>
+  <string name="btn_encrypt_share_file">Kryptera och dela fil</string>
   <string name="btn_encrypt_save_file">Kryptera och spara fil</string>
-    <string name="btn_save">Spara</string>
+  <string name="btn_save">Spara</string>
   <string name="btn_view_log">Visa logg</string>
   <string name="btn_do_not_save">Avbryt</string>
   <string name="btn_delete">Ta bort</string>
@@ -63,11 +63,11 @@
   <string name="btn_export_to_server">Ladda upp till nyckelserver</string>
   <string name="btn_next">Nästa</string>
   <string name="btn_back">Föregående</string>
-    <string name="btn_match">Fingeravtrycken matchar</string>
+  <string name="btn_match">Fingeravtrycken matchar</string>
   <string name="btn_share_encrypted_signed">Kryptera/signera och dela text</string>
   <string name="btn_copy_encrypted_signed">Kryptera/signera och kopiera text</string>
   <string name="btn_paste_encrypted_signed">Kryptera/signera och klistra in text</string>
-    <string name="btn_create_key">Skapa nyckel</string>
+  <string name="btn_create_key">Skapa nyckel</string>
   <string name="btn_add_files">Lägg till fil(er)</string>
   <string name="btn_share_decrypted_text">Dela</string>
   <string name="btn_open_with">Öppna med...</string>
@@ -79,7 +79,7 @@
   <string name="btn_add_email">Lägg till extra e-postadress</string>
   <string name="btn_unlock">Lås upp</string>
   <string name="btn_proceed">Gå vidare</string>
-    <string name="btn_save_default">Spara som standard</string>
+  <string name="btn_save_default">Spara som standard</string>
   <string name="btn_saved">Sparad!</string>
   <string name="btn_not_matching">Inga matchningar</string>
   <!--Shortcut Strings-->
@@ -88,45 +88,45 @@
   <string name="cd_encrypt_files">Kryptera filer</string>
   <string name="cd_exchange_keys">Utbytesnycklar</string>
   <string name="cd_encrypt_text">Kryptera text</string>
-    <!--menu-->
+  <!--menu-->
   <string name="menu_preferences">Inställningar</string>
   <string name="menu_help">Hjälp</string>
   <string name="menu_export_key">Säkerhetskopiera nyckel</string>
   <string name="menu_delete_key">Ta bort nyckel</string>
-    <string name="menu_manage_keys">Hantera mina nycklar</string>
+  <string name="menu_manage_keys">Hantera mina nycklar</string>
   <string name="menu_search">Sök</string>
   <string name="menu_open">Öppen</string>
   <string name="menu_read_clipboard">Läs från urklipp</string>
-    <string name="menu_encrypt_to">Kryptera till…</string>
-    <string name="menu_update_all_keys">Uppdatera alla nycklar</string>
+  <string name="menu_encrypt_to">Kryptera till…</string>
+  <string name="menu_update_all_keys">Uppdatera alla nycklar</string>
   <string name="menu_certify_fingerprint">Bekräfta med fingeravtryck</string>
-    <string name="menu_share_log">Dela logg</string>
+  <string name="menu_share_log">Dela logg</string>
   <string name="menu_change_password">Ändra lösenord</string>
   <string name="menu_advanced">Avancerat</string>
-    <!--label-->
-    <string name="label_no_passphrase">Inget lösenord</string>
+  <!--label-->
+  <string name="label_no_passphrase">Inget lösenord</string>
   <string name="label_passphrase">Lösenord</string>
   <string name="label_pin">PIN-kod</string>
   <string name="label_unlock">Låser upp…</string>
   <string name="label_passphrase_again">Upprepa lösenord</string>
-    <string name="label_algorithm_colon">Algoritm:</string>
-    <string name="label_file_ascii_armor">Aktivera ASCII-format</string>
-    <string name="label_asymmetric_from">Signera med:</string>
+  <string name="label_algorithm_colon">Algoritm:</string>
+  <string name="label_file_ascii_armor">Aktivera ASCII-format</string>
+  <string name="label_asymmetric_from">Signera med:</string>
   <string name="label_to">Kryptera till</string>
   <string name="label_delete_after_encryption">Ta bort filer efter kryptering</string>
-    <string name="label_symmetric">Kryptera med lösenord</string>
+  <string name="label_symmetric">Kryptera med lösenord</string>
   <string name="label_passphrase_cache_subs">Kom ihåg lösenord genom undernyckel</string>
-    <string name="label_keyservers">Hantera OpenPGP-nyckelservrar</string>
-    <string name="label_key_id_colon">Nyckel-ID</string>
+  <string name="label_keyservers">Hantera OpenPGP-nyckelservrar</string>
+  <string name="label_key_id_colon">Nyckel-ID</string>
   <string name="label_key_created">Skapad %s</string>
   <string name="label_key_created_just_now">Skapad just nu</string>
   <string name="label_key_type">Typ</string>
-    <string name="label_expiry">Löper ut</string>
+  <string name="label_expiry">Löper ut</string>
   <string name="label_valid_from">Giltig från</string>
   <string name="label_usage">Användning</string>
   <string name="label_revoked">Upphävd</string>
   <string name="label_insecure">Osäker</string>
-    <string name="label_main_user_id">Primär identitet</string>
+  <string name="label_main_user_id">Primär identitet</string>
   <string name="label_name">Namn</string>
   <string name="label_email">E-post</string>
   <string name="label_send_key">Publicera certifiering på nyckelservrar</string>
@@ -135,15 +135,15 @@
   <string name="label_keyservers_title">Nyckelservrar</string>
   <string name="label_keyserver_settings_hint">Dra för att ändra ordning, tryck på för att redigera/ta bort</string>
   <string name="label_selected_keyserver_title">Vald nyckelserver</string>
-    <string name="label_preferred">föredraget</string>
+  <string name="label_preferred">föredraget</string>
   <string name="label_enable_compression">Aktivera kompression</string>
   <string name="label_enable_self_encrypt">Kryptera till signerare</string>
   <string name="label_encrypt_filenames">Kryptera filnamn</string>
-    <string name="label_smartpgp_verify">SmartPGP: Verifiera certifikat</string>
+  <string name="label_smartpgp_verify">SmartPGP: Verifiera certifikat</string>
   <string name="label_smartpgp_verify_summary">Verifiera certifikat på SmartPGP-säkerhetstoken mot en uppsättning betrodda auktoriteter</string>
   <string name="label_smartpgp_roots">SmartPGP: Betrodda auktoriteter</string>
   <string name="label_verify_keyserver_connection">Pröva anslutning</string>
-    <string name="label_enter_keyserver_url">URL</string>
+  <string name="label_enter_keyserver_url">URL</string>
   <string name="label_enter_keyserver_onion">Valfri Tor .onion-webbadress</string>
   <string name="label_keyserver_dialog_delete">Ta bort nyckelserver</string>
   <string name="label_theme">Tema</string>
@@ -151,7 +151,7 @@
   <string name="label_smartpgp_authority_dialog_delete">Ta bort auktoritet</string>
   <string name="pref_keyserver">OpenPGP-nyckelservrar</string>
   <string name="pref_keyserver_summary">Sök nycklar på valda OpenPGP-nyckelservrar (HKP-protokollet)</string>
-    <string name="pref_wkd">Webbnyckelkatalog</string>
+  <string name="pref_wkd">Webbnyckelkatalog</string>
   <string name="pref_wkd_summary">Sök nycklar använder webbnyckelkatalog</string>
   <string name="label_sync_settings_keyserver_title">Automatiska nyckeluppdateringar</string>
   <string name="label_sync_settings_keyserver_summary_on">Var tredje dag, uppdateras nycklar från den föredragna nyckelserver </string>
@@ -179,14 +179,14 @@
   <string name="orbot_install_dialog_install">Installera</string>
   <string name="orbot_install_dialog_content">Du måste ha Orbot installerat och aktiverat för att sända proxytrafik genom det. Vill du installera det?</string>
   <string name="orbot_install_dialog_cancel">Avbryt</string>
-    <!--StartOrbotDialogFragment strings-->
+  <!--StartOrbotDialogFragment strings-->
   <string name="orbot_start_dialog_title">Starta Orbot?</string>
   <string name="orbot_start_dialog_content">Orbot verkar inte vara igång. Vill du starta upp det och ansluta till Tor?</string>
-    <string name="orbot_start_dialog_start">Starta Orbot</string>
+  <string name="orbot_start_dialog_start">Starta Orbot</string>
   <string name="orbot_start_dialog_cancel">Avbryt</string>
-    <string name="user_id_no_name"><![CDATA[<no name>]]></string>
+  <string name="user_id_no_name"><![CDATA[<no name>]]></string>
   <string name="none"><![CDATA[<none>]]></string>
-    <plurals name="n_keyservers">
+  <plurals name="n_keyservers">
     <item quantity="one">%d nyckelserver</item>
     <item quantity="other">%d nyckelservrar</item>
   </plurals>
@@ -197,8 +197,8 @@
   <string name="secret_key">Privat nyckel:</string>
   <!--choice-->
   <string name="choice_none">Ingen</string>
-    <string name="choice_select_cert">Välj en nyckel</string>
-    <string name="rsa_2048">RSA 2048</string>
+  <string name="choice_select_cert">Välj en nyckel</string>
+  <string name="rsa_2048">RSA 2048</string>
   <string name="rsa_2048_description_html">mindre filstorlek, anses säker fram till 2030</string>
   <string name="rsa_3072">RSA 3072</string>
   <string name="rsa_3072_description_html">rekommenderas, anses säker fram till 2040</string>
@@ -215,7 +215,7 @@
   <string name="usage_sign">Signera</string>
   <string name="usage_encrypt">Kryptera</string>
   <string name="usage_sign_and_encrypt">Signera &amp; kryptera</string>
-    <string name="error_message">Fel: %s</string>
+  <string name="error_message">Fel: %s</string>
   <string name="theme_auto">Automatiskt</string>
   <string name="theme_light">Ljust</string>
   <string name="theme_dark">Mörkt</string>
@@ -233,7 +233,7 @@
   <string name="passphrase_keyboard_hint_numeric">Byt till numeriskt tangentbord</string>
   <string name="passphrase_transfer">Ange överföringskod</string>
   <string name="passphrase_transfer_autocrypt">För att importera detta Autocrypt-inställningsmeddelande, ange överföringskod:</string>
-    <string name="security_token_pin_for">Ange PIN-kod för att få tillgång till säkerhetstoken för \'%s\'</string>
+  <string name="security_token_pin_for">Ange PIN-kod för att få tillgång till säkerhetstoken för \'%s\'</string>
   <string name="security_token_nfc_text">Håll Säkerhetstoken mot NFC markören på baksidan av enheten.</string>
   <string name="security_token_nfc_wait">Håll säkerhetstoken mot baksidan!</string>
   <string name="security_token_nfc_finished">Ta bort säkerhetstoken nu.</string>
@@ -242,16 +242,16 @@
   <string name="file_delete_confirmation">Följande filer kommer tas bort:%s</string>
   <string name="file_delete_successful">%1$d av %2$d filer har tagits bort.%3$s</string>
   <string name="no_file_selected">Inga valda filer.</string>
-    <string name="select_encryption_key">Välj åtminstone en krypteringsnyckel.</string>
+  <string name="select_encryption_key">Välj åtminstone en krypteringsnyckel.</string>
   <string name="error_no_encryption_or_signature_key">Välj åtminstone en krypteringsnyckel eller en signaturnyckel.</string>
-    <string name="key_deletion_confirmation_multi">Vill du verkligen radera alla markerade nycklar?</string>
+  <string name="key_deletion_confirmation_multi">Vill du verkligen radera alla markerade nycklar?</string>
   <string name="secret_key_deletion_confirmation">Efter radering kommer du inte att kunna dekryptera meddelanden/filer som krypterats med den här nyckeln och förlorar alla viktiga bekräftelser gjorda med den!</string>
   <string name="public_key_deletetion_confirmation">Ta bort nyckel \'%s\'?</string>
-    <string name="alert_strip">Att avskala den här undernyckeln gör den oanvändbar på den här enheten!</string>
-    <string name="key_not_found">Kunde inte hitta nyckeln %08X.</string>
+  <string name="alert_strip">Att avskala den här undernyckeln gör den oanvändbar på den här enheten!</string>
+  <string name="key_not_found">Kunde inte hitta nyckeln %08X.</string>
   <string name="authentication_subkey_not_found">Denna nyckel har inte en undernyckel för autentisering.</string>
-    <string name="list_empty">Den här listan är tom!</string>
-    <string name="key_copied_to_clipboard">Nyckel har kopierats till urklipp!</string>
+  <string name="list_empty">Den här listan är tom!</string>
+  <string name="key_copied_to_clipboard">Nyckel har kopierats till urklipp!</string>
   <string name="fingerprint_copied_to_clipboard">Fingeravtryck har kopierats till urklipp!</string>
   <string name="select_key_to_certify">Välj en nyckel att använda för bekräftning!</string>
   <string name="text_copied_to_clipboard">Text har kopierats till urklipp!</string>
@@ -261,14 +261,14 @@
          they will be put after "error_message", e.g. "Error: file not found"-->
   <string name="error_file_delete_failed">har inte tagits bort. Ta bort dem manuellt!</string>
   <string name="error_file_added_already">%s har redan lagts till.</string>
-    <string name="error_bad_data">Dåliga data!</string>
-    <string name="error_invalid_data">Inget giltigt krypterat eller signerat OpenPGP-innehåll!</string>
-    <string name="error_could_not_extract_private_key">kunde inte extrahera hemlig nyckel</string>
+  <string name="error_bad_data">Dåliga data!</string>
+  <string name="error_invalid_data">Inget giltigt krypterat eller signerat OpenPGP-innehåll!</string>
+  <string name="error_could_not_extract_private_key">kunde inte extrahera hemlig nyckel</string>
   <string name="error_wrong_security_token">Denna säkerhetstoken innehåller inte nödvändig nyckel</string>
   <!--errors without preceding Error:-->
-    <string name="error_nothing">Inget att visa ännu.</string>
+  <string name="error_nothing">Inget att visa ännu.</string>
   <string name="error_nothing_import">Inga nycklar hittades!</string>
-    <string name="error_denied_storage_permission">Kan inte läsa filer från lagring eftersom åtkomst har nekats!</string>
+  <string name="error_denied_storage_permission">Kan inte läsa filer från lagring eftersom åtkomst har nekats!</string>
   <!--results shown after decryption/verification-->
   <string name="decrypt_result_no_signature">Inte signerat</string>
   <string name="decrypt_result_invalid_signature">Ogiltig signatur!</string>
@@ -292,10 +292,10 @@
   <string name="progress_done">Klart.</string>
   <string name="progress_cancel">Avbryt</string>
   <string name="progress_cancelling">avbryter…</string>
-    <string name="progress_saving">sparar…</string>
+  <string name="progress_saving">sparar…</string>
   <string name="progress_importing">importerar…</string>
-    <string name="progress_revoking_uploading">Återkallar och laddar upp nyckel…</string>
-    <string name="progress_uploading">laddar upp…</string>
+  <string name="progress_revoking_uploading">Återkallar och laddar upp nyckel…</string>
+  <string name="progress_uploading">laddar upp…</string>
   <string name="progress_building_key">bygger nyckel…</string>
   <string name="progress_building_master_key">bygger primärnyckel...</string>
   <string name="progress_generating_rsa">genererar ny RSA-nyckel…</string>
@@ -312,47 +312,47 @@
   <string name="progress_modify_primaryuid">ändrar primärt användar-ID…</string>
   <string name="progress_modify_subkeychange">modifierar undernycklar…</string>
   <string name="progress_modify_subkeyrevoke">återkallar undernycklar…</string>
-    <string name="progress_modify_subkeyadd">lägger till undernycklar…</string>
+  <string name="progress_modify_subkeyadd">lägger till undernycklar…</string>
   <string name="progress_modify_passphrase">byter lösenord...</string>
   <string name="progress_modify_pin">ändrar PIN-kod...</string>
   <string name="progress_modify_admin_pin">ändrar administratör-PIN-kod...</string>
   <string name="progress_exporting_key">exporterar nyckel...</string>
-    <string name="progress_extracting_signature_key">extraherar signaturnyckel…</string>
-    <string name="progress_preparing_streams">förbereder strömmar…</string>
+  <string name="progress_extracting_signature_key">extraherar signaturnyckel…</string>
+  <string name="progress_preparing_streams">förbereder strömmar…</string>
   <string name="progress_encrypting">krypterar data…</string>
-    <string name="progress_decrypting">Dekrypterar data...</string>
+  <string name="progress_decrypting">Dekrypterar data...</string>
   <string name="progress_preparing_signature">förebereder signatur…</string>
   <string name="progress_processing_signature">behandlar signatur…</string>
   <string name="progress_generating_signature">genererar signatur…</string>
   <string name="progress_verifying_signature">verifierar signatur…</string>
   <string name="progress_signing">signerar…</string>
-    <string name="progress_reading_data">läser data…</string>
-    <string name="progress_deleting">raderar nycklar…</string>
+  <string name="progress_reading_data">läser data…</string>
+  <string name="progress_deleting">raderar nycklar…</string>
   <string name="progress_update_trust">uppdatering av förtroendeinformation...</string>
   <string name="progress_verifying_keyserver_connection">verifierar anslutning...</string>
   <string name="progress_starting_orbot">Startar Orbot…</string>
   <!--action strings-->
-    <!--key bit length selections-->
-    <!--elliptic curve names-->
-    <!--not in for now, see SaveKeyringParcel
-      <string name="key_curve_bp_p256">"Brainpool P-256"</string>
-      <string name="key_curve_bp_p384">"Brainpool P-384"</string>
-      <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
+  <!--key bit length selections-->
+  <!--elliptic curve names-->
+  <!--not in for now, see SaveKeyringParcel
+    <string name="key_curve_bp_p256">"Brainpool P-256"</string>
+    <string name="key_curve_bp_p384">"Brainpool P-384"</string>
+    <string name="key_curve_bp_p512">"Brainpool P-512"</string>-->
   <!--compression-->
-    <!--Help-->
+  <!--Help-->
   <string name="help_tab_start">Start</string>
   <string name="help_tab_faq">Vanliga frågor</string>
   <string name="help_tab_wot">Nyckelbekräftning</string>
-    <string name="help_tab_changelog">Ändringslogg</string>
+  <string name="help_tab_changelog">Ändringslogg</string>
   <string name="help_tab_license">Licenser</string>
   <string name="help_tab_about">Om</string>
   <string name="help_about_version">Version:</string>
-    <!--Import-->
-    <string name="import_found_keys">Hittade %1$d nycklar</string>
+  <!--Import-->
+  <string name="import_found_keys">Hittade %1$d nycklar</string>
   <string name="import_qr_code_wrong">QR-kodformat stöds inte (formatspecifikation: https://github.com/open-keychain/open-keychain/wiki/QR-Codes)!</string>
   <string name="import_qr_code_fp">Fingeravtryck är felaktigt eller för kort!</string>
   <string name="import_qr_code_too_short_fingerprint">Fingeravtrycket är för kort!</string>
-    <string name="import_qr_code_text">Håll din kamera över QR-koden!</string>
+  <string name="import_qr_code_text">Håll din kamera över QR-koden!</string>
   <string name="btn_import">Importera</string>
   <string name="btn_import_keys">Importera alla nycklar</string>
   <string name="btn_view_list">Visa lista</string>
@@ -412,7 +412,7 @@
   <!--Revoke result toast (snackbar)-->
   <string name="revoke_ok">Återkallat nyckel.</string>
   <string name="revoke_fail">Fel vid nyckelåterkallning!</string>
-    <!--Certify result toast-->
+  <!--Certify result toast-->
   <plurals name="certify_keys_ok">
     <item quantity="one">Framgångsrikt bekräftade key%2$s.</item>
     <item quantity="other">Framgångsrikt bekräftade %1$d keys%2$s.</item>
@@ -432,24 +432,24 @@
   <string name="intent_send_decrypt">Dekryptera med OpenKeychain</string>
   <string name="intent_autocrypt_setup">Importera Autocrypt-inställningsmeddelande</string>
   <!--Remote API-->
-    <string name="api_settings_create_key">Skapa ny nyckel</string>
+  <string name="api_settings_create_key">Skapa ny nyckel</string>
   <string name="api_settings_save">Spara</string>
-    <string name="api_settings_revoke">Återkalla åtkomst</string>
-    <string name="api_settings_package_name">Paketnamn</string>
+  <string name="api_settings_revoke">Återkalla åtkomst</string>
+  <string name="api_settings_package_name">Paketnamn</string>
   <string name="api_settings_package_certificate">SHA-256 av paketcertifikat</string>
   <string name="api_settings_advanced">Avancerat</string>
   <string name="api_settings_allowed_keys">Tillåtna nycklar</string>
-    <string name="api_register_title">Tillåt åtkomst till OpenKeychain?</string>
+  <string name="api_register_title">Tillåt åtkomst till OpenKeychain?</string>
   <string name="api_register_text">%s begär att använda OpenKeychain som kryptoleverantör. Du kommer fortfarande att bli ombedd innan appen kan använda någon av dina nycklar för dekryptering.\n\nDu kan återkalla åtkomst senare på skärmen \'Appar\' i OpenKeychain.</string>
-    <string name="api_select_pub_keys_missing_text">Inga nycklar hittades för dessa e-postadresser:</string>
+  <string name="api_select_pub_keys_missing_text">Inga nycklar hittades för dessa e-postadresser:</string>
   <string name="api_select_pub_keys_dublicates_text">Mer än en nyckel existerar för dessa e-postadresser:</string>
   <string name="api_select_pub_keys_text">Se över listan med mottagare!</string>
   <string name="api_select_pub_keys_text_no_user_ids">Välj mottagare!</string>
   <string name="api_error_wrong_signature">Signaturkontroll misslyckades! Har du installerat appen från en annan källa? Om du är säker på att det här inte är en attack, återkalla den här appens registrering i OpenKeychain och registrera sen om appen igen.</string>
   <string name="api_select_sign_key_text">Välj en av dina befintliga nycklar eller skapa en ny.</string>
-    <!--Share-->
+  <!--Share-->
   <string name="share_qr_code_dialog_title">Dela med QR-kod</string>
-    <!--retry upload dialog-->
+  <!--retry upload dialog-->
   <string name="retry_up_dialog_title">Uppladdningen misslyckades</string>
   <string name="retry_up_dialog_message">Uppladdningen misslyckades. Vill du försöka igen?</string>
   <string name="retry_up_dialog_btn_reupload">Försök operation igen</string>
@@ -468,29 +468,29 @@
     <item quantity="other">%d nycklar valda.</item>
   </plurals>
   <string name="key_list_empty_text1">Inga nycklar hittades!</string>
-    <string name="key_list_fab_qr_code">Skanna QR-kod</string>
+  <string name="key_list_fab_qr_code">Skanna QR-kod</string>
   <string name="key_list_fab_search">Nyckelsökning</string>
   <string name="key_list_fab_import">Importera från fil</string>
   <string name="key_list_dummy_title">Du har inga nycklar ännu!</string>
   <string name="key_list_dummy_subtitle">Klicka här för att skapa eller importera en.</string>
   <!--Key view-->
   <string name="key_view_action_edit">Redigera</string>
-    <string name="key_view_action_certify">Bekräfta nyckel</string>
+  <string name="key_view_action_certify">Bekräfta nyckel</string>
   <string name="key_view_action_update">Uppdatera från nyckelserver</string>
   <string name="key_view_action_share_with">Dela med…</string>
   <string name="key_view_action_share_ssh_with">Dela som SSH-nyckel med...</string>
-    <string name="key_view_action_upload">Publicera på nyckelserver</string>
-    <string name="key_view_tab_start">Starta</string>
+  <string name="key_view_action_upload">Publicera på nyckelserver</string>
+  <string name="key_view_tab_start">Starta</string>
   <string name="key_view_tab_share">Dela</string>
   <string name="key_view_tab_keys">Undernycklar</string>
-    <string name="user_id_info_revoked_title">Återkallad</string>
+  <string name="user_id_info_revoked_title">Återkallad</string>
   <string name="user_id_info_revoked_text">Den här identiteten har återkallats av nyckelns ägare. Den är inte längre giltig.</string>
   <string name="user_id_info_certified_title">Bekräftad</string>
   <string name="user_id_info_certified_text">Denna identitet har bekräftats av dig.</string>
   <string name="user_id_info_uncertified_title">Inte bekräftad</string>
   <string name="user_id_info_uncertified_text">Denna identitet har inte bekräftats ännu. Du kan inte vara säker på om identiteten verkligen motsvarar en viss person.</string>
   <!--Key trust-->
-    <!--Edit key-->
+  <!--Edit key-->
   <string name="edit_key_action_change_passphrase">Byt lösenord</string>
   <string name="edit_key_action_add_identity">Lägg till identitet</string>
   <string name="edit_key_action_add_subkey">Lägg till undernyckel</string>
@@ -524,9 +524,9 @@
   <string name="create_key_final_text">Du angav följande identitet:</string>
   <string name="create_key_final_robot_text">Att skapa en nyckel kan ta ett tag, drick en kopp kaffe under tiden…</string>
   <string name="create_key_final_email_valid_warning">Många applikationer fungerar bättre när de är försedda med nycklar som bara innehåller giltiga e-postadresser</string>
-    <string name="create_key_name_text">Välj ett namn som hör till den här nyckeln. Det kan vara ett fullständigt namn, t.ex. \"John Doe\", eller ett smeknamn, t.ex.  \"Johnny\".</string>
+  <string name="create_key_name_text">Välj ett namn som hör till den här nyckeln. Det kan vara ett fullständigt namn, t.ex. \"John Doe\", eller ett smeknamn, t.ex.  \"Johnny\".</string>
   <string name="create_key_email_text">Ange din huvudsakliga e-postadress som används för säker kommunikation.</string>
-    <string name="create_key_hint_full_name">Fullständigt namn eller smeknamn</string>
+  <string name="create_key_hint_full_name">Fullständigt namn eller smeknamn</string>
   <string name="create_key_edit">Ändra nyckelkonfiguration</string>
   <string name="create_key_add_email">Lägg till e-postadress</string>
   <string name="create_key_add_email_text">Ytterligare e-postadresser är också kopplade till denna nyckel och kan användas för säker kommunikation.</string>
@@ -537,7 +537,7 @@
   <string name="create_key_yubi_key_pin">PIN-kod</string>
   <string name="create_key_yubi_key_admin_pin">Administratör-PIN-kod</string>
   <string name="create_key_yubi_key_pin_repeat">Upprepa PIN-kod</string>
-    <string name="create_key_yubi_key_pin_too_short">PIN-koden måste vara minst 6 nummer långt!</string>
+  <string name="create_key_yubi_key_pin_too_short">PIN-koden måste vara minst 6 nummer långt!</string>
   <string name="create_key_yubi_key_pin_insecure">Välj en säker PIN-kod, inte 000000, 123456 eller liknande kombinationer (de 20 mest valda PIN-koderna är inte tillåtna)</string>
   <string name="create_key_yubi_key_algorithm_text">Välj en algoritm för varje nyckel.</string>
   <string name="create_key_yubi_key_algorithm_sign_text">Signaturnyckel</string>
@@ -547,7 +547,7 @@
   <string name="view_key_my_key">Min nyckel</string>
   <string name="view_key_verified">Bekräftad nyckel</string>
   <string name="view_key_unverified">Obekräftad: Skanna QR-kod för att bekräfta nyckeln!</string>
-    <!--Add/Edit keyserver-->
+  <!--Add/Edit keyserver-->
   <string name="add_keyserver_dialog_title">Lägg till nyckelserver</string>
   <string name="edit_keyserver_dialog_title">Redigera nyckelserver</string>
   <string name="add_keyserver_connection_verified">Anslutning bekräftad!</string>
@@ -564,13 +564,13 @@
   <string name="nav_keys">Nycklar</string>
   <string name="nav_encrypt_decrypt">Kryptera/dekryptera</string>
   <string name="nav_apps">Appar</string>
-    <string name="my_keys">Mina nycklar</string>
+  <string name="my_keys">Mina nycklar</string>
   <string name="nav_backup">Säkerhetskopiera/återställa</string>
   <!--hints-->
   <string name="encrypt_content_edit_text_hint">Skriv text</string>
   <!--certs-->
-    <string name="cert_none">ingen</string>
-    <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <string name="cert_none">ingen</string>
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <string name="msg_internal_error">Intern fel!</string>
   <string name="msg_cancelled">Operation avbruten.</string>
   <!--Import Public log entries-->
@@ -581,7 +581,7 @@
   <string name="msg_ip_encode_fail">Operationen misslyckades på grund av ett kodningsfel</string>
   <string name="msg_ip_error_io_exc">Drift misslyckades på grund av i/o-fel</string>
   <string name="msg_ip_error_op_exc">Operationen misslyckades på grund av ett databasfel</string>
-    <string name="msg_ip">Importerar offentlig nyckelring %s</string>
+  <string name="msg_ip">Importerar offentlig nyckelring %s</string>
   <string name="msg_ip_fingerprint_error">Fingeravtryck av importnyckel matchar inte förväntning!</string>
   <string name="msg_ip_fingerprint_ok">Kontroll av fingeravtyck OK</string>
   <string name="msg_ip_insert_keyring">Kodar nyckelringens data</string>
@@ -612,7 +612,7 @@
   <string name="msg_ip_subkey">Behandlar undernyckel %s</string>
   <string name="msg_ip_subkey_expired">Undernyckel gick ut %s</string>
   <string name="msg_ip_subkey_expires">Undernyckel löper ut %s</string>
-    <string name="msg_ip_subkey_flags_cesa">Flaggor för undernyckel: certifiera, kryptera, signera, autentisera</string>
+  <string name="msg_ip_subkey_flags_cesa">Flaggor för undernyckel: certifiera, kryptera, signera, autentisera</string>
   <string name="msg_ip_subkey_flags_cesx">Flaggor för undernyckel: certifiera,, kryptera, signera</string>
   <string name="msg_ip_subkey_flags_cexa">Flaggor för undernyckel: certifiera, kryptera, autentisera</string>
   <string name="msg_ip_subkey_flags_cexx">Flaggor för undernyckel: certifiera, kryptera</string>
@@ -666,9 +666,9 @@
   <string name="msg_ip_uat_classifying">Klassificerar användarattribut</string>
   <string name="msg_ip_uat_revoked">Användarattribut är återkallat</string>
   <string name="msg_is_bad_type_public">Försökte att importera offentlig nyckelring som hemlig. Detta är ett fel, skicka en felrapport!</string>
-    <!--Import Secret log entries-->
+  <!--Import Secret log entries-->
   <string name="msg_is">Importerar hemlig nyckel %s</string>
-    <string name="msg_is_importing_subkeys">Behandlar hemliga undernycklar</string>
+  <string name="msg_is_importing_subkeys">Behandlar hemliga undernycklar</string>
   <string name="msg_is_error_io_exc">Fel vid kodning av nyckelring</string>
   <string name="msg_is_merge_public">Slår ihop importerade data med befintlig offentlig nyckelring</string>
   <string name="msg_is_merge_secret">Sammanfoga importerade data till befintlig hemlig nyckelring</string>
@@ -696,7 +696,7 @@
   <string name="msg_kc_sub_bad">Tar bort ogiltigt bindningscertifikat för undernyckeln</string>
   <string name="msg_kc_sub_bad_err">Tar bort dåligt bindningscertifikat för undernyckel</string>
   <string name="msg_kc_sub_bad_local">Tar bort bindningscertifikat för undernyckel med \"lokal\" flagga</string>
-    <string name="msg_kc_sub_bad_time_early">Undernyckelbindningscertifikatet har tidigare tidsstämpel än dess nyckel!</string>
+  <string name="msg_kc_sub_bad_time_early">Undernyckelbindningscertifikatet har tidigare tidsstämpel än dess nyckel!</string>
   <string name="msg_kc_sub_bad_type">Okänd undernyckel certifikattyp: %s</string>
   <string name="msg_kc_sub_dup">Tar bort överflödigt bindningscertifikat för undernyckel</string>
   <string name="msg_kc_sub_primary_bad">Tar bort bindningscertifikat för undernyckel på grund av ogiltigt primärt bindningscertifikat</string>
@@ -881,7 +881,7 @@
   <string name="msg_vl">Startar signaturkolk</string>
   <string name="msg_vl_error_wrong_key">Meddelandet inte signerat med förväntad nyckel!</string>
   <string name="msg_vl_error_no_signature">Saknar signaturdata!</string>
-    <string name="msg_vl_clear_signature_check">Verifierar signaturdata</string>
+  <string name="msg_vl_clear_signature_check">Verifierar signaturdata</string>
   <string name="msg_vl_error_integrity_check">Fel vid integritetskontroll!</string>
   <string name="msg_vl_ok">Ok</string>
   <!--Messages for SignEncrypt operation-->
@@ -898,7 +898,7 @@
   <string name="msg_pse_error_key_sign">Den valda signeringsnyckeln kan inte signera data!</string>
   <string name="msg_pse_error_sign_key">Fel vid hämtning av signeringsnyckeln!</string>
   <string name="msg_pse_error_nfc">NFC-datafel!</string>
-    <string name="msg_pse_error_pgp">Internt OpenPGP-fel!</string>
+  <string name="msg_pse_error_pgp">Internt OpenPGP-fel!</string>
   <string name="msg_pse_error_sig">Stötte på OpenPGP-signatur undantag!</string>
   <string name="msg_pse_error_unlock">Okänt fel vid upplåsning av nyckel</string>
   <string name="msg_pse_error_key_not_allowed">Nyckel vald för kryptering är inte tillåten</string>
@@ -1012,7 +1012,7 @@
   <string name="msg_bench_enc_time">Krypteringstid: %ss</string>
   <string name="msg_bench_enc_time_avg">Genomsnittlig tidsåtgång för att kryptera 5 MB: %ss</string>
   <string name="msg_bench_dec_time">Dekrypteringstid: %ss</string>
-    <string name="msg_bench_s2k_for_it">Tid för %1$s SHA1 S2K-iterationer: %2$sms</string>
+  <string name="msg_bench_s2k_for_it">Tid för %1$s SHA1 S2K-iterationer: %2$sms</string>
   <string name="msg_data">Behandlar inmatningsdata</string>
   <string name="msg_data_openpgp">Försöker att behandla OpenPGP-data</string>
   <string name="msg_data_detached">Stötte på fristående signatur</string>
@@ -1050,41 +1050,41 @@
   <string name="keyserver_sync_orbot_notif_title">Synkronisering från servrar kräver Orbot</string>
   <string name="keyserver_sync_orbot_notif_msg">Tryck för att starta Orbot</string>
   <string name="keyserver_sync_orbot_notif_start">Starta Orbot</string>
-    <!--First Time-->
-    <string name="first_time_create_key">Skapa min nyckel</string>
+  <!--First Time-->
+  <string name="first_time_create_key">Skapa min nyckel</string>
   <string name="first_time_import_key">Importera nyckel från fil</string>
   <string name="first_time_security_token">Använd säkerhetstoken</string>
   <string name="first_time_security_token_subtitle">(Fidesmo, YubiKey NEO, SIGILANCE, …)</string>
   <string name="first_time_skip">Hoppa över inställning</string>
-    <string name="backup_text">Säkerhetskopior som innehåller dina egna nycklar får aldrig delas med andra personer!</string>
+  <string name="backup_text">Säkerhetskopior som innehåller dina egna nycklar får aldrig delas med andra personer!</string>
   <string name="backup_all">Full säkerhetskopiering (krypterad)</string>
   <string name="backup_public_keys">Exportera endast kontaktnycklar</string>
   <string name="backup_section">Säkerhetskopiering</string>
   <string name="restore_section">Återställa</string>
   <!--unsorted-->
-    <string name="section_uids_to_certify">Identiteter för</string>
+  <string name="section_uids_to_certify">Identiteter för</string>
   <string name="certify_text">Nycklarna du importerar innehåller \"identiteter\": namn och e-postadresser. Välja exakt de för bekräftelse som matchar vad du förväntade dig.</string>
   <string name="certify_fingerprint_text">Jämför fingeravtrycket, tecken efter tecken, med det som visas på din partners enhet.</string>
-    <string name="error_key_not_found">Nyckel hittades inte!</string>
+  <string name="error_key_not_found">Nyckel hittades inte!</string>
   <string name="error_key_processing">Fel vid behandling av nyckel!</string>
   <string name="key_stripped">avskalad</string>
   <string name="key_divert">på säkerhetstoken</string>
-    <string name="secret_cannot_multiple">Dina egna nycklar kan bara tas bort var för sig!</string>
-    <string name="unknown">okänd</string>
-    <string name="error_no_encrypt_subkey">Ingen krypteringsundernyckel tillgänglig!</string>
-    <string name="error_no_file_selected">Välj åtminstone en fil att kryptera!</string>
+  <string name="secret_cannot_multiple">Dina egna nycklar kan bara tas bort var för sig!</string>
+  <string name="unknown">okänd</string>
+  <string name="error_no_encrypt_subkey">Ingen krypteringsundernyckel tillgänglig!</string>
+  <string name="error_no_file_selected">Välj åtminstone en fil att kryptera!</string>
   <string name="error_multi_files">Spara flera filer stöds inte. Detta är en begränsning på nuvarande Android.</string>
   <string name="error_multi_clipboard">Kryptering av flera filer till urklipp stöds inte.</string>
   <string name="error_empty_text">Skriv text att kryptera!</string>
   <string name="error_log_share_internal">Internt fel under förberedning av logg!</string>
-    <!--Android Account-->
-    <!--Passphrase wizard-->
+  <!--Android Account-->
+  <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
-    <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
+  <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">Skriv lösenord</string>
-    <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-    <string name="security_token_create">Håll säkerhetstoken mot baksidan av din enhet.</string>
-    <string name="security_token_error">Fel: %s</string>
+  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="security_token_create">Håll säkerhetstoken mot baksidan av din enhet.</string>
+  <string name="security_token_error">Fel: %s</string>
   <plurals name="security_token_error_pin">
     <item quantity="one">Fel PIN-kod!\n%d försök kvar!</item>
     <item quantity="other">Fel PIN-kod!\n%d försök kvar.</item>
@@ -1111,7 +1111,7 @@
   <string name="snack_compression_off">Komprimering <b>inaktiverad</b>.</string>
   <string name="snack_self_encrypt_on">Kryptera till signerare <b>aktiverad</b>.</string>
   <string name="snack_self_encrypt_off">Kryptera till signerare <b>inaktiverad</b>.</string>
-    <string name="error_empty_log">(fel, tom logg)</string>
+  <string name="error_empty_log">(fel, tom logg)</string>
   <string name="error_reading_text">Kunde inte läsa indata för att dekryptera!</string>
   <string name="error_reading_aosp">Det gick inte att läsa data, det här är ett fel i Android-e-postklienten! (Problem #290)</string>
   <string name="error_reading_k9">Mottog ofullständiga data, försök att trycka på \"Hämta hela meddelandet\" i K-9 Mail!</string>
@@ -1136,9 +1136,9 @@
   <string name="error_scan_match">Fingeravtryck matchade inte!</string>
   <string name="error_expiry_past">Utgångsdatum är i det förflutna!</string>
   <!--Other Linked Identity strings-->
-    <string name="snack_btn_overwrite">Skriv över</string>
+  <string name="snack_btn_overwrite">Skriv över</string>
   <string name="backup_code_explanation">Säkerhetskopian kommer att säkras med en säkerhetskod. Skriv ner den innan du fortsätter!</string>
-    <string name="btn_backup_share">Dela säkerhetskopia</string>
+  <string name="btn_backup_share">Dela säkerhetskopia</string>
   <string name="btn_backup_save">Spara säkerhetskopia</string>
   <string name="btn_backup_export">Exportera säkerhetskopiering</string>
   <string name="snack_backup_error_saving">Fel vid sparande av säkerhetskopia!</string>
@@ -1160,7 +1160,7 @@
   <string name="cache_ttl_one_hour">för en timme</string>
   <string name="cache_ttl_one_day">för en dag</string>
   <string name="remember">Kom ihåg</string>
-    <string name="prompt_fidesmo_pgp_install_title">Installera PGP?</string>
+  <string name="prompt_fidesmo_pgp_install_title">Installera PGP?</string>
   <string name="prompt_fidesmo_pgp_install_message">Det fanns inget PGP-app tillgängligt på din Fidesmo-enhet.</string>
   <string name="prompt_fidesmo_pgp_install_button_positive">Installera</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">Avbryt</string>
@@ -1168,7 +1168,7 @@
   <string name="prompt_fidesmo_app_install_message">För att installera PGP behöver du Fidesmo Android-appen.</string>
   <string name="prompt_fidesmo_app_install_button_positive">Installera</string>
   <string name="prompt_fidesmo_app_install_button_negative">Avbryt</string>
-    <string name="redirect_import_key_title">Skanna med OpenKeychain!</string>
+  <string name="redirect_import_key_title">Skanna med OpenKeychain!</string>
   <string name="redirect_import_key_message">Du skannade en OpenPGP QR-kod med en annan app. Skanna med Openkeychain direkt för att vara säker.</string>
   <string name="redirect_import_key_yes">Skanna igen</string>
   <string name="redirect_import_key_no">Stäng</string>
@@ -1180,8 +1180,8 @@
   <string name="button_back">Tillbaka</string>
   <string name="button_got_it">Förstått</string>
   <string name="requested_key_label">Begärd nyckel:</string>
-    <string name="title_key_status">Nyckelstatus</string>
-    <string name="cap_title_confirm">Bekräfta andra nycklar</string>
+  <string name="title_key_status">Nyckelstatus</string>
+  <string name="cap_title_confirm">Bekräfta andra nycklar</string>
   <string name="cap_cert_ok">Denna nyckel kan bekräfta andra nycklar.</string>
   <string name="cap_cert_divert">Denna nyckel kan bekräfta andra nycklar, med hjälp av en säkerhetstoken.</string>
   <string name="cap_cert_stripped">Denna nyckel är avskalad, den kan INTE bekräfta andra nycklar.</string>
@@ -1201,7 +1201,7 @@
   <string name="cap_decrypt_revoked">Denna nyckel kan dekryptera/ta emot meddelanden, men har återkallats.</string>
   <string name="cap_decrypt_stripped">Denna nyckel kan inte dekryptera/ta emot meddelanden på denna enhet.</string>
   <string name="cap_decrypt_unavailable">Denna nyckel är inte konfigurerad att dekryptera/ta emot meddelanden!</string>
-    <string name="key_health_ok_title">Hälsosam</string>
+  <string name="key_health_ok_title">Hälsosam</string>
   <string name="key_health_ok_subtitle">Inga nyckelproblem hittades.</string>
   <string name="key_health_divert_title">Hälsosam (säkerhetstoken)</string>
   <string name="key_health_divert_subtitle">Inga nyckelproblem hittades.</string>
@@ -1230,7 +1230,7 @@
   <string name="key_insecure_bitstrength_2048_solution">Denna nyckel kan inte uppgraderas. För säker kommunikation måste ägaren generera en ny nyckel.</string>
   <string name="key_insecure_unknown_curve_solution">Denna nyckel kan inte uppgraderas. För säker kommunikation måste ägaren generera en ny nyckel.</string>
   <string name="key_insecure_unidentified_problem">Det finns ett oidentifierat problem med denna nyckel.</string>
-    <string name="key_expiry_text">Denna nyckel löpte ut <b>%1$s</b>.</string>
+  <string name="key_expiry_text">Denna nyckel löpte ut <b>%1$s</b>.</string>
   <string name="dialog_insecure_title">Säkerhetsvarning</string>
   <string name="dialog_insecure_recommend_title">Rekommenderad åtgärd</string>
   <string name="insecure_encrypt_bitstrength">Nyckeln du använde för att ta emot (dekryptera) detta meddelande är föråldrad!\n\nAlgoritmen (%s) är konfigurerad med en styrka på 1024 bitar eller mindre, vilket har ansetts vara osäkert för allmänt bruk sedan 2006.</string>
@@ -1243,7 +1243,7 @@
   <string name="dialog_insecure_button_ok">Förstått</string>
   <string name="usage_authentication">Autentisering</string>
   <string name="identity_context_forget">Glöm</string>
-    <string name="status_check_key">Kontrollerar nyckelstatus...</string>
+  <string name="status_check_key">Kontrollerar nyckelstatus...</string>
   <string name="status_search_local">Söker i nyckellistan...</string>
   <string name="status_search_uri">Söker på webbadress för token...</string>
   <string name="status_search_keyserver">Söker på nyckelservrar...</string>
@@ -1316,7 +1316,7 @@
   <string name="use_key_no_name">Använd nyckel: <![CDATA[<no name>]]></string>
   <string name="title_select_key">%s vill ställa in ände-till-ände-kryptering för denna adress:</string>
   <string name="select_identity_cancel">Inaktivera</string>
-    <string name="menu_list_unrelated_keys">Lista orelaterade nycklar</string>
+  <string name="menu_list_unrelated_keys">Lista orelaterade nycklar</string>
   <string name="no_keys_gen_title">Detta är en ny adress</string>
   <string name="no_keys_gen_subtitle">Skapa ny ände-till-ände-nyckel i OpenKeychain</string>
   <string name="no_keys_import_title">Jag har redan en nyckel</string>
@@ -1331,10 +1331,10 @@
   <string name="button_goto_openkeychain">Gå till OpenKeychain</string>
   <string name="snack_keylist_clipboard_title">Hittade nyckeldata i urklipp!</string>
   <string name="snack_keylist_clipboard_action">Visa</string>
-    <string name="notify_channel_permission">Tillståndsbegäran</string>
+  <string name="notify_channel_permission">Tillståndsbegäran</string>
   <string name="notify_channel_passcache">Lösenordsfras-cache</string>
   <string name="notify_channel_orbot">Orbot status</string>
-    <string name="keychoice_cannot_encrypt">Den här nyckeln kan inte användas för kryptering!</string>
+  <string name="keychoice_cannot_encrypt">Den här nyckeln kan inte användas för kryptering!</string>
   <string name="keychoice_cannot_sign">Den här nyckeln kan inte användas för signering!</string>
   <string name="keychoice_insecure">Den här nyckeln kan inte användas eftersom den är osäker!</string>
   <string name="keychoice_revoked">Den här nyckeln kan inte användas eftersom den har återkallats!</string>

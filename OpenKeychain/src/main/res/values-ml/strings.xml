@@ -16,23 +16,23 @@
   <string name="btn_okay">ശരി</string>
   <string name="btn_next">അടുത്തത്</string>
   <string name="btn_back">പിന്നോട്ട്</string>
-    <string name="btn_share_decrypted_text">പങ്കുവയ്ക്കുക</string>
+  <string name="btn_share_decrypted_text">പങ്കുവയ്ക്കുക</string>
   <string name="btn_unlock">അൺലോക്കുചെയ്യുക</string>
-    <!--Shortcut Strings-->
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">സെറ്റിംഗ്സ് </string>
   <string name="menu_help">സഹായം</string>
   <string name="menu_search">തിരയുക</string>
   <string name="menu_advanced">പുരോഗമിച്ച</string>
-    <!--label-->
-    <string name="label_passphrase">രഹസ്യവാക്കു്</string>
+  <!--label-->
+  <string name="label_passphrase">രഹസ്യവാക്കു്</string>
   <string name="label_unlock">അൺലോക്കുചെയ്യുന്നു…</string>
-    <string name="label_key_type">തരം</string>
+  <string name="label_key_type">തരം</string>
   <string name="label_revoked">പിന്‍വലിക്കപ്പെട്ടു</string>
   <string name="label_name">Name</string>
   <string name="label_email">ഇ-മെയിൽ </string>
-    <string name="label_enter_smartpgp_authority_name">Name</string>
+  <string name="label_enter_smartpgp_authority_name">Name</string>
   <string name="label_experimental_settings_desc_title">താക്കീത്</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">Enable Tor</string>
@@ -46,7 +46,7 @@
   <string name="orbot_start_dialog_cancel">വേണ്ടെന്നു വയ്ക്കുക</string>
   <!--choice-->
   <string name="choice_none">ഒന്നുമില്ല</string>
-    <!--sentences-->
+  <!--sentences-->
   <!--errors
          no punctuation, all lowercase,
          they will be put after "error_message", e.g. "Error: file not found"-->
@@ -71,7 +71,7 @@
   <string name="help_tab_changelog">മാറ്റ വിവരപ്പട്ടിക </string>
   <string name="help_tab_about">വിവരം</string>
   <string name="help_about_version">Version:</string>
-    <!--Import-->
+  <!--Import-->
   <string name="btn_import">ഇറക്കുമതി ചെയ്യുക</string>
   <!--Generic result toast-->
   <!--Import result toast-->
@@ -81,8 +81,8 @@
   <!--Intent labels-->
   <!--Remote API-->
   <string name="api_settings_save">സംരക്ഷിക്കുക</string>
-    <string name="api_settings_advanced">പുരോഗമിച്ച</string>
-    <!--Share-->
+  <string name="api_settings_advanced">പുരോഗമിച്ച</string>
+  <!--Share-->
   <!--retry upload dialog-->
   <!--Delete or revoke private key dialog-->
   <!--Delete Or Revoke Dialog spinner-->
@@ -102,7 +102,7 @@
   <!--hints-->
   <!--certs-->
   <string name="cert_none">ഒന്നുമില്ല</string>
-    <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
   <!--Keyring Canonicalization log entries-->
@@ -116,7 +116,7 @@
   <!--Messages for DecryptVerify operation-->
   <string name="msg_dc_clear_meta_size">ഫയല്‍ വലുപ്പം: %s</string>
   <!--Messages for VerifySignedLiteralData operation-->
-    <string name="msg_vl_ok">ശരി</string>
+  <string name="msg_vl_ok">ശരി</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
@@ -127,12 +127,12 @@
   <!--First Time-->
   <string name="restore_section">തിരികെയെത്തിക്കുക</string>
   <!--unsorted-->
-    <!--Android Account-->
-    <!--Passphrase wizard-->
+  <!--Android Account-->
+  <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
-    <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-    <string name="security_token_error_try_again">വീണ്ടും ശ്രമിക്കുക</string>
+  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="security_token_error_try_again">വീണ്ടും ശ്രമിക്കുക</string>
   <!--Other Linked Identity strings-->
   <string name="share_log_dialog_share_button">പങ്കുവയ്ക്കുക</string>
   <string name="share_log_dialog_cancel_button">വേണ്ടെന്നു വയ്ക്കുക</string>
@@ -146,7 +146,7 @@
   <string name="button_back">പിന്നോട്ട്</string>
   <string name="key_health_expired_title">കാലഹരണപ്പെട്ടതു്</string>
   <string name="key_health_revoked_title">പിന്‍വലിക്കപ്പെട്ടു</string>
-    <string name="token_reset_confirm_ok">പുനസജ്ജമാക്കുക</string>
+  <string name="token_reset_confirm_ok">പുനസജ്ജമാക്കുക</string>
   <string name="token_action_import">ഇറക്കുമതി ചെയ്യുക</string>
   <string name="token_unlock_ok">അൺലോക്കുചെയ്യുക</string>
   <string name="select_identity_cancel">പ്രവർത്തനരഹിതമാക്കു </string>

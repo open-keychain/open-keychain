@@ -13,7 +13,7 @@
   <string name="title_api_registered_apps">एप्लिकेशन</string>
   <string name="title_change_passphrase">पासवर्ड परिवर्तन </string>
   <string name="title_import_keys">कुंजियाँ आयात करें</string>
-    <string name="title_key_not_found">कुंजी नहीं मिली</string>
+  <string name="title_key_not_found">कुंजी नहीं मिली</string>
   <string name="title_backup">बैकअप कुंजी</string>
   <string name="title_key_details">कुंजी विवरण</string>
   <string name="title_help">सहायता</string>
@@ -32,11 +32,11 @@
   <string name="btn_okay">ठीक है</string>
   <string name="btn_next">अगला</string>
   <string name="btn_back">पिछला</string>
-    <string name="btn_create_key">कुंजी बनाएं</string>
+  <string name="btn_create_key">कुंजी बनाएं</string>
   <string name="btn_share_decrypted_text">शेयर</string>
   <string name="btn_copy_decrypted_text">क्लिपबोर्ड पर कॉपी करें</string>
   <string name="btn_unlock">अनलॉक</string>
-    <!--Shortcut Strings-->
+  <!--Shortcut Strings-->
   <!--Content Description-->
   <!--menu-->
   <string name="menu_preferences">सेटिंग</string>
@@ -45,8 +45,8 @@
   <string name="menu_open">खोलें </string>
   <string name="menu_change_password">पासवर्ड बदलें</string>
   <string name="menu_advanced">उन्नत</string>
-    <!--label-->
-    <string name="label_passphrase">पासवर्ड</string>
+  <!--label-->
+  <string name="label_passphrase">पासवर्ड</string>
   <string name="label_pin">पिन</string>
   <string name="label_unlock">अनलॉकिंग</string>
   <string name="label_key_type">प्रकार</string>
@@ -55,7 +55,7 @@
   <string name="label_enter_keyserver_url">यूआरएल</string>
   <string name="label_theme">विषय</string>
   <string name="label_enter_smartpgp_authority_name">नाम</string>
-    <string name="label_experimental_settings_desc_title">चेतावनी</string>
+  <string name="label_experimental_settings_desc_title">चेतावनी</string>
   <!--Proxy Preferences-->
   <string name="pref_proxy_tor_title">टॉर सक्षम करें</string>
   <string name="pref_proxy_host_title">छद्म मेजबान</string>
@@ -69,9 +69,9 @@
   <string name="orbot_start_dialog_cancel">रद्द करना</string>
   <!--choice-->
   <string name="choice_none">कुछ भी नहीं</string>
-    <string name="usage_encrypt">एन्क्रिप्ट</string>
-    <string name="theme_dark">अंधेरा</string>
+  <string name="usage_encrypt">एन्क्रिप्ट</string>
   <string name="theme_light">रोशनी</string>
+  <string name="theme_dark">अंधेरा</string>
   <!--sentences-->
   <string name="passphrase_for_symmetric_encryption">पास वर्ड दर्ज करें</string>
   <string name="passphrase_for_any">पास वर्ड दर्ज करें</string>
@@ -98,18 +98,20 @@
   <string name="help_tab_changelog">परिवर्तनसूची।</string>
   <string name="help_tab_about">बारे में</string>
   <string name="help_about_version">संस्करण:</string>
-    <!--Import-->
+  <!--Import-->
   <string name="btn_import">आयात</string>
+  <string name="btn_refresh">रीफ़्रेश करें</string>
   <!--Generic result toast-->
+  <string name="snackbar_details">विवरण</string>
   <!--Import result toast-->
   <!--Delete result toast-->
   <!--Revoke result toast (snackbar)-->
   <!--Certify result toast-->
   <!--Intent labels-->
   <!--Remote API-->
-    <string name="api_settings_save">बचाना</string>
-    <string name="api_settings_advanced">उन्नत</string>
-    <!--Share-->
+  <string name="api_settings_save">बचाना</string>
+  <string name="api_settings_advanced">उन्नत</string>
+  <!--Share-->
   <!--retry upload dialog-->
   <string name="retry_up_dialog_title">अपलोड विफ़ल रहा।</string>
   <!--Delete or revoke private key dialog-->
@@ -131,10 +133,10 @@
   <!--Add/Edit SmartPGP authority-->
   <!--Navigation Drawer-->
   <string name="nav_apps">एप्लिकेशन</string>
-    <!--hints-->
+  <!--hints-->
   <!--certs-->
   <string name="cert_none">कोई भी नहीं</string>
-    <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
+  <!--LogType log messages. Errors should have _ERROR_ in their name and end with a !-->
   <!--Import Public log entries-->
   <!--Import Secret log entries-->
   <!--Keyring Canonicalization log entries-->
@@ -147,7 +149,7 @@
   <!--Messages for DecryptVerify operation-->
   <string name="msg_dc_clear_meta_size">फ़ाइल का आकार: %s</string>
   <!--Messages for VerifySignedLiteralData operation-->
-    <string name="msg_vl_ok">ठीक</string>
+  <string name="msg_vl_ok">ठीक</string>
   <!--Messages for SignEncrypt operation-->
   <!--Messages for PgpSignEncrypt operation-->
   <!--Messages for Authentication operation-->
@@ -157,16 +159,16 @@
   <!--Keyserver sync-->
   <!--First Time-->
   <!--unsorted-->
-    <!--Android Account-->
-    <!--Passphrase wizard-->
+  <!--Android Account-->
+  <!--Passphrase wizard-->
   <!--TODO: rename all the things!-->
   <!--<string name="enter_passphrase_twice">Enter password twice</string>-->
   <string name="enter_passphrase">पास वर्ड दर्ज करें</string>
-    <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
-    <string name="security_token_error_unknown">अज्ञात त्रुटि</string>
+  <!--<string name="nfc_text">Please place a NFC tag near your device</string>-->
+  <string name="security_token_error_unknown">अज्ञात त्रुटि</string>
   <string name="security_token_error_try_again">पुनः प्रयास करें</string>
   <!--Other Linked Identity strings-->
-    <string name="share_log_dialog_share_button">शेयर</string>
+  <string name="share_log_dialog_share_button">शेयर</string>
   <string name="share_log_dialog_cancel_button">रद्द करना</string>
   <string name="menu_uids_save">बचाना</string>
   <string name="prompt_fidesmo_pgp_install_button_negative">रद्द करना</string>
@@ -177,11 +179,12 @@
   <string name="button_back">पिछला</string>
   <string name="button_got_it">समझ गया</string>
   <string name="dialog_insecure_button_ok">समझ गया</string>
-    <string name="token_reset_confirm_ok">रीसेट करें</string>
+  <string name="token_reset_confirm_ok">रीसेट करें</string>
   <string name="token_action_import">आयात</string>
   <string name="token_unlock_ok">अनलॉक</string>
   <string name="select_identity_cancel">अक्षम</string>
   <string name="key_gen_back">पिछला</string>
   <string name="key_gen_finish">समाप्त</string>
   <string name="snack_keylist_clipboard_action">राय</string>
+  <string name="keylist_header_anonymous">गुमनाम</string>
 </resources>
