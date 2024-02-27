@@ -1,34 +1,46 @@
 [main]
-host = https://www.transifex.com
-lang_map = he: iw, zh_TW: zh-rTW, es_MX: es-rMX, pt_BR: pt-rBR, nl_BE: nl-rBE
+host     = https://www.transifex.com
+lang_map = nl_BE: nl-rBE, he: iw, zh_TW: zh-rTW, es_MX: es-rMX, pt_BR: pt-rBR
 
-[open-keychain.strings]
-file_filter = OpenKeychain/src/main/res/values-<lang>/strings.xml
-source_file = OpenKeychain/src/main/res/values/strings.xml
-source_lang = en
+[o:otf:p:open-keychain:r:advanced]
+file_filter            = OpenKeychain/src/main/res/raw-<lang>/advanced.md
+source_file            = OpenKeychain/src/main/res/raw/advanced.md
+source_lang            = en
+replace_edited_strings = false
+keep_translations      = false
 
-[open-keychain.advanced]
-file_filter = OpenKeychain/src/main/res/raw-<lang>/advanced.md
-source_file = OpenKeychain/src/main/res/raw/advanced.md
-source_lang = en
+[o:otf:p:open-keychain:r:help-about]
+file_filter            = OpenKeychain/src/main/res/raw-<lang>/help_about.md
+source_file            = OpenKeychain/src/main/res/raw/help_about.md
+source_lang            = en
+replace_edited_strings = false
+keep_translations      = false
 
-[open-keychain.help-about]
-file_filter = OpenKeychain/src/main/res/raw-<lang>/help_about.md
-source_file = OpenKeychain/src/main/res/raw/help_about.md
-source_lang = en
+[o:otf:p:open-keychain:r:help-certification]
+file_filter            = OpenKeychain/src/main/res/raw-<lang>/help_certification.md
+source_file            = OpenKeychain/src/main/res/raw/help_certification.md
+source_lang            = en
+replace_edited_strings = false
+keep_translations      = false
 
-[open-keychain.help-changelog]
-file_filter = OpenKeychain/src/main/res/raw-<lang>/help_changelog.md
-source_file = OpenKeychain/src/main/res/raw/help_changelog.md
-source_lang = en
+[o:otf:p:open-keychain:r:help-changelog]
+file_filter            = OpenKeychain/src/main/res/raw-<lang>/help_changelog.md
+source_file            = OpenKeychain/src/main/res/raw/help_changelog.md
+source_lang            = en
+replace_edited_strings = false
+keep_translations      = false
 
-[open-keychain.help-certification]
-file_filter = OpenKeychain/src/main/res/raw-<lang>/help_certification.md
-source_file = OpenKeychain/src/main/res/raw/help_certification.md
-source_lang = en
+[o:otf:p:open-keychain:r:help-start]
+file_filter            = OpenKeychain/src/main/res/raw-<lang>/help_start.md
+source_file            = OpenKeychain/src/main/res/raw/help_start.md
+source_lang            = en
+replace_edited_strings = false
+keep_translations      = false
 
-[open-keychain.help-start]
-file_filter = OpenKeychain/src/main/res/raw-<lang>/help_start.md
-source_file = OpenKeychain/src/main/res/raw/help_start.md
-source_lang = en
+[o:otf:p:open-keychain:r:strings]
+file_filter            = OpenKeychain/src/main/res/values-<lang>/strings.xml
+source_file            = OpenKeychain/src/main/res/values/strings.xml
+source_lang            = en
+replace_edited_strings = false
+keep_translations      = false
 
