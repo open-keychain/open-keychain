@@ -75,12 +75,12 @@
         <item name="android:minHeight">42sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:typeface">monospace</item>
-        <item name="android:textColor">#000</item>
+        <item name="android:textColor">?attr/colorHeaderText</item>
         <item name="android:inputType">numberPassword|textVisiblePassword</item>
     </style>
 
     <style name="TransferCodeText" parent="TransferCodeTextBase">
-        <item name="android:textColor">#000</item>
+        <item name="android:textColor">?attr/colorHeaderText</item>
     </style>
 
     <style name="TransferCodeTextSep" parent="TransferCodeText">
