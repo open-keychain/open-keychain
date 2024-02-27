@@ -1,5 +1,50 @@
 [//]: # (NOTE: Please put every sentence in its own line, Transifex puts every line in its own translation field!)
 
+## 6.0.3
+  * Add special handling for expected ECC import format for Nitrokey 3
+  * Change security defaults from SHA-512 to SHA-256
+  * Fix race condition with progress dialog
+
+## 6.0.2
+  * Fix selection of signing or auth subkey if there are multiple candidates
+
+## 6.0.1
+  * Fixes crash when encrypting an email 
+  * Fixes light/dark mode toggle for passphrase dialog 
+
+## 6.0.0
+  * Updates for Android 14 
+  * Support NitroKey 3
+  * Support autofill in passphrase dialog
+  * ECC 25519 is now the default generated key type
+  * enable encrypt for eddsa
+  * fix key usage spinner 
+  * fixes cv25519 encryption key generation
+  * fixes some UI elements that didn't support dark mode 
+  * Fix behavior for duplicate user ids 
+
+## 5.8.2
+  * Remove donation dialog
+
+## 5.8.0
+  * fixes some network related crashes on newer devices
+  * fixes a crash that could occur when NFC disconnects
+  * security fixes
+  * add automatic theme
+
+## 5.7.5
+  * code optimizations related to EdDSA signature
+
+## 5.7.4
+  * Fixes a bug parsing response from keyserver
+  * Fixes "Error: Invalid KEK!" with security key and ECC NIST curve
+
+## 5.7.3
+  * Fixes a failure to set up security token with new key
+
+## 5.7.2
+  * Fixes a bug with EdDSA subkey signatures when using NFC Security Key
+    
 ## 5.7
   * Fixes for Curve25519
   * IDEA cipher is now considered insecure
