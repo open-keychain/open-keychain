@@ -106,6 +106,8 @@ public class ApiAppsLiveData extends AsyncTaskLiveData<List<ListedApp>> {
 
     private static final ListedApp[] PLACERHOLDER_APPS = {
             new ListedApp("com.fsck.k9", false, false, "K-9 Mail", null, R.drawable.apps_k9),
+            new ListedApp("de.monocles.mail", false, false, "monocles mail", null, R.drawable.apps_monoclesmail),
+            new ListedApp("de.monocles.chat", false, false, "monocles chat", null, R.drawable.apps_monocleschat),
             new ListedApp("dev.msfjarvis.aps", false, false, "Password Store", null, R.drawable.apps_password_store),
             new ListedApp("eu.siacs.conversations", false, false, "Conversations (Instant Messaging)", null,
                     R.drawable.apps_conversations)
