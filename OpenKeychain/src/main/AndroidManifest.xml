@@ -73,6 +73,12 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
+    <queries>
+        <package android:name="com.fsck.k9" />
+        <package android:name="dev.msfjarvis.aps" />
+        <package android:name="eu.siacs.conversations" />
+    </queries>
+
     <!-- android:allowBackup="false": Don't allow backup over adb backup or other apps! -->
     <application
         android:name=".KeychainApplication"
