@@ -1,0 +1,1 @@
+OpenKeychain: Простое PGP шифрование
