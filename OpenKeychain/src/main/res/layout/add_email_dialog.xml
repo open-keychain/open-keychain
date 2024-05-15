@@ -14,7 +14,7 @@
         android:text="@string/create_key_add_email_text"
         android:textAppearance="?android:textAppearanceMedium" />
 
-    <androidx.appcompat.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/add_email_address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
