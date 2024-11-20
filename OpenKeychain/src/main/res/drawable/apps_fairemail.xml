@@ -1,0 +1,34 @@
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp">
+    <item>
+        <shape
+            android:width="108dp"
+            android:height="108dp">
+            <corners android:radius="14dp" />
+            <gradient
+                android:angle="135"
+                android:endColor="#4fc3f7"
+                android:startColor="#0288d1"
+                android:type="linear" />
+            <!-- start: Light blue 700 -->
+            <!-- end: Light blue 300 -->
+        </shape>
+    </item>
+    <item>
+        <vector
+            android:width="108dp"
+            android:height="108dp"
+            android:viewportWidth="40"
+            android:viewportHeight="40"
+            android:tint="@android:color/white">
+            <group android:translateX="8"
+                android:translateY="8">
+                <path
+                    android:fillColor="@android:color/white"
+                    android:pathData="M20,4L4,4c-1.1,0 -1.99,0.9 -1.99,2L2,18c0,1.1 0.9,2 2,2h16c1.1,0 2,-0.9 2,-2L22,6c0,-1.1 -0.9,-2 -2,-2zM20,8l-8,5 -8,-5L4,6l8,5 8,-5v2z"/>
+            </group>
+        </vector>
+    </item>
+</layer-list>
