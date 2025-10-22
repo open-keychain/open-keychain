@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.bouncycastle.bcpg.AEADEncDataPacket;
 import org.bouncycastle.bcpg.SymmetricEncIntegrityPacket;
+import org.bouncycastle.jcajce.util.DefaultJcaJceHelper;
 import org.bouncycastle.jcajce.util.NamedJcaJceHelper;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKeyEncryptedData;
@@ -28,8 +29,8 @@ public class CachingDataDecryptorFactory implements PublicKeyDataDecryptorFactor
     private final PublicKeyDataDecryptorFactory mWrappedDecryptor;
     private final HashMap<ByteBuffer, byte[]> mSessionKeyCache;
 
-    private OperatorHelper mOperatorHelper;
-    private JceAEADUtil mAeadHelper;
+    private OperatorHelper mOperatorHelper=new OperatorHelper(new DefaultJcaJceHelper());;
+    private JceAEADUtil mAeadHelper=new JceAEADUtil(mOperatorHelper);;
 
     public CachingDataDecryptorFactory(String providerName, Map<ByteBuffer, byte[]> sessionKeyCache)
     {
