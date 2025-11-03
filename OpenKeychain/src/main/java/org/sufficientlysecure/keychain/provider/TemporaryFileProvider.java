@@ -109,8 +109,7 @@ public class TemporaryFileProvider extends ContentProvider {
     }
 
     public static Uri createFile(Context context) {
-        ContentValues contentValues = new ContentValues();
-        return context.getContentResolver().insert(CONTENT_URI, contentValues);
+        return createFile(context, null, null);
     }
 
     public static int setName(Context context, Uri uri, String name) {
