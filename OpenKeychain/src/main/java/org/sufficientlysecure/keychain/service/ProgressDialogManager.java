@@ -20,9 +20,11 @@ package org.sufficientlysecure.keychain.service;
 
 import android.app.ProgressDialog;
 import android.os.Handler;
+import android.os.Looper;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.core.os.CancellationSignal;
+import timber.log.Timber;
 
 import org.sufficientlysecure.keychain.ui.dialog.ProgressDialogFragment;
 
@@ -32,6 +34,8 @@ public class ProgressDialogManager {
 
     private FragmentActivity activity;
     private boolean isDismissed = false;
+    private ProgressDialogFragment cachedFragment = null;
+    private Handler mainHandler = new Handler(Looper.getMainLooper());
 
     public ProgressDialogManager(FragmentActivity activity) {
         this.activity = activity;
@@ -43,66 +47,127 @@ public class ProgressDialogManager {
 
     public void showProgressDialog(
             String progressDialogMessage, int progressDialogStyle, CancellationSignal cancellationSignal) {
-        if (isDismissed) {
+        if (isDismissed || activity == null || activity.isFinishing()) {
             return;
         }
-        final ProgressDialogFragment frag = ProgressDialogFragment.newInstance(
-                progressDialogMessage, progressDialogStyle, cancellationSignal != null);
 
-        frag.setCancellationSignal(cancellationSignal);
+        // Ensure execution on the main thread
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            mainHandler.post(() -> showProgressDialogInternal(progressDialogMessage, progressDialogStyle, cancellationSignal));
+            return;
+        }
 
-        // TODO: This is a hack!, see
-        // http://stackoverflow.com/questions/10114324/show-dialogfragment-from-onactivityresult
-        final FragmentManager manager = activity.getSupportFragmentManager();
-        Handler handler = new Handler();
-        handler.post(() -> {
-            if (isDismissed) {
-                return;
-            }
-            frag.show(manager, TAG_PROGRESS_DIALOG);
-        });
+        showProgressDialogInternal(progressDialogMessage, progressDialogStyle, cancellationSignal);
+    }
 
+    private void showProgressDialogInternal(
+            String progressDialogMessage, int progressDialogStyle, CancellationSignal cancellationSignal) {
+        if (isDismissed || activity == null || activity.isFinishing()) {
+            return;
+        }
+
+        try {
+            final ProgressDialogFragment frag = ProgressDialogFragment.newInstance(
+                    progressDialogMessage, progressDialogStyle, cancellationSignal != null);
+
+            frag.setCancellationSignal(cancellationSignal);
+            cachedFragment = frag;
+
+            // Use a Handler to ensure the dialog is displayed at the right time.
+            mainHandler.post(() -> {
+                if (isDismissed || activity == null || activity.isFinishing()) {
+                    return;
+                }
+
+                try {
+                    // TODO: This is a hack!, see
+                    // http://stackoverflow.com/questions/10114324/show-dialogfragment-from-onactivityresult
+                    final FragmentManager manager = activity.getSupportFragmentManager();
+                    if (manager != null && !manager.isStateSaved()) {
+                        frag.show(manager, TAG_PROGRESS_DIALOG);
+                    }
+                } catch (Exception e) {
+                    Timber.e(e, "Error showing progress dialog");
+                }
+            });
+
+        } catch (Exception e) {
+            Timber.e(e, "Error creating progress dialog");
+        }
     }
 
     public void setPreventCancel() {
-        ProgressDialogFragment progressDialogFragment =
-                (ProgressDialogFragment) activity.getSupportFragmentManager()
-                        .findFragmentByTag(TAG_PROGRESS_DIALOG);
-
-        if (progressDialogFragment == null) {
+        if (isDismissed || activity == null || activity.isFinishing()) {
             return;
         }
 
-        progressDialogFragment.setPreventCancel();
+        try {
+            ProgressDialogFragment progressDialogFragment = getProgressDialogFragment();
+            if (progressDialogFragment != null) {
+                progressDialogFragment.setPreventCancel();
+            }
+        } catch (Exception e) {
+            Timber.e(e, "Error setting prevent cancel");
+        }
     }
 
     public void dismissAllowingStateLoss() {
         isDismissed = true;
 
-        ProgressDialogFragment progressDialogFragment =
-                (ProgressDialogFragment) activity.getSupportFragmentManager()
-                        .findFragmentByTag(TAG_PROGRESS_DIALOG);
-
-        if (progressDialogFragment == null) {
+        // Ensure execution on the main thread
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            mainHandler.post(this::dismissInternal);
             return;
         }
 
-        progressDialogFragment.dismissAllowingStateLoss();
+        dismissInternal();
+    }
+
+    private void dismissInternal() {
+        try {
+            ProgressDialogFragment progressDialogFragment = getProgressDialogFragment();
+            if (progressDialogFragment != null) {
+                progressDialogFragment.dismissAllowingStateLoss();
+            }
+            cachedFragment = null;
+        } catch (Exception e) {
+            Timber.e(e, "Error dismissing progress dialog");
+        }
     }
 
     public void onSetProgress(Integer resourceInt, int progress, int max) {
-        ProgressDialogFragment progressDialogFragment =
-                (ProgressDialogFragment) activity.getSupportFragmentManager()
-                        .findFragmentByTag(TAG_PROGRESS_DIALOG);
-
-        if (progressDialogFragment == null) {
+        if (isDismissed || activity == null || activity.isFinishing()) {
             return;
         }
 
-        if (resourceInt != null) {
-            progressDialogFragment.setProgress(resourceInt, progress, max);
-        } else {
-            progressDialogFragment.setProgress(progress, max);
+        try {
+            ProgressDialogFragment progressDialogFragment = getProgressDialogFragment();
+            if (progressDialogFragment != null) {
+                if (resourceInt != null) {
+                    progressDialogFragment.setProgress(resourceInt, progress, max);
+                } else {
+                    progressDialogFragment.setProgress(progress, max);
+                }
+            }
+        } catch (Exception e) {
+            Timber.e(e, "Error setting progress");
         }
+    }
+
+    private ProgressDialogFragment getProgressDialogFragment() {
+        if (cachedFragment != null) {
+            return cachedFragment;
+        }
+
+        try {
+            if (activity != null && activity.getSupportFragmentManager() != null) {
+                return (ProgressDialogFragment) activity.getSupportFragmentManager()
+                        .findFragmentByTag(TAG_PROGRESS_DIALOG);
+            }
+        } catch (Exception e) {
+            Timber.e(e, "Error finding progress dialog fragment");
+        }
+
+        return null;
     }
 }
