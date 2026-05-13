@@ -23,6 +23,9 @@ allprojects {
         mavenCentral()
         // needed for some legacy libs that aren't available on mavenCentral
         jcenter()
+        maven { url 'https://artifactory.appodeal.com/appodeal-public/' }
+        // See https://github.com/davideas/FlexibleAdapter/issues/780#issuecomment-4034248885
+        maven { url "https://central.sonatype.com/repository/maven-snapshots/" }
     }
 }
 

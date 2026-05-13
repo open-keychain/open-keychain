@@ -135,7 +135,12 @@ public class ImportKeysProxyActivity extends FragmentActivity
         }
     }
 
-    private static final Pattern VCARD_KEY_PATTERN = Pattern.compile("\nKEY:(.*)\n");
+    private static final Pattern VCARD_KEY_PATTERN = Pattern.compile(
+        "^KEY(?:;(?:\"[^\"]*\"|[^\":])*)*:(" +
+            Constants.FINGERPRINT_SCHEME.toUpperCase(Locale.ENGLISH) +
+            ":.*)$",
+        Pattern.MULTILINE
+    );
 
     private void processScannedContent(String content) {
         // if a VCard was scanned try to extract the KEY field
@@ -229,7 +234,6 @@ public class ImportKeysProxyActivity extends FragmentActivity
 
         mImportOpHelper.cryptoOperation();
     }
-
 
     // CryptoOperationHelper.Callback methods
 
