@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/toolbar_include"
     android:elevation="4dp"
     android:background="?attr/colorPrimary"
@@ -20,6 +21,7 @@
         android:background="?attr/colorPrimary"
         android:textColor="?attr/colorTabText"
         app:pstsTabTextColor="?attr/colorTabTextSelected"
-        app:pstsIndicatorColor="?attr/colorTabIndicator" />
+        app:pstsIndicatorColor="?attr/colorTabIndicator"
+        tools:ignore="NotSibling" />
 
 </RelativeLayout>
