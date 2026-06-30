@@ -94,7 +94,7 @@ android {
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 34
+        targetSdkVersion 36
         versionCode 60400
         versionName "6.0.4"
         applicationId "org.sufficientlysecure.keychain"
