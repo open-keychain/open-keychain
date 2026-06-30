@@ -94,9 +94,9 @@ android {
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 34
-        versionCode 60400
-        versionName "6.0.4"
+        targetSdkVersion 36
+        versionCode 60500
+        versionName "6.0.5"
         applicationId "org.sufficientlysecure.keychain"
         // the androidjunitrunner is broken regarding coverage, see here:
         // https://code.google.com/p/android/issues/detail?id=170607
@@ -170,8 +170,9 @@ android {
         debugWithTestCoverage.initWith(debug)
         debugWithTestCoverage {
             // Enable code coverage (Jacoco)
-            testCoverageEnabled true
+            enableUnitTestCoverage true
             matchingFallbacks = ['debug']    // instead use this
+            enableAndroidTestCoverage true
         }
     }
 
@@ -205,7 +206,7 @@ android {
 
     // NOTE: Lint is disabled because it slows down builds,
     // to enable it comment out the code at the bottom of this build.gradle
-    lintOptions {
+    lint {
         // Do not abort build if lint finds errors
         abortOnError false
 
@@ -219,13 +220,17 @@ android {
     }
 
     packagingOptions {
-        exclude 'LICENSE.txt'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/NOTICE'
-        exclude '.readme'
+        resources {
+            excludes += [
+                'LICENSE.txt',
+                'META-INF/LICENSE.txt',
+                'META-INF/NOTICE.txt',
+                'META-INF/DEPENDENCIES',
+                'META-INF/LICENSE',
+                'META-INF/NOTICE',
+                '.readme'
+            ]
+        }
     }
 }
 

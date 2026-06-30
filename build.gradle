@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlin_version = '1.8.20'
+        kotlin_version = '2.2.0'
     }
 
     repositories {
@@ -10,7 +10,7 @@ buildscript {
 
     dependencies {
         // NOTE: Always use fixed version codes not dynamic ones, e.g. 0.7.3 instead of 0.7.+, see README for more information
-        classpath 'com.android.tools.build:gradle:8.1.4'
+        classpath 'com.android.tools.build:gradle:8.13.2'
         // classpath 'com.squareup.sqldelight:gradle-plugin:0.8.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.squareup.sqldelight:gradle-plugin:1.5.4'
@@ -19,15 +19,29 @@ buildscript {
 
 allprojects {
     repositories {
+        // needed for some legacy libs that aren't available on mavenCentral
+        maven {
+            url = uri("https://maven.aliyun.com/repository/jcenter")
+            content {
+                includeGroup("eu.davidea")
+                includeGroup("com.fidesmo")
+            }
+        }
+        maven {
+            url 'https://repository-cdn.liferay.com/nexus/content/repositories/public/'
+            content {
+                includeGroup("com.journeyapps")
+                includeGroup("org.sufficientlysecure")
+                includeGroup("com.beloo.widget")
+            }
+        }
         google()
         mavenCentral()
-        // needed for some legacy libs that aren't available on mavenCentral
-        jcenter()
     }
 }
 
 // SDK Version and Build Tools used by all subprojects
 // See http://tools.android.com/tech-docs/new-build-system/tips#TOC-Controlling-Android-properties-of-all-your-modules-from-the-main-project.
 ext {
-    compileSdkVersion = 34
+    compileSdkVersion = 36
 }
