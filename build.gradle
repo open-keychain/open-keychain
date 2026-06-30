@@ -19,10 +19,24 @@ buildscript {
 
 allprojects {
     repositories {
+        // needed for some legacy libs that aren't available on mavenCentral
+        maven {
+            url = uri("https://maven.aliyun.com/repository/jcenter")
+            content {
+                includeGroup("eu.davidea")
+                includeGroup("com.fidesmo")
+            }
+        }
+        maven {
+            url 'https://repository-cdn.liferay.com/nexus/content/repositories/public/'
+            content {
+                includeGroup("com.journeyapps")
+                includeGroup("org.sufficientlysecure")
+                includeGroup("com.beloo.widget")
+            }
+        }
         google()
         mavenCentral()
-        // needed for some legacy libs that aren't available on mavenCentral
-        jcenter()
     }
 }
 
