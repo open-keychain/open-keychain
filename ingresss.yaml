@@ -1,4 +1,77 @@
-name: CI
+name:# ===================================================
+# Abyss Masterpiece - Kubernetes Ingress
+# Reverse proxy configuration for the webhook
+# ===================================================
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: abyss-webhook
+  namespace: default
+  labels:
+    app: abyss-webhook
+  annotations:
+    # Use nginx ingress controller
+    kubernetes.io/ingress.class: nginx
+
+    # Force HTTPS redirect
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+
+    # Security headers
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Frame-Options: DENY";
+      more_set_headers "X-Content-Type-Options: nosniff";
+      more_set_headers "Referrer-Policy: strict-origin-when-cross-origin";
+
+    # cert-manager for automatic Let's Encrypt certificates
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+
+    # Optional: rate limiting
+    nginx.ingress.kubernetes.io/limit-rps: "20"
+
+spec:
+  ingressClassName: nginx
+
+  tls:
+    - hosts:
+        - abyssmasterpiece.com
+        - www.abyssmasterpiece.com
+      secretName: abyss-tls
+
+  rules:
+    # Main domain
+    - host: abyssmasterpiece.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: abyss-webhook
+                port:
+                  number: 80
+
+          # Specific webhook path (optional, more secure)
+          - path: /webhook
+            pathType: Prefix
+            backend:
+              service:
+                name: abyss-webhook
+                port:
+                  number: 80
+
+    # www redirect handled by annotation or separate rule
+    - host: www.abyssmasterpiece.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: abyss-webhook
+                port:
+                  number: 80
 
 on:
   push:
