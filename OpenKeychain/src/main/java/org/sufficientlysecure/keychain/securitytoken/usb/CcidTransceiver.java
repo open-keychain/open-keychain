@@ -258,8 +258,7 @@ public class CcidTransceiver {
                     usbBulkIn, inputBuffer, inputBuffer.length, DEVICE_SKIP_TIMEOUT_MILLIS);
             if (ignoredBytes > 0) {
                 Timber.e(
-                        "Skipped " + ignoredBytes + " bytes: "
-                        + toHexString(inputBuffer, 0, ignoredBytes)
+                        "Skipped " + ignoredBytes + " bytes"
                 );
             }
         } while (ignoredBytes > 0);
@@ -294,7 +293,7 @@ public class CcidTransceiver {
             readBytes = usbConnection.bulkTransfer(
                 usbBulkIn, inputBuffer, inputBuffer.length, DEVICE_COMMUNICATE_TIMEOUT_MILLIS
             );
-            Timber.d("Received " + readBytes + " bytes: " + toHexString(inputBuffer));
+            Timber.d("Received " + readBytes + " bytes");
         } while ((readBytes <= 0) && (attempts-- > 0));
 
         if (readBytes < CCID_HEADER_LENGTH) {

@@ -41,7 +41,6 @@ import org.sufficientlysecure.keychain.securitytoken.Transport;
 import org.sufficientlysecure.keychain.util.Preferences;
 import timber.log.Timber;
 
-import static org.bouncycastle.util.encoders.Hex.toHexString;
 
 
 /**
@@ -180,12 +179,12 @@ public class UsbTransport implements Transport {
     public ResponseApdu transceive(CommandApdu data) throws UsbTransportException {
         byte[] rawCommand = data.toBytes();
         if (Constants.DEBUG) {
-            Timber.d("USB >> " + toHexString(rawCommand));
+            Timber.d("USB >> INS %02x, %d bytes", data.getINS(), rawCommand.length);
         }
 
         byte[] rawResponse = ccidTransportProtocol.transceive(rawCommand);
         if (Constants.DEBUG) {
-            Timber.d("USB << " + toHexString(rawResponse));
+            Timber.d("USB << %d bytes", rawResponse.length);
         }
 
         return ResponseApdu.fromBytes(rawResponse);

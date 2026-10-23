@@ -30,7 +30,6 @@ import nordpol.IsoCard;
 import nordpol.android.AndroidCard;
 import timber.log.Timber;
 
-import static org.bouncycastle.util.encoders.Hex.toHexString;
 
 
 public class NfcTransport implements Transport {
@@ -61,12 +60,12 @@ public class NfcTransport implements Transport {
     public ResponseApdu transceive(final CommandApdu data) throws IOException {
         byte[] rawCommand = data.toBytes();
         if (Constants.DEBUG) {
-            Timber.d("nfc out: " + toHexString(rawCommand));
+            Timber.d("nfc out: INS %02x, %d bytes", data.getINS(), rawCommand.length);
         }
 
         byte[] rawResponse = mIsoCard.transceive(rawCommand);
         if (Constants.DEBUG) {
-            Timber.d("nfc  in: " + toHexString(rawResponse));
+            Timber.d("nfc  in: %d bytes", rawResponse.length);
         }
 
         return ResponseApdu.fromBytes(rawResponse);
