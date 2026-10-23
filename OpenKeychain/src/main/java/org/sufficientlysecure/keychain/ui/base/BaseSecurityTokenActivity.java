@@ -42,6 +42,7 @@ import org.sufficientlysecure.keychain.securitytoken.UsbConnectionDispatcher;
 import org.sufficientlysecure.keychain.securitytoken.usb.UnsupportedUsbTokenException;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransport;
 import org.sufficientlysecure.keychain.securitytoken.usb.UsbTransportException;
+import org.sufficientlysecure.keychain.ssh.CardAuthKeyStore;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
@@ -81,6 +82,7 @@ public abstract class BaseSecurityTokenActivity extends BaseActivity {
     protected void doSecurityTokenInBackground(SecurityTokenConnection stConnection) throws IOException {
         tokenInfo = stConnection.readTokenInfo();
         Timber.d("Security Token: " + tokenInfo);
+        CardAuthKeyStore.getInstance(this).updateFromToken(this, stConnection);
     }
 
     /**

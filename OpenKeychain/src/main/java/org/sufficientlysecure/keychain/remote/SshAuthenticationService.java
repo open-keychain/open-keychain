@@ -32,6 +32,10 @@ import android.os.IBinder;
 
 import org.bouncycastle.bcpg.HashAlgorithmTags;
 import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
+import org.bouncycastle.openpgp.AuthenticationSignatureGenerator;
+import org.bouncycastle.openpgp.PGPException;
+import org.bouncycastle.openpgp.PGPSignature;
+import org.bouncycastle.openpgp.operator.jcajce.NfcSyncPGPContentSignerBuilder;
 import org.openintents.ssh.authentication.ISshAuthenticationService;
 import org.openintents.ssh.authentication.SshAuthenticationApi;
 import org.openintents.ssh.authentication.SshAuthenticationApiError;
@@ -55,6 +59,8 @@ import org.sufficientlysecure.keychain.ssh.AuthenticationData;
 import org.sufficientlysecure.keychain.ssh.AuthenticationOperation;
 import org.sufficientlysecure.keychain.ssh.AuthenticationParcel;
 import org.sufficientlysecure.keychain.ssh.AuthenticationResult;
+import org.sufficientlysecure.keychain.ssh.CardAuthKeyStore;
+import org.sufficientlysecure.keychain.ssh.CardAuthKeyStore.CardAuthKey;
 import org.sufficientlysecure.keychain.ssh.signature.SshSignatureConverter;
 import timber.log.Timber;
 
@@ -64,6 +70,7 @@ public class SshAuthenticationService extends Service {
     private KeyRepository mKeyRepository;
     private ApiAppDao mApiAppDao;
     private ApiPendingIntentFactory mApiPendingIntentFactory;
+    private CardAuthKeyStore mCardAuthKeyStore;
 
     private static final List<Integer> SUPPORTED_VERSIONS = Collections.unmodifiableList(Collections.singletonList(1));
     private static final int INVALID_API_VERSION = -1;
@@ -76,6 +83,7 @@ public class SshAuthenticationService extends Service {
         mApiPermissionHelper = new ApiPermissionHelper(this, ApiAppDao.getInstance(this));
         mKeyRepository = KeyRepository.create(this);
         mApiAppDao = ApiAppDao.getInstance(this);
+        mCardAuthKeyStore = CardAuthKeyStore.getInstance(this);
 
         mApiPendingIntentFactory = new ApiPendingIntentFactory(getBaseContext());
     }
@@ -155,6 +163,10 @@ public class SshAuthenticationService extends Service {
                 authSubKeyCurveOid = getPublicKey(masterKeyId).getCurveOid();
             }
         } catch (NotFoundException e) {
+            CardAuthKey cardAuthKey = mCardAuthKeyStore.get(masterKeyId);
+            if (cardAuthKey != null) {
+                return authenticateWithCardAuthKey(data, cardAuthKey, hashAlgorithmTag, challenge);
+            }
             return createExceptionErrorResult(SshAuthenticationApiError.NO_SUCH_KEY,
                     "Key for master key id not found", e);
         }
@@ -185,35 +197,89 @@ public class SshAuthenticationService extends Service {
             // return PendingIntent to be executed by client
             return packagePendingIntent(pi);
         } else if (authResult.success()) {
-            byte[] rawSignature = authResult.getSignature();
-            byte[] sshSignature;
-            try {
-                switch (authSubKeyAlgorithm) {
-                    case PublicKeyAlgorithmTags.EDDSA:
-                        sshSignature = SshSignatureConverter.getSshSignatureEdDsa(rawSignature);
-                        break;
-                    case PublicKeyAlgorithmTags.RSA_SIGN:
-                    case PublicKeyAlgorithmTags.RSA_GENERAL:
-                        sshSignature = SshSignatureConverter.getSshSignatureRsa(rawSignature, hashAlgorithmTag);
-                        break;
-                    case PublicKeyAlgorithmTags.ECDSA:
-                        sshSignature = SshSignatureConverter.getSshSignatureEcDsa(rawSignature, authSubKeyCurveOid);
-                        break;
-                    case PublicKeyAlgorithmTags.DSA:
-                        sshSignature = SshSignatureConverter.getSshSignatureDsa(rawSignature);
-                        break;
-                    default:
-                        throw new NoSuchAlgorithmException("Unknown algorithm");
-                }
-            } catch (NoSuchAlgorithmException e) {
-                return createExceptionErrorResult(SshAuthenticationApiError.INTERNAL_ERROR,
-                        "Error converting signature", e);
-            }
-            return new SigningResponse(sshSignature).toIntent();
+            return createSigningResponse(authResult.getSignature(), authSubKeyAlgorithm,
+                    hashAlgorithmTag, authSubKeyCurveOid);
         } else {
             LogEntryParcel errorMsg = authResult.getLog().getLast();
             return createErrorResult(SshAuthenticationApiError.INTERNAL_ERROR, getString(errorMsg.mType.getMsgId()));
         }
+    }
+
+    /**
+     * Signs with an authentication key that only exists on the security token, see
+     * {@link CardAuthKeyStore}. The PIN is requested for the card-backed subkey the token was
+     * associated with, the signature itself is made by the token's auth slot.
+     */
+    private Intent authenticateWithCardAuthKey(Intent data, CardAuthKey cardAuthKey,
+            int hashAlgorithmTag, byte[] challenge) {
+        HashSet<Long> allowedKeyIds = getAllowedKeyIds();
+        if (allowedKeyIds != null && !allowedKeyIds.contains(cardAuthKey.masterKeyId)) {
+            return createErrorResult(SshAuthenticationApiError.NO_SUCH_KEY,
+                    "Key not allowed for this app");
+        }
+
+        CryptoInputParcel inputParcel =
+                CryptoInputParcelCacheService.getCryptoInputParcel(this, data);
+        if (inputParcel == null) {
+            inputParcel = CryptoInputParcel.createCryptoInputParcel(new Date());
+        }
+
+        // EdDSA signs the challenge itself, all other algorithms sign its digest
+        boolean preHash = cardAuthKey.algorithm != PublicKeyAlgorithmTags.EDDSA;
+        byte[] rawSignature;
+        try {
+            NfcSyncPGPContentSignerBuilder signerBuilder = new NfcSyncPGPContentSignerBuilder(
+                    cardAuthKey.algorithm, cardAuthKey.authKeyId, preHash, hashAlgorithmTag,
+                    inputParcel.getCryptoData())
+                    .setProvider(Constants.BOUNCY_CASTLE_PROVIDER_NAME);
+            AuthenticationSignatureGenerator signatureGenerator =
+                    new AuthenticationSignatureGenerator(signerBuilder);
+            signatureGenerator.init(PGPSignature.BINARY_DOCUMENT, null);
+            signatureGenerator.update(challenge, 0, challenge.length);
+            rawSignature = signatureGenerator.getSignature();
+        } catch (NfcSyncPGPContentSignerBuilder.NfcInteractionNeeded e) {
+            RequiredInputParcel requiredInput =
+                    RequiredInputParcel.createSecurityTokenAuthenticationOperation(
+                            cardAuthKey.masterKeyId, cardAuthKey.pinAnchorKeyId,
+                            e.hashToSign, e.hashAlgo);
+            PendingIntent pi =
+                    mApiPendingIntentFactory.requiredInputPi(data, requiredInput, inputParcel);
+            return packagePendingIntent(pi);
+        } catch (PGPException e) {
+            return createExceptionErrorResult(SshAuthenticationApiError.INTERNAL_ERROR,
+                    "Error creating signature", e);
+        }
+
+        return createSigningResponse(rawSignature, cardAuthKey.algorithm, hashAlgorithmTag,
+                cardAuthKey.curveOid);
+    }
+
+    private Intent createSigningResponse(byte[] rawSignature, int authSubKeyAlgorithm,
+            int hashAlgorithmTag, String authSubKeyCurveOid) {
+        byte[] sshSignature;
+        try {
+            switch (authSubKeyAlgorithm) {
+                case PublicKeyAlgorithmTags.EDDSA:
+                    sshSignature = SshSignatureConverter.getSshSignatureEdDsa(rawSignature);
+                    break;
+                case PublicKeyAlgorithmTags.RSA_SIGN:
+                case PublicKeyAlgorithmTags.RSA_GENERAL:
+                    sshSignature = SshSignatureConverter.getSshSignatureRsa(rawSignature, hashAlgorithmTag);
+                    break;
+                case PublicKeyAlgorithmTags.ECDSA:
+                    sshSignature = SshSignatureConverter.getSshSignatureEcDsa(rawSignature, authSubKeyCurveOid);
+                    break;
+                case PublicKeyAlgorithmTags.DSA:
+                    sshSignature = SshSignatureConverter.getSshSignatureDsa(rawSignature);
+                    break;
+                default:
+                    throw new NoSuchAlgorithmException("Unknown algorithm");
+            }
+        } catch (NoSuchAlgorithmException e) {
+            return createExceptionErrorResult(SshAuthenticationApiError.INTERNAL_ERROR,
+                    "Error converting signature", e);
+        }
+        return new SigningResponse(sshSignature).toIntent();
     }
 
     private Intent checkForKeyId(Intent data) {
@@ -351,7 +417,16 @@ public class SshAuthenticationService extends Service {
     }
 
     private Intent getSSHPublicKey(long masterKeyId) throws KeyRepository.NotFoundException {
-        CanonicalizedPublicKey publicKey = getPublicKey(masterKeyId);
+        CanonicalizedPublicKey publicKey;
+        try {
+            publicKey = getPublicKey(masterKeyId);
+        } catch (NotFoundException e) {
+            CardAuthKey cardAuthKey = mCardAuthKeyStore.get(masterKeyId);
+            if (cardAuthKey == null) {
+                throw e;
+            }
+            return new SshPublicKeyResponse(cardAuthKey.sshPublicKey).toIntent();
+        }
 
         SshPublicKey sshPublicKey = new SshPublicKey(publicKey);
         String sshPublicKeyBlob;
@@ -374,8 +449,22 @@ public class SshAuthenticationService extends Service {
     private String getDescription(long masterKeyId) throws NotFoundException {
         UnifiedKeyInfo unifiedKeyInfo = mKeyRepository.getUnifiedKeyInfo(masterKeyId);
 
+        if (unifiedKeyInfo == null) {
+            throw new NotFoundException("Key not found");
+        }
+
         String description = "";
-        long authSubKeyId = mKeyRepository.getEffectiveAuthenticationKeyId(masterKeyId);
+        long authSubKeyId;
+        try {
+            authSubKeyId = mKeyRepository.getEffectiveAuthenticationKeyId(masterKeyId);
+        } catch (NotFoundException e) {
+            CardAuthKey cardAuthKey = mCardAuthKeyStore.get(masterKeyId);
+            if (cardAuthKey == null) {
+                throw new NotFoundException("No authentication subkey, and no security token "
+                        + "auth key known. Tap the security token in OpenKeychain once.");
+            }
+            authSubKeyId = cardAuthKey.authKeyId;
+        }
         description += unifiedKeyInfo.user_id();
         description += " (" + Long.toHexString(authSubKeyId) + ")";
 

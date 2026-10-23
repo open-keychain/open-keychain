@@ -45,6 +45,7 @@ import org.sufficientlysecure.keychain.securitytoken.operations.SecurityTokenPso
 import org.sufficientlysecure.keychain.securitytoken.operations.SecurityTokenChangeKeyTokenOp;
 import org.sufficientlysecure.keychain.securitytoken.operations.ResetAndWipeTokenOp;
 import org.sufficientlysecure.keychain.service.PassphraseCacheService;
+import org.sufficientlysecure.keychain.ssh.CardAuthKeyStore;
 import org.sufficientlysecure.keychain.service.input.CryptoInputParcel;
 import org.sufficientlysecure.keychain.service.input.RequiredInputParcel;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
@@ -188,6 +189,8 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
 
     @Override
     protected void doSecurityTokenInBackground(SecurityTokenConnection stConnection) throws IOException {
+        // any token operation is a chance to pick up an auth key not bound to the certificate
+        CardAuthKeyStore.getInstance(this).updateFromToken(this, stConnection);
 
         switch (mRequiredInput.mType) {
             case SECURITY_TOKEN_DECRYPT: {
@@ -239,7 +242,10 @@ public class SecurityTokenOperationActivity extends BaseSecurityTokenActivity {
                 long tokenKeyId = KeyFormattingUtils.getKeyIdFromFingerprint(
                         stConnection.getOpenPgpCapabilities().getFingerprintAuth());
 
-                if (tokenKeyId != mRequiredInput.getSubKeyId()) {
+                if (tokenKeyId != mRequiredInput.getSubKeyId()
+                        && !CardAuthKeyStore.getInstance(this).isPinAnchorFor(
+                                mRequiredInput.getMasterKeyId(), mRequiredInput.getSubKeyId(),
+                                tokenKeyId)) {
                     throw new IOException(getString(R.string.error_wrong_security_token));
                 }
 

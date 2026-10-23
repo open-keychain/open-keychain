@@ -34,6 +34,7 @@ import org.sufficientlysecure.keychain.R;
 import org.sufficientlysecure.keychain.securitytoken.KeyFormat;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenConnection;
 import org.sufficientlysecure.keychain.securitytoken.SecurityTokenInfo;
+import org.sufficientlysecure.keychain.ssh.CardAuthKeyStore;
 import org.sufficientlysecure.keychain.ui.base.BaseSecurityTokenActivity;
 import org.sufficientlysecure.keychain.ui.token.ManageSecurityTokenFragment;
 import org.sufficientlysecure.keychain.util.Passphrase;
@@ -141,6 +142,7 @@ public class CreateKeyActivity extends BaseSecurityTokenActivity {
         }
 
         tokenInfo = stConnection.readTokenInfo();
+        CardAuthKeyStore.getInstance(this).updateFromToken(this, stConnection);
     }
 
     @Override

@@ -190,6 +190,13 @@ public class OpenPgpCommandApduFactory {
     }
 
     @NonNull
+    public CommandApdu createReadPublicKeyCommand(int slot) {
+        return CommandApdu.create(CLA, INS_GENERATE_ASYMMETRIC_KEY_PAIR,
+                P1_GAKP_READ_PUBKEY_TEMPLATE, P2_EMPTY, new byte[] { (byte) slot, 0x00 },
+                MAX_APDU_NE_EXT);
+    }
+
+    @NonNull
     CommandApdu createRetrieveSecureMessagingPublicKeyCommand() {
         // see https://github.com/ANSSI-FR/SmartPGP/blob/master/secure_messaging/smartpgp_sm.pdf
         return CommandApdu.create(CLA, INS_GENERATE_ASYMMETRIC_KEY_PAIR, P1_GAKP_READ_PUBKEY_TEMPLATE, P2_EMPTY,
